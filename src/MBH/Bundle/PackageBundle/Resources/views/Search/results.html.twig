@@ -31,7 +31,7 @@
                     {% if clientConfig and clientConfig.useRoomTypeCategory() and row.roomType.category %}
                         {{ row.roomType.category }} -
                     {% endif %}
-                    мест: {{ row.roomType.places }}{% if row.roomType.additionalPlaces > 0 %}(+{{ row.roomType.additionalPlaces }}){% endif %}
+                    {{ 'mbhpackagebundle.view.search.results.mest'|trans }} : {{ row.roomType.places }}{% if row.roomType.additionalPlaces > 0 %}(+{{ row.roomType.additionalPlaces }}){% endif %}
                     - {{ row.roomType.hotel }}
                 </small>
                 <div class="pull-right">
@@ -118,7 +118,7 @@
                     })) }}"
                        target="_blank"
                        class="btn btn-success btn-xs package-search-book {{ is_granted('ROLE_PACKAGE_NEW') is empty ? 'hidden' }}"
-                       title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
+                       title="{{ 'mbhpackagebundle.view.search.results.bronirovatʹnomer'|trans }} : {{ result.roomsCount }}" data-toggle="tooltip">
                         <span class="package-search-book-reservation-text">{{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}</span>
                                 <span class="package-search-book-accommodation-text"
                                       style="display: none;">{{ "search.results.accommodation"|trans({}, "MBHPackageBundle") }}</span>

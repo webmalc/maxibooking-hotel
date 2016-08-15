@@ -1,59 +1,58 @@
-validator.begin_end_message: Начало брони не должно быть больше или равно концу брони
-validator.places_message: Недопустимый тип номера для указанного количества гостей
-validator.tariff_message: Даты брони выходят за пределы тарифа
-validator.package.check_in_out_message: Нельзя заселить/выселить гостей без указания комнаты
-validator.package.check_out_message: Нельзя выселить гостей без заселения
-validator.document.cacheQueue.wrong_status: Неверный статус.
-validator.document.order.price_min_message: Цена не может быть меньше нуля
-validator.document.order.payed_sum_min_message: Оплачено не может быть меньше нуля
-validator.document.order.wrong_status: Неверный статус.
-validator.document.package.order_not_selected: Не выбран заказ
-validator.document.package.order_not_selected: Не выбран заказ
-validator.document.package.tariff_not_selected: Не выбран тариф
-validator.document.package.room_type_not_selected: Не выбран тип номера
-validator.document.package.adults_amount_less_zero: Количество взрослых не может быть меньше нуля
-validator.document.package.children_amount_less_zero: Количество детей не может быть меньше нуля
-validator.document.package.begin_not_specified: Начало не указано
-validator.document.package.end_not_specified: Конец не указан
-validator.document.package.price_not_specified: Цена не указана
-validator.document.package.price_less_zero: Цена не может быть меньше нуля
-validator.document.package.service_price_less_zero: Цена услуг не может быть меньше нуля
-validator.document.package.wrong_arrival_purpose: Неверная цель приезда.
-validator.document.package.wrong_channel_manager_type: Неверный тип channel manager`а.
-validator.document.package.check_in_time_less_zero: Время заезда не может быть меньше 0
-validator.document.package.check_in_time_greater_23: Время заезда не может быть больше 23
-validator.document.package.check_out_time_less_zero: Время отъезда не может быть меньше 0
-validator.document.package.check_out_time_greater_23: Время отъезда не может быть больше 23
-validator.document.package.discount_less_1: Скидка не может быть меньше 1%
-validator.document.package.discount_greater_100: Скидка не может быть больше 100%
-validator.document.packageService.no_service_selected: Не выбрана услуга
-validator.document.packageService.no_reservation_selected: Не выбрана бронь
-validator.document.packageService.price_less_zero: Цена не может быть меньше нуля
-validator.document.packageService.amount_less_1: Количество не может быть меньше единицы
-validator.document.packageService.person_amount_less_1: Количество персон не может быть меньше единицы
-validator.document.packageService.nights_amount_less_1: Количество ночей не может быть меньше единицы
-validator.document.packageSource.min_name: Слишком короткое имя
-validator.document.packageSource.max_name: Слишком длинное имя
-validator.document.roomCacheOverwrite.no_tariff_selected: Не выбран тариф
-validator.document.roomCacheOverwrite.no_room_type_selected: Не выбран тип номера
-validator.document.roomCacheOverwrite.date_not_specified: Дата не указана
-validator.document.Tourist.name_required: Имя обязательно для заполнения
-validator.document.Tourist.min_name: Слишком короткое имя
-validator.document.Tourist.max_name: Слишком длинное имя
-validator.document.Tourist.surname_required: Фамилия обязательна для заполнения
-validator.document.Tourist.min_surname: Слишком короткая фамилия
-validator.document.Tourist.max_surname: Слишком длинная фамилия
-validator.document.Tourist.min_second_name: Слишком короткое отчество
-validator.document.Tourist.max_second_name: Слишком длинное отчество
-validator.document.Tourist.wrong_gender: Неверный пол.
-validator.document.Tourist.min_address: Слишком короткий адрес
-validator.document.Tourist.max_address: Слишком длинный адрес
-validator.document.Tourist.min_document: Слишком короткий документ
-validator.document.Tourist.max_document: Слишком длинный документ
-validator.document.Tourist.min_phone: Слишком короткий телефон
-validator.document.Tourist.max_phone: Слишком длинный телефон
-validator.document.Tourist.min_note: Слишком короткое примечание
-validator.document.Tourist.max_note: Слишком длинное примечание
-validator.document.OrderDocument.type: Тип должен быть выбран
-validator.document.OrderDocument.file_type: Тип файла не поддерживается. Поддерживаемые форматы png, jpeg, jpg, gif, pdf, xls, doc.
-form.searchType.range_validator: Некорректно заполнено поле "Дополнительные дни поиска"
+validator.begin_end_message: 'Начало брони не должно быть больше или равно концу брони'
+validator.places_message: 'Недопустимый тип номера для указанного количества гостей'
+validator.tariff_message: 'Даты брони выходят за пределы тарифа'
+validator.package.check_in_out_message: 'Нельзя заселить/выселить гостей без указания комнаты'
+validator.package.check_out_message: 'Нельзя выселить гостей без заселения'
+validator.document.cacheQueue.wrong_status: 'Неверный статус.'
+validator.document.order.price_min_message: 'Цена не может быть меньше нуля'
+validator.document.order.payed_sum_min_message: 'Оплачено не может быть меньше нуля'
+validator.document.order.wrong_status: 'Неверный статус.'
+validator.document.package.order_not_selected: 'Не выбран заказ'
+validator.document.package.tariff_not_selected: 'Не выбран тариф'
+validator.document.package.room_type_not_selected: 'Не выбран тип номера'
+validator.document.package.adults_amount_less_zero: 'Количество взрослых не может быть меньше нуля'
+validator.document.package.children_amount_less_zero: 'Количество детей не может быть меньше нуля'
+validator.document.package.begin_not_specified: 'Начало не указано'
+validator.document.package.end_not_specified: 'Конец не указан'
+validator.document.package.price_not_specified: 'Цена не указана'
+validator.document.package.price_less_zero: 'Цена не может быть меньше нуля'
+validator.document.package.service_price_less_zero: 'Цена услуг не может быть меньше нуля'
+validator.document.package.wrong_arrival_purpose: 'Неверная цель приезда.'
+validator.document.package.wrong_channel_manager_type: 'Неверный тип channel manager`а.'
+validator.document.package.check_in_time_less_zero: 'Время заезда не может быть меньше 0'
+validator.document.package.check_in_time_greater_23: 'Время заезда не может быть больше 23'
+validator.document.package.check_out_time_less_zero: 'Время отъезда не может быть меньше 0'
+validator.document.package.check_out_time_greater_23: 'Время отъезда не может быть больше 23'
+validator.document.package.discount_less_1: 'Скидка не может быть меньше 1%'
+validator.document.package.discount_greater_100: 'Скидка не может быть больше 100%'
+validator.document.packageService.no_service_selected: 'Не выбрана услуга'
+validator.document.packageService.no_reservation_selected: 'Не выбрана бронь'
+validator.document.packageService.price_less_zero: 'Цена не может быть меньше нуля'
+validator.document.packageService.amount_less_1: 'Количество не может быть меньше единицы'
+validator.document.packageService.person_amount_less_1: 'Количество персон не может быть меньше единицы'
+validator.document.packageService.nights_amount_less_1: 'Количество ночей не может быть меньше единицы'
+validator.document.packageSource.min_name: 'Слишком короткое имя'
+validator.document.packageSource.max_name: 'Слишком длинное имя'
+validator.document.roomCacheOverwrite.no_tariff_selected: 'Не выбран тариф'
+validator.document.roomCacheOverwrite.no_room_type_selected: 'Не выбран тип номера'
+validator.document.roomCacheOverwrite.date_not_specified: 'Дата не указана'
+validator.document.Tourist.name_required: 'Имя обязательно для заполнения'
+validator.document.Tourist.min_name: 'Слишком короткое имя'
+validator.document.Tourist.max_name: 'Слишком длинное имя'
+validator.document.Tourist.surname_required: 'Фамилия обязательна для заполнения'
+validator.document.Tourist.min_surname: 'Слишком короткая фамилия'
+validator.document.Tourist.max_surname: 'Слишком длинная фамилия'
+validator.document.Tourist.min_second_name: 'Слишком короткое отчество'
+validator.document.Tourist.max_second_name: 'Слишком длинное отчество'
+validator.document.Tourist.wrong_gender: 'Неверный пол.'
+validator.document.Tourist.min_address: 'Слишком короткий адрес'
+validator.document.Tourist.max_address: 'Слишком длинный адрес'
+validator.document.Tourist.min_document: 'Слишком короткий документ'
+validator.document.Tourist.max_document: 'Слишком длинный документ'
+validator.document.Tourist.min_phone: 'Слишком короткий телефон'
+validator.document.Tourist.max_phone: 'Слишком длинный телефон'
+validator.document.Tourist.min_note: 'Слишком короткое примечание'
+validator.document.Tourist.max_note: 'Слишком длинное примечание'
+validator.document.OrderDocument.type: 'Тип должен быть выбран'
+validator.document.OrderDocument.file_type: 'Тип файла не поддерживается. Поддерживаемые форматы png, jpeg, jpg, gif, pdf, xls, doc.'
+form.searchType.range_validator: 'Некорректно заполнено поле "Дополнительные дни поиска"'

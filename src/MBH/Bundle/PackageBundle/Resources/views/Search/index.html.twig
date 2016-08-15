@@ -60,7 +60,7 @@
             {% if not clientConfig or not clientConfig.isInstantSearch %}
                 <div class="input">
                     <button class="btn btn-primary" id="search-submit-button">
-                        <i class="fa fa-search"></i> Найти
+                        <i class="fa fa-search"></i> {{ 'mbhpackagebundle.view.search.index.nayti'|trans }} 
                     </button>
                 </div>
             {% endif %}
@@ -90,7 +90,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Добавление гостя</h4>
+                    <h4 class="modal-title">{{ 'mbhpackagebundle.view.search.index.dobavleniyegostya'|trans }} </h4>
                 </div>
                 <div class="modal-body">
                     <div style="display: none" class="alert alert-danger" id="add-guest-modal-errors"></div>

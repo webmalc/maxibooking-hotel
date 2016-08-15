@@ -1,5 +1,5 @@
 {% set accommodation = {
-    'val': entity.accommodation ? entity.accommodation : 'нет',
+    'val': entity.accommodation ? entity.accommodation : 'mbhpackagebundle.view.package.edittabs.net'|trans,
     'class': entity.accommodation ? 'label-success' : 'label-default',
     'checkIn': entity.accommodation and entity.isCheckIn and entity.isCheckOut is empty ? ' check-in-label' : '',
     'checkOut': entity.accommodation and entity.isCheckOut ? ' check-out-label' : '',

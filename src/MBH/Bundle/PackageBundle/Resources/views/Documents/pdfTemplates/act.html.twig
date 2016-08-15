@@ -39,7 +39,7 @@
 
     <div class="header">
         <div class="title">
-            <h2>Акт № {{ entity.numberWithPrefix }} от {{ 'now'|date('d.m.Y') }}.</h2>
+            <h2>{{ 'mbhpackagebundle.view.documents.pdftemplates.act.akt'|trans }} № {{ entity.numberWithPrefix }} от {{ 'now'|date('d.m.Y') }}.</h2>
         </div>
         {% if hotel and hotel.logoUrl %}
             <div class="logo">
@@ -116,7 +116,7 @@
                         <td align="center">{{ counter }}</td>
                         <td>{{ serviceGroup.byService.name }}</td>
                         <td align="center">{{ serviceGroup.actuallyAmount }}</td>
-                        <td align="center">шт.</td>
+                        <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.act.sht'|trans }} .</td>
                         <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
                         <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
                     </tr>
@@ -128,16 +128,16 @@
         <!-- Total -->
         <table border="0" width="100%">
             <tr>
-                <td align="right"><strong>Итого:</strong></td>
+                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.act.itogo'|trans }} :</strong></td>
                 <td align="right" style="width: 100px;"><strong>{{ total|number_format(2) }}</strong></td>
             </tr>
             <tr>
-                <td align="right"><strong>В том числе НДС:</strong></td>
+                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.act.vtomchislends'|trans }} :</strong></td>
                 <td align="right"><strong>0</strong></td>
             </tr>
         </table>
 
-        <p>Всего оказано услуг {{ counter }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.act.vsegookazanouslug'|trans }} {{ counter }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
         <p>{{ "package.pdf.conditions"|trans({}, "MBHPackageBundle") }}</p>

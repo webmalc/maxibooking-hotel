@@ -39,7 +39,7 @@
 
     <div class="header">
         <div class="title">
-            <h2>Счёт № {{ entity.numberWithPrefix }} от {{ 'now'|date('d.m.Y H:i') }}.</h2>
+            <h2>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.schët'|trans }} № {{ entity.numberWithPrefix }} от {{ 'now'|date('d.m.Y H:i') }}.</h2>
         </div>
         {% if hotel and hotel.logoUrl %}
             <div class="logo">
@@ -56,11 +56,11 @@
             <tr>
                 <td width="15%">{{ "package.pdf.executor"|trans({}, "MBHPackageBundle") }}</td>
                 <td width="85%">
-                    Отель {% if hotel and hotel.fullTitle %}<strong>"{{ hotel.fullTitle }}"</strong>{% else %}____________________{% endif %},
-                    адрес: {% if hotel and hotel.country and hotel.city and hotel.street %}
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.bill.otelʹ'|trans }} {% if hotel and hotel.fullTitle %}<strong>"{{ hotel.fullTitle }}"</strong>{% else %}____________________{% endif %},
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.bill.adres'|trans }} : {% if hotel and hotel.country and hotel.city and hotel.street %}
                     {{ hotel.country.title }}, {% if hotel.region %}{{ hotel.region.title }},{% endif %} г. {{ hotel.city.title }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
                     {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
-                    ИНН {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.bill.inn'|trans }} {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}
                 </td>
             </tr>
             <tr>
@@ -122,12 +122,12 @@
         <!-- Total -->
         <table border="0" width="100%">
             <tr>
-                <td align="right"><strong>Заказано:</strong></td>
+                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.zakazano'|trans }} :</strong></td>
                 <td align="right" style="width: 120px;"><strong>{{ total|number_format(2) }}</strong></td>
             </tr>
         </table>
 
-        <p>Всего заказано услуг {{ counter }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.vsegozakazanouslug'|trans }} {{ counter }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
 
@@ -166,14 +166,14 @@
             </thead>
             <tbody>
                 <tr>
-                    <td align="right"><strong>Оплачено:</strong></td>
+                    <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.oplacheno'|trans }} :</strong></td>
                     <td align="right" style="width: 120px;"><strong>+{{ paidTotal|number_format(2) }}</strong></td>
                 </tr>
             </tbody>
         </table>
 
         {% if paidTotal > 0 %}
-            <p>Всего оплечено услуг на сумму {{ paidTotal|number_format(2) }} {{ currency().text }}<br>
+            <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.vsegooplechenouslugnasummu'|trans }} {{ paidTotal|number_format(2) }} {{ currency().text }}<br>
                 <strong>{{ paidTotal|num2str|capitalize }}</strong></p>
         {% endif %}
 
@@ -184,7 +184,7 @@
             <tbody>
             <tr style="font-size: 20px">
                 <td align="right">
-                    <strong>Итог:</strong>
+                    <strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.itog'|trans }} :</strong>
                 </td>
                 <td align="right" style="width: 160px;"><strong>{{ (paidTotal - order.price)|number_format(2) }}</strong></td>
             </tr>
@@ -193,7 +193,7 @@
 
 
         <div style="margin-top: 70px">
-            <div class="ib">Дежурный администратор</div>
+            <div class="ib">{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.dezhurnyyadministrator'|trans }} </div>
             <div class="ib" style="border-bottom: 1px solid #000; width: 300px;"></div>
             <div class="ib" style="width: 150px">{% if user is defined and user %}{{ user|initial }}{% endif %}</div>
         </div>

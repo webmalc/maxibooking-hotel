@@ -10,19 +10,19 @@
     <div>
         {% for tourist in tourists %}
     <div style="width: 100%;font-weight: bold">
-        <div style="float: right;">Форма 3</div>
+        <div style="float: right;">{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.forma'|trans }} 3</div>
         <div style="clear: both"></div>
     </div>
 
     <div class="header">
-        <span class="upper">Свидетельство</span> № <strong>{{ entity.numberWithPrefix }} - {{ loop.index }}</strong> <br>
-        о регистрации по месту пребывания
+        <span class="upper">{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.svidetelʹstvo'|trans }} </span> № <strong>{{ entity.numberWithPrefix }} - {{ loop.index }}</strong> <br>
+        {{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.oregistratsiipomestuprebyvaniya'|trans }} 
     </div>
 
     <p>
         <div>
             <div class="ib" style="float: left;width: 60px">
-                Выдано &nbsp
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.vydano'|trans }} &nbsp
             </div>
             <div style="margin-left: 62px;">
                 <div class="area">&nbsp
@@ -30,12 +30,12 @@
             {{ tourist.fullName }}{% if tourist.birthday %}, {{ tourist.birthday|date('d.m.Y') }} г. р.{% endif %}{% if tourist.birthplace and tourist.birthplace.country and tourist.birthplace.city %}, {{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.city }}{% endif %}
         {% endif %}
                 </div>
-                <div style="display: block; font-size: 12px; font-weight: normal;">(Ф.И.О., год и место рождения)</div>
+                <div style="display: block; font-size: 12px; font-weight: normal;">({{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.f'|trans }})</div>
             </div>
             <div style="clear: both "></div>
         </div>
 
-        <div>о том, что он(а) зарегистрирован(а) по месту пребывания по адресу:</div>
+        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.otom'|trans }} , что он(а) зарегистрирован(а) по месту пребывания по адресу:</div>
 
         {% set location = '' %}
 
@@ -62,20 +62,20 @@
         </div>
 
         <div>
-            на срок с &nbsp{% if entity.begin %}{{ entity.begin|date('d.m.Y') }}{% endif %} г. по {% if entity.end %}{{ entity.end|date('d.m.Y') }}{% endif %} г.
+            {{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.nasroks'|trans }} &nbsp{% if entity.begin %}{{ entity.begin|date('d.m.Y') }}{% endif %} г. по {% if entity.end %}{{ entity.end|date('d.m.Y') }}{% endif %} г.
         </div>
     </p>
 
     <div>
-        Свидетельство выдано к документу, удостоверяющему личность:
-        <br>вид <div class="area ib" style="width: 475px">&nbsp{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</div>,
-        серия <div class="area ib" style="width: 150px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</div>,
+        {{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.svidetelʹstvovydanokdokumentu'|trans }} :
+        <br>{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.vid'|trans }} <div class="area ib" style="width: 475px">&nbsp{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</div>,
+        {{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.seriya'|trans }} <div class="area ib" style="width: 150px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</div>,
         № <div class="area ib" style="width: 155px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</div>
     </div>
 
     <div>
         <div class="ib" style="float: left;width: 210px">
-            <div style="float: left;width: 100px">дата выдачи</div>
+            <div style="float: left;width: 100px">{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.datavydachi'|trans }} </div>
             <div class="area ib" style="width: 100px;">
                 &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}
             </div>
@@ -90,11 +90,11 @@
 
 
     <p>
-        <div>Начальник (руководитель) органа регистрационного учета</div>
+        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.nachalʹnik'|trans }}</div>
         <div class="area" style="margin-left: 470px;"></div>
         &nbsp
         <div class="area"></div>
-        <div style="display: block; font-size: 12px; font-weight: normal;text-align: center;">(наименование органа регистрационного учета)</div>
+        <div style="display: block; font-size: 12px; font-weight: normal;text-align: center;">({{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.naimenovaniyeorganaregistratsionnogoucheta'|trans }} )</div>
     </p>
 
 
@@ -107,14 +107,14 @@
                 <div>
                     &nbsp
                     <div class="area" style="width: 200px"></div>
-                    <div style="text-align: center;">(подпись)</div>
+                    <div style="text-align: center;">({{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.podpisʹ'|trans }} )</div>
                 </div>
             </td>
             <td style="float: right;">
                 <div>
                     &nbsp
                     <div class="area" style="width: 200px;"></div>
-                    <div style="text-align: center;">(фамилия)</div>
+                    <div style="text-align: center;">({{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.familiya'|trans }} )</div>
                 </div>
             </td>
         </tr>

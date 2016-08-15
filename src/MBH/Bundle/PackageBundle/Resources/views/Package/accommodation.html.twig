@@ -19,7 +19,7 @@
             {% if package.accommodation %}
                 <div class="bg-gray color-palette alert">
                     <i class="fa fa-bed"> </i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ package.accommodation.name(true, true) }}
-                    , {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ package.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
+                    , {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ package.isCheckIn ? '' : 'mbhpackagebundle.view.package.accommodation.ne'|trans}} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
                     {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
 
                             <button data-toggle="modal" data-target="#package-relocation-modal"
@@ -32,13 +32,13 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title">Переселить гостей?</h4>
+                                        <h4 class="modal-title">{{ 'mbhpackagebundle.view.package.accommodation.pereselitʹgostey'|trans }} ?</h4>
                                     </div>
                                     <form class="form-inline" id="package-relocation-form" data-package-id="{{ package.id }}">
                                     <div class="modal-body">
                                         <p></p>
                                             <div class="form-group">
-                                                <label class="control-label" >Дата переезда</label>
+                                                <label class="control-label" >{{ 'mbhpackagebundle.view.package.accommodation.datapereyezda'|trans }} </label>
                                                 <input class="form-control datepicker margin-left-sm"
                                                        required="required" name="date" data-begin="{{ package.begin|date_modify("+1 day")|date('d.m.Y') }}"
                                                        data-end="{{ package.end|date_modify("-1 day")|date('d.m.Y') }}"
@@ -48,8 +48,8 @@
 
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i> Отмена</button>
-                                        <button type="submit" id="package-relocation-go" class="btn btn-primary">Да</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i> {{ 'mbhpackagebundle.view.package.accommodation.otmena'|trans }} </button>
+                                        <button type="submit" id="package-relocation-go" class="btn btn-primary">{{ 'mbhpackagebundle.view.package.accommodation.da'|trans }} </button>
                                     </div>
                                     </form>
                                 </div>
@@ -61,7 +61,7 @@
                     {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                         <div class="pull-right">
                             <a href="{{ path('package_accommodation_delete', { 'id': package.id }) }}"
-                               class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                               class="btn btn-danger btn-xs delete-link " title="{{ 'mbhpackagebundle.view.package.accommodation.udaleniyezapisi'|trans }} " data-toggle="tooltip">
                                 <i class="fa fa-trash-o"></i>
                             </a>
                         </div>
@@ -75,7 +75,7 @@
 
             {% if optGroupRooms|length %}
             <div class="box box-default box-solid">
-                <div class="box-header with-border"><h3 class="box-title">Выбор размещения</h3>
+                <div class="box-header with-border"><h3 class="box-title">{{ 'mbhpackagebundle.view.package.accommodation.vyborrazmeshcheniya'|trans }} </h3>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
                                 id="mbh_bundle_packagebundle_package_accommodation_table"><i class="fa fa-minus"></i>
@@ -89,11 +89,11 @@
                         <tr>
                             <th class="td-xs"></th>
                             <th>#</th>
-                            <th>Тип номера</th>
-                            <th class="td-md">Корпус</th>
-                            <th class="td-sm">Этаж</th>
-                            <th class="td-sm">Статус</th>
-                            <th>Удобства</th>
+                            <th>{{ 'mbhpackagebundle.view.package.accommodation.tipnomera'|trans }} </th>
+                            <th class="td-md">{{ 'mbhpackagebundle.view.package.accommodation.korpus'|trans }} </th>
+                            <th class="td-sm">{{ 'mbhpackagebundle.view.package.accommodation.etazh'|trans }} </th>
+                            <th class="td-sm">{{ 'mbhpackagebundle.view.package.accommodation.status'|trans }} </th>
+                            <th>{{ 'mbhpackagebundle.view.package.accommodation.udobstva'|trans }} </th>
                             <th class="td-xs"></th>
                         </tr>
                         </thead>
@@ -118,13 +118,13 @@
                                     <td class="text-center">
                                         {% if  package.accommodation and room.id == package.accommodation.id %}
                                             <a href="{{ path('package_accommodation_delete', { 'id': package.id }) }}"
-                                               class="btn btn-danger btn-xs delete-link " title="Удаление записи"
+                                               class="btn btn-danger btn-xs delete-link " title="{{ 'mbhpackagebundle.view.package.accommodation.udaleniyezapisi'|trans }} "
                                                data-toggle="tooltip">
                                                 <i class="fa fa-trash-o"></i>
                                             </a>
                                         {% else %}
                                             <a href="{{ path('package_accommodation_set', { 'id': package.id, 'roomId': room.id }) }}"
-                                               class="btn btn-success btn-xs" title="Разместить в этом номере"
+                                               class="btn btn-success btn-xs" title="{{ 'mbhpackagebundle.view.package.accommodation.razmestitʹvetomnomere'|trans }} "
                                                data-toggle="tooltip">
                                                 <i class="fa fa-check"></i>
                                             </a>
@@ -139,7 +139,7 @@
             </div>
         {% else %}
             <div class="alert alert-warning">
-                Номера для размещения не найдены.
+                {{ 'mbhpackagebundle.view.package.accommodation.nomeradlyarazmeshcheniyanenaydeny'|trans }} .
             </div>
         {% endif %}
 
@@ -159,8 +159,7 @@
         end: new Date({{ package.end.timestamp }} * 1000
         ),
         debt: {{ package.debt }}
-                }
-        ;
+                };
         var earlyCheckInServiceIsEnabled = {{ earlyCheckInServiceIsEnabled|json_encode }};
         var lateCheckOutServiceIsEnabled = {{ lateCheckOutServiceIsEnabled|json_encode }};
     </script>
