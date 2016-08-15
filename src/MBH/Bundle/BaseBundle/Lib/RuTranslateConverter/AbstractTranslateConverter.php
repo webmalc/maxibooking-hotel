@@ -28,7 +28,8 @@ abstract class AbstractTranslateConverter
 
     const TRANSLATE_FOLDER = '/Resources/translations';
 
-    const RU_PATTERN = '/([А-Яа-яЁё]+,?.?\??\s*)+/u';
+//    const RU_PATTERN = '/([А-Яа-яЁё]+,?.?\??\-?\s*)+/u';
+    const RU_PATTERN = '/([А-Яа-яЁё]+\s*[\-\.\?\,]?\s*)+/u';
 
 
     protected $bundle;
@@ -129,14 +130,20 @@ abstract class AbstractTranslateConverter
 
     protected function getTranslationId(SplFileInfo $file, string $matchedOrigText): string
     {
+        $replaceSymbols = [
+            '/\s?(\,|\/|\-|\s)+\s?/i'
+        ];
+
         $transliterator = \Transliterator::create('Russian-Latin/BGN');
-        $label = str_replace('\ʹ', '_', $matchedOrigText);
-        $label = str_replace(',', '_', $label);
-        $label = $transliterator->transliterate(str_replace(' ', '', $label));
+//        $label = str_replace('\ʹ', '_', $matchedOrigText);
+//        $label = str_replace(',', '_', $label);
+//        $label = str_replace('-', '_', $label);
+        $label = $transliterator->transliterate($matchedOrigText);
         $bundleName = $this->bundle->getName();
         $dir = str_replace(static::SUFFIX, '', $file->getRelativePathname());
-        $dir = str_replace('/', '.', $dir);
+//        $dir = str_replace('/', '.', $dir);
         $transIdPattern = sprintf($this->transIdPattert(), $bundleName, $dir, $label);
+        $transIdPattern = preg_replace($replaceSymbols, '.', $transIdPattern);
         return strtolower($transIdPattern);
     }
 
