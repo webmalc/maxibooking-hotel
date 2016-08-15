@@ -1,136 +1,153 @@
+mbhpackagebundle.form.packageservicetype.data: Дата
+mbhpackagebundle.form.unwelcometype.dostupentolʹkodlyavasineperedayetsyavservisnezhelatelʹnykhgostey: 'Доступен только для вас и не передается в сервис нежелательных гостей'
+mbhpackagebundle.form.packagemaintype.zayezd: Заезд
+mbhpackagebundle.form.packagemaintype.otʺyezd: Отъезд
+'mbhpackagebundle.form.packagemaintype.prinuditelʹnoyebronirovaniye?': 'Принудительное бронирование?'
+'mbhpackagebundle.form.packagemaintype.ignorirovatʹusloviyaiogranicheniyapripoiskedostupnogonomera?': 'Игнорировать условия и ограничения при поиске доступного номера?'
+mbhpackagebundle.form.packagemaintype.tipnomera: 'Тип номера'
+mbhpackagebundle.form.packagemaintype.vzroslykh: Взрослых
+mbhpackagebundle.form.packagemaintype.detey: Детей
+'mbhpackagebundle.form.packagemaintype.kuryashchiy?': 'Курящий?'
+mbhpackagebundle.form.packagemaintype.nomerbroni: 'Номер брони'
+'mbhpackagebundle.form.packagemaintype.povrezhdena?': 'Повреждена?'
+mbhpackagebundle.form.orderdocumenttype.tip: Тип
+mbhpackagebundle.form.orderdocumenttype.tipskana: 'Тип скана'
+mbhpackagebundle.form.orderdocumenttype.kliyent: Клиент
+mbhpackagebundle.form.orderdocumenttype.zamenitʹfayl: 'Заменить файл'
+mbhpackagebundle.form.orderdocumenttype.kommentariy: Комментарий
+mbhpackagebundle.form.searchtype.otʺyezd: Отъезд
 form.orderTouristType.fio: ФИО
-form.orderTouristType.find_guest: Найти гостя
-form.orderTouristType.placeholder_fio: Иванов Иван Иванович
+form.orderTouristType.find_guest: 'Найти гостя'
+form.orderTouristType.placeholder_fio: 'Иванов Иван Иванович'
 form.orderTouristType.placeholder_surname: Иванов
 form.orderTouristType.surname: Фамилия
-form.orderTouristType.add_guest: Добавить гостя
-form.orderTouristType.min_name: Слишком короткое имя
-form.orderTouristType.max_name: Слишком длинное имя
+form.orderTouristType.add_guest: 'Добавить гостя'
+form.orderTouristType.min_name: 'Слишком короткое имя'
+form.orderTouristType.max_name: 'Слишком длинное имя'
 form.orderTouristType.name: Имя
 form.orderTouristType.placeholder_name: Иван
-form.orderTouristType.min_surname: Слишком короткая фамилия
-form.orderTouristType.max_surname: Слишком длинная фамилия
+form.orderTouristType.min_surname: 'Слишком короткая фамилия'
+form.orderTouristType.max_surname: 'Слишком длинная фамилия'
 form.orderTouristType.second_name: Отчество
 form.orderTouristType.placeholder_second_name: Иванович
-form.orderTouristType.min_second_name: Слишком короткое отчество
-form.orderTouristType.max_second_name: Слишком длинное отчество
-form.orderTouristType.birth_date: Дата рождения
-form.orderTouristType.add_to_package: Добавить как гостя?
-form.orderTouristType.phone: Телефон
+form.orderTouristType.min_second_name: 'Слишком короткое отчество'
+form.orderTouristType.max_second_name: 'Слишком длинное отчество'
+form.orderTouristType.birth_date: 'Дата рождения'
+form.orderTouristType.add_to_package: 'Добавить как гостя?'
 form.orderTouristType.phone: Телефон
 form.orderTouristType.email: E-mail
 form.orderType.source: Источник
 form.orderType.comment: Комментарий
-form.orderType.is_confirmed: Подтвержден?
+form.orderType.is_confirmed: 'Подтвержден?'
 form.packageAccommodationType.room_or_bed: Комната/койко-место
 form.packageAccommodationType.room: Комната
-form.packageAccommodationType.choose_placement: Информация о размещении
-form.packageAccommodationType.are_guests_checked_in: Гости заехали?
-form.packageAccommodationType.are_guests_checked_in_help: Заехал ли гости в номер?
-form.packageAccommodationType.are_guests_checked_out: Гости выехали?
-form.packageAccommodationType.are_guests_checked_out_help: Выехали ли гости из номера?
-form.packageAccommodationType.help: Выехали ли гости из номера?
-form.packageAccommodationType.check_in_group: Время заезда/выезда
-form.packageAccommodationType.can_not_checkout_with_debt: <div class="text-danger"><i class="fa fa-exclamation-triangle"></i> В заказе есть долг</div>
-form.packageAccommodationType.hasEarlyCheckIn: <div class="text-success"><i class="fa fa-check"></i> Заказ имеет раниий заезд</div>
-form.packageAccommodationType.hasLateCheckOut: <div class="text-success"><i class="fa fa-check"></i> Заказ имеет поздний выезд</div>
+form.packageAccommodationType.choose_placement: 'Информация о размещении'
+form.packageAccommodationType.are_guests_checked_in: 'Гости заехали?'
+form.packageAccommodationType.are_guests_checked_in_help: 'Заехал ли гости в номер?'
+form.packageAccommodationType.are_guests_checked_out: 'Гости выехали?'
+form.packageAccommodationType.are_guests_checked_out_help: 'Выехали ли гости из номера?'
+form.packageAccommodationType.help: 'Выехали ли гости из номера?'
+form.packageAccommodationType.check_in_group: 'Время заезда/выезда'
+form.packageAccommodationType.can_not_checkout_with_debt: '<div class="text-danger"><i class="fa fa-exclamation-triangle"></i> В заказе есть долг</div>'
+form.packageAccommodationType.hasEarlyCheckIn: '<div class="text-success"><i class="fa fa-check"></i> Заказ имеет раниий заезд</div>'
+form.packageAccommodationType.hasLateCheckOut: '<div class="text-success"><i class="fa fa-check"></i> Заказ имеет поздний выезд</div>'
 form.packageCopyType.reservation: Бронь
-form.packageCopyType.transfer_parameters: Параметры переноса
-form.packageCopyType.data_transfer_reservation: Бронь в которую будет произведен перенос данных.
-form.packageCopyType.no_data_transfer_reservation_selected: Не выбрана бронь для переноса
+form.packageCopyType.transfer_parameters: 'Параметры переноса'
+form.packageCopyType.data_transfer_reservation: 'Бронь в которую будет произведен перенос данных.'
+form.packageCopyType.no_data_transfer_reservation_selected: 'Не выбрана бронь для переноса'
 form.packageCopyType.packageCopyType: Гости
-form.packageCopyType.should_we_transfer_guests_to_selected_reservation: Перенести ли гостей в выбранную бронь?
+form.packageCopyType.should_we_transfer_guests_to_selected_reservation: 'Перенести ли гостей в выбранную бронь?'
 form.packageCopyType.services: Услуги
-form.packageCopyType.should_we_transfer_all_services_to_selected_reservation: Перенести ли все услуги в выбранную бронь?
+form.packageCopyType.should_we_transfer_all_services_to_selected_reservation: 'Перенести ли все услуги в выбранную бронь?'
 form.packageCopyType.placement: Размещение
-form.packageCopyType..should_we_transfer_placement_to_selected_reservation: Перенести ли размещение в выбранную бронь?
+form.packageCopyType..should_we_transfer_placement_to_selected_reservation: 'Перенести ли размещение в выбранную бронь?'
 form.packageGuestType.fio: ФИО
-form.packageGuestType.find_guest: Найти гостя
-form.packageGuestType.placeholder_fio: Иванов Иван Иванович
+form.packageGuestType.find_guest: 'Найти гостя'
+form.packageGuestType.placeholder_fio: 'Иванов Иван Иванович'
 form.packageGuestType.placeholder_surname: Иванов
 form.packageGuestType.surname: Фамилия
-form.packageGuestType.add_guest: Добавить гостя
-form.packageGuestType.min_name: Слишком короткое имя
-form.packageGuestType.max_name: Слишком длинное имя
+form.packageGuestType.add_guest: 'Добавить гостя'
+form.packageGuestType.min_name: 'Слишком короткое имя'
+form.packageGuestType.max_name: 'Слишком длинное имя'
 form.packageGuestType.name: Имя
 form.packageGuestType.placeholder_name: Иван
-form.packageGuestType.min_surname: Слишком короткая фамилия
-form.packageGuestType.max_surname: Слишком длинная фамилия
+form.packageGuestType.min_surname: 'Слишком короткая фамилия'
+form.packageGuestType.max_surname: 'Слишком длинная фамилия'
 form.packageGuestType.second_name: Отчество
 form.packageGuestType.placeholder_second_name: Иванович
-form.packageGuestType.min_second_name: Слишком короткое отчество
-form.packageGuestType.max_second_name: Слишком длинное отчество
-form.packageGuestType.birth_date: Дата рождения
+form.packageGuestType.min_second_name: 'Слишком короткое отчество'
+form.packageGuestType.max_second_name: 'Слишком длинное отчество'
+form.packageGuestType.birth_date: 'Дата рождения'
 form.packageMainType.promotion: Акция
 form.packageMainType.price: Цена
 form.packageMainType.discount: Скидка
-form.packageMainType.isPercentDiscount: В процентах
-form.packageMainType.check_in_time: Время заезда
-form.packageMainType.check_out_time: Время отъезда
-form.packageMainType.arrival_purpose: Цель приезда
+form.packageMainType.isPercentDiscount: 'В процентах'
+form.packageMainType.check_in_time: 'Время заезда'
+form.packageMainType.check_out_time: 'Время отъезда'
+form.packageMainType.arrival_purpose: 'Цель приезда'
 form.packageMainType.comment: Комментарий
 form.packageServiceType.service: Услуга
 form.packageServiceType.add_service: 'Добавить услугу'
 form.packageServiceType.edit_service: 'Редактирование услуги'
-form.packageServiceType.reservation_add_service: Услуга для добавления к броне
+form.packageServiceType.reservation_add_service: 'Услуга для добавления к броне'
 form.packageServiceType.price: Цена
-form.packageServiceType.nights_amount: Количество суток
-form.packageServiceType.guests_amount: Количество гостей
+form.packageServiceType.nights_amount: 'Количество суток'
+form.packageServiceType.guests_amount: 'Количество гостей'
 form.packageServiceType.amount: Количество
 form.packageServiceType.comment: Комментарий
 form.packageServiceType.time: Время
 form.packageSourceType.name: Назавание
-form.packageSourceType.add_source: Добавить источник
+form.packageSourceType.add_source: 'Добавить источник'
 form.packageSourceType.adds: Реклама
-form.packageSourceType.inner_name: Внутреннее название
-form.packageSourceType.inner_maxibooking_name:  Название для использования внутри MaxiBooking
-form.searchType.all_rooms: Все номера
-form.searchType.room_type: Тип номера
+form.packageSourceType.inner_name: 'Внутреннее название'
+form.packageSourceType.inner_maxibooking_name: 'Название для использования внутри MaxiBooking'
+form.searchType.all_rooms: 'Все номера'
+form.searchType.room_type: 'Тип номера'
 form.searchType.tariff: Тариф
-form.searchType.order: Номер заказа
+form.searchType.order: 'Номер заказа'
 form.searchType.payer: Плательщик
-form.searchType.payer_add: Добавить нового гостя
+form.searchType.payer_add: 'Добавить нового гостя'
 form.searchType.check_in: Заезд
-form.searchType.check_in_date_not_filled: Не заполнена дата заезда
-form.searchType.check_out_date_not_filled: Не заполнена дата отъезда
+form.searchType.check_in_date_not_filled: 'Не заполнена дата заезда'
+form.searchType.check_out_date_not_filled: 'Не заполнена дата отъезда'
 form.searchType.adults: Взрослые
-form.searchType.adults_amount_less_zero: Количество взрослых не может быть меньше нуля
-form.searchType.adults_amount_not_filled: Не заполнено количество взрослых
+form.searchType.adults_amount_less_zero: 'Количество взрослых не может быть меньше нуля'
+form.searchType.adults_amount_not_filled: 'Не заполнено количество взрослых'
 form.searchType.children: Дети
-form.searchType.forceBooking: Игнорировать условия и ограничения
-form.searchType.children_ages: Возраст детей
-form.searchType.children_amount_less_zero: Количество детей не может быть меньше нуля
-form.searchType.children_amount_not_filled: Не заполнено количество детей
-form.searchType.range: Дополнительные дни поиска
+form.searchType.forceBooking: 'Игнорировать условия и ограничения'
+form.searchType.children_ages: 'Возраст детей'
+form.searchType.children_amount_less_zero: 'Количество детей не может быть меньше нуля'
+form.searchType.children_amount_not_filled: 'Не заполнено количество детей'
+form.searchType.range: 'Дополнительные дни поиска'
 form.touristType.surname: Фамилия
-form.touristType.general_info: Общая информация
+form.touristType.general_info: 'Общая информация'
 form.touristType.placeholder_surname: Иванов
 form.touristType.name: Имя
 form.touristType.placeholder_name: Иван
 form.touristType.second_name: Отчество
 form.touristType.placeholder_second_name: Иванович
-form.touristType.birth_date: Дата рождения
+form.touristType.birth_date: 'Дата рождения'
 form.touristType.gender: Пол
-form.touristType.communication_language: Язык общения
+form.touristType.communication_language: 'Язык общения'
 form.touristType.sex_male: Муж.
 form.touristType.sex_female: Жен.
-form.touristType.sex_unknown: -
+form.touristType.sex_unknown: '-'
 form.touristType.address: Адрес
-form.touristType.contact_info: Контактная информация
-form.touristType.placeholder_address: г. Москва, пр-кт Мира, д.6
+form.touristType.contact_info: 'Контактная информация'
+form.touristType.placeholder_address: 'г. Москва, пр-кт Мира, д.6'
 form.touristType.document: Документ
-form.touristType.placeholder_document: Паспорт: 4545№345678, выдан 28 сентября 2002 г. 2 отделением милиции Г. Москвы
+form.touristType.placeholder_document: 'Паспорт: 4545№345678, выдан 28 сентября 2002 г. 2 отделением милиции Г. Москвы'
 form.touristType.phone: Телефон
-form.touristType.mobile_phone: Моб. телефон
-form.touristType.placeholder_messenger: Skype или WhatsApp
+form.touristType.mobile_phone: 'Моб. телефон'
+form.touristType.placeholder_messenger: 'Skype или WhatsApp'
 form.touristType.messenger: Мессенджер
 form.touristType.placeholder_phone: +7(925)3456512
 form.touristType.email: E-mail
 form.touristType.placeholder_email: mail@exapmple.com
 form.touristType.note: Примечание
 controller.analyticsController.services_amount: 'Количество услуг'
-controller.analyticsController.proceeds: 'Выручка'
-controller.analyticsController.percentage: 'Процент'
+controller.analyticsController.proceeds: Выручка
+controller.analyticsController.percentage: Процент
 controller.analyticsController.package_trips_amount: 'Количество путевок'
 controller.analyticsController.sale_date: 'Даты продажи'
 controller.orderController.cash_register_paper_deleted_success: 'Кассовый документ успешно удален.'
@@ -145,9 +162,9 @@ controller.orderController.record_deleted_success: 'Запись успешно 
 controller.packageController.placement_not_transfered_room_is_in_use: 'Размещение не перенесено. Номер уже занят.'
 controller.packageController.data_transfer_success: 'Данные успешно пересены.'
 controller.packageController.record_edited_success: 'Запись успешно отредактирована.'
-controller.packageController.order_created_success:  'Заказ успешно создан.'
+controller.packageController.order_created_success: 'Заказ успешно создан.'
 controller.packageController.guest_added_success: 'Гость успешно добавлен.'
-controller.packageController.service_adding_error_refresh_and_try_again:  'Произошла ошибка при добавлении услуги. Обновите страницу и попробуйте еще раз.'
+controller.packageController.service_adding_error_refresh_and_try_again: 'Произошла ошибка при добавлении услуги. Обновите страницу и попробуйте еще раз.'
 controller.packageController.service_added_success: 'Услуга успешно добавлена.'
 controller.packageController.service_edit_success: 'Услуга успешно отредактирована.'
 controller.packageController.service_deleted_success: 'Услуга успешно удалена.'
@@ -164,184 +181,154 @@ controller.packageController.record_edited_fail_accommodation: 'Ошибка п�
 controller.packageController.relocation_success: 'Создана новая бронь для переселения. Теперь можно выбрать новый номер размещения гостей'
 controller.packageController.relocation_dates_error: 'Ошибка переселения. Некорректная дата переселения'
 controller.packageController.relocation_accommodation_error: 'Ошибка переселения. Нет размещения'
-
-# TaskType Controller
 controller.taskTypeController.record_created_success: 'Запись успешно создана.'
 controller.taskTypeController.record_edited_success: 'Запись успешно отредактирована.'
-
-# Documents Controller
-controller.documentsController.table_row_name: 'Имя'
-controller.documentsController.table_row_comment: 'Комментарий'
-controller.documentsController.table_row_type: 'Тип'
-controller.documentsController.table_row_tourist: 'Клиент'
-controller.documentsController.table_row_created_by: 'Добавил'
-controller.documentsController.action_download: 'Скачать'
-controller.documentsController.action_view: 'Просмотр'
+controller.documentsController.table_row_name: Имя
+controller.documentsController.table_row_comment: Комментарий
+controller.documentsController.table_row_type: Тип
+controller.documentsController.table_row_tourist: Клиент
+controller.documentsController.table_row_created_by: Добавил
+controller.documentsController.action_download: Скачать
+controller.documentsController.action_view: Просмотр
 controller.documentsController.confirm_remove: 'Вы действительно хотите удалить файл "%filename%"?'
 controller.documentsController.alert_no_documents: 'Не загружено ни одного документа.'
-# Organization Type
-form.organizationType.name: 'Название'
+form.organizationType.name: Название
 form.organizationType.short_name: 'Краткое название'
 form.organizationType.director_fio: 'ФИО руководителя'
 form.organizationType.accountant_fio: 'ФИО бухгалтера'
-form.organizationType.phone: 'Телефон'
-form.organizationType.email: 'E-mail'
-form.organizationType.inn: 'ИНН'
-form.organizationType.kpp: 'КПП'
+form.organizationType.phone: Телефон
+form.organizationType.email: E-mail
+form.organizationType.inn: ИНН
+form.organizationType.kpp: КПП
 form.organizationType.registration_date: 'Дата гос.регистрации'
 form.organizationType.registration_number: 'Регистраиционный номер в ПФР'
 form.organizationType.activity_code: 'Код основной деятельности'
 form.organizationType.okpo_code: 'Код по ОКПО'
 form.organizationType.writer_fio: 'ФИО подписанта в род. падеже'
 form.organizationType.reason: 'Действует на основании'
-form.organizationType.city: 'Город'
-form.organizationType.street: 'Улица'
-form.organizationType.house: 'Дом'
-form.organizationType.corpus: 'Корпус'
-form.organizationType.flat: 'Квартира'
-form.organizationType.index: 'Индекс'
-form.organizationType.bank: 'Банк'
+form.organizationType.city: Город
+form.organizationType.street: Улица
+form.organizationType.house: Дом
+form.organizationType.corpus: Корпус
+form.organizationType.flat: Квартира
+form.organizationType.index: Индекс
+form.organizationType.bank: Банк
 form.organizationType.bank_bik: 'БИК банка'
 form.organizationType.bank_address: 'Адрес банка'
 form.organizationType.correspondent_account: 'Корр. счёт'
 form.organizationType.checking_account: 'Расчётный счёт'
-form.organizationType.type: 'Тип'
-form.organizationType.comment: 'Комментарий'
-form.organizationType.stamp: 'Печать'
-form.organizationType.created_at: 'Создан'
-form.organizationType.address: 'Адрес'
+form.organizationType.type: Тип
+form.organizationType.comment: Комментарий
+form.organizationType.stamp: Печать
+form.organizationType.created_at: Создан
+form.organizationType.address: Адрес
 form.organizationType.default_hotels: 'По умолчанию для'
 form.organizationType.default_hotels_help: 'Отели, для которых эта организация будет использоваться по умолчанию'
-form.organizationType.group.search: Найти организацию
-form.organizationType.group.personal: Личные данные
-form.organizationType.group.add: Добавить организацию
-form.organizationType.group.registration: Регистрационные данные
+form.organizationType.group.search: 'Найти организацию'
+form.organizationType.group.personal: 'Личные данные'
+form.organizationType.group.add: 'Добавить организацию'
+form.organizationType.group.registration: 'Регистрационные данные'
 form.organizationType.group.additional: Дополнительно
 form.organizationType.group.location: 'Адресные данные'
 form.organizationType.group.check_account: 'Расчётный счёт'
-
-# Вид документов
 package.document.type_passport: Паспорт
-package.document.type_foreign_passport: Загран. паспорт
-package.document.type_insurance: Мед. страховка
-package.document.type_birth_certificate: Свидетельство о рождении
-package.document.type_military: Военный билет
-package.document.type_accommodation_voucher: Ваучер на проживание
-package.document.type_shuttle_voucher: Ваучер на трансфер
-package.document.type_sertives_voucher: Ваучер на услуги
-package.document.type_complex: Комплект документов
+package.document.type_foreign_passport: 'Загран. паспорт'
+package.document.type_insurance: 'Мед. страховка'
+package.document.type_birth_certificate: 'Свидетельство о рождении'
+package.document.type_military: 'Военный билет'
+package.document.type_accommodation_voucher: 'Ваучер на проживание'
+package.document.type_shuttle_voucher: 'Ваучер на трансфер'
+package.document.type_sertives_voucher: 'Ваучер на услуги'
+package.document.type_complex: 'Комплект документов'
 package.document.type_congirmation_account: Счет-подтверждение
-package.document.type_invoice_for_payment: Счет на оплату
+package.document.type_invoice_for_payment: 'Счет на оплату'
 package.document.type_contract: Договор
-package.document.type_extra_argument: Доп. соглашение
+package.document.type_extra_argument: 'Доп. соглашение'
 package.document.type_air_tickets: Авиабилеты
-package.document.type_train_tickets: Ж/д билеты
+package.document.type_train_tickets: 'Ж/д билеты'
 package.document.type_info: Информация
 package.document.type_letter: Письмо
 package.document.type_other: Прочее
-
-templateDocument.form.confirmation.hasFull: Весь заказ?
-templateDocument.form.confirmation.hasServices: Включить услуги?
-templateDocument.form.confirmation.hasStamp: Добавить печать?
-
+templateDocument.form.confirmation.hasFull: 'Весь заказ?'
+templateDocument.form.confirmation.hasServices: 'Включить услуги?'
+templateDocument.form.confirmation.hasStamp: 'Добавить печать?'
 templateDocument.type.confirmation: Подтверждение
-templateDocument.type.confirmation_en: Подтверждение (EN)
-templateDocument.type.registration_card: Регистрационная карта
-templateDocument.type.evidence: Свидетельство о регистрации по месту пребывания
-templateDocument.type.form: Форма N 1-Г
+templateDocument.type.confirmation_en: 'Подтверждение (EN)'
+templateDocument.type.registration_card: 'Регистрационная карта'
+templateDocument.type.evidence: 'Свидетельство о регистрации по месту пребывания'
+templateDocument.type.form: 'Форма N 1-Г'
 templateDocument.type.receipt: Расписка
 templateDocument.type.act: Акт
-templateDocument.type.xls_notice: Уведомление о прибытии ИГ
-
-
-form.TouristExtendedType.group.person: Персональные данные
-form.TouristExtendedType.group.documentRelation: Удостоверение личности
-form.TouristExtendedType.group.liveAddress: Место проживания
+templateDocument.type.xls_notice: 'Уведомление о прибытии ИГ'
+form.TouristExtendedType.group.person: 'Персональные данные'
+form.TouristExtendedType.group.documentRelation: 'Удостоверение личности'
+form.TouristExtendedType.group.liveAddress: 'Место проживания'
 form.TouristExtendedType.citizenship: Гражданство
-form.TouristExtendedType.birthplace: Место рождения
+form.TouristExtendedType.birthplace: 'Место рождения'
 form.TouristExtendedType.documentRelation: Документ
-form.TouristExtendedType.documentRelation: Документ
-form.TouristExtendedType.address_object: Адрес в виде кода
-form.TouristExtendedType.address_object_decomposed: Адрес проживания
-form.TouristExtendedType.address_object_combined: Адрес проживания
-
+form.TouristExtendedType.address_object: 'Адрес в виде кода'
+form.TouristExtendedType.address_object_decomposed: 'Адрес проживания'
+form.TouristExtendedType.address_object_combined: 'Адрес проживания'
 form.BirthplaceType.country: Страна
 form.BirthplaceType.city: Город
-form.BirthplaceType.main_region: Регион (область)
+form.BirthplaceType.main_region: 'Регион (область)'
 form.BirthplaceType.district: Район
-form.BirthplaceType.settlement: Населенный пункт
-
-
-form.DocumentRelation.type: Тип документа
-form.DocumentRelation.authority_organ: Код подразделения ФМС
-form.DocumentRelation.authority: Орган выдачи документа
-form.DocumentRelation.authorityOrganCode: Код подразделения
+form.BirthplaceType.settlement: 'Населенный пункт'
+form.DocumentRelation.type: 'Тип документа'
+form.DocumentRelation.authority_organ: 'Код подразделения ФМС'
+form.DocumentRelation.authority: 'Орган выдачи документа'
+form.DocumentRelation.authorityOrganCode: 'Код подразделения'
 form.DocumentRelation.series: Серия
 form.DocumentRelation.number: Номер
-form.DocumentRelation.issued: Дата выдачи
-form.DocumentRelation.expiry: Действителен до
-form.DocumentRelation.relation: Связь лица с документом
-
-form.DocumentRelation.citizenship: 'Гражданство'
-form.DocumentRelation.main: Основной документ
-form.DocumentRelation.birthplace: Место рождения
-
-
+form.DocumentRelation.issued: 'Дата выдачи'
+form.DocumentRelation.expiry: 'Действителен до'
+form.DocumentRelation.relation: 'Связь лица с документом'
+form.DocumentRelation.citizenship: Гражданство
+form.DocumentRelation.main: 'Основной документ'
+form.DocumentRelation.birthplace: 'Место рождения'
 form.AddressObjectDecomposedType.country: Страна
 form.AddressObjectDecomposedType.city: Город
-form.AddressObjectDecomposedType.zip_code: Почтовый индекс
-form.AddressObjectDecomposedType.region: Регион (область)
+form.AddressObjectDecomposedType.zip_code: 'Почтовый индекс'
+form.AddressObjectDecomposedType.region: 'Регион (область)'
 form.AddressObjectDecomposedType.district: Район
-form.AddressObjectDecomposedType.settlement: Населенный пункт
-form.AddressObjectDecomposedType.urbanarea: Район города
+form.AddressObjectDecomposedType.settlement: 'Населенный пункт'
+form.AddressObjectDecomposedType.urbanarea: 'Район города'
 form.AddressObjectDecomposedType.street: Улица
 form.AddressObjectDecomposedType.house: Дом
 form.AddressObjectDecomposedType.corpus: Корпус
 form.AddressObjectDecomposedType.flat: Квартира
-
-
-security.not_access_create_cash_document: Нет прав доступа для создания кассового документа
-
+security.not_access_create_cash_document: 'Нет прав доступа для создания кассового документа'
 report.roomType.settle: Поселить
-
 report.roomType.statuses.open: Свободно
-report.roomType.statuses.wait: Не заехал
-report.roomType.statuses.wait_today: Заезд сегодня
-report.roomType.statuses.in_today: Заехал сегодня
+report.roomType.statuses.wait: 'Не заехал'
+report.roomType.statuses.wait_today: 'Заезд сегодня'
+report.roomType.statuses.in_today: 'Заехал сегодня'
 report.roomType.statuses.will_out: Выезд
-report.roomType.statuses.out_today: Выезд сегодня
-report.roomType.statuses.out_tomorrow: Выезд завтра
-report.roomType.statuses.not_out: Не выехал
-
-form.unwelcomeType.group.common: Внести в черный список
-
-form.unwelcomeType.foul: Нарушения правил отеля
+report.roomType.statuses.out_today: 'Выезд сегодня'
+report.roomType.statuses.out_tomorrow: 'Выезд завтра'
+report.roomType.statuses.not_out: 'Не выехал'
+form.unwelcomeType.group.common: 'Внести в черный список'
+form.unwelcomeType.foul: 'Нарушения правил отеля'
 form.unwelcomeType.aggression: Агрессивность
 form.unwelcomeType.inadequacy: Неадекватность
-form.unwelcomeType.drunk: Алкогольное опьянение
-form.unwelcomeType.drugs: Употребление наркотиков
-form.unwelcomeType.destruction: Порча имущества
-form.unwelcomeType.materialDamage: Материальный ущерб
+form.unwelcomeType.drunk: 'Алкогольное опьянение'
+form.unwelcomeType.drugs: 'Употребление наркотиков'
+form.unwelcomeType.destruction: 'Порча имущества'
+form.unwelcomeType.materialDamage: 'Материальный ущерб'
 form.unwelcomeType.comment: Комментарий
-
-form.unwelcomeType.add: Добавить в черный список
-
-
-tourist.migration.type_series: 'Серия'
-tourist.migration.type_number: 'Номер'
+form.unwelcomeType.add: 'Добавить в черный список'
+tourist.migration.type_series: Серия
+tourist.migration.type_number: Номер
 tourist.migration.type_representative: 'Сведения о законных представителях'
 tourist.migration.type_address: 'Адрес прежнего места пребывания'
-
-tourist.visa.type_type: 'Тип'
-tourist.visa.type_series: 'Серия'
-tourist.visa.type_number: 'Номер'
-tourist.visa.type_profession: 'Профессия'
+tourist.visa.type_type: Тип
+tourist.visa.type_series: Серия
+tourist.visa.type_number: Номер
+tourist.visa.type_profession: Профессия
 tourist.visa.arrival_time: 'Дата въезда'
 tourist.visa.departure_time: 'Дата выезда'
 tourist.visa.type_issued: 'Дата выдачи'
 tourist.visa.type_expiry: 'Срок действия'
-
-unwelcome.actions.delete: Удалить из черного списка
-
-package.tourist_in_unwelcome: Гость находится в черном списке
-package.payer_in_unwelcome: Плательщик находится в черном списке
+unwelcome.actions.delete: 'Удалить из черного списка'
+package.tourist_in_unwelcome: 'Гость находится в черном списке'
+package.payer_in_unwelcome: 'Плательщик находится в черном списке'

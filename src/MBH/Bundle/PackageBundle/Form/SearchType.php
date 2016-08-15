@@ -85,7 +85,7 @@ class SearchType extends AbstractType
                 'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
             ))
             ->add('end', 'date', array(
-                'label' => 'Отъезд',
+                'label' => 'mbhpackagebundle.form.searchtype.otʺyezd',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'data' => new \DateTime('+ 1 day'),

@@ -61,7 +61,7 @@ class PackageServiceType extends AbstractType
                 'attr' => ['class' => 'spinner sm']
             ])
             ->add('begin', 'date', [
-                'label' => 'Дата',
+                'label' => 'mbhpackagebundle.form.packageservicetype.data',
                 'group' => 'form.packageServiceType.add_service',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',

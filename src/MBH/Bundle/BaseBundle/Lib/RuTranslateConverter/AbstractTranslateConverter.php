@@ -102,6 +102,7 @@ abstract class AbstractTranslateConverter
                         $changed = true;
                         $line = $resultLine;
                         $this->addMessage('Внесены изменения');
+                        $this->addMessage($messageId, $matchedOrigText);
                         $this->catalogue->add([$messageId => $matchedOrigText], $this->domainChecker());
                     }
                 }
