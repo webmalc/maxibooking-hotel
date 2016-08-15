@@ -29,7 +29,7 @@ class SearchType extends AbstractType
                 'constraints' => [new NotBlank(), new Date()]
             ))
             ->add('end', 'date', array(
-                'label' => 'По',
+                'label' => 'mbhcashbundle.form.searchtype.po',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'data' => null,
@@ -39,11 +39,11 @@ class SearchType extends AbstractType
                 'constraints' => [new NotBlank(), new Date()]
             ))
             ->add('sort', 'choice', [
-                'label' => 'Сортирова',
+                'label' => 'mbhcashbundle.form.searchtype.sortirova',
                 'required' => false,
             ])
             ->add('pay_type', 'choice', [
-                'label' => 'Вид платежа',
+                'label' => 'mbhcashbundle.form.searchtype.vidplatezha',
                 'required' => false,
             ])
             ->add('show_no_paid', 'checkbox', [

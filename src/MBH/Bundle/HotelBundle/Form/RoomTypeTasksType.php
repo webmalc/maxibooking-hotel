@@ -40,7 +40,7 @@ class RoomTypeTasksType extends AbstractType
                 'multiple' => true,
                 'group_by' => 'category',
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
-                'help' => 'Задачи, создаваемые при заезде гостя',
+                'help' => 'mbhhotelbundle.form.roomtypetaskstype.zadachi_sozdavayemyyeprizayezdegostya',
                 'query_builder' => $queryBuilderFunction
             ])
             ->add('daily', 'collection', [
@@ -56,7 +56,7 @@ class RoomTypeTasksType extends AbstractType
                 'multiple' => true,
                 'group_by' => 'category',
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
-                'help' => 'При выезде гостя',
+                'help' => 'mbhhotelbundle.form.roomtypetaskstype.privyyezdegostya',
                 'query_builder' => $queryBuilderFunction
             ]);
     }

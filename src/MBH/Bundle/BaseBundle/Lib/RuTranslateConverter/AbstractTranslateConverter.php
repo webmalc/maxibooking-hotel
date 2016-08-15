@@ -28,7 +28,7 @@ abstract class AbstractTranslateConverter
 
     const TRANSLATE_FOLDER = '/Resources/translations';
 
-    const RU_PATTERN = '/([А-Яа-яЁё]+\s*)+/u';
+    const RU_PATTERN = '/([А-Яа-яЁё]+,?\??\s*)+/u';
 
 
     protected $bundle;
@@ -85,7 +85,7 @@ abstract class AbstractTranslateConverter
             $lines = explode("\n", $contents);
 
             foreach ($lines as &$line) {
-                preg_match(self::RU_PATTERN, $line, $mathes);
+                preg_match(static::RU_PATTERN, $line, $mathes);
                 if ($mathes && $this->checkAdvanceConditions($line)) {
                     $matchedOrigText = $mathes[0];
                     $messageId = $this->getTranslationId($file, $matchedOrigText);
@@ -95,7 +95,9 @@ abstract class AbstractTranslateConverter
                         ->addMessage('Текущий файл', $file->getPathname())
                         ->addMessage('Исходная строка', $line)
                         ->addMessage('Найден текст ', $matchedOrigText)
-                        ->addMessage('Результирующая строка', $resultLine);
+                        ->addMessage('Результирующая строка', $resultLine)
+                        ->addMessage('')
+                    ;
                     if (!$emulate && $this->helper && $this->helper->ask($this->input, $this->output, $this->question)) {
                         $changed = true;
                         $line = $resultLine;
@@ -127,7 +129,9 @@ abstract class AbstractTranslateConverter
     protected function getTranslationId(SplFileInfo $file, string $matchedOrigText): string
     {
         $transliterator = \Transliterator::create('Russian-Latin/BGN');
-        $label = $transliterator->transliterate(str_replace(' ', '', $matchedOrigText));
+        $label = str_replace('\ʹ', '_', $matchedOrigText);
+        $label = str_replace(',', '_', $label);
+        $label = $transliterator->transliterate(str_replace(' ', '', $label));
         $bundleName = $this->bundle->getName();
         $dir = str_replace(static::SUFFIX, '', $file->getRelativePathname());
         $dir = str_replace('/', '.', $dir);

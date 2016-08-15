@@ -9,9 +9,6 @@
 namespace MBH\Bundle\BaseBundle\Lib\RuTranslateConverter;
 
 
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
-
 /**
  * Class TwigTranslateConverter
  * @package MBH\Bundle\BaseBundle\Lib\RuTranslateConverter
@@ -34,7 +31,7 @@ class TwigTranslateConverter extends AbstractTranslateConverter
     }
 
 
-    protected function transIdPattert()
+    protected function transIdPattert(): string
     {
         return '%s.view.%s.%s';
     }
