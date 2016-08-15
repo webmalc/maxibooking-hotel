@@ -19,10 +19,10 @@
                        data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
             </div>
             &nbsp;
-            <input type="submit" class="btn btn-sm btn-success" value="Скачать отчет">
+            <input type="submit" class="btn btn-sm btn-success" value="{{ 'mbhpackagebundle.view.report.fms.skachatʹotchet'|trans }} ">
         </form>
     </div>
     <div class="alert alert-warning">
-        <p>Выберите период для скачивания zip отчета ФМС для ПК "Вега" </p>
+        <p>{{ 'mbhpackagebundle.view.report.fms.vyberiteperioddlyaskachivaniya'|trans }}  </p>
     </div>
 {% endblock %}

@@ -7,22 +7,22 @@
     </style>
 {% for tourist in tourists %}
     {% for i in 1..2 %}
-        <h3 class="center">Расписка</h3>
+        <h3 class="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.raspiska'|trans }} </h3>
         <div>
-            <p>Я, <strong>{% if tourist %}{{ tourist.generateFullName }}{% endif %}</strong></p>
+            <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.ya'|trans }} , <strong>{% if tourist %}{{ tourist.generateFullName }}{% endif %}</strong></p>
             <p>
-                Дата рождения <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</span> г.,
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.datarozhdeniya'|trans }} <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</span> г.,
             </p>
 
             <p>
-                Вид документа <span class="area" style="display: inline-block; width: 350px">{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</span>
-                серия <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</span>
-                номер <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</span>
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.viddokumenta'|trans }} <span class="area" style="display: inline-block; width: 350px">{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</span>
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.seriya'|trans }} <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</span>
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.nomer'|trans }} <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</span>
             </p>
 
             <p>
-                выданный <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}</span> г.,
-                Место рождения <span class="area" style="display: inline-block; width: 505px">
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.vydannyy'|trans }} <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}</span> г.,
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.mestorozhdeniya'|trans }} <span class="area" style="display: inline-block; width: 505px">
                     &nbsp {% if tourist and tourist.birthPlace %}
                         {{ tourist.birthPlace.country }}
                         {{ tourist.birthPlace.mainRegion }}
@@ -34,22 +34,22 @@
 
             <!--<div>
                 <div style="float: left; display: inline-block; width: 30%">
-                    <div style="display: inline-block;">выданный</div>
-                    <div style="width: 60%; display: inline-block;" class="area"></div> г.,
+                    <div style="display: inline-block;">{{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.vydannyy'|trans }} </div>
+                    <div style="width: 60%; display: inline-block;" class="area"></div> {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.g'|trans }} .,
                 </div>
                 <div style="display: inline-block; width: 70%">
-                    Место рождения
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.mestorozhdeniya'|trans }} 
                     <div style="width: 70%; display: inline-block;" class="area"></div>
                 </div>
                 <div style="clear:both;"></div>
             </div>-->
 
             <p>
-                Гражданоство <span class="area" style="display: inline-block; width: 300px">{% if tourist %}{{ tourist.citizenship }}{% endif %}</span>
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.grazhdanostvo'|trans }} <span class="area" style="display: inline-block; width: 300px">{% if tourist %}{{ tourist.citizenship }}{% endif %}</span>
             </p>
             <div>
                 <div style="float: left; width: 240px">
-                    постоянное место жительства
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.postoyannoyemestozhitelʹstva'|trans }} 
                 </div>
                 <div style="display: inline-block">
                 <span class="area" style="display: inline-block; width: 580px">
@@ -59,7 +59,7 @@
                     {% endif %}
                     {% if decomposedAddress and decomposedAddress.country and decomposedAddress.city %}
                         {{ decomposedAddress.country ~ ' ' ~ decomposedAddress.city ~ ' ' ~ decomposedAddress.settlement }}
-                        {% if decomposedAddress.street %} ул. {{  decomposedAddress.street }}
+                        {% if decomposedAddress.street %} {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.ul'|trans }} . {{  decomposedAddress.street }}
                             {% if decomposedAddress.house %}
                                 д. {{ decomposedAddress.house }}
                                 {% if decomposedAddress.corpus %}
@@ -72,13 +72,13 @@
                         {% endif %}
                     {% endif %}
                 </span>
-                    <div style="font-size: 15px; font-weight: normal;">г. обл/кр ул. д.</div>
+                    <div style="font-size: 15px; font-weight: normal;">{{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.g'|trans }} . обл/кр ул. д.</div>
                 </div>
             </div>
-            <p>за период проживания с <strong>{{ entity.begin|date('d.m.Y') }}</strong> г. по <strong>{{ entity.end|date('d.m.Y') }}</strong> г</p>
+            <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.zaperiodprozhivaniyas'|trans }} <strong>{{ entity.begin|date('d.m.Y') }}</strong> г. по <strong>{{ entity.end|date('d.m.Y') }}</strong> г</p>
             <p>
             <div style="float: left; width: 350px">
-                в предоставленной мне квартире по адресу:
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.vpredostavlennoymnekvartirepoadresu'|trans }} :
             </div>
             <div style="display: inline-block">
                 <span class="area" style="display: inline-block; width: 470px">
@@ -88,31 +88,31 @@
                         {{ entity.roomType.hotel.city }}
                         {{ entity.roomType.hotel.street }}
                         {% if entity.roomType.hotel.house %}
-                            д.{{ entity.roomType.hotel.house }}
+                            {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.d'|trans }} .{{ entity.roomType.hotel.house }}
                             {% if entity.roomType.hotel.house %}
                                 {{ entity.roomType.hotel.corpus }}
                             {% endif %}
                         {% endif %}
                     {% endif %}
                 </span>
-                <div style="font-size: 15px; font-weight: normal;">ул. д. корп. кв. </div>
+                <div style="font-size: 15px; font-weight: normal;">{{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.ul'|trans }} . д. корп. кв. </div>
             </div>
             </p>
-            <div style="white-space: pre;"><span style="text-decoration: underline;font-weight: bold">Обязуюсь:</span>
-                -   не производить шум позднее 23-ч часов;
-                -   не загрязнять подъезды и прилегающую у дому территорию;
-                -   не беспокоить соседей;
-                -   не портить предметы обихода и интерьера;
-                -   не производить перестановку мебели
-                -   не хранить и не использовать взрыво и огнеопасные предметы.
-                За все происходящее в предоставленной мне квартире на период проживания я несу полную
-                ответственность. В случае нарушения данных обязательств согласен на досрочное выселение без
-                возврата залога и внесенной предоплаты, с возмещением возникшего материального ущерба.
+            <div style="white-space: pre;"><span style="text-decoration: underline;font-weight: bold">{{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.obyazuyusʹ'|trans }} :</span>
+                -   {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.neproizvoditʹshumpozdneye'|trans }};
+                -   {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.nezagryaznyatʹpodʺyezdyiprilegayushchuyuudomuterritoriyu'|trans }} ;
+                -   {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.nebespokoitʹsosedey'|trans }} ;
+                -   {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.neportitʹpredmetyobikhodaiinterʹyera'|trans }} ;
+                -   {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.neproizvoditʹperestanovkumebeli'|trans }} 
+                -   {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.nekhranitʹineispolʹzovatʹvzryvoiogneopasnyyepredmety'|trans }} .
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.zavseproiskhodyashcheyevpredostavlennoymnekvartirenaperiodprozhivaniyayanesupolnuyu'|trans }} 
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.otvetstvennostʹ'|trans }}
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.vozvratazalogaivnesennoypredoplaty'|trans }} .
             </div>
             <div>
                 <div style="float: left;">
                     <div class="area" style="display: inline-block; width: 150px"></div>
-                    (подпись)
+                    ({{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.podpisʹ'|trans }} )
                 </div>
                 <div style="float: right; font-weight: bold">
                     15.06.2015 г.

@@ -56,7 +56,7 @@
             </button>
         </div>
     {% else %}
-        <div class="mbh-results-error"><i class="fa fa-exclamation-circle"> </i> {{ 'views.api.getPaymentType.reservation_error_try_again'|trans({}, 'MBHOnlineBundle') }}  Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.</div>
+        <div class="mbh-results-error"><i class="fa fa-exclamation-circle"> </i> {{ 'views.api.getPaymentType.reservation_error_try_again'|trans({}, 'MBHOnlineBundle') }}  {{ 'mbhonlinebundle.view.api.getpaymenttype.proizoshlaoshibkavovremyabronirovaniya'|trans }}</div>
     {% endif %}
     </div>
 {% endspaceless %}

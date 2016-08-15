@@ -96,7 +96,7 @@
                                         {% if cash.orderDocument %}
                                             <a href="{{ path('order_document_view', {name: cash.orderDocument.name, download: 1}) }}"
                                                class="btn btn-info btn-xs" title="" data-toggle="tooltip"
-                                               data-original-title="Скачать">
+                                               data-original-title="{{ 'mbhpackagebundle.view.order.cash.skachatʹ'|trans }} ">
                                                 <i class="fa fa-download"></i>
                                             </a>
                                         {% endif %}

@@ -33,7 +33,7 @@
                     <thead>
                     <tr>
                         <th class="td-xs"></th>
-                        <th>ФИО</th>
+                        <th>{{ 'mbhpackagebundle.view.package.guest.fio'|trans }} </th>
                         <th class="td-md">{{ 'package.guest.phone'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md">{{ 'package.guest.email'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md">{{ 'package.guest.birth_date'|trans({}, 'MBHPackageBundle') }}</th>
@@ -53,10 +53,10 @@
                                 &nbsp;
                                 {% if tourist.isUnwelcome %}
                                     <a href='{{ path('tourist_edit_unwelcome', {id: tourist.id}) }}'>
-                                        <i data-toggle='tooltip' data-original-title='Клиент в черном списке' class='fa fa-user-secret unwelcome-icon'></i>
+                                        <i data-toggle='tooltip' data-original-title='{{ 'mbhpackagebundle.view.package.guest.kliyentvchernomspiske'|trans }} ' class='fa fa-user-secret unwelcome-icon'></i>
                                     </a>
                                 {% else %}
-                                    <i style='opacity:0.4' data-toggle='tooltip' data-original-title='Клиент не в черном списке' class='fa fa-check-circle'></i>
+                                    <i style='opacity:0.4' data-toggle='tooltip' data-original-title='{{ 'mbhpackagebundle.view.package.guest.kliyentnevchernomspiske'|trans }} ' class='fa fa-check-circle'></i>
                                 {% endif %}
                             </td>
                             <td>{% if tourist.phone %}{{ tourist.phone }}{% endif %}</td>
@@ -103,10 +103,10 @@
 
             {% if not package.tourists|length < totalGuests %}
                 <div class="bg-gray color-palette alert" id="guest-overflow-alert">
-                    <i class="fa fa-info-circle"></i> Добавлено максимальное количество гостей.
+                    <i class="fa fa-info-circle"></i> {{ 'mbhpackagebundle.view.package.guest.dobavlenomaksimalʹnoyekolichestvogostey'|trans }} .
                     &nbsp;
                     <div class="btn btn-default btn-xs">
-                        <i class="fa fa-plus"></i> Добавить ещё
+                        <i class="fa fa-plus"></i> {{ 'mbhpackagebundle.view.package.guest.dobavitʹyeshchë'|trans }} 
                     </div>
                 </div>
             {% endif %}

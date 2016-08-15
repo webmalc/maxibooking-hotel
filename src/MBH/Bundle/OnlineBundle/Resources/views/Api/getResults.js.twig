@@ -13,7 +13,7 @@ jQuery(document).ready(function () {
         },
         waiting = function () {
             //var locale = getLocale();
-            var text = '';//!locale || locale == 'ru' ?'Подождите...' : 'Please wait...';
+            var text = '';//!locale || locale == 'ru' ?'{{ 'mbhonlinebundle.view.api.getresults.js.twig.podozhdite'|trans }} ...' : 'Please wait...';
             wrapper.html('<div class="mbh-results-info" style="padding: 10px; margin: 10px 0px; background-color: #308dac; color: #fff; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;"><i class="fa fa-spinner fa-spin"></i> '+ text +'</div>');
         },
         getUrlVars = function () {
@@ -36,7 +36,7 @@ jQuery(document).ready(function () {
         },
         query = getUrlVars()
     ;
-    //var errorHtml = '<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>';
+    //var errorHtml = '<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> {{ 'mbhonlinebundle.view.api.getresults.js.twig.nevybranydatyzayezdaivyyezda'|trans }} !</div>';
     var errorHtml = jQuery('#mbh-date-error').clone().removeClass('hide').attr('id', '');
     if (!query.begin || !query.end) {
         wrapper.html(errorHtml);
@@ -110,10 +110,10 @@ jQuery(document).ready(function () {
                         if (parseInt(per_person.attr('data-change'), 10)) {
                             var touriststHash = touristVal.split('_'),
                                 totalTourists = parseInt(touriststHash[0], 10) + parseInt(touriststHash[1], 10);
-                            var touristsPhrase = (totalTourists === 1) ? ' человека': ' человек';
+                            var touristsPhrase = (totalTourists === 1) ? ' {{ 'mbhonlinebundle.view.api.getresults.js.twig.cheloveka'|trans }} ': ' {{ 'mbhonlinebundle.view.api.getresults.js.twig.chelovek'|trans }} ';
                             ;
 
-                            per_person.html('цена за ' + totalTourists + touristsPhrase);
+                            per_person.html('{{ 'mbhonlinebundle.view.api.getresults.js.twig.tsenaza'|trans }} ' + totalTourists + touristsPhrase);
                         }
                     }
                     ;

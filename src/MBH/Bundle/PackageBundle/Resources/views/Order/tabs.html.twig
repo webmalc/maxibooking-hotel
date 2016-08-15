@@ -1,16 +1,16 @@
 <div class="well well-sm we">
     <ul class="nav nav-pills">
         <li role="presentation" {% if active == 1 %} class="active" {% endif %}><a
-                    href="{{ path('package_order_tourist_edit', {id: entity.id, packageId: package.id}) }}"><i class="fa fa-male"></i> Физ. лицо
+                    href="{{ path('package_order_tourist_edit', {id: entity.id, packageId: package.id}) }}"><i class="fa fa-male"></i> {{ 'mbhpackagebundle.view.order.tabs.fiz'|trans }}
                 {% if entity.mainTourist is null %}
-                    <span class="badge">нет</span>
+                    <span class="badge">{{ 'mbhpackagebundle.view.order.tabs.net'|trans }} </span>
                 {% endif %}
             </a>
         </li>
         <li role="presentation" {% if active == 2 %} class="active" {% endif %}><a
-                    href="{{ path('package_order_organization_edit', {id: entity.id, packageId: package.id}) }}"><i class="fa fa-users"></i> Организация
+                    href="{{ path('package_order_organization_edit', {id: entity.id, packageId: package.id}) }}"><i class="fa fa-users"></i> {{ 'mbhpackagebundle.view.order.tabs.organizatsiya'|trans }} 
                 {% if entity.organization is null %}
-                    <span class="badge">нет</span>
+                    <span class="badge">{{ 'mbhpackagebundle.view.order.tabs.net'|trans }} </span>
                 {% endif %}
             </a>
         </li>
