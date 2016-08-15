@@ -150,8 +150,8 @@
                             {% endif %}
                             </small><br>
                             <b>{{ 'mbhpackagebundle.view.report.roomtypestable.daty'|trans }} :</b> {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}<br>
-                            <b>{{ 'mbhpackagebundle.view.report.roomtypestable.zayekhali'|trans }} :</b> {{ package.isCheckIn ? 'да' : 'нет' }}<br>
-                            <b>{{ 'mbhpackagebundle.view.report.roomtypestable.vyyekhali'|trans }} :</b> {{ package.isCheckOut ? 'да' : 'нет' }}<br>
+                            <b>{{ 'mbhpackagebundle.view.report.roomtypestable.zayekhali'|trans }} :</b> {{ package.isCheckIn ? 'mbhpackagebundle.view.report.roomtypestable.da'|trans : 'mbhpackagebundle.view.report.roomtypestable.net'|trans }}<br>
+                            <b>{{ 'mbhpackagebundle.view.report.roomtypestable.vyyekhali'|trans }} :</b> {{ package.isCheckOut ? 'mbhpackagebundle.view.report.roomtypestable.da'|trans : 'mbhpackagebundle.view.report.roomtypestable.net'|trans }}<br>
                             <b>{{ 'mbhpackagebundle.view.report.roomtypestable.gosti'|trans }} :</b> {{ package.adults }}+{{ package.children }}<br>
                             <b>{{ 'mbhpackagebundle.view.report.roomtypestable.stoimostʹ'|trans }} :</b> {{ package.order.price }} {{ currency().text }}<br>
                             <b>{{ 'mbhpackagebundle.view.report.roomtypestable.dolg'|trans }} :</b> {{ package.order.debt }} {{ currency().text }}<br>
