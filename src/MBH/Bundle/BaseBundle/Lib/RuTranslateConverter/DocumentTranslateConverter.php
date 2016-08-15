@@ -3,22 +3,19 @@
  * Created by Zavalyuk Alexandr (Zalex).
  * email: zalex@zalex.com.ua
  * Date: 8/12/16
- * Time: 10:41 AM
+ * Time: 5:52 PM
  */
 
 namespace MBH\Bundle\BaseBundle\Lib\RuTranslateConverter;
 
 
-class FormTranslateConverter extends AbstractTranslateConverter
+class DocumentTranslateConverter extends AbstractTranslateConverter
 {
-
     const SUFFIX = '.php';
 
-    const FOLDER = '/Form';
+    const FOLDER = '/Document';
 
-    const TYPE = "FormParser";
-
-
+    const TYPE = "DocParser";
 
     /**
      * @param string $string
@@ -31,21 +28,27 @@ class FormTranslateConverter extends AbstractTranslateConverter
 
     protected function transIdPattert(): string
     {
-        return '%s.form.%s.%s';
+        return '%s.document.%s.%s';
     }
 
     protected function checkAdvanceConditions($line): bool
     {
         $words = [
-            'label',
-            'help',
-            'placeholder'
+            'message'
         ];
         $pattern = '/' . implode('|', $words) . '/';
         if (preg_match($pattern, $line)) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return string
+     */
+    protected function domainChecker()
+    {
+        return 'validators';
     }
 
 

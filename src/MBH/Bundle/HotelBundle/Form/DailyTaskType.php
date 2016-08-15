@@ -37,7 +37,7 @@ class DailyTaskType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'style' => 'width:60px',
-                    'placeholder' => 'Дней',
+                    'placeholder' => 'mbhhotelbundle.form.dailytasktype.dney',
                     'min' => 1,
                     'max' => 60
                 ],
@@ -48,7 +48,7 @@ class DailyTaskType extends AbstractType
                 'group_by' => 'category',
                 'attr' => [
                     'style' => 'width:250px',
-                    'data-placeholder' => 'Выберите услугу'
+                    'data-placeholder' => 'mbhhotelbundle.form.dailytasktype.vyberiteuslugu'
                 ],
                 'empty_value' => '',
                 'query_builder' => $queryBuilderFunction

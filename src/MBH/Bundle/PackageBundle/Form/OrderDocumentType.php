@@ -33,7 +33,7 @@ class OrderDocumentType extends AbstractType
             'choice',
             [
                 'group' => $groupTitle,
-                'label' => 'Тип',
+                'label' => 'mbhpackagebundle.form.orderdocumenttype.tip',
                 'required' => true,
                 'empty_value' => '',
                 'choices' => $options['documentTypes']
@@ -45,7 +45,7 @@ class OrderDocumentType extends AbstractType
             'choice',
             [
                 'group' => $groupTitle,
-                'label' => 'Тип скана',
+                'label' => 'mbhpackagebundle.form.orderdocumenttype.tipskana',
                 'required' => false,
                 'empty_value' => '',
                 'choices' => $options['scanTypes']
@@ -59,7 +59,7 @@ class OrderDocumentType extends AbstractType
             'document',
             [
                 'group' => $groupTitle,
-                'label' => 'Клиент',
+                'label' => 'mbhpackagebundle.form.orderdocumenttype.kliyent',
                 'class' => 'MBHPackageBundle:Tourist',
                 'required' => false,
                 'property' => 'generateFullNameWithAge',
@@ -86,7 +86,7 @@ class OrderDocumentType extends AbstractType
             'file',
             [
                 'group' => $groupTitle,
-                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'Заменить файл' : 'Файл',
+                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'mbhpackagebundle.form.orderdocumenttype.zamenitʹfayl' : 'Файл',
                 'required' => $options['scenario'] == self::SCENARIO_ADD,
             ] + ($options['scenario'] == self::SCENARIO_EDIT ? ['help' => '<i class="fa '.(isset($typeIcons[strtolower($document->getExtension())]) ? $typeIcons[strtolower($document->getExtension())] : null).'"></i> '.$document->getOriginalName()] : [])
         );
@@ -96,7 +96,7 @@ class OrderDocumentType extends AbstractType
             'textarea',
             [
                 'group' => $groupTitle,
-                'label' => 'Комментарий',
+                'label' => 'mbhpackagebundle.form.orderdocumenttype.kommentariy',
                 'required' => false,
                 'constraints' => [
                     new Length(['min' => 2, 'max' => 300])

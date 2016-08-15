@@ -45,7 +45,7 @@ class RoomTypeType extends AbstractType
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
                 'attr' => ['placeholder' => 'form.roomTypeType.comport_plus_rooms_in_new_housing'],
-                'help' => 'Название для использования внутри MaxiBooking'
+                'help' => 'mbhhotelbundle.form.roomtypetype.nazvaniyedlyaispolʹzovaniyavnutriMaxiBooking'
             ])
             ->add('internationalTitle', 'text', [
                 'label' => 'form.roomTypeType.international_title',

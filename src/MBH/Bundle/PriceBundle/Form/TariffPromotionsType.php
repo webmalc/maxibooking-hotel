@@ -16,18 +16,18 @@ class TariffPromotionsType extends AbstractType
     {
         $builder
             ->add('promotions', 'document', [
-                'label' => 'Доступные акции',
+                'label' => 'mbhpricebundle.form.tariffpromotionstype.dostupnyyeaktsii',
                 'group' => 'Общая информация',
                 'required' => false,
-                'attr' => ['placeholder' => 'Основной'],
+                'attr' => ['placeholder' => 'mbhpricebundle.form.tariffpromotionstype.osnovnoy'],
                 'class' => 'MBH\Bundle\PriceBundle\Document\Promotion',
                 'multiple' => true,
             ])
             ->add('defaultPromotion', 'document', [
-                'label' => 'Акции по умолчанию',
+                'label' => 'mbhpricebundle.form.tariffpromotionstype.aktsiipoumolchaniyu',
                 'group' => 'Общая информация',
                 'required' => false,
-                'attr' => ['placeholder' => 'Основной'],
+                'attr' => ['placeholder' => 'mbhpricebundle.form.tariffpromotionstype.osnovnoy'],
                 'class' => 'MBH\Bundle\PriceBundle\Document\Promotion'
             ])
         ;

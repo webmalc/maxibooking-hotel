@@ -24,7 +24,7 @@ class UserSecurityType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'required' => false,
                 'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year'],
-                'help' => 'Если не указано - срок действия пользователя неограничен'
+                'help' => 'mbhuserbundle.form.usersecuritytype.yesli.ne.ukazano.srok.deystviya.polʹzovatelya.neogranichen'
             ])
             ->add('groups', 'document', [
                 'class' => 'MBHUserBundle:Group',

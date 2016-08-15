@@ -9,9 +9,6 @@
 namespace MBH\Bundle\BaseBundle\Lib\RuTranslateConverter;
 
 
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
-
 /**
  * Class TwigTranslateConverter
  * @package MBH\Bundle\BaseBundle\Lib\RuTranslateConverter
@@ -19,68 +16,12 @@ use Symfony\Component\Finder\SplFileInfo;
 class TwigTranslateConverter extends AbstractTranslateConverter
 {
 
-    /**
-     * @param bool $emulate
-     * @return mixed|void
-     */
-    protected function execute($emulate = true)
-    {
-        $finder = new Finder();
-        $pathPatterns = $this->getPathPatterns();
-        $files = $finder->files()->name($pathPatterns['filesPattern'])->in($pathPatterns['directory']);
 
-        foreach ($files as $file) {
+    const SUFFIX = '.html.twig';
 
-            $changed = false;
-            $contents = $file->getContents();
-            $lines = explode("\n", $contents);
+    const FOLDER = '/Resources/views';
 
-            foreach ($lines as &$line) {
-                preg_match(self::RU_PATTERN, $line, $mathes);
-                if ($mathes) {
-                    $matchedOrigText = $mathes[0];
-                    $messageId = $this->getTransIdPattern($file,  $matchedOrigText);
-                    $convertPattern = $this->getConvertPattern($messageId);
-                    $resultLine = str_replace($matchedOrigText, $convertPattern, $line);
-                    $this
-                        ->addMessage('Текущий файл', $file->getPathname())
-                        ->addMessage('Исходная строка', $line)
-                        ->addMessage('Найден текст ', $matchedOrigText)
-                        ->addMessage('Результирующая строка', $resultLine);
-                    if (!$emulate && $this->helper && $this->helper->ask($this->input, $this->output,$this->question)) {
-                        $changed = true;
-                        $line = $resultLine;
-                        $this->addMessage('Внесены изменения');
-                        $this->catalogue->add([$messageId=>$matchedOrigText], $this->domainChecker());
-                    }
-                }
-
-                if ($changed) {
-                    $newfile = implode("\n", $lines);
-                    $this->saveChangesToFile($file->getPathname(), $newfile);
-                }
-
-            }
-
-
-        }
-        if (!$emulate) {
-            $this->saveTranslationMessages();
-        }
-
-        $this->addMessage('Done without errors');
-    }
-
-    /**
-     * @return array
-     */
-    protected function getPathPatterns(): array
-    {
-        return [
-            'filesPattern' => '*.twig',
-            'directory' => $this->bundle->getPath().'/Resources/views'
-        ];
-    }
+    const TYPE = "TwigParser";
 
     /**
      * @param $string
@@ -91,20 +32,10 @@ class TwigTranslateConverter extends AbstractTranslateConverter
         return sprintf('{{ \'%s\'|trans }} ', $string);
     }
 
-    /**
-     * @param SplFileInfo $file
-     * @return string
-     */
-    protected function getTransIdPattern(SplFileInfo $file, string $matchedOrigText): string
-    {
-        $transliterator = \Transliterator::create('Russian-Latin/BGN');
 
-        $label = $transliterator->transliterate(str_replace(' ', '', $matchedOrigText));
-        $bundleName = $this->bundle->getName();
-        $dir = str_replace('.html.twig', '', $file->getRelativePathname());
-        $dir = str_replace('/', '.', $dir);
-        $transIdPattern = $bundleName . '.view.'.$dir.'.'.$label;
-        return strtolower($transIdPattern);
+    protected function transIdPattert(): string
+    {
+        return '%s.view.%s.%s';
     }
 
 

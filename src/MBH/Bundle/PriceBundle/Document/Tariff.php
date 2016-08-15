@@ -21,7 +21,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
  * @Gedmo\Loggable
  * @MBHValidator\Tariff
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тариф уже существует")
+ * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="mbhpricebundle.document.tariff.takoy.tarif.uzhe.sushchestvuyet")
  * @ODM\HasLifecycleCallbacks
  */
 class Tariff extends Base implements ConditionsInterface
@@ -50,7 +50,7 @@ class Tariff extends Base implements ConditionsInterface
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="tariffs")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="mbhpricebundle.document.tariff.ne.vybran.otelʹ")
      */
     protected $hotel;
     

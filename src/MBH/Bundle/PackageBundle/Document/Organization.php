@@ -24,7 +24,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @ODM\Document(collection="Organizations", repositoryClass="MBH\Bundle\PackageBundle\Document\OrganizationRepository")
  * @Gedmo\Loggable
  * @ODM\HasLifecycleCallbacks
- * @MongoDBUnique(fields="inn", message="Такой ИНН уже существует")
+ * @MongoDBUnique(fields="inn", message="mbhpackagebundle.document.organization.takoy.inn.uzhe.sushchestvuyet")
  */
 class Organization implements PayerInterface, RecipientInterface
 {
@@ -65,7 +65,7 @@ class Organization implements PayerInterface, RecipientInterface
     /**
      * @ODM\Field(type="string") 
      * @Assert\Length(min=9,max=9)
-     * @Assert\Type(type="digit", message="Значение должно быть числом")
+     * @Assert\Type(type="digit", message="mbhpackagebundle.document.organization.znacheniye.dolzhno.bytʹ.chislom")
      */
     protected $kpp;
 

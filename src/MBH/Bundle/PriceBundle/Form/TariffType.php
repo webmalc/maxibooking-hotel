@@ -17,38 +17,38 @@ class TariffType extends AbstractType
 
         $builder
             ->add('fullTitle', 'text', [
-                'label' => 'Название',
+                'label' => 'mbhpricebundle.form.tarifftype.nazvaniye',
                 'group' => 'Общая информация',
                 'required' => true,
-                'attr' => ['placeholder' => 'Основной']
+                'attr' => ['placeholder' => 'mbhpricebundle.form.tarifftype.osnovnoy']
             ])
             ->add('title', 'text', [
-                'label' => 'Внутреннее название',
+                'label' => 'mbhpricebundle.form.tarifftype.vnutrenneyenazvaniye',
                 'group' => 'Общая информация',
                 'required' => false,
                 'attr' => ['placeholder' => 'Основной - лето ' . date('Y')],
-                'help' => 'Название для использования внутри MaxiBooking'
+                'help' => 'mbhpricebundle.form.tarifftype.nazvaniyedlyaispolʹzovaniyavnutriMaxiBooking'
             ])
             ->add('description', 'textarea', [
-                'label' => 'Описание',
+                'label' => 'mbhpricebundle.form.tarifftype.opisaniye',
                 'group' => 'Общая информация',
                 'required' => false,
-                'help' => 'Описание тарифа для онлайн бронирования'
+                'help' => 'mbhpricebundle.form.tarifftype.opisaniyetarifadlyaonlaynbronirovaniya'
             ])
             ->add(
                 'begin',
                 'date',
                 array(
-                    'label' => 'Начало',
+                    'label' => 'mbhpricebundle.form.tarifftype.nachalo',
                     'group' => 'Условия и ограничения',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-                    'help' => 'С какого числа используется тариф?',
+                    'help' => 'mbhpricebundle.form.tarifftype.skakogochislaispolʹzuyetsyatarif?',
                     'required' => false,
                     'attr' => array(
                         'class' => 'datepicker begin-datepicker input-small',
                         'data-date-format' => 'dd.mm.yyyy',
-                        'placeholder' => 'Не ограничен'
+                        'placeholder' => 'mbhpricebundle.form.tarifftype.neogranichen'
                     ),
                 )
             )
@@ -56,16 +56,16 @@ class TariffType extends AbstractType
                 'end',
                 'date',
                 array(
-                    'label' => 'Конец',
+                    'label' => 'mbhpricebundle.form.tarifftype.konets',
                     'group' => 'Условия и ограничения',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-                    'help' => 'По какое число используется тариф?',
+                    'help' => 'mbhpricebundle.form.tarifftype.pokakoyechisloispolʹzuyetsyatarif?',
                     'required' => false,
                     'attr' => array(
                         'class' => 'datepicker end-datepicker input-small',
                         'data-date-format' => 'dd.mm.yyyy',
-                        'placeholder' => 'Не ограничен'
+                        'placeholder' => 'mbhpricebundle.form.tarifftype.neogranichen'
                     ),
                 )
             );
@@ -109,40 +109,40 @@ class TariffType extends AbstractType
             ]);
         $builder
             ->add('isOnline', 'checkbox', [
-                'label' => 'Онлайн?',
+                'label' => 'mbhpricebundle.form.tarifftype.onlayn?',
                 'group' => 'Настройки',
                 'value' => true,
                 'required' => false,
-                'help' => 'Использовать ли тариф в онлайн бронировании?'
+                'help' => 'mbhpricebundle.form.tarifftype.ispolʹzovatʹlitarifvonlaynbronirovanii?'
             ])
             ->add(
                 'childAge',
                 'choice',
                 [
-                    'label' => 'Ребенок до',
+                    'label' => 'mbhpricebundle.form.tarifftype.rebenokdo',
                     'group' => 'Настройки',
                     'required' => false,
                     'multiple' => false,
                     'choices' => range(0, 18),
                     'attr' => array('class' => 'input-xxs plain-html'),
-                    'help' => 'До какого возраста клиент считается ребенком?'
+                    'help' => 'mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyarebenkom?'
                 ]
             )
             ->add(
                 'infantAge',
                 'choice',
                 [
-                    'label' => 'Инфант до',
+                    'label' => 'mbhpricebundle.form.tarifftype.infantdo',
                     'group' => 'Настройки',
                     'required' => false,
                     'multiple' => false,
                     'choices' => range(0, 18),
                     'attr' => array('class' => 'input-xxs plain-html'),
-                    'help' => 'До какого возраста клиент считается инфантом?'
+                    'help' => 'mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyainfantom?'
                 ]
             )
             ->add('defaultForMerging', CheckboxType::class, [
-                'label' => 'Использовать для комбинирования?',
+                'label' => 'mbhpricebundle.form.tarifftype.ispolʹzovatʹdlyakombinirovaniya?',
                 'group' => 'Настройки',
                 'value' => true,
                 'required' => false,
@@ -151,11 +151,11 @@ class TariffType extends AbstractType
                      По-молчанию спец. тарифы комбинируются с основным тарифом'
             ])
             ->add('isEnabled', 'checkbox', [
-                'label' => 'Включен?',
+                'label' => 'mbhpricebundle.form.tarifftype.vklyuchen?',
                 'group' => 'Настройки',
                 'value' => true,
                 'required' => false,
-                'help' => 'Используется ли тариф в поиске?'
+                'help' => 'mbhpricebundle.form.tarifftype.ispolʹzuyetsyalitarifvpoiske?'
             ]);
     }
 

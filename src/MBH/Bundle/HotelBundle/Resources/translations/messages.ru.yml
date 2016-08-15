@@ -1,3 +1,8 @@
+mbhhotelbundle.form.roomtypetaskstype.zadachi_sozdavayemyyeprizayezdegostya: 'Задачи, создаваемые при заезде гостя'
+mbhhotelbundle.form.roomtypetaskstype.privyyezdegostya: 'При выезде гостя'
+mbhhotelbundle.form.roomtypetype.nazvaniyedlyaispolʹzovaniyavnutri: 'Название для использования внутри '
+mbhhotelbundle.form.dailytasktype.dney: Дней
+mbhhotelbundle.form.dailytasktype.vyberiteuslugu: 'Выберите услугу'
 mbhhotelbundle.view.task.list.json.twig.vse: Все
 mbhhotelbundle.view.hotel.new.ozdaniye: создание
 mbhhotelbundle.view.hotel.index.spisok: список

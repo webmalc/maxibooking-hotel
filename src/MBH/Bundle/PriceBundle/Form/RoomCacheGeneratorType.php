@@ -19,7 +19,7 @@ class RoomCacheGeneratorType extends AbstractType
     {
         $builder
                 ->add('begin', 'date', array(
-                    'label' => 'Начало периода',
+                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.nachaloperioda',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'data' => new \DateTime('midnight'),
@@ -28,7 +28,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'constraints' => [new NotBlank(), new Date()],
                 ))
                 ->add('end', 'date', array(
-                    'label' => 'Конец периода',
+                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.konetsperioda',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'required' => true,
@@ -36,43 +36,43 @@ class RoomCacheGeneratorType extends AbstractType
                     'constraints' => [new NotBlank(), new Date()],
                 ))
                 ->add('weekdays', 'choice', [
-                    'label' => 'Дни недели',
+                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.dninedeli',
                     'required' => false,
                     'multiple' => true,
                     'choices' => $options['weekdays'],
-                    'help' => 'Дни недели для готорых будет произведена генерация наличия мест',
-                    'attr' => array('placeholder' => 'Все дни недели'),
+                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
+                    'attr' => array('placeholder' => 'mbhpricebundle.form.roomcachegeneratortype.vsedninedeli'),
                 ])
                 ->add('roomTypes', 'document', [
-                    'label' => 'Типы номеров',
+                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.tipynomerov',
                     'required' => true,
                     'multiple' => true,
                     'class' => 'MBHHotelBundle:RoomType',
                     'query_builder' => function(DocumentRepository $dr) use ($options) {
                         return $dr->fetchQueryBuilder($options['hotel']);
                     },
-                    'help' => 'Типы номеров для готорых будет произведена генерация наличия мест',
+                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
                     'attr' => array('placeholder' => $options['hotel']. ': все типы номеров', 'class' => 'select-all'),
                 ])
                 ->add('quotas', 'checkbox', [
-                    'label' => 'Установить квоты?',
+                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.ustanovitʹkvoty?',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Установить квоты номеров по тарифам?'
+                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.ustanovitʹkvotynomerovpotarifam?'
                 ])
                 ->add('tariffs', 'document', [
-                    'label' => 'Тарифы',
+                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.tarify',
                     'required' => false,
                     'multiple' => true,
                     'class' => 'MBHPriceBundle:Tariff',
                     'query_builder' => function (DocumentRepository $dr) use ($options) {
                         return $dr->fetchChildTariffsQuery($options['hotel'], 'rooms');
                     },
-                    'help' => 'Тарифы для готорых будет произведена генерация квот',
-                    'attr' => array('placeholder' => 'Квоты не будут сгенерированы'),
+                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot',
+                    'attr' => array('placeholder' => 'mbhpricebundle.form.roomcachegeneratortype.kvotynebudutsgenerirovany'),
                 ])
                 ->add('rooms', 'text', [
-                    'label' => 'Количество мест',
+                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvomest',
                     'required' => true,
                     'data' => null,
                     'attr' => ['class' => 'spinner--1 delete-rooms'],
@@ -83,7 +83,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'help' => 'Количестов мест доступные в выбранные сроки. Минус один (-1) для удаления дней',
                 ])
                 /*->add('isClosed', 'checkbox', [
-                    'label' => 'Закрыто?',
+                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.zakryto?',
                     'value' => true,
                     'required' => false,
                 ])*/

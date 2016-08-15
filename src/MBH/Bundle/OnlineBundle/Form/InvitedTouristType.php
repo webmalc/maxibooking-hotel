@@ -19,21 +19,21 @@ class InvitedTouristType extends AbstractType
         $builder
             ->add('firstName', 'text', [
                 'required' => false,
-                'label' => 'Имя',
+                'label' => 'mbhonlinebundle.form.invitedtouristtype.imya',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
             ->add('lastName', 'text', [
                 'required' => false,
-                'label' => 'Фамилия',
+                'label' => 'mbhonlinebundle.form.invitedtouristtype.familiya',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
             ->add('sex', 'choice', [
                 'required' => false,
-                'label' => 'Обращение',
+                'label' => 'mbhonlinebundle.form.invitedtouristtype.obrashcheniye',
                 'expanded' => true,
                 'choices' => [
                     'Господин',
@@ -46,7 +46,7 @@ class InvitedTouristType extends AbstractType
             ])
             ->add('birthday', 'text', [
                 'required' => false,
-                'label' => 'Дата рождения',
+                'label' => 'mbhonlinebundle.form.invitedtouristtype.datarozhdeniya',
                 //'widget' => 'single_text',
                 'constraints' => [
                     new NotBlank()
@@ -54,28 +54,28 @@ class InvitedTouristType extends AbstractType
             ])
             ->add('birthplace', 'text', [
                 'required' => false,
-                'label' => 'Место рождения',
+                'label' => 'mbhonlinebundle.form.invitedtouristtype.mestorozhdeniya',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
             ->add('citizenship', 'text', [
                 'required' => false,
-                'label' => 'Гражданство',
+                'label' => 'mbhonlinebundle.form.invitedtouristtype.grazhdanstvo',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
             ->add('passport', 'text', [
                 'required' => false,
-                'label' => 'Паспорт',
+                'label' => 'mbhonlinebundle.form.invitedtouristtype.pasport',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
             ->add('expiry', 'text', [
                 'required' => false,
-                'label' => 'Действует до',
+                'label' => 'mbhonlinebundle.form.invitedtouristtype.deystvuyetdo',
                 //'widget' => 'single_text',
                 //'format' => 'yyyy-MM-dd',
                 'constraints' => [
