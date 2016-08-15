@@ -1,3 +1,8 @@
+mbhhotelbundle.document.roomtype.takoy.tip.nomera.uzhe.sushchestvuyet: 'Такой тип номера уже существует'
+mbhhotelbundle.document.roomtype.ne.vybran.otelʹ: 'Не выбран отель'
+mbhhotelbundle.document.room.takoy.nomer.uzhe.sushchestvuyet: 'Такой номер уже существует'
+mbhhotelbundle.document.housing.takoy.korpus.uzhe.sushchestvuyet: 'Такой корпус уже существует'
+mbhhotelbundle.document.hotel.takoy.otelʹ.uzhe.sushchestvuyet: 'Такой отель уже существует'
 validator.document.city.country_not_selected: 'Не выбрана страна'
 validator.document.city.region_not_selected: 'Не выбран регион'
 validator.document.city.min_name: 'Слишком короткое имя'

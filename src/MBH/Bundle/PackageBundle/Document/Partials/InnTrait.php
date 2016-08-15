@@ -7,7 +7,7 @@ trait InnTrait {
     /**
      * @ODM\Field(type="string") 
      * @Assert\Length(min=7,max=12)
-     * @Assert\Type(type="digit", message="Значение должно быть числом")
+     * @Assert\Type(type="digit", message="mbhpackagebundle.document.partials.inntrait.znacheniye.dolzhno.bytʹ.chislom")
      */
     protected $inn;
 

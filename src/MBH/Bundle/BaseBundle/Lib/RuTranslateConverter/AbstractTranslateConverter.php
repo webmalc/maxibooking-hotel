@@ -118,7 +118,6 @@ abstract class AbstractTranslateConverter implements RuTranslateInterface
                 if ($changed) {
                     $newfile = implode("\n", $lines);
                     $this->saveChangesToFile($file->getPathname(), $newfile);
-                    $this->addMessage('Произведена запись в файл '. $file->getPathname());
                 }
 
             }
@@ -192,6 +191,7 @@ abstract class AbstractTranslateConverter implements RuTranslateInterface
         $fs = new Filesystem();
         try {
             $fs->dumpFile($filename, $lines);
+            $this->addMessage('Произведена запись в файл '. $filename);
         }
             catch (\InvalidArgumentException $e) {
             throw new RuTranslateException('Проблема с записью файлов ' . $e->getMessage());

@@ -16,7 +16,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
- * @MongoDBUnique(fields={"title", "fullTitle"}, message="Такой источник уже существует")
+ * @MongoDBUnique(fields={"title", "fullTitle"}, message="mbhpackagebundle.document.packagesource.takoy.istochnik.uzhe.sushchestvuyet")
  */
 class PackageSource extends Base
 {

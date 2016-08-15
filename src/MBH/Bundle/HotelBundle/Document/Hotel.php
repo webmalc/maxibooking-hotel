@@ -24,7 +24,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
  * @ODM\Document(collection="Hotels")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
+ * @MongoDBUnique(fields="fullTitle", message="mbhhotelbundle.document.hotel.takoy.otelʹ.uzhe.sushchestvuyet")
  * @ODM\HasLifecycleCallbacks
  */
 class Hotel extends Base implements \JsonSerializable

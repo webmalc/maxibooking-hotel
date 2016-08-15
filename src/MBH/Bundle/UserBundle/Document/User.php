@@ -23,7 +23,7 @@ use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
  * @MBHValidator\User
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
- * @MongoDBUnique(fields="username", message="Такой логин уже зарегистрирован")
+ * @MongoDBUnique(fields="username", message="mbhuserbundle.document.user.takoy.login.uzhe.zaregistrirovan")
  */
 class User extends BaseUser implements RecipientInterface
 {

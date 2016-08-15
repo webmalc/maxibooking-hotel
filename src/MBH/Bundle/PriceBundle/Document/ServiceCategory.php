@@ -42,7 +42,7 @@ class ServiceCategory extends Base
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="servicesCategories")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="mbhpricebundle.document.servicecategory.ne.vybran.otelʹ")
      */
     protected $hotel;
 
