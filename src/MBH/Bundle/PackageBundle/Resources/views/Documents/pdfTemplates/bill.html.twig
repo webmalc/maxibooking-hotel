@@ -127,7 +127,7 @@
             </tr>
         </table>
 
-        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.vsegozakazanouslug'|trans }} {{ counter }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.bill.vsegozakazanouslug'|trans }} {{ counter }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.bill.na.summu.'|trans }} {{ total|number_format(2) }} {{ currency().text }}<br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
 

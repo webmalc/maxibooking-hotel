@@ -83,7 +83,7 @@
                 <tr>
                     <td style="width: 20%">
                         <div style="font-weight: bold;">Registration Card</div>
-                        <small>Регистрационная Карточка</small>
+                        <small>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.registratsionnaya.kartochka'|trans }} </small>
                     </td>
                     <td>
                         <div style="font-weight: bold; text-align: center;font-size: 20px">
@@ -105,7 +105,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Surname</div>
-                                <div>Фамилия</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.familiya'|trans }} </div>
                             </div>
                             <div class="area">{% if tourist %}{{ tourist.lastName }}{% endif %}</div>
                         </div>
@@ -114,7 +114,7 @@
                         <div class="field">
                             <div class="title" style="width: 100px">
                                 <div>First name</div>
-                                <div>Имя</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.imya'|trans }} </div>
                             </div>
                             <div class="area"
                                  style="margin-left: 101px">{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
@@ -124,7 +124,7 @@
                         <div class="field">
                             <div class="title" style="width: 100px">
                                 <div>Patronymic</div>
-                                <div>Отчество</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.otchestvo'|trans }} </div>
                             </div>
                             <div class="area"
                                  style="margin-left: 101px">{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
@@ -136,7 +136,7 @@
                         <div class="field">
                             <div class="title" style="width: 100px;">
                                 <div>Nationality</div>
-                                <div>Гражданство</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.grazhdanstvo'|trans }} </div>
                             </div>
                             <div class="area"
                                  style="margin-left: 100px;">{% if tourist %}{{ tourist.citizenship }}{% endif %}</div>
@@ -146,7 +146,7 @@
                         <div class="field">
                             <div class="title" style="width: 40px;">
                                 <div>Sex</div>
-                                <div>Пол</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.pol'|trans }} </div>
                             </div>
                             <div class="area"
                                  style="margin-left: 40px;">{% if tourist and tourist.sex != 'unknown' %} {{ ('form.touristType.sex_' ~ tourist.sex)|trans }} / {{ tourist.sex|first|upper }} {% endif %}</div>
@@ -156,7 +156,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Company</div>
-                                <div>Фирма</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.firma'|trans }} </div>
                             </div>
                             <div class="area">{% if entity.order and entity.order.organization %} {{ entity.order.organization.name }} {% endif %}</div>
                         </div>
@@ -167,7 +167,7 @@
                         <div class="field">
                             <div class="title" style="width: 120px;">
                                 <div>Date of birth</div>
-                                <div>Дата рождения</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.data.rozhdeniya'|trans }} </div>
                             </div>
                             <div class="area"
                                  style="margin-left: 120px;">{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
@@ -177,7 +177,7 @@
                         <div class="field">
                             <div class="title" style="width: 130px;">
                                 <div>Place of birth</div>
-                                <div>Место рождения</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.mesto.rozhdeniya'|trans }} </div>
                             </div>
                             <div class="area"
                                  style="margin-left: 130px;">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ '  ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
@@ -189,7 +189,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Pass №</div>
-                                <div>Паспорт №</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.pasport.'|trans }} №</div>
                             </div>
                             <div class="area">{% if tourist and tourist.documentRelation and tourist.documentRelation.number and tourist.documentRelation.series %} {{ tourist.documentRelation.series }} {{ tourist.documentRelation.number }} {% endif %}</div>
                         </div>
@@ -198,7 +198,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Issued by</div>
-                                <div>Выдан</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.vydan'|trans }} </div>
                             </div>
                             <div class="area">
                                 {% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
@@ -212,7 +212,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Country</div>
-                                <div>Страна</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.strana'|trans }} </div>
                             </div>
                             <div class="area">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
                         </div>
@@ -221,7 +221,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Zip-code</div>
-                                <div>Индекс</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.indeks'|trans }} </div>
                             </div>
                             <div class="area">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.zipCode %} {{ tourist.addressObjectDecomposed.zipCode }} {% endif %}</div>
                         </div>
@@ -232,7 +232,7 @@
                         <div class="field">
                             <div class="title" style="width:110px">
                                 <div>Base Region</div>
-                                <div>Субъект РФ</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.subʺyekt.rf'|trans }} </div>
                             </div>
                             <div class="area"
                                  style="margin-left: 110px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.region %} {{ tourist.addressObjectDecomposed.region }} {% endif %}</div>
@@ -242,7 +242,7 @@
                         <div class="field">
                             <div class="title" style="width: 55px">
                                 <div>Сity</div>
-                                <div>Город</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.gorod'|trans }} </div>
                             </div>
                             <div style="margin-left: 56px" class="area">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
                         </div>
@@ -253,7 +253,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Street</div>
-                                <div>Улица</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.ulitsa'|trans }} </div>
                             </div>
                             <div class="area">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
                         </div>
@@ -262,7 +262,7 @@
                         <div class="field">
                             <div class="title" style="width: 55px">
                                 <div>Rate</div>
-                                <div>Тариф</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.tarif'|trans }} </div>
                             </div>
                             <div style="margin-left: 56px" class="area">{% if entity.tariff %}{{ entity.tariff.name }}{% endif %}</div>
                         </div>
@@ -273,16 +273,16 @@
                         <div class="field">
                             <div class="title">
                                 <div>Arrival</div>
-                                <div>Прибытие</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.pribytiye'|trans }} </div>
                             </div>
-                            <div class="area">{{ arrival }}</div>
+                        <div class="area">{{ arrival }}</div>
                         </div>
                     </td>
                     <td colspan="4">
                         <div class="field">
                             <div class="title" style="width: 100px;">
                                 <div>Departure</div>
-                                <div>Отъезд</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.otʺyezd'|trans }} </div>
                             </div>
                             <div class="area" style="margin-left: 101px">{{ departure }}</div>
                         </div>
@@ -291,7 +291,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Persons</div>
-                                <div>Кол. гостей</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.kol..gostey'|trans }} </div>
                             </div>
                             <div class="area">{{ entity.adults + entity.children }}</div>
                         </div>
@@ -302,7 +302,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Type</div>
-                                <div>Тип</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.tip'|trans }} </div>
                             </div>
                             <div class="area">{% if entity.accommodation and entity.accommodation.roomType %}{{ entity.accommodation.roomType.internationalTitle }}{% endif %}</div>
                         </div>
@@ -311,7 +311,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Room</div>
-                                <div>Номер</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.nomer'|trans }} </div>
                             </div>
                             <div class="area">{% if entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
                         </div>
@@ -378,41 +378,40 @@
                     <br>
                 </div>
                 <div class="square">
-                    Оплачено<br>
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.oplacheno'|trans }} <br>
                     до<br>
                     {% if entity.end %}{{ entity.end|date('d.m.Y') }} <br> 12:00 {% endif %}
                 </div>
                 <div class="text">
-                    Наша гостиница предоставляет услуги, перечень которых Вы найдете в своем номере. <br>
-                    <strong>Выезд гостей не позднее - 12:00, заселение гостей с 14:00</strong>. <br>
-                    Курение в нашей гостинице запрещено. Разрешается только в специально отведенных для этого местах. <br>
-                    За сохранность денег и ценных вещей, не сданных на хранение, администрация гостиницы ответственности
-                    не
-                    несет. <br>
-                    Посторонние лица по просьбе проживающих, с ведома администрации, могут находиться в гостинице с 9 до
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.nasha.gostinitsa.predostavlyayet.uslugi.perechenʹ.kotorykh.vy.naydete.v.svoyem.nomere..'|trans }} <br>
+                    <strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.vyyezd.gostey.ne.pozdneye.'|trans }} 12:00, {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.zaseleniye.gostey.s.'|trans }} 14:00</strong>. <br>
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.kureniye.v.nashey.gostinitse.zapreshcheno..razreshayetsya.tolʹko.v.spetsialʹno.otvedennykh.dlya.etogo.mestakh..'|trans }} <br>
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.za.sokhrannostʹ.deneg.i.tsennykh.veshchey.ne.sdannykh.na.khraneniye.administratsiya.gostinitsy.otvetstvennosti'|trans }} 
+                    <br>
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.postoronniye.litsa.po.prosʹbe.prozhivayushchikh.s.vedoma.administratsii.mogut.nakhoditʹsya.v.gostinitse.s.'|trans }} 9 до
                     23
-                    часов. <br>
-                    В случае порчи или утери имущества гостиницы проживающий возмещает ущерб. <br>
-                    <strong>Возврат денежных средств производится только при наличии кассового чека подтверждающего
-                        оплату</strong>. <br>
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.chasov..'|trans }} <br>
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.v.sluchaye.porchi.ili.uteri.imushchestva.gostinitsy.prozhivayushchiy.vozmeshchayet.ushcherb..'|trans }} <br>
+                    <strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.vozvrat.denezhnykh.sredstv.proizvoditsya.tolʹko.pri.nalichii.kassovogo.cheka.podtverzhdayushchego'|trans }} 
+                        </strong>. <br>
                 </div>
                 <div class="agree">
-                    <div style="display: inline-block;float: left">С условиями оплаты, возврата и проживания согласен
+                    <div style="display: inline-block;float: left">{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.s.usloviyami.oplaty.vozvrata.i.prozhivaniya.soglasen'|trans }} 
                     </div>
                     &nbsp
                     <div class="fields">
                         <div>
                             <div style="width: 170px" class="area">&nbsp</div>
-                            <div style="display: block; font-size: 12px; font-weight: normal;">SIGNATURE Подпись</div>
+                            <div style="display: block; font-size: 12px; font-weight: normal;">SIGNATURE {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.podpisʹ'|trans }} </div>
                         </div>
                         <div>
                             <div style="width: 140px" class="area">
                                 &nbsp{% if tourist %}{{ tourist|initial }}{% endif %}</div>
-                            <div style="display: block; font-size: 12px; font-weight: normal;">Расшифровка подписи</div>
+                            <div style="display: block; font-size: 12px; font-weight: normal;">{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.rasshifrovka.podpisi'|trans }} </div>
                         </div>
                         <div>
                             <div style="width: 90px" class="area">&nbsp{{ 'now'|date('d.m.Y') }}</div>
-                            <div style="display: block; font-size: 12px; font-weight: normal;">Дата</div>
+                            <div style="display: block; font-size: 12px; font-weight: normal;">{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.data'|trans }} </div>
                         </div>
                     </div>
                 </div>
@@ -503,7 +502,7 @@
                 <div class="permission">
                     <div style="text-align: center;">
                         <div style="font-weight: bold;">{% if organization %}{{ organization.name }}{% endif %}</div>
-                        <div style="font-weight: bold;font-size: 15px;margin: 10px 0px;">Разрешение на поселение</div>
+                        <div style="font-weight: bold;font-size: 15px;margin: 10px 0px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.razresheniye.na.poseleniye'|trans }} </div>
                     </div>
                     <table class="permission-table">
                         <tbody>
@@ -512,7 +511,7 @@
                                 <div class="field">
                                     <div class="title" style="width: 100px">
                                         <div>Surname</div>
-                                        <div>Фамилия</div>
+                                        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.familiya'|trans }} </div>
                                     </div>
                                     <div class="area"
                                          style="margin-left: 101px">{% if tourist %}{{ tourist.lastName }}{% endif %}</div>
@@ -522,7 +521,7 @@
                                 <div class="field">
                                     <div class="title" style="width: 100px">
                                         <div>First name</div>
-                                        <div>Имя</div>
+                                        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.imya'|trans }} </div>
                                     </div>
                                     <div class="area"
                                          style="margin-left: 101px">{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
@@ -532,7 +531,7 @@
                                 <div class="field">
                                     <div class="title" style="width: 110px">
                                         <div>Patronymic</div>
-                                        <div>Отчество</div>
+                                        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.otchestvo'|trans }} </div>
                                     </div>
                                     <div class="area"
                                          style="margin-left: 111px">{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
@@ -544,7 +543,7 @@
                                 <div class="field">
                                     <div class="title" style="width: 40px">
                                         <div>Sex</div>
-                                        <div>Пол</div>
+                                        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.pol'|trans }} </div>
                                     </div>
                                     <div class="area"
                                          style="margin-left: 41px">{% if tourist and tourist.sex %} {{ ('form.touristType.sex_' ~ tourist.sex)|trans }} / {{ tourist.sex|first|upper }} {% endif %}</div>
@@ -554,7 +553,7 @@
                                 <div class="field">
                                     <div class="title" style="width: 130px">
                                         <div>Date of birth</div>
-                                        <div>Дата рождения</div>
+                                        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.data.rozhdeniya'|trans }} </div>
                                     </div>
                                     <div class="area"
                                          style="margin-left: 131px">{% if tourist and tourist.birthday %} {{ tourist.birthday|date('d.m.Y') }} {% endif %}</div>
@@ -566,7 +565,7 @@
                                 <div class="field">
                                     <div class="title" style="width: 100px">
                                         <div>Arrival</div>
-                                        <div>Прибытие</div>
+                                        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.pribytiye'|trans }} </div>
                                     </div>
                                     <div class="area" style="margin-left: 101px">{{ arrival }}</div>
                                 </div>
@@ -575,7 +574,7 @@
                                 <div class="field">
                                     <div class="title" style="width: 100px">
                                         <div>Departure</div>
-                                        <div>Отъезд</div>
+                                        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.otʺyezd'|trans }} </div>
                                     </div>
                                     <div class="area" style="margin-left: 101px">{{ departure }}</div>
                                 </div>
@@ -586,7 +585,7 @@
                                 <div class="field">
                                     <div class="title" style="width:60px">
                                         <div>Type</div>
-                                        <div>Тип</div>
+                                        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.tip'|trans }} </div>
                                     </div>
                                     <div class="area"
                                          style="margin-left: 61px">{% if entity.accommodation and entity.accommodation.roomType %}{{ entity.accommodation.roomType.internationalTitle }}{% endif %}</div>
@@ -596,7 +595,7 @@
                                 <div class="field">
                                     <div class="title" style="width:60px">
                                         <div>Room</div>
-                                        <div>Номер</div>
+                                        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.nomer'|trans }} </div>
                                     </div>
                                     <div class="area"
                                          style="margin-left: 61px">{% if entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
@@ -618,7 +617,7 @@
 
                     <div class="signature">
                         <div>SIGNATURE</div>
-                        <small>Подпись</small>
+                        <small>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.podpisʹ'|trans }} </small>
                     </div>
 
                 </div>
