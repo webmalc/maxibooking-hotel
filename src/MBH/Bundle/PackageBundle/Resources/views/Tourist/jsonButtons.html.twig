@@ -1,6 +1,6 @@
 {% spaceless %}
     <div class='btn-list'>
-        <a href='{{ path('tourist_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
+        <a href='{{ path('tourist_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='{{ 'mbhpackagebundle.view.tourist.jsonbuttons.redaktirovaniye.zapisi'|trans }} ' data-toggle='tooltip'>
             <i class='fa fa-pencil-square-o'></i>
         </a>
         <a href='{{ path('tourist_delete', { 'id': entity.id}) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'mbhpackagebundle.view.tourist.jsonbuttons.udaleniyezapisi'|trans }} ' data-toggle='tooltip'>

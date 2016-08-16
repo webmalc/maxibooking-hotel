@@ -1,23 +1,23 @@
 views.actions.deleteButtons.delete: Удалить
 views.actions.list.add: Добавить
 views.actions.new.save: Сохранить
-views.actions.saveButtons.save_and_close: 'Сохранить и закрыть'
+views.actions.saveButtons.save_and_close: Сохранить и закрыть
 views.actions.saveButtons.save: Сохранить
 views.actions.saveButtons.cancel: Отмена
 views.actions.saveButtons.log: Логи
 views.actions.update.save: Сохранить
 views.actions.update.delete: Удалить
-views.partials.entityDeleteForm.confirm_delete_quote: 'Подтверждение удаления'
-views.partials.entityDeleteForm.confirm_delete: 'Подтверждение удаления'
-views.partials.entityDeleteForm.are_you_sure_delete_record_quote: 'Точно удалить эту запись?'
-views.partials.entityDeleteForm.are_you_sure_delete_record: 'Точно удалить эту запись?'
+views.partials.entityDeleteForm.confirm_delete_quote: Подтверждение удаления
+views.partials.entityDeleteForm.confirm_delete: Подтверждение удаления
+views.partials.entityDeleteForm.are_you_sure_delete_record_quote: Точно удалить эту запись?
+views.partials.entityDeleteForm.are_you_sure_delete_record: Точно удалить эту запись?
 views.partials.entityDeleteForm.cancel: Отмена
 views.partials.entityInfo.info: Информация
-views.partials.entityInfo.changes_history: 'История изменений'
+views.partials.entityInfo.changes_history: История изменений
 views.partials.entityInfo.created: Создана
 views.partials.entityInfo.by_user: пользователем
 views.partials.entityInfo.modified: Изменена
-views.partials.entityInfo.no_changes_made: 'Изменений не производилось'
+views.partials.entityInfo.no_changes_made: Изменений не производилось
 views.partials.entityInfo.date: Дата
 views.partials.entityInfo.user: Пользователь
 views.partials.entityInfo.changes: Изменения

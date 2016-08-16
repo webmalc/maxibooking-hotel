@@ -28,7 +28,7 @@ class TranslatorCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('mbh:translation:guessermbh')
+            ->setName('mbh:translation')
             ->setDefinition(array(
                 new InputArgument('action', InputArgument::OPTIONAL, 'show or convert', 'show'),
                 new InputOption('type', null, InputOption::VALUE_OPTIONAL, 'twig/form/doc/all', 'all'),

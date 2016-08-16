@@ -218,3 +218,68 @@ per_piece: шт.
 per_grm: гр.
 per_l: л.
 per_ml: мл.
+
+menu.header.navigation: Навигация
+menu.header.settings: Настройки
+menu.label.broni: Брони
+menu.label.podbor: Подбор
+menu.label.portie: Портье
+menu.label.portie.nomfond: Номерной фонд
+menu.label.portie.shah: Шахматка
+menu.label.portie.arrdep: Заезд/Выезд
+
+menu.label.nomandprice: Номера и цены
+menu.label.nomandprice.tariff: Тарифы
+menu.label.nomandprice.overview: Обзор
+menu.label.nomandprice.roomsell: Номера в продаже
+menu.label.nomandprice.prices: Цены
+menu.label.nomandprice.restriction: Условия и ограничения
+menu.label.nomandprice.services: Услуги
+menu.label.nomandprice.promotions: Акции
+menu.label.task:  Задачи
+menu.label.cash: Касса
+menu.label.warehouse: Склад
+menu.label.restaurant: Ресторан
+menu.label.reports: Отчеты
+menu.label.reports.services: Услуги
+menu.label.reports.clients: Клиенты
+menu.label.reports.organizations: Организации
+menu.label.reports.filling: Заполняемость
+menu.label.reports.managers: Менеджеры
+menu.label.reports.invite: Визовые приглашения
+menu.label.reports.analystics: Аналитика
+menu.label.reports.polls: Оценки
+menu.label.reports.work_shift: Рабочие смены
+menu.label.reports.fms: Для ФМС
+
+menu.settings.label.hotels: Отели
+menu.settings.label.housing: Корпуса
+menu.settings.label.room_types: Номерной фонд
+
+menu.room_type_category: Группы номеров
+
+menu.settings.label.restaurant: Ресторан
+menu.settings.label.restaurant.ingredients: Ингредиенты
+menu.settings.label.restaurant.dishmenu: Меню блюд
+menu.settings.label.restaurant.tables: Управление столиками
+
+menu.configs.config: Настройки
+menu.configs.users: Пользователи
+menu.configs.groups: Группы
+menu.configs.sources: Источники
+menu.configs.templates: Шаблоны документов
+menu.configs.parameters: Параметры
+menu.configs.tasktype: Типы задач
+menu.configs.warehouse: Склад
+
+menu.communication.label: Взаимодействие
+menu.communication.label.advanced: Дополнительные каналы
+menu.communication.label.yh: ВашОтель
+menu.communication.label.onlineform: Онлайн форма
+menu.communication.label.polls: Оценки
+menu.communication.label.invite: Визовое приглашение
+
+menu.hotel_new.label: Создать новый отель
+
+menu.help.noarrival: Количество незаехавших броней
+menu.help.nodepart: Количество невыехавших броней
