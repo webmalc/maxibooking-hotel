@@ -2,19 +2,15 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * Class TaskType
@@ -101,7 +97,7 @@ class TaskType extends AbstractType
                 'choices' => array_combine($floors, $floors)
             ]);
 
-            $builder->add('rooms', 'document', [
+            $builder->add('rooms', DocumentType::class, [
                 'label' => 'form.task.rooms',
                 'group' => $generalGroup,
                 'class' => 'MBH\Bundle\HotelBundle\Document\Room',

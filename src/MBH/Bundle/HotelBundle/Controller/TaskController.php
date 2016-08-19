@@ -4,7 +4,9 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Form\Extension\DateType;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
+use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -18,6 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\HotelBundle\Form\TaskType;
@@ -93,17 +96,17 @@ class TaskController extends Controller
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm'],
             ])
-            ->add('end', 'date', [
+            ->add('end', DateType::class, [
                 'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm'],
             ])
-            ->add('status', 'choice', [
+            ->add('status', ChoiceType::class, [
                 'empty_value' => '',
                 'choices' => $this->container->getParameter('mbh.task.statuses')
             ])
-            ->add('priority', 'choice', [
+            ->add('priority', ChoiceType::class, [
                 'empty_value' => '',
                 'choices' => $this->container->getParameter('mbh.tasktype.priority')
             ])
@@ -133,6 +136,8 @@ class TaskController extends Controller
      * @Method("POST")
      * @Security("is_granted('ROLE_TASK_MANAGER')")
      * @Template("MBHHotelBundle:Task:list.json.twig")
+     * @param Request $request
+     * @return array
      */
     public function jsonListAction(Request $request)
     {
@@ -149,6 +154,7 @@ class TaskController extends Controller
 
             $tableParams = ClientDataTableParams::createFromRequest($request);
             $firstSort = $tableParams->getFirstSort();
+            /** @var  TaskQueryCriteria $queryCriteria */
             $queryCriteria->onlyOwned = false;
             $queryCriteria->sort = $firstSort ? [$firstSort[0] => $firstSort[1]] : ['createdAt' => -1];
             $queryCriteria->offset = $tableParams->getStart();
@@ -214,6 +220,8 @@ class TaskController extends Controller
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TASK_MANAGER')")
      * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function newAction(Request $request)
     {
@@ -272,10 +280,10 @@ class TaskController extends Controller
     private function sendNotifications(Task $task)
     {
         $recipients = [];
-        if ($task->getRole()) {
+        if ($userGroup = $task->getUserGroup()) {
             /** @var User[] $recipients */
             $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy([
-                'userGroup' => $task->getUserGroup(),
+                'userGroup' => $userGroup,
                 'taskNotify' => true,
                 'email' => ['$exists' => true],
                 'enabled' => true,
