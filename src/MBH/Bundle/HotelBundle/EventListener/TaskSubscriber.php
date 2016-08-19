@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Task;
@@ -54,6 +55,8 @@ class TaskSubscriber implements EventSubscriber
     private function updateRoomStatus(Task $task, DocumentManager $dm)
     {
         $uow = $dm->getUnitOfWork();
+        /** @var UnitOfWork $uow
+         * @var array $changeSet */
         $changeSet = $uow->getDocumentChangeSet($task);
         /** @var TaskRepository $taskRepository */
         $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
@@ -64,8 +67,8 @@ class TaskSubscriber implements EventSubscriber
             $newRoom = $changeSet['room'][1];
 
             $dm->refresh($task->getType());
-            if ($task->getType()->getRoomStatus()) {
-                $newRoom->setStatus($task->getType()->getRoomStatus());
+            if ($status = $task->getType()->getRoomStatus() && $task->getStatus() !== Task::STATUS_OPEN) {
+                $newRoom->setStatus($status);
             }
             $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($newRoom)), $newRoom);
             if ($oldRoom) {
@@ -77,17 +80,17 @@ class TaskSubscriber implements EventSubscriber
             if ($task->getStatus() == Task::STATUS_PROCESS) {
                 $room = $task->getRoom();
                 $dm->refresh($task->getType());
-                if ($task->getType()->getRoomStatus()) {
-                    $room->setStatus($task->getType()->getRoomStatus());
+                if ($status = $task->getType()->getRoomStatus()) {
+                    $room->setStatus($status);
                 }
                 $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
-            } elseif ($task->getStatus() == Task::STATUS_CLOSED) {
+            } elseif ($task->getStatus() === Task::STATUS_CLOSED) {
                 $room = $task->getRoom();
                 $room->setStatus($taskRepository->getActuallyRoomStatus($room, $task));
                 $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
             }
         }
-        if (array_key_exists('type', $changeSet)) {
+        if (array_key_exists('type', $changeSet) && $task->getStatus() !==Task::STATUS_OPEN) {
             $room = $task->getRoom();
             $dm->refresh($task->getType());
             $room->setStatus($task->getType()->getRoomStatus());
