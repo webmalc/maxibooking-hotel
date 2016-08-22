@@ -146,13 +146,9 @@ abstract class AbstractTranslateConverter implements RuTranslateInterface
         ];
 
         $transliterator = \Transliterator::create('Russian-Latin/BGN');
-//        $label = str_replace('\ʹ', '_', $matchedOrigText);
-//        $label = str_replace(',', '_', $label);
-//        $label = str_replace('-', '_', $label);
         $label = $transliterator->transliterate($matchedOrigText);
         $bundleName = $this->bundle->getName();
         $dir = str_replace(static::SUFFIX, '', $file->getRelativePathname());
-//        $dir = str_replace('/', '.', $dir);
         $transIdPattern = sprintf($this->transIdPattert(), $bundleName, $dir, $label);
         $transIdPattern = preg_replace($replaceSymbols, '.', $transIdPattern);
         return strtolower($transIdPattern);
