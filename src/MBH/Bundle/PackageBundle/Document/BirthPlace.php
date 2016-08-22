@@ -26,7 +26,7 @@ class BirthPlace
 
     /**
      * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
      */
     protected $mainRegion;
 

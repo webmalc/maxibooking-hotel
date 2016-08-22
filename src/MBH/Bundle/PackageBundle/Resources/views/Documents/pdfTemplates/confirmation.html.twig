@@ -52,9 +52,9 @@
             <p>
                 {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.podtverzhdeniye'|trans }} 
                 {% if formParams.hasFull is defined and formParams.hasFull %}
-                    заказа № {{ entity.order.id }} от {{ entity.order.createdAt|date("d.m.Y") }} г.
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.zakaza.'|trans }} № {{ entity.order.id }} от {{ entity.order.createdAt|date("d.m.Y") }} г.
                 {% else %}
-                    брони № {{ entity.numberWithPrefix }} от {{ entity.createdAt|date("d.m.Y") }} г.
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.broni.'|trans }} № {{ entity.numberWithPrefix }} от {{ entity.createdAt|date("d.m.Y") }} г.
                 {% endif %}
             </p>
         </div>
@@ -73,7 +73,7 @@
             {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.adresu'|trans }} : {% if hotel and hotel.country and hotel.city and hotel.street %}
             {{ hotel.country.title }}, {% if hotel.region %}{{ hotel.region.title }},{% endif %} {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.g'|trans }} . {{ hotel.city.title }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
             {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
-            ИНН {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}, извещает
+            {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.inn.'|trans }} {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.izveshchayet'|trans }} 
             {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.zakazchika'|trans }} :
         </p>
         <style>
@@ -85,7 +85,7 @@
             <table border="0">
                 <tbody>
                 <tr>
-                    <td style="width: 40px">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.fio'|trans }} .И.О.</td>
+                    <td style="width: 40px">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.fio'|trans }}</td>
                     <td style="width: 60%;">
                         <div class="area">&nbsp{% if tourist %}{{ tourist.fullName }}{% endif %}</div>
                     </td>
@@ -216,12 +216,12 @@
             </tr>
         </table>
 
-        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.vsegozakazanouslug'|trans }} {{ entity.services|length + packages|length }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.vsegozakazanouslug'|trans }} {{ entity.services|length + packages|length }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.na.summu.'|trans }} {{ total|number_format(2) }} {{ currency().text }}<br>
             <strong>{{ total|num2str|capitalize }}</strong>
         </p>
 
         <p>
-            {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.primechaniye'|trans }} : в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание компенсации из внесенной предоплаты.
+            {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.primechaniye'|trans }} : {{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.v.sluchaye.nesvoyevremennogo.otkaza.ot.zakazannykh.uslug.otelʹ.imeyet.pravo.na.uderzhaniye.kompensatsii.iz.vnesennoy.predoplaty.'|trans }} 
         </p>
 
         <table class="signatures" cellpadding="0" cellspacing="0">

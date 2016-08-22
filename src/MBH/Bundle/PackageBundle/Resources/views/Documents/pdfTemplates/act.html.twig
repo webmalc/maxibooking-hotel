@@ -137,7 +137,7 @@
             </tr>
         </table>
 
-        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.act.vsegookazanouslug'|trans }} {{ counter }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.act.vsegookazanouslug'|trans }} {{ counter }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.act.na.summu.'|trans }} {{ total|number_format(2) }} {{ currency().text }}<br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
         <p>{{ "package.pdf.conditions"|trans({}, "MBHPackageBundle") }}</p>

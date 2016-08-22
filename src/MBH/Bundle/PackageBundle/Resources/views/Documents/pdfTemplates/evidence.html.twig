@@ -35,7 +35,7 @@
             <div style="clear: both "></div>
         </div>
 
-        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.otom'|trans }} , что он(а) зарегистрирован(а) по месту пребывания по адресу:</div>
+        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.otom'|trans }}:</div>
 
         {% set location = '' %}
 
@@ -84,7 +84,7 @@
             <div class="area">
                 &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}
             </div>
-            <div style="display: block; font-size: 12px; font-weight: normal;">(наименование органа, учреждения, выдавшего документ)</div>
+            <div style="display: block; font-size: 12px; font-weight: normal;">({{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.naimenovaniye.organa.uchrezhdeniya.vydavshego.dokument'|trans }} )</div>
         </div>
     </div>
 
