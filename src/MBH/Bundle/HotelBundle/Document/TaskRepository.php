@@ -84,7 +84,7 @@ class TaskRepository extends DocumentRepository
         }
 
         if ($queryCriteria->end) {
-            $queryBuilder->addAnd($queryBuilder->expr()->field('createdAt')->lte($queryCriteria->end));
+            $queryBuilder->addAnd($queryBuilder->expr()->field('createdAt')->lte($queryCriteria->endWholeDay()));
         }
 
         if ($queryCriteria->hotel) {

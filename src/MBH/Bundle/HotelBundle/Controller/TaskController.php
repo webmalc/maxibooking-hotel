@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Controller;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Form\Extension\DateType;
@@ -20,6 +21,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -86,11 +88,12 @@ class TaskController extends Controller
      */
     public function getSearchForm()
     {
+        $statuses = $this->container->getParameter('mbh.task.statuses');
         $user = $this->getUser();
         $formBuilder = $this->createFormBuilder(null, ['data_class' => TaskQueryCriteria::class]);
 
         $formBuilder
-            ->add('begin', 'date', [
+            ->add('begin', DateType::class, [
                 'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
@@ -104,25 +107,22 @@ class TaskController extends Controller
             ])
             ->add('status', ChoiceType::class, [
                 'empty_value' => '',
-                'choices' => $this->container->getParameter('mbh.task.statuses')
+                'choices' => array_keys($statuses),
             ])
             ->add('priority', ChoiceType::class, [
                 'empty_value' => '',
                 'choices' => $this->container->getParameter('mbh.tasktype.priority')
             ])
-            ->add('userGroups', 'document', [
+            ->add('userGroups', DocumentType::class, [
                 'empty_value' => '',
                 'multiple' => true,
                 'class' => Group::class
             ])
-            ->add('performer', 'document', [
+            ->add('performer', DocumentType::class, [
                 'empty_value' => '',
-                'class' => User::class,
-                'query_builder' => function(DocumentRepository $groupRepository) use ($user) {
-                    return $groupRepository->createQueryBuilder()->field('id')->notEqual($user->getId());
-                }
+                'class' => User::class
             ])
-            ->add('deleted', 'checkbox')
+            ->add('deleted', CheckboxType::class)
         ;
 
         return $formBuilder->getForm();
@@ -174,6 +174,7 @@ class TaskController extends Controller
             'statuses' => $this->container->getParameter('mbh.task.statuses'),
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
             'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => count($recordsTotal),
             'tasks' => $tasks,
             'draw' => $request->get('draw'),
             'taskRepository' => $taskRepository
