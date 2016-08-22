@@ -116,7 +116,7 @@ class TaskType extends AbstractType
                 },
             ]);
         } elseif ($options['scenario'] == TaskType::SCENARIO_EDIT) {
-            $builder->add('room', 'document', [
+            $builder->add('room', DocumentType::class, [
                 'label' => 'form.task.room',
                 'group' => $generalGroup,
                 'group_by' => 'roomType',

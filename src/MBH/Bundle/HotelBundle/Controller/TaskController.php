@@ -13,6 +13,7 @@ use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
+use MBH\Bundle\HotelBundle\Form\SearchTaskType;
 use MBH\Bundle\UserBundle\Document\Group;
 use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -46,7 +47,7 @@ class TaskController extends Controller
         $statuses = $this->container->getParameter('mbh.task.statuses');
 
         if ($authorizationChecker->isGranted('ROLE_TASK_VIEW')) {
-            $searchForm = $this->getSearchForm();
+            $searchForm = $this->createForm(SearchTaskType::class, new TaskQueryCriteria());
 
             return $this->render('MBHHotelBundle:Task:index.html.twig', [
                 'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
@@ -83,57 +84,12 @@ class TaskController extends Controller
         }
     }
 
-    /**
-     * @return \Symfony\Component\Form\Form
-     */
-    public function getSearchForm()
-    {
-        $statuses = $this->container->getParameter('mbh.task.statuses');
-        $user = $this->getUser();
-        $formBuilder = $this->createFormBuilder(null, ['data_class' => TaskQueryCriteria::class]);
-
-        $formBuilder
-            ->add('begin', DateType::class, [
-                'required' => false,
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm'],
-            ])
-            ->add('end', DateType::class, [
-                'required' => false,
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm'],
-            ])
-            ->add('status', ChoiceType::class, [
-                'empty_value' => '',
-                'choices' => array_keys($statuses),
-            ])
-            ->add('priority', ChoiceType::class, [
-                'empty_value' => '',
-                'choices' => $this->container->getParameter('mbh.tasktype.priority')
-            ])
-            ->add('userGroups', DocumentType::class, [
-                'empty_value' => '',
-                'multiple' => true,
-                'class' => Group::class
-            ])
-            ->add('performer', DocumentType::class, [
-                'empty_value' => '',
-                'class' => User::class
-            ])
-            ->add('deleted', CheckboxType::class)
-        ;
-
-        return $formBuilder->getForm();
-    }
-
 
     /**
      * List entities
      *
      * @Route("/json_list", name="task_json", defaults={"_format"="json"}, options={"expose"=true})
-     * @Method("POST")
+     * @Method({"POST", "GET"})
      * @Security("is_granted('ROLE_TASK_MANAGER')")
      * @Template("MBHHotelBundle:Task:list.json.twig")
      * @param Request $request
@@ -147,7 +103,7 @@ class TaskController extends Controller
         $tasks = [];
         $recordsTotal = 0;
 
-        $searchForm = $this->getSearchForm();
+        $searchForm = $this->createForm(SearchTaskType::class, new TaskQueryCriteria());
         $searchForm->handleRequest($request);
         if($searchForm->isValid()) {
             $queryCriteria = $searchForm->getData();

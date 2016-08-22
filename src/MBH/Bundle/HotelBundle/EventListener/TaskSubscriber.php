@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomStatus;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -54,9 +55,9 @@ class TaskSubscriber implements EventSubscriber
      */
     private function updateRoomStatus(Task $task, DocumentManager $dm)
     {
-        $uow = $dm->getUnitOfWork();
         /** @var UnitOfWork $uow
          * @var array $changeSet */
+        $uow = $dm->getUnitOfWork();
         $changeSet = $uow->getDocumentChangeSet($task);
         /** @var TaskRepository $taskRepository */
         $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
@@ -68,7 +69,10 @@ class TaskSubscriber implements EventSubscriber
 
             $dm->refresh($task->getType());
             if ($status = $task->getType()->getRoomStatus() && $task->getStatus() !== Task::STATUS_OPEN) {
-                $newRoom->setStatus($status);
+                if ($status instanceof RoomStatus) {
+                    $newRoom->setStatus($status);
+                }
+
             }
             $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($newRoom)), $newRoom);
             if ($oldRoom) {

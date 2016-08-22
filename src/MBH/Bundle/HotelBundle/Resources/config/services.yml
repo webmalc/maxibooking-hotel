@@ -54,3 +54,9 @@ services:
     mbh.hotel.hotel_manager:
         class: MBH\Bundle\HotelBundle\Service\HotelManager
         arguments: [@service_container]
+
+    mbh_bundle_hotel.form.search_task_type:
+        class: MBH\Bundle\HotelBundle\Form\SearchTaskType
+        arguments: ['@service_container']
+        tags:
+            - { name: form.type, alias: MBH\Bundle\HotelBundle\Form\SearchTaskType }
