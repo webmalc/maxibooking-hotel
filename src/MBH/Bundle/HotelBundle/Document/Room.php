@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -100,8 +101,7 @@ class Room extends Base
 
     /**
      * @var RoomStatus
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomStatus")
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomStatus")
      */
     protected $status;
 
@@ -110,6 +110,15 @@ class Room extends Base
      * @ODM\Collection()
      */
     protected $facilities;
+
+    /**
+     * Room constructor.
+     */
+    public function __construct()
+    {
+        $this->status = new ArrayCollection();
+    }
+
 
     /**
      * Set hotel
@@ -274,10 +283,22 @@ class Room extends Base
 
     /**
      * @param RoomStatus $status
+     * @return $this
      */
-    public function setStatus($status = null)
+    public function addStatus(RoomStatus $status)
     {
-        $this->status = $status;
+        if ($status) {
+            $this->status->add($status);
+        }
+
+        return $this;
+    }
+
+    public function removeStatus(RoomStatus $status)
+    {
+        $this->status->removeElement($status);
+
+        return $this;
     }
 
     /**

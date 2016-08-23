@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Form\Extension\DateType;
@@ -24,6 +25,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\HotelBundle\Form\TaskType;
@@ -137,6 +139,121 @@ class TaskController extends Controller
         ];
     }
 
+
+    /**
+     * Displays a form to create a new entity.
+     *
+     * @Route("/new", name="task_new")
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_TASK_MANAGER')")
+     * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function newAction(Request $request)
+    {
+        if (!$this->get('mbh.hotel.selector')->checkPermissions($this->hotel)) {
+            throw $this->createNotFoundException();
+        }
+
+        $entity = new Task();
+        $entity->setStatus(Task::STATUS_OPEN);
+        $entity->setPriority(Task::PRIORITY_AVERAGE);
+
+        /** @var DocumentManager $dm */
+        $dm = $this->dm;
+
+        $form = $this->createForm(new TaskType($dm), $entity, $this->getFormTaskTypeOptions());
+
+        if ($request->isMethod(Request::METHOD_POST)) {
+            if ($form->submit($request)->isValid()) {
+                /** @var Room[] $rooms */
+                $rooms = $form['rooms']->getData();
+                $task = null; $numOfTasks = 0;
+                foreach ($rooms as $room) {
+                    $task = clone($entity);
+                    /** @var DocumentManager $this->dm */
+                    $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
+                    /** @var TaskRepository $taskRepository */
+                    if (!$taskRepository->isStatusRoomInProccess($task, $room)) {
+                        $task->setRoom($room);
+                        $dm->persist($task);
+                        $numOfTasks ++;
+                    }
+                }
+                if ($numOfTasks && $numOfTasks !== count($rooms)) {
+                    $request->getSession()->getFlashBag()->set('warning',
+                        $this->get('translator')->trans('controller.taskTypeController.task_created_notall'));
+                };
+
+                $dm->flush();
+
+                if($task) {
+                    $this->sendNotifications($task);
+                }
+
+                if ($numOfTasks) {
+                    $request->getSession()->getFlashBag()->set('success',
+                        $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
+                } else {
+                    $request->getSession()->getFlashBag()->set('danger',
+                        $this->get('translator')->trans('controller.taskTypeController.task_created_failed'));
+                }
+
+
+                return $this->redirectToRoute('task');
+            }
+        }
+
+        return [
+            'form' => $form->createView(),
+        ];
+    }
+
+
+    /**
+     * Edits an existing entity.
+     *
+     * @Route("/edit/{id}", name="task_edit")
+     * @Method({"GET","PUT"})
+     * @Security("is_granted('ROLE_TASK_EDIT')")
+     * @Template()
+     * @ParamConverter("entity", class="MBHHotelBundle:Task")
+     */
+    public function editAction(Request $request, Task $entity)
+    {
+        if (!$this->get('mbh.hotel.selector')->checkPermissions($this->hotel)) {
+            throw $this->createNotFoundException();
+        }
+        $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions() + [
+                'scenario' => TaskType::SCENARIO_EDIT
+            ]);
+
+        if ($request->isMethod(Request::METHOD_PUT)) {
+            if ($form->submit($request)->isValid()) {
+                $dm = $this->dm;
+                $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
+                /** @var Form $form */
+                $task = $form->getData();
+                $this->dm->persist($entity);
+                $this->dm->flush();
+
+                $request->getSession()->getFlashBag()
+                    ->set('success',
+                        $this->get('translator')->trans('controller.taskTypeController.record_edited_success'));
+
+                return $this->afterSaveRedirect('task', $entity->getId());
+            }
+        }
+
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        );
+    }
+
+
     /**
      * @Route("/change_status/{id}/{status}", name="task_change_status", options={"expose":true})
      * @Method({"GET"})
@@ -170,54 +287,10 @@ class TaskController extends Controller
         return $this->redirectToRoute('task');
     }
 
+
     /**
-     * Displays a form to create a new entity.
-     *
-     * @Route("/new", name="task_new")
-     * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_TASK_MANAGER')")
-     * @Template()
-     * @param Request $request
-     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @return array
      */
-    public function newAction(Request $request)
-    {
-        if (!$this->get('mbh.hotel.selector')->checkPermissions($this->hotel)) {
-            throw $this->createNotFoundException();
-        }
-        $entity = new Task();
-        $entity->setStatus(Task::STATUS_OPEN);
-        $entity->setPriority(Task::PRIORITY_AVERAGE);
-
-        $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions());
-
-        if ($request->isMethod(Request::METHOD_POST)) {
-            if ($form->submit($request)->isValid()) {
-                /** @var Room[] $rooms */
-                $rooms = $form['rooms']->getData();
-                $task = null;
-                foreach ($rooms as $room) {
-                    $task = clone($entity);
-                    $task->setRoom($room);
-                    $this->dm->persist($task);
-                }
-                $this->dm->flush();
-                if($task) {
-                    $this->sendNotifications($task);
-                }
-
-                $request->getSession()->getFlashBag()->set('success',
-                    $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
-
-                return $this->redirectToRoute('task');
-            }
-        }
-
-        return [
-            'form' => $form->createView(),
-        ];
-    }
-
     private function getFormTaskTypeOptions()
     {
         $statuses = $this->getParameter('mbh.task.statuses');
@@ -264,43 +337,6 @@ class TaskController extends Controller
         }
     }
 
-    /**
-     * Edits an existing entity.
-     *
-     * @Route("/edit/{id}", name="task_edit")
-     * @Method({"GET","PUT"})
-     * @Security("is_granted('ROLE_TASK_EDIT')")
-     * @Template()
-     * @ParamConverter("entity", class="MBHHotelBundle:Task")
-     */
-    public function editAction(Request $request, Task $entity)
-    {
-        if (!$this->get('mbh.hotel.selector')->checkPermissions($this->hotel)) {
-            throw $this->createNotFoundException();
-        }
-        $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions() + [
-            'scenario' => TaskType::SCENARIO_EDIT
-        ]);
-
-        if ($request->isMethod(Request::METHOD_PUT)) {
-            if ($form->submit($request)->isValid()) {
-                $this->dm->persist($entity);
-                $this->dm->flush();
-
-                $request->getSession()->getFlashBag()
-                    ->set('success',
-                        $this->get('translator')->trans('controller.taskTypeController.record_edited_success'));
-
-                return $this->afterSaveRedirect('task', $entity->getId());
-            }
-        }
-
-        return array(
-            'entity' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        );
-    }
 
     /**
      * Delete entity.

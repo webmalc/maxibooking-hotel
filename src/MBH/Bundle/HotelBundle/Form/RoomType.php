@@ -2,13 +2,11 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Class RoomType
@@ -81,7 +79,7 @@ class RoomType extends AbstractType
                 'group' => 'form.roomType.general_info',
                 'required' => false
             ])
-            ->add('status', 'document', [
+            ->add('status', DocumentType::class, [
                 'label' => 'form.roomType.status',
                 'group' => 'form.roomType.settings',
                 'required' => false,
@@ -91,6 +89,7 @@ class RoomType extends AbstractType
                 },
                 'class' => 'MBH\Bundle\HotelBundle\Document\RoomStatus',
                 'empty_value' => '',
+                'multiple' => 'true'
             ]);
     }
 

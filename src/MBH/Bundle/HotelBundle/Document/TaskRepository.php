@@ -122,9 +122,9 @@ class TaskRepository extends DocumentRepository
         if ($exceptTask) {
             $qb->field('_id')->notEqual($exceptTask->getId());
         }
+        $result = $qb->sort(['createdBy' => -1])->limit(1)->getQuery()->getSingleResult();
 
-        return $qb->sort(['createdBy' => -1])->limit(1)
-            ->getQuery()->getSingleResult();
+        return $result;
     }
 
     /**
@@ -178,6 +178,27 @@ class TaskRepository extends DocumentRepository
             ->count()
             ->getQuery();
 
+        return $query->execute();
+    }
+
+    public function isStatusRoomInProccess(Task $task, Room $room)
+    {
+        $qb = $this->getDocumentManager()->getRepository('MBHHotelBundle:Room')->createQueryBuilder();
+        $statusExist = $qb
+            ->field('_id')->equals($room->getId())
+            ->field('status.id')->equals($task->getType()->getRoomStatus()->getId())
+            ->getQuery()
+        ;
+
+        return (bool) count($statusExist);
+    }
+
+    public function getTaskInProcessedByRoom(Room $room)
+    {
+        $query = $this->createQueryBuilder()
+            ->field('room.id')->equals($room->getId())
+            ->field('status')->equals(Task::STATUS_PROCESS)
+            ->getQuery();
         return $query->execute();
     }
 }
