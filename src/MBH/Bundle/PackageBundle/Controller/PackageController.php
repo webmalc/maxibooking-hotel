@@ -832,6 +832,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'logs' => $this->logs($package),
             'optGroupRooms' => $optGroupRooms,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
+            'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
+
         ];
     }
 

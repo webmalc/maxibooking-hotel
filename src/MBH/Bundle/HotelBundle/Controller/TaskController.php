@@ -166,7 +166,6 @@ class TaskController extends Controller
                 $rooms = $form['rooms']->getData();
                 $task = null;
                 /** @var ValidatorInterface $validator */
-                $validator = $this->get('validator');
                 foreach ($rooms as $room) {
                     $task = clone($entity);
                     $task->setRoom($room);
@@ -179,14 +178,6 @@ class TaskController extends Controller
                 if($task) {
                     $this->sendNotifications($task);
                 }
-
-//                if ($numOfTasks) {
-//                    $request->getSession()->getFlashBag()->set('success',
-//                        $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
-//                } else {
-//                    $request->getSession()->getFlashBag()->set('danger',
-//                        $this->get('translator')->trans('controller.taskTypeController.task_created_failed'));
-//                }
 
 
                 return $this->redirectToRoute('task');
