@@ -126,12 +126,14 @@
                 </td>
                 <td class="text-center">
                     {% if is_granted('ROLE_ROOM_STATUS_EDIT') %}
+                        {% for roomStatus in room.status %}
                         <select data-room="{{ room.id }}" class="plain-html select-status select2">
                             <option data-icon="fa-lg fa-check">.</option>
                             {% for status in roomStatuses %}
-                                <option value="{{ status.code }}" {{ room.status and room.status.code == status.code ? 'selected="selected"' : '' }} data-icon="mbf-{{ roomStatusIcons[status.code] }}">{{ status.title }}</option>
+                                <option value="{{ status.code }}" {{ roomStatus and roomStatus.code == status.code ? 'selected="selected"' : '' }} data-icon="mbf-{{ roomStatusIcons[status.code] }}">{{ status.title }}</option>
                             {% endfor %}
                         </select>
+                        {% endfor %}
                     {% elseif room.status %}
                         <i class="fa fa-lg mbf-{{ roomStatusIcons[room.status.code] }}" data-toggle='tooltip' data-title='{{ room.status.title }}'></i>
                     {% else %}

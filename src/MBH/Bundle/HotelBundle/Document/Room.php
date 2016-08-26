@@ -292,6 +292,11 @@ class Room extends Base
         return $this;
     }
 
+//    public function setStatus(RoomStatus $status)
+//    {
+//        $this->status->set
+//    }
+
     public function removeStatus(RoomStatus $status)
     {
         $this->status->removeElement($status);
