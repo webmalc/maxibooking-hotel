@@ -11,7 +11,7 @@ $(document).ready(function () {
             {"name": "priority", "class": "text-center"},
             {"name": "room", "bSortable": false},
             {"name": "assign", "bSortable": false},
-            {"name": "period"},
+            {"name": "period", "bSortable": false},
             {"name": "createdAt"},
             {"bSortable": false}
         ],

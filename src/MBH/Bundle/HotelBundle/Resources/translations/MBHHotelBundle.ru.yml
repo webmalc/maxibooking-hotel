@@ -20,7 +20,7 @@ views.task.index.groups: Группы
 views.task.index.createAt: Создано
 views.task.index.dates: Даты
 views.task.index.date: Дата
-views.task.index.period: Статус
+views.task.index.period: Период
 views.task.index.createdAt: Создано
 views.task.index.createdBy: Создал
 views.task.index.description: Комментарий
