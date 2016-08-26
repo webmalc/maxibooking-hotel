@@ -51,8 +51,6 @@ class TaskSubscriber implements EventSubscriber
                     $dm->detach($document);
                     $this->flashBag->add('warning', $e->getMessage());
                 }
-
-
             }
         }
 
@@ -88,45 +86,9 @@ class TaskSubscriber implements EventSubscriber
 
             }
 
-//            $room = $task->getRoom();
-//            if ($task->getStatus() !== Task::STATUS_CLOSED) {
-//
-//
-//                $activeTasksByRoom = $taskRepository->getNoClosedTaskByRoom($task);
-//                    //Проверка есть ли не закрытые задачи с тем же типом
-//                foreach ($activeTasksByRoom as $activeTask) {
-//                    if ($task->getType()->getRoomStatus()->getId() === $activeTask->getType()->getRoomStatus()->getId()) {
-//                        throw new TaskRoomStatusUpdateException(sprintf('close %s before open new task', $activeTask->getId()));
-//                    }
-//                }
-//                    //Если нет тасков, проверяем есть ли статус через редактирование
-//
-//                $currentRoomStatus = $task->getRoom()->getStatus();
-//                $currentStatus = $task->getType()->getRoomStatus();
-//                $statusTrue = array_filter($currentRoomStatus->toArray(), function (RoomStatus $status) use ($currentStatus) {
-//                    return $status->getId() === $currentStatus->getId();
-//                });
-//                if (count($statusTrue)) {
-//                    throw new TaskRoomStatusUpdateException('Невозможно создать задачу. Т.к. статус комнаты обозначен через меню номерной фонд');
-//                }
-//
-//                if ($task->getStatus() === Task::STATUS_PROCESS) {
-//                    $room->addStatus($task->getType()->getRoomStatus());
-//                }
-//            } elseif ($task->getStatus() === Task::STATUS_CLOSED) {
-//                $taskOwner = $taskRepository->getNoClosedTaskByRoom($task);
-//                if (count($taskOwner)) {
-//                    return;
-//                }
-//                $room->removeStatus($task->getType()->getRoomStatus());
-//            }
-//
         }
 
         $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
-//
-//
-//
     }
 
         public function preRemove(LifecycleEventArgs $args)
@@ -153,8 +115,6 @@ class TaskSubscriber implements EventSubscriber
         $taskRepository->setContainer($this->container);
 
         return $taskRepository->getTaskInProcessedByRoom($task);
-
-
     }
 
 

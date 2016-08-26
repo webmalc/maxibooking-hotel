@@ -179,7 +179,6 @@ class TaskController extends Controller
                     $this->sendNotifications($task);
                 }
 
-
                 return $this->redirectToRoute('task');
             }
         }
@@ -210,10 +209,6 @@ class TaskController extends Controller
 
         if ($request->isMethod(Request::METHOD_PUT)) {
             if ($form->submit($request)->isValid()) {
-                $dm = $this->dm;
-                $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
-                /** @var Form $form */
-                $task = $form->getData();
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
@@ -292,7 +287,7 @@ class TaskController extends Controller
         if ($userGroup = $task->getUserGroup()) {
             /** @var User[] $recipients */
             $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy([
-                'userGroup' => $userGroup,
+                'groups' => $userGroup,
                 'taskNotify' => true,
                 'email' => ['$exists' => true],
                 'enabled' => true,

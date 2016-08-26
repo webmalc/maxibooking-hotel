@@ -148,6 +148,15 @@ form.task.group.settings: Настройки
 form.userType.users: Исполнитель
 form.userType.date: Дата
 
+
+task.filter.prior.low:      Низкий
+task.filter.prior.average:  Средний
+task.filter.prior.high:    Высокий
+task.filter.task.open:      Открыта
+task.filter.task.process:   В процессe
+task.filter.task.closed:    Закрыта
+
+
 # corpus
 views.form.corpus.group.main: Общая информация
 views.form.corpus.group.address: Адрес

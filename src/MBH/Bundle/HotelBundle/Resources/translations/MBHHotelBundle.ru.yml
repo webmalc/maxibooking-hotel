@@ -63,6 +63,7 @@ views.filter.placeholder.status: Статус
 views.filter.placeholder.status: Обновлено
 views.filter.placeholder.priority: Приоритет
 
+
 views.hotel.edit.editing_number: "редактирование #"
 views.hotel.extended.editing_number: "редактирование #"
 views.hotel.extended.close: Закрыть
@@ -155,7 +156,5 @@ views.corpus: Корпус
 
 
 view.create_task_type_categoty: 'Новая категория'
-
-
 
 

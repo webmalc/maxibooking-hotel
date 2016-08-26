@@ -59,12 +59,15 @@ class SearchTaskType extends AbstractType
                 'empty_value' => '',
                 'choices' => array_combine(array_keys($statuses),array_keys($statuses)),
                 'choice_label' => function ($status) {
-                    return 'task.filter.'. $status;
+                    return 'task.filter.task.'. $status;
                 }
             ])
             ->add('priority', ChoiceType::class, [
                 'empty_value' => '',
-                'choices' => $this->container->getParameter('mbh.tasktype.priority')
+                'choices' => $options['priority'],
+                'choice_label' => function ($index) use ($options){
+                    return 'task.filter.prior.'. $options['priority'][$index];
+                }
             ])
             ->add('userGroups', DocumentType::class, [
                 'empty_value' => '',
@@ -86,7 +89,8 @@ class SearchTaskType extends AbstractType
     {
         $resolver
             ->setDefaults([
-                'data_class' => 'MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria'
+                'data_class' => 'MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria',
+                'priority' => $this->container->getParameter('mbh.tasktype.priority')
             ]);
     }
 
