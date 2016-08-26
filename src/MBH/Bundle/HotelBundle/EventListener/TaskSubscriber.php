@@ -93,13 +93,14 @@ class TaskSubscriber implements EventSubscriber
 
         public function preRemove(LifecycleEventArgs $args)
     {
-        $dm = $args->getDocumentManager();
-        $uow = $dm->getUnitOfWork();
-        /** @var Task $task */
-        $task = $args->getDocument();
-        $room = $task->getRoom();
 
-        if ($task instanceof Task) {
+        if ($args->getDocument() instanceof Task) {
+            $task = $args->getDocument();
+            $dm = $args->getDocumentManager();
+            $uow = $dm->getUnitOfWork();
+            /** @var Task $task */
+            $room = $task->getRoom();
+
             if ($task->getStatus() === Task::STATUS_PROCESS) {
                 if (!count($this->checkRemainsProcess($dm, $task))) {
                     $room->removeStatus($task->getType()->getRoomStatus());
