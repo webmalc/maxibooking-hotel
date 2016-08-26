@@ -6,7 +6,7 @@ services:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     mbh.hotel.task.subscriber:
         class: MBH\Bundle\HotelBundle\EventListener\TaskSubscriber
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
     mbh.hotel.facility.subscriber:

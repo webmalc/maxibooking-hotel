@@ -178,4 +178,3 @@ mailer.new_task.subject: 'Вам назначена новая задача'
 mailer.new_task.text: 'Вам назначили задачу "%taskType%"'
 
 
-task.exception.failed_start_process: 'Error start process %s task, close even %s task before'

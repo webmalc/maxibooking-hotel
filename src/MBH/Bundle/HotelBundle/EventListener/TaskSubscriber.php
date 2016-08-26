@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\EventListener;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
@@ -12,6 +13,7 @@ use MBH\Bundle\BaseBundle\Lib\TaskRoomStatusUpdateException;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class TaskSubscriber
@@ -19,6 +21,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class TaskSubscriber implements EventSubscriber
 {
     private $container;
+
+    private $flashBag;
 
     public function __construct(ContainerInterface $container)
     {
@@ -39,7 +43,6 @@ class TaskSubscriber implements EventSubscriber
         $dm = $args->getDocumentManager();
         /** @var UnitOfWork $uow */
         $uow = $dm->getUnitOfWork();
-        $success = true;
         foreach ($uow->getScheduledDocumentInsertions() + $uow->getScheduledDocumentUpdates() as $document) {
             if ($document instanceof Task) {
                 try {
@@ -57,156 +60,102 @@ class TaskSubscriber implements EventSubscriber
 
     private function updateRoomStatus(Task $task, DocumentManager $dm)
     {
-        /** @var TaskRepository $taskRepository */
         /** @var UnitOfWork $uow */
-        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
+
         $uow = $dm->getUnitOfWork();
         /** @var array $changeSet */
         $changeSet = $uow->getDocumentChangeSet($task);
+        $taskStatus = $task->getStatus();
+        $taskRoomStatus = $task->getType()->getRoomStatus();
+        $room = $task->getRoom();
 
         if (array_key_exists('status', $changeSet)) {
-            $isCurrentProcess = $taskRepository->isStatusRoomInProccess($task, $task->getRoom());
-            $room = $task->getRoom();
-            $status = $task->getType()->getRoomStatus();
-            if ($task->getStatus() === Task::STATUS_PROCESS && !$isCurrentProcess) {
-                $room->addStatus($status);
-            } elseif ($task->getStatus() === Task::STATUS_PROCESS && $isCurrentProcess) {
-                $tasks = $taskRepository->getTaskInProcessedByRoom($room);
-                throw new TaskRoomStatusUpdateException(sprintf('Error start process %s task, close even %s task before',$task->getId(), $tasks->getSingleResult()->getId()));
 
-            } elseif ($task->getStatus() === Task::STATUS_CLOSED) {
-                if ($isCurrentProcess) {
-                    $room->removeStatus($status);
+            /** @var ArrayCollection $currentRoomStatuses */
+            $currentRoomStatuses = $room->getStatus();
+
+            switch ($taskStatus) {
+                case Task::STATUS_PROCESS:
+                    if (!$currentRoomStatuses->contains($taskRoomStatus)) {
+                        $room->addStatus($taskRoomStatus);
+                    }
+                    break;
+                case Task::STATUS_CLOSED:
+                    if (!count($this->checkRemainsProcess($dm, $task))) {
+                        $room->removeStatus($taskRoomStatus);
+                    }
+                    break;
+
+            }
+
+//            $room = $task->getRoom();
+//            if ($task->getStatus() !== Task::STATUS_CLOSED) {
+//
+//
+//                $activeTasksByRoom = $taskRepository->getNoClosedTaskByRoom($task);
+//                    //Проверка есть ли не закрытые задачи с тем же типом
+//                foreach ($activeTasksByRoom as $activeTask) {
+//                    if ($task->getType()->getRoomStatus()->getId() === $activeTask->getType()->getRoomStatus()->getId()) {
+//                        throw new TaskRoomStatusUpdateException(sprintf('close %s before open new task', $activeTask->getId()));
+//                    }
+//                }
+//                    //Если нет тасков, проверяем есть ли статус через редактирование
+//
+//                $currentRoomStatus = $task->getRoom()->getStatus();
+//                $currentStatus = $task->getType()->getRoomStatus();
+//                $statusTrue = array_filter($currentRoomStatus->toArray(), function (RoomStatus $status) use ($currentStatus) {
+//                    return $status->getId() === $currentStatus->getId();
+//                });
+//                if (count($statusTrue)) {
+//                    throw new TaskRoomStatusUpdateException('Невозможно создать задачу. Т.к. статус комнаты обозначен через меню номерной фонд');
+//                }
+//
+//                if ($task->getStatus() === Task::STATUS_PROCESS) {
+//                    $room->addStatus($task->getType()->getRoomStatus());
+//                }
+//            } elseif ($task->getStatus() === Task::STATUS_CLOSED) {
+//                $taskOwner = $taskRepository->getNoClosedTaskByRoom($task);
+//                if (count($taskOwner)) {
+//                    return;
+//                }
+//                $room->removeStatus($task->getType()->getRoomStatus());
+//            }
+//
+        }
+
+        $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
+//
+//
+//
+    }
+
+        public function preRemove(LifecycleEventArgs $args)
+    {
+        $dm = $args->getDocumentManager();
+        $uow = $dm->getUnitOfWork();
+        /** @var Task $task */
+        $task = $args->getDocument();
+        $room = $task->getRoom();
+
+        if ($task instanceof Task) {
+            if ($task->getStatus() === Task::STATUS_PROCESS) {
+                if (!count($this->checkRemainsProcess($dm, $task))) {
+                    $room->removeStatus($task->getType()->getRoomStatus());
+                    $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
                 }
             }
         }
-        $room = $task->getRoom();
-        $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
-
-
     }
 
-//    private function updateRoomStatus(Task $task, DocumentManager $dm)
-//    {
-//        /** @var UnitOfWork $uow
-//         * @var array $changeSet
-//         */
-//        $uow = $dm->getUnitOfWork();
-//        $changeSet = $uow->getDocumentChangeSet($task);
-//        /** @var TaskRepository $taskRepository */
-//        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
-//        $currentProcess = $taskRepository->isStatusRoomInProccess($task, $task->getRoom());
-//        $room = $task->getRoom();
-//
-//        /** @var TaskRepository $taskRepository */
-//        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
-//
-//        if (array_key_exists('room', $changeSet)) {
-//            /** @var Room $oldRoom */
-//            $oldRoom = $changeSet['room'][0];
-//            /** @var Room $newRoom */
-//            $newRoom = $changeSet['room'][1];
-//
-//            if (!$taskRepository->checkExistTaskRoomstatus($task,  $newRoom)) {
-//                $dm->refresh($task->getType());
-//            } else {
-//                $uow->remove($task);
-//                $this->container->get('session')->getFlashBag()->add('danger', 'Не все задачи были добавлены');
-//                return;
-//            };
-//        }
-//
-//            /** Создание, изменение задачи */
-//            $roomStatus = $task->getType()->getRoomStatus();
-//            if ($task->getType()->getRoomStatus() && $task->getStatus() !== Task::STATUS_OPEN) {
-//                $newRoom->addStatus($task->getType()->getRoomStatus());
-//            }
-//            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($newRoom)), $newRoom);
-//            if ($oldRoom) {
-//                $oldRoom->addStatus($taskRepository->getActuallyRoomStatus($oldRoom, $task));
-//                $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($oldRoom)), $oldRoom);
-//            }
-//        }
-//        /** @var Room $room */
-//        if (array_key_exists('status', $changeSet)) {
-//            $this->setActualStatus($task);
-//        }
-//        if (array_key_exists('type', $changeSet)) {
-//            $oldType = $changeSet['type']['0'];
-//            $newType = $changeSet['type']['1'];
-//            if (!$oldType) {
-//                return;
-//            }
-//            if ($currentProcess && $currentProcess === $oldType) {
-//                $room->removeStatus($oldType);
-//            }
-//            if ($currentProcess) {
-//                $room->addStatus($newType);
-//            }
-//            $dm->refresh($task->getType());
-//            if (!$roomStatusInProcess) {
-//
-//            }
-//
-//
-//
-//            if ($oldType) {
-//                $room->removeStatus($oldType->getRoomStatus());
-//            }
-//            if ($task->getRoom())
-//                $room->addStatus($newType->getRoomStatus());
-//            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
-//        }
-//    }
-//
-//
-//
-//    private function setActualStatus(Task $task, TaskType $taskType = null)
-//    {
-//        if (!$taskType) {
-//            $taskType = $task->getType();
-//        }
-//
-//        $roomStatus = $taskType->getRoomStatus();
-//
-//        if ($task->getStatus() === Task::STATUS_PROCESS) {
-//            $dm->refresh($task->getType());
-//            if ($roomStatus && !$currentProcess ) {
-//                $room->addStatus($roomStatus);
-//            }
-//            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
-//        } elseif ($task->getStatus() === Task::STATUS_CLOSED) {
-//            if ($roomStatus && $currentProcess ) {
-//                $room->removeStatus($roomStatus);
-//                $task->setEnd(new \DateTime("now"));
-//            }
-//            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
-//        } elseif ($task->getStatus() === Task::STATUS_OPEN) {
-//            if ($roomStatus && $currentProcess ) {
-//                $room->removeStatus($roomStatus);
-//            }
-//            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
-//        }
-//
-//    }
-        public function preRemove(LifecycleEventArgs $args)
+    private function checkRemainsProcess(DocumentManager $dm, Task $task)
     {
-        $task = $args->getDocument();
-        $dm = $args->getDocumentManager();
-        $uow = $dm->getUnitOfWork();
         $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
-        $isCurrentProcess = $taskRepository->isStatusRoomInProccess($task, $task->getRoom());
+        $taskRepository->setContainer($this->container);
 
-        if ($task instanceof Task) {
-            $room = $task->getRoom();
-            /** @var TaskRepository $taskRepository */
-            if ($task->getStatus() === Task::STATUS_PROCESS && $isCurrentProcess) {
-                $roomStatus = $task->getType()->getRoomStatus();
-                $room->removeStatus($roomStatus);
-            }
+        return $taskRepository->getTaskInProcessedByRoom($task);
 
-            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
-        }
+
     }
+
 
 }

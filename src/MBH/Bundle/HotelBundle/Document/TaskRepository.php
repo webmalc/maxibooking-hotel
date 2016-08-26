@@ -3,7 +3,9 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 
+use Doctrine\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\UserBundle\Document\User;
@@ -11,7 +13,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class TaskRepository
-
  */
 class TaskRepository extends DocumentRepository
 {
@@ -181,24 +182,24 @@ class TaskRepository extends DocumentRepository
         return $query->execute();
     }
 
-    public function isStatusRoomInProccess(Task $task, Room $room)
+    public function getTaskInProcessedByRoom(Task $task)
     {
-        $qb = $this->getDocumentManager()->getRepository('MBHHotelBundle:Room')->createQueryBuilder();
-        $statusExist = $qb
-            ->field('_id')->equals($room->getId())
-            ->field('status.id')->equals($task->getType()->getRoomStatus()->getId())
+        $types = $this->getDocumentManager()->getRepository('MBHHotelBundle:TaskType')
+            ->createQueryBuilder()
+            ->field('roomStatus.id')->equals($task->getType()->getRoomStatus()->getId())
             ->getQuery()
-        ;
+            ->execute();
+        $typesId = $this->container->get('mbh.helper')->toIds($types);
 
-        return (bool) count($statusExist);
-    }
-
-    public function getTaskInProcessedByRoom(Room $room)
-    {
         $query = $this->createQueryBuilder()
-            ->field('room.id')->equals($room->getId())
             ->field('status')->equals(Task::STATUS_PROCESS)
+            ->field('room.id')->equals($task->getRoom()->getId())
+            ->field('_id')->notEqual($task->getId())
+            ->field('type.id')->in($typesId)
             ->getQuery();
+
         return $query->execute();
+
     }
+
 }

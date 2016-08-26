@@ -47,8 +47,7 @@ class Room extends Base
     protected $hotel;
     
     /**
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="RoomType", inversedBy="rooms")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull(message="validator.document.room.room_type_not_selected")
      */
     protected $roomType;
@@ -204,6 +203,7 @@ class Room extends Base
     public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
     {
         $this->roomType = $roomType;
+
         return $this;
     }
 
@@ -287,9 +287,7 @@ class Room extends Base
      */
     public function addStatus(RoomStatus $status)
     {
-        if ($status) {
-            $this->status->add($status);
-        }
+        $this->status->add($status);
 
         return $this;
     }

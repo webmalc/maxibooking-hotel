@@ -2,33 +2,27 @@
 
 namespace MBH\Bundle\HotelBundle\Controller;
 
-use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Form\Extension\DateType;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
-use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
 use MBH\Bundle\HotelBundle\Form\SearchTaskType;
-use MBH\Bundle\UserBundle\Document\Group;
 use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\HotelBundle\Form\TaskType;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class TaskController
@@ -149,6 +143,7 @@ class TaskController extends Controller
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws Exception
      */
     public function newAction(Request $request)
     {
@@ -169,22 +164,15 @@ class TaskController extends Controller
             if ($form->submit($request)->isValid()) {
                 /** @var Room[] $rooms */
                 $rooms = $form['rooms']->getData();
-                $task = null; $numOfTasks = 0;
+                $task = null;
+                /** @var ValidatorInterface $validator */
+                $validator = $this->get('validator');
                 foreach ($rooms as $room) {
                     $task = clone($entity);
-                    /** @var DocumentManager $this->dm */
-                    $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
-                    /** @var TaskRepository $taskRepository */
-                    if (!$taskRepository->isStatusRoomInProccess($task, $room)) {
-                        $task->setRoom($room);
-                        $dm->persist($task);
-                        $numOfTasks ++;
-                    }
+                    $task->setRoom($room);
+
+                    $dm->persist($task);
                 }
-                if ($numOfTasks && $numOfTasks !== count($rooms)) {
-                    $request->getSession()->getFlashBag()->set('warning',
-                        $this->get('translator')->trans('controller.taskTypeController.task_created_notall'));
-                };
 
                 $dm->flush();
 
@@ -192,13 +180,13 @@ class TaskController extends Controller
                     $this->sendNotifications($task);
                 }
 
-                if ($numOfTasks) {
-                    $request->getSession()->getFlashBag()->set('success',
-                        $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
-                } else {
-                    $request->getSession()->getFlashBag()->set('danger',
-                        $this->get('translator')->trans('controller.taskTypeController.task_created_failed'));
-                }
+//                if ($numOfTasks) {
+//                    $request->getSession()->getFlashBag()->set('success',
+//                        $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
+//                } else {
+//                    $request->getSession()->getFlashBag()->set('danger',
+//                        $this->get('translator')->trans('controller.taskTypeController.task_created_failed'));
+//                }
 
 
                 return $this->redirectToRoute('task');
