@@ -5,10 +5,10 @@ $(document).ready(function () {
         $taskTableFilterForm = $('#task-table-filter'),
         processing = false,
         columns = [
-            {"name": "number", "class": 'text-center'},
-            {"name": "status", "class": 'text-center'},
+            {"name": "id", "class": "text-center"},
+            {"name": "status", "class": "text-center"},
             {"name": "task", "bSortable": false},
-            {"name": "priority", "class": 'text-center'},
+            {"name": "priority", "class": "text-center"},
             {"name": "room", "bSortable": false},
             {"name": "assign", "bSortable": false},
             {"name": "period"},
@@ -16,7 +16,7 @@ $(document).ready(function () {
             {"bSortable": false}
         ],
         ajax = {
-            "url": Routing.generate('task_json'),
+            "url": Routing.generate("task_json"),
             "method": "POST",
             "beforeSend": function () {
                 processing = true;

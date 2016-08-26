@@ -126,7 +126,6 @@ class TaskController extends Controller
             'statuses' => $this->container->getParameter('mbh.task.statuses'),
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
             'recordsTotal' => $recordsTotal,
-            'recordsFiltered' => count($recordsTotal),
             'tasks' => $tasks,
             'draw' => $request->get('draw'),
             'taskRepository' => $taskRepository
