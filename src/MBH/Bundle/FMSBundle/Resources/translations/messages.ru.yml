@@ -1,0 +1,5 @@
+importFMS.title: Импорт в ФМС
+form.ImportFMSType.startDate: Начальная дата
+form.ImportFMSType.endDate: Конечная дата
+import.index.import_to_fms: Отправить в ФМС
+success_import_toFMS: Данные о туристах успешно отправлены в ФМС

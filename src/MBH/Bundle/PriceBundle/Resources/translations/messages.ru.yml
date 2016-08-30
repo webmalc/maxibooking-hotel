@@ -65,7 +65,7 @@ mbhpricebundle.form.restrictiongeneratortype.netzayezda?: Нет заезда?
 mbhpricebundle.form.restrictiongeneratortype.netvyyezda?: Нет выезда?
 mbhpricebundle.form.restrictiongeneratortype.zakryto?: Закрыто?
 mbhpricebundle.form.tariffservicestype.dostupnyyeuslugi: Доступные услуги
-mbhpricebundle.form.tariffservicestype.vseuslugi: Все услуги
+mbhpricebundle.form.tariffservicestype.vseuslugi : Все услуги
 mbhpricebundle.form.tariffservicestype.uslugipoumolchaniyu: Услуги по умолчанию
 mbhpricebundle.form.pricecachegeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.pricecachegeneratortype.konetsperioda: Конец периода

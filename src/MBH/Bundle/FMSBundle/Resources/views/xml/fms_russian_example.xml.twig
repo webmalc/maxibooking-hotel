@@ -1,0 +1,77 @@
+{# Обязательный элемент, по которому определяем правильность формата файла для загрузки данных по гражданину РФ. #}
+-<ns1:form5 xmlns:ns1="http://umms.fms.gov.ru/replication/hotel/form5" schemaVersion="1.0"
+            xmlns="http://umms.fms.gov.ru/replication/core"
+            xmlns:ns8="http://umms.fms.gov.ru/replication/invitation-application"
+            xmlns:ns7="http://umms.fms.gov.ru/replication/migration/staying"
+            xmlns:ns6="http://umms.fms.gov.ru/replication/migration/staying/unreg"
+            xmlns:ns5="http://umms.fms.gov.ru/replication/hotel"
+            xmlns:ns4="http://umms.fms.gov.ru/replication/payment"
+            xmlns:ns3="http://umms.fms.gov.ru/replication/migration"
+            xmlns:ns2="http://umms.fms.gov.ru/replication/foreign-citizen-core"
+            xmlns:ns10="http://umms.fms.gov.ru/hotel/hotel-response">
+
+    <number>26</number> {# Номер дела гостя. Если не заполнен, система подставит автоматически (сквозная автоматическая нумерация). #}
+    <ns1:personDataDocument>
+        <person>
+            <lastName>Петров</lastName>
+            <firstName>Леонид</firstName>
+            <middleName>Ильич</middleName>
+            -<gender>
+                <type>Gender</type>
+                {# Принимает значения M, F. #}
+                <element>M</element>
+            </gender>
+            <birthDate>10.01.1977</birthDate>
+            {# Справочник ОКСМ #}
+            <citizenship>
+                <type>Citizenship</type>
+                <element>RUS</element>
+            </citizenship>
+            -<birthPlace>
+                -<country>
+                    <type>Country</type>
+                    <element>RUS</element>
+                </country>
+                <place3>нижневартовск</place3>
+            </birthPlace>
+        </person>
+        -<document>
+            -<type>
+                <type>DocumentType</type>
+                <element>103008</element>
+            </type>
+            <series>6301</series>
+            <number>340912</number>
+            <authorityOrgan>
+                <type>officialOrgan</type>
+                <element>7747</element>
+            </authorityOrgan>
+            <issued>2012-08-01</issued>
+            <validFrom>2012-08-01</validFrom>
+            <validTo>2032-08-01</validTo>
+        </document>
+    </ns1:personDataDocument>
+    -<ns1:livingAddress>
+        -<russianAddress>
+            <addressObjectString>Новосибирская обл$$г Новосибирск$$$ул Саввы Кожевникова</addressObjectString>
+            -<housing>
+                -<type>
+                    <type>addressObjectType</type>
+                    <element>1202</element>
+                </type>
+                <value>5</value>
+            </housing>
+            -<housing>
+                -<type>
+                    <type>addressObjectType</type>
+                    <element>1303</element>
+                </type>
+                <value>5</value>
+            </housing>
+        </russianAddress>
+    </ns1:livingAddress>
+    -<ns1:stayPeriod>
+        <dateFrom>2015-08-01</dateFrom>
+        <dateTo>2015-08-03</dateTo>
+    </ns1:stayPeriod>
+</ns1:form5>

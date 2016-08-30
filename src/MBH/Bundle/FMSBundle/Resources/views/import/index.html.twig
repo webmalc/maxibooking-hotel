@@ -1,0 +1,12 @@
+{% extends "MBHFMSBundle:import:layout.html.twig" %}
+{% set title = 'importFMS.title'|trans %}
+{% set title_url = path('import') %}
+
+{% block content %}
+    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    <button type="submit" name="import_fms" class="btn btn-success navbar-btn"><i
+                class="fa fa-check-square-o"> </i> {{ 'import.index.import_to_fms'|trans }}
+    </button>
+    {{ form_end(form) }}
+{% endblock %}
