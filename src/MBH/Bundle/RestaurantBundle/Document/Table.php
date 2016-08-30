@@ -71,6 +71,12 @@ class Table extends Base
      *      maxMessage="validator.document.table.max_name"
      * )
      */
+    /**
+     * @var ArrayCollection
+     * @Gedmo\Versioned
+     */
+    protected $shifted;
+
     protected $title;
     /**
      * @var TableType $category
@@ -90,7 +96,24 @@ class Table extends Base
      */
     public function __construct()
     {
+        $this->shifted = new ArrayCollection();
         $this->chairs = new ArrayCollection();
+    }
+    /**
+     * @return string
+     */
+    public function getShifted()
+    {
+        return $this->shifted;
+    }
+
+    /**
+     * @param string $shifted
+     */
+    public function addShifted($shifted)
+    {
+        $this->shifted[] = $shifted;
+
     }
     /**
      * @return ArrayCollection

@@ -154,6 +154,10 @@ class TableController extends BaseController implements CheckHotelControllerInte
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+//            dump($table);
+//            dump($table = $form['shifted']->getData());exit;
+//            $this->$table->getShifted()->addShifted($form['shifted']->getData());
+
             $this->dm->persist($table);
             $this->dm->flush();
 

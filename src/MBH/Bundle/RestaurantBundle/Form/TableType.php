@@ -35,6 +35,15 @@ class TableType extends AbstractType
                 'help' => 'restaurant.table.form.title.help',
                 'group' => 'restaurant.group'
             ])
+            ->add('shifted', 'document', [
+                'label' => 'Сдвигается со столами',
+                'class' => 'MBH\Bundle\RestaurantBundle\Document\Table',
+                'required' => false,
+                'multiple' => true,
+                'mapped' => false,
+                'group' => 'restaurant.group',
+
+            ])
             ->add('isEnabled', CheckboxType::class, [
                 'label' => 'restaurant.table.form.is_enable.label',
                 'required' => false,
