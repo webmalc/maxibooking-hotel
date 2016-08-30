@@ -38,6 +38,8 @@ class Task extends Base
 
     const DAY_DEAL_LINE = 3;
 
+    const AUTO_CREATE = 'Автоматически созданная задача';
+
     /**
      * @var string
      * @ODM\Id(strategy="INCREMENT")

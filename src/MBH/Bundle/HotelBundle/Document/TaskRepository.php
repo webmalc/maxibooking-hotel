@@ -184,18 +184,12 @@ class TaskRepository extends DocumentRepository
 
     public function getTaskInProcessedByRoom(Task $task)
     {
-        $types = $this->getDocumentManager()->getRepository('MBHHotelBundle:TaskType')
-            ->createQueryBuilder()
-            ->field('roomStatus.id')->equals($task->getType()->getRoomStatus()->getId())
-            ->getQuery()
-            ->execute();
-        $typesId = $this->container->get('mbh.helper')->toIds($types);
 
         $query = $this->createQueryBuilder()
             ->field('status')->equals(Task::STATUS_PROCESS)
-            ->field('room.id')->equals($task->getRoom()->getId())
+            ->field('room')->equals($task->getRoom())
             ->field('_id')->notEqual($task->getId())
-            ->field('type.id')->in($typesId)
+            ->field('type')->equals($task->getType())
             ->getQuery();
 
         return $query->execute();

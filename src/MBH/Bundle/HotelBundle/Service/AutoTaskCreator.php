@@ -2,7 +2,9 @@
 
 namespace MBH\Bundle\HotelBundle\Service;
 
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use MBH\Bundle\HotelBundle\Document\TaskType;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -17,7 +19,6 @@ use MBH\Bundle\HotelBundle\Document\Task;
 
 /**
  * Class AutoTaskCreator
-
  */
 class AutoTaskCreator
 {
@@ -35,10 +36,10 @@ class AutoTaskCreator
     }
 
     /**
+     * @param OutputInterface $output
      * @return int
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function createDailyTasks()
+    public function createDailyTasks(OutputInterface $output = null)
     {
         $this->dm->getConnection()->getConfiguration()->setLoggerCallable(null);
 
@@ -56,10 +57,8 @@ class AutoTaskCreator
             ->select('_id')
             ->getQuery()->toArray();
 
-        $hotelIDs = [];//array_column($hotels, '_id');
-        foreach ($hotels as $hotel) {
-            $hotelIDs[] = $hotel->getId();
-        }
+        $helper = $this->container->get('mbh.helper');
+        $hotelIDs = $helper->toIds($hotels);
 
         if (!$hotelIDs) {
             return 0;
@@ -109,22 +108,25 @@ class AutoTaskCreator
                                     ->setRoom($package->getAccommodation())
                                     ->setStatus(Task::STATUS_OPEN)
                                     ->setPriority(Task::PRIORITY_AVERAGE)
-                                    ->setHotel($package->getAccommodation()->getHotel())
-                                ;
-                                if ($this->getCountSameTasks($task) == 0) {
+                                    ->setDescription(Task::AUTO_CREATE)
+                                    ->setHotel($package->getAccommodation()->getHotel());
+
+                                if ($this->getCountSameTasks($task) === 0) {
                                     $this->dm->persist($task);
                                     ++$inc;
+
+                                    $this->dm->flush();
                                 }
                             };
+                        } else {
+                            if ($output) {
+                                $output->writeln('No default group in taskType');
+                            }
                         }
                     }
                 }
-                $this->dm->detach($package);
             }
-            $this->dm->detach($roomType);
         }
-
-        $this->dm->flush();
 
         return $inc;
     }
@@ -135,22 +137,19 @@ class AutoTaskCreator
         $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
 
         $midnight = new \DateTime('midnight');
-        $tomorrow = new \DateTime('+1 day');
+        $tomorrow =  new \DateTime('midnight tomorrow -1 minute');
 
         $queryBuilder = $taskRepository->createQueryBuilder();
         $queryBuilder
-            ->field('type.id')->equals($task->getType()->getId())
-            ->field('UserGroup.id')->equals($task->getUserGroup() ? $task->getUserGroup()->getId() : null)
-            ->field('room.id')->equals($task->getRoom()->getId())
-            //->field('status')->equals(Task::STATUS_OPEN)
-            //->field('priority')->equals(Task::PRIORITY_AVERAGE)
-            ->field('createdBy')->equals(null)
+            ->field('type')->equals($task->getType())
+            ->field('userGroup')->equals($task->getUserGroup())
+            ->field('room')->equals($task->getRoom())
+            ->field('createdBy')->exists(false)
             ->field('createdAt')->gte($midnight)->lte($tomorrow);
-
+        ;
         $query = $queryBuilder->getQuery();
         $count = $query->count();
 
-        //var_dump($queryBuilder->getQueryArray());
         return $count;
     }
 
@@ -186,8 +185,7 @@ class AutoTaskCreator
                     ->setRoom($package->getAccommodation())
                     ->setStatus(Task::STATUS_OPEN)
                     ->setPriority(Task::PRIORITY_AVERAGE)
-                    ->setHotel($package->getRoomType()->getHotel())
-                ;
+                    ->setHotel($package->getRoomType()->getHotel());
 
                 if ($this->getCountSameTasks($task) == 0) {
                     $this->dm->persist($task);
