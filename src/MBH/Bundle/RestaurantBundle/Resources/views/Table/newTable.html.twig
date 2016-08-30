@@ -1,11 +1,29 @@
 {% extends 'MBHRestaurantBundle:Table:layout.html.twig' %}
 
 {% set small_title = 'restaurant.table.newaction.small_title'|trans %}
-{% set layout = 'box' %}
+{% set layout = 'tabs' %}
 
 {% block content %}
-    {{ form_start(form, {'action': path('restaurant_table_new'), 'attr': {'class': 'form-horizontal'}}) }}
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#general_info" role="tab" data-toggle="tab">
+                Столик
+            </a>
+        </li>
+        <li class="disabled">
+            <a href="">
+                Стулья
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+    <div class="tab-pane active" id="general_info">
+    {{ form_start(form, {'action': path('restaurant_table_item_new',{'id': entity.id}), 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_end(form) }}
+    <div class="tab-pane" id="images">
+    </div>
+    </div>
+    </div>
 {% endblock %}

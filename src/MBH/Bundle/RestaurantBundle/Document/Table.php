@@ -9,6 +9,7 @@
 namespace MBH\Bundle\RestaurantBundle\Document;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -44,13 +45,6 @@ class Table extends Base
      */
     use BlameableDocument;
 
-    /**
-     * @var Hotel
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
-     * @Assert\NotNull(message="validator.document.table.hotel")
-     */
-    protected $hotel;
 
     /**
      * @var string
@@ -78,23 +72,64 @@ class Table extends Base
      * )
      */
     protected $title;
+    /**
+     * @var TableType $category
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\RestaurantBundle\Document\TableType", inversedBy="categories")
+     * @Assert\NotNull()
+     */
+    protected $category;
+    /**
+     * @var Chair $category
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\Chair", mappedBy="table" , cascade="persist")
+     * @Assert\NotNull()
+     */
+    protected $chairs;
 
     /**
-     * @return Hotel
+     * TableType constructor.
      */
-    public function getHotel()
+    public function __construct()
     {
-        return $this->hotel;
+        $this->chairs = new ArrayCollection();
+    }
+    /**
+     * @return ArrayCollection
+     */
+    public function getChairs()
+    {
+        return $this->chairs;
     }
 
     /**
-     * @param Hotel $hotel
+     * @param Chair $chairs
      */
-    public function setHotel($hotel)
+    public function addChairs(Chair $chairs)
     {
-        $this->hotel = $hotel;
+        $this->chairs->add($chairs);
+        $chairs->setTable($this);
     }
 
+    /**
+     * @return TableType
+     */
+    public function getCategory(): TableType
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param TableType $category
+     */
+    public function setCategory(TableType $category)
+    {
+        $this->category = $category;
+    }
+
+    public function getHotel(): Hotel
+    {
+
+        return $this->category->getHotel();
+    }
     /**
      * @return string
      */

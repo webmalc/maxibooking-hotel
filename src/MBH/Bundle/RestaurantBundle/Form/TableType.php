@@ -38,7 +38,7 @@ class TableType extends AbstractType
             ->add('isEnabled', CheckboxType::class, [
                 'label' => 'restaurant.table.form.is_enable.label',
                 'required' => false,
-                'value' => true,
+                'value' => false,
                 'help' => 'restaurant.table.form.is_enable.help',
                 'group' => 'restaurant.group'
             ])

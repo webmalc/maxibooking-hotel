@@ -1,3 +1,6 @@
+restaurant.table.newaction.title: Новая категория столиков
+restaurant.table.category.form.fullTitle.placeholder: Название категории столиков
+restaurant.table.category.name.form.fullTitle.help:
 restaurant:
 
   amount:                 Количество
@@ -202,6 +205,14 @@ restaurant:
       isfreezed:
         label:            Оплата
   table:
+    item:
+      helper:
+        new: Создать столик в категории
+      noitems: В этой категории нет ни отдного стола
+      category:
+        new: Новая категория столиков
+        edit_table_incategory: Редактирование столика в категории
+        category_new: Название категории столиков
     common:
       title:              Столики
       editsuccess:        Столик успешно отредактирован

@@ -22,3 +22,6 @@ services:
       arguments: ['@service_container']
       tags:
           - { name: form.type, alias: mbh_bundle_restaurantbundle_dishorder_dishorderitem_type }
+  mbh.table_manager:
+      class: MBH\Bundle\RestaurantBundle\Service\TableManager
+      arguments: ['@doctrine.odm.mongodb.document_manager']
