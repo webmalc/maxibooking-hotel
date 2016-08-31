@@ -1,4 +1,5 @@
 views.tasktype.index.name: Название
+views.tasktype.index.status: Статус
 views.tasktype.index.default_role: Исполнители по умолчанию
 views.tasktype.index.created: Создан
 views.task.index.status: Cтатус

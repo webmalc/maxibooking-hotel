@@ -46,6 +46,7 @@
                     <tr>
                         <th class="td-xs"></th>
                         <th>{{ "views.tasktype.index.name"|trans({}, "MBHHotelBundle") }}</th>
+                        <th>{{ "views.tasktype.index.status"|trans({}, "MBHHotelBundle") }}</th>
                         <th>{{ "views.tasktype.index.default_role"|trans({}, "MBHHotelBundle") }}</th>
                         <th class="td-md">{{ "views.tasktype.index.created"|trans({}, "MBHHotelBundle") }}</th>
                         <th class="td-sm"></th>
@@ -59,6 +60,7 @@
                                 <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.title }}</a>
                                 &nbsp{% if entity.isSystem %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
                             </td>
+                            <td class="td-md">{{ entity.roomStatus }}</td>
                             <td class="td-md">{{ entity.defaultUserGroup }}</td>
                             <td>{{ entity.createdAt|date('d.m.Y') }}</td>
                             <td class="table-actions-td text-center">
