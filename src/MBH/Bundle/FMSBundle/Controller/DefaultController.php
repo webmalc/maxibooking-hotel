@@ -43,7 +43,7 @@ class DefaultController extends Controller
         if ($form->isValid()) {
 
             $parameters = $form->getData();
-            $this->get('mbh.fms.fms_export')->getFmsXML($parameters['startDate'], $parameters['endDate']);
+            $this->get('mbh.fms.fms_export')->sendEmail($parameters['startDate'], $parameters['endDate']);
             $this->addFlash('success', 'success_import_toFMS');
         }
 
