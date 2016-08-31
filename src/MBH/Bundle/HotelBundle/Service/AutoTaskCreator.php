@@ -39,7 +39,7 @@ class AutoTaskCreator
      * @param OutputInterface $output
      * @return int
      */
-    public function createDailyTasks(OutputInterface $output = null)
+    public function createDailyTasks()
     {
         $this->dm->getConnection()->getConfiguration()->setLoggerCallable(null);
 
@@ -118,10 +118,6 @@ class AutoTaskCreator
                                     $this->dm->flush();
                                 }
                             };
-                        } else {
-                            if ($output) {
-                                $output->writeln('No default group in taskType');
-                            }
                         }
                     }
                 }

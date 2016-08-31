@@ -36,7 +36,7 @@ class AutoTasksCommand extends ContainerAwareCommand
         $creator = $this->getContainer()->get('mbh.hotel.auto_task_creator');
         $check = $input->getArgument('check');
         if(!$check) {
-            $count = $creator->createDailyTasks($output);
+            $count = $creator->createDailyTasks();
             $output->writeln("Created task total: " . $count. ". Done");
         } else {
             $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
