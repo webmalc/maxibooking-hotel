@@ -36,24 +36,25 @@ class FMSExport
         ]);
     }
 
-    public function sendEmail()
+    public function sendEmail(\DateTime $startDate, \DateTime $endDate)
     {
         $transporter = \Swift_SmtpTransport::newInstance('smtp.gmail.com', 465, 'ssl')
-            ->setUsername('faainttt@gmail.com')
-            ->setPassword('44834631TRye2009');
+            ->setUsername('test@gmail.com')
+            ->setPassword('password');
 
         /** @var \Swift_Mailer $mailer */
         $mailer = \Swift_Mailer::newInstance($transporter);
 
-        $message = \Swift_Message::newInstance('Абсоолютли! Уот так уот! Плиз ду!')
-            ->attach(\Swift_Attachment::newInstance('uot tak uot', 'xmlForFMS.xml', 'text/xml'))
-            ->setFrom('mihailPetrovichDazdrachevskiy@gmail.com')
-            ->setTo('zaluevd@gmail.com')
+        $xml = $this->getKonturXML($startDate, $endDate);
+
+        $message = \Swift_Message::newInstance('XML-файл для ФМС')
+            ->attach(\Swift_Attachment::newInstance($xml, 'xmlForFMS.xml', 'text/xml'))
+            ->setFrom('test@gmail.com')
+            ->setTo('test1@gmail.com')
             ->setBody(
                 $this->container->get('templating')
                     ->render('@MBHFMS/test/text.html.twig'),
                 'text/html');
         $mailer->send($message);
-
     }
 }

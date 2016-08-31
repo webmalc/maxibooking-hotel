@@ -49,7 +49,7 @@ class FMSImportDataCommand extends ContainerAwareCommand
         $dateDifference = $currentDate->diff($lastLogEntry->getSendAt())->days;
 
         if($dateDifference > self::DAY_DELAY) {
-            $this->getContainer()->get('mbh.fms.fms_export')->getFmsXML($lastLogEntry, $currentDate);
+            $this->getContainer()->get('mbh.fms.fms_export')->sendEmail($lastLogEntry, $currentDate);
         }
     }
 }
