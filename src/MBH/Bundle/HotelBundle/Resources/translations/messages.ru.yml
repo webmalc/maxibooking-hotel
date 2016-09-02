@@ -140,6 +140,7 @@ form.task.description: Комментарий
 form.task.status: Статус
 form.task.roomType: Тип номера
 
+
 form.task.group.general_add: Добавление задачи
 form.task.group.general_edit: Редактирование задачи
 form.task.group.assign: Назначить
@@ -171,7 +172,11 @@ form.taskTypeCategory.general_info: Добавление категории за
 form.taskTypeCategory.title: Внутреннее Название
 form.taskTypeCategory.fullTitle: Название
 
-
+views.task.index.creation: Создание
+views.task.index.performance: Исполнение
+views.task.index.dates: Даты
+form.searchTask.performance: Исполнение
+form.searchTask.creation: Создание
 
 building: Здание
 rules: Правила размещения
