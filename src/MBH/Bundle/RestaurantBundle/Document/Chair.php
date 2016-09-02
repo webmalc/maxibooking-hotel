@@ -67,13 +67,11 @@ class Chair extends Base
         return $this->table;
     }
 
-
     public function setTable(Table $table)
     {
         $table->getChairs()->add($this);
         $this->table = $table;
     }
-
 
     /**
      * @return boolean

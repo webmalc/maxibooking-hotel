@@ -71,13 +71,19 @@ class Table extends Base
      *      maxMessage="validator.document.table.max_name"
      * )
      */
+    protected $title;
     /**
      * @var ArrayCollection
-     * @Gedmo\Versioned
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\Table", inversedBy="shifted")
+     */
+    protected $withShifted;
+
+    /**
+     * @var ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\Table", mappedBy="withShifted")
      */
     protected $shifted;
 
-    protected $title;
     /**
      * @var TableType $category
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\RestaurantBundle\Document\TableType", inversedBy="categories")
@@ -96,8 +102,24 @@ class Table extends Base
      */
     public function __construct()
     {
+        $this->withShifted= new ArrayCollection();
         $this->shifted = new ArrayCollection();
         $this->chairs = new ArrayCollection();
+    }
+    /**
+     * @return ArrayCollection
+     */
+    public function getWithShifted()
+    {
+        return $this->withShifted;
+    }
+    /**
+     * @return string
+     */
+    public function addWithShifted(Table $table)
+    {
+        $table->shifted[]=$this;
+        $this->withShifted[]=$table;
     }
     /**
      * @return string
@@ -110,9 +132,10 @@ class Table extends Base
     /**
      * @param string $shifted
      */
-    public function addShifted($shifted)
+    public function addShifted(Table $table)
     {
-        $this->shifted[] = $shifted;
+        $this->shifted[]=$table;
+        $table->withShifted[]=$this;
 
     }
     /**

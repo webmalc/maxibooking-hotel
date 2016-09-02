@@ -9,16 +9,30 @@
 namespace MBH\Bundle\RestaurantBundle\Form;
 
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\RestaurantBundle\Document\Table;
 class TableType extends AbstractType
 {
+    /**
+     * @var DocumentManager
+     */
+    protected $dm;
+
+    public function __construct(DocumentManager $dm)
+    {
+        $this->dm = $dm;
+    }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $tableId=$options['tableId'];
+
         $builder
             ->add('fullTitle', TextType::class, [
                 'label' => 'restaurant.table.form.fullTitle.label',
@@ -35,13 +49,20 @@ class TableType extends AbstractType
                 'help' => 'restaurant.table.form.title.help',
                 'group' => 'restaurant.group'
             ])
-            ->add('shifted', 'document', [
-                'label' => 'Сдвигается со столами',
+
+            ->add('withShifted', DocumentType::class, [
+                'label' => 'restaurant.table.common.shifted',
                 'class' => 'MBH\Bundle\RestaurantBundle\Document\Table',
                 'required' => false,
                 'multiple' => true,
-                'mapped' => false,
+                'by_reference' => true,
+                'group_by' => 'category',
                 'group' => 'restaurant.group',
+                'query_builder' => function(DocumentRepository $repository)  use ($tableId){
+                        $qb = $repository->createQueryBuilder()
+                            ->field('id')->notIn(array($tableId));
+                        return $qb;
+                    }
 
             ])
             ->add('isEnabled', CheckboxType::class, [
@@ -58,7 +79,8 @@ class TableType extends AbstractType
     {
         $resolver
             ->setDefaults([
-                'data_class' => 'MBH\Bundle\RestaurantBundle\Document\Table'
+                'data_class' => 'MBH\Bundle\RestaurantBundle\Document\Table',
+                'tableId'=>null
             ]);
     }
 

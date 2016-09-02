@@ -53,7 +53,6 @@
                                         {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entry, 'route': 'restaurant_table'} %}{% endembed %}
                                     </td>
                                     <td class="text-center">
-                                        {#Заглушка, чтоб обязательно передавались все столики#}
                                         <input type="hidden" name="entries[{{ entry.id }}][foo]">
                                         <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]"
                                                type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">

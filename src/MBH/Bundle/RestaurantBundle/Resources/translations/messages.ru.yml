@@ -1,6 +1,3 @@
-restaurant.table.newaction.title: Новая категория столиков
-restaurant.table.category.form.fullTitle.placeholder: Название категории столиков
-restaurant.table.category.name.form.fullTitle.help:
 restaurant:
 
   amount:                 Количество
@@ -156,7 +153,7 @@ restaurant:
     common:
       title:              Заказы
       addsuccess:         Заказ успешно создан
-      editsuccess:        Ззаказ успешно отредактирован
+      editsuccess:        Заказ успешно отредактирован
       noitems:            Заказов нет
     table:
       number:             № Заказа
@@ -207,25 +204,38 @@ restaurant:
   table:
     item:
       helper:
-        new: Создать столик в категории
+        counts: Количество
+        inputcountchairs: Введите количество взрослых стульев
+        countchairs: Количество стульев
+        new: Создать стол в категории
+        childrenchairs: Детский
+        deletechair: Вы действительно хотите удалить стул ?
+        addtype: Выберите тип
+        addchairs: Добавьте стулья
       noitems: В этой категории нет ни отдного стола
       category:
-        new: Новая категория столиков
-        edit_table_incategory: Редактирование столика в категории
-        category_new: Название категории столиков
+        new: Новая категория столов
+        edit_table_incategory: Редактирование стола в категории
+        category_new: Название категории столов
+        chears:           Стулья
+        table:            Стол
     common:
-      title:              Столики
-      editsuccess:        Столик успешно отредактирован
-      addsuccess:         Столик успешно добавлен
-      noitems:            Нет столиков в списке
+      title:              Столы
+      editsuccess:        Стол успешно отредактирован
+      addsuccess:         Стол успешно добавлен
+      noitems:            Нет столов в списке
+      shifted:            Сдвигается со столами
     newaction:
-      small_title:        добавление столика
+      title: Новая категория столов
+      small_title:        добавление стола
     actions:
       list:
-        small_title:      Список столиков
-      edit:               редактирование столика
-      add:                Добавить столик
-      delete:             Удалить столик
+        small_title:      Список столов
+      edit:               редактирование стола
+      add:                Добавить стол
+      addchars:           Добавить стул
+      delete:             Удалить стол
+      adult:              Взрослый
     table:
       name:               Название
       isEnable:           Активен
@@ -233,17 +243,23 @@ restaurant:
     form:
       fullTitle:
         label:            Название
-        help:             Название столика
-        placeholder:      Столик1
+        help:             Название стола
+        placeholder:      Стол 1
       title:
         label:            Внутреннее название
         help:             Название для использования внутри MaxiBooking
-        placeholder:      Столик возле окна
+        placeholder:      Стол возле окна
       is_enable:
         label:            Активен
-        help:             Активен ли столик
-
+        help:             Активен ли стол
+    category:
+      form:
+        fullTitle:
+         placeholder: Название категории столов
   exceptions:
+    editsuccsess: Запись успешно отредактирована.
+    edittables:   Столики успешно отредактированы.
+    danger:       Внимание, не все параметры сохранены успешно
     delete:
       ingredient:
       table:

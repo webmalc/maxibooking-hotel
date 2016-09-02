@@ -29,11 +29,6 @@ use MBH\Bundle\RestaurantBundle\Service\TableManager;
 /** @Route("tables") */
 class TableController extends BaseController implements CheckHotelControllerInterface
 {
-//    /**
-//     * @Route("/", name="restaurant_table")
-//     * @Security("is_granted('ROLE_RESTAURANT_TABLE_VIEW')")
-//     * @Template()
-//     */
     /**
      * List all TableTypes category
      *
@@ -52,6 +47,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
         return [
             'entities' => $entities
         ];
+
     }
 
     /**
@@ -74,7 +70,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
 
             return $this->afterSaveRedirect('restaurant_table_category', $entity->getId());
         }
@@ -88,7 +84,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
      * @Route("/{id}/edit", name="restaurant_table_category_edit")
      * @Security("is_granted('ROLE_RESTAURANT_TABLE_CATEGORY_EDIT')")
      * @Template()
-     * @Method("GET")
+     * @Method({"GET","POST"})
      * @ParamConverter(class="MBHRestaurantBundle:TableType")
      * @param Request $request
      * @param \MBH\Bundle\RestaurantBundle\Document\TableType $category
@@ -107,9 +103,9 @@ class TableController extends BaseController implements CheckHotelControllerInte
             $this->dm->persist($category);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
 
-            return $this->afterSaveRedirect('restaurant_table_category');
+            return $this->afterSaveRedirect('restaurant_table_category', $category->getId());
         }
 
         return [
@@ -149,24 +145,16 @@ class TableController extends BaseController implements CheckHotelControllerInte
         $table = new Table();
         $table->setCategory($category);
 
-        $form = $this->createForm(new TableType(), $table);
+        $form = $this->createForm(new TableType($this->dm), $table);
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-//            dump($table);
-//            dump($table = $form['shifted']->getData());exit;
-//            $this->$table->getShifted()->addShifted($form['shifted']->getData());
-
             $this->dm->persist($table);
             $this->dm->flush();
-
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
-
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
             return $this->afterSaveRedirect('restaurant_table', $table->getId(), ['tab' => $category->getId()]);
-
         }
-
         return array(
             'entity' => $category,
             'form' => $form->createView(),
@@ -178,7 +166,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
      *
      * @Route("/{id}/edit/tabletype", name="restaurant_table_edit")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_RESTAURANT_TABLE_EDIT')")
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_EDIT')")
      * @Template()
      * @ParamConverter(class="MBHRestaurantBundle:Table")
      * @param Request $request
@@ -190,15 +178,17 @@ class TableController extends BaseController implements CheckHotelControllerInte
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($item->getHotel())) {
             throw $this->createNotFoundException();
         }
-
-        $form = $this->createForm(new TableType(), $item);
+        dump($item->getTitle());
+        $form = $this->createForm(new TableType($this->dm), $item, [
+            'tableId' => $item->getId()
+        ]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isValid()) {
 
             $this->dm->persist($item);
             $this->dm->flush();
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
 
             if ($request->get('save') !== null) {
                 return $this->redirectToRoute('restaurant_table_edit', ['id' => $item->getId()]);
@@ -218,7 +208,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
     /**
      * Delete entry.
      * @Route("/{id}/delete/tabletype", name="restaurant_table_delete")
-     * @Security("is_granted('ROLE_RESTAURANT_TABLE_DELETE')")
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_DELETE')")
      * @ParamConverter(class="MBHRestaurantBundle:Table")
      * @param Table $item
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -268,10 +258,9 @@ class TableController extends BaseController implements CheckHotelControllerInte
             $flashBag = $request->getSession()->getFlashBag();
 
             $success ?
-                $flashBag->set('success', 'Столики успешно отредактированы.') :
-                $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
+                $flashBag->set('success', $this->get('translator')->trans('restaurant.exceptions.edittables')) :
+                $flashBag->set('danger', $this->get('translator')->trans('restaurant.exceptions.danger'));
         }
-
 
         return $this->redirectToRoute('restaurant_table');
     }
@@ -282,7 +271,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
      *
      * @Route("/{id}/new/chair", name="restaurant_chair_new")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_RESTAURANT_TABLE_EDIT')")
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_EDIT')")
      * @Template()
      * @ParamConverter(class="MBHRestaurantBundle:Table")
      * @param Request $request
@@ -304,9 +293,9 @@ class TableController extends BaseController implements CheckHotelControllerInte
             $chairDescription = $form->getData();
             /** @var TableManager $generator */
             $generator = $this->get('mbh.table_manager');
-            $generator->generateChair($chairDescription['adult'],$chairDescription['type'], $item);
+            $generator->generateChair($chairDescription['adult'], $chairDescription['type'], $item);
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
 
             if ($request->get('save') !== null) {
                 return $this->redirectToRoute('restaurant_chair_new', ['id' => $item->getId()]);
@@ -315,13 +304,13 @@ class TableController extends BaseController implements CheckHotelControllerInte
 
         }
 
-
         return [
             'entry' => $item,
             'form' => $form->createView(),
         ];
 
     }
+
     /**
      * @Route("/{id}/add/chair", name="restaurant_chair_add")
      * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_NEW')")
@@ -332,20 +321,21 @@ class TableController extends BaseController implements CheckHotelControllerInte
     public function addChairAction(Request $request, Table $item)
     {
         $generator = $this->get('mbh.table_manager');
-        $generator->generateChair(1,false, $item);
+        $generator->generateChair(1, false, $item);
         return $this->redirectToRoute('restaurant_chair_new', ['id' => $item->getId()]);
     }
+
     /**
      * Delete entry.
      * @Route("/{id}/delete/chair", name="restaurant_chair_delete")
-     * @Security("is_granted('ROLE_RESTAURANT_TABLE_DELETE')")
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_DELETE')")
      * @ParamConverter(class="MBHRestaurantBundle:Chair")
      * @param Chair $item
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteChairAction(Chair $item)
     {
-        return $this->deleteEntity($item->getId(), 'MBHRestaurantBundle:Chair', 'restaurant_chair_new',['id' => $item->getTable()->getId()]);
+        return $this->deleteEntity($item->getId(), 'MBHRestaurantBundle:Chair', 'restaurant_chair_new', ['id' => $item->getTable()->getId()]);
     }
 
 }

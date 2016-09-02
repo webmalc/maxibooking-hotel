@@ -14,16 +14,16 @@ class ChairType extends  AbstractType
     {
         $builder
             ->add('adult', TextType::class, [
-                'label' => 'Количество',
+                'label' => 'restaurant.table.item.helper.counts',
                 'required' => true,
-                'attr' => ['placeholder' => 'Введите количество взрослых стульев'],
-                'help' => 'Количество взрослых стульев'
+                'attr' => ['placeholder' => 'restaurant.table.item.helper.inputcountchairs'],
+                'help' => 'restaurant.table.item.helper.countchairs'
             ])
             ->add('type', CheckboxType::class, [
-                'label' => 'Детский стул',
+                'label' => 'restaurant.table.item.helper.childrenchairs',
                 'required' => false,
                 'value' => false,
-                'help' => 'Добавлять детский стол',
+                'help' => 'restaurant.table.item.helper.addtype',
             ])
         ;
 

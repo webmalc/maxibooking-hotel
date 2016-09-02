@@ -8,7 +8,6 @@ use MBH\Bundle\RestaurantBundle\Document\Table;
 
 class TableManager
 {
-
     /**
      * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
      */
@@ -16,7 +15,6 @@ class TableManager
 
     public function __construct(DocumentManager $dm)
     {
-
         $this->dm = $dm;
     }
 
@@ -32,6 +30,5 @@ class TableManager
             $this->dm->flush();
         }
     }
-
 
 }
