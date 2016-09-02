@@ -178,7 +178,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($item->getHotel())) {
             throw $this->createNotFoundException();
         }
-        dump($item->getTitle());
+        
         $form = $this->createForm(new TableType($this->dm), $item, [
             'tableId' => $item->getId()
         ]);
