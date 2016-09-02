@@ -115,7 +115,7 @@ class RestrictionRepository extends DocumentRepository
      * @param RoomType $roomType
      * @param Tariff $tariff
      * @param Cache $memcached
-     * @return null|object
+     * @return Restriction
      */
     public function findOneByDate(\DateTime $date, RoomType $roomType, Tariff $tariff, Cache $memcached = null)
     {

@@ -145,6 +145,7 @@ package.edit.service_price: Цена услуг
 package.edit.order_type: Тип заказа
 package.edit.deleted: удалена
 package.edit.is_confirmed: Подтверждена?
+package.edit.virtual_room: Виртуальный номер
 package.edit.is_confirmed_yes: да
 package.edit.is_confirmed_no: нет
 package.edit.print_act: Распечатать

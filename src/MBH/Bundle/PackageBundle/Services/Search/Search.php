@@ -393,9 +393,10 @@ class Search implements SearchInterface
                 }
 
                 //check windows
-                /*if (!$this->checkWindows($result)) {
+                $result = $this->setVirtualRoom($result);
+                if (!$result) {
                     continue;
-                }*/
+                }
 
                 $roomTypeObjId = $result->getRoomTypeInterfaceObject()->getId() . '_' . $result->getTariff()->getId();
 
@@ -417,11 +418,13 @@ class Search implements SearchInterface
         return array_values($results);
     }
 
-    public function checkWindows(SearchResult $result)
+    /**
+     * Sets virtual room to search result
+     * @param SearchResult $result
+     * @return bool|SearchResult
+     */
+    public function setVirtualRoom(SearchResult $result)
     {
-        // TODO: complete windows (on UPDATE too)
-        
-        return true;
         
         if ($result->getBegin() <= new \DateTime('midnight')) {
             return true;
@@ -430,57 +433,49 @@ class Search implements SearchInterface
         if (!$this->config || !$this->config->getSearchWindows() || $result->getForceBooking()) {
             return true;
         }
-        
-        $tariff = $result->getTariff();
-        if ($tariff && $tariff->getParent() && $tariff->getChildOptions()->isInheritRestrictions()) {
-            $tariff = $tariff->getParent();
-        }
-
-        $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')->findOneByDate(
-            $result->getBegin(),
-            $result->getRoomType(),
-            $tariff
-        );
-
-        if (!$restriction || !$restriction->getMinStayArrival()) {
-            return true;
-        }
-
-        $len = $restriction->getMinStayArrival();
-        $roomTypeId = $result->getRoomType()->getId();
-        $tariffId = $tariff->getId();
-
+        $roomType = $result->getRoomType();
         $begin = clone $result->getBegin();
-        $begin->modify('-' . $len . ' days');
         $end = clone $result->getEnd();
-        $end->modify('-1 day');
-        $end->modify('+' . $len . ' days');
+        $preferredRoom = null;
+        $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')->
+            findOneByDate($begin, $roomType, $result->getTariff(), $this->memcached)
+        ;
 
-        $caches = $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $begin, $end, null, [$roomTypeId], null
-        );
-        $tariffCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $begin, $end, null, [$roomTypeId], [$tariffId], true
-        );
+        if ($restriction && $restriction->getMinStayArrival()) {
+            $begin->modify('-' . $restriction->getMinStayArrival() . ' days');
+            $end->modify('+' . ($restriction->getMinStayArrival() - 1) . ' days');
+        }
 
-        foreach ($caches as $cache) {
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->fetchWithVirtualRooms($begin, $end, $roomType)
+        ;
 
-            $date = $cache->getDate();
-            $strDate = $date->format('d.m.Y');
+        $groupedPackages = [];
+        foreach ($packages as $package) {
+            $groupedPackages[$package->getVirtualRoom()->getId()][] = $package;
+        }
 
-            if (isset($tariffCaches[$roomTypeId][$tariffId][$strDate])) {
-                $cache = $tariffCaches[$roomTypeId][$tariffId][$strDate];
-            }
+        foreach ($this->dm->getRepository('MBHHotelBundle:Room')->fetch(null, [$result->getRoomType()->getId()]) as $room) {
 
-            $rooms = $cache->getLeftRooms();
-            $packages = $cache->getPackagesCount();
-
-
-            if ($date < $result->getEnd() && $date >= $result->getBegin()) {
-                $packages += 1;
+            if (isset($groupedPackages[$room->getId()])) {
+                foreach ($groupedPackages[$room->getId()] as $package) {
+                    if ($package->getBegin() != $result->getEnd() && $package->getEnd() != $result->getBegin()) {
+                        continue 2;
+                    }
+                }
+                $preferredRoom = $room;
+            } else {
+                $preferredRoom = $room;
             }
         }
-        return true;
+
+        if ($preferredRoom) {
+            $result->setVirtualRoom($preferredRoom);
+
+            return $result;
+        }
+
+        return false;
     }
 
     /**

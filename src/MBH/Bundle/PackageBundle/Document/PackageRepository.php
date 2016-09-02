@@ -4,11 +4,12 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\MongoDB\CursorInterface;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Room;
-use MBH\Bundle\HotelBundle\Form\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 
 /**
@@ -16,6 +17,24 @@ use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
  */
 class PackageRepository extends DocumentRepository
 {
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @return mixed
+     */
+    public function fetchWithVirtualRooms(\DateTime $begin, \DateTime $end, RoomType $roomType): CursorInterface
+    {
+        return $this->createQueryBuilder()
+            ->field('begin')->lt($end)
+            ->field('end')->gt($begin)
+            ->field('virtualRoom')->notEqual(null)
+            ->field('roomType')->equals($roomType)
+            ->getQuery()
+            ->execute()
+        ;
+    }
+
     /**
      * @param PackageQueryCriteria $criteria
      * @return Package[]

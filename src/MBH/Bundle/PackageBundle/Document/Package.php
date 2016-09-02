@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -71,6 +72,12 @@ class Package extends Base implements JsonSerializable
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
     protected $accommodation;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
+     */
+    protected $virtualRoom;
     
     /** 
      * @ODM\ReferenceMany(targetDocument="Tourist", inversedBy="packages")
@@ -1494,5 +1501,25 @@ class Package extends Base implements JsonSerializable
         $this->services = new ArrayCollection();
         
         return $this;
-    }    
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVirtualRoom()
+    {
+        return $this->virtualRoom;
+    }
+
+    /**
+     * @param mixed $virtualRoom
+     * @return Package
+     */
+    public function setVirtualRoom(Room $virtualRoom = null): self
+    {
+        $this->virtualRoom = $virtualRoom;
+        return $this;
+    }
+
+
 }
