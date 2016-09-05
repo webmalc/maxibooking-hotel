@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
+use MBH\Bundle\FMSBundle\Service\FMSExport\AttachedFile;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -88,7 +89,8 @@ class Mailer implements \SplObserver
                 'linkText' => $message->getLinkText(),
                 'order' => $message->getOrder(),
                 'signature' => $message->getSignature(),
-                'transParams' => $message->getTranslateParams()
+                'transParams' => $message->getTranslateParams(),
+                'attachedFiles' => $message->getAttachedFiles()
             ], $message->getAdditionalData()), $message->getTemplate());
         }
     }
@@ -172,6 +174,18 @@ class Mailer implements \SplObserver
         $data['hotelName'] = 'MaxiBooking';
         $data = $this->addImages($data, $message, $template);
         $translator = $this->container->get('translator');
+
+        if ($data['attachedFiles']) {
+            for ($i = 0; $i < count($data['attachedFiles']); $i++) {
+                /** @var AttachedFile $file */
+                $file = $data['attachedFiles'][$i];
+                $message->attach(\Swift_Attachment::newInstance(
+                    $file->getContent(),
+                    $file->getFileName(),
+                    $file->getContentType()
+                ));
+            }
+        }
 
         foreach ($recipients as $recipient) {
             //@todo move to notifier
