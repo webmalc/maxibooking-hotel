@@ -3,3 +3,5 @@ form.ImportFMSType.startDate: Начальная дата
 form.ImportFMSType.endDate: Конечная дата
 import.index.import_to_fms: Отправить в ФМС
 success_import_toFMS: Данные о туристах успешно отправлены в ФМС
+fmsXML_letter_title: Файл с данными о туристах для ФМС
+fmsXML_letter_message: Файл в формате xml, содержащий данные о туристах, для отправки в ФМС

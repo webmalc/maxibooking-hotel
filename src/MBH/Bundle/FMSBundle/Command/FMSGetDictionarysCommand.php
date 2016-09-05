@@ -32,7 +32,10 @@ class FMSGetDictionarysCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
+        $this->importDocumentTypes();
+        $this->importOfficialFMSOrgans();
+        $this->importOKSM();
+        $this->importProfessionType();
     }
 
     protected function configure()

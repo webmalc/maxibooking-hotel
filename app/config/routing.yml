@@ -1,8 +1,7 @@
 mbhfms:
     resource: "@MBHFMSBundle/Controller/"
     type:     annotation
-    prefix:   /
-
+    prefix:   /fms
 
 mbh_warehouse:
     resource: "@MBHWarehouseBundle/Controller/"

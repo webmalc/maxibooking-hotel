@@ -1,4 +1,4 @@
 services:
     mbh.fms.fms_export:
-          class: MBH\Bundle\FMSBundle\Service\FMSExport
+          class: MBH\Bundle\FMSBundle\Service\FMSExport\FMSExport
           arguments: [@service_container]

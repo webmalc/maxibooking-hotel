@@ -1,0 +1,6 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+
+{% block subject %}
+    {% set subject = text %}
+    {{ parent() }}
+{% endblock %}

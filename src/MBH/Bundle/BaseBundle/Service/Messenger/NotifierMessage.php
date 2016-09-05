@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
+use MBH\Bundle\FMSBundle\Service\FMSExport\AttachedFile;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
@@ -34,6 +35,11 @@ class NotifierMessage
      * @var RecipientInterface
      */
     private $recipients = [];
+
+    /**
+     * @var array AttachedFile[]
+     */
+    private $attachedFiles = [];
 
     /**
      * @var bool
@@ -429,4 +435,30 @@ class NotifierMessage
         return $this;
     }
 
+    /**
+     * @return AttachedFile[]
+     */
+    public function getAttachedFiles(): array
+    {
+        return $this->attachedFiles;
+    }
+
+    /**
+     * @param AttachedFile[] $attachedFiles
+     */
+    public function setAttachedFiles(array $attachedFiles)
+    {
+        $this->attachedFiles = $attachedFiles;
+    }
+
+    /**
+     * @param AttachedFile $file
+     * @return $this
+     */
+    public function addAttachedFiles(AttachedFile $file)
+    {
+        $this->attachedFiles[] = $file;
+
+        return $this;
+    }
 }
