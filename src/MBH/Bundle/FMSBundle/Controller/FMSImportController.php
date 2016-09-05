@@ -3,17 +3,18 @@
 namespace MBH\Bundle\FMSBundle\Controller;
 
 use MBH\Bundle\FMSBundle\Form\ImportFMSType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class FMSImportController extends Controller
 {
     /**
      * @param Request $request
-     * @return Response
      * @Route("/import", name="fms_import")
+     * @Template("MBHFMSBundle:import:index.html.twig")
+     * @return array
      */
     public function importPageAction(Request $request)
     {
@@ -27,6 +28,6 @@ class FMSImportController extends Controller
             $this->addFlash('success', 'success_import_toFMS');
         }
 
-        return $this->render('@MBHFMS/import/index.html.twig', ['form' => $form->createView()]);
+        return  ['form' => $form->createView()];
     }
 }

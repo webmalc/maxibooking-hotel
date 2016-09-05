@@ -35,6 +35,10 @@ class FMSExport
         return $this->container->get('twig')->render('@MBHFMS/xml/fms_russian_example.xml.twig');
     }
 
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     */
     public function sendEmail(\DateTime $startDate , \DateTime $endDate )
     {
         /** @var Notifier $mailer */
