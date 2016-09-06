@@ -29,14 +29,6 @@
 
                 <div class="tab-pane active">
                     <!-- Tab actions -->
-                    <div class="btn-list spacer-bottom text-right">
-                        {% if is_granted('ROLE_RESTAURANT_TABLE_ITEM_NEW') %}
-                            <a href="{{ path('restaurant_chair_add',{'id': entry.id}) }}" class="btn btn-sm btn-default"
-                               data-toggle="tooltip" data-placement="bottom"
-                               title=" {{ 'restaurant.table.actions.adult'|trans }}"><i
-                                        class="fa fa-plus"></i> {{ 'restaurant.table.actions.addchars'|trans }}</a>
-                        {% endif %}
-                    </div>
                     {% if entry.chairs.count %}
                         <table class="table table-actions table-striped table-hover table-condensed table-icons">
                             <thead>

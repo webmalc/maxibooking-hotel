@@ -87,6 +87,12 @@
         'order': true,
         'title': '<i class="fa fa-file"></i> '~'package.editTabs.documents'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ documents ~ '</small>',
         'append': entity.order.documents|length > 0 ? entity.order.documents|length : 'dash',
+    },
+    {
+    'route': 'order_documents',
+    'order': true,
+    'title': '<i class="fa fa-cutlery aria-hidden="true""></i> Столовая ',
+    'append': 'Выберите стол',
     }
 ] %}
 

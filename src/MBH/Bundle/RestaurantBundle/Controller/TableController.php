@@ -312,20 +312,6 @@ class TableController extends BaseController implements CheckHotelControllerInte
     }
 
     /**
-     * @Route("/{id}/add/chair", name="restaurant_chair_add")
-     * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_NEW')")
-     * @ParamConverter(class="MBHRestaurantBundle:Table")
-     * @param Table $item
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function addChairAction(Request $request, Table $item)
-    {
-        $generator = $this->get('mbh.table_manager');
-        $generator->generateChair(1, false, $item);
-        return $this->redirectToRoute('restaurant_chair_new', ['id' => $item->getId()]);
-    }
-
-    /**
      * Delete entry.
      * @Route("/{id}/delete/chair", name="restaurant_chair_delete")
      * @Security("is_granted('ROLE_RESTAURANT_TABLE_ITEM_DELETE')")

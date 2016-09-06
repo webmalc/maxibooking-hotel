@@ -158,7 +158,7 @@ class Table extends Base
     /**
      * @return TableType
      */
-    public function getCategory(): TableType
+    public function getCategory()
     {
         return $this->category;
     }
