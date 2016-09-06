@@ -2,10 +2,13 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -30,22 +33,22 @@ class TaskTypeType extends AbstractType
             'form.taskType.general_info' :
             'form.taskType.general_info_edit';
         $builder
-            ->add('title', 'text', [
+            ->add('title', TextType::class, [
                 'label' => 'form.taskType.title',
                 'group' => $group,
                 'required' => true,
                 'attr' => ['placeholder' => ''],
             ])
-            ->add('category', 'hidden', [
+            ->add('category', HiddenType::class, [
                 'required' => true
             ])
-            ->add('defaultUserGroup', 'document', [
+            ->add('defaultUserGroup', DocumentType::class, [
                 'label' => 'form.taskType.default_user_group',
                 'required' => true,
                 'group' => $group,
                 'class' => Group::class
             ])
-            ->add('roomStatus', 'document', [
+            ->add('roomStatus', DocumentType::class, [
                 'label' => 'form.taskType.roomStatus',
                 'group' => $group,
                 'required' => false,

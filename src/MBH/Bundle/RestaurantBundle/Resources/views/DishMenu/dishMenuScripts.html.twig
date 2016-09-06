@@ -1,0 +1,18 @@
+<script>
+    var ingredients = {
+        {% for ingredient in ingredients %}
+        '{{ ingredient.id }}' : {
+            'price':{{ ingredient.price }},
+            'units': '{{ (ingredient.calcType)|trans() }}',
+            'currency': '{{ currency()['text'] }}',
+            'costprice': '{{ ingredient.costPrice }}'
+        },
+        {% endfor %}
+        'dishMenuItem': {
+            'id': '{{ entry.id }}',
+            'price': {{ entry.price }},
+            'marginprice': {{ entry.margin }}
+        }
+
+    };
+</script>

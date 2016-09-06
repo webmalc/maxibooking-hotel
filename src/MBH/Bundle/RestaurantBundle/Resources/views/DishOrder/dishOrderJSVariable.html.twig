@@ -1,0 +1,9 @@
+<script>
+    var dishes = {
+    {% for dish in dishes %}
+        '{{ dish.id }}': {
+            'price': {{ dish.actualPrice }}
+        },
+    {% endfor %}
+    };
+</script>

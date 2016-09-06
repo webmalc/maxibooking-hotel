@@ -280,9 +280,9 @@ parameters:
 
     #Приоритет задач
     mbh.tasktype.priority:
-        0: low
-        1: average
-        2: high
+        1: low
+        2: average
+        3: high
 
     #Типы документов
     mbh.order.document.types:
@@ -352,3 +352,5 @@ parameters:
     mbh.warehouse.operations:
         in: "Приход"
         out: "Расход"
+
+

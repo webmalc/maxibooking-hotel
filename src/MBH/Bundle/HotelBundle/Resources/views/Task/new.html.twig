@@ -5,9 +5,11 @@
 
 {% block content %}
 
+    {% form_theme form 'MBHHotelBundle:Task:fields.html.twig' %}
+
     {{ form_start(form, {'action': path('task_new'), 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:new.html.twig' with {save: false} %}
     {{ form_end(form) }}
-    
+
 {% endblock %}

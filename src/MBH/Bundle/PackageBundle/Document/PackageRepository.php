@@ -4,10 +4,12 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\MongoDB\CursorInterface;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Room;
-use MBH\Bundle\HotelBundle\Form\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 
 /**
@@ -15,6 +17,43 @@ use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
  */
 class PackageRepository extends DocumentRepository
 {
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @param boolean $group
+     * @return mixed
+     */
+    public function fetchWithVirtualRooms(\DateTime $begin, \DateTime $end, RoomType $roomType = null, bool $group = false)
+    {
+        $qb = $this->createQueryBuilder()
+            ->field('begin')->lte($end)
+            ->field('end')->gte($begin)
+            ->field('virtualRoom')->notEqual(null)
+            ->field('deletedAt')->equals(null)
+        ;
+        
+        if ($roomType) {
+            $qb->field('roomType')->equals($roomType);
+        }
+        
+        $packages = $qb->getQuery()->execute();
+        
+        if ($group) {
+            $result = [];
+            foreach ($packages as $package) {;
+
+                $roomType = $package->getRoomType();
+                $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
+
+            }
+
+            return $result;
+        }
+        
+        return $packages;
+    }
+
     /**
      * @param PackageQueryCriteria $criteria
      * @return Package[]
@@ -681,9 +720,9 @@ class PackageRepository extends DocumentRepository
     {
         $queryBuilder = $this->getQueryBuilderByType($type);
 
-        if($hotel) {
+        if ($hotel) {
             $roomTypes = [];
-            foreach($hotel->getRoomTypes() as $roomType) {
+            foreach ($hotel->getRoomTypes() as $roomType) {
                 $roomTypes[] = $roomType->getId();
             }
             $queryBuilder->field('roomType.id')->in($roomTypes);
@@ -704,9 +743,9 @@ class PackageRepository extends DocumentRepository
     {
         $queryBuilder = $this->getQueryBuilderByType($type);
 
-        if($hotel) {
+        if ($hotel) {
             $roomTypes = [];
-            foreach($hotel->getRoomTypes() as $roomType) {
+            foreach ($hotel->getRoomTypes() as $roomType) {
                 $roomTypes[] = $roomType->getId();
             }
             $queryBuilder->field('roomType.id')->in($roomTypes);
@@ -739,7 +778,7 @@ class PackageRepository extends DocumentRepository
         $query = $queryBuilder->getQuery()->getQuery()['query'];
 
         $aggregate = [];
-        if($query) {
+        if ($query) {
             $aggregate[] = ['$match' => $query];
         }
         $aggregate[] = ['$project' => ['tourists' => 1]];
@@ -748,11 +787,37 @@ class PackageRepository extends DocumentRepository
 
         $result = $this->dm->getDocumentCollection(Package::class)->aggregate($aggregate);
 
-        $IDs = [];
-        foreach($result as $tourist) {
-            $IDs[] = strval($tourist['_id']['$id']);
+        $ids = [];
+        foreach ($result as $tourist) {
+            $ids[] = strval($tourist['_id']['$id']);
         }
 
-        return $IDs;
+        return $ids;
+    }
+
+    public function findByOrderOrRoom(string $term, Helper $helper)
+    {
+        $queryRoom = $this->getDocumentManager()->getRepository('MBHHotelBundle:Room')->createQueryBuilder();
+        $queryRoom
+            ->addOr(
+                $queryRoom->expr()->field('fullTitle')->equals(new \MongoRegex('/.*' . $term . '.*/i'))
+            )
+            ->addOr(
+                $queryRoom->expr()->field('title')->equals(new \MongoRegex('/.*' . $term . '.*/i'))
+            );
+
+        $rooms = $queryRoom->getQuery()->execute();
+
+        $roomIds = $helper->toIds($rooms);
+
+        $queryPackage = $this->createQueryBuilder();
+        $queryPackage
+            ->addOr($queryPackage->expr()->field('accommodation.id')->in($roomIds))
+            ->addOr($queryPackage->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $term . '.*/i')))
+            ->field('departureTime')->exists(false)
+            ->field('begin')->lte(new \DateTime('midnight'))
+            ->field('end')->gte(new \DateTime('midnight'));
+
+        return $queryPackage->getQuery()->execute();
     }
 }

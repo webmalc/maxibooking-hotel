@@ -13,6 +13,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class Builder extends ContainerAware
 {
 
+    /**
+     * @var \MBH\Bundle\ClientBundle\Document\ClientConfig
+     */
+    protected $config;
+
+    protected function setConfig()
+    {
+        if (!$this->config) {
+            $this->config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        }
+    }
+
     protected $counter = 0;
 
     /**
@@ -25,6 +37,7 @@ class Builder extends ContainerAware
     {
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
+        $this->setConfig();
 
         /** @var UserInterface $user */
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
@@ -134,6 +147,9 @@ class Builder extends ContainerAware
         // warehouse
         $menu->addChild('warehouse_record', ['route' => 'warehouse_record', 'label' => 'Склад'])->setAttributes(['icon' => 'fa fa-book']);
 
+        //restaurant
+        $menu->addChild('restaurant', ['route' => 'restaurant_dishorder', 'label' => 'Ресторан'])->setAttributes(['icon' => 'fa fa-cutlery']);
+
         // report
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart']);
@@ -153,6 +169,11 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
+
+        if ($this->config && $this->config->getSearchWindows()) {
+            $menu['reports']->addChild('report_windows', ['route' => 'report_windows', 'label' => 'Окна'])
+                ->setAttributes(['icon' => 'fa fa-windows']);
+        }
         //$token = $this->container->get('security.token_storage')->getToken();
         //if ($token && $token->getUser() instanceof User && $token->getUser()->getIsEnabledWorkShift()) {
         $menu['reports']->addChild('report_work_shift',
@@ -190,6 +211,7 @@ class Builder extends ContainerAware
         $router = $this->container->get('router');
         $router->getContext()->setMethod('GET');
         $security = $this->container->get('security.authorization_checker');
+        $this->setConfig();
 
         !empty($options['title_url']) ? $title_url = $options['title_url'] : $title_url = null;
 
@@ -269,11 +291,21 @@ class Builder extends ContainerAware
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номерной фонд'])
             ->setAttributes(['icon' => 'fa fa-bed']);
 
-        $config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        if ($config && $config->getUseRoomTypeCategory()) {
+        if ($this->config && $this->config->getUseRoomTypeCategory()) {
             $menu['hotels']->addChild('room_type_category', ['route' => 'room_type_category', 'label' => 'Группы номеров'])
                 ->setAttributes(['icon' => 'fa fa-bed']);
         }
+
+        //Restaurant links
+        $menu->addChild('restaurant', ['route' => '_welcome', 'label' => 'Ресторан'])
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-cutlery']);
+        $menu['restaurant']->addChild('ingredients', ['route'=>'restaurant_ingredient_category', 'label' => 'Ингредиенты'])
+            ->setAttributes(['icon'=> 'fa fa-cutlery']);
+        $menu['restaurant']->addChild('dishmenu', ['route'=>'restaurant_dishmenu_category', 'label' => 'Меню блюд'])
+            ->setAttributes(['icon'=> 'fa fa-cutlery']);
+        $menu['restaurant']->addChild('tables', ['route'=>'restaurant_table', 'label' => 'Управление столиками'])
+            ->setAttributes(['icon'=> 'fa fa-cutlery']);
+
 
         //Users links
         $menu->addChild('configs', ['route' => '_welcome', 'label' => 'Настройки'])

@@ -90,7 +90,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         }
         //get tariffs
         $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
-            ->fetch($this->hotel, $request->get('tariffs'));
+            ->fetchChildTariffs($this->hotel, 'prices', $request->get('tariffs'));
         if (!count($tariffs)) {
             return array_merge($response, ['error' => 'Тарифы не найдены']);
         }

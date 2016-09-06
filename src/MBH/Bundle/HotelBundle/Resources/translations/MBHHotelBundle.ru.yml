@@ -1,4 +1,5 @@
 views.tasktype.index.name: Название
+views.tasktype.index.status: Статус
 views.tasktype.index.default_role: Исполнители по умолчанию
 views.tasktype.index.created: Создан
 views.task.index.status: Cтатус
@@ -20,7 +21,7 @@ views.task.index.groups: Группы
 views.task.index.createAt: Создано
 views.task.index.dates: Даты
 views.task.index.date: Дата
-views.task.index.period: Статус
+views.task.index.period: Период
 views.task.index.createdAt: Создано
 views.task.index.createdBy: Создал
 views.task.index.description: Комментарий
@@ -62,6 +63,7 @@ views.task.priority.high : Высокий
 views.filter.placeholder.status: Статус
 views.filter.placeholder.status: Обновлено
 views.filter.placeholder.priority: Приоритет
+
 
 views.hotel.edit.editing_number: "редактирование #"
 views.hotel.extended.editing_number: "редактирование #"
@@ -155,7 +157,5 @@ views.corpus: Корпус
 
 
 view.create_task_type_categoty: 'Новая категория'
-
-
 
 

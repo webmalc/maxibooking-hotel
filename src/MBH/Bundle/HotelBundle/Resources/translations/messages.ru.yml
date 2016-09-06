@@ -108,11 +108,16 @@ form.roomTypeType.room_space: Площадь номера (м2)
 form.roomTypeType.help.empty_facilities: Используются удобства из отеля
 
 controller.hotelController.record_created_success: 'Запись успешно создана.'
+
 controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
 controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
 controller.TaskTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
 controller.TaskTypeController.record_edited_success: 'Запись успешно отредактирована.'
+
+controller.hotelController.task_created_notall: 'Не все задачи созданы/отредактированы, сначала закройте открытые задачи для данного типа'
+controller.hotelController.task_created_failed: 'Не удалось создать ни одной задачи'
+
 
 form.taskType.title: Название
 form.taskType.category: Категория
@@ -144,6 +149,15 @@ form.task.group.settings: Настройки
 form.userType.users: Исполнитель
 form.userType.date: Дата
 
+
+task.filter.prior.low:      Низкий
+task.filter.prior.average:  Средний
+task.filter.prior.high:    Высокий
+task.filter.task.open:      Открыта
+task.filter.task.process:   В процессe
+task.filter.task.closed:    Закрыта
+
+
 # corpus
 views.form.corpus.group.main: Общая информация
 views.form.corpus.group.address: Адрес
@@ -172,3 +186,5 @@ technical: Техника
 
 mailer.new_task.subject: 'Вам назначена новая задача'
 mailer.new_task.text: 'Вам назначили задачу "%taskType%"'
+
+

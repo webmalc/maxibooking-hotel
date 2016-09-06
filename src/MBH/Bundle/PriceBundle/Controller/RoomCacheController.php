@@ -148,7 +148,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         //get tariffs
         if (!empty($request->get('tariffs'))) {
             $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
-                ->fetch($hotel, $request->get('tariffs'))
+                ->fetchChildTariffs($hotel, 'rooms', $request->get('tariffs'))
             ;
         } else {
             $tariffs = [null];

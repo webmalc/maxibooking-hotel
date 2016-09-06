@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Lib;
 
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
@@ -34,6 +35,11 @@ class SearchResult
      * @var RoomType
      */
     protected $roomType;
+
+    /**
+     * @var Room
+     */
+    protected $virtualRoom;
 
     /**
      * @var Tariff 
@@ -494,4 +500,24 @@ class SearchResult
 
         return $tariffs;
     }
+
+    /**
+     * @return Room
+     */
+    public function getVirtualRoom()
+    {
+        return $this->virtualRoom;
+    }
+
+    /**
+     * @param Room $virtualRoom
+     * @return SearchResult
+     */
+    public function setVirtualRoom(Room $virtualRoom): SearchResult
+    {
+        $this->virtualRoom = $virtualRoom;
+        return $this;
+    }
+
+
 }

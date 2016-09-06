@@ -215,7 +215,10 @@ var docReadyPackages = function () {
             {
                 extend: 'pdf',
                 text: '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
-                className: 'btn btn-default btn-sm'
+                className: 'btn btn-default btn-sm',
+                exportOptions: {
+                    stripNewlines: false
+                }
             }
         ],
         "processing": true,

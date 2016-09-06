@@ -71,4 +71,12 @@ class TaskQueryCriteria extends AbstractQueryCriteria
      * @var Hotel|null
      */
     public $hotel;
+
+    public function endWholeDay()
+    {
+        if ($this->end instanceof \DateTime) {
+            $end = clone $this->end;
+            return $end->modify("tomorrow -1 minute");
+        }
+    }
 }

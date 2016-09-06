@@ -107,7 +107,15 @@
                                     <td>{{ room.roomType }}</td>
                                     <td>{{ room.housing }}</td>
                                     <td>{{ room.floor }}</td>
-                                    <td>{{ room.status }}</td>
+                                    <td>
+                                        {% if room.status is iterable and room.status is not empty %}
+                                            {% for status in room.status %}
+                                                {% if status.code in roomStatusIcons|keys  %}
+                                                    <i class="fa mbf-{{ roomStatusIcons[status.code] }}" title="{{ status }}" data-toggle="tooltip"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
                                     <td>
                                         {% for facility in room.allFacilities %}
                                             <i style="margin-left: 3px" data-toggle="tooltip"

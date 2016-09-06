@@ -50,11 +50,17 @@
                         <ul class="calendarDates list-unstyled" data-obj="{{ roomData.room.id }}"
                             data-index="{{ key }}">
                             <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
-                                <div class="title-sub">
+                                <div class="title-sub text-right">
                                     {{ roomData.room.getName[0:48] }}
-                                    {% if roomData.room.status and roomData.room.status.code %}
-                                        <i style="position: absolute; right: 10px; top: 15px;" class="fa mbf-{{ roomStatusIcons[roomData.room.status.code] }}" title='{{ roomData.room.status.title }}'></i>
+                                    <div class="text-right">
+                                    {% if roomData.room.status is iterable and roomData.room.status is not empty %}
+                                        {% for status in roomData.room.status %}
+                                            {% if status.code in roomStatusIcons|keys  %}
+                                                <i style="position: relative; bottom: 10px;" class=" fa mbf-{{ roomStatusIcons[status.code] }}" title="{{ status }}" data-toggle="tooltip"></i>
+                                            {% endif %}
+                                        {% endfor %}
                                     {% endif %}
+                                    </div>
                                 </div>
                             </li>
 

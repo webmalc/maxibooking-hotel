@@ -17,6 +17,7 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -831,6 +832,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'logs' => $this->logs($package),
             'optGroupRooms' => $optGroupRooms,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
+            'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
+
         ];
     }
 
@@ -917,4 +920,57 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
     }
+
+    /**
+     * @param null $id
+     * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @Route("/getPackageJsonById/{id}", name="getPackageJsonById", options={"expose"=true})
+     */
+    public function getPackageJsonByIdAction($id = null)
+    {
+        if (!$id) {
+            return new JsonResponse([]);
+        }
+        
+        $result = [];
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
+        
+        if ($package) {
+            $result = [
+                'id' => $package->getId(),
+                'text' => $package->getTitle(true,true)
+            ];
+        }
+        return new JsonResponse($result);
+    }
+
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @Route("/getPackageJsonSearch", name="getPackageJsonSearch", options={"expose"=true})
+     */
+    public function getPackageJsonSearchAction(Request $request)
+    {
+        $data = [];
+        if (!$request->get('query')) {
+            return new JsonResponse([]);
+        }
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByOrderOrRoom($request->get('query'), $this->helper);
+        if (!$packages) {
+            return new JsonResponse([
+                'results' => [[]]
+            ]);
+        }
+        foreach ($packages as $item) {
+            /** @var Package $item */
+            $data[] = [
+                'id' => $item->getId(),
+                'text' => $item->getTitle(true,true)
+            ];
+        }
+        return new JsonResponse(['results' => $data]);
+    }
+
 }

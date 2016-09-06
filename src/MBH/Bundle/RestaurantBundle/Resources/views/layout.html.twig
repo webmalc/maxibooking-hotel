@@ -1,0 +1,20 @@
+{% extends "MBHBaseBundle::page.html.twig" %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='uglifyjs2'
+        '@MBHRestaurantBundle/Resources/public/js/003-spinners.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHRestaurantBundle/Resources/public/css/*'%}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}

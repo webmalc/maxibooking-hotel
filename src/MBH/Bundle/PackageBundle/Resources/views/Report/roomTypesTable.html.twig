@@ -126,12 +126,15 @@
                 </td>
                 <td class="text-center">
                     {% if is_granted('ROLE_ROOM_STATUS_EDIT') %}
-                        <select data-room="{{ room.id }}" class="plain-html select-status select2">
-                            <option data-icon="fa-lg fa-check">.</option>
-                            {% for status in roomStatuses %}
-                                <option value="{{ status.code }}" {{ room.status and room.status.code == status.code ? 'selected="selected"' : '' }} data-icon="mbf-{{ roomStatusIcons[status.code] }}">{{ status.title }}</option>
+                        {% if room.status is iterable and room.status is not empty %}
+                            {% for status in room.status %}
+                                {% if status.code in roomStatusIcons|keys  %}
+                                    <a href="{{ path('room_edit', {'id': room.id}) }}" class="text-black">
+                                    <i class="fa mbf-{{ roomStatusIcons[status.code] }}" title="{{ status }}" data-toggle="tooltip"></i>
+                                    </a>
+                                {% endif %}
                             {% endfor %}
-                        </select>
+                        {% endif %}
                     {% elseif room.status %}
                         <i class="fa fa-lg mbf-{{ roomStatusIcons[room.status.code] }}" data-toggle='tooltip' data-title='{{ room.status.title }}'></i>
                     {% else %}

@@ -93,7 +93,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         }
         //get tariffs
         $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
-            ->fetch($hotel, $request->get('tariffs'))
+            ->fetchChildTariffs($hotel, 'restrictions', $request->get('tariffs'))
         ;
         if (!count($tariffs)) {
             return array_merge($response, ['error' => 'Тарифы не найдены']);

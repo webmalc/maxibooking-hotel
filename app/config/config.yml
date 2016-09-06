@@ -4,6 +4,7 @@ imports:
     - { resource: version.yml }
     - { resource: mbh.yml }
     - { resource: roles.yml }
+    - { resource: mbh_restaurant_ctypes.xml }
 
 framework:
     serializer:
@@ -65,7 +66,7 @@ twig:
 # Assetic Configuration
 assetic:
     debug:          "%kernel.debug%"
-    use_controller: false
+    use_controller: '%use_assetic_controller%'
     filters:
         cssrewrite: ~
         uglifycss:

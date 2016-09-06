@@ -60,27 +60,28 @@ class Cache
     public function generateKey(string $prefix, array $keys): string
     {
         $keyString = $this->globalPrefix . '_' . $prefix;
+        $hash = '';
 
         foreach ($keys as $key) {
             if ($key instanceof \DateTime) {
-                $keyString .= '_' . $key->format('d.m.Y');
+                $hash .= '_' . $key->format('d.m.Y');
             }
             elseif (is_object($key) && method_exists($key, 'getId')) {
-                $keyString .= '_' . $key->getId();
+                $hash .= '_' . $key->getId();
             }
             elseif (is_array($key)) {
-                $keyString .= '_' . implode('.', $key);
+                $hash .= '_' . implode('.', $key);
             }
             elseif (is_object($key) && !method_exists($key, '__toString')) {
                 continue;
             }
             else {
-                $keyString .= '_' . (string) $key;
+                $hash .= '_' . (string) $key;
             }
 
         }
 
-        return substr($keyString, 0, 250);
+        return $keyString . '_' . md5($hash);
     }
 
     /**

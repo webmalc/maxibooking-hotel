@@ -5,45 +5,46 @@ $(document).ready(function () {
         $taskTableFilterForm = $('#task-table-filter'),
         processing = false,
         columns = [
-            {"name": "number", "class": 'text-center'},
-            {"name": "status", "class": 'text-center'},
+            {"name": "id", "class": "text-center"},
+            {"name": "status", "class": "text-center"},
             {"name": "task", "bSortable": false},
-            {"name": "priority", "class": 'text-center'},
+            {"name": "priority", "class": "text-center"},
             {"name": "room", "bSortable": false},
             {"name": "assign", "bSortable": false},
-            {"name": "period"},
+            {"name": "period", "bSortable": false},
             {"name": "createdAt"},
             {"bSortable": false}
-        ];
-    var ajax = {
-        "url": Routing.generate('task_json'),
-        "method": "POST",
-        "beforeSend": function () {
-            processing = true;
+        ],
+        ajax = {
+            "url": Routing.generate("task_json"),
+            "method": "POST",
+            "beforeSend": function () {
+                processing = true;
+            },
+            "data": function (data) {
+                data = $.extend({}, data, $taskTableFilterForm.serializeObject());
+                return data;
+            }
         },
-        "data": function (data) {
-            data = $taskTableFilterForm.serializeObject();
-            return data;
-        }
-    };
-    var dataTableOptions = {
-        "processing": true,
-        "serverSide": true,
-        "ordering": true,
-        "searching": false,
-        "ajax": ajax,
-        "aoColumns": columns,
-        "drawCallback": function (settings) {
-            processing = false;
-            $taskTable.find('tr a[data-row-class]').each(function () {
-                var $this = $(this),
-                    rowClass = $this.data('row-class');
+        dataTableOptions = {
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+            "searching": false,
+            "ajax": ajax,
+            "aoColumns": columns,
+            "drawCallback": function (settings) {
+                processing = false;
+                $taskTable.find('tr a[data-row-class]').each(function () {
+                    var $this = $(this),
+                        rowClass = $this.data('row-class');
 
-                $this.closest('tr').addClass(rowClass);
-            });
-        },
-        "order": [[7, "desc"]]
-    };
+                    $this.closest('tr').addClass(rowClass);
+                });
+            },
+            "order": [[7, "desc"]]
+        };
+
     $taskTable.dataTable(dataTableOptions);
 
     var updateTaskTable = function () {
@@ -72,8 +73,7 @@ $(document).ready(function () {
     var $housingSelect = $('#mbh_bundle_hotelbundle_task_housing'),
         $floorSelect = $('#mbh_bundle_hotelbundle_task_floor'),
         $roomsSelect = $('#mbh_bundle_hotelbundle_task_rooms'),
-        resetRoomsSelectHtml = $roomsSelect.html()
-    ;
+        resetRoomsSelectHtml = $roomsSelect.html();
 
     //var firstCall = true;
     var changeHousingAndFloor = function (e) {
@@ -82,23 +82,23 @@ $(document).ready(function () {
         }
         $roomsSelect.val('');
         /*if(!firstCall) {
-            roomsSelectHtml = roomsSelectHtml.replace('selected="selected"', '');
-        }*/
+         roomsSelectHtml = roomsSelectHtml.replace('selected="selected"', '');
+         }*/
         var housing = $housingSelect.val(),
             floor = $floorSelect.val()
             //$roomsSelectHtml = $('<select>' + roomsSelectHtml + '</select>')
-        ;
+            ;
 
         /*$roomsSelectHtml.find('option').map(function() {
-            var isChecked = (!housing|| this.getAttribute("data-housing") == housing)
-                && (!floor || this.getAttribute("data-floor") == floor);
-            if(!isChecked)
-                $(this).remove();
-        });
-        var newHtml = $roomsSelectHtml.html();*/
+         var isChecked = (!housing|| this.getAttribute("data-housing") == housing)
+         && (!floor || this.getAttribute("data-floor") == floor);
+         if(!isChecked)
+         $(this).remove();
+         });
+         var newHtml = $roomsSelectHtml.html();*/
 
-        $roomsSelect.mbhSelect2OptionsFilter(function(){
-            return (!housing|| this.getAttribute("data-housing") == housing)
+        $roomsSelect.mbhSelect2OptionsFilter(function () {
+            return (!housing || this.getAttribute("data-housing") == housing)
                 && (!floor || this.getAttribute("data-floor") == floor);
         }, resetRoomsSelectHtml);
 
@@ -146,7 +146,7 @@ $(document).ready(function () {
                 var status,
                     buttonClass,
                     buttonTitle;
-                if (response.status == 'Открыта') {
+                if (response.status === 'Открыта') {
                     status = 'process';
                     buttonClass = 'btn-primary';
                     buttonTitle = 'Взять в работу';
@@ -163,7 +163,7 @@ $(document).ready(function () {
                 $taskInfoModal.modal('show');
             }
         });
-    }
+    };
 
     $ownedTaskTable.find('tr').on('click', function (e) {
         if (e.target.tagName != 'A' && $(e.target.tagName).closest('a').length == 0) {
