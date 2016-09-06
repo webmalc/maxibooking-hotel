@@ -102,3 +102,7 @@ services:
             class: MBH\Bundle\PackageBundle\Document\PayerRepository
             calls:
                    - [setContainer, [@service_container]]
+
+    mbh.package.windows.report.generator:
+      class: MBH\Bundle\PackageBundle\Services\WindowsReportGenerator
+      arguments: [@mbh.helper, @doctrine_mongodb]

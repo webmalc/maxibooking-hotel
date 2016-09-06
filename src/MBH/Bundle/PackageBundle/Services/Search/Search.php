@@ -393,8 +393,12 @@ class Search implements SearchInterface
                 }
 
                 //check windows
-                $result = $this->setVirtualRoom($result);
-                if (!$result) {
+
+                $virtualResult = $this->setVirtualRoom(
+                    $result, $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($result->getRoomType()->getHotel())
+                );
+
+                if (!$virtualResult) {
                     continue;
                 }
 
@@ -421,9 +425,10 @@ class Search implements SearchInterface
     /**
      * Sets virtual room to search result
      * @param SearchResult $result
+     * @param Tariff $tariff
      * @return bool|SearchResult
      */
-    public function setVirtualRoom(SearchResult $result)
+    public function setVirtualRoom(SearchResult $result, Tariff $tariff)
     {
         
         if ($result->getBegin() <= new \DateTime('midnight')) {
@@ -438,7 +443,7 @@ class Search implements SearchInterface
         $end = clone $result->getEnd();
         $preferredRoom = null;
         $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')->
-            findOneByDate($begin, $roomType, $result->getTariff(), $this->memcached)
+            findOneByDate($begin, $roomType, $tariff, $this->memcached)
         ;
 
         if ($restriction && $restriction->getMinStayArrival()) {
@@ -457,16 +462,31 @@ class Search implements SearchInterface
 
         foreach ($this->dm->getRepository('MBHHotelBundle:Room')->fetch(null, [$result->getRoomType()->getId()]) as $room) {
 
+
             if (isset($groupedPackages[$room->getId()])) {
                 foreach ($groupedPackages[$room->getId()] as $package) {
-                    if ($package->getBegin() != $result->getEnd() && $package->getEnd() != $result->getBegin()) {
-                        continue 2;
+
+                    if ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
+                        $preferredRoom = $room;
+                    } elseif ($package->getBegin() == $end || $package->getEnd() == $begin) {
+                        $preferredRoom = $room;
+                    } else {
+                        $preferredRoom = $preferredRoom == $room ? null : $preferredRoom;
+                        break;
                     }
+
                 }
-                $preferredRoom = $room;
+
+                if ($preferredRoom) {
+                    $result->setVirtualRoom($preferredRoom);
+
+                    return $result;
+                }
+
             } else {
                 $preferredRoom = $room;
             }
+
         }
 
         if ($preferredRoom) {

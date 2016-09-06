@@ -34,6 +34,41 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     /**
      * Porter report.
      *
+     * @Route("/windows", name="report_windows")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_WINDOWS_REPORT')")
+     * @Template()
+     */
+    public function windowsAction()
+    {
+        return [
+            'roomTypes' => $this->hotel->getRoomTypes(),
+        ];
+    }
+
+    /**
+     * Windows report table.
+     *
+     * @Route("/windows/table", name="report_windows_table", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_WINDOWS_REPORT')")
+     * @Template()
+     * @param $request Request
+     * @return array
+     */
+    public function windowsTableAction(Request $request)
+    {
+        $generator = $this->get('mbh.package.windows.report.generator');
+
+        return [
+            'data' => $generator->generate($request, $this->hotel),
+            'error' => $generator->getError()
+        ];
+    }
+
+    /**
+     * Porter report.
+     *
      * @Route("/porter/{type}", name="report_porter", defaults={"type"="lives"}, requirements={
      *      "type" : "lives|arrivals|out"
      * })

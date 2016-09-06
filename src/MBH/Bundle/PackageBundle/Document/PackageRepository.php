@@ -21,18 +21,37 @@ class PackageRepository extends DocumentRepository
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param RoomType $roomType
+     * @param boolean $group
      * @return mixed
      */
-    public function fetchWithVirtualRooms(\DateTime $begin, \DateTime $end, RoomType $roomType): CursorInterface
+    public function fetchWithVirtualRooms(\DateTime $begin, \DateTime $end, RoomType $roomType = null, bool $group = false)
     {
-        return $this->createQueryBuilder()
-            ->field('begin')->lt($end)
-            ->field('end')->gt($begin)
+        $qb = $this->createQueryBuilder()
+            ->field('begin')->lte($end)
+            ->field('end')->gte($begin)
             ->field('virtualRoom')->notEqual(null)
-            ->field('roomType')->equals($roomType)
-            ->getQuery()
-            ->execute()
+            ->field('deletedAt')->equals(null)
         ;
+        
+        if ($roomType) {
+            $qb->field('roomType')->equals($roomType);
+        }
+        
+        $packages = $qb->getQuery()->execute();
+        
+        if ($group) {
+            $result = [];
+            foreach ($packages as $package) {;
+
+                $roomType = $package->getRoomType();
+                $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
+
+            }
+
+            return $result;
+        }
+        
+        return $packages;
     }
 
     /**

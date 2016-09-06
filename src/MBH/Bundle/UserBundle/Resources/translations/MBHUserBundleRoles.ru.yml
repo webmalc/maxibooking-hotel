@@ -183,6 +183,7 @@ ROLE_ORGANIZATION: Организации
 ROLE_MANAGERS_REPORT: Отчет по менеджерам
 ROLE_POLLS_REPORT: Отчет по оценкам
 ROLE_ROOMS_REPORT: Отчет по номерному фонду
+ROLE_WINDOWS_REPORT: Отчет окна
 
 ROLE_TOURIST_VIEW: Просмотр гостей
 ROLE_TOURIST_NEW: Создание гостя

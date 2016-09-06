@@ -504,7 +504,7 @@ class SearchResult
     /**
      * @return Room
      */
-    public function getVirtualRoom(): Room
+    public function getVirtualRoom()
     {
         return $this->virtualRoom;
     }
