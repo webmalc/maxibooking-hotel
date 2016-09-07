@@ -396,7 +396,10 @@ class Search implements SearchInterface
                 //check windows
 
                 $virtualResult = $this->setVirtualRoom(
-                    $result, $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($result->getRoomType()->getHotel())
+                    $result,
+                    $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($result->getRoomType()->getHotel(),
+                    $result->getForceBooking()
+                    )
                 );
 
                 if (!$virtualResult) {
@@ -429,14 +432,14 @@ class Search implements SearchInterface
      * @param Tariff $tariff
      * @return bool|SearchResult
      */
-    public function setVirtualRoom(SearchResult $result, Tariff $tariff)
+    public function setVirtualRoom($result, Tariff $tariff, $forceBooking = false)
     {
         
         if ($result->getBegin() <= new \DateTime('midnight')) {
             return true;
         }
 
-        if (!$this->config || !$this->config->getSearchWindows() || $result->getForceBooking()) {
+        if (!$this->config || !$this->config->getSearchWindows() || $forceBooking) {
             return true;
         }
         $roomType = $result->getRoomType();
