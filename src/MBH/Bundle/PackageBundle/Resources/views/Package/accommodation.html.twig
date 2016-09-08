@@ -101,7 +101,7 @@
                         {% for roomTypeName, rooms in optGroupRooms %}
 
                             {% for room in rooms %}
-                                <tr class="{% if  package.accommodation and room.id == package.accommodation.id %}info{% elseif room.status %}warning{% elseif room.roomType.id == package.roomType.id %}success{% endif %}">
+                                <tr class="{% if  package.accommodation and room.id == package.accommodation.id %}info{% elseif room.status is not empty %}warning{% elseif room.roomType.id == package.roomType.id %}success{% endif %}">
                                     <td><i class="fa fa-bed"></i></td>
                                     <td><strong>{{ room }}</strong></td>
                                     <td>{{ room.roomType }}</td>

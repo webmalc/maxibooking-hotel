@@ -135,8 +135,12 @@
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
-                    {% elseif room.status %}
-                        <i class="fa fa-lg mbf-{{ roomStatusIcons[room.status.code] }}" data-toggle='tooltip' data-title='{{ room.status.title }}'></i>
+                    {% elseif room.status is not empty %}
+                        {% for status in room.status %}
+                            {% if status.code in roomStatusIcons|keys  %}
+                                    <i class="fa mbf-{{ roomStatusIcons[status.code] }}" title="{{ status }}" data-toggle="tooltip"></i>
+                            {% endif %}
+                        {% endfor %}
                     {% else %}
                         <i class="fa fa-lg mbf-keys" data-toggle='tooltip'></i>
                     {% endif %}

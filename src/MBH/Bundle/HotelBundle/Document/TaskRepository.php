@@ -80,12 +80,14 @@ class TaskRepository extends DocumentRepository
             $queryBuilder->addAnd($queryBuilder->expr()->field('priority')->equals($queryCriteria->priority));
         }
 
-        if ($queryCriteria->begin) {
-            $queryBuilder->addAnd($queryBuilder->expr()->field('createdAt')->gte($queryCriteria->begin));
-        }
+        if ($dateCriteriaType = $queryCriteria->dateCriteriaType) {
+            if ($queryCriteria->begin) {
+                $queryBuilder->addAnd($queryBuilder->expr()->field($dateCriteriaType)->gte($queryCriteria->begin));
+            }
 
-        if ($queryCriteria->end) {
-            $queryBuilder->addAnd($queryBuilder->expr()->field('createdAt')->lte($queryCriteria->endWholeDay()));
+            if ($queryCriteria->end) {
+                $queryBuilder->addAnd($queryBuilder->expr()->field($dateCriteriaType)->lte($queryCriteria->endWholeDay($queryCriteria->end)));
+            }
         }
 
         if ($queryCriteria->hotel) {

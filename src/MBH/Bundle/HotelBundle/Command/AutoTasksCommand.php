@@ -29,6 +29,8 @@ class AutoTasksCommand extends ContainerAwareCommand
         $taskModuleEnabled = $this->getContainer()->getParameter('mbh_modules')['tasks'];
         if(!$taskModuleEnabled) {
             $output->writeln("Tasks module is disabled.");
+
+            return 0;
         }
         /** @var AutoTaskCreator $creator */
         $creator = $this->getContainer()->get('mbh.hotel.auto_task_creator');

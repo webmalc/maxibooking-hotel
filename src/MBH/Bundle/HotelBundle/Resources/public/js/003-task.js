@@ -26,11 +26,43 @@ $(document).ready(function () {
                 return data;
             }
         },
+        customize = function ( win ) {
+            var table = win.content[1].table.body;
+            for(var i = 0; i<table.length; i++)
+            {
+                //getting date substring
+                if (i>0) {
+                    var dateString = table[i][7].text;
+                    var index = dateString.indexOf('до');
+                    table[i][7].text = dateString.substr(index,100);
+                }
+                //removal "Период" column
+                table[i].splice(6, 1);
+            }
+        },
+        buttons = [
+        {
+            extend: 'excel',
+            text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
+            className: 'btn btn-default btn-sm'
+        },
+        {
+            extend: 'pdf',
+            exportOptions: {
+                stripNewlines: true
+            },
+            customize: customize,
+            text: '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
+            className: 'btn btn-default btn-sm'
+        }],
+
         dataTableOptions = {
+            dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
             "processing": true,
             "serverSide": true,
             "ordering": true,
             "searching": false,
+            "buttons": buttons,
             "ajax": ajax,
             "aoColumns": columns,
             "drawCallback": function (settings) {
@@ -44,8 +76,8 @@ $(document).ready(function () {
             },
             "order": [[7, "desc"]]
         };
-
     $taskTable.dataTable(dataTableOptions);
+
 
     var updateTaskTable = function () {
         if (!processing) {

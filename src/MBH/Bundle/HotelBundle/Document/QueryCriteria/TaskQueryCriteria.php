@@ -53,6 +53,11 @@ class TaskQueryCriteria extends AbstractQueryCriteria
     public $end;
 
     /**
+     * @var string
+     */
+    public $dateCriteriaType;
+
+    /**
      * @var bool
      */
     public $onlyOwned;
@@ -72,11 +77,11 @@ class TaskQueryCriteria extends AbstractQueryCriteria
      */
     public $hotel;
 
-    public function endWholeDay()
+    public function endWholeDay($date)
     {
-        if ($this->end instanceof \DateTime) {
-            $end = clone $this->end;
-            return $end->modify("tomorrow -1 minute");
+        if ($date instanceof \DateTime) {
+            $modifiedDate = clone $date;
+            return $modifiedDate->modify("tomorrow -1 minute");
         }
     }
 }

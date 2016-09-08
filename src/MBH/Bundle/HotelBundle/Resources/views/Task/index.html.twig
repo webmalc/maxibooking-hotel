@@ -10,16 +10,19 @@
     {% if app.security.granted('ROLE_TASK_MANAGER') %}
 
         {% include 'MBHBaseBundle:Partials:filter.html.twig' with {id: 'task-table-filter-widget'} %}
-            <form id="task-table-filter" class="form-inline icon-label-form">
+            <form id="task-table-filter" class="form-inline icon-label-form ">
                 <div class="form-group">
-                    <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
-                    {{ form_widget(searchForm.begin) }}
+                    <i class="fa fa-calendar" title='{{ 'views.task.index.dates' |trans }}'
+                       data-toggle='tooltip'></i>&nbsp{{ form_widget(searchForm.begin) }}
                 </div>
                 <div class="form-group">
                     <label>—</label>
                     {{ form_widget(searchForm.end) }}
                 </div>
-
+                &nbsp;
+                <div class="form-group">
+                    {{ form_widget(searchForm.dateCriteriaType) }}
+                </div>
                 <div class="form-group">
                     {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
                 </div>
