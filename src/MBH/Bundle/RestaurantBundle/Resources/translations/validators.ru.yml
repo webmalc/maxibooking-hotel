@@ -32,3 +32,4 @@ validator.document.tableType.min_name: Имя категории должно б
 validator.document.tableType.max_name: Превышено допустимое количество символов
 
 validator.document.category.unique: Такая категория уже существует
+validator.document.table.unique: Такой стол уже существует

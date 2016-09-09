@@ -17,12 +17,14 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 
 /**
  * @ODM\Document(collection="Chair")
  * @Gedmo\Loggable()
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @MongoDBUnique(fields={"fullTitle"}, message="validator.document.table.unique")
  */
 class Chair extends Base
 {
@@ -43,6 +45,15 @@ class Chair extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string", name="fullTitle")
+     * @Assert\NotNull()
+     */
+    protected $fullTitle;
+
 
     /**
      * @var boolean
@@ -88,9 +99,21 @@ class Chair extends Base
     {
         $this->type = $type;
     }
+    /**
+     * @return string
+     */
+    public function getFullTitle(): string
+    {
+        return $this->fullTitle;
+    }
 
-
-
+    /**
+     * @param string $fullTitle
+     */
+    public function setFullTitle(string $fullTitle)
+    {
+        $this->fullTitle = $fullTitle;
+    }
 
 
 }

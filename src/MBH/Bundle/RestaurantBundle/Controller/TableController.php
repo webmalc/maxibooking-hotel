@@ -144,14 +144,16 @@ class TableController extends BaseController implements CheckHotelControllerInte
 
         $table = new Table();
         $table->setCategory($category);
-
-        $form = $this->createForm(new TableType($this->dm), $table);
+        $table->setHotel($this->hotel);
+        $form = $this->createForm(new TableType($this->dm,$this->container), $table);
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+
             $this->dm->persist($table);
             $this->dm->flush();
+
             $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
             return $this->afterSaveRedirect('restaurant_table', $table->getId(), ['tab' => $category->getId()]);
         }
@@ -178,16 +180,15 @@ class TableController extends BaseController implements CheckHotelControllerInte
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($item->getHotel())) {
             throw $this->createNotFoundException();
         }
-        
-        $form = $this->createForm(new TableType($this->dm), $item, [
-            'tableId' => $item->getId()
-        ]);
+
+        $form = $this->createForm(new TableType($this->dm,$this->container), $item);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
 
             $this->dm->persist($item);
             $this->dm->flush();
+
             $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
 
             if ($request->get('save') !== null) {
@@ -281,23 +282,24 @@ class TableController extends BaseController implements CheckHotelControllerInte
     public function newChairAction(Request $request, Table $item)
     {
         $chairDescription = [
-            'adult' => '',
+            'amount' => '',
             'type' => false,
         ];
 
-        $form = $this->createForm(ChairType::class, $chairDescription);
+        $form = $this->createForm( new ChairType(), $chairDescription);
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $chairDescription = $form->getData();
             /** @var TableManager $generator */
-            $generator = $this->get('mbh.table_manager');
-            $generator->generateChair($chairDescription['adult'], $chairDescription['type'], $item);
+            $generator = $this->get('mbh_table_manager');
+            $generator->generateChair($chairDescription['amount'], $chairDescription['type'], $item);
 
             $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
 
             if ($request->get('save') !== null) {
+
                 return $this->redirectToRoute('restaurant_chair_new', ['id' => $item->getId()]);
             }
             return $this->redirectToRoute('restaurant_table_category', ['tab' => $item->getCategory()->getId()]);

@@ -1,6 +1,6 @@
 {% extends 'MBHRestaurantBundle:Table:layout.html.twig' %}
 
-{% set small_title = 'restaurant.table.newaction.small_title'|trans %}
+{% set small_title = 'restaurant.table.newaction.small_title_addchairs'|trans %}
 {% set layout = 'tabs' %}
 
 {% block content %}
@@ -44,7 +44,7 @@
                                 <tr {% if(chair.type == true) %} class="info odd"{% endif %}>
                                     <td><i class="fa fa-cutlery"></i></td>
                                     <td>
-                                        № {{ loop.index }}
+                                        № {{ chair.fullTitle }}
                                     </td>
                                     <td>
                                         {% if chair.type == true %}
@@ -64,8 +64,8 @@
                         </table>
                     {% else %}
                         <div class="alert alert-warning"><i
-                                    class="fa fa-exclamation-circle"></i> {{ 'restaurant.table.item.noitems'|trans|capitalize }}
-                            . <a href="">{{ 'restaurant.table.item.helper.addchairs'|trans }}</a></div>
+                                    class="fa fa-exclamation-circle"></i> {{ 'restaurant.table.item.nochair'|trans|capitalize }}
+                            . {{ 'restaurant.table.item.helper.addchairs'|trans }}</div>
                     {% endif %}
 
                 </div>

@@ -4,7 +4,11 @@ services:
     arguments: ["@service_container"]
     tags:
       - { name: doctrine_mongodb.odm.event_subscriber, connection: default }
-
+  mbh.table.subscriber:
+      class: MBH\Bundle\RestaurantBundle\EventListener\TableSubscriber
+      arguments: ["@service_container"]
+      tags:
+        - { name: doctrine_mongodb.odm.event_subscriber, connection: default }
   mbh__restaurant.form_dish_order.dish_order_item_emmbedded_type:
       class: MBH\Bundle\RestaurantBundle\Form\DishOrder\DishOrderItemEmmbeddedType
       arguments: ['@request_stack', '@mbh.hotel.selector', '@mbh.helper']
@@ -22,6 +26,17 @@ services:
       arguments: ['@service_container']
       tags:
           - { name: form.type, alias: mbh_bundle_restaurantbundle_dishorder_dishorderitem_type }
-  mbh.table_manager:
+  mbh_table_manager:
       class: MBH\Bundle\RestaurantBundle\Service\TableManager
-      arguments: ['@doctrine.odm.mongodb.document_manager']
+      arguments: ['@doctrine.odm.mongodb.document_manager','@service_container','@mbh.table.validator']
+
+  mbh_restaurant.form_table_type:
+        class: MBH\Bundle\RestaurantBundle\Form\TableType
+        arguments: ['@service_container']
+        tags:
+            - { name: form.type }
+  mbh.table.validator:
+        class: MBH\Bundle\RestaurantBundle\Validator\Constraints\TableValidator
+        arguments: [@service_container]
+        tags:
+            - { name: validator.constraint_validator, alias: mbh.table.validator }

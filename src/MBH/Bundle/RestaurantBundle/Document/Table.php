@@ -17,13 +17,18 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\RestaurantBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 
 /**
  * @ODM\Document(collection="Tables")
  * @Gedmo\Loggable()
+ * @MBHValidator\Table
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @MongoDBUnique(fields={"fullTitle"}, message="validator.document.table.unique")
+ * @ODM\HasLifecycleCallbacks
  */
 class Table extends Base
 {
@@ -73,8 +78,16 @@ class Table extends Base
      */
     protected $title;
     /**
+     * @var Hotel
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
+     * @Assert\NotNull(message="validator.document.table.hotel")
+     */
+    protected $hotel;
+
+    /**
      * @var ArrayCollection
-     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\Table", inversedBy="shifted")
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\Table", inversedBy="shifted", cascade="persist")
      */
     protected $withShifted;
 
@@ -170,10 +183,15 @@ class Table extends Base
     {
         $this->category = $category;
     }
-
+    /**
+     * @param Hotel $hotel
+     */
+    public function setHotel(Hotel $hotel)
+    {
+        $this->hotel = $hotel;
+    }
     public function getHotel(): Hotel
     {
-
         return $this->category->getHotel();
     }
     /**

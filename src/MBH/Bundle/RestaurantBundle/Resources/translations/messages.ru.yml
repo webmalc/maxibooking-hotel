@@ -213,6 +213,7 @@ restaurant:
         addtype: Выберите тип
         addchairs: Добавьте стулья
       noitems: В этой категории нет ни отдного стола
+      nochair: В этом столе нет ни отдного стула
       category:
         new: Новая категория столов
         edit_table_incategory: Редактирование стола в категории
@@ -228,6 +229,7 @@ restaurant:
     newaction:
       title: Новая категория столов
       small_title:        добавление стола
+      small_title_addchairs: добавление стульев
     actions:
       list:
         small_title:      Список столов

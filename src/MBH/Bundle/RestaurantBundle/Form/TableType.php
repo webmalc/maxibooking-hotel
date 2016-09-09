@@ -18,6 +18,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\RestaurantBundle\Document\Table;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 class TableType extends AbstractType
 {
     /**
@@ -25,13 +26,18 @@ class TableType extends AbstractType
      */
     protected $dm;
 
-    public function __construct(DocumentManager $dm)
+    private $container;
+
+    public function __construct(DocumentManager $dm, ContainerInterface $container)
     {
         $this->dm = $dm;
+        $this->container = $container;
     }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $tableId=$options['tableId'];
+        $selector = $this->container->get('mbh.hotel.selector');
+        $tableId = $builder->getData()->getId();
 
         $builder
             ->add('fullTitle', TextType::class, [
@@ -49,20 +55,21 @@ class TableType extends AbstractType
                 'help' => 'restaurant.table.form.title.help',
                 'group' => 'restaurant.group'
             ])
-
             ->add('withShifted', DocumentType::class, [
                 'label' => 'restaurant.table.common.shifted',
                 'class' => 'MBH\Bundle\RestaurantBundle\Document\Table',
                 'required' => false,
                 'multiple' => true,
-                'by_reference' => true,
                 'group_by' => 'category',
                 'group' => 'restaurant.group',
-                'query_builder' => function(DocumentRepository $repository)  use ($tableId){
-                        $qb = $repository->createQueryBuilder()
-                            ->field('id')->notIn(array($tableId));
-                        return $qb;
-                    }
+                'query_builder' => function (DocumentRepository $repository) use ($tableId,$selector) {
+                    $hotelId = $selector->getSelected()->getId();
+                    $qb = $repository->createQueryBuilder()
+                        ->field('hotel.id')->equals($hotelId)
+                        ->field('id')->notIn(array($tableId))
+                        ->field('isEnabled')->equals(true);
+                    return $qb;
+                }
 
             ])
             ->add('isEnabled', CheckboxType::class, [
@@ -71,8 +78,7 @@ class TableType extends AbstractType
                 'value' => false,
                 'help' => 'restaurant.table.form.is_enable.help',
                 'group' => 'restaurant.group'
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -80,7 +86,6 @@ class TableType extends AbstractType
         $resolver
             ->setDefaults([
                 'data_class' => 'MBH\Bundle\RestaurantBundle\Document\Table',
-                'tableId'=>null
             ]);
     }
 
