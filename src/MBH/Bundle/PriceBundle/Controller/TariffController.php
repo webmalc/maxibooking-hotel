@@ -137,7 +137,9 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     public function newAction()
     {
         $entity = new Tariff();
-        $form = $this->createForm(new TariffType(), $entity);
+        $form = $this->createForm(new TariffType(), $entity, [
+            'hotel' => $this->hotel
+        ]);
 
         return [
             'form' => $form->createView(),
@@ -157,7 +159,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $entity = new Tariff();
         $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
 
-        $form = $this->createForm(new TariffType(), $entity);
+        $form = $this->createForm(new TariffType(), $entity, ['hotel' => $this->hotel]);
         $form->submit($request);
 
         if ($form->isValid()) {
@@ -190,7 +192,10 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffType(), $entity);
+        $form = $this->createForm(new TariffType(), $entity, [
+            'hotel' => $this->hotel,
+            'exclude' => [$entity->getId()]
+        ]);
         $form->submit($request);
 
         if ($form->isValid()) {
@@ -220,11 +225,16 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      */
     public function editAction(Tariff $entity)
     {
+        dump($entity);
+
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffType(), $entity);
+        $form = $this->createForm(new TariffType(), $entity, [
+            'hotel' => $this->hotel,
+            'exclude' => [$entity->getId()]
+        ]);
 
         return [
             'entity' => $entity,

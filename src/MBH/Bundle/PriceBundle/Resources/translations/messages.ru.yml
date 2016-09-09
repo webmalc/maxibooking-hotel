@@ -1,5 +1,7 @@
 form:
     promotionType:
+        help:
+          mergingTariffs: Используются для комбинирования тарифов в переходных периодах
         label:
             title: Внутреннее название
             fullTitle: Название

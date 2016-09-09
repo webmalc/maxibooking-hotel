@@ -15,6 +15,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\BaseBundle\Annotations as MBH;
 
 /**
  * @ODM\Document(collection="Tariffs", repositoryClass="MBH\Bundle\PriceBundle\Document\TariffRepository")
@@ -207,27 +208,31 @@ class Tariff extends Base implements ConditionsInterface
     protected $parent;
 
     /**
-     * @var boolean
-     * @Gedmo\Versioned
-     * @ODM\Boolean()
-     * @Assert\NotNull()
-     * @Assert\Type(type="boolean")
+     * @var Tariff[]
+     * @MBH\Versioned()
+     * @ODM\ReferenceMany(targetDocument="Tariff")
      */
-    protected $defaultForMerging = false;
+    protected $mergingTariffs;
 
-    public function __construct()
+
+    private function set(): void
     {
         $this->promotions = new ArrayCollection();
         $this->defaultServices = new ArrayCollection();
+        $this->services  = new ArrayCollection();
+        $this->mergingTariffs  = new ArrayCollection();
+    }
+
+    public function __construct()
+    {
+        $this->set();
     }
 
     public function __clone()
     {
         parent::__clone();
         $this->isDefault = false;
-        $this->promotions = new ArrayCollection();
-        $this->defaultServices = new ArrayCollection();
-        $this->services  = new ArrayCollection();
+        $this->set();
     }
 
     /**
@@ -599,25 +604,6 @@ class Tariff extends Base implements ConditionsInterface
     }
 
     /**
-     * @return boolean
-     */
-    public function isDefaultForMerging(): bool
-    {
-        return $this->defaultForMerging;
-    }
-
-    /**
-     * @param boolean $defaultForMerging
-     * @return Tariff
-     */
-    public function setDefaultForMerging(bool $defaultForMerging)
-    {
-        $this->defaultForMerging = $defaultForMerging;
-
-        return $this;
-    }
-
-    /**
      * @return mixed
      */
     public function getRestrictions()
@@ -670,6 +656,26 @@ class Tariff extends Base implements ConditionsInterface
         $this->roomCaches = $roomCaches;
         return $this;
     }
-    
-    
+
+    /**
+     * @return Tariff[]
+     */
+    public function getMergingTariffs()
+    {
+        return $this->mergingTariffs;
+    }
+
+    /**
+     * @param Tariff[] $mergingTariffs
+     * @return Tariff
+     */
+    public function setMergingTariffs($mergingTariffs): Tariff
+    {
+        $this->mergingTariffs = $mergingTariffs;
+
+        return $this;
+    }
+
+
+
 }

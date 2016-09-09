@@ -2,9 +2,10 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -12,9 +13,6 @@ class TariffType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
-        $conditions = PromotionConditionFactory::getAvailableConditions();
-
         $builder
             ->add('fullTitle', 'text', [
                 'label' => 'Название',
@@ -141,14 +139,20 @@ class TariffType extends AbstractType
                     'help' => 'До какого возраста клиент считается инфантом?'
                 ]
             )
-            ->add('defaultForMerging', CheckboxType::class, [
-                'label' => 'Использовать для комбинирования?',
+            ->add('merging_tariffs', DocumentType::class, [
+                'label' => 'Комбинировать с?',
+                'class' => 'MBH\Bundle\PriceBundle\Document\Tariff',
                 'group' => 'Настройки',
-                'value' => true,
+                'multiple'=> true,
                 'required' => false,
-                'help' =>
-                    'Использовать для комбинирования тарифов в переходных периодах?<br>
-                     По-молчанию спец. тарифы комбинируются с основным тарифом'
+                'query_builder' => function (DocumentRepository $dr) use ($options) {
+                    return $dr->createQueryBuilder()
+                        ->field('hotel.id')
+                        ->equals($options['hotel']->getId())
+                        ->field('id')->notIn($options['exclude'])
+                        ;
+                },
+                'help' => 'form.promotionType.help.mergingTariffs'
             ])
             ->add('isEnabled', 'checkbox', [
                 'label' => 'Включен?',
@@ -162,7 +166,9 @@ class TariffType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'MBH\Bundle\PriceBundle\Document\Tariff'
+            'data_class' => 'MBH\Bundle\PriceBundle\Document\Tariff',
+            'hotel' => null,
+            'exclude' => []
         ));
     }
 
