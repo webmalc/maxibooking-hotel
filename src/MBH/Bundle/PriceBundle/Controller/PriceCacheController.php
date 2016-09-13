@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Form\PriceCacheGeneratorType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("price_cache")
@@ -241,26 +242,54 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     }
 
     /**
-     * @Route("/generator", name="price_cache_generator")
+     * @Route("/generator/{id}", name="price_cache_generator", defaults={"id": null})
      * @Method("GET")
      * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
+     * @ParamConverter(class="MBHPriceBundle:PriceCache", isOptional=true)
      * @Template()
+     *
+     * @param PriceCache $cache
+     * @param Request $request
+     * @return array
      */
-    public function generatorAction(Request $request)
+    public function generatorAction(PriceCache $cache = null, Request $request): array
     {
-        $sessionFormData = [];
-        if ($request->getSession()->has('priceCacheGeneratorForm')) {
-            $sessionFormData = $request->getSession()->get('priceCacheGeneratorForm');
-            foreach ($sessionFormData['roomTypes'] as $id) {
-                $sessionFormData['roomTypes'][$id] = $this->dm->getRepository($this->manager->useCategories ? RoomTypeCategory::class : RoomType::class)->find($id);
+        $data = [];
+
+        if ($cache) {
+            // Data from PriceCache object
+            $data = $cache->toArray();
+
+            $data['begin'] = $data['date'];
+            $data['roomTypes'][] = $data['roomType'] ? $data['roomType'] : $data['roomTypeCategory'];
+            $data['tariffs'][] = $data['tariff'];
+            foreach (['singlePrice', 'additionalPrice', 'childPrice', 'additionalChildrenPrice'] as $name) {
+                $data[$name . 'Fake'] = $data[$name];
+            }
+            $setAdditionalPrices = function ($title) use (&$data) {
+                foreach (array_slice($data[$title . 's'], 1) as $key => $price) {
+                    $data[$title . ($key+1)] = $price;
+                    $data[$title . 'Fake' . ($key+1)] = $price;
+                }
+
+                return $data;
+            };
+            $setAdditionalPrices('additionalPrice');
+            $setAdditionalPrices('additionalChildrenPrice');
+        }
+        elseif ($request->getSession()->has('priceCacheGeneratorForm')) {
+            // Data from session
+            $data = $request->getSession()->get('priceCacheGeneratorForm');
+            foreach ($data['roomTypes'] as $id) {
+                $data['roomTypes'][$id] = $this->dm->getRepository($this->manager->useCategories ? RoomTypeCategory::class : RoomType::class)->find($id);
 
             }
-            foreach ($sessionFormData['tariffs'] as $id) {
-                $sessionFormData['tariffs'][$id] = $this->dm->getRepository(Tariff::class)->find($id);
+            foreach ($data['tariffs'] as $id) {
+                $data['tariffs'][$id] = $this->dm->getRepository(Tariff::class)->find($id);
             }
         }
 
-        $form = $this->createForm(new PriceCacheGeneratorType(), $sessionFormData, [
+        $form = $this->createForm(new PriceCacheGeneratorType(), $data, [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $this->hotel,
             'useCategories' => $this->manager->useCategories,
@@ -322,7 +351,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 $data['begin'], $data['end'], $this->hotel, $data['price'], $data['isPersonPrice'],
                 $data['singlePrice'], $data['additionalPrice'], $data['additionalChildrenPrice'],
                 $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays'],
-                $data['childPrice'], $additionalPrices, $childrenPrices
+                $data['childPrice'], $additionalPrices, $childrenPrices, $data['addPrices']
             );
 
             $this->get('mbh.channelmanager')->updatePricesInBackground();

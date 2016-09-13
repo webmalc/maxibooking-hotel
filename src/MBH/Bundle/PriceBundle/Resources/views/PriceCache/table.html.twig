@@ -22,13 +22,6 @@
                     <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff }}</small></td>
                 </tr>
 
-                <tr class="header">
-                    <td class="first-th"></td>
-                    {% for date in period %}
-                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
-                    {% endfor %}
-                </tr>
-
                 {% set categories = {'price': 'Цена'} %}
 
                 {% if roomType.isHostel is empty %}
@@ -48,6 +41,21 @@
                         {% set categories = categories|merge({('additionalPrice' ~ num): 'Цена за взрослое доп. место #' ~ (num + 1), ('additionalChildrenPrice' ~ num): 'Цена за детское доп. место #'  ~ (num + 1) }) %}
                     {% endfor %}
                 {% endif %}
+
+                <tr class="header">
+                    <td class="first-th"></td>
+                    {% for date in period %}
+                        {% set priceCache = priceCaches[roomType.id][tariff.id][date|date('d.m.Y')]|default(null) %}
+                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>
+                            {% if priceCache %}
+                                <small class="mbh-grid-edit-row">
+                                    <a data-toggle="tooltip" data-placement="top" title="Перейти в генератор с ценами из этого дня" href="{{ path('price_cache_generator', {'id': priceCache.id}) }}"><i class="fa fa-cog"></i></a>
+                                </small>&nbsp;
+                            {% endif %}
+                            {{ date|mbh_format }}</td>
+                    {% endfor %}
+                </tr>
+
 
                 {% for categoryId, category in categories %}
                     <tr>

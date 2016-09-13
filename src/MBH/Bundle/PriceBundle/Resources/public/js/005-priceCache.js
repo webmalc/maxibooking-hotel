@@ -73,9 +73,7 @@ $(document).ready(function () {
             showMessage = function () {
                 prices.each(function () {
                     var text = parseInt($(this).val(), 10) === -1 ? 'Цена будет удалена' : '';
-                    $(this).closest('.col-sm-6').
-                        next('.col-sm-4').
-                        html('<span class="text-danger text-left input-errors">' + text + '</span>');
+                    $(this).closest('.col-sm-6').next('.col-sm-4').html('<span class="text-danger text-left input-errors">' + text + '</span>');
                 });
             };
         showMessage();
@@ -89,7 +87,7 @@ $(document).ready(function () {
         var $hiddenPrices = $('.hidden-price');
         var $textPrices = $('.text-price');
 
-        $hiddenPrices.each(function(index, hiddenInput) {
+        $hiddenPrices.each(function (index, hiddenInput) {
             var $hiddenInput = $(hiddenInput);
             var $fakeInput = $($textPrices[index]);
             inputs.push([$fakeInput, $hiddenInput]);
@@ -119,7 +117,7 @@ $(document).ready(function () {
                     //$formGroup.addClass('has-error');
                 } else if ($fakeInput.val()) {
                     var $helpBlock = $fakeInput.siblings('.help-block');
-                    if($helpBlock.length == 0) {
+                    if ($helpBlock.length == 0) {
                         $helpBlock = $('<div class="help-block dynamic"></div>');
                         $fakeInput.after($helpBlock);
                     }
@@ -139,6 +137,7 @@ $(document).ready(function () {
                     $input.val(parseInt(value));
                 } else {
                     $fakeInput.val('');
+                    $input.val('');
                     return false;
                 }
                 return true;
@@ -147,7 +146,9 @@ $(document).ready(function () {
                 $fakeInput.on('change', function () {
                     updatePrice($fakeInput, $input);
                     updatePriceView($fakeInput, $input);
-                })
+                });
+                updatePrice($fakeInput, $input);
+                updatePriceView($fakeInput, $input);
             }
 
         $priceInput.on('change', function (e) {
@@ -160,5 +161,5 @@ $(document).ready(function () {
         });
 
         updatePriceViewList();
-    })()
+    })();
 });

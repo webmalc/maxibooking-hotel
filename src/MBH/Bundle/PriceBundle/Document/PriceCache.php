@@ -506,4 +506,9 @@ class PriceCache extends Base
         return $category ? $this->getRoomTypeCategory() : $this->getRoomType();
     }
 
+
+    public function getRoomTypeOrCategory()
+    {
+        return $this->roomType ? $this->roomType : $this->roomTypeCategory;
+    }
 }

@@ -52,13 +52,14 @@ class PriceCache
      * @param null $childPrice
      * @param array $additionalPrices
      * @param array $additionalChildrenPrices
+     * @param bool $addPrices
      */
     public function update(
         \DateTime $begin,
         \DateTime $end,
         Hotel $hotel,
         $price,
-        $isPersonPrice = false,
+        bool $isPersonPrice = false,
         $singlePrice = null,
         $additionalPrice = null,
         $additionalChildrenPrice = null,
@@ -67,8 +68,10 @@ class PriceCache
         array $weekdays = [],
         $childPrice = null,
         array $additionalPrices = [],
-        array $additionalChildrenPrices = []
+        array $additionalChildrenPrices = [],
+        bool $addPrices = false
     ) {
+
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $priceCaches = $updateCaches = $updates = $remove = [];
@@ -118,15 +121,29 @@ class PriceCache
                 $remove['_id']['$in'][] = new \MongoId($oldPriceCache->getId());
             }
 
+            $setPrices = function ($new, $old) {
+                foreach ($new as $key => $p) {
+                    if (is_null($p) && isset($old[$key])) {
+                        $new[$key] = $old[$key];
+                    }
+                }
+                return $new;
+            };
+
+            if ($addPrices) {
+                $additionalPrices = $setPrices($additionalPrices, $oldPriceCache->getAdditionalPrices());
+                $additionalChildrenPrices = $setPrices($additionalChildrenPrices, $oldPriceCache->getAdditionalChildrenPrices());
+            }
+
             $updates[] = [
                 'criteria' => ['_id' => new \MongoId($oldPriceCache->getId())],
                 'values' => [
                     'price' => (float) $price,
-                    'childPrice' => $childPrice,
-                    'isPersonPrice' => $isPersonPrice,
-                    'singlePrice' => $singlePrice,
-                    'additionalPrice' => $additionalPrice,
-                    'additionalChildrenPrice' => $additionalChildrenPrice,
+                    'childPrice' => $addPrices && !$childPrice ? $oldPriceCache->getChildPrice() : $childPrice,
+                    'isPersonPrice' => $addPrices && !$isPersonPrice ? $oldPriceCache->getIsPersonPrice() : $isPersonPrice,
+                    'singlePrice' => $addPrices && !$singlePrice ? $oldPriceCache->getSinglePrice() : $singlePrice,
+                    'additionalPrice' => $addPrices && !$additionalPrice ? $oldPriceCache->getAdditionalPrice() : $additionalPrice,
+                    'additionalChildrenPrice' => $addPrices && !$additionalChildrenPrice ? $oldPriceCache->getAdditionalChildrenPrice() : $additionalChildrenPrice,
                     'additionalPrices' => $additionalPrices,
                     'additionalChildrenPrices' => $additionalChildrenPrices
                 ]
