@@ -77,7 +77,13 @@ class Package extends Base implements JsonSerializable
      * @MBH\Versioned()
      */
     protected $tourists;
-    
+
+    /**
+
+     * @ODM\ReferenceMany(targetDocument="RestarauntSeat", mappedBy="package")
+     */
+    protected $restarauntSeat;
+
     /**
      * @var int
      * @Gedmo\Versioned
@@ -716,6 +722,7 @@ class Package extends Base implements JsonSerializable
    
     public function __construct()
     {
+        $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tourists = new \Doctrine\Common\Collections\ArrayCollection();
     }
 

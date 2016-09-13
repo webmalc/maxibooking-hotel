@@ -186,7 +186,6 @@ class TableController extends BaseController implements CheckHotelControllerInte
 
         if ($form->isValid()) {
 
-            $this->dm->persist($item);
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));

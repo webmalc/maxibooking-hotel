@@ -42,6 +42,11 @@ class TableManager
 
             for ($i = $newcount; $i < $count+$newcount; $i++) {
 
+                $chair = new Chair();
+                $chair->setType($type);
+                $chair->setTable($item);
+                $chair->setFullTitle($i);
+
                 $errors = $this->validator->validate($item);
 
                 if (count($errors)>0) {
@@ -49,15 +54,11 @@ class TableManager
                     foreach ($errors as $error)
                     {
                         $errorsString = (string) $error->getMessage();
-                        $session->getFlashBag()->add('danger',$errorsString);
+
                     }
-                    return ;
+                    return $session->getFlashBag()->add('danger',$errorsString);
                 }
                 else{
-                    $chair = new Chair();
-                    $chair->setType($type);
-                    $chair->setTable($item);
-                    $chair->setFullTitle($i);
                     $this->dm->persist($chair);
                     $this->dm->flush();
                 }

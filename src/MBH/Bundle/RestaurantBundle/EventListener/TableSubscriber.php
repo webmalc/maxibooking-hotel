@@ -11,6 +11,8 @@ namespace MBH\Bundle\RestaurantBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
+use Doctrine\ODM\MongoDB\Events;
 use MBH\Bundle\RestaurantBundle\Document\Table;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -42,7 +44,8 @@ class TableSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            'prePersist'
+            Events::prePersist => 'prePersist',
+            Events::preUpdate => 'onFlush',
         ];
     }
 
@@ -61,9 +64,41 @@ class TableSubscriber implements EventSubscriber
             foreach ($doc->getWithShifted() as $item )
             {
                 $doc->addShifted($item);
+
             }
         }
 
+
+    }
+
+    public function onFlush(OnFlushEventArgs $args)
+    {
+        $dm = $args->getDocumentManager();
+        $uow = $dm->getUnitOfWork();
+        $docs_tables = array();
+
+        $shiftTables=$uow->getScheduledCollectionUpdates();
+        foreach ($shiftTables as $shiftTable ) {
+            $docs_tables = $shiftTable->toArray();
+        }
+
+        $docs = array_merge(
+            $uow->getScheduledDocumentUpdates(),
+            $docs_tables
+        );
+
+        foreach ($docs as $doc) {
+
+            if ($doc instanceof Table) {
+
+                foreach ($doc->getWithShifted() as $item )
+                {
+                    $doc->addShifted($item);
+                }
+                $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($doc)), $doc);
+            }
+
+        }
 
     }
 

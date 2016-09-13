@@ -13,7 +13,7 @@ class TableValidator extends ConstraintValidator
      */
     protected $container;
 
-    const AMOUNT_CHAIRS = 19;
+    const AMOUNT_CHAIRS = 20;
 
     public function __construct(ContainerInterface $container)
     {
@@ -26,7 +26,6 @@ class TableValidator extends ConstraintValidator
      */
     public function validate($table, Constraint $constraint)
     {
-
         if ( count($table->getChairs()->toArray()) > self::AMOUNT_CHAIRS ) {
             $this->context->addViolation($constraint->messageError);
         }
