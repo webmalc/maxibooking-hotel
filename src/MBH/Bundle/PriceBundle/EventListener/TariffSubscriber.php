@@ -27,21 +27,7 @@ class TariffSubscriber implements EventSubscriber
     {
         return [
             'prePersist',
-            'preRemove',
         ];
-    }
-
-    /**
-     * @param LifecycleEventArgs $args
-     * @throws DeleteException
-     */
-    public function preRemove(LifecycleEventArgs $args)
-    {
-        $doc = $args->getDocument();
-
-        if ($doc instanceof Tariff && $doc->getIsDefault()) {
-            throw new DeleteException('Невозможно удалить основной тариф.');
-        }
     }
 
     /**

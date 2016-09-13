@@ -27,7 +27,6 @@ class RoomSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            Events::preRemove => 'preRemove',
             Events::prePersist => 'prePersist',
         ];
     }
@@ -38,11 +37,6 @@ class RoomSubscriber implements EventSubscriber
         if($document instanceof Room) {
             $this->container->get('mbh.cache')->clear('accommodation_rooms');
         }
-    }
-
-    public function preRemove(LifecycleEventArgs $args)
-    {
-        $this->clearCache($args);
     }
 
     public function prePersist(LifecycleEventArgs $args)

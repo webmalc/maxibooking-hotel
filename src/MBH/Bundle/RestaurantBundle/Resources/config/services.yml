@@ -1,10 +1,4 @@
 services:
-  mbh.testaurant.subscriber:
-    class: MBH\Bundle\RestaurantBundle\EventListener\RestaurantSubscriber
-    arguments: ["@service_container"]
-    tags:
-      - { name: doctrine_mongodb.odm.event_subscriber, connection: default }
-
   mbh__restaurant.form_dish_order.dish_order_item_emmbedded_type:
       class: MBH\Bundle\RestaurantBundle\Form\DishOrder\DishOrderItemEmmbeddedType
       arguments: ['@request_stack', '@mbh.hotel.selector', '@mbh.helper']
