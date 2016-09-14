@@ -42,7 +42,6 @@ class Subscriber implements EventSubscriber
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->translator = $this->container->get('translator');
     }
 
     public function preRemove(LifecycleEventArgs $args)

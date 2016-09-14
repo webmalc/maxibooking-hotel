@@ -69,17 +69,7 @@ class RestaurantSubscriber implements EventSubscriber
                 ->getQuery();
 
             if ($query->count()) {
-                $dishlist = '';
-                $router = $this->container->get('router');
-
-                foreach ($query->execute() as $dishItem) {
-                    /** @var DishMenuItem $dishItem */
-                    $route = $router->generate('restaurant_dishmenu_item_edit', ['id' => $dishItem->getId()]);
-                    $dishlist .= '<a href="' . $route . '">' . $dishItem->getName() . '</a> .';
-                }
-
-                $message = 'Невозможно удалить ингредиент ' . $doc->getName() . ' так как он используется в блюдах: ' . $dishlist;
-                throw new DeleteException($message);
+                throw new DeleteException('exception.ingredient_relation_delete.message.dishIngredient', $query->count());
             }
         }
 
