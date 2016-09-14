@@ -96,7 +96,7 @@ mbhpricebundle.form.roomcachegeneratortype.ustanovitʹkvotynomerovpotarifam?: У
 mbhpricebundle.form.roomcachegeneratortype.tarify: Тарифы
 mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot: Тарифы для готорых будет произведена генерация квот
 mbhpricebundle.form.roomcachegeneratortype.kvotynebudutsgenerirovany: Квоты не будут сгенерированы
-mbhpricebundle.form.roomcachegeneratortype.kolichestvomest: Количество мест
+mbhpricebundle.form.roomcachegeneratortype.kolichestvomest: Количество мест, доступных в выбранные сроки. Минус один (-1) для удаления дней'
 mbhpricebundle.form.roomcachegeneratortype.zakryto?: Закрыто?
 mbhpricebundle.form.tariffinheritancetype.tseny: Цены
 mbhpricebundle.form.tariffinheritancetype.nasledovatʹlitsenyotroditelʹskogotarifa: Наследовать ли цены от родительского тарифа

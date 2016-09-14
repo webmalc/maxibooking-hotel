@@ -29,12 +29,47 @@ class PackageSubscriber implements EventSubscriber
     {
         return array(
             Events::prePersist => 'prePersist',
+            Events::preRemove => 'preRemove',
             Events::postPersist => 'postPersist',
             'postSoftDelete' => 'postSoftDelete',
             Events::onFlush => 'onFlush',
             Events::preUpdate => 'preUpdate',
             Events::postUpdate => 'postUpdate'
         );
+    }
+
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $entity = $args->getDocument();
+
+        //Calc services price
+        if($entity instanceof PackageService) {
+            try {
+                $package = $entity->getPackage();
+                $this->container->get('mbh.calculation')->setServicesPrice($package, null, $entity);
+                $dm->persist($package);
+                $dm->flush();
+            } catch (\Exception $e) {
+
+            }
+        }
+
+        //Calc package
+        if($entity instanceof Package) {
+            foreach ($entity->getServices() as $packageService) {
+                $packageService->setDeletedAt(new \DateTime());
+                $dm->persist($packageService);
+            }
+            $entity->setServicesPrice(0);
+            $dm->persist($entity);
+            $dm->flush();
+
+            $this->container->get('mbh.cache')->clear('accommodation_rooms');
+            $this->container->get('mbh.cache')->clear('room_cache_fetch');
+        }
+        return;
     }
 
     public function postPersist(LifecycleEventArgs $args)

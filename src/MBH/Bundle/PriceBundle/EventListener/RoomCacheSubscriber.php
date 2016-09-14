@@ -28,7 +28,8 @@ class RoomCacheSubscriber implements EventSubscriber
     {
         return [
             'preUpdate',
-            'prePersist'
+            'prePersist',
+            'preRemove'
         ];
     }
 
@@ -56,5 +57,19 @@ class RoomCacheSubscriber implements EventSubscriber
         $this->container->get('mbh.room.cache')->recalculateByPackagesBackground(
             $doc->getDate(), $doc->getDate(), [$doc->getRoomType()->getId()]
         );
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     * @throws DeleteException
+     */
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        $doc = $args->getDocument();
+
+        if ($doc instanceof RoomCache && $doc->getPackagesCount() > 0) {
+
+            throw new DeleteException('Невозможно удалить «Номер в продаже» с забронированными номерами.');
+        }
     }
 }
