@@ -158,6 +158,12 @@ class User extends BaseUser implements RecipientInterface
     protected $twoFactorAuthentication = false;
 
     /**
+     * @var string $googleAuthenticatorCode Stores the secret code
+     * @ODM\Field(type="string")
+     */
+    private $googleAuthenticatorCode;
+
+    /**
      * @var integer $twoFactorCode Current authentication code
      * @ODM\Field(type="integer")
      */
@@ -521,5 +527,25 @@ class User extends BaseUser implements RecipientInterface
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getGoogleAuthenticatorCode(): string
+    {
+        return $this->googleAuthenticatorCode;
+    }
+
+    /**
+     * @param string $googleAuthenticatorCode
+     * @return User
+     */
+    public function setGoogleAuthenticatorCode(string $googleAuthenticatorCode): User
+    {
+        $this->googleAuthenticatorCode = $googleAuthenticatorCode;
+        return $this;
+    }
+
+
 
 }

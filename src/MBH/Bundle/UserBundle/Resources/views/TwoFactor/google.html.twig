@@ -5,7 +5,8 @@
 <form class="form" action="{{ path('_welcome') }}" method="post"  class="form login-form" role="form"
       method="post" accept-charset="UTF-8">
 
-    <p>Вам на почту выслан код для входа</p>
+    <p><strong>Введите код из приложения телефона Google Authenticator</strong></p>
+    <p><small>Если Google Authenticator не настроен, проверьте почтовый ящик для получения дальнейших инструкций</small></p>
 
     <div class="form-group has-feedback">
         <input type="text" name="_auth_code" class="form-control" placeholder="{{ 'security.two_factor.code'|trans() }}" required>
@@ -21,7 +22,6 @@
             </button>
         </div>
     </div>
-
 </form>
 
 {% endblock %}

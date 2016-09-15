@@ -1,5 +1,5 @@
 <?php
-namespace MBH\Bundle\UserBundle\Service\TwoFactor\Email;
+namespace MBH\Bundle\UserBundle\Service\TwoFactor;
 
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -8,7 +8,7 @@ use MBH\Bundle\UserBundle\Document\User;
 class InteractiveLoginListener
 {
     /**
-     * @var Helper $helper
+     * @var HelperInterface $helper
      */
     private $helper;
 
@@ -19,10 +19,10 @@ class InteractiveLoginListener
 
     /**
      * Construct a listener, which is handling successful authentication
-     * @param Helper $helper
+     * @param HelperInterface $helper
      * @param bool $enabled
      */
-    public function __construct(Helper $helper, bool $enabled = false)
+    public function __construct(HelperInterface $helper, bool $enabled = false)
     {
         $this->helper = $helper;
         $this->enabled = $enabled;
@@ -34,6 +34,10 @@ class InteractiveLoginListener
      */
     public function onSecurityInteractiveLogin(InteractiveLoginEvent $event)
     {
+        if (!$this->enabled) {
+            return;
+        }
+
         $session = $event->getRequest()->getSession();
 
         if (!$event->getAuthenticationToken() instanceof UsernamePasswordToken)
@@ -46,10 +50,6 @@ class InteractiveLoginListener
         $user = $token->getUser();
         if (!$user instanceof User)
         {
-            return;
-        }
-
-        if (!$this->enabled) {
             return;
         }
 
