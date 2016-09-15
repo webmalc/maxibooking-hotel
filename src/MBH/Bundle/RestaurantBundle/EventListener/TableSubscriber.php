@@ -44,31 +44,8 @@ class TableSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            Events::prePersist => 'prePersist',
             Events::preUpdate => 'onFlush',
         ];
-    }
-
-
-
-    /**
-     * @param LifecycleEventArgs $args
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    public function prePersist(LifecycleEventArgs $args)
-    {
-        $doc = $args->getDocument();
-
-        if ($doc instanceof Table) {
-
-            foreach ($doc->getWithShifted() as $item )
-            {
-                $doc->addShifted($item);
-
-            }
-        }
-
-
     }
 
     public function onFlush(OnFlushEventArgs $args)
@@ -77,8 +54,8 @@ class TableSubscriber implements EventSubscriber
         $uow = $dm->getUnitOfWork();
         $docs_tables = array();
 
-        $shiftTables=$uow->getScheduledCollectionUpdates();
-        foreach ($shiftTables as $shiftTable ) {
+        $shiftTables = $uow->getScheduledCollectionUpdates();
+        foreach ($shiftTables as $shiftTable) {
             $docs_tables = $shiftTable->toArray();
         }
 
@@ -91,8 +68,7 @@ class TableSubscriber implements EventSubscriber
 
             if ($doc instanceof Table) {
 
-                foreach ($doc->getWithShifted() as $item )
-                {
+                foreach ($doc->getWithShifted() as $item) {
                     $doc->addShifted($item);
                 }
                 $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($doc)), $doc);

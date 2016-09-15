@@ -18,7 +18,7 @@ class TableManager
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
-   private $container;
+    private $container;
     /**
      * @var \Symfony\Component\Validator\Validator;
      */
@@ -38,9 +38,9 @@ class TableManager
 
         if ($count) {
             $session = $this->container->get('session');
-            $last_item ?  $newcount = $last_item->getFullTitle()+1 : $newcount=1;
+            $last_item ? $newCount = $last_item->getFullTitle() + 1 : $newCount = 1;
 
-            for ($i = $newcount; $i < $count+$newcount; $i++) {
+            for ($i = $newCount; $i < $count + $newCount; $i++) {
 
                 $chair = new Chair();
                 $chair->setType($type);
@@ -49,16 +49,14 @@ class TableManager
 
                 $errors = $this->validator->validate($item);
 
-                if (count($errors)>0) {
+                if (count($errors) > 0) {
 
-                    foreach ($errors as $error)
-                    {
-                        $errorsString = (string) $error->getMessage();
+                    foreach ($errors as $error) {
+                        $errorsString = (string)$error->getMessage();
 
                     }
-                    return $session->getFlashBag()->add('danger',$errorsString);
-                }
-                else{
+                    return $session->getFlashBag()->add('danger', $errorsString);
+                } else {
                     $this->dm->persist($chair);
                     $this->dm->flush();
                 }

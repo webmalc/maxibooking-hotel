@@ -127,7 +127,7 @@ class Table extends Base
         return $this->withShifted;
     }
     /**
-     * @return string
+     * @return mixed
      */
     public function addWithShifted(Table $table)
     {
@@ -135,15 +135,14 @@ class Table extends Base
         $this->withShifted[]=$table;
     }
     /**
-     * @return string
+     * @return ArrayCollection
      */
     public function getShifted()
     {
         return $this->shifted;
     }
-
     /**
-     * @param string $shifted
+     * @return mixed
      */
     public function addShifted(Table $table)
     {

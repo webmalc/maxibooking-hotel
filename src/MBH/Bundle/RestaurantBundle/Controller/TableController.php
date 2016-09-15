@@ -105,7 +105,8 @@ class TableController extends BaseController implements CheckHotelControllerInte
 
             $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('restaurant.exceptions.editsuccsess'));
 
-            return $this->afterSaveRedirect('restaurant_table_category', $category->getId());
+            return $this->redirectToRoute('restaurant_table_category', ['tab' => $category->getId()]);
+
         }
 
         return [
@@ -145,7 +146,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
         $table = new Table();
         $table->setCategory($category);
         $table->setHotel($this->hotel);
-        $form = $this->createForm(new TableType($this->dm,$this->container), $table);
+        $form = $this->createForm(new TableType($this->dm, $this->container), $table);
 
         $form->handleRequest($request);
 
@@ -181,7 +182,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TableType($this->dm,$this->container), $item);
+        $form = $this->createForm(new TableType($this->dm, $this->container), $item);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -219,7 +220,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
     }
 
     /**
-     * @Route("/quicksave", name="restaurant_table_save")
+     * @Route("/quicksave/", name="restaurant_table_save")
      * @Method("GET")
      * @Security("is_granted('ROLE_RESTAURANT_TABLE_EDIT')")
      * @param Request $request
@@ -227,6 +228,8 @@ class TableController extends BaseController implements CheckHotelControllerInte
      */
     public function quickSaveAction(Request $request)
     {
+        $idCategory = substr($request->query->get('activetab'), 1);
+
         $entries = $request->get('entries');
 
         $tableRepository = $this->dm->getRepository('MBHRestaurantBundle:Table');
@@ -262,7 +265,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
                 $flashBag->set('danger', $this->get('translator')->trans('restaurant.exceptions.danger'));
         }
 
-        return $this->redirectToRoute('restaurant_table');
+        return $this->redirectToRoute('restaurant_table_category', ['tab' => $idCategory]);
     }
 
 
@@ -285,7 +288,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
             'type' => false,
         ];
 
-        $form = $this->createForm( new ChairType(), $chairDescription);
+        $form = $this->createForm(new ChairType(), $chairDescription);
 
         $form->handleRequest($request);
 

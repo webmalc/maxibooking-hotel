@@ -19,6 +19,7 @@ class TableValidator extends ConstraintValidator
     {
         $this->container = $container;
     }
+
     /**
      * @param \MBH\Bundle\RestaurantBundle\Document\Table $table
      * @param Constraint $constraint
@@ -26,10 +27,10 @@ class TableValidator extends ConstraintValidator
      */
     public function validate($table, Constraint $constraint)
     {
-        if ( count($table->getChairs()->toArray()) > self::AMOUNT_CHAIRS ) {
+        if ($table->getChairs()->count() > self::AMOUNT_CHAIRS) {
             $this->context->addViolation($constraint->messageError);
         }
-            return true;
+        return true;
     }
 
 }
