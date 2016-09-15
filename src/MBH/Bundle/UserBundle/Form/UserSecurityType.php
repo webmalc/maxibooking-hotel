@@ -17,6 +17,12 @@ class UserSecurityType extends AbstractType
                 'value' => true,
                 'required' => false,
             ])
+            ->add('twoFactorAuthentication', 'checkbox', [
+                'group' => 'form.userType.settings',
+                'label' => 'form.userType.two_factor',
+                'value' => true,
+                'required' => false,
+            ])
             ->add('expiresAt', 'date', [
                 'label' => 'form.userType.expires_at',
                 'group' => 'form.userType.settings',

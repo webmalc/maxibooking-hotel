@@ -152,6 +152,18 @@ class User extends BaseUser implements RecipientInterface
     protected $isEnabledWorkShift = false;
 
     /**
+     * @var boolean $twoFactorAuthentication Enabled yes/no
+     * @ODM\Boolean()
+     */
+    protected $twoFactorAuthentication = false;
+
+    /**
+     * @var integer $twoFactorCode Current authentication code
+     * @ODM\Field(type="integer")
+     */
+    protected $twoFactorCode;
+
+    /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
      */
@@ -473,5 +485,41 @@ class User extends BaseUser implements RecipientInterface
         $this->defaultNoticeDoc = $defaultNoticeDoc;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isTwoFactorAuthentication(): bool
+    {
+        return $this->twoFactorAuthentication;
+    }
+
+    /**
+     * @param boolean $twoFactorAuthentication
+     * @return User
+     */
+    public function setTwoFactorAuthentication(bool $twoFactorAuthentication): User
+    {
+        $this->twoFactorAuthentication = $twoFactorAuthentication;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTwoFactorCode(): int
+    {
+        return $this->twoFactorCode;
+    }
+
+    /**
+     * @param int $twoFactorCode
+     * @return User
+     */
+    public function setTwoFactorCode(int $twoFactorCode): User
+    {
+        $this->twoFactorCode = $twoFactorCode;
+
+        return $this;
+    }
 
 }
