@@ -1,0 +1,20 @@
+{% extends 'MBHChannelManagerBundle:HundredOneHotels:layout.html.twig' %}
+
+{% set small_title = 'views.hundredOneHotels.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': config, 'base': 'hundred_one_hotels'} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            {{ form_start(form, {'action': path('hundred_one_hotels_save'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHChannelManagerBundle::actions.html.twig' %}
+            {%  if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+            {%  endif %}
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

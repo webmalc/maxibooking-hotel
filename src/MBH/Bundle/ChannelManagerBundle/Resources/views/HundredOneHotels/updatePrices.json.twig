@@ -1,0 +1,21 @@
+{
+    "api_key" : "wpYofbd5ns4Y2EGfGHv0",
+    "hotel_id" : "{{ config.hotel.id }}",
+    "service" : "set_calendar",
+    "data" : [
+        {% for date, dayPrices in prices  %}
+        {
+            "day" : "{{ date }}",
+            "prices" : {
+                {% for roomTypeId, roomPrices in roomTypePrices %}
+                "{{ roomTypeId }}" : {
+                    {% for roomId, roomPrice in roomPrices %}
+                    "{{ roomId }}" : "{{ roomPrice }}"
+                }
+                {% endfor %}
+                {% endfor %}
+            },
+        },
+        {% endfor %}
+    ]
+}

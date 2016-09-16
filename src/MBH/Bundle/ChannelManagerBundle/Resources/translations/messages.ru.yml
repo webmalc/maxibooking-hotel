@@ -48,7 +48,10 @@ form.ostrovokType.in_included: Включен?
 form.ostrovokType.hotel_id: ID отеля
 form.ostrovokType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
 form.ostrovokType.ostrovok_ru_settings_hotel_id:  ID отеля в настройках Ostrovok.ru
-
+form.hundredOneHotels.is_included: Включен?
+form.hundredOneHotels.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.hundredOneHotels.hotel_id: ID отеля
+form.hundredOneHotels.hotel_id_in_booking_com: ID отеля в 101hotels.ru
 
 #myAllocator
 form.myallocatorType.username: Логин

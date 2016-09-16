@@ -1,0 +1,26 @@
+{
+    "api_key" : "wpYofbd5ns4Y2EGfGHv0",
+    "hotel_id" : "{{ config.hotel.id }}",
+    "service" : "set_calendar",
+    "data" : [
+        {
+        {% for day, dayRestrictions in restrictions %}
+            "day" : "{{ day }}",
+            {% for roomRestrictions in dayRestrictions %}
+            "closed_to_arrival" : {
+                "23" : { "110" : 1 },
+                "78" : { "342" : 1 }
+            },
+            "closed_to_departure" : {
+                "23" : { "110" : 1 },
+                "78" : { "342" : 1 }
+            },
+            "min_stay" : {
+                "23" : { "110" : 5 },
+                "78" : { "342" : 0 }
+            }
+            {% endfor %}
+        {% endfor %}
+        }
+    ]
+}
