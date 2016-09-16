@@ -37,6 +37,7 @@ twig:
     strict_variables: "%kernel.debug%"
     base_template_class: MBH\Bundle\BaseBundle\Twig\Template
     globals:
+        recaptcha: "%mbh.recaptcha%"
         meta_title: 'Система бронирования "MaxiBooking".'
         project_title: 'MaxiBooking'
         months:

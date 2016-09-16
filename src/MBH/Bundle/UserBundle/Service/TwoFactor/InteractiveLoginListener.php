@@ -34,6 +34,10 @@ class InteractiveLoginListener
      */
     public function onSecurityInteractiveLogin(InteractiveLoginEvent $event)
     {
+        /*$recaptcha = new \ReCaptcha\ReCaptcha('6Lev6AYUAAAAAIk51IMnRdGS4Im_-1h3pk-cM87a');
+        $resp = $recaptcha->verify($_POST['g-recaptcha-response'], $_SERVER['REMOTE_ADDR']);
+        dump($resp->isSuccess());
+        exit();*/
 
         $session = $event->getRequest()->getSession();
 

@@ -42,7 +42,8 @@
     "myallocator/myallocator-php-sdk": "dev-master",
     "leafo/scssphp": "^0.6.3",
     "leaseweb/memcache-bundle": "^2.1",
-    "sonata-project/google-authenticator": "^1.0"
+    "sonata-project/google-authenticator": "^1.0",
+    "google/recaptcha": "^1.1"
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3"
