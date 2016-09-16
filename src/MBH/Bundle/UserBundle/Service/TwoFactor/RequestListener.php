@@ -34,12 +34,8 @@ class RequestListener
     /**
      * @var bool $helper
      */
-    private $enabled = false;
+    private $type= false;
 
-    /**
-     * @var string
-     */
-    private $template;
 
     /**
      * Construct the listener
@@ -47,18 +43,17 @@ class RequestListener
      * @param \Symfony\Component\Security\Core\SecurityContextInterface $securityContext
      * @param \Symfony\Bundle\FrameworkBundle\Templating\EngineInterface $templating
      * @param \Symfony\Bundle\FrameworkBundle\Routing\Router $router
-     * @param bool $enabled
+     * @param string $type
      */
     public function __construct(
         HelperInterface $helper, SecurityContextInterface $securityContext,
-        EngineInterface $templating, Router $router, bool $enabled = false, string $template)
+        EngineInterface $templating, Router $router, string $type)
     {
         $this->helper = $helper;
         $this->securityContext = $securityContext;
         $this->templating = $templating;
         $this->router = $router;
-        $this->enabled = $enabled;
-        $this->template = $template;
+        $this->type = $type;
     }
 
     /**
@@ -67,10 +62,6 @@ class RequestListener
      */
     public function onCoreRequest(GetResponseEvent $event)
     {
-        if (!$this->enabled) {
-            return;
-        }
-
         $token = $this->securityContext->getToken();
         if (!$token) {
             return;
@@ -89,6 +80,10 @@ class RequestListener
             return;
         }
         if ($session->get($key) === true) {
+            return;
+        }
+        if ($user->getTwoFactorAuthentication() != $this->type)
+        {
             return;
         }
 
@@ -113,7 +108,7 @@ class RequestListener
         }
 
         //Force authentication code dialog
-        $response = $this->templating->renderResponse($this->template);
+        $response = $this->templating->renderResponse('MBHUserBundle:TwoFactor:' . $this->type . '.html.twig');
         $event->setResponse($response);
     }
 }

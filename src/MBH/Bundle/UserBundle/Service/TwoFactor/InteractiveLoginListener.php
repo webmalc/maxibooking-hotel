@@ -15,17 +15,17 @@ class InteractiveLoginListener
     /**
      * @var bool $helper
      */
-    private $enabled = false;
+    private $type = null;
 
     /**
      * Construct a listener, which is handling successful authentication
      * @param HelperInterface $helper
-     * @param bool $enabled
+     * @param string $type
      */
-    public function __construct(HelperInterface $helper, bool $enabled = false)
+    public function __construct(HelperInterface $helper, string $type)
     {
         $this->helper = $helper;
-        $this->enabled = $enabled;
+        $this->type = $type;
     }
 
     /**
@@ -34,9 +34,6 @@ class InteractiveLoginListener
      */
     public function onSecurityInteractiveLogin(InteractiveLoginEvent $event)
     {
-        if (!$this->enabled) {
-            return;
-        }
 
         $session = $event->getRequest()->getSession();
 
@@ -48,12 +45,8 @@ class InteractiveLoginListener
         //Check if user can do two-factor authentication
         $token = $event->getAuthenticationToken();
         $user = $token->getUser();
-        if (!$user instanceof User)
-        {
-            return;
-        }
 
-        if (!$user->isTwoFactorAuthentication())
+        if (!$user instanceof User || $user->getTwoFactorAuthentication() != $this->type)
         {
             return;
         }

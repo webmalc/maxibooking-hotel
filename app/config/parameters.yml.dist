@@ -55,7 +55,3 @@ parameters:
 
   mbh_modules:
     tasks: true
-
-  # Two-factor auth
-  mbh_two_factor_email: false
-  mbh_two_factor_google: false

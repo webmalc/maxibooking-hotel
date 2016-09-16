@@ -51,13 +51,13 @@ services:
 
     mbh.twofactor.email.interactive_login_listener:
           class: MBH\Bundle\UserBundle\Service\TwoFactor\InteractiveLoginListener
-          arguments: ["@mbh.twofactor.email.helper", "%mbh_two_factor_email%"]
+          arguments: ["@mbh.twofactor.email.helper", "email"]
           tags:
             - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
 
     mbh.twofactor.email.request_listener:
               class: MBH\Bundle\UserBundle\Service\TwoFactor\RequestListener
-              arguments: ["@mbh.twofactor.email.helper", "@security.context", "@templating", "@router", "%mbh_two_factor_email%", "MBHUserBundle:TwoFactor:email.html.twig"]
+              arguments: ["@mbh.twofactor.email.helper", "@security.context", "@templating", "@router", "email"]
               tags:
                 - { name: kernel.event_listener, event: kernel.request, method: onCoreRequest, priority: "-1"}
 
@@ -70,12 +70,12 @@ services:
 
     mbh.twofactor.google.interactive_login_listener:
           class: MBH\Bundle\UserBundle\Service\TwoFactor\InteractiveLoginListener
-          arguments: ["@mbh.twofactor.google.helper", "%mbh_two_factor_google%"]
+          arguments: ["@mbh.twofactor.google.helper", "google"]
           tags:
             - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
 
     mbh.twofactor.google.request_listener:
               class: MBH\Bundle\UserBundle\Service\TwoFactor\RequestListener
-              arguments: ["@mbh.twofactor.google.helper", "@security.context", "@templating", "@router", "%mbh_two_factor_google%", "MBHUserBundle:TwoFactor:google.html.twig"]
+              arguments: ["@mbh.twofactor.google.helper", "@security.context", "@templating", "@router", "google"]
               tags:
                 - { name: kernel.event_listener, event: kernel.request, method: onCoreRequest, priority: "-1"}

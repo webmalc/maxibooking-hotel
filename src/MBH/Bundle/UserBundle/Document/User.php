@@ -28,6 +28,7 @@ use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
 class User extends BaseUser implements RecipientInterface
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
+    const TWO_FACTOR_TYPES = ['email', 'google'];
 
     /**
      * @var string
@@ -152,10 +153,11 @@ class User extends BaseUser implements RecipientInterface
     protected $isEnabledWorkShift = false;
 
     /**
-     * @var boolean $twoFactorAuthentication Enabled yes/no
-     * @ODM\Boolean()
+     * @var string $twoFactorAuthentication google or email
+     * @ODM\Field(type="string")
+     * @Assert\Choice(callback = "getTwoFactorTypes")
      */
-    protected $twoFactorAuthentication = false;
+    protected $twoFactorAuthentication;
 
     /**
      * @var string $googleAuthenticatorCode Stores the secret code
@@ -492,20 +494,21 @@ class User extends BaseUser implements RecipientInterface
     }
 
     /**
-     * @return boolean
+     * @return string
      */
-    public function isTwoFactorAuthentication(): bool
+    public function getTwoFactorAuthentication()
     {
         return $this->twoFactorAuthentication;
     }
 
     /**
-     * @param boolean $twoFactorAuthentication
+     * @param string $twoFactorAuthentication
      * @return User
      */
-    public function setTwoFactorAuthentication(bool $twoFactorAuthentication): User
+    public function setTwoFactorAuthentication($twoFactorAuthentication): User
     {
         $this->twoFactorAuthentication = $twoFactorAuthentication;
+
         return $this;
     }
 
@@ -531,7 +534,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @return string
      */
-    public function getGoogleAuthenticatorCode(): string
+    public function getGoogleAuthenticatorCode()
     {
         return $this->googleAuthenticatorCode;
     }
@@ -546,6 +549,11 @@ class User extends BaseUser implements RecipientInterface
         return $this;
     }
 
-
-
+    /**
+     * @return array
+     */
+    public static function getTwoFactorTypes(): array
+    {
+        return self::TWO_FACTOR_TYPES;
+    }
 }
