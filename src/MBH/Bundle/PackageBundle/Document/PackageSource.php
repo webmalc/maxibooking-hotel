@@ -16,7 +16,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
- * @MongoDBUnique(fields={"title", "fullTitle"}, message="Такой источник уже существует")
+ * @MongoDBUnique(fields={"title", "fullTitle", "code"}, message="Такой источник уже существует")
  */
 class PackageSource extends Base
 {
@@ -70,6 +70,59 @@ class PackageSource extends Base
      */
     protected $title;
 
+    /**
+     * @var boolean
+     * @ODM\Field(type="boolean", name="system")
+     * @Assert\NotNull()
+     */
+    protected $system;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string", name="code")
+     */
+    protected $code;
+
+    public function __construct()
+    {
+       $this->setSystem(false);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSystem()
+    {
+        return $this->system;
+    }
+
+    /**
+     * @param mixed $system
+     * @return PackageSource
+     */
+    public function setSystem($system)
+    {
+        $this->system = $system;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     * @return PackageSource
+     */
+    public function setCode(string $code): PackageSource
+    {
+        $this->code = $code;
+        return $this;
+    }
     /**
      * Set fullTitle
      *
@@ -128,11 +181,6 @@ class PackageSource extends Base
         return $this->fullTitle;
     }
 
-    public function __construct()
-    {
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
     /**
      * Add order
      *
@@ -152,6 +200,7 @@ class PackageSource extends Base
     {
         $this->orders->removeElement($order);
     }
+
 
     /**
      * Get orders

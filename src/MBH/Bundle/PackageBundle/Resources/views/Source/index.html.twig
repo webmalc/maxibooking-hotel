@@ -26,9 +26,11 @@
                     <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
                         <i class="fa fa-pencil-square-o"></i>
                     </a>
+                    {% if entity.system == false  %}
                     <a href="{{ path('package_source_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
                         <i class="fa fa-trash-o"></i>
                     </a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}
