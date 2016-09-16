@@ -34,6 +34,41 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     /**
      * Porter report.
      *
+     * @Route("/windows", name="report_windows")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_WINDOWS_REPORT')")
+     * @Template()
+     */
+    public function windowsAction()
+    {
+        return [
+            'roomTypes' => $this->hotel->getRoomTypes(),
+        ];
+    }
+
+    /**
+     * Windows report table.
+     *
+     * @Route("/windows/table", name="report_windows_table", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_WINDOWS_REPORT')")
+     * @Template()
+     * @param $request Request
+     * @return array
+     */
+    public function windowsTableAction(Request $request)
+    {
+        $generator = $this->get('mbh.package.windows.report.generator');
+
+        return [
+            'data' => $generator->generate($request, $this->hotel),
+            'error' => $generator->getError()
+        ];
+    }
+
+    /**
+     * Porter report.
+     *
      * @Route("/porter/{type}", name="report_porter", defaults={"type"="lives"}, requirements={
      *      "type" : "lives|arrivals|out"
      * })
@@ -600,10 +635,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     {
         $roomID = $request->get('roomID');
         $code = $request->get('value');
-        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
-        $roomStatusRepository = $this->dm->getRepository('MBHHotelBundle:RoomStatus');
-        $room = $roomRepository->find($roomID);
-        $roomStatus = $roomStatusRepository->findOneBy(['code' => $code]);
+        $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($roomID);
+        $roomStatus = $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findOneBy(['code' => $code]);
         if(!$room) {
             throw $this->createNotFoundException();
         }

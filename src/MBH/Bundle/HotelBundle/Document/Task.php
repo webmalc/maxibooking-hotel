@@ -28,15 +28,17 @@ class Task extends Base
 
     use HotelableDocument;
 
-    const PRIORITY_LOW = 0;
-    const PRIORITY_AVERAGE = 1;
-    const PRIORITY_HIGH = 2;
+    const PRIORITY_LOW = 1;
+    const PRIORITY_AVERAGE = 2;
+    const PRIORITY_HIGH = 3;
 
     const STATUS_OPEN = 'open';
     const STATUS_PROCESS = 'process';
     const STATUS_CLOSED = 'closed';
 
     const DAY_DEAL_LINE = 3;
+
+    const AUTO_CREATE = 'Автоматически созданная задача';
 
     /**
      * @var string

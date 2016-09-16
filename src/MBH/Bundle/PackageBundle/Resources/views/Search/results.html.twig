@@ -21,7 +21,6 @@
         </tr>
         </thead>
         <tbody>
-
     {% for row in results %}
 
         <tr class="mbh-grid-header1 info">
@@ -47,7 +46,6 @@
         </tr>
 
         {% for result in row.results %}
-
             <tr {% if query.begin == result.begin and query.end == result.end and query.range %}class="success"{% endif %}>
                 <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
                 <td>
@@ -80,7 +78,8 @@
                         <select class="form-control input-sm search-room-select">
                             <option></option>
                             {% for room in  result.rooms %}
-                                <option {% if room.status and room.status.code in roomStatusIcons %}data-icon="mbf-{{ roomStatusIcons[room.status.code] }}"{% endif %} {% if query.room == room.id %}selected{% endif %}
+                                <option  {% if room.status is iterable and room.status is not empty %}data-icon="{% for status in room.status %}{% if status.code in roomStatusIcons|keys  %}mbf-{{ roomStatusIcons[status.code] }};{% endif %}{% endfor %} "{% endif %}
+                                        {% if query.room == room.id %}selected{% endif %}
                                         value="{{ room.id }}">
                                     {{ room }}
                                 </option>

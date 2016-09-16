@@ -1,0 +1,27 @@
+{% extends 'MBHBaseBundle::login.html.twig' %}
+
+{% block content %}
+
+<form class="form" action="{{ path('_welcome') }}" method="post"  class="form login-form" role="form"
+      method="post" accept-charset="UTF-8">
+
+    <p><strong>Введите код из приложения телефона Google Authenticator</strong></p>
+    <p><small>Если Google Authenticator не настроен, проверьте почтовый ящик для получения дальнейших инструкций</small></p>
+
+    <div class="form-group has-feedback">
+        <input type="text" name="_auth_code" class="form-control" placeholder="{{ 'security.two_factor.code'|trans() }}" required>
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+    </div>
+    <div class="row margin-left-sm">
+        <div class="col-xs-8">
+            <a href="{{ path("fos_user_security_logout") }}">{{ 'cancel'|trans }}</a>
+        </div>
+        <div class="col-xs-4">
+            <button type="submit" name="_submit" value="Login" class="btn btn-primary btn-block btn-flat">
+                <i class="fa fa-sign-in"></i> {{ 'security.login.submit'|trans({}, 'FOSUserBundle') }}
+            </button>
+        </div>
+    </div>
+</form>
+
+{% endblock %}

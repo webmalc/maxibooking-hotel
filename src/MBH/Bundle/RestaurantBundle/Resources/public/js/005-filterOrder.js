@@ -29,10 +29,7 @@ $(document).ready(function () {
             {"name": 'id'},
             {"orderable": false, "className": "text-center"},
             {"name": 'createdAt'},
-            {
-                "orderable": false,
-                "className": "text-right"
-            },
+            {"orderable": false, "className": "text-right"},
             {"name": 'isFreezed'},
             {"orderable": false}
         ]

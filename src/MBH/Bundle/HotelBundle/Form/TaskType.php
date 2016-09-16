@@ -2,19 +2,18 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\Extension\DateTimeType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * Class TaskType
@@ -54,7 +53,7 @@ class TaskType extends AbstractType
             return $queryBuilder;
         };
         $builder
-            ->add('type', 'document', [
+            ->add('type', DocumentType::class, [
                 'label' => 'form.task.type',
                 'group' => $generalGroup,
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
@@ -62,14 +61,14 @@ class TaskType extends AbstractType
                 'required' => true,
                 'query_builder' => $queryBuilderSelectedHotelOnly
             ])
-            ->add('priority', 'choice', [
+            ->add('priority', ChoiceType::class, [
                 'label' => 'form.task.priority',
                 'group' => $generalGroup,
                 'choices' => $options['priorities'],
                 'required' => true,
                 'expanded' => true,
             ])
-            ->add('date', 'datetime', array(
+            ->add('date', DateTimeType::class, array(
                 'label' => 'form.task.date',
                 'html5' => false,
                 'group' => $generalGroup,
@@ -79,7 +78,7 @@ class TaskType extends AbstractType
                 //'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
             ));
         if ($options['scenario'] == TaskType::SCENARIO_NEW) {
-            $builder->add('housing', 'document', [
+            $builder->add('housing', DocumentType::class, [
                 'label' => 'form.task.housing',
                 'group' => $generalGroup,
                 'required' => false,
@@ -93,7 +92,7 @@ class TaskType extends AbstractType
                 }
             ]);
             $floors = $this->dm->getRepository('MBHHotelBundle:Room')->getFloorsByHotel($hotel);
-            $builder->add('floor', 'choice', [
+            $builder->add('floor', ChoiceType::class, [
                 'label' => 'form.task.floor',
                 'group' => $generalGroup,
                 'required' => false,
@@ -101,7 +100,7 @@ class TaskType extends AbstractType
                 'choices' => array_combine($floors, $floors)
             ]);
 
-            $builder->add('rooms', 'document', [
+            $builder->add('rooms', DocumentType::class, [
                 'label' => 'form.task.rooms',
                 'group' => $generalGroup,
                 'class' => 'MBH\Bundle\HotelBundle\Document\Room',
@@ -117,7 +116,7 @@ class TaskType extends AbstractType
                 },
             ]);
         } elseif ($options['scenario'] == TaskType::SCENARIO_EDIT) {
-            $builder->add('room', 'document', [
+            $builder->add('room', DocumentType::class, [
                 'label' => 'form.task.room',
                 'group' => $generalGroup,
                 'group_by' => 'roomType',
@@ -126,7 +125,7 @@ class TaskType extends AbstractType
             ]);
         }
         $builder
-            ->add('userGroup', 'document', [
+            ->add('userGroup', DocumentType::class, [
                 'label' => 'form.task.roles',
                 'group' => 'form.task.group.assign',
                 //'multiple' => true,
@@ -135,18 +134,18 @@ class TaskType extends AbstractType
                 'required' => false,
                 'class' => Group::class
             ])
-            ->add('performer', 'document', [
+            ->add('performer', DocumentType::class, [
                 'label' => 'form.userType.users',
                 'group' => 'form.task.group.assign',
                 'class' => 'MBH\Bundle\UserBundle\Document\User',
                 'required' => false,
             ])
-            ->add('description', 'textarea', [
+            ->add('description', TextareaType::class, [
                 'label' => 'form.task.description',
                 'group' => 'form.task.group.settings',
                 'required' => false,
             ])
-            ->add('status', 'choice', [
+            ->add('status', ChoiceType::class, [
                 'label' => 'form.task.status',
                 'group' => 'form.task.group.settings',
                 'required' => true,

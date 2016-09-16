@@ -621,8 +621,14 @@ var select2TemplateResult = {
         if (!state.id) {
             return state.text;
         }
-        var icon = state.element.getAttribute('data-icon');
-        return icon ? '<i class="fa ' + icon + '"></i>' : null;
+        var icons = state.element.getAttribute('data-icon').split(';'),
+            result = '';
+        $.each(icons, function (key, icon) {
+            if (icon) {
+                result += '<i class="fa ' + icon + '"></i>';
+            }
+        });
+        return result ? result : null;
     },
     appendIcon: function (state) {
         var iconHtml = select2TemplateResult._iconHtml(state);

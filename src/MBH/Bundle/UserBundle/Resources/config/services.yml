@@ -43,3 +43,39 @@ services:
         arguments: [@security.token_storage, @session, @router, @mbh.user.work_shift_repository, @translator.default]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
+    # Two factor auth
+    mbh.twofactor.email.helper:
+      class: MBH\Bundle\UserBundle\Service\TwoFactor\Email\Helper
+      arguments: ["@doctrine.odm.mongodb.document_manager", "@mbh.notifier.mailer"]
+
+    mbh.twofactor.email.interactive_login_listener:
+          class: MBH\Bundle\UserBundle\Service\TwoFactor\InteractiveLoginListener
+          arguments: ["@mbh.twofactor.email.helper", "email"]
+          tags:
+            - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
+
+    mbh.twofactor.email.request_listener:
+              class: MBH\Bundle\UserBundle\Service\TwoFactor\RequestListener
+              arguments: ["@mbh.twofactor.email.helper", "@security.context", "@templating", "@router", "email"]
+              tags:
+                - { name: kernel.event_listener, event: kernel.request, method: onCoreRequest, priority: "-1"}
+
+    mbh.twofactor.google:
+          class: Google\Authenticator\GoogleAuthenticator
+
+    mbh.twofactor.google.helper:
+          class: MBH\Bundle\UserBundle\Service\TwoFactor\Google\Helper
+          arguments: ["maxibooking.ru", "@mbh.twofactor.google", "@doctrine.odm.mongodb.document_manager", "@mbh.notifier.mailer"]
+
+    mbh.twofactor.google.interactive_login_listener:
+          class: MBH\Bundle\UserBundle\Service\TwoFactor\InteractiveLoginListener
+          arguments: ["@mbh.twofactor.google.helper", "google"]
+          tags:
+            - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
+
+    mbh.twofactor.google.request_listener:
+              class: MBH\Bundle\UserBundle\Service\TwoFactor\RequestListener
+              arguments: ["@mbh.twofactor.google.helper", "@security.context", "@templating", "@router", "google"]
+              tags:
+                - { name: kernel.event_listener, event: kernel.request, method: onCoreRequest, priority: "-1"}

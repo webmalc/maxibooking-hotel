@@ -348,6 +348,7 @@ class OrderManager
             ->setChannelManagerId(!empty($data['channelManagerId']) ? $data['channelManagerId'] : null)
             ->setChannelManagerType(!empty($data['channelManagerType']) ? $data['channelManagerType'] : null)
             ->setOrder($order)
+            ->setVirtualRoom($results[0]->getVirtualRoom())
             ->setPrice(
                 (isset($data['price'])) ? (int)$data['price'] : $results[0]->getPrice($results[0]->getAdults(),
                     $results[0]->getChildren())

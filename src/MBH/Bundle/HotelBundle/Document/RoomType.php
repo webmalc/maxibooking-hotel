@@ -53,7 +53,7 @@ class RoomType extends Base implements RoomTypeInterface
      */
     protected $hotel;
 
-    /** @ODM\ReferenceMany(targetDocument="Room", mappedBy="roomType") */
+    /** @ODM\ReferenceMany(targetDocument="Room", mappedBy="roomType" ) */
     protected $rooms;
 
     /**

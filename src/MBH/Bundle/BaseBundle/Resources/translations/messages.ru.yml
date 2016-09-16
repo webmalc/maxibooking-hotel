@@ -26,7 +26,10 @@ mailer.to_package: Перейти к брони
 
 mailer.base.linkText: 'Перейти в «МаксиБукинг»'
 
-
+cancel: отмена
+security.two_factor.code: "код для входа"
+security.two_factor.invalid_code: "Неверный код для входа"
+mailer.two_factor.subject: "Код для входа в «МаксиБукинг»"
 mailer.online.user.map: "Схема проезда"
 mailer.online.payment.backend: "По заказу #%order% поступил платеж на сумму %cash%.<br> Плательщик: %payer%"
 mailer.online.payment.user: "Ваш платеж по заказу #%order% прошел успешно."
