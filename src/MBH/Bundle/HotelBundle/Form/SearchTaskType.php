@@ -55,6 +55,11 @@ class SearchTaskType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm end-datepicker'],
             ])
+            ->add('dateCriteriaType', ChoiceType::class, [
+                'empty_value' => '',
+                'choices' => [ 'date' => 'form.searchTask.performance', 'createdAt' => 'form.searchTask.creation'],
+                'data' => 'date',
+            ])
             ->add('status', ChoiceType::class, [
                 'empty_value' => '',
                 'choices' => array_combine(array_keys($statuses),array_keys($statuses)),

@@ -120,7 +120,8 @@ class FillingReportGenerator
                 '$lte' => $end,
             ],
             'roomType.id' => ['$in' => $roomTypeIDs],
-            'hotel.id' => $this->hotel->getId()
+            'hotel.id' => $this->hotel->getId(),
+            'tariff' => null
         ]);
 
         $roomCachesByRoomTypeAndDate = [];

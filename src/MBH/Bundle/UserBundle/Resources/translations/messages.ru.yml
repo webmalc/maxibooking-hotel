@@ -14,6 +14,7 @@ form.userType.hotels_user_has_access_to: Отели к которым имеет
 form.userType.is_included: Включен?
 form.userType.expires_at: Действует до
 form.userType.surname: Фамилия
+form.userType.two_factor: Двухфакторная аутентификация?
 form.userType.general_info: Общая информация
 form.userType.placeholder_surname: Иванов
 form.userType.name: Имя

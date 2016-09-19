@@ -239,9 +239,9 @@ class TaskController extends Controller
         $room = $entity->getRoom();
 
         if ($status == Task::STATUS_PROCESS) {
-            if (!$entity->getPerformer()) {
+            /*if (!$entity->getPerformer()) {
                 $entity->setPerformer($this->getUser());
-            }
+            }*/
             $entity->setStart(new \DateTime());
         } elseif ($status == Task::STATUS_CLOSED) {
             $entity->setEnd(new \DateTime());

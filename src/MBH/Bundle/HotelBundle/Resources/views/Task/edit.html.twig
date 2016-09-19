@@ -11,4 +11,5 @@
     {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_end(form) }}
 
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'task_delete' } %}
 {% endblock %}
