@@ -27,9 +27,9 @@ class RoomCacheSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            'preRemove',
             'preUpdate',
-            'prePersist'
+            'prePersist',
+            'preRemove'
         ];
     }
 
@@ -69,7 +69,7 @@ class RoomCacheSubscriber implements EventSubscriber
 
         if ($doc instanceof RoomCache && $doc->getPackagesCount() > 0) {
 
-            throw new DeleteException('Невозможно удалить «Номер в продаже» с забронированными номерами.');
+            throw new DeleteException($this->container->get('translator')->trans('roomCacheSubscriber.delete_exception_message.can_not_delete_room'));
         }
     }
 }

@@ -53,7 +53,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      */
     public $packages;
     /**
-     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="payer")
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="touristPayer")
      */
     protected $cashDocuments;
     /**

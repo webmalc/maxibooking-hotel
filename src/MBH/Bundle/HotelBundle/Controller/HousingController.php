@@ -134,8 +134,7 @@ class HousingController extends BaseController
      */
     public function deleteAction(Housing $housing)
     {
-        $this->dm->remove($housing);
-        $this->dm->flush();
-        return $this->redirectToRoute('housing');
+        $response = $this->deleteEntity($housing->getId(), 'MBHHotelBundle:Housing', 'housing');
+        return $response;
     }
 }
