@@ -9,13 +9,10 @@ namespace MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber;
  */
 class Relationship
 {
-    public function __construct($document, $field, $message = null, $isMany = false)
-    {
-        $this->documentClass = $document;
-        $this->fieldName = $field;
-        $this->errorMessage = $message;
-        $this->isMany = $isMany;
-    }
+    /**
+     * @var bool
+     */
+    private $isMany;
 
     /**
      * @var string
@@ -27,7 +24,18 @@ class Relationship
      */
     private $errorMessage;
 
+    /**
+     * @var string
+     */
     private $documentClass;
+
+    public function __construct($document, string $field, $message = null, $isMany = false)
+    {
+        $this->documentClass = $document;
+        $this->fieldName = $field;
+        $this->errorMessage = $message;
+        $this->isMany = $isMany;
+    }
 
     /**
      * @return string
@@ -60,9 +68,4 @@ class Relationship
     {
         return $this->isMany;
     }
-
-    /**
-     * @var bool
-     */
-    private $isMany;
 }
