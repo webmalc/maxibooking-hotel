@@ -303,7 +303,7 @@ class Builder extends ContainerAware
             ->setAttributes(['icon'=> 'fa fa-cutlery']);
         $menu['restaurant']->addChild('dishmenu', ['route'=>'restaurant_dishmenu_category', 'label' => 'Меню блюд'])
             ->setAttributes(['icon'=> 'fa fa-cutlery']);
-        $menu['restaurant']->addChild('tables', ['route'=>'restaurant_table', 'label' => 'Управление столиками'])
+        $menu['restaurant']->addChild('tables', ['route'=>'restaurant_table_category', 'label' => 'Столы'])
             ->setAttributes(['icon'=> 'fa fa-cutlery']);
 
 

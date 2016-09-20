@@ -193,6 +193,10 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
     protected $ingredientCategories;
 
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\TableType", mappedBy="hotel") */
+    protected $TableTypes;
+
+
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\DishMenuCategory", mappedBy="hotel") */
     protected $dishMenuCategories;
 
@@ -297,8 +301,23 @@ class Hotel extends Base implements \JsonSerializable
         $this->tariffs = new ArrayCollection();
         $this->dishMenuCategories = new ArrayCollection();
         $this->ingredientCategories = new ArrayCollection();
+        $this->TableTypes = new ArrayCollection();
+    }
+    /**
+     * @return mixed
+     */
+    public function getTableTypes()
+    {
+        return $this->TableTypes;
     }
 
+    /**
+     * @param mixed $TableTypes
+     */
+    public function setTableTypes($TableTypes)
+    {
+        $this->TableTypes = $TableTypes;
+    }
     /**
      * Get fullTitle
      *
