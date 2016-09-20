@@ -38,10 +38,15 @@ class PackageSourceData implements FixtureInterface
     private function getSource(): array
     {
         return [
-            '101Отель'=>'101Otel',
-            'Островок'=>'Ostrovok',
-            'Booking.com'=>'booking',
-            'Менеджер'=>'manager',
+            '101Отель' => '101hotel',
+            'Островок' => 'ostrovok',
+            'Booking.com' => 'booking',
+            'Myallocator.com' => 'myallocator',
+            'ВашОтель.ру' => 'vashotel',
+            'Он-лайн бронирование' => 'online',
+            'Менеджер' => 'manager',
+            'Постоянный клиент' => 'regular_customer',
+            'Рекомендация знакомых' => 'recommendet_friend',
         ];
     }
 }

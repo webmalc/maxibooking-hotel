@@ -45,15 +45,6 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
             ->execute()
         ;
 
-        if(!count($entities)) {
-            foreach($this->container->getParameter('mbh.default.sources') as $default) {
-                $new =new PackageSource();
-                $new->setFullTitle($default)->setTitle($default);
-                $dm->persist($new);
-            }
-            $dm->flush();
-        }
-
         if($request->isMethod('POST')) {
             $form->submit($request);
             $dm->persist($entity);
@@ -158,9 +149,8 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
      */
     public function deleteAction(PackageSource $entity)
     {
-        if (!$entity->getSystem())
-        {
-            return $this->deleteEntity($entity, 'MBHPackageBundle:PackageSource', 'package_source');
+        if (!$entity->getSystem()) {
+            return $this->deleteEntity($entity->getId(), 'MBHPackageBundle:PackageSource', 'package_source');
         }
 
     }

@@ -19,7 +19,7 @@
             <tr>
                 <td class="text-center table-icon"><i class="fa fa-compass"></i></td>
                 <td>
-                    <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.fullTitle }}</a>
+                    <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.fullTitle }}{% if entity.system %} <small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</a>
                 </td>
                 <td>{{ entity.createdAt|date('d.m.Y') }}</td>
                 <td class="table-actions-td text-center">

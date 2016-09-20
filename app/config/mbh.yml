@@ -157,9 +157,6 @@ parameters:
       mbhs: 'aHR0cDovL21iaHMubWF4aWJvb2tpbmcucnUv'
       key: '%mbhs_key%'
 
-    #mbh sources
-    mbh.default.sources: ['Он-лайн бронирование', 'ВашОтель.ру', 'Постоянный клиент', 'Рекомендация знакомых']
-
     #mbh services
     mbh.services:
       calcTypes:

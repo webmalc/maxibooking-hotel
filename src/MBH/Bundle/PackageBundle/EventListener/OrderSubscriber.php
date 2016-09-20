@@ -119,7 +119,7 @@ class OrderSubscriber implements EventSubscriber
                 $dm->persist($order);
                 $meta = $dm->getClassMetadata(get_class($order));
                 $uow->recomputeSingleDocumentChangeSet($meta, $order);
-                
+
                 if (isset($uow->getDocumentChangeSet($entity)['accommodation'])) {
                     $this->container->get('mbh.cache')->clear('accommodation_rooms');
                 }
@@ -190,6 +190,9 @@ class OrderSubscriber implements EventSubscriber
     {
         $entity = $args->getEntity();
 
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+
         //Calc paid
         if($entity instanceof CashDocument && $entity->getOrder()) {
             $order = $entity->getOrder();
@@ -199,5 +202,24 @@ class OrderSubscriber implements EventSubscriber
         if ($entity instanceof Package) {
             $entity->getOrder()->calcPrice();
         }
+
+        if ($entity instanceof Order) {
+
+            if ($entity->getStatus() == 'offline') {
+                $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(array('code' => 'manager'));
+                $entity->setSource($source);
+            }
+            if ($entity->getStatus() == 'online') {
+                $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(array('code' => 'online'));
+                $entity->setSource($source);
+            }
+            if ($entity->getStatus() == 'channel_manager') {
+                $manager = $entity->getChannelManagerType();
+                $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(array('code' => $manager));
+                $entity->setSource($source);
+            }
+
+        }
+
     }
 }

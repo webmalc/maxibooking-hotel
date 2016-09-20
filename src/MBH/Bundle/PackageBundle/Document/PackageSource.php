@@ -39,7 +39,7 @@ class PackageSource extends Base
     use BlameableDocument;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Order", inversedBy="source")
+     * @ODM\ReferenceMany(targetDocument="Order", mappedBy="source")
      */
     protected $orders;
 
