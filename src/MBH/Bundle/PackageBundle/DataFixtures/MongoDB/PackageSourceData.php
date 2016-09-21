@@ -12,27 +12,22 @@ class PackageSourceData implements FixtureInterface
 {
     public function load(ObjectManager $manager)
     {
-        $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
-        if ($hotels) {
-            foreach ($hotels as $hotel) {
-
-                foreach ($this->getSource() as $Source => $value) {
-                    if ($manager->getRepository('MBHPackageBundle:PackageSource')->findBy(['fullTitle'=>$Source,'code'=>$value])) {
-                        continue;
-                    }
-
-                    $packageSource = new PackageSource();
-                    $packageSource
-                        ->setFullTitle($Source)
-                        ->setCode($value)
-                        ->setSystem(true);
-
-                    $manager->persist($packageSource);
-                    $manager->flush();
-                }
+        foreach ($this->getSource() as $Source => $value) {
+            if ($manager->getRepository('MBHPackageBundle:PackageSource')->findBy(['fullTitle' => $Source, 'code' => $value])) {
+                continue;
             }
+
+            $packageSource = new PackageSource();
+            $packageSource
+                ->setFullTitle($Source)
+                ->setCode($value)
+                ->setSystem(true);
+
+            $manager->persist($packageSource);
+            $manager->flush();
         }
+
     }
 
     private function getSource(): array
