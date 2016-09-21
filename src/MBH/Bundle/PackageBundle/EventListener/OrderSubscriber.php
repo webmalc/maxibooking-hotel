@@ -204,18 +204,10 @@ class OrderSubscriber implements EventSubscriber
         }
 
         if ($entity instanceof Order) {
+            $code = $entity->getStatus() != 'channel_manager' ? $entity->getStatus() : $entity->getChannelManagerType();
 
-            if ($entity->getStatus() == 'offline') {
-                $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(array('code' => 'manager'));
-                $entity->setSource($source);
-            }
-            if ($entity->getStatus() == 'online') {
-                $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(array('code' => 'online'));
-                $entity->setSource($source);
-            }
-            if ($entity->getStatus() == 'channel_manager') {
-                $manager = $entity->getChannelManagerType();
-                $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(array('code' => $manager));
+            if ($code) {
+                $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(['code' => $code]);
                 $entity->setSource($source);
             }
 
