@@ -47,7 +47,7 @@ class Order extends Base
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="PackageSource")
+     * @ODM\ReferenceOne(targetDocument="PackageSource", inversedBy="orders")
      */
     protected $source;
 
@@ -164,7 +164,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "myallocator"},
+     *      choices = {"vashotel", "booking", "myallocator", "ostrovok"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      */
