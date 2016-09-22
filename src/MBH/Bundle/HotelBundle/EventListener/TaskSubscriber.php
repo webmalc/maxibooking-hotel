@@ -33,8 +33,8 @@ class TaskSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            Events::onFlush => 'onFlush',
             Events::preRemove => 'preRemove',
+            Events::onFlush => 'onFlush',
         ];
     }
 
@@ -53,7 +53,6 @@ class TaskSubscriber implements EventSubscriber
                 }
             }
         }
-
     }
 
     private function updateRoomStatus(Task $task, DocumentManager $dm)
@@ -83,17 +82,14 @@ class TaskSubscriber implements EventSubscriber
                         $room->removeStatus($taskRoomStatus);
                     }
                     break;
-
             }
-
         }
 
         $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
     }
 
-        public function preRemove(LifecycleEventArgs $args)
+    public function preRemove(LifecycleEventArgs $args)
     {
-
         if ($args->getDocument() instanceof Task) {
             $task = $args->getDocument();
             $dm = $args->getDocumentManager();

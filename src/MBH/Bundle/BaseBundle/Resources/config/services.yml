@@ -149,10 +149,13 @@ services:
     #    tags:
     #          - { name: doctrine.event_subscriber, connection: default }
 
+
     mbh.event_listener.check_relation_subscriber:
-        class: MBH\Bundle\BaseBundle\EventListener\CheckDeleteRelationSubscriber
-        tags:
-            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+            class: MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Subscriber
+            arguments: [@service_container]
+            tags:
+                - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
 
     mbh.event_listener.versioned_subscriber:
             class: MBH\Bundle\BaseBundle\EventListener\VersionedSubscriber

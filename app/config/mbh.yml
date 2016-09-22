@@ -8,6 +8,11 @@ parameters:
       kzt: {text: 'тенге', small: 'тиын', icon: 'fa fa-money'}
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
 
+    # ReCaptcha
+    mbh.recaptcha:
+      site: '6Lev6AYUAAAAADL-WFxyHoaaGfya4uFBCUh09FWx'
+      secret: '6Lev6AYUAAAAAIk51IMnRdGS4Im_-1h3pk-cM87a'
+
     #timezone. default - deafult server timezone
     mbh.timezone: "%mbh_timezone%"
 

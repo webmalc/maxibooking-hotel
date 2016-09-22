@@ -37,9 +37,58 @@ class OrderSubscriber implements EventSubscriber
     {
         return array(
             'prePersist',
-            'preRemove',
             'onFlush',
+            'preRemove'
         );
+    }
+
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $entity = $args->getDocument();
+
+        //Delete packages from order
+        if ($entity instanceof Order)
+        {
+            foreach($entity->getPackages() as $package) {
+
+                foreach ($package->getServices() as $packageService) {
+                    $packageService->setDeletedAt(new \DateTime());
+                    $dm->persist($packageService);
+                }
+
+                $package->setServicesPrice(0);
+                $package->setDeletedAt(new \DateTime());
+                $dm->persist($package);
+                $end = clone $package->getEnd();
+                $this->container->get('mbh.room.cache')->recalculate(
+                    $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff(), false
+                );
+                $this->container->get('mbh.cache')->clear('accommodation_rooms');
+                $this->container->get('mbh.cache')->clear('room_cache_fetch');
+            }
+            $entity->setPrice(0);
+            $dm->persist($entity);
+            $dm->flush();
+
+            $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
+        }
+
+        //Calc paid
+        if($entity instanceof CashDocument && $entity->getOrder()) {
+            $order = $entity->getOrder();
+            $this->container->get('mbh.calculation')->setPaid($order, null, $entity);
+            $dm->persist($order);
+            $dm->flush();
+        }
+
+        //Calc order price
+        if($entity instanceof Package) {
+            $order = $entity->getOrder()->calcPrice($entity);
+            $dm->persist($order);
+            $dm->flush();
+        }
     }
 
 
@@ -126,63 +175,6 @@ class OrderSubscriber implements EventSubscriber
                 $this->container->get('mbh.cache')->clear('room_cache_fetch');
             }
 
-        }
-    }
-
-    public function preRemove(LifecycleEventArgs $args)
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-        $entity = $args->getEntity();
-
-        //Delete packages from order
-        if ($entity instanceof Order)
-        {
-            foreach($entity->getPackages() as $package) {
-
-                foreach ($package->getServices() as $packageService) {
-                    $packageService->setDeletedAt(new \DateTime());
-                    $dm->persist($packageService);
-                }
-
-                $package->setServicesPrice(0);
-                $package->setDeletedAt(new \DateTime());
-                $dm->persist($package);
-                $end = clone $package->getEnd();
-                $this->container->get('mbh.room.cache')->recalculate(
-                    $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff(), false
-                );
-                $this->container->get('mbh.cache')->clear('accommodation_rooms');
-                $this->container->get('mbh.cache')->clear('room_cache_fetch');
-            }
-            $entity->setPrice(0);
-            $dm->persist($entity);
-            $dm->flush();
-
-            $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
-        }
-
-        //Calc paid
-        if($entity instanceof CashDocument && $entity->getOrder()) {
-            try {
-                $order = $entity->getOrder();
-                $this->container->get('mbh.calculation')->setPaid($order, null, $entity);
-                $dm->persist($order);
-                $dm->flush();
-            } catch (\Exception $e) {
-
-            }
-        }
-
-        //Calc order price
-        if($entity instanceof Package) {
-            try {
-                $order = $entity->getOrder()->calcPrice($entity);
-                $dm->persist($order);
-                $dm->flush();
-            } catch (\Exception $e) {
-
-            }
         }
     }
 
