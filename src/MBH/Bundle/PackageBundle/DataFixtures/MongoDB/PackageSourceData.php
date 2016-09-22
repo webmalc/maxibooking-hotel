@@ -39,7 +39,7 @@ class PackageSourceData implements FixtureInterface
             'Myallocator.com' => 'myallocator',
             'ВашОтель.ру' => 'vashotel',
             'Он-лайн бронирование' => 'online',
-            'Менеджер' => 'manager',
+            'Менеджер' => 'offline',
             'Постоянный клиент' => 'regular_customer',
             'Рекомендация знакомых' => 'recommendet_friend',
         ];

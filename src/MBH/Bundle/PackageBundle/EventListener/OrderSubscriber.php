@@ -190,9 +190,6 @@ class OrderSubscriber implements EventSubscriber
     {
         $entity = $args->getEntity();
 
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-
         //Calc paid
         if($entity instanceof CashDocument && $entity->getOrder()) {
             $order = $entity->getOrder();
@@ -204,9 +201,12 @@ class OrderSubscriber implements EventSubscriber
         }
 
         if ($entity instanceof Order) {
+
             $code = $entity->getStatus() != 'channel_manager' ? $entity->getStatus() : $entity->getChannelManagerType();
 
             if ($code) {
+                /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+                $dm = $this->container->get('doctrine_mongodb')->getManager();
                 $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(['code' => $code]);
                 $entity->setSource($source);
             }
