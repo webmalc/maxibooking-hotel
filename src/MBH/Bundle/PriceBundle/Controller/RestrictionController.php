@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("restriction")
@@ -221,17 +222,31 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
     }
 
     /**
-     * @Route("/generator", name="restriction_generator")
+     * @Route("/generator/{id}", name="restriction_generator", defaults={"id": null})
+     * @ParamConverter(class="MBHPriceBundle:Restriction", isOptional=true)
      * @Method("GET")
      * @Security("is_granted('ROLE_RESTRICTION_EDIT')")
      * @Template()
+     * @param Restriction $restriction
+     * @return array
      */
-    public function generatorAction()
+    public function generatorAction(Restriction $restriction = null)
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
+        $data = [];
+        if ($restriction) {
+            // Data from PriceCache object
+            $data = $restriction->toArray();
+
+            $data['begin'] = $data['date'];
+            $data['roomTypes'][] = $data['roomType'] ? $data['roomType'] : $data['roomTypeCategory'];
+            $data['tariffs'][] = $data['tariff'];
+        }
+
+
         $form = $this->createForm(
-            new RestrictionGeneratorType(), [], [
+            new RestrictionGeneratorType(), $data, [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -272,7 +287,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                 $data['begin'], $data['end'], $hotel, $data['minStay'], $data['maxStay'],
                 $data['minStayArrival'], $data['maxStayArrival'], $data['minBeforeArrival'],
                 $data['maxBeforeArrival'], $data['closedOnArrival'], $data['closedOnDeparture'], $data['closed'],
-                $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
+                $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays'], $data['addRestrictions']
             );
 
             $this->get('mbh.channelmanager')->updateRestrictionsInBackground();

@@ -259,7 +259,7 @@ class PriceCacheGeneratorType extends AbstractType
             ])
             ->add('addPrices',  CheckboxType::class, [
                 'label' => 'Дополнить?',
-                'help' => 'Дополнить цены вместо перезаписи?',
+                'help' => 'Дополнить вместо перезаписи?',
                 'group' => 'Настройки',
                 'required' => false
             ]);

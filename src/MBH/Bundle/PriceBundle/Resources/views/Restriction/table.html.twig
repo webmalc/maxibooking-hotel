@@ -25,7 +25,15 @@
                 <tr class="header">
                     <td class="first-th"></td>
                     {% for date in period %}
-                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+                        {% set restriction = restrictions[roomType.id][tariff.id][date|date('d.m.Y')]|default(null) %}
+                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>
+                            {% if restriction %}
+                                <small class="mbh-grid-edit-row">
+                                    <a data-toggle="tooltip" data-placement="top" title="Перейти в генератор с условий и ограничений из этого дня" href="{{ path('restriction_generator', {'id': restriction.id}) }}"><i class="fa fa-cog"></i></a>
+                                </small>&nbsp;
+                            {% endif %}
+                            {{ date|mbh_format }}
+                        </td>
                     {% endfor %}
                 </tr>
 

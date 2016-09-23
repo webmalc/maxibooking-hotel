@@ -52,6 +52,7 @@ class Restriction
      * @param array $availableRoomTypes
      * @param array $availableTariffs
      * @param array $weekdays
+     * @param bool $addPrices
      * @return boolean
      */
     public function update(
@@ -69,7 +70,8 @@ class Restriction
         $closed = false,
         array $availableRoomTypes = [],
         array $availableTariffs = [],
-        array $weekdays = []
+        array $weekdays = [],
+        bool $addPrices = false
     ) {
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
@@ -107,15 +109,15 @@ class Restriction
                 $updates[] = [
                     'criteria' => ['_id' => new \MongoId($oldRestriction->getId())],
                     'values' => [
-                        'minStay' => !empty($minStay) ? (int) $minStay : null,
-                        'maxStay' => !empty($maxStay) ? (int) $maxStay : null,
-                        'minStayArrival' => !empty($minStayArrival) ? (int) $minStayArrival : null,
-                        'maxStayArrival' => !empty($maxStayArrival) ? (int) $maxStayArrival : null,
-                        'minBeforeArrival' => !empty($minBeforeArrival) ? (int) $minBeforeArrival : null,
-                        'maxBeforeArrival' => !empty($maxBeforeArrival) ? (int) $maxBeforeArrival : null,
-                        'closedOnArrival' => !empty($closedOnArrival) ? true : false,
-                        'closedOnDeparture' => !empty($closedOnDeparture) ? true : false,
-                        'closed' => !empty($closed) ? true : false,
+                        'minStay' => $addPrices && empty($minStay) ? $oldRestriction->getMinStay() : (!empty($minStay) ? (int) $minStay : null),
+                        'maxStay' =>  $addPrices && empty($maxStay) ? $oldRestriction->getMaxStay() : (!empty($maxStay) ? (int) $maxStay : null),
+                        'minStayArrival' => $addPrices && empty($minStayArrival) ? $oldRestriction->getMinStayArrival() : (!empty($minStayArrival) ? (int) $minStayArrival : null),
+                        'maxStayArrival' => $addPrices && empty($maxStayArrival) ? $oldRestriction->getMaxStayArrival() : (!empty($maxStayArrival) ? (int) $maxStayArrival : null),
+                        'minBeforeArrival' => $addPrices && empty($minBeforeArrival) ? $oldRestriction->getMinBeforeArrival() : (!empty($minBeforeArrival) ? (int) $minBeforeArrival : null),
+                        'maxBeforeArrival' => $addPrices && empty($maxBeforeArrival) ? $oldRestriction->getMaxBeforeArrival() : (!empty($maxBeforeArrival) ? (int) $maxBeforeArrival : null),
+                        'closedOnArrival' => $addPrices && empty($closedOnArrival) ? $oldRestriction->getClosedOnArrival() : (!empty($closedOnArrival) ? true : false),
+                        'closedOnDeparture' => $addPrices && empty($closedOnDeparture) ? $oldRestriction->getClosedOnDeparture() : (!empty($closedOnDeparture) ? true : false),
+                        'closed' => $addPrices && empty($closed) ? $oldRestriction->getClosed() : (!empty($closed) ? true : false),
                     ]
                 ];
             }
