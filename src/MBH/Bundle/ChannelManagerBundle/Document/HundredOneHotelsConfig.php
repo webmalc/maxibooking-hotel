@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,6 +23,9 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
  */
 class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterface
 {
+
+
+    use ConfigTrait;
 
     /**
      * Hook timestampable behavior
@@ -81,7 +85,7 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
     /**
      * @return array
      */
-    public function getRooms(): array
+    public function getRooms()
     {
         return $this->rooms;
     }
@@ -89,7 +93,7 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
     /**
      * @return array
      */
-    public function getTariffs(): array
+    public function getTariffs()
     {
         return $this->tariffs;
     }

@@ -9,6 +9,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use MBH\Bundle\BaseBundle\Service\Currency;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,6 +17,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HundredOneHotelType extends AbstractType
 {
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -36,7 +38,7 @@ class HundredOneHotelType extends AbstractType
                     'label' => 'form.hundredOneHotels.hotel_id',
                     'required' => true,
                     'attr' => ['placeholder' => 'hotel id'],
-                    'help' => 'form.hundredOneHotels.hotel_id_in_booking_com'
+                    'help' => 'form.hundredOneHotels.hotel_id_in_101_hotels'
                 ]
             );
     }
@@ -50,6 +52,6 @@ class HundredOneHotelType extends AbstractType
 
     public function getName()
     {
-        return 'mbh_bundle_channelmanagerbundle_booking_type';
+        return 'mbh_bundle_channelmanagerbundle_hundred_one_hotels_type';
     }
 }

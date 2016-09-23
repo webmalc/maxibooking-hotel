@@ -23,6 +23,14 @@ services:
                 class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
                 arguments: [@service_container]
 
+    mbh.channelmanager.hundred_one_hotels:
+                    class: MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels
+                    arguments: [@service_container]
+
+    mbh.channelmanager.hundred_one_hotels_type:
+          class: MBH\Bundle\ChannelManagerBundle\Form\HundredOneHotelType
+          arguments: [@mbh.currency]
+
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: [@mbh.currency]
