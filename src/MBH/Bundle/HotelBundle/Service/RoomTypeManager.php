@@ -3,6 +3,8 @@
 namespace MBH\Bundle\HotelBundle\Service;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
@@ -43,7 +45,7 @@ class RoomTypeManager
     }
 
     /**
-     * @return RoomTypeRepositoryInterface
+     * @return RoomTypeCategory|RoomType
      */
     public function getRepository()
     {

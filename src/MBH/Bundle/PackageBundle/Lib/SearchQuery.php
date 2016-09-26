@@ -129,7 +129,7 @@ class SearchQuery
     public $range = 0;
 
     /**
-     * @var RoomTypes ids
+     * @var RoomTypes|array ids
      */
     public $availableRoomTypes = [];
 

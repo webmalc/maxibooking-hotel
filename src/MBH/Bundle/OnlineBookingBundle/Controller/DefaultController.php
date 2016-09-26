@@ -4,10 +4,8 @@ namespace MBH\Bundle\OnlineBookingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
-use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
+use MBH\Bundle\OnlineBookingBundle\Form\SearchFormType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -15,9 +13,7 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -27,123 +23,50 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class DefaultController extends BaseController
 {
-    public function getSearchForm()
-    {
-        /** @var RoomTypeRepositoryInterface $roomTypeRepository */
-        $roomTypeRepository = $this->get('mbh.hotel.room_type_manager')->getRepository();
-        $roomTypes = $roomTypeRepository->findAll();
-
-        $roomTypeList = [];
-        $hotelIds = [];
-        foreach ($roomTypes as $roomType) {
-            $hotelIds[$roomType->getId()] = $roomType->getHotel()->getId();
-            $roomTypeList[$roomType->getId()] = $roomType->getFullTitle();
-        }
-
-        return $this->createFormBuilder([], [
-            'method' => Request::METHOD_GET,
-            'csrf_protection' => false
-        ])
-            ->add('hotel', 'document', [
-                'label' => 'Отель',
-                'required' => false,
-                'empty_value' => '',
-                'class' => Hotel::class,
-                'property' => 'fullTitle'
-            ])
-            ->add('roomType', 'choice', [
-                'label' => 'Тип номера',
-                'required' => false,
-                'empty_value' => '',
-                'choices' => $roomTypeList,
-                'choice_attr' => function ($roomType) use ($hotelIds) {
-                    return ['data-hotel' => $hotelIds[$roomType]];
-                }
-            ])
-            ->add('range', 'text', [
-                'label' => 'Даты',
-                'required' => false,
-                'mapped' => false
-            ])
-            ->add('begin', 'date', [
-                'label' => 'Заезд',
-                'widget' => 'single_text',
-                'required' => false,
-                'format' => 'dd.MM.yyyy',
-                'constraints' => [
-                    new NotBlank()
-                ],
-            ])
-            ->add('end', 'date', [
-                'label' => 'Выезд',
-                'widget' => 'single_text',
-                'required' => false,
-                'format' => 'dd.MM.yyyy',
-                'constraints' => [
-                    new NotBlank()
-                ],
-            ])
-            ->add('adults', 'integer', [
-                'label' => 'Взрослые',
-                'attr' => ['min' => 1],
-                'data' => 1,
-            ])
-            ->add('children', 'integer', [
-                'label' => 'Дети',
-                'attr' => ['min' => 0, 'max' => 5],
-                'required' => false
-            ])
-            ->add('children_age', 'collection', [
-                'label' => 'Возраста детей',
-                'required' => false,
-                'type' => 'integer',
-                'prototype' => true,
-                'allow_add' => true,
-            ])
-            ->getForm();
-    }
-
-    /**
-     * @Route("/form", name="online_booking_form")
-     */
-    public function formAction(Request $request)
-    {
-        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
-        $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
-
-        $form = $this->getSearchForm();
-        $form->handleRequest($request);
-
-        return $this->render('MBHOnlineBookingBundle:Default:form.html.twig', [
-            'hotels' => $hotels,
-            'requestSearchUrl' => $requestSearchUrl,
-            'form' => $form->createView()
-        ]);
-    }
 
     /**
      * @Route("/", name="online_booking")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function indexAction(Request $request)
     {
         $step = $request->get('step');
-        if ($step) {
-            if ($step == 2) {
-                return $this->signAction($request);//$this->forward('MBHOnlineBookingBundle:Default:sign');
-            }
-        } else {
-            return $this->searchAction($request);//$this->forward('MBHOnlineBookingBundle:Default:search');
+        if ($step && $step == 2) {
+            return $this->signAction($request);//$this->forward('MBHOnlineBookingBundle:Default:sign');
         }
+
+        return $this->searchAction($request);//$this->forward('MBHOnlineBookingBundle:Default:search');
     }
 
     /**
+     * @Route("/form", name="online_booking_form")
+     * @Template()
+     * @param Request $request
+     * @return array
+     */
+    public function formAction(Request $request)
+    {
+        $form = $this->createForm(SearchFormType::class);
+        $form->handleRequest($request);
+
+        return [
+            'form' => $form->createView()
+        ];
+
+    }
+
+
+    /**
      * @Route("/search", name="online_booking_search")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function searchAction(Request $request)
     {
         $searchQuery = new SearchQuery();
 
-        $form = $this->getSearchForm();
+        $form = $this->createForm(SearchFormType::class);
         $form->handleRequest($request);
 
         $searchResults = [];
@@ -217,74 +140,9 @@ class DefaultController extends BaseController
         ]);
     }
 
-    /**
-     * @return \Symfony\Component\Form\Form
-     */
-    public function getSignForm()
-    {
-        $paymentTypes = $this->getParameter('mbh.online.form')['payment_types'];
-        unset($paymentTypes['online_first_day']);
-
-        $formBuilder = $this->createFormBuilder(null, [
-            'method' => Request::METHOD_GET,
-            'csrf_protection' => false
-        ]);
-        $formBuilder
-            ->add('firstName', 'text', [
-                'label' => 'Имя',
-                'constraints' => [
-                    new NotBlank()
-                ]
-            ])
-            ->add('lastName', 'text', [
-                'label' => 'Фамилия',
-                'constraints' => [
-                    new NotBlank()
-                ]
-            ])
-            ->add('patronymic', 'text', [
-                'required' => false,
-                'label' => 'Отчество'
-            ])
-            ->add('phone', 'text', [
-                'label' => 'Телефон'
-            ])
-            ->add('email', 'text', [
-                'label' => 'Email',
-                'constraints' => [
-                    new Email(),
-                    new NotBlank()
-                ]
-            ])
-            //->add('step', 'hidden', [])
-            ->add('adults', 'hidden', [])
-            ->add('children', 'hidden', [])
-            ->add('begin', 'hidden', [
-                'constraints' => [
-                    new NotBlank()
-                ]
-            ])
-            ->add('end', 'hidden', [
-                'constraints' => [
-                    new NotBlank()
-                ]
-            ])
-            ->add('roomType', 'hidden', [])
-            ->add('tariff', 'hidden', [])
-            ->add('payment', 'choice', [
-                'label' => 'Способ оплаты',
-                'choices' => $paymentTypes,
-                'expanded' => true
-            ])
-            ->add('total', 'hidden')
-            ->add('promotion', 'hidden');
-        $formBuilder->get('promotion')->addViewTransformer(new EntityToIdTransformer($this->dm, Promotion::class));
-
-        return $formBuilder->getForm();
-    }
 
     /**
-     * @Route("/search", name="online_booking_sign")
+     * @Route("/sign", name="online_booking_sign")
      */
     public function signAction(Request $request)
     {
@@ -409,6 +267,72 @@ class DefaultController extends BaseController
         }
     }
 
+
+    /**
+     * @return \Symfony\Component\Form\Form
+     */
+    public function getSignForm()
+    {
+        $paymentTypes = $this->getParameter('mbh.online.form')['payment_types'];
+        unset($paymentTypes['online_first_day']);
+
+        $formBuilder = $this->createFormBuilder(null, [
+            'method' => Request::METHOD_GET,
+            'csrf_protection' => false
+        ]);
+        $formBuilder
+            ->add('firstName', 'text', [
+                'label' => 'Имя',
+                'constraints' => [
+                    new NotBlank()
+                ]
+            ])
+            ->add('lastName', 'text', [
+                'label' => 'Фамилия',
+                'constraints' => [
+                    new NotBlank()
+                ]
+            ])
+            ->add('patronymic', 'text', [
+                'required' => false,
+                'label' => 'Отчество'
+            ])
+            ->add('phone', 'text', [
+                'label' => 'Телефон'
+            ])
+            ->add('email', 'text', [
+                'label' => 'Email',
+                'constraints' => [
+                    new Email(),
+                    new NotBlank()
+                ]
+            ])
+            //->add('step', 'hidden', [])
+            ->add('adults', 'hidden', [])
+            ->add('children', 'hidden', [])
+            ->add('begin', 'hidden', [
+                'constraints' => [
+                    new NotBlank()
+                ]
+            ])
+            ->add('end', 'hidden', [
+                'constraints' => [
+                    new NotBlank()
+                ]
+            ])
+            ->add('roomType', 'hidden', [])
+            ->add('tariff', 'hidden', [])
+            ->add('payment', 'choice', [
+                'label' => 'Способ оплаты',
+                'choices' => $paymentTypes,
+                'expanded' => true
+            ])
+            ->add('total', 'hidden')
+            ->add('promotion', 'hidden');
+        $formBuilder->get('promotion')->addViewTransformer(new EntityToIdTransformer($this->dm, Promotion::class));
+
+        return $formBuilder->getForm();
+    }
 
     /**
      * @param Order $order

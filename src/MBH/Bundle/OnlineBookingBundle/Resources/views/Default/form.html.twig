@@ -1,5 +1,6 @@
 {#% form_theme form 'bootstrap_3_layout.html.twig' %#}
-{{ form_start(form, {attr: {id: 'search-form'}, action: requestSearchUrl}) }}
+
+{{ form_start(form, {attr: {id: 'search-form'}, action: path('online_booking')}) }}
 <div class="form-group">
     {{ form_label(form.hotel) }}
     <div class="input-group">
