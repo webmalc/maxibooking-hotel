@@ -2,14 +2,15 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\Response;
-use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
@@ -18,7 +19,6 @@ use MBH\Bundle\PackageBundle\Document\Order;
 
 class HundredOneHotels extends Base
 {
-
     /**
      * Config class
      */
@@ -44,11 +44,13 @@ class HundredOneHotels extends Base
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
-
         $end = $this->getDefaultEnd($begin, $end);
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
+
+            $requestFormatter = new HOHRequestFormatter($config);
+
             /** @var HundredOneHotelsConfig $config */
             //$roomTypes array[roomTypeId => [roomId('syncId'), roomType('doc')]]
             $roomTypes = $this->getRoomTypes($config);
@@ -61,10 +63,8 @@ class HundredOneHotels extends Base
                 null,
                 true
             );
-            $quotasData = [];
 
             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
-                $currentDateQuotas = [];
                 foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                     $roomQuotaForCurrentDate = 0;
                     /** @var \DateTime $day */
@@ -73,18 +73,15 @@ class HundredOneHotels extends Base
                         $currentDateRoomCache = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
                         $roomQuotaForCurrentDate = $currentDateRoomCache->getLeftRooms() > 0 ? $currentDateRoomCache->getLeftRooms() : 0;
                     }
-                    $currentDateQuotas[$roomTypeInfo['syncId']] = $roomQuotaForCurrentDate;
-                }
-                if (count($currentDateQuotas) > 0) {
-                    $quotasData[] = ['day' => $day->format('Y-m-d'), 'quota' => $currentDateQuotas];
+                    $requestFormatter->addSingleParamCondition($day, HOHRequestFormatter::QUOTA, $roomTypeInfo['syncId'], $roomQuotaForCurrentDate);
                 }
             }
 
-            if (!isset($quotasData)) {
+            if ($requestFormatter->isDataEmpty()) {
                 continue;
             }
 
-            $request = $this->getRequestArray($config->getHotelId(), 'set_calendar', $quotasData);
+            $request = $requestFormatter->getRequest();
             dump($request);exit();
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
 
@@ -107,9 +104,10 @@ class HundredOneHotels extends Base
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
-        $pricesData = [];
         // iterate hotels
         foreach ($this->getConfig() as $config) {
+            $requestFormatter = new HOHRequestFormatter($config);
+
             /** @var HundredOneHotelsConfig $config */
             //array [maxi TariffId][syncId(service TariffId)=> doc(maxi Tariff)]
             $tariffs = $this->getTariffs($config);
@@ -127,11 +125,8 @@ class HundredOneHotels extends Base
                 $this->roomManager->useCategories
             );
 
-
             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
-                $currentDatePrices = [];
                 foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
-                    $currentTypePrices = [];
                     /** @var \DateTime $day */
                     foreach ($tariffs as $tariffId => $tariff) {
 
@@ -149,24 +144,19 @@ class HundredOneHotels extends Base
                             $currentDatePriceCache = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
                             $currentDatePrice = $currentDatePriceCache->getPrice() ?
                                 $currentDatePriceCache->getPrice() : null;
-
-                            $currentTypePrices[$tariff['syncId']] =  $currentDatePrice;
+                        } else {
+                            $currentDatePrice = 0;
                         }
+                        $requestFormatter->addDoubleParamCondition($day, HOHRequestFormatter::PRICES, $roomTypeInfo['syncId'], $tariff['syncId'], $currentDatePrice);
                     }
-                    if (count($currentTypePrices) > 0) {
-                        $currentDatePrices[$roomTypeInfo['syncId']] = $currentTypePrices;
-                    }
-                }
-                if (count($currentDatePrices) > 0) {
-                    $pricesData[] = ['day' => $day->format('Y-m-d'), 'prices' => $currentDatePrices];
                 }
             }
 
-            if (!isset($pricesData)) {
+            if ($requestFormatter->isDataEmpty()) {
                 continue;
             }
 
-            $request = $this->getRequestArray($config->getHotelId(), 'set_calendar', $pricesData);
+            $request = $requestFormatter->getRequest();
             dump($request);exit();
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
 
@@ -195,6 +185,7 @@ class HundredOneHotels extends Base
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
+            $requestFormatter = new HOHRequestFormatter($config);
             /** @var HundredOneHotelsConfig $config */
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config);
@@ -216,11 +207,8 @@ class HundredOneHotels extends Base
                 true
             );
 
-            $restrictionsData = [];
             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                 /** @var \DateTime $day */
-                $currentDateRestrictions = ['day' => $day->format('Y-m-d')];
-                $closed = $closedToArrival = $closedToDeparture = $minStay = [];
                 foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                     foreach ($tariffs as $tariffId => $tariff) {
 
@@ -242,36 +230,38 @@ class HundredOneHotels extends Base
                             /** @var Restriction $maxiBookingRestrictionObject */
                             $maxiBookingRestrictionObject = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
 
-                            $closed[$roomTypeInfo['syncId']][$tariff['syncId']] = $maxiBookingRestrictionObject->getClosed() || !$price ? 1 : 0;
+                            $requestFormatter->addSingleParamCondition($day,
+                                HOHRequestFormatter::CLOSED,
+                                $roomTypeInfo['syncId'],
+                                $maxiBookingRestrictionObject->getClosed() || !$price ? 1 : 0);
 
-                            $closedToArrival[$roomTypeInfo['syncId']][$tariff['syncId']] = $maxiBookingRestrictionObject->getClosedOnArrival() ? 1 : 0;
+                            $requestFormatter->addDoubleParamCondition($day,
+                                HOHRequestFormatter::CLOSED_TO_ARRIVAL,
+                                $roomTypeInfo['syncId'],
+                                $tariff['syncId'],
+                                $maxiBookingRestrictionObject->getClosedOnArrival() ? 1 : 0);
 
-                            $closedToDeparture[$roomTypeInfo['syncId']][$tariff['syncId']] = $maxiBookingRestrictionObject->getClosedOnDeparture() ? 1 : 0;
+                            $requestFormatter->addDoubleParamCondition($day,
+                                HOHRequestFormatter::CLOSED_TO_DEPARTURE,
+                                $roomTypeInfo['syncId'],
+                                $tariff['syncId'],
+                                $maxiBookingRestrictionObject->getClosedOnDeparture() ? 1 : 0);
 
-                            $minStay[$roomTypeInfo['syncId']][$tariff['syncId']] = (int)$maxiBookingRestrictionObject->getMinStay();
+                            $requestFormatter->addDoubleParamCondition($day,
+                                HOHRequestFormatter::MIN_STAY,
+                                $roomTypeInfo['syncId'],
+                                $tariff['syncId'],
+                                (int)$maxiBookingRestrictionObject->getMinStay());
                         }
                     }
                 }
-                if (count($closed) > 0) {
-                    $currentDateRestrictions['closed'] = $closed;
-                }
-                if (count($closedToDeparture) > 0) {
-                    $currentDateRestrictions['closed_to_departure'] = $closedToDeparture;
-                }
-                if (count($closedToArrival) > 0) {
-                    $currentDateRestrictions['closed_to_arrival'] = $closedToArrival;
-                }
-                if (count($minStay) > 0) {
-                    $currentDateRestrictions['min_stay'] = $minStay;
-                }
-                $restrictionsData[] = $currentDateRestrictions;
             }
 
-            if (!isset($restrictionsData)) {
+            if ($requestFormatter->isDataEmpty()) {
                 continue;
             }
 
-            $request = $this->getRequestArray($config->getHotelId(), 'set_calendar', $restrictionsData);
+            $request = $requestFormatter->getRequest();
             dump($request);exit();
             $sendResult = $this->send(static::BASE_URL, $request, null, true, true);
 
@@ -305,10 +295,8 @@ class HundredOneHotels extends Base
 
         foreach ($this->getConfig() as $config) {
 
-            $request = $this->templating->render(
-                'MBHChannelManagerBundle:Booking:reservations.xml.twig',
-                ['config' => $config, 'lastChange' => false]
-            );
+            $requestFormatter = new HOHRequestFormatter($config, 'get_bookings');
+            $request = $requestFormatter->getRequest();
             $serviceOrders = $this->sendJson(static::BASE_URL, $request, null, true);
             $this->log('Reservations count: ' . count($serviceOrders['data']));
 
@@ -322,8 +310,7 @@ class HundredOneHotels extends Base
                 //old order
                 $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
                     [
-                        //TODO: Проверить booking_id или id. В документации в респонзе id, в описании booking_id
-                        'channelManagerId' => (string)$serviceOrder['booking_id'],
+                        'channelManagerId' => (string)$serviceOrder['id'],
                         'channelManagerType' => self::CHANNEL_MANAGER_TYPE
                     ]
                 );
@@ -348,13 +335,12 @@ class HundredOneHotels extends Base
                     $this->dm->remove($order);
                     $this->dm->flush();
                     $result = true;
-
                 };
 
                 if (in_array((string)$serviceOrder['state'], ['modified', 'cancelled']) && !$order) {
                     $this->notifyError(
-                        'booking',
-                        '#' . $serviceOrder['booking_id'] . ' ' .
+                        self::CHANNEL_MANAGER_TYPE,
+                        '#' . $serviceOrder['id'] . ' ' .
                         $serviceOrder['contact_last_name'] . ' ' . $serviceOrder['contact_first_name']
                     );
                 }
@@ -376,17 +362,13 @@ class HundredOneHotels extends Base
         Order $order = null
     )
     {
-        $helper = $this->container->get('mbh.helper');
-
-        $services = $this->getServices($config);
-
         $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
             (string)$orderData['contact_last_name'],
             (string)$orderData['contact_first_name'],
             null,
             null,
-            empty((string)$orderData['contact_email']) ? null : (string)$orderData['contact_email'],
-            empty((string)$orderData['contact_phone']) ? null : (string)$orderData['contact_phone']
+            isset($orderData['contact_email']) ? (string)$orderData['contact_email'] : null,
+            isset($orderData['contact_phone']) ? (string)$orderData['contact_phone'] : null
         );
         //order
         if (!$order) {
@@ -406,8 +388,7 @@ class HundredOneHotels extends Base
         }
 
         $order->setChannelManagerType(self::CHANNEL_MANAGER_TYPE)
-            //TODO: Проверить booking_id или id. В документации в репонзе id, в описании booking_id
-            ->setChannelManagerId((string)$orderData['booking_id'])
+            ->setChannelManagerId((string)$orderData['id'])
             ->setMainTourist($payer)
             ->setConfirmed(false)
             ->setStatus('channel_manager')
@@ -418,109 +399,30 @@ class HundredOneHotels extends Base
         $this->dm->persist($order);
         $this->dm->flush();
 
-        //fee
-//        if (!empty((float)$reservation->commissionamount)) {
-//            $fee = new CashDocument();
-//            $fee->setIsConfirmed(false)
-//                ->setIsPaid(false)
-//                ->setMethod('electronic')
-//                ->setOperation('fee')
-//                ->setOrder($order)
-//                ->setTouristPayer($payer)
-//                ->setTotal($this->currencyConvertToRub($config, (float)$reservation->commissionamount));
-//            $this->dm->persist($fee);
-//            $this->dm->flush();
-//        }
-        //Сортируем данные о типах номеров
-        $rooms = $orderData['rooms'];
-        foreach ($rooms as $key => $row) {
-            $date[$key] = $row['day'];
-            $roomId[$key] = $row['room_id'];
+        //Разбиваем получаемый массив данных о размещениях по типам размещений
+        $roomTypeData = [];
+        foreach ($orderData['rooms'] as $currentDatePlacement) {
+            $roomTypeData[$currentDatePlacement['placement_id']]['roomData'][] = $currentDatePlacement;
         }
 
-        $sortedRooms = array_multisort($date, SORT_ASC, $roomId, SORT_ASC, $rooms);
+        //Добавляем данные о гостях
+        foreach ($orderData['guests'] as $guest) {
+            $roomTypeData[$guest['placement_id']]['guests'][] = $guest;
+        }
 
-        $currentPlacementId = 0;
-        $currentPackage = new Package();
+        $tariffs = $this->getTariffs($config, true);
+        $roomTypes = $this->getRoomTypes($config, true);
 
         //packages
-        foreach ($sortedRooms as $room) {
-            if ($currentPlacementId != $room['placement_id']) {
-                $currentPackage = $this->createPackage($room, $config);
+        foreach ($roomTypeData as $placementType) {
+            //TODO: Не могу найти как можно забронировать в 1 брони номера на разные даты, исходя из этого рассчитываю, что такого быть не может
+            //Создаем бронь для всех комнат, так как в параметре qty, отображающем кол-во комнат, может быть указано несколько комнат
+            for ($i = 0; $i < (int)$placementType['qty']; $i++) {
+                $package = $this->createPackage($placementType[$i], $config, $tariffs, $roomTypes, $order);
+                $order->addPackage($package);
             }
-
-            $currentPackage->setEnd(date_add($currentPackage->getEnd(), new \DateInterval('P1D')));
-
-//            foreach ($orderData['guests'] as $guest) {
-//                if ($guest['“placement_id”'] == $orderData['placement_id']) {
-//                    $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-//                        (string)$guest[''],
-//                        (string)$customer->first_name,
-//                        null,
-//                        null,
-//                        empty((string)$customer->email) ? null : (string)$customer->email,
-//                        empty((string)$customer->telephone) ? null : (string)$customer->telephone,
-//                        empty((string)$customer->address) ? null : (string)$customer->address,
-//                        empty($payerNote) ? null : $payerNote
-//                    );
-//                }
-//            }
-
-            //guests
-            if ($payer->getFirstName() . ' ' . $payer->getLastName() == (string)$package['contact_name']) {
-                $guest = $payer;
-            } else {
-                $guest = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-                    'н/д',
-                    (string)$room->guest_name
-                );
-            }
-
-
-            $packageNote = 'remarks: ' . $room->remarks . '; extra_info: ' . $room->extra_info . '; facilities: ' . $room->facilities . '; max_children: ' . $room->max_children;
-            $packageNote .= '; commissionamount=' . $room->commissionamount . '; currencycode = ' . $room->currencycode . '; ';
-            $packageNote .= $errorMessage;
-
-            $packageTotal = $this->currencyConvertToRub($config, (float)$total);
-
-            //services
-            $servicesTotal = 0;
-
-            if ($room->addons->addon) {
-                foreach ($room->addons->addon as $addon) {
-                    $servicesTotal += (float)$addon->totalprice;
-                    if (empty($services[(int)$addon->type])) {
-                        continue;
-                    }
-
-                    $packageService = new PackageService();
-                    $packageService
-                        ->setService($services[(int)$addon->type]['doc'])
-                        ->setIsCustomPrice(true)
-                        ->setNights(empty((string)$addon->nights) ? null : (int)$addon->nights)
-                        ->setPersons(empty((string)$addon->persons) ? null : (int)$addon->persons)
-                        ->setPrice(
-                            empty((string)$addon->price_per_unit) ? null : $this->currencyConvertToRub(
-                                $config,
-                                (float)$addon->price_per_unit
-                            )
-                        )
-                        ->setTotalOverwrite($this->currencyConvertToRub($config, (float)$addon->totalprice))
-                        ->setPackage($package);
-                    $this->dm->persist($packageService);
-                    $package->addService($packageService);
-                }
-            }
-
-            $package->setServicesPrice($this->currencyConvertToRub($config, (float)$servicesTotal));
-            $package->setTotalOverwrite($this->currencyConvertToRub($config, (float)$room->totalprice));
-
-            $order->addPackage($package);
-            $this->dm->persist($package);
-            $this->dm->persist($order);
-            $this->dm->flush();
         }
-        $order->setTotalOverwrite($this->currencyConvertToRub($config, (float)$reservation->totalprice));
+        $order->setTotalOverwrite((float)$orderData['sum']);
         $this->dm->persist($order);
         $this->dm->flush();
 
@@ -528,22 +430,25 @@ class HundredOneHotels extends Base
     }
 
     /**
-     * @param $room
-     * @param HundredOneHotelsConfig $config
+     * @param $roomTypeData
+     * @param ChannelManagerConfigInterface $config
+     * @param $tariffs
+     * @param $roomTypes
+     * @param Order $order
+     * @return Package
+     * @throws Exception
      */
-    private function createPackage($room, $config)
+    private function createPackage($roomTypeData, $config, $tariffs, $roomTypes, Order $order)
     {
         $corrupted = false;
         $errorMessage = '';
-        $tariffs = $this->getTariffs($config, true);
-        $roomTypes = $this->getRoomTypes($config, true);
 
-        $package = new Package();
-        $package->setBegin(\DateTime::createFromFormat('Y-m-d', $room['day']));
+        //Данные о размещении одинаковы для всех элементов массива, представляющего данные о размещениях по дням
+        $packageCommonData = $roomTypeData['roomData'][0];
 
-        //roomType
-        if (isset($roomTypes[(string)$room['room_id']])) {
-            $roomType = $roomTypes[(string)$room['room_id']]['doc'];
+        //getting current room type
+        if (isset($roomTypes[(string)$packageCommonData['room_id']])) {
+            $roomType = $roomTypes[(string)$packageCommonData['room_id']]['doc'];
         } else {
             $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
                 [
@@ -554,16 +459,15 @@ class HundredOneHotels extends Base
             );
             $corrupted = true;
             $errorMessage = $this->container->get('translator')
-                ->trans('services.hundredOneHotels.invalid_room_type_id', ['%id%' => (string)$room['room_id']]);
-
+                ->trans('services.hundredOneHotels.invalid_room_type_id', ['%id%' => (string)$packageCommonData['room_id']]);
             if (!$roomType) {
-                return;
+                throw new Exception($this->container->get('translator')->trans('services.hundredOneHotels.nor_one_room_type'));
             }
         }
 
-        //array [service TariffId][syncId(service TariffId)=> doc(maxi Tariff)]
-        if (isset($tariffs[(string)$room['placement_id']])) {
-            $tariff = $tariffs[(string)$room['placement_id']]['doc'];
+        //getting current tariff
+        if (isset($tariffs[(string)$packageCommonData['placement_id']])) {
+            $tariff = $tariffs[(string)$packageCommonData['placement_id']]['doc'];
         } else {
             $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
                 [
@@ -574,35 +478,53 @@ class HundredOneHotels extends Base
             );
             $corrupted = true;
             $errorMessage = $this->container->get('translator')
-                ->trans('services.hundredOneHotels.invalid_tariff_id', ['%id%' => (string)$room['placement_id']]);
+                ->trans('services.hundredOneHotels.invalid_tariff_id', ['%id%' => (string)$packageCommonData['placement_id']]);
 
             if (!$tariff) {
-                //TODO: Обработать ситуцацию, когда нет ни одного тарифа
-                return;
+                throw new Exception($this->container->get('translator')->trans('services.hundredOneHotels.nor_one_tariff'));
             }
         }
-        $date = \DateTime::createFromFormat('Y-m-d', $room['day']);
-        $package->setTariff($tariff);
-        $packagePrices[] = new PackagePrice($room , $room['price'], $tariff);
 
+        $packagePrices = [];
+        $totalPrice = 0;
+        foreach ($roomTypeData['roomData'] as $currentDatePlacementData) {
+            $currentDate = \DateTime::createFromFormat('Y-m-d', $currentDatePlacementData['day']);
+            $price = (int)$currentDatePlacementData['price']; 
+            $packagePrices[] = new PackagePrice($currentDate, $price, $tariff);
+            $totalPrice += $price;
+        }
+
+        $beginDate = \DateTime::createFromFormat('Y-m-d', $packageCommonData['day']);
+
+        $package = new Package();
         $package
-            ->setChannelManagerId((string)$room['id'])
+            ->setChannelManagerId((string)$packageCommonData['id'])
             ->setChannelManagerType(self::CHANNEL_MANAGER_TYPE)
-            ->setBegin($date)
+            ->setBegin($beginDate)
             ->setEnd(date_add($package->getBegin(), new \DateInterval('P1D')))
             ->setRoomType($roomType)
             ->setTariff($tariff)
-            ->setAdults((int)$room['occupants'])
+            ->setAdults((int)$packageCommonData['occupants'])
             ->setChildren(0)
-            ->setPricesByDate($pricesByDate)
             ->setPrices($packagePrices)
-            ->setPrice($packageTotal)
-            ->setOriginalPrice((float)$total)
-            ->setTotalOverwrite($packageTotal)
-            ->setNote($packageNote)
+            ->setPrice($totalPrice)
+            ->setOriginalPrice($totalPrice)
+            ->setTotalOverwrite($totalPrice)
+            ->setNote($errorMessage)
             ->setOrder($order)
-            ->setCorrupted($corrupted)
-            ->addTourist($guest);
+            ->setCorrupted($corrupted);
+
+        $touristRepository = $this->dm->getRepository('MBHPackageBundle:Tourist');
+        foreach ($roomTypeData['guests'] as $guestData) {
+            $touristNameData = explode(' ',$guestData['name']);
+            /** @var Tourist $tourist */
+            $tourist = $touristRepository->fetchOrCreate(
+                $touristNameData[0],
+                isset($touristNameData[1]) ? $touristNameData[1] : null
+            );
+            $package->addTourist($tourist);
+        }
+        return $package;
     }
 
     /**
@@ -612,7 +534,8 @@ class HundredOneHotels extends Base
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
-        $request = $this->getRequestArray($config->getHotelId(), 'get_hotel');
+        $requestFormatter = new HOHRequestFormatter($config, 'get_hotel');
+        $request = $requestFormatter->getRequest();
         $jsonResponse = $this->send(static::BASE_URL, $request, null, true);
         $response = json_decode($jsonResponse, true);
 
@@ -631,11 +554,10 @@ class HundredOneHotels extends Base
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
-        //TODO: Реализовать добавление другой информации по необходимости(к примеру названия тарифа)
+        $requestFormatter = new HOHRequestFormatter($config, 'get_hotel');
+        $request = $requestFormatter->getRequest();
+
         $result = [];
-
-        $request = $this->getRequestArray($config->getHotelId(), 'get_hotel');
-
         $jsonResponse = $this->send(static::BASE_URL, $request);
         $response = json_decode($jsonResponse, true);
 
@@ -666,28 +588,6 @@ class HundredOneHotels extends Base
 
         $responseCode = $response['response'];
         return $responseCode == 1 ? true : false;
-    }
-
-    /**
-     * return data for request with specified service name
-     * @param $hotel_id
-     * @param $serviceName
-     * @param $data
-     * @return array
-     */
-    private function getRequestArray($hotel_id, $serviceName, $data = null)
-    {
-        $template = [
-            'api_key' => self::API_KEY,
-            'hotel_id' => $hotel_id,
-            'service' => $serviceName
-        ];
-        if ($data) {
-            $template['data'] = $data;
-        }
-        //отправляемые сообщения должны содержать один POST параметр 'request', содержащий данные в json-формате
-        $requestData = ['request' => json_encode($template)];
-        return $requestData;
     }
 
     /**

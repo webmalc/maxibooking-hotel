@@ -23,8 +23,6 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
  */
 class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterface
 {
-
-
     use ConfigTrait;
 
     /**

@@ -50,7 +50,7 @@ class HundredOneHotelsController extends Controller
     {
         $firstDate = \DateTime::createFromFormat('d.m.Y', '4.3.2017');
         $secondTime = \DateTime::createFromFormat('d.m.Y', '10.3.2017');
-        $json = $this->get('mbh.channelmanager.hundred_one_hotels')->updateRestrictions($firstDate, $secondTime);
+        $json = $this->get('mbh.channelmanager.hundred_one_hotels')->pullOrders();
         $a = 1;
         return [
             'json' => count($json)

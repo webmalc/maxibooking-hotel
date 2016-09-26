@@ -52,10 +52,10 @@ form.hundredOneHotels.is_included: Включен?
 form.hundredOneHotels.should_we_use_in_channel_manager: Использовать ли в Channel manager?
 form.hundredOneHotels.hotel_id: ID отеля
 form.hundredOneHotels.hotel_id_in_101_hotels: ID отеля в 101hotels.ru
-form.hundredOneHotels.currency: Валюта
-form.bookingType.currency_help: Валюта конвертации цен
 services.hundredOneHotels.invalid_room_type_id: 'ОШИБКА: тип комнат с id = %id% сервиса 101Hotels не синхронизирован ни с одним типом комнат maxibooking'
 services.hundredOneHotels.invalid_tariff_id: 'ОШИБКА: тип размещения с id = %id% сервиса 101Hotels не синхронизирован ни с одним тарифом maxibooking.'
+services.hundredOneHotels.nor_one_room_type: 'В данном отеле не существует ни одного типа номера'
+services.hundredOneHotels.nor_one_tariff: 'В данном отеле не существует ни одного тарифа'
 controller.hundredOneHotelsController.settings_saved_success: 'Настройки успешно сохранены.'
 
 #myAllocator
