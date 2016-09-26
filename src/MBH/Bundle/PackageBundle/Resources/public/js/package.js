@@ -219,6 +219,43 @@ var docReadyPackages = function () {
                 exportOptions: {
                     stripNewlines: false
                 }
+            },
+            {
+                text: '<i class="fa fa-file" title="CSV" data-toggle="tooltip" data-placement="bottom"></i>',
+                className: 'btn btn-default btn-sm',
+                action: function ( e, dt, button, config ) {
+                    $.ajax({
+                        url: Routing.generate('package_csv'),
+                        data: function (d) {
+                            d.begin = $('#package-filter-begin').val();
+                            d.end = $('#package-filter-end').val();
+                            d.roomType = $('#package-filter-roomType').val();
+                            d.status = $('#package-filter-status').val();
+                            d.deleted = ($('#package-filter-deleted').is(':checked')) ? 1 : 0;
+                            d.dates = $('#package-filter-dates').val();
+                            d.paid = $('#package-filter-paid').val();
+                            d.confirmed = $('#package-filter-confirmed').val();
+                            d.quick_link = $('#package-filter-quick-link').val();
+                        },
+                        success: function (response) {
+                            $('<div id="template-document-csv-modal" class="modal"> </div> ').insertAfter($('.content-wrapper'));
+                            var $modal = $('#template-document-csv-modal');
+                            var $body = $modal.find('.modal-body');
+
+                            $modal.html(response);
+                            $modal.modal('show');
+
+                            $modal.find('input[type=checkbox]').bootstrapSwitch({
+                                'size': 'mini',
+                                'onColor' : 'success',
+                                'onText': 'да',
+                                'offText': 'нет',
+                            });
+
+                        }
+                    });
+
+                }
             }
         ],
         "processing": true,
@@ -265,6 +302,7 @@ var docReadyPackages = function () {
             $('#package-summary-guests').html(settings.json.package_summary_guests || '-');
         }
     });
+
 
     // package datatable filter
     (function () {

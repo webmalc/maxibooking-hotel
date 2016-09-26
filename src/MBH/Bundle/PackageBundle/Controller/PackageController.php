@@ -12,8 +12,10 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
+use MBH\Bundle\PackageBundle\Services\CsvGenerate;
 use MBH\Bundle\PackageBundle\Services\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PackageBundle\Form\PackageCsvType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -129,7 +131,115 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'count' => $count
         ];
     }
+    /**
+     * Lists all entities as json.
+     *
+     * @Route("/csv", name="package_csv", options={"expose"=true})
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
+     * @Template()
+     */
+    public function csvAction(Request $request)
+    {
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
+        $data = [
+            'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
+            'roomType' => $request->get('roomType'),
+            'status' => $request->get('status'),
+            'deleted' => $request->get('deleted'),
+            'begin' => $request->get('begin'),
+            'end' => $request->get('end'),
+            'dates' => $request->get('dates'),
+            'skip' => $request->get('start'),
+            'limit' => $request->get('length'),
+            'query' => $request->get('search')['value'],
+            'order' => $request->get('order')['0']['column'],
+            'dir' => $request->get('order')['0']['dir'],
+            'paid' => $request->get('paid'),
+            'confirmed' => $request->get('confirmed'),
+        ];
+
+        //quick links
+        switch ($request->get('quick_link')) {
+            case 'begin-today':
+                $data['dates'] = 'begin';
+                $now = new \DateTime('midnight');
+                $data['begin'] = $now->format('d.m.Y');
+                $data['end'] = $now->format('d.m.Y');
+                $data['checkOut'] = false;
+                $data['checkIn'] = false;
+                break;
+
+            case 'begin-tomorrow':
+                $data['dates'] = 'begin';
+                $now = new \DateTime('midnight');
+                $now->modify('+1 day');
+                $data['begin'] = $now->format('d.m.Y');
+                $data['end'] = $now->format('d.m.Y');
+                $data['checkOut'] = false;
+                $data['checkIn'] = false;
+                break;
+
+            case 'live-now':
+                $data['filter'] = 'live_now';
+                $data['checkIn'] = true;
+                $data['checkOut'] = false;
+                break;
+
+            case 'without-approval':
+                $data['confirmed'] = '0';
+                break;
+
+            case 'without-accommodation':
+                $data['filter'] = 'without_accommodation';
+                $data['dates'] = 'begin';
+                $now = new \DateTime('midnight');
+                $data['end'] = $now->format('d.m.Y');
+                break;
+
+            case 'not-paid':
+                $data['paid'] = 'not_paid';
+                break;
+
+            case 'not-paid-time':
+                $notPaidTime = new \DateTime($this->container->getParameter('mbh.package.notpaid.time'));
+                $data['paid'] = 'not_paid';
+                $data['dates'] = 'createdAt';
+                $data['end'] = $notPaidTime->format('d.m.Y');
+                break;
+
+            case 'not-check-in':
+                $data['checkIn'] = false;
+                $data['dates'] = 'begin';
+                $now = new \DateTime('midnight');
+                $data['end'] = $now->format('d.m.Y');
+                break;
+
+            case 'created-by':
+                $data['createdBy'] = $this->getUser()->getUsername();
+                break;
+            default:
+        }
+
+        $form = $this->createForm(new PackageCsvType());
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $formData = $form->getData();
+            $generate = $this->get('mbh.package.csv.generator')->generateCsv($data, $formData);
+            $response = new Response($generate);
+            $response->setStatusCode(200);
+            $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+            $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+            return $response;
+        }
+
+
+        return [
+            'form' => $form->createView(),
+        ];
+    }
     /**
      * Lists all entities as json.
      *
@@ -228,7 +338,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
         $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
-        
+
         return [
             'entities' => $entities,
             'total' => $entities->count(),
