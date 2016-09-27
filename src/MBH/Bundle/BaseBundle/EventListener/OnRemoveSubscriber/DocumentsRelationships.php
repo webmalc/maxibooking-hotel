@@ -72,9 +72,9 @@ class DocumentsRelationships
                 new Relationship(IngredientCategory::class, 'hotel', 'exception.hotel_relation_delete.message.ingredientCategory'),
                 new Relationship(DishMenuCategory::class, 'hotel', 'exception.hotel_relation_delete.message.dishMenuCategory'),
                 new Relationship(Housing::class, 'hotel', 'exception.hotel_relation_delete.message.housing'),
-                new Relationship(PriceCache::class, 'hotel', 'exception.hotel_relation_delete.message.priceCache'),
-                new Relationship(Restriction::class, 'hotel', 'exception.hotel_relation_delete.message.restriction'),
-                new Relationship(RoomCache::class, 'hotel', 'exception.hotel_relation_delete.message.roomCache'),
+                //new Relationship(PriceCache::class, 'hotel', 'exception.hotel_relation_delete.message.priceCache'),
+                //new Relationship(Restriction::class, 'hotel', 'exception.hotel_relation_delete.message.restriction'),
+                //new Relationship(RoomCache::class, 'hotel', 'exception.hotel_relation_delete.message.roomCache'),
                 new Relationship(ServiceCategory::class, 'hotel', 'exception.hotel_relation_delete.message.serviceCategory'),
                 new Relationship(DishMenuCategory::class, 'hotel', 'exception.hotel_relation_delete.message.dishMenuCategory'),
                 new Relationship(DishOrderItem::class, 'hotel', 'exception.hotel_relation_delete.message.dishOrderItem'),
@@ -95,8 +95,8 @@ class DocumentsRelationships
             ],
             RoomType::class => [
                 new Relationship(Room::class, 'roomType', 'exception.roomType_relation_delete.message.room'),
-                new Relationship(PriceCache::class, 'roomType', 'exception.roomType_relation_delete.message.priceCache'),
-                new Relationship(RoomCache::class, 'roomType', 'exception.roomType_relation_delete.message.roomCache'),
+                //new Relationship(PriceCache::class, 'roomType', 'exception.roomType_relation_delete.message.priceCache'),
+                //new Relationship(RoomCache::class, 'roomType', 'exception.roomType_relation_delete.message.roomCache'),
                 new Relationship(Package::class, 'roomType', 'exception.roomType_relation_delete.message.package')
             ],
             Room::class => [
@@ -136,7 +136,7 @@ class DocumentsRelationships
                 new Relationship(DishOrderItem::class, 'table', 'exception.table_relation_delete.message.dishorderItem')
             ],
             Package::class => [
-                new Relationship(DishOrderItem::class, 'order', 'exception.package_relation_delete.message.dishOrderItem'),
+                //new Relationship(DishOrderItem::class, 'order', 'exception.package_relation_delete.message.dishOrderItem'),
                 //new Relationship(PackageService::class, 'package', 'exception.package_relation_delete.message.packageService')
             ],
             IngredientCategory::class => [

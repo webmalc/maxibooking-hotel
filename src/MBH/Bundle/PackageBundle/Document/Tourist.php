@@ -216,8 +216,15 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      */
     protected $isUnwelcome = false;
 
+    /**
+     *
+     * @ODM\ReferenceMany(targetDocument="RestarauntSeat", mappedBy="tourist")
+     */
+    protected $restarauntSeat;
+
     public function __construct()
     {
+        $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
         $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
     }
 

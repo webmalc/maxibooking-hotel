@@ -294,15 +294,19 @@ class HundredOneHotels extends Base
         $result = true;
 
         foreach ($this->getConfig() as $config) {
-
             $requestFormatter = new HOHRequestFormatter($config, 'get_bookings');
+            $firstDate = \DateTime::createFromFormat('Y-m-d H:i:s', '2016-09-27 11:50:00');
+            $secondTime = \DateTime::createFromFormat('Y-m-d H:i:s', '2016-09-27 14:12:00');
+            $requestFormatter->addDateCondition($firstDate, $secondTime);
             $request = $requestFormatter->getRequest();
-            $serviceOrders = $this->sendJson(static::BASE_URL, $request, null, true);
+            $serviceOrders = $this->send(static::BASE_URL, $request, null, true, true);
+            $serviceOrders = json_decode($serviceOrders, true);
             $this->log('Reservations count: ' . count($serviceOrders['data']));
 
             foreach ($serviceOrders['data'] as $serviceOrder) {
+                $editDateTime = $serviceOrder['modified'];
 
-                if ((string)$serviceOrder['state'] == 'modified') {
+                if ((string)$serviceOrder['last_action'] == 'modified') {
                     if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->disable('softdeleteable');
                     }
@@ -314,20 +318,25 @@ class HundredOneHotels extends Base
                         'channelManagerType' => self::CHANNEL_MANAGER_TYPE
                     ]
                 );
-                if ((string)$serviceOrder['state'] == 'modified') {
+                if ((string)$serviceOrder['last_action'] == 'modified') {
                     if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->enable('softdeleteable');
                     }
                 }
-                //TODO: Разобраться с остальными статусами
                 //new
-                if ((string)$serviceOrder['state'] == 1 && !$order) {
+                if ((string)$serviceOrder['last_action'] == 'created' && !$order) {
                     $result = $this->createOrder($serviceOrder, $config, $order);
                     $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'new');
                 }
 
+                //edited
+                if ((string)$serviceOrder['last_action'] == 'modified' && $order && $order->getChannelManagerEditDateTime() != $editDateTime) {
+                    $result = $this->createOrder($serviceOrder, $config, $order);
+                    $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'edit');
+                }
+
                 //delete
-                if ((string)$serviceOrder['state'] == 2 && $order) {
+                if ((string)$serviceOrder['last_action'] == 'canceled' && $order) {
                     $order->setChannelManagerStatus('cancelled');
                     $this->dm->persist($order);
                     $this->dm->flush();
@@ -384,10 +393,11 @@ class HundredOneHotels extends Base
                 $this->dm->flush();
             }
             $order->setChannelManagerStatus('modified');
+            $order->setChannelManagerEditDateTime($orderData['modified']);
             $order->setDeletedAt(null);
         }
 
-        $order->setChannelManagerType(self::CHANNEL_MANAGER_TYPE)
+        $order->setChannelManagerType('101 Отель')
             ->setChannelManagerId((string)$orderData['id'])
             ->setMainTourist($payer)
             ->setConfirmed(false)
@@ -415,11 +425,13 @@ class HundredOneHotels extends Base
 
         //packages
         foreach ($roomTypeData as $placementType) {
-            //TODO: Не могу найти как можно забронировать в 1 брони номера на разные даты, исходя из этого рассчитываю, что такого быть не может
             //Создаем бронь для всех комнат, так как в параметре qty, отображающем кол-во комнат, может быть указано несколько комнат
-            for ($i = 0; $i < (int)$placementType['qty']; $i++) {
-                $package = $this->createPackage($placementType[$i], $config, $tariffs, $roomTypes, $order);
+            for ($i = 0; $i < (int)$placementType['roomData'][0]['qty']; $i++) {
+                $package = $this->createPackage($placementType, $config, $tariffs, $roomTypes, $order);
                 $order->addPackage($package);
+                $this->dm->persist($package);
+                $this->dm->persist($order);
+                $this->dm->flush();
             }
         }
         $order->setTotalOverwrite((float)$orderData['sum']);
@@ -487,21 +499,21 @@ class HundredOneHotels extends Base
 
         $packagePrices = [];
         $totalPrice = 0;
+        $beginDate = \DateTime::createFromFormat('Y-m-d', $packageCommonData['day']);
         foreach ($roomTypeData['roomData'] as $currentDatePlacementData) {
             $currentDate = \DateTime::createFromFormat('Y-m-d', $currentDatePlacementData['day']);
             $price = (int)$currentDatePlacementData['price']; 
             $packagePrices[] = new PackagePrice($currentDate, $price, $tariff);
             $totalPrice += $price;
         }
-
-        $beginDate = \DateTime::createFromFormat('Y-m-d', $packageCommonData['day']);
+        $endDate = \DateTime::createFromFormat('Y-m-d', end($roomTypeData['roomData'])['day']);
+        date_add($endDate, new \DateInterval('P1D'));
 
         $package = new Package();
         $package
-            ->setChannelManagerId((string)$packageCommonData['id'])
             ->setChannelManagerType(self::CHANNEL_MANAGER_TYPE)
             ->setBegin($beginDate)
-            ->setEnd(date_add($package->getBegin(), new \DateInterval('P1D')))
+            ->setEnd($endDate)
             ->setRoomType($roomType)
             ->setTariff($tariff)
             ->setAdults((int)$packageCommonData['occupants'])

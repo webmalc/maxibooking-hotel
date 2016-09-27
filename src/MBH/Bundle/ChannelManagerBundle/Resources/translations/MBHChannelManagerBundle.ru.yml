@@ -67,3 +67,12 @@ channelManager.booking.notification.bottom: Внимание! Требуется
 
 channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы отель, типы номеров, тарифы или услуги
 views.channelmanager.actions.sync: Синхронизировать
+
+channelManager.hundredOneHotels.notification.subject.new: 'Новый заказ 101hotels.ru'
+channelManager.hundredOneHotels.notification.subject.edit: 'Изменен заказ 101hotels.ru'
+channelManager.hundredOneHotels.notification.subject.delete: 'Удален заказ 101hotels.ru'
+channelManager.hundredOneHotels.notification.new: 'Новый заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.hundredOneHotels.notification.edit: 'Изменен заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.hundredOneHotels.notification.delete: 'Удален заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.hundredOneHotels.notification.error.subject: 'Ошибка 101hotels.ru'
+channelManager.hundredOneHotels.notification.error: 'Ошибка при обработке заказа 101hotels.ru. Информация: %info%'

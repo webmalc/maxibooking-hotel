@@ -50,7 +50,7 @@ class HOHRequestFormatter
 
     public function addDateCondition(\DateTime $startDate, \DateTime $endDate)
     {
-        $this->requestData["data"] =
+        $this->requestData =
             ["start" => $this->formatDate($startDate, true), "end" => $this->formatDate($endDate, true)];
     }
 
@@ -83,7 +83,8 @@ class HOHRequestFormatter
     public function addDoubleParamCondition(\DateTime $date, $conditionName, $roomTypeId, $placementId, $value)
     {
         $dateString = $this->formatDate($date);
-        if ($dateInfoKey = $this->getDateInfoKey($dateString)) {
+        $dateInfoKey = $this->getDateInfoKey($dateString);
+        if (isset($dateInfoKey)) {
             $this->requestData[$dateInfoKey][$conditionName][$roomTypeId][$placementId] = $value;
         } else {
             $data = ['day' => $dateString, $conditionName => [$roomTypeId => [$placementId => $value]]];

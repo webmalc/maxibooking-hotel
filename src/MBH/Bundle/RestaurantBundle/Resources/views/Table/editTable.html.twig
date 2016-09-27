@@ -1,12 +1,31 @@
 {% extends 'MBHRestaurantBundle:Table:layout.html.twig' %}
 
-{% set small_title = 'restaurant.table.actions.edit'|trans %}
-{%  set layout = 'box' %}
+{% set small_title = 'restaurant.table.item.category.edit_table_incategory'|trans ~" #"~ entry.category.name %}
+{% set layout = 'tabs' %}
 
 {% block content %}
-    {{ form_start(form, {'action': path('restaurant_table_edit', {'id' : table.id}), 'method': method|default('POST'), 'attr':{'class':'form-horizontal'}}) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': table, 'delete_route': 'restaurant_table_delete', 'delete_role':'ROLE_RESTAURANT_DISHORDER_DELETE' } %}
-    {{ form(form) }}
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#general_info" role="tab" data-toggle="tab">
+                {{ 'restaurant.table.item.category.table'|trans }}
+            </a>
+        </li>
+        <li class="">
+
+            <a href="{{ path('restaurant_chair_new', {'id': entry.id}) }}">
+                {{ 'restaurant.table.item.category.chears'|trans }}
+            </a>
+        </li>
+    </ul>
+<div class="tab-content">
+    <div class="tab-pane active" id="general_info">
+    {{ form_start(form, {'action': path('restaurant_table_edit', {'id': entry.id}), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry, 'delete_route': 'restaurant_table_delete', 'delete_role':'ROLE_RESTAURANT_TABLE_DELETE' } %}
     {{ form_end(form) }}
-    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': table, 'logs': logs, 'delete_route': 'restaurant_table_delete' } %}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entry, 'logs': logs, 'delete_route': 'restaurant_table_delete' } %}
+
+    </div>
+</div>
 {% endblock %}

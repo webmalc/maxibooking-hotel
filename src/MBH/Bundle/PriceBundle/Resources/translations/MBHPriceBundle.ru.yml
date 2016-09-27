@@ -1,0 +1,66 @@
+#restruction/table html
+price.views.restriction.table.minstayArrival: 'Мин. длина брони (заезд)'
+price.views.restriction.table.maxStayArrival: 'Макс. длина брони (заезд)'
+price.views.restriction.table.minStay: 'Мин. длина брони (сквозное)'
+price.views.restriction.table.maxStay: 'Макс. длина брони (сквозное)'
+price.views.restriction.table.minBeforeArrival: 'Мин. дней до заезда'
+price.views.restriction.table.maxBeforeArrival: 'Макс. дней до заезда'
+price.views.restriction.table.closedOnArrival: 'Нет заезда'
+price.views.restriction.table.closedOnDeparture: 'Нет выезда'
+price.views.restriction.table.closed: 'Закрыто'
+#restruction/generator html
+price.views.restruction.generator.small_title: 'генератор'
+#restruction/layout html
+price.views.restruction.layout.small_title: 'Условия и ограничения'
+#restruction/index html
+price.views.restruction.index.small_title: 'обзор'
+price.views.restruction.index.date: 'Даты'
+price.views.restruction.index.type: 'Тип номера'
+price.views.restruction.index.save: 'Сохранить'
+price.views.restruction.index.random: 'Генератор условий и ограничений'
+price.views.restruction.index.cancel: 'Отмена'
+#promotion/ html
+price.views.promotion.edit.small_title: 'редактирование акции'
+price.views.promotion.layout.small_title: 'Акции'
+price.views.promotion.index.name: 'Название'
+price.views.promotion.index.individual: 'Индивидуальная'
+price.views.promotion.index.discount: 'Скидка'
+price.views.promotion.index.adults: 'Взрослые бесплатно'
+price.views.promotion.index.children: 'Дети бесплатно'
+price.views.promotion.index.yes: 'Да'
+price.views.promotion.index.edit: 'Редактирование записи'
+price.views.promotion.index.delete: 'Удаление записи'
+price.views.promotion.new.small_title: 'создание акции'
+#pricecache/ html
+price.views.priceCache.table.prices: 'Цена'
+price.views.priceCache.table.isPersonPrice: 'Цена за человека?'
+price.views.priceCache.table.singlePrice: 'Цена 1-местного размещения'
+price.views.priceCache.generator.small_title: 'генератор'
+price.views.priceCache.layout.small_title: 'Цены'
+price.views.priceCache.index.small_title: 'Обзор'
+price.views.priceCache.index.date: 'Даты'
+price.views.priceCache.index.type: 'Тип номера'
+price.views.priceCache.index.rate: 'Тариф'
+price.views.priceCache.index.save: 'Сохранить'
+price.views.priceCache.index.random: 'Генератор цен'
+price.views.priceCache.index.cancel: 'Отмена'
+#/overview html
+price.views.overview.tabla.rooms: 'Номера в продаже'
+price.views.overview.tabla.tariff_rooms: 'Квоты по тарифам'
+price.views.overview.tabla.prices: 'Цены'
+price.views.overview.tabla.restriction: 'Условия и ограничения'
+price.views.overview.layout.small_title: 'Номера и цены'
+
+price.views.overview.index.small_title: 'обзор'
+price.views.overview.index.date: 'Даты'
+price.views.overview.index.type: 'Тип номера'
+price.views.overview.index.rate: 'Тариф'
+
+
+
+
+
+
+
+
+

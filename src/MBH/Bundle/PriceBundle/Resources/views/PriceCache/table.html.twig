@@ -21,7 +21,6 @@
                 <tr class="mbh-grid-header2 warning">
                     <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff }}</small></td>
                 </tr>
-
                 <tr class="header">
                     <td class="first-th"></td>
                     {% for date in period %}
@@ -29,10 +28,10 @@
                     {% endfor %}
                 </tr>
 
-                {% set categories = {'price': 'Цена'} %}
+                {% set categories = {'price': 'price.views.priceCache.table.prices'|trans({},'MBHPriceBundle')} %}
 
                 {% if roomType.isHostel is empty %}
-                    {% set categories = categories|merge({'price': 'Цена', 'isPersonPrice': 'Цена за человека?', 'singlePrice': 'Цена 1-местного размещения'}) %}
+                    {% set categories = categories|merge({'price': 'price.views.priceCache.table.prices'|trans({},'MBHPriceBundle'), 'isPersonPrice': 'price.views.priceCache.table.isPersonPrice'|trans({},'MBHPriceBundle'), 'singlePrice': 'price.views.priceCache.table.singlePrice'|trans({},'MBHPriceBundle')}) %}
                 {% endif %}
 
                 {% if roomType.isChildPrices %}
