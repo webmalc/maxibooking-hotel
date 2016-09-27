@@ -1,3 +1,4 @@
 parameters:
     online_booking:
-          request_search_url: http://azovsky.local/index.php
+          request_search_url: /assets/vendor/azovsky/azovsky.ru/services/mb-search/index.php
+          payonlineurl: http://azovsky-billing.com/pay/

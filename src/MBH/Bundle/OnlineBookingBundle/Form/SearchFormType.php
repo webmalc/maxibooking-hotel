@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by Zavalyuk Alexandr (Zalex).
- * email: zalex@zalex.com.ua
- * Date: 9/26/16
- * Time: 11:27 AM
- */
 
 namespace MBH\Bundle\OnlineBookingBundle\Form;
 
@@ -57,16 +51,16 @@ class SearchFormType extends AbstractType
 
         $builder
             ->add('hotel', DocumentType::class, [
-                'label' => 'Отель',
+                'label' => 'Пансионат',
                 'required' => false,
-                'empty_value' => '',
+                'empty_value' => 'Все пансионаты',
                 'class' => Hotel::class,
                 'property' => 'fullTitle'
             ])
             ->add('roomType', ChoiceType::class, [
                 'label' => 'Тип номера',
                 'required' => false,
-                'empty_value' => '',
+                'empty_value' => 'Все типы номеров',
                 'choices' => $roomTypeList,
                 'choice_attr' => function ($roomType) use ($hotelIds) {
                     return ['data-hotel' => $hotelIds[$roomType]];
@@ -77,7 +71,6 @@ class SearchFormType extends AbstractType
                 'required' => false,
                 'mapped' => false
             ])
-            //TODO:Есть два разных типа, одно из них расширение, какое выбирать? надо позже решить.
             ->add('begin', DateType::class, [
                 'label' => 'Заезд',
                 'widget' => 'single_text',
@@ -109,7 +102,7 @@ class SearchFormType extends AbstractType
             ->add('children_age', CollectionType::class, [
                 'label' => 'Возраста детей',
                 'required' => false,
-                'type' => 'integer',
+                'type' => IntegerType::class,
                 'prototype' => true,
                 'allow_add' => true,
             ]);

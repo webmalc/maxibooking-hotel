@@ -2,43 +2,61 @@
   position: relative;
   bottom: 15px;
 }
+
 #search-form .popover {
   max-width: 350px;
 }
+
 #search-form .popover-content input {
   width: 55px;
   margin-right: 5px;
 }
+
 #search-form .popover-content input:last-child {
   margin-right: 0;
 }
+
 #search-form .popover-content div {
   white-space: nowrap;
 }
+
 .form-group {
-  margin: 5px 7% 15px !important;
+  margin: 5px 7% 15px !important
 }
-.bronirovanie select {
-  margin: 0 !important;
-  width: 100% !important;
+
+.input-group {
+
 }
-.bronirovanie label {
-  font-weight: normal !important;
+
+.bronirovanie {
+  select {
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  label {
+    font-weight: normal !important;
+  }
+  input {
+    margin: 0;
+    &[type="text"] {
+      margin: 0;
+      width: 100% !important;
+      //background-color: white;
+      padding: 0 12px;
+    }
+  }
+  span {
+    color: #f7f7f7;
+  }
 }
-.bronirovanie input {
-  margin: 0;
-}
-.bronirovanie input[type="text"] {
-  margin: 0;
-  width: 100% !important;
-  padding: 0 12px;
-}
-.bronirovanie span {
-  color: #f7f7f7;
-}
+
 .bcy {
   background-color: #ebb630;
 }
+
 .bgnd {
   background: #f4f4f4 url(../images/fico4.png) no-repeat scroll right center / auto 100% !important;
+
 }
+
+

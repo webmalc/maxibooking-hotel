@@ -93,7 +93,6 @@ class Search implements SearchInterface
         $beforeArrival = $today->diff($query->begin)->format('%a');
         $helper = $this->container->get('mbh.helper');
 
-
         //roomTypes
         if (empty($query->roomTypes)) {
             $query->roomTypes = [];
@@ -114,7 +113,6 @@ class Search implements SearchInterface
             }
             $query->roomTypes = count($roomTypes) ? $roomTypes : [0];
         }
-
         //roomCache with tariffs
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null,

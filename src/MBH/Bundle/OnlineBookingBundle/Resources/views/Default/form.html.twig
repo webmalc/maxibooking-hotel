@@ -1,18 +1,19 @@
-{#% form_theme form 'bootstrap_3_layout.html.twig' %#}
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
 
-{{ form_start(form, {attr: {id: 'search-form'}, action: path('online_booking')}) }}
+{{ form_start(form, {attr: {id: 'search-form', class: 'bronirovanie'}, action: requestSearchUrl }) }}
+<div class="hinform h2">Онлайн бронирование</div>
 <div class="form-group">
     {{ form_label(form.hotel) }}
     <div class="input-group">
         {{ form_widget(form.hotel) }}
-        <span class="input-group-addon"><i class="fa fa-home"></i></span>
+        <span class="input-group-addon bcy"><i class="fa fa-home"></i></span>
     </div>
 </div>
 <div class="form-group">
     {{ form_label(form.roomType) }}
     <div class="input-group">
         {{ form_widget(form.roomType, {attr: {'data-value': form.roomType.vars.value}}) }}
-        <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+        <span class="input-group-addon bcy"><i class="fa fa-tag"></i></span>
     </div>
 </div>
 
@@ -20,27 +21,34 @@
     {{ form_label(form.range) }}
     <div class="input-group">
         {{ form_widget(form.range) }}
-        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+        <span class="input-group-addon bcy"><i class="fa fa-calendar"></i></span>
     </div>
 </div>
+
 
 <div class="form-group row">
     <div class="col-sm-6">
         {{ form_label(form.adults) }}
-        {{ form_widget(form.adults) }}
+        {{ form_widget(form.adults, {attr: {class:"bgnd"}}) }}
     </div>
     <div class="col-sm-6">
         {{ form_label(form.children) }}
-        {{ form_widget(form.children) }}
+        {{ form_widget(form.children,{attr: {class:"bgnd"}}) }}
         <div id="children-icon" data-value="{{ form.children_age.vars.value|json_encode }}" style="visibility: hidden"></div>
     </div>
 </div>
+
 
 {{ form_widget(form.begin, {attr: {class: 'hide'}}) }}
 {{ form_widget(form.end, {attr: {class: 'hide'}}) }}
 
 <input type="submit" name="submit" value="Найти" id="rsc">
+
+<div class="hinform h2" style="padding:16px 0 10px;"><a href="{{ payOnlineUrl }}" target="_blank"><img src="http://azovsky.ru/images/vzmc.png" style="margin-right:10px;height:30px;">Внести оплату Online</a></div>
 {{ form_end(form, {render_rest: false}) }}
 
-<script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>
 <link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/form.css', null, true) }}">
+<link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-daterangepicker/daterangepicker.css') }}">
+<script src="{{ asset('assets/vendor/moment/moment.js') }}"></script>
+<script src="{{ asset('assets/vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+<script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>

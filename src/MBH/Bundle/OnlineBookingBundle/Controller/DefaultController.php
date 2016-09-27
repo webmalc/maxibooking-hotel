@@ -47,11 +47,16 @@ class DefaultController extends BaseController
      */
     public function formAction(Request $request)
     {
+
         $form = $this->createForm(SearchFormType::class);
+        $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
+        $payOnlineUrl = $this->getParameter('online_booking')['payonlineurl'];
         $form->handleRequest($request);
 
         return [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'requestSearchUrl' => $requestSearchUrl,
+            'payOnlineUrl' => $payOnlineUrl
         ];
 
     }

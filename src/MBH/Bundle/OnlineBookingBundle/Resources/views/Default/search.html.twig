@@ -14,7 +14,8 @@
             {% endif %}
         {% endfor %}
         {% if not renderedImage %}
-            <div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>
+            {#<div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>#}
+            <div class="placeholder-logo">тут картинка</div>
         {% endif %}
     </div>
     <div class="col-md-8 right-info">
@@ -134,8 +135,8 @@
 </div>
 {% endfor %#}
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
+{#<link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">#}
+{#<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>#}
 
 <script>
     var RoomTypeRow = function($row) {
