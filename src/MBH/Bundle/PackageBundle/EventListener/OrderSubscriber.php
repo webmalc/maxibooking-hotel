@@ -168,7 +168,7 @@ class OrderSubscriber implements EventSubscriber
                 $dm->persist($order);
                 $meta = $dm->getClassMetadata(get_class($order));
                 $uow->recomputeSingleDocumentChangeSet($meta, $order);
-                
+
                 if (isset($uow->getDocumentChangeSet($entity)['accommodation'])) {
                     $this->container->get('mbh.cache')->clear('accommodation_rooms');
                 }
@@ -191,5 +191,19 @@ class OrderSubscriber implements EventSubscriber
         if ($entity instanceof Package) {
             $entity->getOrder()->calcPrice();
         }
+
+        if ($entity instanceof Order) {
+
+            $code = $entity->getStatus() != 'channel_manager' ? $entity->getStatus() : $entity->getChannelManagerType();
+
+            if ($code) {
+                /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+                $dm = $this->container->get('doctrine_mongodb')->getManager();
+                $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(['code' => $code]);
+                $entity->setSource($source);
+            }
+
+        }
+
     }
 }
