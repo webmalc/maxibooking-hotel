@@ -412,7 +412,8 @@ class HundredOneHotels extends Base
                 ->setTouristPayer($orderInfo->getPayer())
                 ->setTotal($orderInfo->getOrderPrice());
             if ($orderInfo->getPayType() == 2) {
-                $fee->setIsPaid(false);
+                $fee->setIsPaid(false)
+                ->setMethod('cashless');
             }
             $this->dm->persist($fee);
             $this->dm->flush();

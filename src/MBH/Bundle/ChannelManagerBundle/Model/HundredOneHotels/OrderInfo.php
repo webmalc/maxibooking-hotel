@@ -46,7 +46,7 @@ class OrderInfo
 
     public function getPayerName()
     {
-        return $this->orderData['contact_last_name'] . ' ' . $this->orderData['contact_first_name'];
+        return $this->orderData['contact_name'];
     }
 
     public function getLastAction()
