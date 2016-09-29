@@ -63,9 +63,10 @@ class Helper
     /**
      * @param mixed $date
      * @param string $format
+     * @param string $timezone
      * @return \DateTime|null
      */
-    public static function getDateFromString($date, $format = "d.m.Y")
+    public static function getDateFromString($date, $format = "d.m.Y", string $timezone = null)
     {
         if (empty($date)) {
             return null;
@@ -74,7 +75,9 @@ class Helper
             return $date;
         }
 
-        return \DateTime::createFromFormat($format . ' H:i:s', $date . ' 00:00:00');
+        $timezone = $timezone ?? date_default_timezone_get();
+
+        return \DateTime::createFromFormat($format . ' H:i:s', $date . ' 00:00:00', new \DateTimeZone($timezone));
     }
 
     /**
