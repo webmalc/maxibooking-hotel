@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\ChannelManagerBundle\Services;
+namespace MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels;
 
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
@@ -23,7 +23,6 @@ class HOHRequestFormatter
     const PRICES = 'prices';
 
     /**
-     * HOHRequestFormatter constructor.
      * @param ChannelManagerConfigInterface $config
      * @param string $serviceName
      */
@@ -31,6 +30,11 @@ class HOHRequestFormatter
     {
         $this->serviceName = $serviceName;
         $this->config = $config;
+    }
+
+    public function setRequestedData($data)
+    {
+        $this->requestData = $data;
     }
 
     /**
@@ -64,7 +68,8 @@ class HOHRequestFormatter
     public function addSingleParamCondition(\DateTime $date, $conditionName, $roomTypeId, $value)
     {
         $dateString = $this->formatDate($date);
-        if ($dateInfoKey = $this->getDateInfoKey($dateString)) {
+        $dateInfoKey = $this->getDateInfoKey($dateString);
+        if (isset($dateInfoKey)) {
             $this->requestData[$dateInfoKey][$conditionName][$roomTypeId] = $value;
         } else {
             $data = ['day' => $dateString, $conditionName => [$roomTypeId => $value]];
@@ -102,7 +107,7 @@ class HOHRequestFormatter
      * @param bool $isFullFormat
      * @return string
      */
-    private function formatDate(\DateTime $date, $isFullFormat = false)
+    public function formatDate(\DateTime $date, $isFullFormat = false)
     {
         if ($isFullFormat) {
             return $date->format('Y-m-d H:i:s');

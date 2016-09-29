@@ -2,20 +2,21 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
-use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\OrderInfo;
+use MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\HOHRequestFormatter;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\Response;
+use MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\PackageInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 
 class HundredOneHotels extends Base
 {
@@ -32,6 +33,8 @@ class HundredOneHotels extends Base
      * Base API URL
      */
     const BASE_URL = 'https://101hotels.info/api2';
+
+    const CHANNEL_MANAGER_TYPE_DISPLAYED = '101Hotels';
 
     /**
      * @param \DateTime $begin
@@ -82,7 +85,6 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest();
-            dump($request);exit();
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
 
             $result = $this->checkResponse($sendResult);
@@ -157,7 +159,6 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest();
-            dump($request);exit();
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
 
             if ($result) {
@@ -262,7 +263,6 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest();
-            dump($request);exit();
             $sendResult = $this->send(static::BASE_URL, $request, null, true, true);
 
             if ($result) {
@@ -294,19 +294,25 @@ class HundredOneHotels extends Base
         $result = true;
 
         foreach ($this->getConfig() as $config) {
+
             $requestFormatter = new HOHRequestFormatter($config, 'get_bookings');
-            $firstDate = \DateTime::createFromFormat('Y-m-d H:i:s', '2016-09-27 11:50:00');
-            $secondTime = \DateTime::createFromFormat('Y-m-d H:i:s', '2016-09-27 14:12:00');
-            $requestFormatter->addDateCondition($firstDate, $secondTime);
+            $startTime = new \DateTime('- 1 day');
+            $endTime = new \DateTime();
+            $requestFormatter->addDateCondition($startTime, $endTime);
             $request = $requestFormatter->getRequest();
+
             $serviceOrders = $this->send(static::BASE_URL, $request, null, true, true);
             $serviceOrders = json_decode($serviceOrders, true);
             $this->log('Reservations count: ' . count($serviceOrders['data']));
 
-            foreach ($serviceOrders['data'] as $serviceOrder) {
-                $editDateTime = $serviceOrder['modified'];
 
-                if ((string)$serviceOrder['last_action'] == 'modified') {
+            $tariffs = $this->getTariffs($config, true);
+            $roomTypes = $this->getRoomTypes($config, true);
+
+            foreach ($serviceOrders['data'] as $serviceOrder) {
+                $orderInfo = new OrderInfo($serviceOrder, $config, $tariffs, $roomTypes, $this->dm, $this->container);
+
+                if ($orderInfo->getLastAction() == 'modified') {
                     if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->disable('softdeleteable');
                     }
@@ -314,29 +320,30 @@ class HundredOneHotels extends Base
                 //old order
                 $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
                     [
-                        'channelManagerId' => (string)$serviceOrder['id'],
+                        'channelManagerId' => $orderInfo->getChannelManagerId(),
                         'channelManagerType' => self::CHANNEL_MANAGER_TYPE
                     ]
                 );
-                if ((string)$serviceOrder['last_action'] == 'modified') {
+                if ($orderInfo->getLastAction() == 'modified') {
                     if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->enable('softdeleteable');
                     }
                 }
                 //new
-                if ((string)$serviceOrder['last_action'] == 'created' && !$order) {
-                    $result = $this->createOrder($serviceOrder, $config, $order);
+                if ($orderInfo->getLastAction() == 'created' && !$order) {
+                    $result = $this->createOrder($orderInfo, $order);
                     $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'new');
                 }
 
                 //edited
-                if ((string)$serviceOrder['last_action'] == 'modified' && $order && $order->getChannelManagerEditDateTime() != $editDateTime) {
-                    $result = $this->createOrder($serviceOrder, $config, $order);
+                if ($orderInfo->getLastAction() == 'modified'
+                    && $order && $order->getChannelManagerEditDateTime() != $orderInfo->getModifiedDate()) {
+                    $result = $this->createOrder($orderInfo, $order);
                     $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'edit');
                 }
 
                 //delete
-                if ((string)$serviceOrder['last_action'] == 'canceled' && $order) {
+                if ($orderInfo->getLastAction() == 'canceled' && $order) {
                     $order->setChannelManagerStatus('cancelled');
                     $this->dm->persist($order);
                     $this->dm->flush();
@@ -346,11 +353,10 @@ class HundredOneHotels extends Base
                     $result = true;
                 };
 
-                if (in_array((string)$serviceOrder['state'], ['modified', 'cancelled']) && !$order) {
+                if (in_array($orderInfo->getLastAction(), ['modified', 'cancelled']) && !$order) {
                     $this->notifyError(
                         self::CHANNEL_MANAGER_TYPE,
-                        '#' . $serviceOrder['id'] . ' ' .
-                        $serviceOrder['contact_last_name'] . ' ' . $serviceOrder['contact_first_name']
+                        '#' . $orderInfo->getChannelManagerId() . ' ' . $orderInfo->getPayerName()
                     );
                 }
             };
@@ -360,25 +366,12 @@ class HundredOneHotels extends Base
     }
 
     /**
-     * @param $orderData
-     * @param ChannelManagerConfigInterface $config
+     * @param OrderInfo $orderInfo
      * @param Order $order
      * @return Order
      */
-    private function createOrder(
-        $orderData,
-        ChannelManagerConfigInterface $config,
-        Order $order = null
-    )
+    private function createOrder($orderInfo, Order $order = null)
     {
-        $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-            (string)$orderData['contact_last_name'],
-            (string)$orderData['contact_first_name'],
-            null,
-            null,
-            isset($orderData['contact_email']) ? (string)$orderData['contact_email'] : null,
-            isset($orderData['contact_phone']) ? (string)$orderData['contact_phone'] : null
-        );
         //order
         if (!$order) {
             $order = new Order();
@@ -393,48 +386,46 @@ class HundredOneHotels extends Base
                 $this->dm->flush();
             }
             $order->setChannelManagerStatus('modified');
-            $order->setChannelManagerEditDateTime($orderData['modified']);
+            $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
             $order->setDeletedAt(null);
         }
 
-        $order->setChannelManagerType('101 Отель')
-            ->setChannelManagerId((string)$orderData['id'])
-            ->setMainTourist($payer)
+        $order->setChannelManagerType(self::CHANNEL_MANAGER_TYPE_DISPLAYED)
+            ->setChannelManagerId($orderInfo->getBookingId())
+            ->setMainTourist($orderInfo->getPayer())
             ->setConfirmed(false)
             ->setStatus('channel_manager')
-            ->setPrice($orderData['sum'])
-            ->setOriginalPrice($orderData['sum'])
-            ->setTotalOverwrite($orderData['sum']);
+            ->setPrice($orderInfo->getOrderPrice())
+            ->setOriginalPrice($orderInfo->getOrderPrice())
+            ->setTotalOverwrite($orderInfo->getOrderPrice());
 
         $this->dm->persist($order);
         $this->dm->flush();
 
-        //Разбиваем получаемый массив данных о размещениях по типам размещений
-        $roomTypeData = [];
-        foreach ($orderData['rooms'] as $currentDatePlacement) {
-            $roomTypeData[$currentDatePlacement['placement_id']]['roomData'][] = $currentDatePlacement;
-        }
-
-        //Добавляем данные о гостях
-        foreach ($orderData['guests'] as $guest) {
-            $roomTypeData[$guest['placement_id']]['guests'][] = $guest;
-        }
-
-        $tariffs = $this->getTariffs($config, true);
-        $roomTypes = $this->getRoomTypes($config, true);
-
-        //packages
-        foreach ($roomTypeData as $placementType) {
-            //Создаем бронь для всех комнат, так как в параметре qty, отображающем кол-во комнат, может быть указано несколько комнат
-            for ($i = 0; $i < (int)$placementType['roomData'][0]['qty']; $i++) {
-                $package = $this->createPackage($placementType, $config, $tariffs, $roomTypes, $order);
-                $order->addPackage($package);
-                $this->dm->persist($package);
-                $this->dm->persist($order);
-                $this->dm->flush();
+        if ($orderInfo->getPayType() == 4 || $orderInfo->getPayType() == 5 || $orderInfo->getPayType() == 2) {
+            $fee = new CashDocument();
+            $fee->setIsConfirmed(false)
+                ->setIsPaid(true)
+                ->setMethod('electronic')
+                ->setOperation('fee')
+                ->setOrder($order)
+                ->setTouristPayer($orderInfo->getPayer())
+                ->setTotal($orderInfo->getOrderPrice());
+            if ($orderInfo->getPayType() == 2) {
+                $fee->setIsPaid(false);
             }
+            $this->dm->persist($fee);
+            $this->dm->flush();
         }
-        $order->setTotalOverwrite((float)$orderData['sum']);
+
+        foreach ($orderInfo->getPackages() as $packageInfo) {
+            $package = $this->createPackage($packageInfo, $order);
+            $order->addPackage($package);
+            $this->dm->persist($package);
+            $this->dm->flush();
+        }
+
+        $order->setTotalOverwrite($orderInfo->getOrderPrice());
         $this->dm->persist($order);
         $this->dm->flush();
 
@@ -442,98 +433,30 @@ class HundredOneHotels extends Base
     }
 
     /**
-     * @param $roomTypeData
-     * @param ChannelManagerConfigInterface $config
-     * @param $tariffs
-     * @param $roomTypes
+     * @param PackageInfo $packageInfo
      * @param Order $order
      * @return Package
-     * @throws Exception
      */
-    private function createPackage($roomTypeData, $config, $tariffs, $roomTypes, Order $order)
+    private function createPackage($packageInfo, Order $order)
     {
-        $corrupted = false;
-        $errorMessage = '';
-
-        //Данные о размещении одинаковы для всех элементов массива, представляющего данные о размещениях по дням
-        $packageCommonData = $roomTypeData['roomData'][0];
-
-        //getting current room type
-        if (isset($roomTypes[(string)$packageCommonData['room_id']])) {
-            $roomType = $roomTypes[(string)$packageCommonData['room_id']]['doc'];
-        } else {
-            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
-                [
-                    'hotel.id' => $config->getHotelId(),
-                    'isEnabled' => true,
-                    'deletedAt' => null
-                ]
-            );
-            $corrupted = true;
-            $errorMessage = $this->container->get('translator')
-                ->trans('services.hundredOneHotels.invalid_room_type_id', ['%id%' => (string)$packageCommonData['room_id']]);
-            if (!$roomType) {
-                throw new Exception($this->container->get('translator')->trans('services.hundredOneHotels.nor_one_room_type'));
-            }
-        }
-
-        //getting current tariff
-        if (isset($tariffs[(string)$packageCommonData['placement_id']])) {
-            $tariff = $tariffs[(string)$packageCommonData['placement_id']]['doc'];
-        } else {
-            $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
-                [
-                    'hotel.id' => $config->getHotelId(),
-                    'isEnabled' => true,
-                    'deletedAt' => null
-                ]
-            );
-            $corrupted = true;
-            $errorMessage = $this->container->get('translator')
-                ->trans('services.hundredOneHotels.invalid_tariff_id', ['%id%' => (string)$packageCommonData['placement_id']]);
-
-            if (!$tariff) {
-                throw new Exception($this->container->get('translator')->trans('services.hundredOneHotels.nor_one_tariff'));
-            }
-        }
-
-        $packagePrices = [];
-        $totalPrice = 0;
-        $beginDate = \DateTime::createFromFormat('Y-m-d', $packageCommonData['day']);
-        foreach ($roomTypeData['roomData'] as $currentDatePlacementData) {
-            $currentDate = \DateTime::createFromFormat('Y-m-d', $currentDatePlacementData['day']);
-            $price = (int)$currentDatePlacementData['price']; 
-            $packagePrices[] = new PackagePrice($currentDate, $price, $tariff);
-            $totalPrice += $price;
-        }
-        $endDate = \DateTime::createFromFormat('Y-m-d', end($roomTypeData['roomData'])['day']);
-        date_add($endDate, new \DateInterval('P1D'));
-
         $package = new Package();
         $package
-            ->setChannelManagerType(self::CHANNEL_MANAGER_TYPE)
-            ->setBegin($beginDate)
-            ->setEnd($endDate)
-            ->setRoomType($roomType)
-            ->setTariff($tariff)
-            ->setAdults((int)$packageCommonData['occupants'])
+            ->setChannelManagerType(self::CHANNEL_MANAGER_TYPE_DISPLAYED)
+            ->setBegin($packageInfo->getBeginDate())
+            ->setEnd($packageInfo->getEndDate())
+            ->setRoomType($packageInfo->getRoomType())
+            ->setTariff($packageInfo->getTariff())
+            ->setAdults($packageInfo->getOccupantsCount())
             ->setChildren(0)
-            ->setPrices($packagePrices)
-            ->setPrice($totalPrice)
-            ->setOriginalPrice($totalPrice)
-            ->setTotalOverwrite($totalPrice)
-            ->setNote($errorMessage)
+            ->setPrices($packageInfo->getPackagePrices())
+            ->setPrice($packageInfo->getTotalPrice())
+            ->setOriginalPrice($packageInfo->getTotalPrice())
+            ->setTotalOverwrite($packageInfo->getTotalPrice())
+            ->setNote($packageInfo->getErrorMessage())
             ->setOrder($order)
-            ->setCorrupted($corrupted);
-
-        $touristRepository = $this->dm->getRepository('MBHPackageBundle:Tourist');
-        foreach ($roomTypeData['guests'] as $guestData) {
-            $touristNameData = explode(' ',$guestData['name']);
-            /** @var Tourist $tourist */
-            $tourist = $touristRepository->fetchOrCreate(
-                $touristNameData[0],
-                isset($touristNameData[1]) ? $touristNameData[1] : null
-            );
+            ->setCorrupted($packageInfo->getIsCorrupted());
+        foreach ($packageInfo->getTourists() as $tourist)
+        {
             $package->addTourist($tourist);
         }
         return $package;
@@ -605,11 +528,33 @@ class HundredOneHotels extends Base
     /**
      * Close sales on service
      * @param ChannelManagerConfigInterface $config
-     * @return boolean
+     * @return bool|void
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
-        //TODO: Реализовать, при необходимости, функционал закрытия продаж
+        $requestFormatter = new HOHRequestFormatter($config);
+        $firstDate = new \DateTime();
+        $endDate = new \DateTime('+5 year');
+        $requestFormatter->addDateCondition($firstDate, $endDate);
+        $roomTypes = $this->getRoomTypes($config);
+        $closedData[] = [
+            'start' => $requestFormatter->formatDate($firstDate),
+            'end' => $requestFormatter->formatDate($endDate)
+        ];
+        foreach ($roomTypes as $roomType) {
+            $closedData[0]['closed'][$roomType['syncId']] = 1;
+        }
+        $requestFormatter->setRequestedData($closedData);
+        $request = $requestFormatter->getRequest();
+        $sendResult = $this->send(static::BASE_URL, $request, null, true);
+        $response = json_decode($sendResult, true);
+        $result = false;
+        if ($response) {
+            $result = $this->checkResponse($sendResult);
+        }
+
+        $this->log($sendResult);
+        return $result;
     }
 
     /**

@@ -1,0 +1,116 @@
+<?php
+
+namespace MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
+
+class OrderInfo
+{
+    private $orderData;
+    private $tariffs;
+    private $roomTypes;
+    private $dm;
+    private $container;
+    private $config;
+
+    public function __construct($bookingInfoArray, $config, $tariffs, $roomTypes, DocumentManager $dm, ContainerInterface $container)
+    {
+        $this->orderData = $bookingInfoArray;
+        $this->tariffs = $tariffs;
+        $this->roomTypes = $roomTypes;
+        $this->dm = $dm;
+        $this->container = $container;
+        $this->config = $config;
+    }
+
+    public function getContactLastname()
+    {
+        return (string)$this->orderData['contact_last_name'];
+    }
+
+    public function getBookingId()
+    {
+        return $this->orderData['id'];
+    }
+
+    public function getPayType()
+    {
+        return $this->orderData['pay_type'];
+    }
+
+    public function getChannelManagerId()
+    {
+        return (string)$this->orderData['id'];
+    }
+
+    public function getPayerName()
+    {
+        return $this->orderData['contact_last_name'] . ' ' . $this->orderData['contact_first_name'];
+    }
+
+    public function getLastAction()
+    {
+        return (string)$this->orderData['last_action'];
+    }
+
+    public function getModifiedDate()
+    {
+        return $this->orderData['modified'];
+    }
+
+    public function getPayer()
+    {
+        $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+            (string)$this->orderData['contact_last_name'],
+            (string)$this->orderData['contact_first_name'],
+            null,
+            null,
+            isset($this->orderData['contact_email']) ? (string)$this->orderData['contact_email'] : null,
+            isset($this->orderData['contact_phone']) ? (string)$this->orderData['contact_phone'] : null
+        );
+
+        return $payer;
+    }
+
+    public function getPackages()
+    {
+        $packages = [];
+
+        //Разбиваем получаемый массив данных о размещениях по типам размещений
+        $roomTypesData = [];
+        foreach ($this->orderData['rooms'] as $currentDatePlacementData) {
+            $roomTypesData[$currentDatePlacementData['placement_id']][] = $currentDatePlacementData;
+        }
+
+        //Разбиваем получаемый массив данных о гостях по типам размещений гостей
+        $guests = [];
+        foreach ($this->orderData['guests'] as $guest) {
+            $guests[$guest['placement_id']][] = $guest;
+        }
+
+        foreach ($roomTypesData as $roomType) {
+            //В одном заказе для одного типа размещения кол-во используемых комнат одинаково, поэтому берем первый элемент массива
+            for ($i = 0; $i < (int)$roomType[0]['qty']; $i++) {
+                $occupantsCount = $roomType[0]['occupants'];
+                $placementId = $roomType[0]['placement_id'];
+                $guestArrayOffset = $i * $occupantsCount;
+                $currentPackageGuests = array_slice($guests[$placementId], $guestArrayOffset,  $occupantsCount);
+                $packages[] = new PackageInfo($roomType,
+                    $currentPackageGuests,
+                    $this->config,
+                    $this->tariffs,
+                    $this->roomTypes,
+                    $this->dm,
+                    $this->container);
+            }
+        }
+        return $packages;
+    }
+
+    public function getOrderPrice()
+    {
+        return (float)$this->orderData['sum'];
+    }
+
+}

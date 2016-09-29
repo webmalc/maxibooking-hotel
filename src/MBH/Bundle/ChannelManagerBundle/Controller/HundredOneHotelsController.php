@@ -43,21 +43,6 @@ class HundredOneHotelsController extends Controller
     }
 
     /**
-     * @Template()
-     * @Route("/test")
-     */
-    public function testAction()
-    {
-        $firstDate = \DateTime::createFromFormat('d.m.Y', '4.3.2017');
-        $secondTime = \DateTime::createFromFormat('d.m.Y', '10.3.2017');
-        $json = $this->get('mbh.channelmanager.hundred_one_hotels')->pullOrders();
-        $a = 1;
-        return [
-            'json' => count($json)
-        ];
-    }
-
-    /**
      * @Route("/", name="hundred_one_hotels_save")
      * @Method("POST")
      * @Template("MBHChannelManagerBundle:HundredOneHotels:index.html.twig")
