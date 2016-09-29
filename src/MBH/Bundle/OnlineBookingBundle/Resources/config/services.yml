@@ -7,3 +7,9 @@ services:
         arguments: ["@service_container"]
         tags:
             - { name: form.type }
+
+    mbh.sign_form:
+        class: MBH\Bundle\OnlineBookingBundle\Form\SignType
+        arguments: ["@service_container"]
+        tags:
+            - { name: form.type }

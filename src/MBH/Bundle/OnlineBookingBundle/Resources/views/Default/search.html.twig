@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/search.css') }}">
 <div id="online-booking-search">
 {% for result in searchResults %}
 <div class="row oneblock room-type-row">
@@ -14,27 +15,36 @@
             {% endif %}
         {% endfor %}
         {% if not renderedImage %}
-            {#<div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>#}
-            <div class="placeholder-logo">тут картинка</div>
+            <div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>
+            {#<div class="placeholder-logo">тут картинка</div>#}
         {% endif %}
     </div>
     <div class="col-md-8 right-info">
         <div class="row">
             <div class="col-md-5 col-sm-6 col-xs-12" style="padding:0px;">
-                <div class="title">{{ result.roomType.fullTitle }}</div>
-                <div class="subtitle">{{ result.roomType.hotel.fullTitle }}</div>
+                <div class="title">{{ result.roomType.hotel.fullTitle }}&nbsp;
+                    {% set star = 4 %}
+                    {% for i in 1..5 %}
+                        <div class="round {{ (i in (1..star))?'star':'' }} {{ i }}"></div>
+                    {% endfor %}
+                </div>
+                <div class="subtitle">{{ result.roomType.fullTitle }}</div>
             </div>
             <div class="col-md-7 col-sm-6 col-xs-12 prices">
                 {#<div class="col-md-7 col-sm-7 col-xs-7 newprice">забронируй сейчас<br><span>&#8381;56 344</span></div>#}
                 {% set searchResult = result.results|first %}
                 <div class="oldprice pull-right">
+                    <div>СТОИМОСТЬ</div>
                     <span>{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}</span>
-                    <i class="fa fa-2x fa-ruble"></i>
+                    <i class="fa fa-ruble rublesize"></i>
                 </div>
             </div>
-        </div>
-        <div class="descr col-xs-12">
-            {{ searchResult.roomTypeInterfaceObject.description|raw }}
+            <div class="row">
+                <div class="descr col-xs-12">
+                    {{ searchResult.roomTypeInterfaceObject.description|raw }}
+                </div>
+
+            </div>
         </div>
 
         <table class="table table-hover table-striped">
@@ -61,10 +71,12 @@
             </thead>
             <tbody>
             {% for searchResult in result.results %}
-            <tr class="tariff-row" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">
-                <td>{{ searchResult.tariff.fullTitle }}</td>
+            <tr class="tariff-row" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}&form[infants]={{ searchResult.infants }}">
+                <td>{{ searchResult.tariff.fullTitle }}
+                    <i class="fa fa-question-circle" data-toggle="tooltip" title="{{ searchResult.tariff.description }}"></i>
+                </td>
                 <td>
-                    {{ searchResult.adults }} взр{% if searchResult.children %} + {{ searchResult.children }} реб{% endif %}
+                    {{ searchResult.adults }} {{ searchResult.infants?'+ '~searchResult.infants }}
                 </td>
                 <td>
                     {% if searchResult.begin|date('Y') == 'now'|date('Y') %}
@@ -91,12 +103,14 @@
             {% endfor %}
             </tbody>
         </table>
-
         <div class="btmactions">
-            <a href="#" class="pull-right" style="margin-top: 10px" title="Купить Online">
+                {#<a href="#" class="pull-right" style="margin-top: 10px" title="Купить Online">#}
                 <a href="#" class="btn btn-booking">Забронировать</a>
             </a>
         </div>
+
+
+
     </div>
 </div>
 {% endfor %}
@@ -137,7 +151,22 @@
 
 {#<link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">#}
 {#<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>#}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Readmore.js/2.2.0/readmore.min.js"></script>
+<script>
+    $(function () {
+        $('.descr').readmore({
+            moreLink: '<div class="more-link"><a href="#">... <i class="fa fa-caret-right"></i></a></div>',
+            lessLink: '<div class="less-link"><a href="#">... <i class="fa fa-caret-up"></i></a></div>',
+            collapsedHeight: 45
+        });
 
+        $('.table').readmore({
+            moreLink: '<div class="more-link"><a href="#">еще предложения <i class="fa fa-caret-right"></i></a></div>',
+            lessLink: '<div class="less-link"><a href="#">... <i class="fa fa-caret-up"></i></a></div>',
+            collapsedHeight: 120
+        });
+    });
+</script>
 <script>
     var RoomTypeRow = function($row) {
         this.$row = $row;

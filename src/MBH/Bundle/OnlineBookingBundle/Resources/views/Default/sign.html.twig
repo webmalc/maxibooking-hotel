@@ -1,7 +1,7 @@
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
 
 <div id="sign-page" class="col-md-8">
-    <h3>Введите ваши данные</h3>
+    <h3>Персональная информация</h3>
     {% form_theme form.payment 'bootstrap_3_layout.html.twig' %}
     {{ form_start(form, {attr: {id: 'sign-form', method: 'get' }, action: requestSearchUrl}) }}
     {{ form_widget(form, {attr: {class: 'ss'}}) }}
@@ -22,11 +22,13 @@
         <div class="item row">
             <div class="col-xs-4">
                 {% if roomType.mainImage %}
-                <a href="{{ asset(roomType.mainImage.path, null, true) }}" class="fancybox">
-                    <img src="{{ roomType.mainImage.path|imagine_filter('thumb_100x100') }}" width="70px" height="70px">
-                </a>
+                    <a href="{{ asset(roomType.mainImage.path, null, true) }}" class="fancybox">
+                        <img src="{{ roomType.mainImage.path|imagine_filter('thumb_100x100') }}" width="70px"
+                             height="70px">
+                    </a>
                 {% else %}
-                    <img src="{{ asset('bundles/mbhonlinebooking/images/no-image.jpg', null, true) }}" width="70px" height="70px">
+                    <img src="{{ asset('bundles/mbhonlinebooking/images/no-image.jpg', null, true) }}" width="70px"
+                         height="70px">
                 {% endif %}
             </div>
             <div class="col-xs-8">
@@ -61,7 +63,8 @@
             </div>
         </div>
         <div class="guests">
-            <div>Гости: {{ data.adults }} взрослых {{ data.children }} ребёнок</div>
+            {#<div>Гости: {{ data.adults }} взрослых {{ data.children }} ребёнок</div>#}
+            <div>Гости: {{ data.adults }} {{ data.infants?' + '~data.infants }}</div>
             <div>Тариф: {{ tariff.fullTitle }}</div>
         </div>
 
@@ -87,7 +90,9 @@
 
         <div class="row" style="margin-top: 15px">
             <div class="title" style="display: inline-block;">Стоимость</div>
-            <div class="pull-right" style="color: #41bc19; display: inline-block; font-weight: bold; font-size: 18px">{{ data.total|number_format(2) }} <i class="fa fa-ruble"></i></div>
+            <div class="pull-right"
+                 style="color: #41bc19; display: inline-block; font-weight: bold; font-size: 18px">{{ data.total|number_format(2) }}
+                <i class="fa fa-ruble"></i></div>
         </div>
     </div>
 
@@ -101,10 +106,10 @@
         </div>
         <div class="phone">
             <i class="fa fa-phone fa-2x"></i>
-            <span>8-800-555-25-55</span>
+            <span>8-800-775-15-41</span>
         </div>
         <div class="email">
-            email@email.com
+            mail@azovsky.ru
         </div>
     </div>
 </div>
@@ -113,6 +118,6 @@
 <script>
     var $radio = $('#form_payment input[value=online_half]').parent().parent();
     if ($radio.length) {
-        $radio.get(0).innerHTML += ' - ' + {{ data.total / 2 }} + ' <i class="fa fa-ruble"></i>';
+        $radio.get(0).innerHTML += ' - ' + {{ data.total / 2 }} +' <i class="fa fa-ruble"></i>';
     }
 </script>

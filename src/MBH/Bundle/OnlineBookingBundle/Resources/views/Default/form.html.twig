@@ -34,7 +34,7 @@
     <div class="col-sm-6">
         {{ form_label(form.children) }}
         {{ form_widget(form.children,{attr: {class:"bgnd"}}) }}
-        <div id="children-icon" data-value="{{ form.children_age.vars.value|json_encode }}" style="visibility: hidden"></div>
+        <div id="children-icon" data-value="{{ form.children_age.vars.value|json_encode }}" style="visibility: hidden" title="Возраст"></div>
     </div>
 </div>
 

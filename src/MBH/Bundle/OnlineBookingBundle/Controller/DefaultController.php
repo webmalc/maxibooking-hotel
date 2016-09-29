@@ -4,8 +4,10 @@ namespace MBH\Bundle\OnlineBookingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Form\SearchFormType;
+use MBH\Bundle\OnlineBookingBundle\Form\SignType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -120,14 +122,14 @@ class DefaultController extends BaseController
                 ->setWithTariffs()
                 ->search($searchQuery);
 
-            foreach($searchResults as $k => $item) {
+            foreach ($searchResults as $k => $item) {
                 $filterSearchResults = [];
                 /** @var SearchResult[] $results */
                 $results = $item['results'];
-                foreach($results as $i => $searchResult) {
+                foreach ($results as $i => $searchResult) {
                     if ($searchResult->getRoomType()->getCategory()) {
-                        $uniqid = $searchResult->getRoomType()->getCategory()->getId().$searchResult->getTariff()->getId();
-                        $uniqid .= $searchResult->getBegin()->format('dmY').$searchResult->getEnd()->format('dmY');
+                        $uniqid = $searchResult->getRoomType()->getCategory()->getId() . $searchResult->getTariff()->getId();
+                        $uniqid .= $searchResult->getBegin()->format('dmY') . $searchResult->getEnd()->format('dmY');
                         if (!array_key_exists($uniqid, $filterSearchResults) || $searchResult->getRoomType()->getTotalPlaces() < $filterSearchResults[$uniqid]->getRoomType()->getTotalPlaces()) {
                             $filterSearchResults[$uniqid] = $searchResult;
                         }
@@ -152,10 +154,10 @@ class DefaultController extends BaseController
     public function signAction(Request $request)
     {
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
-        $form = $this->getSignForm();
+        $form = $this->createForm(SignType::class);
 
         $isSubmit = $request->get('submit');
-        if($isSubmit) {
+        if ($isSubmit) {
             $form->submit($request->get('form'));
         } else {
             $form->setData($request->get('form'));
@@ -203,7 +205,16 @@ class DefaultController extends BaseController
             }
 
             $data['onlinePaymentType'] = $payment;
-            $order = $orderManger->createPackages($data, null, null, $cash);
+            try {
+                $order = $orderManger->createPackages($data, null, null, $cash);
+            } catch (Exception $e) {
+                $text = 'Произошла ошибка при бронировании, пожалуйста, позвоните нам.';
+                $payButtonHtml = '';
+                return $this->render('MBHOnlineBookingBundle:Default:sign-success.html.twig', [
+                    'text' => $text,
+                    'payButtonHtml' => $payButtonHtml,
+                ]);
+            }
             //$order = new Order();
             //$order->addCashDocument(new CashDocument());
 
@@ -212,7 +223,7 @@ class DefaultController extends BaseController
             $this->sendNotifications($order);
 
             $payButtonHtml = '';
-            if (!in_array($payment, ['in_hotel','by_receipt', 'in_office']) && $clientConfig->getPaymentSystem()) {
+            if (!in_array($payment, ['in_hotel', 'by_receipt', 'in_office']) && $clientConfig->getPaymentSystem()) {
                 $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
                     'data' => array_merge([
                         'test' => false,
@@ -224,7 +235,6 @@ class DefaultController extends BaseController
                         $this->generateUrl('online_form_check_order', [], true)))
                 ]);
             }
-
             $text = 'Заказ успешно создан №' . $order->getId();
             return $this->render('MBHOnlineBookingBundle:Default:sign-success.html.twig', [
                 'text' => $text,
@@ -256,7 +266,7 @@ class DefaultController extends BaseController
             $endTime = $this->get('mbh.helper')->getDateFromString($data['end']);
 
             $days = 1;
-            if($beginTime && $endTime) {
+            if ($beginTime && $endTime) {
                 $days = $endTime->diff($beginTime)->d;
             }
 
@@ -272,72 +282,6 @@ class DefaultController extends BaseController
         }
     }
 
-
-    /**
-     * @return \Symfony\Component\Form\Form
-     */
-    public function getSignForm()
-    {
-        $paymentTypes = $this->getParameter('mbh.online.form')['payment_types'];
-        unset($paymentTypes['online_first_day']);
-
-        $formBuilder = $this->createFormBuilder(null, [
-            'method' => Request::METHOD_GET,
-            'csrf_protection' => false
-        ]);
-        $formBuilder
-            ->add('firstName', 'text', [
-                'label' => 'Имя',
-                'constraints' => [
-                    new NotBlank()
-                ]
-            ])
-            ->add('lastName', 'text', [
-                'label' => 'Фамилия',
-                'constraints' => [
-                    new NotBlank()
-                ]
-            ])
-            ->add('patronymic', 'text', [
-                'required' => false,
-                'label' => 'Отчество'
-            ])
-            ->add('phone', 'text', [
-                'label' => 'Телефон'
-            ])
-            ->add('email', 'text', [
-                'label' => 'Email',
-                'constraints' => [
-                    new Email(),
-                    new NotBlank()
-                ]
-            ])
-            //->add('step', 'hidden', [])
-            ->add('adults', 'hidden', [])
-            ->add('children', 'hidden', [])
-            ->add('begin', 'hidden', [
-                'constraints' => [
-                    new NotBlank()
-                ]
-            ])
-            ->add('end', 'hidden', [
-                'constraints' => [
-                    new NotBlank()
-                ]
-            ])
-            ->add('roomType', 'hidden', [])
-            ->add('tariff', 'hidden', [])
-            ->add('payment', 'choice', [
-                'label' => 'Способ оплаты',
-                'choices' => $paymentTypes,
-                'expanded' => true
-            ])
-            ->add('total', 'hidden')
-            ->add('promotion', 'hidden');
-        $formBuilder->get('promotion')->addViewTransformer(new EntityToIdTransformer($this->dm, Promotion::class));
-
-        return $formBuilder->getForm();
-    }
 
     /**
      * @param Order $order
@@ -369,12 +313,10 @@ class DefaultController extends BaseController
                 ->setHotel($hotel)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
-                ->setEnd(new \DateTime('+1 minute'))
-            ;
+                ->setEnd(new \DateTime('+1 minute'));
             $notifier
                 ->setMessage($message)
-                ->notify()
-            ;
+                ->notify();
 
             //user
             $payer = $order->getPayer();
@@ -398,21 +340,18 @@ class DefaultController extends BaseController
                     ->setEnd(new \DateTime('+1 minute'))
                     ->addRecipient($payer)
                     ->setLink('hide')
-                    ->setSignature('mailer.online.user.signature')
-                ;
+                    ->setSignature('mailer.online.user.signature');
 
                 $params = $this->container->getParameter('mailer_user_arrival_links');
 
                 if (!empty($params['map'])) {
                     $message->setLink($params['map'])
-                        ->setLinkText($tr->trans('mailer.online.user.map'))
-                    ;
+                        ->setLinkText($tr->trans('mailer.online.user.map'));
                 }
 
                 $notifier
                     ->setMessage($message)
-                    ->notify()
-                ;
+                    ->notify();
             }
 
         } catch (\Exception $e) {

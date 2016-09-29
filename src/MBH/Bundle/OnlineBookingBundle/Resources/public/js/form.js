@@ -18,7 +18,12 @@ var updateRoomList = function () {
 };
 
 var updateRoomListView = function (roomTypes) {
-    var html = '<option value=""></option>';
+    if(!roomTypes.length) {
+        $roomTypeSelect.prop("disabled", true);
+    } else {
+        $roomTypeSelect.prop("disabled", false);
+    }
+    var html = '<option value="">Все типы номеров</option>';
     roomTypes.forEach(function (roomType) {
         html += '<option value="' + roomType.id + '">' + roomType.title + '</option>';
     });
