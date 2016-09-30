@@ -221,22 +221,23 @@ var docReadyPackages = function () {
                 }
             },
             {
-                text: '<i class="fa fa-file" title="CSV" data-toggle="tooltip" data-placement="bottom"></i>',
+                text: '<i class="fa fa-file-excel-o" title="CSV" data-toggle="tooltip" data-placement="bottom"></i>',
                 className: 'btn btn-default btn-sm',
                 action: function ( e, dt, button, config ) {
                     $.ajax({
                         url: Routing.generate('package_csv'),
-                        data: function (d) {
-                            d.begin = $('#package-filter-begin').val();
-                            d.end = $('#package-filter-end').val();
-                            d.roomType = $('#package-filter-roomType').val();
-                            d.status = $('#package-filter-status').val();
-                            d.deleted = ($('#package-filter-deleted').is(':checked')) ? 1 : 0;
-                            d.dates = $('#package-filter-dates').val();
-                            d.paid = $('#package-filter-paid').val();
-                            d.confirmed = $('#package-filter-confirmed').val();
-                            d.quick_link = $('#package-filter-quick-link').val();
-                        },
+                        type:'POST',
+                        data: {
+                            begin : $('#package-filter-begin').val(),
+                            end : $('#package-filter-end').val(),
+                            roomType : $('#package-filter-roomType').val(),
+                            status : $('#package-filter-status').val(),
+                            deleted : ($('#package-filter-deleted').is(':checked')) ? 1 : 0,
+                            dates : $('#package-filter-dates').val(),
+                            paid : $('#package-filter-paid').val(),
+                            confirmed : $('#package-filter-confirmed').val(),
+                            quick_link : $('#package-filter-quick-link').val()
+                        } ,
                         success: function (response) {
                             $('<div id="template-document-csv-modal" class="modal"> </div> ').insertAfter($('.content-wrapper'));
                             var $modal = $('#template-document-csv-modal');
@@ -251,6 +252,16 @@ var docReadyPackages = function () {
                                 'onText': 'да',
                                 'offText': 'нет',
                             });
+                            $('#mbh_bundle_packagebundle_package_csv_type_roomType').val($('#package-filter-roomType').val())
+                            $('#mbh_bundle_packagebundle_package_csv_type_status').val($('#package-filter-status').val())
+                            $('#mbh_bundle_packagebundle_package_csv_type_deleted').val($('#package-filter-deleted').val())
+                            $('#mbh_bundle_packagebundle_package_csv_type_begin').val($('#package-filter-begin').val())
+                            $('#mbh_bundle_packagebundle_package_csv_type_end').val($('#package-filter-end').val())
+                            $('#mbh_bundle_packagebundle_package_csv_type_dates').val($('#package-filter-dates').val())
+                            $('#mbh_bundle_packagebundle_package_csv_type_paid').val($('#package-filter-paid').val())
+                            $('#mbh_bundle_packagebundle_package_csv_type_confirmed').val($('#package-filter-confirmed').val())
+                            $('#mbh_bundle_packagebundle_package_csv_type_quick_link').val($('#package-table-quick-links .btn-primary').attr('data-value'))
+
 
                         }
                     });

@@ -143,90 +143,87 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     {
         $this->dm->getFilterCollection()->enable('softdeleteable');
 
-        $data = [
-            'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
-            'roomType' => $request->get('roomType'),
-            'status' => $request->get('status'),
-            'deleted' => $request->get('deleted'),
-            'begin' => $request->get('begin'),
-            'end' => $request->get('end'),
-            'dates' => $request->get('dates'),
-            'skip' => $request->get('start'),
-            'limit' => $request->get('length'),
-            'query' => $request->get('search')['value'],
-            'order' => $request->get('order')['0']['column'],
-            'dir' => $request->get('order')['0']['dir'],
-            'paid' => $request->get('paid'),
-            'confirmed' => $request->get('confirmed'),
-        ];
-
-        //quick links
-        switch ($request->get('quick_link')) {
-            case 'begin-today':
-                $data['dates'] = 'begin';
-                $now = new \DateTime('midnight');
-                $data['begin'] = $now->format('d.m.Y');
-                $data['end'] = $now->format('d.m.Y');
-                $data['checkOut'] = false;
-                $data['checkIn'] = false;
-                break;
-
-            case 'begin-tomorrow':
-                $data['dates'] = 'begin';
-                $now = new \DateTime('midnight');
-                $now->modify('+1 day');
-                $data['begin'] = $now->format('d.m.Y');
-                $data['end'] = $now->format('d.m.Y');
-                $data['checkOut'] = false;
-                $data['checkIn'] = false;
-                break;
-
-            case 'live-now':
-                $data['filter'] = 'live_now';
-                $data['checkIn'] = true;
-                $data['checkOut'] = false;
-                break;
-
-            case 'without-approval':
-                $data['confirmed'] = '0';
-                break;
-
-            case 'without-accommodation':
-                $data['filter'] = 'without_accommodation';
-                $data['dates'] = 'begin';
-                $now = new \DateTime('midnight');
-                $data['end'] = $now->format('d.m.Y');
-                break;
-
-            case 'not-paid':
-                $data['paid'] = 'not_paid';
-                break;
-
-            case 'not-paid-time':
-                $notPaidTime = new \DateTime($this->container->getParameter('mbh.package.notpaid.time'));
-                $data['paid'] = 'not_paid';
-                $data['dates'] = 'createdAt';
-                $data['end'] = $notPaidTime->format('d.m.Y');
-                break;
-
-            case 'not-check-in':
-                $data['checkIn'] = false;
-                $data['dates'] = 'begin';
-                $now = new \DateTime('midnight');
-                $data['end'] = $now->format('d.m.Y');
-                break;
-
-            case 'created-by':
-                $data['createdBy'] = $this->getUser()->getUsername();
-                break;
-            default:
-        }
-
         $form = $this->createForm(new PackageCsvType());
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+
             $formData = $form->getData();
+
+            $data = [
+                'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
+                'roomType' => $formData['roomType'],
+                'status' => $formData['status'],
+                'deleted' => $formData['deleted'],
+                'begin' => $formData['begin'],
+                'end' => $formData['end'],
+                'dates' => $formData['dates'],
+                'paid' => $formData['paid'],
+                'confirmed' => $formData['confirmed'],
+            ];
+
+            //quick links
+            switch ($formData['quick_link']) {
+                case 'begin-today':
+                    $data['dates'] = 'begin';
+                    $now = new \DateTime('midnight');
+                    $data['begin'] = $now->format('d.m.Y');
+                    $data['end'] = $now->format('d.m.Y');
+                    $data['checkOut'] = false;
+                    $data['checkIn'] = false;
+                    break;
+
+                case 'begin-tomorrow':
+                    $data['dates'] = 'begin';
+                    $now = new \DateTime('midnight');
+                    $now->modify('+1 day');
+                    $data['begin'] = $now->format('d.m.Y');
+                    $data['end'] = $now->format('d.m.Y');
+                    $data['checkOut'] = false;
+                    $data['checkIn'] = false;
+                    break;
+
+                case 'live-now':
+                    $data['filter'] = 'live_now';
+                    $data['checkIn'] = true;
+                    $data['checkOut'] = false;
+                    break;
+
+                case 'without-approval':
+                    $data['confirmed'] = '0';
+                    break;
+
+                case 'without-accommodation':
+                    $data['filter'] = 'without_accommodation';
+                    $data['dates'] = 'begin';
+                    $now = new \DateTime('midnight');
+                    $data['end'] = $now->format('d.m.Y');
+                    break;
+
+                case 'not-paid':
+                    $data['paid'] = 'not_paid';
+                    break;
+
+                case 'not-paid-time':
+                    $notPaidTime = new \DateTime($this->container->getParameter('mbh.package.notpaid.time'));
+                    $data['paid'] = 'not_paid';
+                    $data['dates'] = 'createdAt';
+                    $data['end'] = $notPaidTime->format('d.m.Y');
+                    break;
+
+                case 'not-check-in':
+                    $data['checkIn'] = false;
+                    $data['dates'] = 'begin';
+                    $now = new \DateTime('midnight');
+                    $data['end'] = $now->format('d.m.Y');
+                    break;
+
+                case 'created-by':
+                    $data['createdBy'] = $this->getUser()->getUsername();
+                    break;
+                default:
+            }
+
             $generate = $this->get('mbh.package.csv.generator')->generateCsv($data, $formData);
             $response = new Response($generate);
             $response->setStatusCode(200);
