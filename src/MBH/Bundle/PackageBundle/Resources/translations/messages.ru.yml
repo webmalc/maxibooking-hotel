@@ -364,3 +364,21 @@ csv.type.price: Стоимость
 csv.type.tariff: Тариф
 csv.type.createdAt: Дата создания
 csv.type.createdBy: Создал
+
+csv.form.group: Параметры генерации CSV файла
+csv.form.type: Тип брони
+csv.form.numberWithPrefix: Название брони
+csv.form.dateBegin: С
+csv.form.dateEnd: По
+csv.form.tariffType: Тип номера
+csv.form.tariffAccomodation: Размещение
+csv.form.guests: Плательщик
+csv.form.adults: Взрослые
+csv.form.children: Дети
+csv.form.price: Стоимость
+csv.form.tariff: Тариф
+csv.form.createdAt: Дата создания
+csv.form.createdBy: Создал
+csv.form.modal_title: Генерация документа
+csv.form.modal_close: Закрыть
+csv.form.modal_generate: Сгенерировать

@@ -15,82 +15,82 @@ class PackageCsvType extends AbstractType
     {
         $builder
             ->add('type', CheckboxType::class, [
-                'label' => 'Тип брони',
+                'label' => 'csv.form.type',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('numberWithPrefix', CheckboxType::class, [
-                'label' => 'Название брони',
+                'label' => 'csv.form.numberWithPrefix',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('dateBegin', CheckboxType::class, [
-                'label' => 'С',
+                'label' => 'csv.form.dateBegin',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('dateEnd', CheckboxType::class, [
-                'label' => 'По',
+                'label' => 'csv.form.dateEnd',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('tariffType', CheckboxType::class, [
-                'label' => 'Тип номера',
+                'label' => 'csv.form.tariffType',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('tariffAccomodation', CheckboxType::class, [
-                'label' => 'Размещение',
+                'label' => 'csv.form.tariffAccomodation',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('guests', CheckboxType::class, [
-                'label' => 'Плательщик',
+                'label' => 'csv.form.guests',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('adults', CheckboxType::class, [
-                'label' => 'Взрослые',
+                'label' => 'csv.form.adults',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('children', CheckboxType::class, [
-                'label' => 'Дети',
+                'label' => 'csv.form.children',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('price', CheckboxType::class, [
-                'label' => 'Стоимость',
+                'label' => 'csv.form.pric',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('tariff', CheckboxType::class, [
-                'label' => 'Тариф',
+                'label' => 'csv.form.tariff',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('createdAt', CheckboxType::class, [
-                'label' => 'Дата создания',
+                'label' => 'csv.form.createdAt',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('createdBy', CheckboxType::class, [
-                'label' => 'Создал',
+                'label' => 'csv.form.createdBy',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
-                'group' => 'Параметры генерации CSV файла',
+                'group' => 'csv.form.group',
             ])
             ->add('roomType', HiddenType::class, [
                 'required' => false,
