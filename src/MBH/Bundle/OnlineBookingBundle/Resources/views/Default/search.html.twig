@@ -15,8 +15,8 @@
             {% endif %}
         {% endfor %}
         {% if not renderedImage %}
-            <div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>
-            {#<div class="placeholder-logo">тут картинка</div>#}
+            {#<div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>#}
+            <img src="{{ asset('bundles/mbhonlinebooking/images/no-image.jpg', null, true) }}">
         {% endif %}
     </div>
     <div class="col-md-8 right-info">

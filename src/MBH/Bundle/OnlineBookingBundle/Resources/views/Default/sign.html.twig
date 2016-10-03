@@ -5,8 +5,16 @@
     {% form_theme form.payment 'bootstrap_3_layout.html.twig' %}
     {{ form_start(form, {attr: {id: 'sign-form', method: 'get' }, action: requestSearchUrl}) }}
     {{ form_widget(form, {attr: {class: 'ss'}}) }}
-    <button type="submit" name="submit" value="1">Забронировать</button>
+
     <input type="hidden" name="step" value="2">
+
+
+    <hr>
+    <div class="g-recaptcha" data-sitekey="6Lcj9gcUAAAAAKRFMX1YdoK4yyIUIHea4pUIXiKI"></div>
+
+    <div class="submit">
+        <button type="submit" name="submit" value="1" class="bkbutton" >Забронировать</button>
+    </div>
     {#<input type="hidden" name="adults" value="{{ app.request.get('adults') }}">
     <input type="hidden" name="children" value="{{ app.request.get('children') }}">
     <input type="hidden" name="begin" value="{{ app.request.get('begin') }}">
@@ -22,7 +30,7 @@
         <div class="item row">
             <div class="col-xs-4">
                 {% if roomType.mainImage %}
-                    <a href="{{ asset(roomType.mainImage.path, null, true) }}" class="fancybox">
+                    <a  class="fancybox" href="{{ asset(roomType.mainImage.path, null, true) }}">
                         <img src="{{ roomType.mainImage.path|imagine_filter('thumb_100x100') }}" width="70px"
                              height="70px">
                     </a>
@@ -63,6 +71,7 @@
             </div>
         </div>
         <div class="guests">
+
             {#<div>Гости: {{ data.adults }} взрослых {{ data.children }} ребёнок</div>#}
             <div>Гости: {{ data.adults }} {{ data.infants?' + '~data.infants }}</div>
             <div>Тариф: {{ tariff.fullTitle }}</div>
@@ -116,8 +125,19 @@
 
 <link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/sign.css', null, true) }}">
 <script>
+    $(function () {
+        $('#info').find('.fancybox').fancybox();
+    });
+</script>
+<script>
     var $radio = $('#form_payment input[value=online_half]').parent().parent();
     if ($radio.length) {
         $radio.get(0).innerHTML += ' - ' + {{ data.total / 2 }} +' <i class="fa fa-ruble"></i>';
     }
 </script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+{#<script>#}
+    {#var reCaptchaCallBack = function(data) {#}
+        {#$button = $("button.bkbutton").prop('disabled', false).removeClass('disabled');#}
+    {#};#}
+{#</script>#}
