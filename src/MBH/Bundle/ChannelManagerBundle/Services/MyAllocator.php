@@ -139,7 +139,7 @@ class MyAllocator extends Base
         $api->setAuth($auth);
         $response = $this->call($api);
 
-        if (!empty($response['response']['body']['Success'])) {
+        if (!empty($response['response']['body']['Auth/UserToken'])) {
             return $response['response']['body']['Auth/UserToken'];
         }
 
@@ -177,7 +177,7 @@ class MyAllocator extends Base
             $response = $api->callApi();
         } catch (\Exception $e) {
             if ($this->isDevEnvironment()) {
-                dump($e);
+                dump($e->getMessage());
             }
             return false;
         }
@@ -478,7 +478,9 @@ class MyAllocator extends Base
                 $result = false;
             }
 
-            $this->log('Reservations count: ' . count($response['response']['body']['Bookings']));
+            //TODO: Remove logs
+            //$this->log('Reservations count: ' . count($response['response']['body']['Bookings']));
+            $this->log('Reservations: ' . json_encode($response));
 
             foreach ($response['response']['body']['Bookings'] as $orderInfo) {
 
@@ -744,12 +746,13 @@ class MyAllocator extends Base
             $packageTotal = $this->currencyConvertToRub($config, (float)$room['Price']);
 
             $package = new Package();
+            $startDate = $helper->getDateFromString($room['StartDate'], 'Y-m-d');
             $endDate = $helper->getDateFromString($room['EndDate'], 'Y-m-d');
             $endDate->modify('+1 day');
             $package
                 ->setChannelManagerId($booking['MyallocatorId'])
                 ->setChannelManagerType('myallocator')
-                ->setBegin($helper->getDateFromString($room['StartDate'], 'Y-m-d'))
+                ->setBegin($startDate)
                 ->setEnd($endDate)
                 ->setRoomType($roomType)
                 ->setTariff($tariffs['base']['doc'])
