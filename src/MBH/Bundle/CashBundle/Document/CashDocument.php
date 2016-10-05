@@ -150,7 +150,7 @@ class CashDocument extends Base
 
 
     /**
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\OrderDocument", inversedBy="cashDocuments")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\OrderDocument", inversedBy="cashDocument")
      */
     protected $orderDocument;
 

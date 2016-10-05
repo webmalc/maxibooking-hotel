@@ -357,7 +357,8 @@ $(document).ready(function () {
         changePopover();
     }
 
-    childrenInput.change(function () {
+    childrenInput.bind('keyup mouseup', function () {
+        console.log(Date.now());
         changePopover();
         $('.children_age').change(sendForm);
     });

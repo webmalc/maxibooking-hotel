@@ -241,7 +241,7 @@ class Message extends Base implements \JsonSerializable
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
      * @return self
      */
-    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel = null)
     {
         $this->hotel = $hotel;
 

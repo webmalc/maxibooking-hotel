@@ -27,8 +27,8 @@ class RoomSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            Events::preRemove => 'preRemove',
             Events::prePersist => 'prePersist',
+            Events::preRemove => 'preRemove'
         ];
     }
 

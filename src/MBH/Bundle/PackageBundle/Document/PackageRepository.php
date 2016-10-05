@@ -34,7 +34,7 @@ class PackageRepository extends DocumentRepository
         ;
         
         if ($roomType) {
-            $qb->field('roomType')->equals($roomType);
+            $qb->field('roomType')->references($roomType);
         }
         
         $packages = $qb->getQuery()->execute();

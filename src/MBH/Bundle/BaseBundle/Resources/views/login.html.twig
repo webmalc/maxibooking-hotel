@@ -15,15 +15,15 @@
 
     <div class="login-box">
 
-        {% block messages %}
-            {% include 'MBHBaseBundle::messages.html.twig' %}
-        {% endblock %}
-
         <div class="login-logo">
             <a href="{{ path('_welcome') }}"><b>Maxi</b>Booking</a>
         </div>
 
         <div class="login-box-body">
+            {% block messages %}
+                {% include 'MBHBaseBundle::messages.html.twig' %}
+            {% endblock %}
+
             {% block content %}{% endblock %}
         </div>
     </div>

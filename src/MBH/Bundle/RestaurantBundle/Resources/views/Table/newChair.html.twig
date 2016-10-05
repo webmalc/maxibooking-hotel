@@ -1,0 +1,79 @@
+{% extends 'MBHRestaurantBundle:Table:layout.html.twig' %}
+
+{% set small_title = 'restaurant.table.newaction.small_title_addchairs'|trans %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+    <ul class="nav nav-tabs" role="tablist">
+        <li>
+            <a href="{{ path('restaurant_table_edit', {'id': entry.id}) }}">
+                {{ 'restaurant.table.item.category.table'|trans }}
+            </a>
+        </li>
+        <li class="active">
+            <a href="#chars" role="tab" data-toggle="tab">
+                {{ 'restaurant.table.item.category.chears'|trans }}
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+
+        {{ form_start(form, {'action': path('restaurant_chair_new', {'id': entry.id}), 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+        {{ form_end(form) }}
+
+        <form method="post" role="form" class="are-you-sure form-inline">
+            <!-- Tabs content -->
+            <div class="tab-content">
+
+                <div class="tab-pane active">
+                    <!-- Tab actions -->
+                    {% if entry.chairs.count %}
+                        <table class="table table-actions table-striped table-hover table-condensed table-icons">
+                            <thead>
+                            <tr>
+                                <th class="td-xs"></th>
+                                <th>{{ 'restaurant.namelabel'|trans }}</th>
+                                <th>{{ 'restaurant.table.item.helper.childrenchairs'|trans }}</th>
+                                <th class="td-sm text-center">{{ 'restaurant.common.doing'|trans|capitalize }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for chair in entry.chairs %}
+                                <tr {% if(chair.type == true) %} class="info odd"{% endif %}>
+                                    <td><i class="fa fa-cutlery"></i></td>
+                                    <td>
+                                        № {{ chair.fullTitle }}
+                                    </td>
+                                    <td>
+                                        {% if chair.type == true %}
+                                            <i class="fa fa-lg fa-check"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td class="table-actions-td text-center">
+                                        <a href='{{ path('restaurant_chair_delete',{'id':chair.id}) }}'
+                                           class='btn btn-danger btn-xs delete-link'
+                                           data-text='{{ 'restaurant.table.item.helper.deletechair'|trans }}'
+                                           title={{ 'entry.actions.delete'|trans() }} data-toggle='tooltip'><i
+                                                    class='fa fa-trash-o'></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="alert alert-warning"><i
+                                    class="fa fa-exclamation-circle"></i> {{ 'restaurant.table.item.nochair'|trans|capitalize }}
+                            . {{ 'restaurant.table.item.helper.addchairs'|trans }}</div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <input name="activetab" type="hidden" value="" id="activetab">
+        </form>
+
+    </div>
+{% endblock %}

@@ -214,7 +214,8 @@ class Mailer implements \SplObserver
             $this->mailer->send($message);
         }
 
-        if (php_sapi_name() == 'cli') {
+        if (php_sapi_name() == 'cli' || !empty($data['spool'])) {
+
             $spool = $this->mailer->getTransport()->getSpool();
             $transport = $this->container->get('swiftmailer.transport.real');
             $spool->flushQueue($transport);
