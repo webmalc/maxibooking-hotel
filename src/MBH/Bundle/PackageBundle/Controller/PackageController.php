@@ -301,6 +301,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $package->setTotalOverwrite(0);
         $package->getOrder()->setTotalOverwrite(0);
         $this->dm->flush();
+        $this->addFlash('success', $this->get('translator')->trans('controller.packageController.record_edited_success'));
         return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
     }
 
