@@ -2,7 +2,11 @@
 
 namespace MBH\Bundle\OnlineBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -14,7 +18,7 @@ class FormType extends AbstractType
         $builder
             ->add(
                 'hotels',
-                'document',
+                DocumentType::class,
                 [
                     'label' => 'form.formType.hotels',
                     'class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
@@ -22,23 +26,23 @@ class FormType extends AbstractType
                     'required' => false,
                     'multiple' => true,
                     'attr' => ['placeholder' => 'form.formType.hotels_placeholder'],
-                    'help' =>  'form.formType.hotels_desc'
+                    'help' => 'form.formType.hotels_desc'
                 ]
             )
             ->add(
                 'enabled',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.formType.is_turned_on',
                     'group' => 'form.formType.parameters',
                     'value' => true,
                     'required' => false,
-                    'help' =>  'form.formType.use_online_form'
+                    'help' => 'form.formType.use_online_form'
                 ]
             )
             ->add(
                 'roomTypes',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.formType.room_types',
                     'group' => 'form.formType.parameters',
@@ -46,24 +50,21 @@ class FormType extends AbstractType
                     'required' => false,
                     'help' => 'form.formType.should_we_use_room_type_field_in_online_form'
                 ]
-            );
-            $builder
-                ->add(
-                    'tourists',
-                    'checkbox',
-                    [
-                        'label' => 'form.formType.are_there_guests',
-                        'group' => 'form.formType.parameters',
-                        'value' => true,
-                        'required' => false,
-                        'help' => 'form.formType.should_we_use_guests_amount_field_in_online_form'
-                    ]
-                )
-            ;
-        $builder
+            )
+            ->add(
+                'tourists',
+                CheckboxType::class,
+                [
+                    'label' => 'form.formType.are_there_guests',
+                    'group' => 'form.formType.parameters',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'form.formType.should_we_use_guests_amount_field_in_online_form'
+                ]
+            )
             ->add(
                 'nights',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.formType.should_we_use_nights_field',
                     'group' => 'form.formType.parameters',
@@ -73,8 +74,18 @@ class FormType extends AbstractType
                 ]
             )
             ->add(
+                'css',
+                TextType::class,
+                [
+                    'label' => 'form.formType.css',
+                    'group' => 'form.formType.parameters',
+                    'required' => false,
+                    'help' => 'form.formType.css_help'
+                ]
+            )
+            ->add(
                 'paymentTypes',
-                'choice',
+                ChoiceType::class,
                 [
                     'group' => 'form.formType.payment',
                     'choices' => $options['paymentTypes'],
@@ -82,8 +93,7 @@ class FormType extends AbstractType
                     'multiple' => true,
                     'help' => 'form.formType.reservation_payment_types_with_online_form'
                 ]
-            )
-        ;
+            );
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

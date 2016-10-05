@@ -1,3 +1,7 @@
+mbh_api:
+    resource: "@MBHApiBundle/Controller/"
+    type:     annotation
+    prefix:   /api
 
 mbh_warehouse:
     resource: "@MBHWarehouseBundle/Controller/"

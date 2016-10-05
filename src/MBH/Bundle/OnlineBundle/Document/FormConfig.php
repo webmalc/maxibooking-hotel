@@ -21,6 +21,8 @@ class FormConfig extends Base
         "in_hotel", "online_full", "online_first_day", "online_half"
     ];
 
+    const CSS = 'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/paper/bootstrap.min.css';
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -89,6 +91,13 @@ class FormConfig extends Base
      * @Assert\Choice(callback = "getPaymentTypesList", multiple = true)
      */
     protected $paymentTypes = [];
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
+    protected $css;
 
     public function __construct()
     {
@@ -234,6 +243,33 @@ class FormConfig extends Base
     {
         $this->hotels = $hotels;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCss()
+    {
+        return $this->css;
+    }
+
+    /**
+     * @param string $css
+     * @return FormConfig
+     */
+    public function setCss($css): FormConfig
+    {
+        $this->css = $css;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCssURL(): string
+    {
+        return $this->css?: self::CSS;
     }
 
 
