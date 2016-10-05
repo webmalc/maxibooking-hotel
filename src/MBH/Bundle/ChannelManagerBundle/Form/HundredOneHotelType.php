@@ -21,10 +21,7 @@ class HundredOneHotelType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add(
-                'isEnabled',
-                CheckboxType::class,
-                [
+            ->add('isEnabled', CheckboxType::class, [
                     'label' => 'form.hundredOneHotels.is_included',
                     'value' => true,
                     'required' => false,
@@ -32,15 +29,25 @@ class HundredOneHotelType extends AbstractType
                 ]
             )
             ->add(
-                'hotelId',
-                TextType::class,
-                [
+                'hotelId', TextType::class, [
                     'label' => 'form.hundredOneHotels.hotel_id',
                     'required' => true,
-                    'attr' => ['placeholder' => 'hotel id'],
+                    'attr' => [
+                        'placeholder' => 'hotel id'
+                    ],
                     'help' => 'form.hundredOneHotels.hotel_id_in_101_hotels'
                 ]
-            );
+            )
+            ->add('apiKey', TextType::class, [
+                    'label' => 'form.hundredOneHotels.api_key.label',
+                    'required' => true,
+                    'attr' => [
+                        'placeholder' => 'form.hundredOneHotels.api_key.placeholder'
+                    ],
+                    'help' => 'form.hundredIneHotels.api_key.help'
+                ]
+            )
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

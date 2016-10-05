@@ -59,6 +59,30 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
     protected $hotelId;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull(message="validator.document.hundredOneHotelsConfig.no_api_key_specified")
+     */
+    protected $apiKey;
+
+    /**
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * @param string $apiKey
+     */
+    public function setApiKey($apiKey)
+    {
+        $this->apiKey = $apiKey;
+    }
+
+    /**
      * @var array
      * @ODM\EmbedMany(targetDocument="Room")
      */

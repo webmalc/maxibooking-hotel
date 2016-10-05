@@ -27,8 +27,6 @@ class HundredOneHotels extends Base
 
     const CHANNEL_MANAGER_TYPE = 'hundredOneHotels';
 
-    const API_KEY = 'ayKWtlRrCobH8ohFFrJO';
-
     /**
      * Base API URL
      */
@@ -123,8 +121,7 @@ class HundredOneHotels extends Base
                 $config->getHotel(),
                 $this->getRoomTypeArray($roomType),
                 [],
-                true,
-                $this->roomManager->useCategories
+                true
             );
 
             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
@@ -302,9 +299,9 @@ class HundredOneHotels extends Base
             $request = $requestFormatter->getRequest();
 
             $serviceOrders = $this->send(static::BASE_URL, $request, null, true, true);
+            //$this->log('Reservations: ' . $serviceOrders);
             $serviceOrders = json_decode($serviceOrders, true);
             $this->log('Reservations count: ' . count($serviceOrders['data']));
-
 
             $tariffs = $this->getTariffs($config, true);
             $roomTypes = $this->getRoomTypes($config, true);
@@ -527,16 +524,41 @@ class HundredOneHotels extends Base
     }
 
     /**
+     * @param HundredOneHotelsConfig $config
+     * @return null
+     */
+    public function sendTestRequestAndGetErrorMessage(HundredOneHotelsConfig $config)
+    {
+        $requestFormatter = new HOHRequestFormatter($config, 'get_hotel');
+        $request = $requestFormatter->getRequest();
+        $response = $this->send(self::BASE_URL, $request, null, true);
+        $response = json_decode($response, true);
+        if ($response['response'] === 1) {
+            return null;
+        } else {
+            $error = $response['errors'][0];
+            $errorCode = $error['code'];
+            if($errorCode == 5) {
+                return 'form.hundredOneHotels.error.invalid_api_key';
+            }
+            if ($errorCode == 8) {
+                return 'form.hundredOneHotels.error.invalid_hotel_id';
+            }
+            return $error['message'];
+        }
+    }
+
+    /**
      * Close sales on service
      * @param ChannelManagerConfigInterface $config
      * @return bool|void
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
+        $config = $this->getConfig()[0];
         $requestFormatter = new HOHRequestFormatter($config);
         $firstDate = new \DateTime();
         $endDate = new \DateTime('+5 year');
-        $requestFormatter->addDateCondition($firstDate, $endDate);
         $roomTypes = $this->getRoomTypes($config);
         $closedData[] = [
             'start' => $requestFormatter->formatDate($firstDate),

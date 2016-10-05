@@ -26,7 +26,7 @@ class HundredOneHotelsController extends Controller
      * Main configuration page
      * @Route("/", name="hundred_one_hotels")
      * @Method("GET")
-     * @Security("is_granted('ROLE_BOOKING')")
+     * @Security("is_granted('ROLE_101HOTELS')")
      * @Template()
      */
     public function indexAction()
@@ -42,9 +42,12 @@ class HundredOneHotelsController extends Controller
         ];
     }
 
+
+
     /**
      * @Route("/", name="hundred_one_hotels_save")
      * @Method("POST")
+     * @Security("is_granted('ROLE_101HOTELS')")
      * @Template("MBHChannelManagerBundle:HundredOneHotels:index.html.twig")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -61,18 +64,22 @@ class HundredOneHotelsController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $errorMessage = $this->get('mbh.channelmanager.hundred_one_hotels')->sendTestRequestAndGetErrorMessage($config);
+            if (isset($errorMessage)) {
+                $this->addFlash('danger',
+                    $this->get('translator')->trans($errorMessage));
+            } else {
+                /* @var $dm DocumentManager; */
+                $dm = $this->get('doctrine_mongodb')->getManager();
+                $dm->persist($config);
+                $dm->flush();
 
-            /* @var $dm DocumentManager; */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($config);
-            $dm->flush();
+                $this->get('mbh.channelmanager')->updateInBackground();
 
-            $this->get('mbh.channelmanager')->updateInBackground();
-
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                $this->addFlash('success',
+                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+            }
         }
-
         return $this->redirectToRoute('hundred_one_hotels');
     }
 
@@ -82,6 +89,7 @@ class HundredOneHotelsController extends Controller
      * @Method({"GET", "POST"})
      * @Template()
      * @param Request $request
+     * @Security("is_granted('ROLE_101HOTELS')")
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function tariffAction(Request $request)
@@ -129,6 +137,7 @@ class HundredOneHotelsController extends Controller
      * @Route("/room", name="hundred_one_hotels_room")
      * @Method({"GET", "POST"})
      * @Template()
+     * @Security("is_granted('ROLE_101HOTELS')")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Doctrine\ODM\MongoDB\LockException

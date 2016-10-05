@@ -6,8 +6,6 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
 class HOHRequestFormatter
 {
-    const API_KEY = 'ayKWtlRrCobH8ohFFrJO';
-
     private $serviceName;
     private $requestData = [];
     /**
@@ -122,7 +120,7 @@ class HOHRequestFormatter
     public function getRequest()
     {
         $template = [
-            'api_key' => self::API_KEY,
+            'api_key' => $this->config->getApiKey(),
             'hotel_id' => $this->config->getHotelId(),
             'service' => $this->serviceName
         ];
