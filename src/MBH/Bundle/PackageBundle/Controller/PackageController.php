@@ -290,6 +290,19 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         ];
     }
 
+    /**
+     * @Route("/service/resetValue/{id}", name="reset_total_overwrite_value")
+     * @Security("is_granted('ROLE_ORDER_EDIT')")
+     * @param Package $package
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function resetTotalOverwriteValue(Package $package)
+    {
+        $package->setTotalOverwrite(0);
+        $package->getOrder()->setTotalOverwrite(0);
+        $this->dm->flush();
+        return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
+    }
 
     /**
      * Edits an existing entity.
