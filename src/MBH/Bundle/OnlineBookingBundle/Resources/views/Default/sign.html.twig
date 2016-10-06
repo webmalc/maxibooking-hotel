@@ -1,16 +1,19 @@
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
 
 <div id="sign-page" class="col-md-8">
+
     <h3>Персональная информация</h3>
-    {% form_theme form.payment 'bootstrap_3_layout.html.twig' %}
     {{ form_start(form, {attr: {id: 'sign-form', method: 'get' }, action: requestSearchUrl}) }}
+
+    <div class="error_pay" style="display:block;">Внимание! Оплачивая туристические услуги, Вы соглашаетесь с условиями публичного <a href="https://yadi.sk/i/thkaoWkPoVMxK" target="_blank">договора-оферты.</a></div>
     {{ form_widget(form, {attr: {class: 'ss'}}) }}
+
 
     <input type="hidden" name="step" value="2">
 
 
     <hr>
-    <div class="g-recaptcha" data-sitekey="6Lcj9gcUAAAAAKRFMX1YdoK4yyIUIHea4pUIXiKI"></div>
+    {#<div class="g-recaptcha" data-sitekey="6Lcj9gcUAAAAAKRFMX1YdoK4yyIUIHea4pUIXiKI"></div>#}
 
     <div class="submit">
         <button type="submit" name="submit" value="1" class="bkbutton" >Забронировать</button>
@@ -41,6 +44,7 @@
             </div>
             <div class="col-xs-8">
                 <div>{{ roomType.hotel.fullTitle }}</div>
+                <div class="numtype">Тип номера</div>
                 <div>{{ roomTypeCategory.fullTitle }}</div>
             </div>
         </div>

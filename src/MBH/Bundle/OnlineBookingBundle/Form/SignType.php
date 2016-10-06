@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -23,6 +24,7 @@ class SignType extends AbstractType
     private $container;
 
     private $dm;
+
     /**
      * SignType constructor.
      * @param $container
@@ -39,8 +41,12 @@ class SignType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $paymentTypes = $this->container->getParameter('mbh.online.form')['payment_types'];
-        unset($paymentTypes['online_first_day']);
+        $paymentTypesConfig = $this->container->getParameter('mbh.online.form')['payment_types'];
+//        unset($paymentTypes['online_first_day']);
+        $allowed = ['online_full', 'online_half'];
+        $paymentTypes = array_filter($paymentTypesConfig, function ($key) use ($allowed) {
+            return in_array($key, $allowed);
+        }, ARRAY_FILTER_USE_KEY);
 
         $builder
             ->add('firstName', TextType::class, [
@@ -62,7 +68,7 @@ class SignType extends AbstractType
             ->add('phone', TextType::class, [
                 'label' => 'Телефон'
             ])
-            ->add('email', TextType::class, [
+            ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'constraints' => [
                     new Email(),
@@ -76,6 +82,14 @@ class SignType extends AbstractType
                     new NotBlank()
                 ],
                 'label' => 'Я согласен на обработку моих персональных данных.'
+            ])
+            ->add('offerta', CheckboxType::class, [
+                'mapped' => false,
+                'constraints' => [
+                    new NotNull(),
+                    new NotBlank()
+                ],
+                'label' => 'Принимаю условия договора оферты'
             ])
             //->add('step', 'hidden', [])
             ->add('adults', HiddenType::class, [])
@@ -93,9 +107,9 @@ class SignType extends AbstractType
             ->add('roomType', HiddenType::class, [])
             ->add('tariff', HiddenType::class, [])
             ->add('payment', ChoiceType::class, [
-                'label' => 'Способ оплаты',
+                'label' => 'Сумма оплаты',
                 'choices' => $paymentTypes,
-//                'expanded' => true
+                'expanded' => true
             ])
             ->add('total', HiddenType::class)
             ->add('promotion', HiddenType::class);

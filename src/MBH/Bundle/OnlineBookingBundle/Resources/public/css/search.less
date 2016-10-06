@@ -50,16 +50,16 @@
   }
   .btmactions {
     float: right;
-    background-color: #bababa;
     a {
+      text-transform: uppercase;
       color: white;
       font-size: 12px;
+      border-radius: 0;
+      &.btn-default {
+        background-color: #8a8a8a;
+      }
     }
 
-
-  }
-  .btn-booking {
-    text-transform: uppercase;
   }
 
   .more-link, .less-link {
@@ -67,5 +67,51 @@
     float: left;
     font-size: 12px;
 
+  }
+
+  .numicon {
+    color: #ebb630;
+    margin-top: 8px;
+    margin-right: 10px;
+
+  }
+
+  .roomtype {
+    color: #2196F3;
+  }
+  .infocontainer {
+    overflow: hidden;
+  }
+  .hotellogo {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    left: -65px;
+    top: 0px;
+    background-color: rgb(255, 255, 255);
+  }
+  //.beforesubtitle {
+  //  float: left;
+  //  margin-top: 8px;
+  //  color: #ebb630;
+  //  &+.subtitle {
+  //    float: left;
+  //  }
+  //}
+  //.aftersubtitle {
+  //  float:left;
+  //  margin-top: 8px;
+  //  margin-left: 10px;
+  //}
+  .guests {
+    i {
+      color: #ebb630;
+      & + .guestslist {
+        margin-left: 5px;
+
+        color: #8a8a8a;
+        font-size: 12px;
+      }
+    }
   }
 }

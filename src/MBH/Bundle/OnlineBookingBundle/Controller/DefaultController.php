@@ -3,25 +3,20 @@
 namespace MBH\Bundle\OnlineBookingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\OnlineBookingBundle\Form\OrderGuessType;
+use MBH\Bundle\OnlineBookingBundle\Form\ReservationType;
 use MBH\Bundle\OnlineBookingBundle\Form\SearchFormType;
 use MBH\Bundle\OnlineBookingBundle\Form\SignType;
-use MBH\Bundle\OnlineBookingBundle\Lib\SearchOrderParams;
+use MBH\Bundle\OnlineBookingBundle\Lib\ManagerRecipient;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
-use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use ReCaptcha\ReCaptcha;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\NotBlank;
+
 
 
 /**
@@ -29,7 +24,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class DefaultController extends BaseController
 {
-    const RECAPCHA_SECRET = '6Lcj9gcUAAAAAH_zLNfIhoNHvbMRibwDl3d3Thx9';
+    /*const RECAPCHA_SECRET = '6Lcj9gcUAAAAAH_zLNfIhoNHvbMRibwDl3d3Thx9';*/
 
     /**
      * @Route("/", name="online_booking")
@@ -158,16 +153,21 @@ class DefaultController extends BaseController
      */
     public function signAction(Request $request)
     {
+        $reservation = $request->get('reservation');
+        if ($reservation) {
+            $form = $this->createForm(ReservationType::class);
+        } else {
+            $form = $this->createForm(SignType::class);
+        }
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
-        $form = $this->createForm(SignType::class);
 
         $isSubmit = $request->get('submit');
+
         if ($isSubmit) {
             $form->submit($request->get('form'));
         } else {
             $form->setData($request->get('form'));
         }
-
         if ($isSubmit && $form->isValid()) {
             $helper = $this->get('mbh.helper');
             $orderManger = $this->get('mbh.order_manager');
@@ -197,6 +197,10 @@ class DefaultController extends BaseController
                 'status' => 'online',
                 'confirmed' => false
             ];
+            if ($reservation) {
+                $this->reserveNotification($data);
+                return $this->render('@MBHOnlineBooking/Default/reservation-success.html.twig');
+            }
             $payment = $formData['payment'];
             $cash = ['total' => 0];
             $total = (int)$formData['total'];
@@ -366,79 +370,108 @@ class DefaultController extends BaseController
         }
     }
 
-
-    /**
-     * @Route("payrest")
-     * @Template()
-     */
-    public function payRestAction()
+    private function reserveNotification($data)
     {
-        $form = $this->createForm(OrderGuessType::class);
+//        dump($data);exit;
+        $notifier = $this->container->get('mbh.notifier');
+        $message = $notifier::createMessage();
 
-        return [
-            'form' => $form->createView()
-        ];
+        $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(['id'=>$data['packages'][0]['roomType']]);
+        $hotel = $roomType->getHotel();
+        $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['id' => $data['packages'][0]['tariff']]);
+        $recipient = new ManagerRecipient();
+        $recipient->setEmail($this->container->getParameter('online_reservation_manager_email'));
+        $message
+            ->setRecipients([$recipient])
+            ->setText('mailer.online.backend.reservation.text')
+            ->setFrom('online_form')
+            ->setSubject('mailer.online.backend.reservation.subject')
+            ->setType('info')
+            ->setCategory('notification')
+            ->setAdditionalData([
+                'roomType' => $roomType,
+                'tariff' => $tariff
+//                'arrivalTime' => $data,
+//                'departureTime' => $departure,
+            ])
+            ->setHotel($hotel)
+            ->setTemplate('MBHBaseBundle:Mailer:reservation.html.twig')
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'));
+        $notifier
+            ->setMessage($message)
+            ->notify();
+        exit;
+
     }
 
-    /**
-     * @param Request $request
-     * @return array
-     * @Route("payer", name="payrest_payer", options={"expose"=true}, methods={"POST"})
-     * @Template()
-     *
-     */
-    public function payerAction (Request $request)
-    {
-        $form = $this->createForm(OrderGuessType::class);
-        $form->handleRequest($request);
-
-        $error = '';
-        $result = false;
-        $data = '';
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var SearchOrderParams $searchParams */
-            $searchParams = $form->getData();
-            $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(['id' => $searchParams->getNumber()]);
-            if ($order) {
-                $payer = $order->getPayer();
-                if ($payer && ($payer->getEmail() === $searchParams->getEmail() || $payer->getPhone() === Tourist::formatPhone($searchParams->getPhone()))) {
-                    if ($searchParams->getSum() > $order->getDebt()) {
-                        $error = 'Максимальная сумма для оплаты составляет ' . $order->getDebt();
-                    } else {
-                        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-                        $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
-                            'data' => array_merge([
-                                'test' => false,
-                                'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
-                                    ['%total%' => number_format($order->getDebt(), 2), '%order_id%' => $order->getId()],
-                                    'MBHOnlineBundle')
-                            ], $clientConfig->getFormData($order->getCashDocuments()[0],
-                                $this->container->getParameter('online_form_result_url'),
-                                $this->generateUrl('online_form_check_order', [], true)))
-                        ]);
-                        $result = true;
-                        $data = $payButtonHtml;
-                    }
-                }
-            } else {
-                $error = 'Заказ не найден, пожалуйста уточните номер заказа у менеджера.';
-            }
-
-        } else {
-            $errors = $form->getErrors();
-        }
-
-        return [
-            'succes' => $result,
-            'error' => $error,
-            'data' => $data
-        ];
-
-
-
-//        $fullName = $payer->getName();
-//        $maxCash = $order->get
-
-    }
+//
+//
+//
+//    public function payRestAction()
+//    {
+//
+//    }
+//
+//    /**
+//     * @param Request $request
+//     * @return array
+//     * @Route("payer", name="payrest_payer", options={"expose"=true}, methods={"POST"})
+//     * @Template()
+//     *
+//     */
+//    public function payerAction (Request $request)
+//    {
+//        $form = $this->createForm(PaymentFormType::class);
+//        $form->handleRequest($request);
+//
+//        $error = '';
+//        $result = false;
+//        $data = '';
+//        if ($form->isSubmitted() && $form->isValid()) {
+//            /** @var SearchOrderParams $searchParams */
+//            $searchParams = $form->getData();
+//            $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(['id' => $searchParams->getNumber()]);
+//            if ($order) {
+//                $payer = $order->getPayer();
+//                if ($payer && ($payer->getEmail() === $searchParams->getEmail() || $payer->getPhone() === Tourist::formatPhone($searchParams->getPhone()))) {
+//                    if ($searchParams->getSum() > $order->getDebt()) {
+//                        $error = 'Максимальная сумма для оплаты составляет ' . $order->getDebt();
+//                    } else {
+//                        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+//                        $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
+//                            'data' => array_merge([
+//                                'test' => false,
+//                                'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
+//                                    ['%total%' => number_format($order->getDebt(), 2), '%order_id%' => $order->getId()],
+//                                    'MBHOnlineBundle')
+//                            ], $clientConfig->getFormData($order->getCashDocuments()[0],
+//                                $this->container->getParameter('online_form_result_url'),
+//                                $this->generateUrl('online_form_check_order', [], true)))
+//                        ]);
+//                        $result = true;
+//                        $data = $payButtonHtml;
+//                    }
+//                }
+//            } else {
+//                $error = 'Заказ не найден, пожалуйста уточните номер заказа у менеджера.';
+//            }
+//
+//        } else {
+//            $errors = $form->getErrors();
+//        }
+//
+//        return [
+//            'succes' => $result,
+//            'error' => $error,
+//            'data' => $data
+//        ];
+//
+//
+//
+////        $fullName = $payer->getName();
+////        $maxCash = $order->get
+//
+//    }
 
 }

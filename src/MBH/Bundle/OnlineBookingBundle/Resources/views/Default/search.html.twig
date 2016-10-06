@@ -3,7 +3,6 @@
 {% for result in searchResults %}
 <div class="row oneblock room-type-row">
     <!--<div class="sale"></div>-->
-
     <div class="col-md-4 logo">
         {% set renderedImage = false %}
         {% for searchResult in result.results if not renderedImage %}
@@ -18,19 +17,49 @@
             {#<div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>#}
             <img src="{{ asset('bundles/mbhonlinebooking/images/no-image.jpg', null, true) }}">
         {% endif %}
+        <div class="row">
+            {% if result.results|first.roomType.images is not empty %}
+                {% for image in result.results|first.roomType.images %}
+                    <div class="col-md-4">image</div>
+                {% endfor %}
+            {% endif %}
+
+        </div>
     </div>
     <div class="col-md-8 right-info">
         <div class="row">
             <div class="col-md-5 col-sm-6 col-xs-12" style="padding:0px;">
-                <div class="title">{{ result.roomType.hotel.fullTitle }}&nbsp;
-                    {% set star = 4 %}
-                    {% for i in 1..5 %}
-                        <div class="round {{ (i in (1..star))?'star':'' }} {{ i }}"></div>
-                    {% endfor %}
+                <div class="title">
+                    {{ result.roomType.hotel.fullTitle }}&nbsp;
                 </div>
-                <div class="subtitle">{{ result.roomType.fullTitle }}</div>
+                <div class="hotellogo">
+                    <img src="{{ result.roomType.hotel.logoUrl }}" alt="{{ result.roomType.hotel.name }}">
+                </div>
+                <div class="subtitle infocontainer">
+                    <div class="pull-left">
+                        {#<i class="fa fa-h-square numicon"></i>#}
+                        <div class="pull-right roomcon">
+                            <div class="roomtype">тип номера</div>
+                            <div class="roomname">{{ result.roomType.fullTitle }}</div>
+                        </div>
+
+                    </div>
+                </div>
+                {#<div class="aftersubtitle">#}
+                    {#<div class="beforesubtitle">#}
+                        {#<i class="fa fa-h-square"></i>#}
+                    {#</div>#}
+                    {#<div class="ntype">ТИП НОМЕРА</div><div></div>#}
+
+                {#</div>#}
             </div>
             <div class="col-md-7 col-sm-6 col-xs-12 prices">
+                <div class="guests pull-left">
+                <i class="fa fa-users"></i> Гости
+                {% if result.results|first.adults is defined %}
+                    <span class="guestslist">{{ result.results|first.adults }} {{ result.results|first.infants?'+ '~result.results|first.infants }}</span>
+                {% endif %}
+                </div>
                 {#<div class="col-md-7 col-sm-7 col-xs-7 newprice">забронируй сейчас<br><span>&#8381;56 344</span></div>#}
                 {% set searchResult = result.results|first %}
                 <div class="oldprice pull-right">
@@ -54,13 +83,13 @@
                     <i class="fa fa-tag"></i>
                     Тариф
                 </th>
-                <th style="width: 75px">
-                    <i class="fa fa-users"></i>
-                    Гости
-                </th>
                 <th>
                     <i class="fa fa-calendar"></i>
                     Дата
+                </th>
+                <th style="width: 75px">
+                    <i class="fa fa-clock-o"></i>
+                    Ночи
                 </th>
                 <th>
                     <i class="fa fa-ruble"></i>
@@ -75,9 +104,7 @@
                 <td>{{ searchResult.tariff.fullTitle }}
                     <i class="fa fa-question-circle" data-toggle="tooltip" title="{{ searchResult.tariff.description }}"></i>
                 </td>
-                <td>
-                    {{ searchResult.adults }} {{ searchResult.infants?'+ '~searchResult.infants }}
-                </td>
+
                 <td>
                     {% if searchResult.begin|date('Y') == 'now'|date('Y') %}
                         {% set format = 'd MMM' %}
@@ -93,6 +120,9 @@
                     {% endif %}
                     {{ searchResult.end|localizeddate('medium', 'none', 'ru', null, format) }}
                 </td>
+                <td class="text-center">
+                    {{ searchResult.nights }}
+                </td>
                 <td>
                     {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}
                 </td>
@@ -104,9 +134,8 @@
             </tbody>
         </table>
         <div class="btmactions">
-                {#<a href="#" class="pull-right" style="margin-top: 10px" title="Купить Online">#}
-                <a href="#" class="btn btn-booking">Забронировать</a>
-            </a>
+            <a href="#" class="btn btn-default btn-booking-reservation disabled" title="Забронировать" >Забронировать</a>
+            <a href="#" class="btn btn-warning btn-booking" title="Купить онлайн">Купить онлайн</a>
         </div>
 
 
@@ -168,6 +197,10 @@
     });
 </script>
 <script>
+
+    //Send notification
+
+    //BuyOnline
     var RoomTypeRow = function($row) {
         this.$row = $row;
         this.$bookingButton = $row.find('.btn-booking');
@@ -301,10 +334,24 @@
             roomTypeRow.tariffRows.forEach(function(tariffRow) {
                 tariffRow.$row.on('click', function() {
                     tariffRow.selected();
+                    start_bron(this);
                 });
             })
         });
     });
+
+    var start_bron = function(row) {
+        var $button_reservation = $(row).closest("table").siblings(".btmactions").find("a.btn-booking-reservation");
+        if($button_reservation.hasClass("disabled")) {
+            $button_reservation.removeClass("disabled");
+        }
+        console.log(row);
+        var href = $(row).data("url");
+        href = href + '&reservation=true';
+        $button_reservation.attr("href", href )
+        console.log(href);
+
+    };
 </script>
 
 <style>

@@ -10,6 +10,10 @@
   background-color: #FFFFFF;
   padding: 15px;
 }
+#sign-page > h3,
+#sign-page .error_pay {
+  text-align: center;
+}
 #info {
   width: 100%;
   margin-bottom: 15px;
@@ -173,4 +177,11 @@ div.submit .disabled {
 .g-recaptcha {
   width: 285px;
   margin: 0 auto;
+}
+.error_pay {
+  margin: 10px 30px;
+}
+.numtype {
+  font-weight: bold;
+  color: #10a3ed;
 }

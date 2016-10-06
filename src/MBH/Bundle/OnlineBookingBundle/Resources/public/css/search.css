@@ -42,18 +42,46 @@
 }
 #online-booking-search .btmactions {
   float: right;
-  background-color: #bababa;
 }
 #online-booking-search .btmactions a {
+  text-transform: uppercase;
   color: white;
   font-size: 12px;
+  border-radius: 0;
 }
-#online-booking-search .btn-booking {
-  text-transform: uppercase;
+#online-booking-search .btmactions a.btn-default {
+  background-color: #8a8a8a;
 }
 #online-booking-search .more-link,
 #online-booking-search .less-link {
   padding: 5px 0 0 5px;
   float: left;
+  font-size: 12px;
+}
+#online-booking-search .numicon {
+  color: #ebb630;
+  margin-top: 8px;
+  margin-right: 10px;
+}
+#online-booking-search .roomtype {
+  color: #2196F3;
+}
+#online-booking-search .infocontainer {
+  overflow: hidden;
+}
+#online-booking-search .hotellogo {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: -65px;
+  top: 0px;
+  background-color: #ffffff;
+}
+#online-booking-search .guests i {
+  color: #ebb630;
+}
+#online-booking-search .guests i + .guestslist {
+  margin-left: 5px;
+  color: #8a8a8a;
   font-size: 12px;
 }

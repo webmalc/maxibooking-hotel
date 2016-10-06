@@ -58,15 +58,39 @@ $hotelSelect.on("change", updateSelectView);
 var $beginInput = $('#search_form_begin');
 var $endInput = $('#search_form_end');
 var $rangeInput = $('#search_form_range');
-$rangeInput.daterangepicker({
-    locale: {
-        applyLabel: 'Принять',
-        cancelLabel: 'Отмена',
-        format: 'DD.MM.YYYY'
-    },
-    autoApply: true,
-    language: "ru"
-});
+
+
+var Dates = function() {
+    var defaultDate = "01.07.2017";
+    return {
+        minDate: moment(defaultDate)
+    }
+};
+var RangePickerDefault = function() {
+    var defaultMinDate = '07.01.2016',
+        minDate = moment(defaultMinDate),
+        now = moment(),
+        startDate = moment(Math.max(minDate, now)),
+        maxDate = startDate.clone().add(1, 'year'),
+        endDate = startDate.clone().add(1, 'day');
+
+    return {
+        locale: {
+            applyLabel: 'Принять',
+            cancelLabel: 'Отмена',
+            format: 'DD.MM.YYYY'
+        },
+        autoApply: true,
+        language: "ru",
+        minDate: minDate,
+        maxDate: maxDate,
+        startDate: startDate,
+        endDate: endDate
+    };
+};
+
+var defaults = RangePickerDefault();
+$rangeInput.daterangepicker(defaults);
 
 // $("#form_begin, #form_end").datepicker({language: "ru"});
 

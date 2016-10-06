@@ -67,7 +67,7 @@ class SearchFormType extends AbstractType
                 }
             ])
             ->add('range', TextType::class, [
-                'label' => 'Даты',
+                'label' => 'Даты заезда - выезда',
                 'required' => false,
                 'mapped' => false
             ])

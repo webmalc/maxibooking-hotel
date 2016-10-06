@@ -13,3 +13,9 @@ services:
         arguments: ["@service_container"]
         tags:
             - { name: form.type }
+
+    mbh.reservation_form:
+            class: MBH\Bundle\OnlineBookingBundle\Form\ReservationType
+            arguments: ["@service_container"]
+            tags:
+                - { name: form.type }
