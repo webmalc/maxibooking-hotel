@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
+use MBH\Bundle\ClientBundle\Document\Paypal;
 use MBH\Bundle\ClientBundle\Document\Rbk;
 use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
@@ -159,6 +160,12 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $rbk->setRbkEshopId($form->get('rbkEshopId')->getData())
                         ->setRbkSecretKey($form->get('rbkSecretKey')->getData());
                     $entity->setRbk($rbk);
+                    break;
+                case 'paypal':
+                    $paypal = new Paypal();
+                    $paypal->setPaypalLogin($form->get('paypalLogin')->getData())
+                           ->setPaypalSecretKey($form->get('paypalSecretKey')->getData());
+                    $entity->setPaypal($paypal);
                     break;
                 default:
                     break;

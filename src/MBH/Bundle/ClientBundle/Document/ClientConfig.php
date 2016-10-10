@@ -78,7 +78,7 @@ class ClientConfig extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
-     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "rbk"})
+     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "paypal", "rbk"})
      */
     protected $paymentSystem;
 
@@ -113,6 +113,12 @@ class ClientConfig extends Base
     protected $rbk;
 
     /**
+     * @var PayPal
+     * @ODM\EmbedOne(targetDocument="Paypal")
+     */
+    protected $paypal;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
@@ -136,6 +142,24 @@ class ClientConfig extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isInstantSearch = true;
+
+    /**
+     * @return PayPal
+     */
+    public function getPaypal()
+    {
+        return $this->paypal;
+    }
+
+    /**
+     * @param PayPal $PayPal
+     * @return self
+     */
+    public function setPaypal(\MBH\Bundle\ClientBundle\Document\Paypal $paypal)
+    {
+        $this->paypal = $paypal;
+        return $this;
+    }
 
     /**
      * Set sendSms
@@ -304,6 +328,7 @@ class ClientConfig extends Base
     public function getPaymentSystemDoc()
     {
         $paymentSystem = $this->getPaymentSystem();
+
         if (!empty($paymentSystem) && !empty($this->$paymentSystem)) {
             return $this->$paymentSystem;
         }
@@ -319,6 +344,7 @@ class ClientConfig extends Base
     public function getFormData(CashDocument $cashDocument, $url = null)
     {
         $doc = $this->getPaymentSystemDoc();
+
         if (!$doc || $cashDocument->getOperation() != 'in' || $cashDocument->getMethod() != 'electronic' || $cashDocument->getIsPaid()) {
             return [];
         }
