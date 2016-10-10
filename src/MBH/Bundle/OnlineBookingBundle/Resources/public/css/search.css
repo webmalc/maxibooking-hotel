@@ -8,8 +8,12 @@
   padding: 0 5px 0 10px;
 }
 #online-booking-search .oblimg {
-  width: 275px;
-  height: 270px;
+  width: auto;
+  height: auto;
+}
+#online-booking-search .miniimages {
+  margin: 0;
+  padding: 0;
 }
 #online-booking-search .oldprice {
   color: #90b738;
