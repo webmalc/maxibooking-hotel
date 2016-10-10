@@ -428,9 +428,9 @@ class Search implements SearchInterface
      * @param Tariff $tariff
      * @return bool|SearchResult
      */
-    public function setVirtualRoom(SearchResult $result, Tariff $tariff)
+    public function setVirtualRoom($result, Tariff $tariff)
     {
-        
+
         if ($result->getBegin() <= new \DateTime('midnight')) {
             return true;
         }
@@ -442,8 +442,9 @@ class Search implements SearchInterface
         $begin = clone $result->getBegin();
         $end = clone $result->getEnd();
         $preferredRoom = null;
+        $emptyRoom = null;
         $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')->
-            findOneByDate($begin, $roomType, $tariff, $this->memcached)
+        findOneByDate($begin, $roomType, $tariff, $this->memcached)
         ;
 
         if ($restriction && $restriction->getMinStayArrival()) {
@@ -462,7 +463,6 @@ class Search implements SearchInterface
 
         foreach ($this->dm->getRepository('MBHHotelBundle:Room')->fetch(null, [$result->getRoomType()->getId()]) as $room) {
 
-
             if (isset($groupedPackages[$room->getId()])) {
                 foreach ($groupedPackages[$room->getId()] as $package) {
 
@@ -471,10 +471,9 @@ class Search implements SearchInterface
                     } elseif ($package->getBegin() == $end || $package->getEnd() == $begin) {
                         $preferredRoom = $room;
                     } else {
-                        $preferredRoom = $preferredRoom == $room ? null : $preferredRoom;
+                        $preferredRoom = null;
                         break;
                     }
-
                 }
 
                 if ($preferredRoom) {
@@ -484,13 +483,13 @@ class Search implements SearchInterface
                 }
 
             } else {
-                $preferredRoom = $room;
+                $emptyRoom = $room;
             }
 
         }
 
-        if ($preferredRoom) {
-            $result->setVirtualRoom($preferredRoom);
+        if ($emptyRoom) {
+            $result->setVirtualRoom($emptyRoom);
 
             return $result;
         }
