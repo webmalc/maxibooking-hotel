@@ -77,6 +77,12 @@ class SearchQuery
     public $roomTypes = [];
 
     /**
+     *
+     * @var array
+     */
+    public $hotels = [];
+
+    /**
      * @var boolean
      */
     public $forceRoomTypes = false;
@@ -115,6 +121,11 @@ class SearchQuery
      * @var mixed
      */
     public $tariff;
+
+    /**
+     * @var int
+     */
+    public $nights;
 
     /**
      * Additional days for search

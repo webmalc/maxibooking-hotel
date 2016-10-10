@@ -1,0 +1,8 @@
+api.search.form.begin: 'Arrival date'
+api.search.form.end: 'Departure date'
+api.search.form.hotel: Hotel
+api.search.form.submit: Search
+api.search.form.roomtype: 'Room type'
+api.search.form.nights: Duration
+api.search.form.adults: Adults
+api.search.form.children: Children

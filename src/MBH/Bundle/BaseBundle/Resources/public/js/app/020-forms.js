@@ -43,6 +43,25 @@ mbh.datarangepicker = {
     }
 };
 
+mbh.codeMirror = function (id, type) {
+    var textarea = document.getElementById(id);
+    var type  = type == undefined ? 'xml' : type;
+    if (textarea) {
+        CodeMirror.fromTextArea(textarea, {
+            lineNumbers: true,
+            mode: type,
+            extraKeys: {
+                "F11": function(cm) {
+                    cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                },
+                "Esc": function(cm) {
+                    if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+                }
+            }
+        });
+    }
+}
+
 var createDate = function (input) {
     'use strict';
     var parts = input.val().split(".");

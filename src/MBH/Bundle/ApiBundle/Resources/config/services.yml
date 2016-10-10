@@ -1,0 +1,11 @@
+services:
+    mbh.api.language_listener:
+        class: MBH\Bundle\ApiBundle\EventListener\Language
+        arguments: ["@doctrine_mongodb", "@translator"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
+    mbh_api_search_type:
+        class: MBH\Bundle\ApiBundle\Form\SearchType
+        arguments: ["@mbh.helper", "@mbh.hotel.room_type_manager"]
+        tags: [{ name: form.type }]

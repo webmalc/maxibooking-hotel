@@ -9,20 +9,7 @@
     <script src="{{ asset('assets/vendor/codemirror/mode/xml/xml.js') }}"></script>
     <script src="{{ asset('assets/vendor/codemirror/addon/display/fullscreen.js') }}"></script>
     <script>
-        if (document.getElementById('mbh_client_document_template_content')) {
-            CodeMirror.fromTextArea(document.getElementById('mbh_client_document_template_content'), {
-                lineNumbers: true,
-                mode: 'xml',
-                extraKeys: {
-                    "F11": function(cm) {
-                        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-                    },
-                    "Esc": function(cm) {
-                        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-                    }
-                }
-            });
-        }
+        mbh.codeMirror('mbh_client_document_template_content');
     </script>
 {% endblock %}
 
@@ -30,11 +17,4 @@
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('assets/vendor/codemirror/lib/codemirror.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/codemirror/addon/display/fullscreen.css') }}">
-    <style>
-        .CodeMirror-fullscreen {
-            top: 60px;
-            left: 60px;
-            bottom: 60px;
-        }
-    </style>
 {% endblock %}

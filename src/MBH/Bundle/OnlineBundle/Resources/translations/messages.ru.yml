@@ -10,6 +10,7 @@ form.formType.should_we_use_room_type_field_in_online_form: Использова
 form.formType.are_there_guests: Гости?
 form.formType.should_we_use_guests_amount_field_in_online_form: Использовать ли поле "Количестов гостей" в онлайн форме?
 form.formType.should_we_use_nights_field: Поле "ночи"?
+form.formType.language: Язык
 form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: Использовать ли поле дату заезда и количестов ночей или дату заезда/выезда?
 form.formType.payment: Оплата
 form.formType.payment_type: Типы оплаты

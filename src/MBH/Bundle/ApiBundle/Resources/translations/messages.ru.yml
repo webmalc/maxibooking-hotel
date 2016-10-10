@@ -1,0 +1,8 @@
+api.search.form.begin: 'Дата заезда'
+api.search.form.end: 'Дата выезда'
+api.search.form.hotel: Отель
+api.search.form.submit: Найти
+api.search.form.roomtype: 'Тип номера'
+api.search.form.nights: 'Количество дней'
+api.search.form.adults: Взрослых
+api.search.form.children: Детей

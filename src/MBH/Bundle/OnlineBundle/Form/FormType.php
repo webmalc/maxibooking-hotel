@@ -3,9 +3,12 @@
 namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use MBH\Bundle\BaseBundle\Form\LanguageType;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -23,7 +26,7 @@ class FormType extends AbstractType
                     'label' => 'form.formType.hotels',
                     'class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
                     'group' => 'form.formType.parameters',
-                    'required' => false,
+                    'required' => true,
                     'multiple' => true,
                     'attr' => ['placeholder' => 'form.formType.hotels_placeholder'],
                     'help' => 'form.formType.hotels_desc'
@@ -74,13 +77,12 @@ class FormType extends AbstractType
                 ]
             )
             ->add(
-                'css',
-                TextType::class,
+                'language',
+                LanguageType::class,
                 [
-                    'label' => 'form.formType.css',
                     'group' => 'form.formType.parameters',
-                    'required' => false,
-                    'help' => 'form.formType.css_help'
+                    'label' => 'form.formType.language',
+                    'required' => true,
                 ]
             )
             ->add(
@@ -93,7 +95,29 @@ class FormType extends AbstractType
                     'multiple' => true,
                     'help' => 'form.formType.reservation_payment_types_with_online_form'
                 ]
-            );
+            )
+            ->add(
+                'css',
+                ChoiceType::class,
+                [
+                    'label' => 'form.formType.css',
+                    'group' => 'form.formType.design',
+                    'required' => true,
+                    'choices' => FormConfig::getCssList(),
+                    'help' => 'form.formType.css_help'
+                ]
+            )
+            ->add(
+                'style',
+                TextareaType::class,
+                [
+                    'label' => 'form.formType.style',
+                    'group' => 'form.formType.design',
+                    'required' => false,
+                    'help' => 'form.formType.style_help'
+                ]
+            )
+            ;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

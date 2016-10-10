@@ -21,7 +21,25 @@ class FormConfig extends Base
         "in_hotel", "online_full", "online_first_day", "online_half"
     ];
 
-    const CSS = 'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/paper/bootstrap.min.css';
+    const CSS = [
+        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' => 'bootstrap',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css' => 'cerulean',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css' => 'cosmo',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cyborg/bootstrap.min.css' => 'cyborg',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/darkly/bootstrap.min.css' => 'darkly',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css' => 'flatly',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/journal/bootstrap.min.css' => 'journal',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/lumen/bootstrap.min.css' => 'lumen',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/paper/bootstrap.min.css' => 'paper',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css' =>  'readable',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/sandstone/bootstrap.min.css' => 'sandstone',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/simplex/bootstrap.min.css' => 'simplex',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/slate/bootstrap.min.css' => 'slate',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/spacelab/bootstrap.min.css' => 'spacelab',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/superhero/bootstrap.min.css' => 'superhero',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/united/bootstrap.min.css' => 'united',
+        'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css' => 'yeti',
+    ];
 
     /**
      * Hook timestampable behavior
@@ -44,6 +62,7 @@ class FormConfig extends Base
     /**
      * @var array
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
+     * @Assert\NotNull()
      */
     protected $hotels;
 
@@ -96,8 +115,25 @@ class FormConfig extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     * @Assert\Choice(callback = "getCssListKeys")
      */
     protected $css;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
+    protected $style;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     */
+    protected $language;
 
     public function __construct()
     {
@@ -264,13 +300,54 @@ class FormConfig extends Base
         return $this;
     }
 
+
     /**
      * @return string
      */
-    public function getCssURL(): string
+    public function getStyle()
     {
-        return $this->css?: self::CSS;
+        return $this->style;
     }
 
+    /**
+     * @param string $style
+     * @return FormConfig
+     */
+    public function setStyle($style): FormConfig
+    {
+        $this->style = $style;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    /**
+     * @param string $language
+     * @return FormConfig
+     */
+    public function setLanguage(string $language): FormConfig
+    {
+        $this->language = $language;
+        return $this;
+    }
+
+
+
+    public static function getCssList(): array
+    {
+        return self::CSS;
+    }
+
+    public static function getCssListKeys(): array
+    {
+        return array_keys(self::CSS);
+    }
 
 }
