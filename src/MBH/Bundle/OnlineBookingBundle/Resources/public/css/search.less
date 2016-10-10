@@ -1,7 +1,6 @@
 #online-booking-search {
   .rublesize {
-    font-size: 16px;
-    color: #90b738;
+    font-size: 19px;
   }
   .logo {
     padding: 0;
@@ -14,10 +13,11 @@
     height: 270px;
   }
   .oldprice {
-    span {
-      text-decoration: none;
-    }
-
+    color: #90b738;
+    text-decoration: line-through;
+  }
+  .newprice {
+    color: red;
   }
   .title {
 
@@ -77,6 +77,7 @@
   }
 
   .roomtype {
+    text-transform: capitalize;
     color: #2196F3;
   }
   .infocontainer {
@@ -104,6 +105,7 @@
   //  margin-left: 10px;
   //}
   .guests {
+    .roomtype;
     i {
       color: #ebb630;
       & + .guestslist {

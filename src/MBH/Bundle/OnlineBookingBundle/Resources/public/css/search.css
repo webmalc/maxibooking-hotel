@@ -1,6 +1,5 @@
 #online-booking-search .rublesize {
-  font-size: 16px;
-  color: #90b738;
+  font-size: 19px;
 }
 #online-booking-search .logo {
   padding: 0;
@@ -12,8 +11,12 @@
   width: 275px;
   height: 270px;
 }
-#online-booking-search .oldprice span {
-  text-decoration: none;
+#online-booking-search .oldprice {
+  color: #90b738;
+  text-decoration: line-through;
+}
+#online-booking-search .newprice {
+  color: red;
 }
 #online-booking-search .title .round {
   background-color: #8a8a8a;
@@ -64,6 +67,7 @@
   margin-right: 10px;
 }
 #online-booking-search .roomtype {
+  text-transform: capitalize;
   color: #2196F3;
 }
 #online-booking-search .infocontainer {
@@ -76,6 +80,10 @@
   left: -65px;
   top: 0px;
   background-color: #ffffff;
+}
+#online-booking-search .guests {
+  text-transform: capitalize;
+  color: #2196F3;
 }
 #online-booking-search .guests i {
   color: #ebb630;

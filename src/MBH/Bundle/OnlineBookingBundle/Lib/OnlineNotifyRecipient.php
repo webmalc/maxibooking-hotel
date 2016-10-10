@@ -11,11 +11,11 @@ namespace MBH\Bundle\OnlineBookingBundle\Lib;
 
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 
-class ManagerRecipient implements RecipientInterface
+class OnlineNotifyRecipient implements RecipientInterface
 {
     private $email = 'noreply@maxibooking.ru';
 
-    private $name = 'Manager';
+    private $name;
 
     private $language = 'ru';
 
@@ -29,10 +29,13 @@ class ManagerRecipient implements RecipientInterface
 
     /**
      * @param mixed $email
+     * @return $this
      */
     public function setEmail($email)
     {
         $this->email = $email;
+
+        return $this;
     }
 
     /**
@@ -45,10 +48,13 @@ class ManagerRecipient implements RecipientInterface
 
     /**
      * @param mixed $name
+     * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -61,10 +67,13 @@ class ManagerRecipient implements RecipientInterface
 
     /**
      * @param mixed $language
+     * @return $this
      */
     public function setLanguage($language)
     {
         $this->language = $language;
+
+        return $this;
     }
 
     /**

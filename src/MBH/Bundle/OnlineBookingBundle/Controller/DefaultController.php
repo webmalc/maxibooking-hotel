@@ -8,7 +8,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Form\ReservationType;
 use MBH\Bundle\OnlineBookingBundle\Form\SearchFormType;
 use MBH\Bundle\OnlineBookingBundle\Form\SignType;
-use MBH\Bundle\OnlineBookingBundle\Lib\ManagerRecipient;
+use MBH\Bundle\OnlineBookingBundle\Lib\OnlineNotifyRecipient;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -198,6 +198,7 @@ class DefaultController extends BaseController
                 'confirmed' => false
             ];
             if ($reservation) {
+                $data['total'] = $formData['total']??0;
                 $this->reserveNotification($data);
                 return $this->render('@MBHOnlineBooking/Default/reservation-success.html.twig');
             }
@@ -372,37 +373,56 @@ class DefaultController extends BaseController
 
     private function reserveNotification($data)
     {
-//        dump($data);exit;
         $notifier = $this->container->get('mbh.notifier');
         $message = $notifier::createMessage();
-
         $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(['id'=>$data['packages'][0]['roomType']]);
         $hotel = $roomType->getHotel();
         $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['id' => $data['packages'][0]['tariff']]);
-        $recipient = new ManagerRecipient();
+        $recipient = new OnlineNotifyRecipient();
         $recipient->setEmail($this->container->getParameter('online_reservation_manager_email'));
+//        dump($data);exit;
         $message
             ->setRecipients([$recipient])
+            ->setSubject('mailer.online.backend.reservation.subject')
             ->setText('mailer.online.backend.reservation.text')
             ->setFrom('online_form')
-            ->setSubject('mailer.online.backend.reservation.subject')
             ->setType('info')
             ->setCategory('notification')
             ->setAdditionalData([
                 'roomType' => $roomType,
-                'tariff' => $tariff
-//                'arrivalTime' => $data,
-//                'departureTime' => $departure,
+                'tariff' => $tariff,
+                'begin' => $data['packages'][0]['begin'],
+                'end' => $data['packages'][0]['end'],
+                'client' => $data['tourist'],
+                'total' => $data['total'],
+                'package' => $data['packages'][0],
+
             ])
             ->setHotel($hotel)
-            ->setTemplate('MBHBaseBundle:Mailer:reservation.html.twig')
+            ->setTemplate('MBHOnlineBookingBundle:Mailer:reservation.html.twig')
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'));
+
         $notifier
             ->setMessage($message)
             ->notify();
-        exit;
 
+        if ($data['tourist']['email']) {
+            $tourist = $data['tourist'];
+            $notifier = $this->container->get('mbh.notifier.mailer');
+            $recipient = new OnlineNotifyRecipient();
+            $recipient
+                ->setName($tourist['firstName'] . ' ' . $tourist['lastName'])
+                ->setEmail($tourist['email']);
+            $message
+                ->setRecipients([$recipient])
+                ->setSubject('mailer.online.backend.reservation.client.subject')
+                ->setText('mailer.online.backend.reservation.client.text')
+                ->setTemplate('MBHOnlineBookingBundle:Mailer:reservation.client.html.twig');
+            $notifier
+                ->setMessage($message)
+                ->notify();
+        }
     }
 
 //

@@ -55,17 +55,19 @@
             </div>
             <div class="col-md-7 col-sm-6 col-xs-12 prices">
                 <div class="guests pull-left">
-                <i class="fa fa-users"></i> Гости
+                <i class="fa fa-users"></i> Гости <br/>
                 {% if result.results|first.adults is defined %}
                     <span class="guestslist">{{ result.results|first.adults }} {{ result.results|first.infants?'+ '~result.results|first.infants }}</span>
                 {% endif %}
                 </div>
-                {#<div class="col-md-7 col-sm-7 col-xs-7 newprice">забронируй сейчас<br><span>&#8381;56 344</span></div>#}
+
                 {% set searchResult = result.results|first %}
-                <div class="oldprice pull-right">
-                    <div>СТОИМОСТЬ</div>
-                    <span>{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}</span>
-                    <i class="fa fa-ruble rublesize"></i>
+                <div class=" pull-right">
+                    <div style="text-align: left;">СТОИМОСТЬ</div>
+                    <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}<i class="fa fa-ruble rublesize"></i></span>
+                    &nbsp;
+                    <span class="oldprice">{{ result.results|last.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}<i class="fa fa-ruble rublesize"></i></span>
+
                 </div>
             </div>
             <div class="row">
@@ -134,7 +136,7 @@
             </tbody>
         </table>
         <div class="btmactions">
-            <a href="#" class="btn btn-default btn-booking-reservation disabled" title="Забронировать" >Забронировать</a>
+            <a href="#" class="btn btn-default btn-booking-reservation disabled" title="Отправить заявку" >Отправить заявку</a>
             <a href="#" class="btn btn-warning btn-booking" title="Купить онлайн">Купить онлайн</a>
         </div>
 

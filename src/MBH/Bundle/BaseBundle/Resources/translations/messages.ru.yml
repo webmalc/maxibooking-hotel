@@ -50,6 +50,8 @@ mailer.online.backend.signature: "С уважением,<br>Отдел брон�
 
 mailer.online.backend.reservation.subject: "Поступила новая заявка для обработки"
 mailer.online.backend.reservation.text: "Поступила новая заявка для обработки"
+mailer.online.backend.reservation.client.subject: "Заявка на бронь"
+mailer.online.backend.reservation.client.text: "Спасибо за ваше обращение"
 
 
 
