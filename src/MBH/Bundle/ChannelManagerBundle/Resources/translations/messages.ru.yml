@@ -62,6 +62,7 @@ services.hundredOneHotels.invalid_tariff_id: 'ОШИБКА: тип размещ�
 services.hundredOneHotels.nor_one_room_type: 'В данном отеле не существует ни одного типа номера'
 services.hundredOneHotels.nor_one_tariff: 'В данном отеле не существует ни одного тарифа'
 controller.hundredOneHotelsController.settings_saved_success: 'Настройки успешно сохранены.'
+services.hundredOneHotels.cash_document_not_paid: 'Безналичный платеж не подтвержден'
 
 #myAllocator
 form.myallocatorType.username: Логин

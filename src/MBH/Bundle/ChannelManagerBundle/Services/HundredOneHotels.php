@@ -50,7 +50,8 @@ class HundredOneHotels extends Base
         // iterate hotels
         foreach ($this->getConfig() as $config) {
 
-            $requestFormatter = new HOHRequestFormatter($config);
+            /** @var HOHRequestFormatter $requestFormatter */
+            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config);
 
             /** @var HundredOneHotelsConfig $config */
             //$roomTypes array[roomTypeId => [roomId('syncId'), roomType('doc')]]
@@ -74,7 +75,7 @@ class HundredOneHotels extends Base
                         $currentDateRoomCache = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
                         $roomQuotaForCurrentDate = $currentDateRoomCache->getLeftRooms() > 0 ? $currentDateRoomCache->getLeftRooms() : 0;
                     }
-                    $requestFormatter->addSingleParamCondition($day, HOHRequestFormatter::QUOTA, $roomTypeInfo['syncId'], $roomQuotaForCurrentDate);
+                    $requestFormatter->addSingleParamCondition($day, $requestFormatter::QUOTA, $roomTypeInfo['syncId'], $roomQuotaForCurrentDate);
                 }
             }
 
@@ -146,7 +147,7 @@ class HundredOneHotels extends Base
                         } else {
                             $currentDatePrice = 0;
                         }
-                        $requestFormatter->addDoubleParamCondition($day, HOHRequestFormatter::PRICES, $roomTypeInfo['syncId'], $tariff['syncId'], $currentDatePrice);
+                        $requestFormatter->addDoubleParamCondition($day, $requestFormatter::PRICES, $roomTypeInfo['syncId'], $tariff['syncId'], $currentDatePrice);
                     }
                 }
             }
@@ -183,7 +184,8 @@ class HundredOneHotels extends Base
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
-            $requestFormatter = new HOHRequestFormatter($config);
+            /** @var HOHRequestFormatter $requestFormatter */
+            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config);
             /** @var HundredOneHotelsConfig $config */
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config);
@@ -229,24 +231,24 @@ class HundredOneHotels extends Base
                             $maxiBookingRestrictionObject = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
 
                             $requestFormatter->addSingleParamCondition($day,
-                                HOHRequestFormatter::CLOSED,
+                                $requestFormatter::CLOSED,
                                 $roomTypeInfo['syncId'],
                                 $maxiBookingRestrictionObject->getClosed() || !$price ? 1 : 0);
 
                             $requestFormatter->addDoubleParamCondition($day,
-                                HOHRequestFormatter::CLOSED_TO_ARRIVAL,
+                                $requestFormatter::CLOSED_TO_ARRIVAL,
                                 $roomTypeInfo['syncId'],
                                 $tariff['syncId'],
                                 $maxiBookingRestrictionObject->getClosedOnArrival() ? 1 : 0);
 
                             $requestFormatter->addDoubleParamCondition($day,
-                                HOHRequestFormatter::CLOSED_TO_DEPARTURE,
+                                $requestFormatter::CLOSED_TO_DEPARTURE,
                                 $roomTypeInfo['syncId'],
                                 $tariff['syncId'],
                                 $maxiBookingRestrictionObject->getClosedOnDeparture() ? 1 : 0);
 
                             $requestFormatter->addDoubleParamCondition($day,
-                                HOHRequestFormatter::MIN_STAY,
+                                $requestFormatter::MIN_STAY,
                                 $roomTypeInfo['syncId'],
                                 $tariff['syncId'],
                                 (int)$maxiBookingRestrictionObject->getMinStay());
@@ -291,8 +293,9 @@ class HundredOneHotels extends Base
         $result = true;
 
         foreach ($this->getConfig() as $config) {
-
-            $requestFormatter = new HOHRequestFormatter($config, 'get_bookings');
+            /** @var HOHRequestFormatter $requestFormatter */
+            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')
+                ->setInitData($config, 'get_bookings');
             $startTime = new \DateTime('- 1 day');
             $endTime = new \DateTime();
             $requestFormatter->addDateCondition($startTime, $endTime);
@@ -301,13 +304,16 @@ class HundredOneHotels extends Base
             $serviceOrders = $this->send(static::BASE_URL, $request, null, true, true);
             //$this->log('Reservations: ' . $serviceOrders);
             $serviceOrders = json_decode($serviceOrders, true);
+
             $this->log('Reservations count: ' . count($serviceOrders['data']));
 
             $tariffs = $this->getTariffs($config, true);
             $roomTypes = $this->getRoomTypes($config, true);
 
             foreach ($serviceOrders['data'] as $serviceOrder) {
-                $orderInfo = new OrderInfo($serviceOrder, $config, $tariffs, $roomTypes, $this->dm, $this->container);
+                /** @var OrderInfo $orderInfo */
+                $orderInfo = $this->container->get('mbh.channelmanager.hoh_order_info')
+                    ->setInitData($serviceOrder, $config, $tariffs, $roomTypes);
 
                 if ($orderInfo->getLastAction() == 'modified') {
                     if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
@@ -399,20 +405,29 @@ class HundredOneHotels extends Base
         $this->dm->persist($order);
         $this->dm->flush();
 
+        /**
+         * Тип платежа
+         * 1 – наличными при заселении
+         * 2 – безналичная форма расчета
+         * 3 – картой при заселении
+         * 4 – картой на сайте при бронировании (предоплата)
+         * 5 – картой на сайте после бронирования (постоплата)
+         */
         if ($orderInfo->getPayType() == 4 || $orderInfo->getPayType() == 5 || $orderInfo->getPayType() == 2) {
-            $fee = new CashDocument();
-            $fee->setIsConfirmed(false)
+            $cashDoc = new CashDocument();
+            $cashDoc->setIsConfirmed(false)
                 ->setIsPaid(true)
                 ->setMethod('electronic')
-                ->setOperation('fee')
+                ->setOperation('in')
                 ->setOrder($order)
+                ->setDocumentDate(new \DateTime())
                 ->setTouristPayer($orderInfo->getPayer())
                 ->setTotal($orderInfo->getOrderPrice());
             if ($orderInfo->getPayType() == 2) {
-                $fee->setIsPaid(false)
-                ->setMethod('cashless');
+                $cashDoc->setIsPaid(false)->setMethod('cashless');
+                $order->setNote($this->container->get('translator')->trans('services.hundredOneHotels.cash_document_not_paid'));
             }
-            $this->dm->persist($fee);
+            $this->dm->persist($cashDoc);
             $this->dm->flush();
         }
 
@@ -453,9 +468,9 @@ class HundredOneHotels extends Base
             ->setNote($packageInfo->getErrorMessage())
             ->setOrder($order)
             ->setCorrupted($packageInfo->getIsCorrupted());
-        foreach ($packageInfo->getTourists() as $tourist)
+        foreach ($packageInfo->getTourists() as $touristInfo)
         {
-            $package->addTourist($tourist);
+            $package->addTourist($touristInfo);
         }
         return $package;
     }
@@ -467,7 +482,8 @@ class HundredOneHotels extends Base
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
-        $requestFormatter = new HOHRequestFormatter($config, 'get_hotel');
+        /** @var HOHRequestFormatter $requestFormatter */
+        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config, 'get_hotel');
         $request = $requestFormatter->getRequest();
         $jsonResponse = $this->send(static::BASE_URL, $request, null, true);
         $response = json_decode($jsonResponse, true);
@@ -487,7 +503,8 @@ class HundredOneHotels extends Base
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
-        $requestFormatter = new HOHRequestFormatter($config, 'get_hotel');
+        /** @var HOHRequestFormatter $requestFormatter */
+        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config, 'get_hotel');
         $request = $requestFormatter->getRequest();
 
         $result = [];
@@ -529,7 +546,9 @@ class HundredOneHotels extends Base
      */
     public function sendTestRequestAndGetErrorMessage(HundredOneHotelsConfig $config)
     {
-        $requestFormatter = new HOHRequestFormatter($config, 'get_hotel');
+        /** @var HOHRequestFormatter $requestFormatter */
+        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')
+            ->setInitData($config, 'get_hotel');
         $request = $requestFormatter->getRequest();
         $response = $this->send(self::BASE_URL, $request, null, true);
         $response = json_decode($response, true);
@@ -556,7 +575,8 @@ class HundredOneHotels extends Base
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
         $config = $this->getConfig()[0];
-        $requestFormatter = new HOHRequestFormatter($config);
+        /** @var HOHRequestFormatter $requestFormatter */
+        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config);
         $firstDate = new \DateTime();
         $endDate = new \DateTime('+5 year');
         $roomTypes = $this->getRoomTypes($config);

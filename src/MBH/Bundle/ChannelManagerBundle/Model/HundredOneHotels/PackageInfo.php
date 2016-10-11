@@ -30,17 +30,22 @@ class PackageInfo
     private $isTotalPriceInit;
     private $totalPrice = 0;
 
-    public function __construct($roomTypeInfo, $guests, $config, $tariffs, $roomTypes, DocumentManager $dm, ContainerInterface $container)
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+        $this->dm = $container->get('doctrine_mongodb')->getManager();
+    }
+
+    public function setInitData($roomTypeInfo, $guests, $config, $tariffs, $roomTypes)
     {
         $this->roomTypeInfo = $roomTypeInfo;
         $this->guests = $guests;
         $this->tariffs = $tariffs;
         $this->roomTypes = $roomTypes;
-        $this->dm = $dm;
         $this->config = $config;
-        $this->container = $container;
         //Данные о размещении одинаковы для всех элементов массива, представляющего данные о размещениях по дням
         $this->packageCommonData = $roomTypeInfo[0];
+        return $this;
     }
 
     public function getRoomType()

@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Doctrine\ODM\MongoDB\DocumentManager;
 
 class OrderInfo
 {
@@ -14,14 +13,19 @@ class OrderInfo
     private $container;
     private $config;
 
-    public function __construct($bookingInfoArray, $config, $tariffs, $roomTypes, DocumentManager $dm, ContainerInterface $container)
+    public function __construct(ContainerInterface $container)
     {
+        $this->container = $container;
+        $this->dm = $container->get('doctrine_mongodb')->getManager();
+    }
+
+    public function setInitData($bookingInfoArray, $config, $tariffs, $roomTypes)
+    {
+        $this->config = $config;
         $this->orderData = $bookingInfoArray;
         $this->tariffs = $tariffs;
         $this->roomTypes = $roomTypes;
-        $this->dm = $dm;
-        $this->container = $container;
-        $this->config = $config;
+        return $this;
     }
 
     public function getContactLastname()
@@ -96,13 +100,8 @@ class OrderInfo
                 $placementId = $roomType[0]['placement_id'];
                 $guestArrayOffset = $i * $occupantsCount;
                 $currentPackageGuests = array_slice($guests[$placementId], $guestArrayOffset,  $occupantsCount);
-                $packages[] = new PackageInfo($roomType,
-                    $currentPackageGuests,
-                    $this->config,
-                    $this->tariffs,
-                    $this->roomTypes,
-                    $this->dm,
-                    $this->container);
+                $packages[] = $this->container->get('mbh.channelmanager.hoh_package_info')
+                    ->setInitData($roomType, $currentPackageGuests, $this->config, $this->tariffs, $this->roomTypes);
             }
         }
         return $packages;
