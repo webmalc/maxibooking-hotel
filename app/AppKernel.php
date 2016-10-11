@@ -32,6 +32,7 @@ class AppKernel extends Kernel
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
             new Ornicar\GravatarBundle\OrnicarGravatarBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle(),
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),

@@ -238,3 +238,8 @@ ornicar_gravatar:
 parameters:
     knp_menu.renderer.twig.options:
         currentClass: active
+
+#
+bazinga_js_translation:
+    default_domain: messages
+    locale_fallback: ru

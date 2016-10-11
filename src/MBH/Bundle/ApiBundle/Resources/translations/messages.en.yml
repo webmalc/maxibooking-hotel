@@ -6,3 +6,5 @@ api.search.form.roomtype: 'Room type'
 api.search.form.nights: Duration
 api.search.form.adults: Adults
 api.search.form.children: Children
+api.search.form.all_hotels: 'All hotels'
+api.search.form.all_rooms: 'All room types'

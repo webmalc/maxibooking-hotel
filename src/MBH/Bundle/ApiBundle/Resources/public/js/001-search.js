@@ -1,7 +1,20 @@
-/*global window, $, document, selectpicker */
+/*global window, $, document, selectpicker, Translator */
 $(document).ready(function () {
     'use strict';
-    $('.mbh-search-form select').selectpicker();
+    $('.mbh-search-form select:not(.manual)').selectpicker({});
+
+    //hotels & roomTypes
+    (function () {
+        var hotels = $('#mbh_api_search_type_hotels'),
+            roomTypes = $('#mbh_api_search_type_roomTypes');
+
+        hotels.selectpicker({
+            noneSelectedText: Translator.trans('api.search.form.all_hotels')
+        });
+        roomTypes.selectpicker({
+            noneSelectedText: Translator.trans('api.search.form.all_rooms')
+        });
+    }());
 
     //begin and end dates
     (function () {

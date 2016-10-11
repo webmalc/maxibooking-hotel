@@ -85,7 +85,7 @@ class SearchType extends AbstractType
                 'empty_data' => count($hotels) > 1 ? [] : $hotels,
                 'multiple' => true,
                 'property' => 'fullTitle',
-                'attr' => ['class' => count($hotels) == 1 ? 'hide' : ''],
+                'attr' => ['class' => count($hotels) == 1 ? 'hide manual' : 'manual'],
                 'label_attr' => ['class' => count($hotels) == 1 ? 'hide' : ''],
             ]);
 
@@ -103,7 +103,8 @@ class SearchType extends AbstractType
                     },
                     'empty_data' => count($hotels) > 1 ? [] : $hotels,
                     'property' => 'fullTitle',
-                    'multiple' => true
+                    'multiple' => true,
+                    'attr' => ['class' => 'manual'],
             ]);
 
         }
