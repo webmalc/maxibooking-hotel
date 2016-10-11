@@ -380,7 +380,6 @@ class DefaultController extends BaseController
         $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['id' => $data['packages'][0]['tariff']]);
         $recipient = new OnlineNotifyRecipient();
         $recipient->setEmail($this->container->getParameter('online_reservation_manager_email'));
-//        dump($data);exit;
         $message
             ->setRecipients([$recipient])
             ->setSubject('mailer.online.backend.reservation.subject')

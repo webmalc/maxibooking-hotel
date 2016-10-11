@@ -19,18 +19,16 @@
         {% endif %}
         <div class="row">
             {% if result.results|first.roomType.images is not empty %}
+                <div class="col-md-12 miniimages">
                 {% for image in result.results|first.roomType.images %}
-                    <div class="col-md-12 miniimages">
+
                         {% if not image.ismain %}
-                            {% for i in range (1,10) %}
-                        <a href="{{ asset(image.path, null, true) }}" class="fancybox" rel="cat{{ loop.index }}">
+                        <a href="{{ asset(image.path, null, true) }}" class="fancybox" rel="cat{{ loop.parent.loop.index }}">
                             <img src="{{ asset(image.path|imagine_filter('thumb_40x40')) }}" alt="{{ result.results|first.roomType.name }}">
                         </a>
-                            {% endfor %}
-
                         {% endif %}
-                    </div>
                 {% endfor %}
+                </div>
             {% endif %}
 
         </div>
