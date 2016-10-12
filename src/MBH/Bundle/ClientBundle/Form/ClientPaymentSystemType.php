@@ -200,7 +200,7 @@ class ClientPaymentSystemType extends AbstractType
                 'paypalLogin',
                 'text',
                 [
-                    'label' => 'Логин',
+                    'label' => 'form.clientPaymentSystemType.payment_system_paypal_login',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params paypal'],
                     'group' => 'form.clientPaymentSystemType.payment_system_group',

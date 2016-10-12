@@ -30,7 +30,7 @@ class Paypal implements PaymentSystemInterface
         $createdAt->modify('+30 minutes');
 
         return [
-            'action' => 'https://www.sandbox.paypal.com/cgi-bin/websc',
+            'action' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
             'testAction' => 'https://www.sandbox.paypal.com/cgi-bin/websc',
             'shopId' => $this->getPaypalLogin(),
             'total' => $cashDocument->getTotal(),
@@ -62,19 +62,21 @@ class Paypal implements PaymentSystemInterface
     {
         $cashDocumentId = $request->get('item_name');
         $total = $request->get('mc_gross');
+        $commission = $request->get('mc_fee');
         $status = $request->get('address_status');
 
         $dataRequest = $request->request->all();
 
+
         $test = true;
 
         $Ipn = new PaypalIPN();
-        $statusResponse = $Ipn->checkPayment($dataRequest, true);
+        $statusResponse = $Ipn->checkPayment($dataRequest, $test);
 
         if ($statusResponse == 'VERIFIED') {
             return [
                 'doc' => $cashDocumentId,
-                //'commission' => self::COMMISSION,
+                'commission' => $commission,
                 //'commissionPercent' => true,
                 'text' => 'OK'
             ];
