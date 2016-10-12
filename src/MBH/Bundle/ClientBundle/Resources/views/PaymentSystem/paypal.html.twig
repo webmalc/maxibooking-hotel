@@ -7,9 +7,10 @@
     <input type="hidden" name="amount" value="{{ data.total|default('') }}">
     <INPUT TYPE="hidden" name="charset" value="utf-8">
     <input type="hidden" name="currency_code" value="{{  attribute(currency_code, currency) }}">
+    <input type="hidden" name="fees_payer" value="SENDER">
     <input type="hidden" name="email" value="{{  data.touristEmail|default('') }}">
     {% include 'MBHClientBundle:PaymentSystem:button.html.twig' with {'data': data} %}
-
+    {#{{  attribute(currency_code, currency) }}#}
 </form>
 
 

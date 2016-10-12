@@ -17,7 +17,7 @@ class ClientPaymentSystemType extends AbstractType
         $moneymailShopIDP = $moneymailKey = null;
         $unitellerShopIDP = $unitellerPassword = null;
         $rbkEshopId = $rbkSecretKey = null;
-        $paypalLogin = $paypalSecretKey = null;
+        $paypalLogin =  null;
         $default = $options['default'];
 
         if ($entity) {
@@ -33,7 +33,6 @@ class ClientPaymentSystemType extends AbstractType
             $rbkEshopId = $entity->getRbk() ? $entity->getRbk()->getRbkEshopId() : '';
             $rbkSecretKey = $entity->getRbk() ? $entity->getRbk()->getRbkSecretKey() : '';
             $paypalLogin = $entity->getPaypal() ? $entity->getPaypal()->getPaypalLogin() : '';
-            $paypalSecretKey = $entity->getPaypal() ? $entity->getPaypal()->getPaypalSecretKey() : '';
 
             if ($entity->getPaymentSystem()) {
                 $default = $entity->getPaymentSystem();
@@ -201,24 +200,12 @@ class ClientPaymentSystemType extends AbstractType
                 'paypalLogin',
                 'text',
                 [
-                    'label' => 'Login',
+                    'label' => 'Логин',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params paypal'],
                     'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $paypalLogin
-                ]
-            )
-            ->add(
-                'paypalSecretKey',
-                'text',
-                [
-                    'label' => 'key',
-                    'required' => false,
-                    'attr' => ['class' => 'payment-system-params paypal'],
-                    'group' => 'form.clientPaymentSystemType.payment_system_group',
-                    'mapped' => false,
-                    'data' => $paypalSecretKey
                 ]
             )
             ->add(

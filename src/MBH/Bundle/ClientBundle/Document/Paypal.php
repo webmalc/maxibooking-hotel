@@ -7,11 +7,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
-
-use Mdb\PayPal\Ipn\Event\MessageInvalidEvent;
-use Mdb\PayPal\Ipn\Event\MessageVerificationFailureEvent;
-use Mdb\PayPal\Ipn\Event\MessageVerifiedEvent;
-use Mdb\PayPal\Ipn\ListenerBuilder\Guzzle\ArrayListenerBuilder as ListenerBuilder;
+use MBH\Bundle\ClientBundle\Lib\PaypalIPN;
 
 /**
  * @ODM\EmbeddedDocument
@@ -23,12 +19,6 @@ class Paypal implements PaymentSystemInterface
      * @ODM\Field(type="string")
      */
     protected $paypalLogin;
-
-    /**
-     * @var string
-     * @ODM\Field(type="string")
-     */
-    protected $paypalSecretKey;
 
     /**
      * @inheritdoc
@@ -56,6 +46,7 @@ class Paypal implements PaymentSystemInterface
             'signature' => $this->getSignature($cashDocument, $url),
         ];
     }
+
     /**
      * @inheritdoc
      */
@@ -63,40 +54,36 @@ class Paypal implements PaymentSystemInterface
     {
 
     }
+
     /**
      * @inheritdoc
      */
     public function checkRequest(Request $request)
     {
-        $listenerBuilder = new ListenerBuilder();
+        $cashDocumentId = $request->get('item_name');
+        $total = $request->get('mc_gross');
+        $status = $request->get('address_status');
 
-        $gd = $request->request->all();
-//        dump($gd);
-        $listenerBuilder->setData($gd);
+        $dataRequest = $request->request->all();
 
-        $listenerBuilder->useSandbox();
+        $test = true;
 
-        $listener = $listenerBuilder->build();
+        $Ipn = new PaypalIPN();
+        $statusResponse = $Ipn->checkPayment($dataRequest, true);
 
-        $listener->onInvalid(function (MessageInvalidEvent $event) {
-            $ipnMessage = $event->getMessage();
-            dump($ipnMessage);
-            dump('не действительный платеж');
+        if ($statusResponse == 'VERIFIED') {
+            return [
+                'doc' => $cashDocumentId,
+                //'commission' => self::COMMISSION,
+                //'commissionPercent' => true,
+                'text' => 'OK'
+            ];
+        } elseif ($statusResponse == 'INVALID') {
+            return false;
+        } elseif ($statusResponse == 'ERROR') {
+            return false;
+        }
 
-        });
-        $listener->onVerified(function (MessageVerifiedEvent $event) {
-            $ipnMessage = $event->getMessage();
-            dump(' действительный платеж');
-        });
-        $listener->onVerificationFailure(function (MessageVerificationFailureEvent $event) {
-            $error = $event->getError();
-            dump('Ошибка');
-        });
-        $listener->listen();
-
-
-        exit();
-       return $request;
     }
 
     /**
@@ -113,23 +100,6 @@ class Paypal implements PaymentSystemInterface
     public function setPaypalLogin(string $paypalLogin)
     {
         $this->paypalLogin = $paypalLogin;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPaypalSecretKey()
-    {
-        return $this->paypalSecretKey;
-    }
-
-    /**
-     * @param string $PayPalSecretKey
-     */
-    public function setPaypalSecretKey(string $paypalSecretKey)
-    {
-        $this->paypalSecretKey = $paypalSecretKey;
         return $this;
     }
 
