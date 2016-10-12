@@ -112,8 +112,8 @@ class DocumentsRelationships
                 new Relationship(User::class, 'groups', 'exception.group_relation_delete.message.user', true)
             ],
             Order::class => [
-                new Relationship(Package::class, 'order', 'exception.order_relation_delete.message.package'),
-                new Relationship(CashDocument::class, 'order', 'exception.order_relation_delete.message.cashDocument')
+                //new Relationship(Package::class, 'order', 'exception.order_relation_delete.message.package'),
+                //new Relationship(CashDocument::class, 'order', 'exception.order_relation_delete.message.cashDocument')
             ],
             Tariff::class => [
                 //new Relationship(PriceCache::class, 'tariff', 'exception.tariff_relation_delete.message.priceCache'),
