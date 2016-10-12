@@ -1,0 +1,12 @@
+#
+# Azovsky.ru
+#
+User-Agent: *
+Disallow: /services/mb-search/
+Disallow: /mail-us/
+Disallow: /news/kazantip-fests/
+Disallow: /blog/plyazhni-tennis/
+Disallow: /azovsky/azovskiy-sport/tennisnii_turnir_osennie-kanikuly/
+Host: azovsky.ru
+
+Sitemap: http://azovsky.ru/sitemap.php
