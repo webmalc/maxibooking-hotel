@@ -40,7 +40,7 @@
                     {{ result.roomType.hotel.fullTitle }}&nbsp;
                 </div>
                 <div class="hotellogo">
-                    <img src="{{ result.roomType.hotel.logoUrl }}" alt="{{ result.roomType.hotel.name }}">
+                    <img src="{{ asset(result.roomType.hotel.logoUrl, null, true ) }}" alt="{{ result.roomType.hotel.name }}">
                 </div>
                 <div class="subtitle infocontainer">
                     <div class="pull-left">
@@ -72,9 +72,9 @@
                 <div class=" pull-right">
                     <div style="text-align: left;">СТОИМОСТЬ</div>
                     <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}<i class="fa fa-ruble rublesize"></i></span>
-                    &nbsp;
+                    {% if result.results|length > 1 %}
                     <span class="oldprice">{{ result.results|last.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}<i class="fa fa-ruble rublesize"></i></span>
-
+                    {% endif %}
                 </div>
             </div>
             <div class="row">
