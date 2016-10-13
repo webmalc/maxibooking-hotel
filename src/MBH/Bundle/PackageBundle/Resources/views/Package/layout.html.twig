@@ -11,5 +11,3 @@
 {% if package is not defined and entity is defined and entity.isLocked is defined %}
     {% set package = entity %}
 {% endif %}
-
-{% set small_title = small_title ~ ' ' ~ (package is defined and package.isLocked ? ' &nbsp&nbsp<i class="fa fa-lg fa-lock"></i>' : '') %}

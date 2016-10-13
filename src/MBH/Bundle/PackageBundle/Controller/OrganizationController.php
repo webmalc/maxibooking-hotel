@@ -195,13 +195,13 @@ class OrganizationController extends Controller
      * @Security("is_granted('ROLE_ORGANIZATION_DELETE')")
      * @ParamConverter("organization", class="MBHPackageBundle:Organization")
      * @Template()
+     * @param Organization $organization
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Organization $organization)
     {
-        $this->dm->remove($organization);
-        $this->dm->flush();
-
-        return $this->redirect($this->generateUrl('organizations'));
+        $response = $this->deleteEntity($organization->getId(), 'MBHPackageBundle:Organization', 'organizations');
+        return $response;
     }
 
 

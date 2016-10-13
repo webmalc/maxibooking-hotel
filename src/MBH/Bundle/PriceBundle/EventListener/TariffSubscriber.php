@@ -20,16 +20,6 @@ class TariffSubscriber implements EventSubscriber
         $this->container = $container;
     }
 
-    /**
-     * @return array
-     */
-    public function getSubscribedEvents()
-    {
-        return [
-            'prePersist',
-            'preRemove',
-        ];
-    }
 
     /**
      * @param LifecycleEventArgs $args
@@ -40,8 +30,19 @@ class TariffSubscriber implements EventSubscriber
         $doc = $args->getDocument();
 
         if ($doc instanceof Tariff && $doc->getIsDefault()) {
-            throw new DeleteException('Невозможно удалить основной тариф.');
+            throw new DeleteException($this->container->get('translator')->trans('tariffSubscriber.delete_exception_message.can_not_delete_main_tariff'));
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getSubscribedEvents()
+    {
+        return [
+            'prePersist',
+            'preRemove'
+        ];
     }
 
     /**

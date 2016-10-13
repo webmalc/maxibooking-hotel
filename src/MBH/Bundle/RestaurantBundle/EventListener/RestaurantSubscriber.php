@@ -69,31 +69,7 @@ class RestaurantSubscriber implements EventSubscriber
                 ->getQuery();
 
             if ($query->count()) {
-                $dishlist = '';
-                $router = $this->container->get('router');
-
-                foreach ($query->execute() as $dishItem) {
-                    /** @var DishMenuItem $dishItem */
-                    $route = $router->generate('restaurant_dishmenu_item_edit', ['id' => $dishItem->getId()]);
-                    $dishlist .= '<a href="' . $route . '">' . $dishItem->getName() . '</a> .';
-                }
-
-                $message = 'Невозможно удалить ингредиент ' . $doc->getName() . ' так как он используется в блюдах: ' . $dishlist;
-                throw new DeleteException($message);
-            }
-        }
-
-        if ($doc instanceof Table) {
-            $query = $args->getDocumentManager()->getRepository('MBHRestaurantBundle:DishOrderItem')
-                ->createQueryBuilder()
-                ->field('table.$id')->equals(new \MongoId($doc->getId()))
-                ->getQuery();
-
-            if ($query->count()) {
-                $router = $this->container->get('router');
-                $route = $router->generate('restaurant_table_edit', ['id' => $doc->getId()]);
-                $message = 'Невозможно удалить столик. Вы всегда можете его скрыть в <a href="'.$route.'"> меню редактирования'.'</a>';
-                throw new DeleteException($message);
+                throw new DeleteException('exception.ingredient_relation_delete.message.dishIngredient', $query->count());
             }
         }
 
@@ -107,17 +83,9 @@ class RestaurantSubscriber implements EventSubscriber
                 $router = $this->container->get('router');
                 $route = $router->generate('restaurant_dishmenu_item_edit', ['id' => $doc->getId()]);
                 $message = 'Невозможно удалить блюдо, т.к. оно фигурирует в заказах. Вы всегда можете его скрыть в <a href="'.$route.'"> меню редактирования'.'</a>';
-//                $message = 'Невозможно удалить блюдо, т.к. оно фигурирует в заказах. Вы всегда можете его скрыть в <a href="'.$route.'"> меню редактирования'.'</a>';
                 throw new DeleteException($message);
             }
         }
-        if ($doc instanceof IngredientCategory) {
-            if ($doc->getIngredients()->count()) {
-                $message = 'restaurant.exceptions.delete.ingredientcategory';
-                throw new DeleteException($message);
-            }
-        }
-
     }
 
 }

@@ -32,6 +32,8 @@ parameters.yml
 /protectedUpload/1C/*
 /protectedUpload/vegaDocuments/*
 !/protectedUpload/orderDocuments/.gitkeep
+web/assets
+web/online
 !web/assets/vendor/azovsky/
 web/assets/vendor/
 #web/assets

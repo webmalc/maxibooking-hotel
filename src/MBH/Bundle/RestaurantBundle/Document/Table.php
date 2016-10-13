@@ -9,6 +9,7 @@
 namespace MBH\Bundle\RestaurantBundle\Document;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -16,13 +17,18 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\RestaurantBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 
 /**
  * @ODM\Document(collection="Tables")
  * @Gedmo\Loggable()
+ * @MBHValidator\Table
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @MongoDBUnique(fields={"fullTitle"}, message="validator.document.table.unique")
+ * @ODM\HasLifecycleCallbacks
  */
 class Table extends Base
 {
@@ -44,13 +50,6 @@ class Table extends Base
      */
     use BlameableDocument;
 
-    /**
-     * @var Hotel
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
-     * @Assert\NotNull(message="validator.document.table.hotel")
-     */
-    protected $hotel;
 
     /**
      * @var string
@@ -78,23 +77,122 @@ class Table extends Base
      * )
      */
     protected $title;
+    /**
+     * @var Hotel
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
+     * @Assert\NotNull(message="validator.document.table.hotel")
+     */
+    protected $hotel;
 
     /**
-     * @return Hotel
+     * @var ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\Table", inversedBy="shifted", cascade="persist")
      */
-    public function getHotel()
+    protected $withShifted;
+
+    /**
+     * @var ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\Table", mappedBy="withShifted")
+     */
+    protected $shifted;
+
+    /**
+     * @var TableType $category
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\RestaurantBundle\Document\TableType", inversedBy="categories")
+     * @Assert\NotNull()
+     */
+    protected $category;
+    /**
+     * @var Chair $category
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\Chair", mappedBy="table" , cascade="persist")
+     * @Assert\NotNull()
+     */
+    protected $chairs;
+
+    /**
+     * TableType constructor.
+     */
+    public function __construct()
     {
-        return $this->hotel;
+        $this->withShifted= new ArrayCollection();
+        $this->shifted = new ArrayCollection();
+        $this->chairs = new ArrayCollection();
+    }
+    /**
+     * @return ArrayCollection
+     */
+    public function getWithShifted()
+    {
+        return $this->withShifted;
+    }
+    /**
+     * @return mixed
+     */
+    public function addWithShifted(Table $table)
+    {
+        $table->shifted[]=$this;
+        $this->withShifted[]=$table;
+    }
+    /**
+     * @return ArrayCollection
+     */
+    public function getShifted()
+    {
+        return $this->shifted;
+    }
+    /**
+     * @return mixed
+     */
+    public function addShifted(Table $table)
+    {
+        $this->shifted[]=$table;
+        $table->withShifted[]=$this;
+
+    }
+    /**
+     * @return ArrayCollection
+     */
+    public function getChairs()
+    {
+        return $this->chairs;
     }
 
+    /**
+     * @param Chair $chairs
+     */
+    public function addChairs(Chair $chairs)
+    {
+        $this->chairs->add($chairs);
+        $chairs->setTable($this);
+    }
+
+    /**
+     * @return TableType
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param TableType $category
+     */
+    public function setCategory(TableType $category)
+    {
+        $this->category = $category;
+    }
     /**
      * @param Hotel $hotel
      */
-    public function setHotel($hotel)
+    public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
     }
-
+    public function getHotel(): Hotel
+    {
+        return $this->category->getHotel();
+    }
     /**
      * @return string
      */

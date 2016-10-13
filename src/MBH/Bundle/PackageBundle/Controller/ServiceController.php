@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
-
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;

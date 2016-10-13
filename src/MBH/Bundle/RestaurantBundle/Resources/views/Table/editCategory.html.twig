@@ -1,0 +1,11 @@
+{% extends 'MBHRestaurantBundle:Table:layout.html.twig' %}
+
+{% set small_title = 'restaurant.table.newaction.title'|trans|capitalize %}
+{% set layout = 'box' %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('restaurant_table_category_edit',  {'id': entity.id}),'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+{% endblock %}
