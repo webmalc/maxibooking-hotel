@@ -491,7 +491,7 @@
 
 
                 <?php
-                $content = file_get_contents('http://mbh.local/app_dev.php/online_booking/form');
+                $content = file_get_contents('http://az.maxibooking.ru/online_booking/form');
                 echo $content;
                 ?>
                 <script>

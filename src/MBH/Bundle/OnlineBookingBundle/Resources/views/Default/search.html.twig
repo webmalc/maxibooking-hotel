@@ -71,9 +71,9 @@
                 {% set searchResult = result.results|first %}
                 <div class=" pull-right">
                     <div style="text-align: left;">СТОИМОСТЬ</div>
-                    <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}<i class="fa fa-ruble rublesize"></i></span>
+                    <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}<i class="fa fa-ruble rublesize"></i></span>
                     {% if result.results|length > 1 %}
-                    <span class="oldprice">{{ result.results|last.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}<i class="fa fa-ruble rublesize"></i></span>
+                    <span class="oldprice">{{ result.results|last.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}<i class="fa fa-ruble rublesize"></i></span>
                     {% endif %}
                 </div>
             </div>
@@ -132,8 +132,8 @@
                 <td class="text-center">
                     {{ searchResult.nights }}
                 </td>
-                <td>
-                    {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}
+                <td nowrap>
+                    {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}
                 </td>
                 <td>
                     <input type="radio" name="booking-{{ searchResult.roomType.id }}">
@@ -174,7 +174,7 @@
                         Взрослых: <br>
                         Даты: <br>
                         Количество комнат: {{ searchResult.roomsCount }}<br>
-                        Цена: {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}
+                        Цена: {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}
                     </div>
                 </div>
                 {% endfor %}

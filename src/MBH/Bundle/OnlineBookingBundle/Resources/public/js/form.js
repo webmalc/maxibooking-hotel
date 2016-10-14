@@ -67,7 +67,7 @@ var Dates = function() {
     }
 };
 var RangePickerDefault = function() {
-    var defaultMinDate = '07.01.2016',
+    var defaultMinDate = '07.01.2017',
         minDate = moment(defaultMinDate),
         now = moment(),
         startDate = moment(Math.max(minDate, now)),
