@@ -1,0 +1,16 @@
+{% extends 'MBHBaseBundle:Form:fields.html.twig' %}
+
+{% block _mbh_bundle_hotelbundle_task_priority_widget %}
+    {% spaceless %}
+        <div {{ block('widget_container_attributes') }} class="btn-group" data-toggle="buttons">
+            {% for child in form %}
+                <label {% for k, a in child.vars.attr %} {{ k }}="{{ a }}" {% endfor %} class="btn btn-sm btn-default {% if child.vars.checked %} active{% endif %}">
+                <input type="radio" {{ block('widget_attributes') }}{% if child.vars.value is defined %} value="{{ child.vars.value }}"{% endif %}{% if child.vars.checked %} checked="checked"{% endif %} />
+
+
+                <span class="text-{% if loop.index == 1 %}default{% elseif loop.index == 2 %}info{% else %}danger{% endif %}">{{ child.vars.label|trans }}</span>
+                </label>
+            {% endfor %}
+        </div>
+    {% endspaceless %}
+{% endblock %}

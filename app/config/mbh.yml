@@ -8,6 +8,11 @@ parameters:
       kzt: {text: 'тенге', small: 'тиын', icon: 'fa fa-money'}
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
 
+    # ReCaptcha
+    mbh.recaptcha:
+      site: '6Lev6AYUAAAAADL-WFxyHoaaGfya4uFBCUh09FWx'
+      secret: '6Lev6AYUAAAAAIk51IMnRdGS4Im_-1h3pk-cM87a'
+
     #timezone. default - deafult server timezone
     mbh.timezone: "%mbh_timezone%"
 
@@ -157,9 +162,6 @@ parameters:
       mbhs: 'aHR0cDovL21iaHMubWF4aWJvb2tpbmcucnUv'
       key: '%mbhs_key%'
 
-    #mbh sources
-    mbh.default.sources: ['Он-лайн бронирование', 'ВашОтель.ру', 'Постоянный клиент', 'Рекомендация знакомых']
-
     #mbh services
     mbh.services:
       calcTypes:
@@ -171,7 +173,7 @@ parameters:
     #mailer
     mbh.mailer:
       fromText: 'MaxiBooking'
-      fromMail: robot@maxi-booking.ru
+      fromMail:  %from_email%
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 
@@ -278,9 +280,9 @@ parameters:
 
     #Приоритет задач
     mbh.tasktype.priority:
-        0: low
-        1: average
-        2: high
+        1: low
+        2: average
+        3: high
 
     #Типы документов
     mbh.order.document.types:
@@ -350,3 +352,5 @@ parameters:
     mbh.warehouse.operations:
         in: "Приход"
         out: "Расход"
+
+

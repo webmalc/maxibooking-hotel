@@ -1,0 +1,30 @@
+{#Шаблон напоминалка , обратить внимание на название блока нигде не используется#}
+{% block _mbh_bundle_restaurantbundle_dishmenu_item_type_dishIngredients_entry_widget %}
+    <div class="dish-item-ingredients form-group form-inline">
+        {{ form_label(form.dishIngredients) }}
+        <div class="col-sm-6">
+            <ul>
+                {% if form.dishIngredients|length %}
+                    {% for dishIngredient in form.dishIngredients %}
+                        <li>
+                            <div>
+                                <div> {{ form_widget(dishIngredient.amount) }} </div>
+                                <small>{{ dishIngredient.amount.vars.help }}</small>
+                            </div>
+                            <div>
+                                <div>{{ form_widget(dishIngredient.ingredient) }}</div>
+                            </div>
+                            <i class="fa fa-times"></i>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+            <a data-prototype="
+                {{ (
+            form_widget(form.dishIngredients.vars.prototype.amount) ~
+            form_widget(form.dishIngredients.vars.prototype.ingredient)
+            )|e }}{{ '<i class="fa fa-times"></i> '|e }}
+                " class="btn btn-xs btn-success"><i class="fa fa-plus"></i> Добавить</a>
+        </div>
+    </div>
+{% endblock %}

@@ -2,9 +2,6 @@
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
-
-mb_internal_encoding('utf-8');
-
 // If you don't want to setup permissions the proper way, just uncomment the following PHP line
 // read http://symfony.com/doc/current/book/installation.html#configuration-and-setup for more information
 //umask(0000);
@@ -18,6 +15,7 @@ mb_internal_encoding('utf-8');
     header('HTTP/1.0 403 Forbidden');
     exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
 }*/
+
 
 $loader = require_once __DIR__.'/../var/bootstrap.php.cache';
 Debug::enable();

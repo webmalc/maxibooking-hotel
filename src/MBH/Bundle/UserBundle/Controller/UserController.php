@@ -37,6 +37,14 @@ class UserController extends Controller
      */
     public function indexAction()
     {
+//        $helper = $this->get('mbh.twofactor.google.helper');
+//
+//        $user = $this->getUser();
+//        $user->setGoogleAuthenticatorCode($helper->generateSecret());
+//        $this->dm->persist($user);
+//        $this->dm->flush();
+//        dump($helper->checkCode($user, '875560'));
+
         $entities = $this->dm->getRepository('MBHUserBundle:User')->createQueryBuilder('q')
             ->sort('username', 'asc')
             ->getQuery()

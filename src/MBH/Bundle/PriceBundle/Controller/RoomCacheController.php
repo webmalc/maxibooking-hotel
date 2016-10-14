@@ -101,7 +101,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         //get tariffs
         if (!empty($request->get('tariffs'))) {
             $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
-                ->fetch($hotel, $request->get('tariffs'))
+                ->fetchChildTariffs($hotel, 'rooms', $request->get('tariffs'))
             ;
         } else {
             $tariffs = [null];
@@ -213,6 +213,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
         $request->getSession()->getFlashBag()->set('success', 'Изменения успешно сохранены.');
         $this->get('mbh.channelmanager')->updateRoomsInBackground();
+        $this->get('mbh.cache')->clear();
 
         return $this->redirectToRoute('room_cache_overview', [
             'begin' => $request->get('begin'),
@@ -270,6 +271,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             );
 
             $this->get('mbh.channelmanager')->updateRoomsInBackground();
+            $this->get('mbh.cache')->clear();
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('room_cache_generator') :

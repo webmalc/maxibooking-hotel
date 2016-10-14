@@ -71,7 +71,7 @@ class RoomCacheGraphGenerator
     {
         $this->helper = $helper;
         $this->dm = $dm;
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
     }
 
     /**

@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 use Doctrine\MongoDB\ArrayIterator;
 use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
+use MBH\Bundle\BaseBundle\Service\Cache;
 
 /**
  * Class RoomRepository
@@ -92,10 +93,21 @@ class RoomRepository extends AbstractBaseRepository
      * @param null $rooms
      * @param null $excludePackages
      * @param bool $grouped
+     * @param Cache $memcached
      * @return array|mixed
      */
-    public function fetchAccommodationRooms(\DateTime $begin, \DateTime $end, Hotel $hotel, $roomTypes = null, $rooms = null, $excludePackages = null, $grouped = false)
+    public function fetchAccommodationRooms(
+        \DateTime $begin, \DateTime $end, Hotel $hotel, $roomTypes = null,
+        $rooms = null, $excludePackages = null, $grouped = false, Cache $memcached = null
+    )
     {
+        if ($memcached) {
+            $cache = $memcached->get('accommodation_rooms', func_get_args());
+            if ($cache !== false) {
+                return $cache;
+            }
+        }
+
         $dm = $this->getDocumentManager();
         $filter = $this->dm->getFilterCollection()->isEnabled('softdeleteable');
 
@@ -109,8 +121,8 @@ class RoomRepository extends AbstractBaseRepository
         $excludePackages and !is_array($excludePackages) ? $excludePackages = [$excludePackages] : $excludePackages;
         $ids = $groupedRooms = [];
         $hotelRoomTypes = [];
-        $end = clone $end;
-        $begin = clone $begin;
+        $newEnd = clone $end;
+        $newBegin = clone $begin;
 
         foreach ($hotel->getRoomTypes() as $roomType) {
             if ($roomTypes && !in_array($roomType->getId(), $roomTypes)) {
@@ -120,7 +132,7 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         //packages with accommodation
-        $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation($begin->modify('+1 day'), $end->modify('-1 day'), $rooms, $excludePackages);
+        $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation($newBegin->modify('+1 day'), $newEnd->modify('-1 day'), $rooms, $excludePackages);
         foreach ($packages as $package) {
             $ids[] = $package->getAccommodation()->getId();
         };
@@ -136,6 +148,10 @@ class RoomRepository extends AbstractBaseRepository
         $roomDocs = $qb->getQuery()->execute();
 
         if (!$grouped) {
+            if ($memcached) {
+                $memcached->set(iterator_to_array($roomDocs), 'accommodation_rooms', func_get_args());
+            }
+
             return $roomDocs;
         }
         foreach ($roomDocs as $room) {
@@ -144,6 +160,10 @@ class RoomRepository extends AbstractBaseRepository
 
         if (!$filter && $this->dm->getFilterCollection()->enable('softdeleteable')) {
             $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
+
+        if ($memcached) {
+            $memcached->set($groupedRooms, 'accommodation_rooms', func_get_args());
         }
 
         return $groupedRooms;

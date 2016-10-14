@@ -90,7 +90,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         }
         //get tariffs
         $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
-            ->fetch($this->hotel, $request->get('tariffs'));
+            ->fetchChildTariffs($this->hotel, 'prices', $request->get('tariffs'));
         if (!count($tariffs)) {
             return array_merge($response, ['error' => 'Тарифы не найдены']);
         }
@@ -204,6 +204,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             ->set('success', 'Изменения успешно сохранены.');
 
         $this->get('mbh.channelmanager')->updatePricesInBackground();
+        $this->get('mbh.cache')->clear();
 
         return $this->redirect($this->generateUrl('price_cache_overview', [
             'begin' => $request->get('begin'),
@@ -325,6 +326,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             );
 
             $this->get('mbh.channelmanager')->updatePricesInBackground();
+            $this->get('mbh.cache')->clear();
 
             $session->getFlashBag()->set('success', 'Данные успешно сгенерированы.');
 

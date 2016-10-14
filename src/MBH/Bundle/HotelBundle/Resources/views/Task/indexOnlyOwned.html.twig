@@ -125,17 +125,15 @@
                         <tr data-id="{{ task.id }}"
                             class="clickable {% if task.isDeleted %}danger{% elseif task.isExpired %}danger{% elseif task.priority == 2 %}warning{% endif %}">
                             <td class="text-center">{{ task.id }}</td>
-                            <td class="text-center">{% if task.status == 'open' %}<i data-toggle='tooltip'
-                                                                                     title='{{ statuses[task.status].title }}'
-                                                                                     class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}
+                            <td class="text-center">
+                                {% if task.status == 'open' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}
                                     <i data-toggle='tooltip' title='{{ statuses[task.status].title }}'
                                        class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i
                                     data-toggle='tooltip' title='{{ statuses[task.status].title }}'
                                     class='fa fa-check text-success'></i>{% endif %}</td>
                             <td>{{ task.type.title }}{% if task.isDeleted %}<br>
-                                <small><i class='fa fa-trash-o'
-                                          title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}'
-                                          data-toggle='tooltip'></i> Запись удалена</small>{% endif %}"
+                                <small><i class='fa fa-trash-o' title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}'
+                                          data-toggle='tooltip'></i> Запись удалена</small>{% endif %}
                             </td>
                             <td>{% if task.priority == 2 %}<i title='{{ priorities[task.priority] }}'
                                                               class='fa fa-arrow-up text-danger'></i><i

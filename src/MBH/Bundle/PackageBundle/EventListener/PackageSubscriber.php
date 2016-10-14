@@ -38,6 +38,40 @@ class PackageSubscriber implements EventSubscriber
         );
     }
 
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $entity = $args->getDocument();
+
+        //Calc services price
+        if($entity instanceof PackageService) {
+            try {
+                $package = $entity->getPackage();
+                $this->container->get('mbh.calculation')->setServicesPrice($package, null, $entity);
+                $dm->persist($package);
+                $dm->flush();
+            } catch (\Exception $e) {
+
+            }
+        }
+
+        //Calc package
+        if($entity instanceof Package) {
+            foreach ($entity->getServices() as $packageService) {
+                $packageService->setDeletedAt(new \DateTime());
+                $dm->persist($packageService);
+            }
+            $entity->setServicesPrice(0);
+            $dm->persist($entity);
+            $dm->flush();
+
+            $this->container->get('mbh.cache')->clear('accommodation_rooms');
+            $this->container->get('mbh.cache')->clear('room_cache_fetch');
+        }
+        return;
+    }
+
     public function postPersist(LifecycleEventArgs $args)
     {
         $package = $args->getDocument();
@@ -118,103 +152,6 @@ class PackageSubscriber implements EventSubscriber
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
         }
-    }
-
-    public function preRemove(LifecycleEventArgs $args)
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-        $entity = $args->getEntity();
-
-        //prevent delete hotel
-        if ($entity instanceof Hotel) {
-            $docs = $dm->getRepository('MBHPackageBundle:Package')
-                ->createQueryBuilder('q')
-                ->field('roomType.id')->in($this->container->get('mbh.helper')->toIds($entity->getRoomTypes()))
-                ->getQuery()
-                ->execute()
-            ;
-
-            if(count($docs) > 0) {
-                throw new DeleteException('Невозможно удалить отель с бронями');
-            }
-        }
-
-        //prevent deleting related docs
-        $docs = [
-            ['class' => '\MBH\Bundle\HotelBundle\Document\RoomType', 'criteria' => 'roomType.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
-            ['class' => '\MBH\Bundle\HotelBundle\Document\Room', 'criteria' => 'accommodation.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
-            ['class' => '\MBH\Bundle\PriceBundle\Document\Tariff', 'criteria' => 'tariff.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
-            ['class' => '\MBH\Bundle\PackageBundle\Document\Tourist', 'criteria' => 'mainTourist.id', 'many' => false, 'repo' => 'MBHPackageBundle:Order'],
-            ['class' => '\MBH\Bundle\PackageBundle\Document\Tourist', 'criteria' => 'tourists', 'many' => true, 'repo' => 'MBHPackageBundle:Package'],
-            ['class' => '\MBH\Bundle\PriceBundle\Document\Service', 'criteria' => 'service.id', 'many' => false, 'repo' => 'MBHPackageBundle:PackageService'],
-            ['class' => '\MBH\Bundle\PackageBundle\Document\PackageSource', 'criteria' => 'source.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
-        ];
-
-        foreach ($docs as $docInfo)  {
-            if (is_a($entity, $docInfo['class'])) {
-
-                if ($docInfo['many']) {
-                    $relatedPackages = $dm->getRepository($docInfo['repo'])
-                        ->createQueryBuilder('q')
-                        ->field($docInfo['criteria'])->includesReferenceTo($entity)
-                        ->getQuery()
-                        ->execute()
-                    ;
-                } else {
-                    $relatedPackages = $dm->getRepository($docInfo['repo'])
-                        ->findBy([$docInfo['criteria'] => $entity->getId()])
-                    ;
-                }
-
-                if (count($relatedPackages) > 0) {
-
-                    foreach ($relatedPackages as $relatedPackage) {
-
-                        if ($relatedPackage instanceof PackageService) {
-                            $relatedPackage = $relatedPackage->getPackage();
-                        }
-
-                        if ($relatedPackage instanceof Order) {
-                            foreach ($relatedPackage->getPackages() as $d) {
-                                $relatedPackagesIds[] = $d->getNumberWithPrefix();
-                            }
-                        } else {
-                            $relatedPackagesIds[] = $relatedPackage->getNumberWithPrefix();
-                        }
-                    }
-                    throw new DeleteException($this->container->get('translator')->trans('eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations') . ' ' . implode(', ', $relatedPackagesIds));
-                }
-            }
-        }
-
-        //Calc services price
-        if($entity instanceof PackageService) {
-            try {
-                $package = $entity->getPackage();
-                $this->container->get('mbh.calculation')->setServicesPrice($package, null, $entity);
-                $dm->persist($package);
-                $dm->flush();
-            } catch (\Exception $e) {
-
-            }
-        }
-
-        //Calc package
-        if($entity instanceof Package) {
-            try {
-                foreach ($entity->getServices() as $packageService) {
-                    $packageService->setDeletedAt(new \DateTime());
-                    $dm->persist($packageService);
-                }
-                $entity->setServicesPrice(0);
-                $dm->persist($entity);
-                $dm->flush();
-            } catch (\Exception $e) {
-
-            }
-        }
-        return;
     }
 
     public function prePersist(LifecycleEventArgs $args)

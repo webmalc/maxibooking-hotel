@@ -43,7 +43,7 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'Настройки',
                 'multiple' => true,
                 'choices' => $options['weekdays'],
-                'help' => 'Дни недели для готорых будет произведена генерация наличия мест',
+                'help' => 'Дни недели для которых будет произведена генерация наличия мест',
                 'attr' => array('placeholder' => 'все дни недели'),
             ])
             ->add('roomTypes', 'document', [
@@ -65,7 +65,7 @@ class RestrictionGeneratorType extends AbstractType
                 'multiple' => true,
                 'class' => 'MBHPriceBundle:Tariff',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
-                    return $dr->fetchChildTariffsQuery($options['hotel'], 'rooms');
+                    return $dr->fetchChildTariffsQuery($options['hotel'], 'restrictions');
                 },
                 'help' => 'Тарифы для готорых будет произведена генерация цен',
                 'attr' => array('placeholder' => $options['hotel'].': все тарифы', 'class' => 'select-all'),

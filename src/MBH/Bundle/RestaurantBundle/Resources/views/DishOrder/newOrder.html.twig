@@ -1,0 +1,26 @@
+{% extends 'MBHRestaurantBundle:DishOrder:layout.html.twig' %}
+
+{% set small_title = 'restaurant.dishorder.actions.add'|trans %}
+{%  set layout = 'box' %}
+
+{% block content %}
+    {% form_theme form.dishes '@MBHRestaurant/Form/dishItemCollection.html.twig'  %}
+    {{ form_start(form, {'action': path('restaurant_dishorder_new'), 'method': method|default('POST'), 'attr':{'class':'form-horizontal'}}) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+
+    {{ form(form) }}
+    {{ form_end(form) }}
+    {% block editAction %}
+    {% endblock editAction %}
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2'
+    '@MBHRestaurantBundle/Resources/public/js/001-add_dish_item.js'
+    '@MBHRestaurantBundle/Resources/public/js/004-calculate-orderprice.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% include '@MBHRestaurant/DishOrder/dishOrderJSVariable.html.twig' %}
+{% endblock scripts %}

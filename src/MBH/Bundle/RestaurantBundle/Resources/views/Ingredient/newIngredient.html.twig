@@ -1,0 +1,12 @@
+{% extends 'MBHRestaurantBundle:Ingredient:layout.html.twig' %}
+
+{% set small_title = 'restaurant.ingredient.newaction.small_title'|trans ~ " <" ~ entity.name ~ ">" %}
+{% set layout = 'box' %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('restaurant_ingredient_create', {'id': entity.id}), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+{% endblock %}
+

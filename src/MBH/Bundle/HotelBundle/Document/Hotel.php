@@ -2,12 +2,14 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
+use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -188,6 +190,17 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig", mappedBy="hotel") */
     protected $myallocatorConfig;
 
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
+    protected $ingredientCategories;
+
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\TableType", mappedBy="hotel") */
+    protected $TableTypes;
+
+
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\DishMenuCategory", mappedBy="hotel") */
+    protected $dishMenuCategories;
+
+
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country")
@@ -283,11 +296,28 @@ class Hotel extends Base implements \JsonSerializable
 
     public function __construct()
     {
-        $this->roomTypes = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->roomTypes = new ArrayCollection();
+        $this->rooms = new ArrayCollection();
+        $this->tariffs = new ArrayCollection();
+        $this->dishMenuCategories = new ArrayCollection();
+        $this->ingredientCategories = new ArrayCollection();
+        $this->TableTypes = new ArrayCollection();
+    }
+    /**
+     * @return mixed
+     */
+    public function getTableTypes()
+    {
+        return $this->TableTypes;
     }
 
+    /**
+     * @param mixed $TableTypes
+     */
+    public function setTableTypes($TableTypes)
+    {
+        $this->TableTypes = $TableTypes;
+    }
     /**
      * Get fullTitle
      *
@@ -1175,5 +1205,42 @@ class Hotel extends Base implements \JsonSerializable
     public function setDescription($description)
     {
         $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIngredientCategories()
+    {
+        return $this->ingredientCategories;
+    }
+
+    /**
+     * @param mixed $ingredientCategories
+     */
+    public function setIngredientCategories($ingredientCategories)
+    {
+        $this->ingredientCategories = $ingredientCategories;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDishMenuCategories()
+    {
+        return $this->dishMenuCategories;
+    }
+
+    /**
+     * @param mixed $dishMenuCategories
+     */
+    public function setDishMenuCategories($dishMenuCategories)
+    {
+        $this->dishMenuCategories = $dishMenuCategories;
+    }
+
+    public function addDishMenuCategories(DishMenuCategory $dishMenuCategory)
+    {
+        $this->dishMenuCategories->add($dishMenuCategory);
     }
 }

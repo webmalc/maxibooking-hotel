@@ -158,6 +158,7 @@ ROLE_ORDER_EDIT: Редактирование информации заказа
 ROLE_PACKAGE_EDIT: Редактирование информации брони
 ROLE_ORDER_PAYER: Плательщик заказа
 ROLE_PACKAGE_GUESTS: Гости брони
+ROLE_PACKAGE_UNLOCK: Разблокировка брони
 ROLE_PACKAGE_SERVICES: Услуги брони
 ROLE_PACKAGE_ACCOMMODATION: Размещение брони
 ROLE_ORDER_DOCUMENTS: Документы заказа
@@ -174,6 +175,7 @@ ROLE_PROMOTION_ADD: Добавление акции
 ROLE_FORCE_BOOKING: Принудительное бронирование
 
 ROLE_TOURIST: Клиенты
+ROLE_TOURIST_REPORT: Отчет по клиентам
 ROLE_PORTER_REPORT: Отчет портье
 ROLE_ACCOMMODATION_REPORT: Отчет по размещению
 ROLE_SERVICES_REPORT: Отчет по услугам
@@ -181,6 +183,7 @@ ROLE_ORGANIZATION: Организации
 ROLE_MANAGERS_REPORT: Отчет по менеджерам
 ROLE_POLLS_REPORT: Отчет по оценкам
 ROLE_ROOMS_REPORT: Отчет по номерному фонду
+ROLE_WINDOWS_REPORT: Отчет окна
 
 ROLE_TOURIST_VIEW: Просмотр гостей
 ROLE_TOURIST_NEW: Создание гостя
@@ -240,3 +243,45 @@ ROLE_WAREHOUSE_INVOICE_VIEW: Просмотр накладной
 ROLE_WAREHOUSE_INVOICE_NEW: Добавление накладной
 ROLE_WAREHOUSE_INVOICE_EDIT: Редактирование накладной
 ROLE_WAREHOUSE_INVOICE_DELETE: Удаление накладной
+ROLE_WAREHOUSE: Склад
+
+ROLE_RESTAURANT_SENIOR_MANAGER: Ресторан - старший менеджер
+ROLE_RESTAURANT_MANAGER: Ресторан - менеджер
+ROLE_RESTAURANT_CATEGORY: Ресторан - категории ингредиентов
+ROLE_RESTAURANT_INGREDIENT: Ресторан - ингредиенты
+ROLE_RESTAURANT_CATEGORY_NEW: Создание категорий ингредиентов
+ROLE_RESTAURANT_CATEGORY_EDIT: Редактирование категорий ингредиентов
+ROLE_RESTAURANT_CATEGORY_DELETE: Удаление категорий ингредиентов
+ROLE_RESTAURANT_INGREDIENT_VIEW: Просмотр ингредиентов
+ROLE_RESTAURANT_INGREDIENT_NEW: Создание ингредиентов
+ROLE_RESTAURANT_INGREDIENT_EDIT: Редактирование ингредиентов
+ROLE_RESTAURANT_INGREDIENT_DELETE: Удаление ингредиентов
+ROLE_RESTAURANT_DISHMENU_CATEGORY: Ресторан - категории блюд
+ROLE_RESTAURANT_DISHMENU_CATEGORY_NEW: Создание категорий блюд
+ROLE_RESTAURANT_DISHMENU_CATEGORY_EDIT: Редактирование категорий блюд
+ROLE_RESTAURANT_DISHMENU_CATEGORY_DELETE: Удаление категорий блюд
+ROLE_RESTAURANT_DISHMENU_ITEM: Ресторан - блюда
+ROLE_RESTAURANT_DISHMENU_ITEM_VIEW: Просмотр блюд
+ROLE_RESTAURANT_DISHMENU_ITEM_NEW: Добавление блюд
+ROLE_RESTAURANT_DISHMENU_ITEM_EDIT: Редактирование блюд
+ROLE_RESTAURANT_DISHMENU_ITEM_DELETE: Удаление блюд
+ROLE_RESTAURANT_DISHORDER: Ресторан - менеджмент заказов
+ROLE_RESTAURANT_DISHORDER_VIEW: Просмотр заказов
+ROLE_RESTAURANT_DISHORDER_NEW: Добавление заказа
+ROLE_RESTAURANT_DISHORDER_EDIT: Редактирование заказа
+ROLE_RESTAURANT_DISHORDER_DELETE: Удаление заказа
+ROLE_RESTAURANT_DISHORDER_FREEZED: Ресторан - управление оплаченными заказами
+ROLE_RESTAURANT_DISHORDER_FREEZED_EDIT: Редактировать уже оплаченный заказ
+ROLE_RESTAURANT_DISHORDER_FREEZED_DELETE: Удалить уже оплаченный заказ
+ROLE_RESTAURANT_DISHORDER_PAY: Фиксирование факта оплаты
+ROLE_RESTAURANT_TABLE: Ресторан - управление столиками
+ROLE_RESTAURANT_TABLE_VIEW: Просмотр столиков
+ROLE_RESTAURANT_TABLE_NEW: Добавить столик
+ROLE_RESTAURANT_TABLE_EDIT: Редактировать столик
+ROLE_RESTAURANT_TABLE_DELETE: Удалить столик
+ROLE_RESTAURANT_TABLE_ITEM_NEW: Добавить стул
+ROLE_RESTAURANT_TABLE_ITEM_EDIT: Редактировать стул
+ROLE_RESTAURANT_TABLE_ITEM_DELETE: Удалить стул
+ROLE_RESTAURANT_TABLE_CATEGORY_NEW: Добавить категорию
+ROLE_RESTAURANT_TABLE_CATEGORY_EDIT: Редактировать категорию
+ROLE_RESTAURANT_TABLE_CATEGORY_DELETE: Удалить категорию

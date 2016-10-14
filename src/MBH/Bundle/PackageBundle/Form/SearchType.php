@@ -3,13 +3,9 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Range;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * Class SearchType
@@ -48,6 +44,7 @@ class SearchType extends AbstractType
             ->add('tourist', 'text', [
                 'label' => 'form.searchType.fio',
                 'required' => false,
+                'mapped' => false,
                 'attr' => [
                     'placeholder' => 'form.orderTouristType.placeholder_fio',
                     'style' => 'min-width: 350px !important; width: 350px !important;',
@@ -57,6 +54,7 @@ class SearchType extends AbstractType
             ->add('order', 'integer', [
                 'label' => 'form.searchType.order',
                 'required' => false,
+                'mapped' => false,
                 'error_bubbling' => true,
                 'data' => $options['orderId'],
                 'attr' => ['class' => 'input-xs only-int'],
@@ -64,6 +62,7 @@ class SearchType extends AbstractType
             ->add('roomType', 'choice', [
                 'label' => 'form.searchType.room_type',
                 'required' => false,
+                'mapped' => false,
                 'multiple' => true,
                 'error_bubbling' => true,
                 'choices' => $roomTypes,
@@ -83,8 +82,7 @@ class SearchType extends AbstractType
                 'data' => new \DateTime(),
                 'required' => true,
                 'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy'),
-                'constraints' => [new NotBlank(['message' => 'form.searchType.check_in_date_not_filled']), new Date()]
+                'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
             ))
             ->add('end', 'date', array(
                 'label' => 'Отъезд',
@@ -93,19 +91,21 @@ class SearchType extends AbstractType
                 'data' => new \DateTime('+ 1 day'),
                 'required' => true,
                 'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker end-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy'),
-                'constraints' => [new NotBlank(['message' => 'form.searchType.check_out_date_not_filled']), new Date()]
+                'attr' => array('class' => 'datepicker end-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
+            ))
+            ->add('range', 'integer', array(
+                'label' => 'form.searchType.range',
+                'required' => false,
+                'mapped' => true,
+                'error_bubbling' => true,
+                'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 10],
             ))
             ->add('adults', 'integer', [
                 'label' => 'form.searchType.adults',
                 'required' => true,
                 'error_bubbling' => true,
-                'data' => 0,
+                'data' => 1,
                 'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 10],
-                'constraints' => [
-                    new Range(['min' => 0, 'minMessage' => 'form.searchType.adults_amount_less_zero']),
-                    new NotBlank(['message' => 'form.searchType.adults_amount_not_filled'])
-                ]
             ])
             ->add('children', 'integer', [
                 'label' => 'form.searchType.children',
@@ -113,10 +113,6 @@ class SearchType extends AbstractType
                 'error_bubbling' => true,
                 'data' => 0,
                 'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 6],
-                'constraints' => [
-                    new Range(['min' => 0, 'minMessage' => 'form.searchType.children_amount_less_zero']),
-                    new NotBlank(['message' => 'form.searchType.children_amount_not_filled'])
-                ]
             ])
             ->add('forceBooking', 'checkbox', [
                 'label' => 'form.searchType.forceBooking',
@@ -137,7 +133,8 @@ class SearchType extends AbstractType
             'security' => null,
             'hotel' => null,
             'orderId' => null,
-            'roomManager' => null
+            'roomManager' => null,
+            'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery'
         ]);
     }
 

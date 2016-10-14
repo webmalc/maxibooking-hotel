@@ -80,7 +80,7 @@ class RoomCacheGeneratorType extends AbstractType
                         new Range(['min' => -1, 'minMessage' => 'Количество мест не может быть меньше минус одного']),
                         new NotBlank()
                     ],
-                    'help' => 'Количестов мест доступные в выбранные сроки. Минус один (-1) для удаления дней',
+                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvomest',
                 ])
                 /*->add('isClosed', 'checkbox', [
                     'label' => 'Закрыто?',

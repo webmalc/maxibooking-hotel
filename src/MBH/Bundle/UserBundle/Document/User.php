@@ -28,6 +28,7 @@ use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
 class User extends BaseUser implements RecipientInterface
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
+    const TWO_FACTOR_TYPES = ['email', 'google'];
 
     /**
      * @var string
@@ -150,6 +151,25 @@ class User extends BaseUser implements RecipientInterface
      * @Assert\Type(type="boolean")
      */
     protected $isEnabledWorkShift = false;
+
+    /**
+     * @var string $twoFactorAuthentication google or email
+     * @ODM\Field(type="string")
+     * @Assert\Choice(callback = "getTwoFactorTypes")
+     */
+    protected $twoFactorAuthentication;
+
+    /**
+     * @var string $googleAuthenticatorCode Stores the secret code
+     * @ODM\Field(type="string")
+     */
+    private $googleAuthenticatorCode;
+
+    /**
+     * @var integer $twoFactorCode Current authentication code
+     * @ODM\Field(type="integer")
+     */
+    protected $twoFactorCode;
 
     /**
      * Hook timestampable behavior
@@ -473,5 +493,67 @@ class User extends BaseUser implements RecipientInterface
         $this->defaultNoticeDoc = $defaultNoticeDoc;
     }
 
+    /**
+     * @return string
+     */
+    public function getTwoFactorAuthentication()
+    {
+        return $this->twoFactorAuthentication;
+    }
 
+    /**
+     * @param string $twoFactorAuthentication
+     * @return User
+     */
+    public function setTwoFactorAuthentication($twoFactorAuthentication): User
+    {
+        $this->twoFactorAuthentication = $twoFactorAuthentication;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTwoFactorCode(): int
+    {
+        return $this->twoFactorCode;
+    }
+
+    /**
+     * @param int $twoFactorCode
+     * @return User
+     */
+    public function setTwoFactorCode(int $twoFactorCode): User
+    {
+        $this->twoFactorCode = $twoFactorCode;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGoogleAuthenticatorCode()
+    {
+        return $this->googleAuthenticatorCode;
+    }
+
+    /**
+     * @param string $googleAuthenticatorCode
+     * @return User
+     */
+    public function setGoogleAuthenticatorCode(string $googleAuthenticatorCode): User
+    {
+        $this->googleAuthenticatorCode = $googleAuthenticatorCode;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getTwoFactorTypes(): array
+    {
+        return self::TWO_FACTOR_TYPES;
+    }
 }

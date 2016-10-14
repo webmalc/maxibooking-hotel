@@ -4,9 +4,12 @@
 
 {% block content %}
 
+    {% form_theme form 'MBHHotelBundle:Task:fields.html.twig' %}
+
     {{ form_start(form, {'action': path('task_edit', {id: entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_end(form) }}
 
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'task_delete' } %}
 {% endblock %}

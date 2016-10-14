@@ -2,7 +2,9 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
+
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
@@ -15,6 +17,7 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -25,6 +28,7 @@ use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
@@ -286,6 +290,20 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         ];
     }
 
+    /**
+     * @Route("/service/resetValue/{id}", name="reset_total_overwrite_value")
+     * @Security("is_granted('ROLE_ORDER_EDIT')")
+     * @param Package $package
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function resetTotalOverwriteValue(Package $package)
+    {
+        $package->setTotalOverwrite(0);
+        $package->getOrder()->setTotalOverwrite(0);
+        $this->dm->flush();
+        $this->addFlash('success', $this->get('translator')->trans('controller.packageController.record_edited_success'));
+        return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
+    }
 
     /**
      * Edits an existing entity.
@@ -451,6 +469,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
+
 
         $form = $this->createForm(new OrderTouristType(), null, ['guest' => false]);
 
@@ -698,6 +717,29 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         return $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);
     }
 
+
+    /**
+     * Package relocation (new accommodation)
+     *
+     * @Route("/{id}/relocation/{date}", name="package_relocation", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
+     * @param Package $package
+     * @param \DateTime $date
+     * @return Response
+     */
+    public function relocationAction(Package $package, \DateTime $date)
+    {
+        try {
+            $redirectPackage = $this->get('mbh.order_manager')->relocatePackage($package, $date);
+            $this->addFlash('success', 'controller.packageController.relocation_success');
+        } catch (Exception $e) {
+            $this->addFlash('danger', $e->getMessage());
+            $redirectPackage = $package;
+        }
+        return $this->redirectToRoute('package_accommodation', ['id' => $redirectPackage->getId()]);
+    }
+
     /**
      * Accommodation
      *
@@ -804,6 +846,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'logs' => $this->logs($package),
             'optGroupRooms' => $optGroupRooms,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
+            'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
+
         ];
     }
 
@@ -862,7 +906,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * @Route("/{id}/unlock", name="package_unlock")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PACKAGE_UNLOCK')")
      * @ParamConverter("package", class="MBHPackageBundle:Package")
      */
     public function unlockAction(Package $package)
@@ -877,7 +921,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * @Route("/{id}/lock", name="package_lock")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PACKAGE_UNLOCK')")
      * @ParamConverter("package", class="MBHPackageBundle:Package")
      */
     public function lockAction(Package $package)
@@ -890,4 +934,57 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
     }
+
+    /**
+     * @param null $id
+     * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @Route("/getPackageJsonById/{id}", name="getPackageJsonById", options={"expose"=true})
+     */
+    public function getPackageJsonByIdAction($id = null)
+    {
+        if (!$id) {
+            return new JsonResponse([]);
+        }
+        
+        $result = [];
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
+        
+        if ($package) {
+            $result = [
+                'id' => $package->getId(),
+                'text' => $package->getTitle(true,true)
+            ];
+        }
+        return new JsonResponse($result);
+    }
+
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @Route("/getPackageJsonSearch", name="getPackageJsonSearch", options={"expose"=true})
+     */
+    public function getPackageJsonSearchAction(Request $request)
+    {
+        $data = [];
+        if (!$request->get('query')) {
+            return new JsonResponse([]);
+        }
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByOrderOrRoom($request->get('query'), $this->helper);
+        if (!$packages) {
+            return new JsonResponse([
+                'results' => [[]]
+            ]);
+        }
+        foreach ($packages as $item) {
+            /** @var Package $item */
+            $data[] = [
+                'id' => $item->getId(),
+                'text' => $item->getTitle(true,true)
+            ];
+        }
+        return new JsonResponse(['results' => $data]);
+    }
+
 }

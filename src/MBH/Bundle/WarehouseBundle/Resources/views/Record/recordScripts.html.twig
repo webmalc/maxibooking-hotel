@@ -51,8 +51,7 @@
 			var amount = $(this).val();			
 			var qtty = $('#mbh_bundle_warehousebundle_recordtype_qtty').val() * 1;
 			if (! qtty) {
-				alert('Ошибка. Количество не может быть нулевым!');
-				$(this).val('');
+				$('#mbh_bundle_warehousebundle_recordtype_price').val(0.00);
 				return;
 			}
 			var price = amount / qtty;

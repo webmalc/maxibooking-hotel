@@ -4,6 +4,7 @@ imports:
     - { resource: version.yml }
     - { resource: mbh.yml }
     - { resource: roles.yml }
+    - { resource: mbh_restaurant_ctypes.xml }
 
 framework:
     serializer:
@@ -36,6 +37,7 @@ twig:
     strict_variables: "%kernel.debug%"
     base_template_class: MBH\Bundle\BaseBundle\Twig\Template
     globals:
+        recaptcha: "%mbh.recaptcha%"
         meta_title: 'Система бронирования "MaxiBooking".'
         project_title: 'MaxiBooking'
         months:
@@ -65,7 +67,7 @@ twig:
 # Assetic Configuration
 assetic:
     debug:          "%kernel.debug%"
-    use_controller: false
+    use_controller: '%use_assetic_controller%'
     filters:
         cssrewrite: ~
         uglifycss:
@@ -87,7 +89,7 @@ swiftmailer:
     host:      "%mailer_host%"
     username:  "%mailer_user%"
     password:  "%mailer_password%"
-    spool:     { type: memory}
+    spool:     { type: file }
     encryption: ssl
     
 # DoctrineMongoDBBundle Configuration

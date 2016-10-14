@@ -1,0 +1,13 @@
+{% extends 'MBHRestaurantBundle::layout.html.twig' %}
+{% set title = 'restaurant.dishorder.common.title'|trans|capitalize %}
+{% set title_url = path('restaurant_dishorder') %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='uglifyjs2'
+    '@MBHRestaurantBundle/Resources/public/js/005-filterOrder.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

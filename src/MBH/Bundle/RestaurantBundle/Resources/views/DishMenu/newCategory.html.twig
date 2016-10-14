@@ -1,0 +1,11 @@
+{% extends 'MBHRestaurantBundle:DishMenu:layout.html.twig' %}
+
+{% set small_title = 'restaurant.dishmenu.category.action.new'|trans|capitalize %}
+{% set layout = 'box' %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('restaurant_dishmenu_category_new'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+{% endblock %}

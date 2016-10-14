@@ -1,0 +1,23 @@
+{% extends 'MBHRestaurantBundle:DishMenu:layout.html.twig' %}
+
+{% set small_title = 'restaurant.dishmenu.item.edit_small_title'|trans ~" <" ~ entity.name ~ ">" %}
+{% set layout = 'box' %}
+
+{% block content %}
+    {% include '@MBHRestaurant/DishMenu/dishItemFormTemplate.html.twig' with {'path': 'restaurant_dishmenu_item_edit' } %}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entry, 'logs': logs, 'delete_route': 'restaurant_dishmenu_item_delete' } %}
+
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2'
+    '@MBHRestaurantBundle/Resources/public/js/001-add_dish_item.js'
+    '@MBHRestaurantBundle/Resources/public/js/002-calculate-costprice.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% include '@MBHRestaurant/DishMenu/dishMenuScripts.html.twig' with {'ingredients' : ingredients} %}
+{% endblock scripts %}
+

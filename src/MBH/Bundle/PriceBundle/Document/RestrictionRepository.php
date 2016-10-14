@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 
@@ -89,7 +90,6 @@ class RestrictionRepository extends DocumentRepository
             $qb->field('hotel.id')->equals($hotel->getId());
         }
         // begin & end
-        // begin & end
         if (!empty($begin)) {
             $qb->field('date')->gte($begin);
         }
@@ -114,17 +114,31 @@ class RestrictionRepository extends DocumentRepository
      * @param \DateTime $date
      * @param RoomType $roomType
      * @param Tariff $tariff
-     * @return null|object
+     * @param Cache $memcached
+     * @return Restriction
      */
-    public function findOneByDate(\DateTime $date, RoomType $roomType, Tariff $tariff)
+    public function findOneByDate(\DateTime $date, RoomType $roomType, Tariff $tariff, Cache $memcached = null)
     {
+        if ($memcached) {
+            $cache = $memcached->get('restrictions_find_one_by_date', func_get_args());
+            if ($cache !== false) {
+                return $cache;
+            }
+        }
+        
         $qb = $this->createQueryBuilder('q');
         $qb
             ->field('date')->equals($date)
             ->field('tariff.id')->equals($tariff->getId())
             ->field('roomType.id')->equals($roomType->getId());;
 
-        return $qb->getQuery()->getSingleResult();
+        $result = $qb->getQuery()->getSingleResult();
+        
+        if ($memcached) {
+            $memcached->set($result, 'price_caches_fetch', func_get_args());
+        }
+        
+        return $result;
     }
 
     /**
@@ -134,6 +148,7 @@ class RestrictionRepository extends DocumentRepository
      * @param array $roomTypes
      * @param array $tariffs
      * @param boolean $grouped
+     * @param Cache $memcached
      * @return array
      */
     public function fetch(
@@ -142,17 +157,33 @@ class RestrictionRepository extends DocumentRepository
         Hotel $hotel = null,
         array $roomTypes = [],
         array $tariffs = [],
-        $grouped = false
+        $grouped = false,
+        Cache $memcached = null
     )
     {
+        if ($memcached) {
+            $cache = $memcached->get('restrictions_fetch', func_get_args());
+            if ($cache !== false) {
+                return $cache;
+            }
+        }
+
         $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs)->getQuery()->execute();
 
         if (!$grouped) {
+            if ($memcached) {
+                $memcached->set(iterator_to_array($caches), 'restrictions_fetch', func_get_args());
+            }
+
             return $caches;
         }
         $result = [];
         foreach ($caches as $cache) {
             $result[$cache->getRoomType()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
+        }
+
+        if ($memcached) {
+            $memcached->set($result, 'restrictions_fetch', func_get_args());
         }
 
         return $result;

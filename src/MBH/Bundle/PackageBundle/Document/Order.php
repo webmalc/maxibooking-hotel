@@ -11,6 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Annotations as MBH;
 
 /**
  * @ODM\Document(collection="Order", repositoryClass="MBH\Bundle\PackageBundle\Document\OrderRepository")
@@ -46,7 +47,7 @@ class Order extends Base
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="PackageSource")
+     * @ODM\ReferenceOne(targetDocument="PackageSource", inversedBy="orders")
      */
     protected $source;
 
@@ -66,7 +67,10 @@ class Order extends Base
      */
     protected $organization;
 
-    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="order") */
+    /** 
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="order")
+     * @MBH\Versioned()
+     */
     protected $cashDocuments;
 
     /**
@@ -160,7 +164,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "myallocator"},
+     *      choices = {"vashotel", "booking", "myallocator", "ostrovok"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      */

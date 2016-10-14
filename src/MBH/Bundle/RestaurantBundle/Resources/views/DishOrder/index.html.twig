@@ -1,0 +1,64 @@
+{% extends "MBHRestaurantBundle:DishOrder:layout.html.twig" %}
+{% set small_title = 'restaurant.dishorder.actions.list.small_title'|trans %}
+{% set layout = "box" %}
+
+{% block content %}
+    {% embed '@MBHBase/Partials/embed_filter.html.twig' with {'id': 'dishorder-table-filter-widget'}  %}
+        {% block content %}
+            {% if form is defined %}
+                {{ form_start(form) }}
+
+                {% if form.begin is defined %}
+                    <div class="form-group">
+                        <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                        {{ form_widget(form.begin) }} —
+                        {{ form_widget(form.end) }}
+                    </div>
+                {% endif %}
+                {% if form.money_begin is defined %}
+                    <div class="form-group">
+                        <label><i class="fa fa-money" title="Цены" data-toggle="tooltip"></i></label>
+                        {{ form_widget(form.money_begin) }}—
+                        {{ form_widget(form.money_end) }}
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    <label><i class="fa fa-money" title="Оплачен" data-toggle="tooltip"></i></label>
+                    &nbsp;{{ form_widget(form.is_freezed) }}
+                    {{ form_widget(form._token) }}
+                </div>
+                {{ form_end(form, {render_rest: false}) }}
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+    <div class="box-tools pull-rigth">
+
+
+    </div>
+
+        <div class="box-body">
+        <table id="dishorder-table"
+               class="table table-actions not-auto-datatable table-striped table-hover table-condensed table-icons">
+            <thead>
+            <tr>
+                <th class="td-xs"></th>
+                <th>{{ 'restaurant.dishorder.table.number'|trans }}</th>
+                <th class="td-md text-center">{{ 'restaurant.dishorder.table.table'|trans }}</th>
+                <th class="td-xs">{{ 'restaurant.dishorder.table.time'|trans }}</th>
+                <th class="td-sm text-right">{{ 'restaurant.dishorder.table.price'|trans }} <i class="fa {{ currency().icon }}"></i></th>
+                <th class="td-md text-center">{{ 'restaurant.dishorder.table.freezed'|trans }}</th>
+                <th class="td-sm text-center">{{ 'restaurant.dishorder.table.doing'|trans }}</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+
+            </tbody>
+        </table>
+        </div> <!-- /.box-body -->
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'restaurant_dishorder_new', 'role': 'RESTAURANT_DISHORDER'} %}
+{% endblock %}
+
+
+

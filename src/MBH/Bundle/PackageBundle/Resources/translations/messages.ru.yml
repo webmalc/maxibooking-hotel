@@ -101,6 +101,7 @@ form.searchType.forceBooking: Игнорировать условия и огр�
 form.searchType.children_ages: Возраст детей
 form.searchType.children_amount_less_zero: Количество детей не может быть меньше нуля
 form.searchType.children_amount_not_filled: Не заполнено количество детей
+form.searchType.range: Дополнительные дни поиска
 form.touristType.surname: Фамилия
 form.touristType.general_info: Общая информация
 form.touristType.placeholder_surname: Иванов
@@ -136,7 +137,7 @@ controller.orderController.cash_register_paper_deleted_success: 'Кассовы�
 controller.orderController.add_cash_register_paper: 'Добавить кассовый документ'
 controller.orderController.cash_register_paper_added_success: 'Кассовый документ успешно добавлен.'
 controller.orderController.payer_added_success: 'Плательщик успешно добавлен.'
-controller.orderController.organization_added_success: 'Организация успешно добавлена.'
+controller.orderController.payer_saved_success: 'Плательщик успешно сохранен.'
 controller.orderController.payer_deleted_success: 'Плательщик успешно удален.'
 controller.orderController.payer_organization_success: 'Организация успешно удалена.'
 controller.orderController.record_edited_success: 'Запись успешно отредактирована.'
@@ -160,6 +161,9 @@ controller.touristController.tourist_was_found_in_unwelcome: 'Турист бы�
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
 controller.packageController.record_edited_fail: 'Ошибка при обновлении брони. Нет доступных номеров.'
 controller.packageController.record_edited_fail_accommodation: 'Ошибка при обновлении брони. Номер недоступен для размещения.'
+controller.packageController.relocation_success: 'Создана новая бронь для переселения. Теперь можно выбрать новый номер размещения гостей'
+controller.packageController.relocation_dates_error: 'Ошибка переселения. Некорректная дата переселения'
+controller.packageController.relocation_accommodation_error: 'Ошибка переселения. Нет размещения'
 
 # TaskType Controller
 controller.taskTypeController.record_created_success: 'Запись успешно создана.'
@@ -341,3 +345,5 @@ unwelcome.actions.delete: Удалить из черного списка
 
 package.tourist_in_unwelcome: Гость находится в черном списке
 package.payer_in_unwelcome: Плательщик находится в черном списке
+
+report.windows.title: 'окна'

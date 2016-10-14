@@ -1,0 +1,102 @@
+{% extends "MBHRestaurantBundle:Table:layout.html.twig" %}
+{% set small_title = 'restaurant.table.actions.list.small_title'|trans %}
+{% set layout = "tabs" %}
+
+{% block content %}
+    <ul class="nav nav-tabs" role="tablist">
+        {% for entity in entities %}
+            <li {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}class="active"{% endif %}>
+                <a href="#{{entity.id}}" role="tab" data-toggle="tab">
+                    <i class="fa fa-cutlery"></i>  {{entity.name}}
+                    {% if entity.system is defined and entity.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
+                </a>
+            </li>
+        {% endfor %}
+        {% if is_granted('ROLE_RESTAURANT_TABLE_NEW') %}
+            <li>
+                <a href="{{ path('restaurant_table_category_new') }}"><i class="fa fa-plus"></i> {{ 'restaurant.table.item.category.new'|trans|capitalize }}</a>
+            </li>
+        {% endif %}
+    </ul>
+    <form method="get" role="form" class="are-you-sure form-inline" action="{{ path('restaurant_table_save') }}">
+        <!-- Tabs content -->
+        <div class="tab-content">
+            {% for entity in entities %}
+                <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}" id="{{entity.id}}">
+                    <!-- Tab actions -->
+                    <div class="btn-list spacer-bottom text-right">
+                        {% if is_granted('ROLE_RESTAURANT_TABLE_CATEGORY_EDIT') %}
+                            <a href="{{ path('restaurant_table_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.category.edit'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-edit"></i> {{ 'restaurant.category.edit'|trans|capitalize }}</a>
+                        {% endif %}
+                        {% if is_granted('ROLE_RESTAURANT_TABLE_ITEM_NEW') %}
+                            <a href="{{ path('restaurant_table_item_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.table.item.helper.new'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-plus"></i> {{ 'restaurant.table.actions.add'|trans|capitalize }}</a>
+                        {% endif %}
+                        {% if is_granted('ROLE_RESTAURANT_TABLE_CATEGORY_DELETE') %}
+                            <a href="{{ path('restaurant_table_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.category.delete'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-trash-o"></i> {{ 'restaurant.category.delete'|trans|capitalize }}</a>
+                        {% endif %}
+                    </div>
+                    {% if entity.categories.count %}
+                        <table class="table table-actions table-striped table-hover table-condensed table-icons">
+                            <thead>
+                            <tr>
+                                <th class="td-xs"></th>
+                                <th>{{ 'restaurant.namelabel'|trans }}</th>
+                                <th class="td-md text-center">{{ 'restaurant.table.table.isEnable'|trans }}</th>
+                                <th class="td-sm text-center">{{ 'restaurant.common.doing'|trans|capitalize }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for entry in entity.categories %}
+                                <tr>
+                                    <td><i class="fa fa-cutlery"></i></td>
+                                    <td>
+                                        {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entry, 'route': 'restaurant_table'} %}{% endembed %}
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="hidden" name="entries[{{ entry.id }}][foo]">
+                                        <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]"
+                                               type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
+                                    </td>
+                                    <td class="table-actions-td text-center">
+                                        {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entry, 'route': 'restaurant_table'} %}{% endembed %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'restaurant.table.item.noitems'|trans|capitalize }}. <a href="{{ path('restaurant_table_item_new', {'id': entity.id }) }}">{{ 'restaurant.table.actions.add'|trans|capitalize }}?</a></div>
+                    {% endif %}
+
+                </div>
+            {% endfor %}
+        </div>
+
+        <input name="activetab" type="hidden" value="" id="activetab">
+        <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+
+                    {% if is_granted('ROLE_RESTAURANT_TABLE_EDIT') and entities.count %}
+                        <li>
+                            <button type="submit" class="btn btn-success navbar-btn"><i
+                                        class="fa fa-check-square-o"></i> {{ 'restaurant.common.save'|trans|capitalize }}
+                            </button>
+                        </li>
+                    {% endif %}
+                </ul>
+
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2'
+    '@MBHRestaurantBundle/Resources/public/js/006-quicksave-form-tab-sent.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+

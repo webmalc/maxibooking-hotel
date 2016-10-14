@@ -107,11 +107,16 @@ form.roomTypeType.room_space: Площадь номера (м2)
 form.roomTypeType.help.empty_facilities: Используются удобства из отеля
 
 controller.hotelController.record_created_success: 'Запись успешно создана.'
+
 controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
 controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
 controller.TaskTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
 controller.TaskTypeController.record_edited_success: 'Запись успешно отредактирована.'
+
+controller.hotelController.task_created_notall: 'Не все задачи созданы/отредактированы, сначала закройте открытые задачи для данного типа'
+controller.hotelController.task_created_failed: 'Не удалось создать ни одной задачи'
+
 
 form.taskType.title: Название
 form.taskType.category: Категория
@@ -135,6 +140,7 @@ form.task.description: Комментарий
 form.task.status: Статус
 form.task.roomType: Тип номера
 
+
 form.task.group.general_add: Добавление задачи
 form.task.group.general_edit: Редактирование задачи
 form.task.group.assign: Назначить
@@ -142,6 +148,15 @@ form.task.group.settings: Настройки
 
 form.userType.users: Исполнитель
 form.userType.date: Дата
+
+
+task.filter.prior.low:      Низкий
+task.filter.prior.average:  Средний
+task.filter.prior.high:    Высокий
+task.filter.task.open:      Открыта
+task.filter.task.process:   В процессe
+task.filter.task.closed:    Закрыта
+
 
 # corpus
 views.form.corpus.group.main: Общая информация
@@ -157,7 +172,11 @@ form.taskTypeCategory.general_info: Добавление категории за
 form.taskTypeCategory.title: Внутреннее Название
 form.taskTypeCategory.fullTitle: Название
 
-
+views.task.index.creation: Создание
+views.task.index.performance: Исполнение
+views.task.index.dates: Даты
+form.searchTask.performance: Исполнение
+form.searchTask.creation: Создание
 
 building: Здание
 rules: Правила размещения
@@ -171,3 +190,5 @@ technical: Техника
 
 mailer.new_task.subject: 'Вам назначена новая задача'
 mailer.new_task.text: 'Вам назначили задачу "%taskType%"'
+
+

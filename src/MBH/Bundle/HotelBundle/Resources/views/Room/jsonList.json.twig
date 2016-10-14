@@ -9,7 +9,7 @@
                 "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'room'} %}{% endembed %}",
                 "{{ entity.housing }}",
                 "{{ entity.floor }}",
-                "<div class='text-center'>{% if entity.status and entity.status.code %}<i class='fa mbf-{{ roomStatusIcons[entity.status.code] }}' data-toggle='tooltip' data-title='{{ entity.status.title }}'></i>{% endif %}</div>",
+                "<div class='text-center'>{% if entity.status and entity.status is iterable  %} {% for status in entity.status %}{% if status.code %}<i class='fa mbf-{{ roomStatusIcons[status.code] }}' data-toggle='tooltip' data-title='{{ status.title }}'></i>{% endif %}{% endfor %}{% endif %}</div>",
                 "<div class='btn-list'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'room'} %}{% endembed %}</div>"
             ]{% if loop.index != entities.count(true) %},{% endif %}
         {% endfor %}

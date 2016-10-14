@@ -18,6 +18,10 @@
                 - &nbsp{{ form_widget(form.end) }}
             </div>
             <div class="input">
+                <i class="fa fa-calendar-plus-o " title='{{ 'form.searchType.range'|trans() }}'
+                   data-toggle='tooltip'></i>&nbsp{{ form_widget(form.range) }}
+            </div>
+            <div class="input">
                 <i class="fa fa-male" title='{{ 'form.searchType.adults'|trans() }}'
                    data-toggle='tooltip'></i>&nbsp{{ form_widget(form.adults) }}
             </div>
@@ -52,7 +56,8 @@
                     </a>
                 </small>
             </div>
-            {% if config and not config.isInstantSearch %}
+            {% set clientConfig = client_config() %}
+            {% if not clientConfig or not clientConfig.isInstantSearch %}
                 <div class="input">
                     <button class="btn btn-primary" id="search-submit-button">
                         <i class="fa fa-search"></i> Найти

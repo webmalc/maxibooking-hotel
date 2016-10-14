@@ -330,7 +330,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()->set('success',
-                $this->get('translator')->trans('controller.orderController.organization_added_success'));
+                $this->get('translator')->trans('controller.orderController.payer_saved_success'));
 
             if ($request->get('save') !== null) {
                 return $this->redirectToRoute('package_order_organization_edit',
@@ -509,12 +509,8 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
-        $this->dm->remove($entity);
-        $this->dm->flush($entity);
 
-        $request->getSession()->getFlashBag()
-            ->set('success', $this->get('translator')->trans('controller.orderController.record_deleted_success'));
-
-        return $this->redirect($this->generateUrl('package'));
+        $response = $this->deleteEntity($entity->getId(), 'MBHPackageBundle:Order', 'package');
+        return $response;
     }
 }

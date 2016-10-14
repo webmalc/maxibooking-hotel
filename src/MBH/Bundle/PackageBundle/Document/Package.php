@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -15,6 +17,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Zend\Stdlib\JsonSerializable;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use MBH\Bundle\BaseBundle\Annotations as MBH;
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -69,12 +72,25 @@ class Package extends Base implements JsonSerializable
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
     protected $accommodation;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
+     */
+    protected $virtualRoom;
     
     /** 
      * @ODM\ReferenceMany(targetDocument="Tourist", inversedBy="packages")
+     * @MBH\Versioned()
      */
     protected $tourists;
-    
+
+    /**
+
+     * @ODM\ReferenceMany(targetDocument="RestarauntSeat", mappedBy="package")
+     */
+    protected $restarauntSeat;
+
     /**
      * @var int
      * @Gedmo\Versioned
@@ -87,6 +103,8 @@ class Package extends Base implements JsonSerializable
      * @var int
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="numberWithPrefix")
+     * @ODM\Index()
+     *
      */
     protected $numberWithPrefix;
 
@@ -391,10 +409,10 @@ class Package extends Base implements JsonSerializable
     /**
      * Set accommodation
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Room $accommodation
+     * @param $accommodation
      * @return self
      */
-    public function setAccommodation(\MBH\Bundle\HotelBundle\Document\Room $accommodation)
+    public function setAccommodation($accommodation)
     {
         $this->accommodation = $accommodation;
         return $this;
@@ -711,6 +729,7 @@ class Package extends Base implements JsonSerializable
    
     public function __construct()
     {
+        $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tourists = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -829,7 +848,21 @@ class Package extends Base implements JsonSerializable
 
     public function __toString()
     {
-        return $this->getNumberWithPrefix();
+        return $this->getTitle();
+    }
+
+    public function getTitle(bool $accommodation = false, bool $payer = false)
+    {
+        $title = $this->getNumberWithPrefix();
+        if ($accommodation && $this->getAccommodation()) {
+            $title .=' Номер: '.$this->getAccommodation()->getName().'. ';
+        }
+        /** @var Tourist|Organization $name */
+        if ($payer && $name = $this->getOrder()->getPayer()) {
+            $title .= ' Плательщик: '.$name.'. ';
+        }
+        return $title;
+
     }
 
     /**
@@ -1467,6 +1500,31 @@ class Package extends Base implements JsonSerializable
     public function setIsForceBooking($isForceBooking)
     {
         $this->isForceBooking = $isForceBooking;
+        return $this;
+    }
+
+    public function clearServices()
+    {
+        $this->services = new ArrayCollection();
+        
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVirtualRoom()
+    {
+        return $this->virtualRoom;
+    }
+
+    /**
+     * @param mixed $virtualRoom
+     * @return Package
+     */
+    public function setVirtualRoom(Room $virtualRoom = null): self
+    {
+        $this->virtualRoom = $virtualRoom;
         return $this;
     }
 

@@ -8,6 +8,18 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 class TariffRepository extends DocumentRepository
 {
 
+    public function getMergingTariffs()
+    {
+        $result = $this->createQueryBuilder()
+            ->field('defaultForMerging')->equals(true)
+            ->field('isDefault')->equals(false)
+            ->getQuery()
+            ->execute()
+        ;
+        
+        return $result;
+    }
+
     /**
      * Get Tariffs with > 1 package
      * @return array
@@ -32,10 +44,11 @@ class TariffRepository extends DocumentRepository
     /**
      * @param Hotel $hotel
      * @param array $type 'rooms', 'restrictions', 'prices'
+     * @param array $tariffs ids
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetchChildTariffsQuery(Hotel $hotel, $type)
+    public function fetchChildTariffsQuery(Hotel $hotel, $type, $tariffs = [])
     {
         $types = [
             'rooms' =>'inheritRooms', 'restrictions' => 'inheritRestrictions', 'prices' => 'inheritPrices'
@@ -48,18 +61,24 @@ class TariffRepository extends DocumentRepository
             ->addOr($qb->expr()->field('childOptions.' . $types[$type])->equals(false))
         ;
 
+        // tariffs
+        if (!empty($tariffs) && is_array($tariffs)) {
+            $qb->field('id')->in($tariffs);
+        }
+
         return $qb;
     }
 
     /**
      * @param Hotel $hotel
      * @param array $type 'rooms', 'restrictions', 'prices'
+     * @param array $tariffs ids
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetchChildTariffs(Hotel $hotel, $type)
+    public function fetchChildTariffs(Hotel $hotel, $type, $tariffs = [])
     {
-        return $this->fetchChildTariffsQuery($hotel, $type)->getQuery()->execute();
+        return $this->fetchChildTariffsQuery($hotel, $type, $tariffs)->getQuery()->execute();
     }
 
     /**

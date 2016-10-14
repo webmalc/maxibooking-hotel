@@ -28,18 +28,12 @@ class SearchFactory implements SearchInterface
     protected $dm;
 
     /**
-     * @var ClientConfig;
-     */
-    private $config;
-
-    /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
         $this->search = $this->container->get('mbh.package.search_simple');
     }
 
@@ -54,11 +48,12 @@ class SearchFactory implements SearchInterface
     }
 
     /**
+     * @var int $range
      * @return $this
      */
-    public function setAdditionalDates()
+    public function setAdditionalDates(int $range = 0)
     {
-        if ($this->config && $this->config->getSearchDates()) {
+        if ($range) {
             $this->search = $this->container->get('mbh.package.search_multiple_dates')->setSearch($this->search);
         }
 

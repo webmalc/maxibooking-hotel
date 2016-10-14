@@ -5,13 +5,12 @@
   "description": "The \"Symfony Standard Edition\" distribution",
   "minimum-stability": "dev",
   "autoload": {
-    "psr-0": {
-      "": "src/",
-      "SymfonyStandard": "app/"
-    }
+    "psr-4": { "": "src/" },
+    "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
   },
   "require": {
     "php": ">=5.3.3",
+    "alcaeus/mongo-php-adapter": "*@dev",
     "symfony/symfony": "2.8.*@stable",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
@@ -20,9 +19,9 @@
     "sensio/distribution-bundle": "*@stable",
     "sensio/framework-extra-bundle": "~3.0",
     "incenteev/composer-parameter-handler": "*@stable",
-    "doctrine/mongodb": "*@stable",
-    "doctrine/mongodb-odm": "*@stable",
-    "doctrine/mongodb-odm-bundle": "*@stable",
+    "doctrine/mongodb": "*@dev",
+    "doctrine/mongodb-odm": "*@dev",
+    "doctrine/mongodb-odm-bundle": "*@dev",
     "gedmo/doctrine-extensions": "dev-master as 2.4.13",
     "stof/doctrine-extensions-bundle": "dev-master",
     "friendsofsymfony/user-bundle": "*@dev",
@@ -42,7 +41,9 @@
     "doctrine/doctrine-fixtures-bundle": "^2.2@dev",
     "myallocator/myallocator-php-sdk": "dev-master",
     "leafo/scssphp": "^0.6.3",
-    "alcaeus/mongo-php-adapter": "^1.0"
+    "leaseweb/memcache-bundle": "^2.1",
+    "sonata-project/google-authenticator": "^1.0",
+    "google/recaptcha": "^1.1"
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3"

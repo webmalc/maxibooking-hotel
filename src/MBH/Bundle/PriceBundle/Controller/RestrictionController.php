@@ -93,7 +93,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         }
         //get tariffs
         $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
-            ->fetch($hotel, $request->get('tariffs'))
+            ->fetchChildTariffs($hotel, 'restrictions', $request->get('tariffs'))
         ;
         if (!count($tariffs)) {
             return array_merge($response, ['error' => 'Тарифы не найдены']);
@@ -206,6 +206,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $dm->flush();
 
         $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
+        $this->get('mbh.cache')->clear();
 
         $request->getSession()->getFlashBag()
             ->set('success', 'Изменения успешно сохранены.')
@@ -244,7 +245,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
      * @Route("/generator/save", name="restriction_generator_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_RESTRICTION_EDIT')")
-     * @Template("MBHPriceBundle:Restriction:index.html.twig")
+     * @Template("MBHPriceBundle:Restriction:generator.html.twig")
      * @param Request $request
      * @return array
      */
@@ -275,13 +276,13 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             );
 
             $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
+            $this->get('mbh.cache')->clear();
 
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('restriction_generator'));
             }
             return $this->redirect($this->generateUrl('restriction_overview'));
         }
-
         return [
             'form' => $form->createView()
         ];

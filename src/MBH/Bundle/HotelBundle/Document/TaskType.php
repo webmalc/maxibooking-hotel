@@ -173,7 +173,7 @@ class TaskType extends Base
     }
 
     /**
-     * @return RoomStatus
+     * @return RoomStatus|null
      */
     public function getRoomStatus()
     {

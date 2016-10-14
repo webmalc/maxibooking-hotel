@@ -3,7 +3,9 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 
+use Doctrine\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\UserBundle\Document\User;
@@ -11,7 +13,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class TaskRepository
-
  */
 class TaskRepository extends DocumentRepository
 {
@@ -79,12 +80,14 @@ class TaskRepository extends DocumentRepository
             $queryBuilder->addAnd($queryBuilder->expr()->field('priority')->equals($queryCriteria->priority));
         }
 
-        if ($queryCriteria->begin) {
-            $queryBuilder->addAnd($queryBuilder->expr()->field('createdAt')->gte($queryCriteria->begin));
-        }
+        if ($dateCriteriaType = $queryCriteria->dateCriteriaType) {
+            if ($queryCriteria->begin) {
+                $queryBuilder->addAnd($queryBuilder->expr()->field($dateCriteriaType)->gte($queryCriteria->begin));
+            }
 
-        if ($queryCriteria->end) {
-            $queryBuilder->addAnd($queryBuilder->expr()->field('createdAt')->lte($queryCriteria->end));
+            if ($queryCriteria->end) {
+                $queryBuilder->addAnd($queryBuilder->expr()->field($dateCriteriaType)->lte($queryCriteria->endWholeDay($queryCriteria->end)));
+            }
         }
 
         if ($queryCriteria->hotel) {
@@ -122,9 +125,9 @@ class TaskRepository extends DocumentRepository
         if ($exceptTask) {
             $qb->field('_id')->notEqual($exceptTask->getId());
         }
+        $result = $qb->sort(['createdBy' => -1])->limit(1)->getQuery()->getSingleResult();
 
-        return $qb->sort(['createdBy' => -1])->limit(1)
-            ->getQuery()->getSingleResult();
+        return $result;
     }
 
     /**
@@ -180,4 +183,25 @@ class TaskRepository extends DocumentRepository
 
         return $query->execute();
     }
+
+    public function getTaskInProcessedByRoom(Task $task)
+    {
+        $types = $this->getDocumentManager()->getRepository('MBHHotelBundle:TaskType')
+            ->createQueryBuilder()
+            ->field('roomStatus.id')->equals($task->getType()->getRoomStatus()->getId())
+            ->getQuery()
+            ->execute();
+        $typesId = $this->container->get('mbh.helper')->toIds($types);
+
+        $query = $this->createQueryBuilder()
+            ->field('status')->equals(Task::STATUS_PROCESS)
+            ->field('room.id')->equals($task->getRoom()->getId())
+            ->field('_id')->notEqual($task->getId())
+            ->field('type.id')->in($typesId)
+            ->getQuery();
+
+        return $query->execute();
+
+    }
+
 }

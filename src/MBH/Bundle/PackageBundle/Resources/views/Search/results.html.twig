@@ -1,7 +1,7 @@
 <div class="spacer-top">
 
     {% if results is not empty %}
-
+    {% set clientConfig = client_config() %}
 
     <table class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
         <thead>
@@ -21,14 +21,13 @@
         </tr>
         </thead>
         <tbody>
-
     {% for row in results %}
 
         <tr class="mbh-grid-header1 info">
             <td colspan="10">
                 <strong>{{ row.roomType }}</strong> -
                 <small>
-                    {% if client_config() and client_config().useRoomTypeCategory() and row.roomType.category %}
+                    {% if clientConfig and clientConfig.useRoomTypeCategory() and row.roomType.category %}
                         {{ row.roomType.category }} -
                     {% endif %}
                     мест: {{ row.roomType.places }}{% if row.roomType.additionalPlaces > 0 %}(+{{ row.roomType.additionalPlaces }}){% endif %}
@@ -47,8 +46,7 @@
         </tr>
 
         {% for result in row.results %}
-
-            <tr {% if query.begin == result.begin and query.end == result.end and client_config() and client_config().searchDates %}class="success"{% endif %}>
+            <tr {% if query.begin == result.begin and query.end == result.end and query.range %}class="success"{% endif %}>
                 <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
                 <td>
                     {{ result.begin|mbh_format }} - {{ result.end|mbh_format }}
@@ -80,7 +78,8 @@
                         <select class="form-control input-sm search-room-select">
                             <option></option>
                             {% for room in  result.rooms %}
-                                <option {% if room.status and room.status.code in roomStatusIcons %}data-icon="mbf-{{ roomStatusIcons[room.status.code] }}"{% endif %} {% if query.room == room.id %}selected{% endif %}
+                                <option  {% if room.status is iterable and room.status is not empty %}data-icon="{% for status in room.status %}{% if status.code in roomStatusIcons|keys  %}mbf-{{ roomStatusIcons[status.code] }};{% endif %}{% endfor %} "{% endif %}
+                                        {% if query.room == room.id %}selected{% endif %}
                                         value="{{ room.id }}">
                                     {{ room }}
                                 </option>
@@ -130,6 +129,13 @@
         </tbody></table>
 
 
+    {% elseif errors %}
+        <div class="alert alert-danger">
+            <i class="fa fa-exclamation-circle"> </i>
+            {% for error in errors %}
+                {{ error.message }}
+            {% endfor %}
+        </div>
     {% elseif results is iterable and results|length == 0 %}
         <div class="alert alert-warning"><i
                     class="fa fa-exclamation-circle"> </i> {{ "search.results.nothing_found_for_your_request"|trans({}, "MBHPackageBundle") }}

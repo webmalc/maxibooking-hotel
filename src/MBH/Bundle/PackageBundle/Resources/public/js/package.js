@@ -1,9 +1,29 @@
 /*global window, $, services, document, datepicker, deleteLink, Routing, mbh */
-var initAccommodationTab = function() {
+var initAccommodationTab = function () {
+    'use strict'
+
+    //Package relocation
+    var packageRelocationDate = $('#package-relocation-date');
+    if (packageRelocationDate.length) {
+        packageRelocationDate.datepicker('setStartDate', packageRelocationDate.attr('data-begin'));
+        packageRelocationDate.datepicker('setEndDate', packageRelocationDate.attr('data-end'));
+
+        $('#package-relocation-form').submit(function (event) {
+            event.preventDefault();
+            window.location = Routing.generate(
+                'package_relocation',
+                {'id': $(this).attr('data-package-id'), 'date': packageRelocationDate.val()},
+                true
+            );
+        });
+    }
+
     var $form = $('form[name=mbh_bundle_packagebundle_package_accommodation_type]');
 
     var userConfirmation = false;
-    var lateEarlyDateChecker = new LateEarlyDateChecker(function(){}, function(){});
+    var lateEarlyDateChecker = new LateEarlyDateChecker(function () {
+    }, function () {
+    });
 
     var $checkIn = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckIn'),
         $checkOut = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckOut'),
@@ -17,11 +37,19 @@ var initAccommodationTab = function() {
             format: 'dd.mm.yyyy'
         };
 
-    $arrivalDate.on('change', function(){userConfirmation = false});
-    $arrival.on('change', function(){userConfirmation = false});
+    $arrivalDate.on('change', function () {
+        userConfirmation = false
+    });
+    $arrival.on('change', function () {
+        userConfirmation = false
+    });
 
-    $departureDate.on('change', function(){userConfirmation = false});
-    $departure.on('change', function(){userConfirmation = false});
+    $departureDate.on('change', function () {
+        userConfirmation = false
+    });
+    $departure.on('change', function () {
+        userConfirmation = false
+    });
 
     var show = function () {
         if ($checkIn.is(':checked')) {
@@ -58,19 +86,18 @@ var initAccommodationTab = function() {
     $checkOut.on('switchChange.bootstrapSwitch', show);
 
 
-
-    var getConfirmText = function() {
+    var getConfirmText = function () {
         var pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
 
         var arrivalDate = $arrivalDate.val();
         var arrivalTime = $arrival.val();
-        var arrivalDate = new Date(arrivalDate.replace(pattern,'$3-$2-$1') + 'T' + arrivalTime + ':00');
+        var arrivalDate = new Date(arrivalDate.replace(pattern, '$3-$2-$1') + 'T' + arrivalTime + ':00');
         arrivalDate.setHours(arrivalDate.getHours() - mbh.UTCHoursOffset);
         var isSuitArrival = !$checkIn.is(':checked') || arrivalDate && arrivalTime && lateEarlyDateChecker.checkLateArrival(Package.begin, arrivalDate);
 
         var departureDate = $departureDate.val();
         var departureTime = $departure.val();
-        var departureDate = new Date(departureDate.replace(pattern,'$3-$2-$1') + 'T' + departureTime + ':00');
+        var departureDate = new Date(departureDate.replace(pattern, '$3-$2-$1') + 'T' + departureTime + ':00');
         departureDate.setHours(departureDate.getHours() - mbh.UTCHoursOffset);
         var isSuitDeparture = !$checkOut.is(':checked') || departureDate && departureTime && lateEarlyDateChecker.checkEarlyDeparture(Package.end, departureDate);
 
@@ -90,7 +117,7 @@ var initAccommodationTab = function() {
     }
 
     var confirmed = false;
-    var formHandler = function(e) {
+    var formHandler = function (e) {
         if (!confirmed) {
             var text = [];
             if ($checkOut.is(':checked') && Package.debt > 0) {
@@ -100,9 +127,9 @@ var initAccommodationTab = function() {
             if (confirmText) {
                 text.push(confirmText);
             }
-            if(text.length > 0) {
+            if (text.length > 0) {
                 e.preventDefault();
-                mbh.alert.show(null, 'Подтверждение', text.join('<br>'), 'Продолжить', null, 'danger', function(){
+                mbh.alert.show(null, 'Подтверждение', text.join('<br>'), 'Продолжить', null, 'danger', function () {
                     mbh.alert.hide();
                     confirmed = true;
                     $('button[type=submit][name=save]').trigger('click');
@@ -111,11 +138,10 @@ var initAccommodationTab = function() {
         }
     }
 
-    $form.on('submit', function(e){
+    $form.on('submit', function (e) {
         formHandler(e);
     });
 }
-
 
 
 var docReadyPackages = function () {
@@ -189,7 +215,10 @@ var docReadyPackages = function () {
             {
                 extend: 'pdf',
                 text: '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
-                className: 'btn btn-default btn-sm'
+                className: 'btn btn-default btn-sm',
+                exportOptions: {
+                    stripNewlines: false
+                }
             }
         ],
         "processing": true,
@@ -232,11 +261,11 @@ var docReadyPackages = function () {
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
 
             //summary
-            $('#package-summary-total').html(settings.json.package_summary_total ||  '-');
-            $('#package-summary-paid').html(settings.json.package_summary_paid ||  '-');
-            $('#package-summary-debt').html(settings.json.package_summary_debt ||  '-');
-            $('#package-summary-nights').html(settings.json.package_summary_nights ||  '-');
-            $('#package-summary-guests').html(settings.json.package_summary_guests ||  '-');
+            $('#package-summary-total').html(settings.json.package_summary_total || '-');
+            $('#package-summary-paid').html(settings.json.package_summary_paid || '-');
+            $('#package-summary-debt').html(settings.json.package_summary_debt || '-');
+            $('#package-summary-nights').html(settings.json.package_summary_nights || '-');
+            $('#package-summary-guests').html(settings.json.package_summary_guests || '-');
         }
     });
 
@@ -343,14 +372,14 @@ var docReadyPackages = function () {
             entityId = $button.closest('ul').data('id');
 
         $.ajax(Routing.generate('document_modal_form', {id: entityId, type: type}), {
-            'success' : function (response) {
+            'success': function (response) {
                 $body.html(response.html);
 
                 var $em = $modalTitle.find('em');
                 $em.text(response.name);
 
                 $submitButton.attr('disabled', response.error);
-                if(!response.error) {
+                if (!response.error) {
                     $body.find("input[type=checkbox]").bootstrapSwitch({
                         'size': 'small',
                         'onText': 'да',
@@ -370,7 +399,6 @@ var docReadyPackages = function () {
     $('#mbh_bundle_packagebundle_package_accommodation_type_accommodation').select2({
         templateResult: select2TemplateResult.appendIcon
     });
-
 
 
     discountInit($('#mbh_bundle_packagebundle_package_main_type_discount'), $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount'))

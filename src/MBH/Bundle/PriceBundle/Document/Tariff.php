@@ -153,6 +153,24 @@ class Tariff extends Base implements ConditionsInterface
     protected $promotions;
 
     /**
+     * @var Restriction[]|ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="Restriction", mappedBy="tariff", cascade={"remove"})
+     */
+    protected $restrictions;
+
+    /**
+     * @var PriceCache[]|ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="PriceCache", mappedBy="tariff", cascade={"remove"})
+     */
+    protected $priceCaches;
+
+    /**
+     * @var RoomCache[]|ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="RoomCache", mappedBy="tariff", cascade={"remove"})
+     */
+    protected $roomCaches;
+
+    /**
      * @ODM\ReferenceOne(targetDocument="Promotion")
      * @var Promotion|null
      */
@@ -596,6 +614,60 @@ class Tariff extends Base implements ConditionsInterface
     {
         $this->defaultForMerging = $defaultForMerging;
 
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRestrictions()
+    {
+        return $this->restrictions;
+    }
+
+    /**
+     * @param mixed $restrictions
+     * @return Tariff
+     */
+    public function setRestrictions($restrictions)
+    {
+        $this->restrictions = $restrictions;
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection|PriceCache[]
+     */
+    public function getPriceCaches()
+    {
+        return $this->priceCaches;
+    }
+
+    /**
+     * @param ArrayCollection|PriceCache[] $priceCaches
+     * @return Tariff
+     */
+    public function setPriceCaches($priceCaches)
+    {
+        $this->priceCaches = $priceCaches;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRoomCaches()
+    {
+        return $this->roomCaches;
+    }
+
+    /**
+     * @param mixed $roomCaches
+     * @return Tariff
+     */
+    public function setRoomCaches($roomCaches)
+    {
+        $this->roomCaches = $roomCaches;
         return $this;
     }
     

@@ -2,17 +2,17 @@
 
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
-use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
-use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 
 /**
  *  Search with tariffs service
  */
 class SearchMultipleDates implements SearchInterface
 {
+    CONST MAX_RESULTS = 20;
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -30,16 +30,6 @@ class SearchMultipleDates implements SearchInterface
     protected $dm;
 
     /**
-     * @var ClientConfig;
-     */
-    protected $config;
-
-    /**
-     * @var int
-     */
-    protected $dates;
-
-    /**
      * @var RoomTypeManager
      */
     private $manager;
@@ -51,8 +41,6 @@ class SearchMultipleDates implements SearchInterface
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
-        $this->dates = $this->config && $this->config->getSearchDates() ? $this->config->getSearchDates() : 0;
         $this->manager = $container->get('mbh.hotel.room_type_manager');
     }
 
@@ -78,7 +66,6 @@ class SearchMultipleDates implements SearchInterface
         if (!$this->search) {
             throw new Exception('SearchInterface $search is null.');
         }
-
         $roomTypes = $query->roomTypes;
         if (empty($roomTypes)) {
             foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
@@ -103,102 +90,64 @@ class SearchMultipleDates implements SearchInterface
         }
         $results = [];
 
-        foreach ($roomTypes as $roomTypeId) {
+        $dates = $this->getDates(clone $query->begin, clone $query->end, $query->range, null, $tariff);
 
-            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
+        $q = clone $query;
+        foreach ($dates as $pair) {
+            $q->begin = $pair[0];
+            $q->end = $pair[1];
+            $q->roomTypes = $roomTypes;
+            $q->forceRoomTypes = true;
+            $row = $this->search->search($q);
+            $results = array_merge($results, $row);
 
-            $dates = $this->getDates($query->begin, $query->end, $roomType, $tariff);
+            if ($q->begin == $query->begin && $q->end == $query->end && !empty($row[0]) && $tariff && $row[0]->getTariff() == $tariff) {
+                break;
+            }
 
-            $q = clone $query;
-            foreach ($dates as $pair) {
-                $q->begin = $pair[0];
-                $q->end = $pair[1];
-                $q->roomTypes = [$roomTypeId];
-                $q->forceRoomTypes = true;
-                $row = $this->search->search($q);
-                $results = array_merge($results, $row);
-
-                if ($q->begin == $query->begin && $q->end == $query->end && !empty($row[0]) && $tariff && $row[0]->getTariff() == $tariff) {
-                    break;
-                }
-
-                if (count($results) > 20) {
-                    return $results;
-                }
+            if (count($results) > self::MAX_RESULTS) {
+                return $results;
             }
         }
-
         return $results;
     }
 
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
+     * @param int $range
      * @param RoomType|null $roomType
      * @param Tariff|null $tariff
-     * @param null $count
-     * @return mixed
+     * @return array
      */
-    public function getDates(\DateTime $begin, \DateTime $end, RoomType $roomType = null, Tariff $tariff = null, $count = null)
+    public function getDates(\DateTime $begin, \DateTime $end, int $range, RoomType $roomType = null, Tariff $tariff = null)
     {
-        $count = is_numeric($count) ? $count : $this->dates;
         $result = [];
-        /**
-         * @param $date
-         * @param $count
-         * @param RoomType $roomType
-         * @param Tariff $tariff
-         * @param bool|false $departure
-         * @return mixed
-         */
-        $dates = function ($date, $count, RoomType $roomType = null, Tariff $tariff = null, $departure = false) {
-            $result[0] = $date;
 
-            $plus = $minus = 1;
-            for ($i = 1; count($result) <= $count; $i++) {
-                $new = clone $date;
+        $dates = function (\DateTime $date, int $range): array {
+            $from = clone $date;
+            $to = clone $date;
+            $from->modify('- ' . ceil($range / 2) . ' days');
+            $to->modify('+ ' . (ceil($range / 2) + 1) . ' days');
 
-                if ($i % 2) {
-                    $new->modify('-' . $minus . ' day');
-                    $minus += 1;
-                } else {
-                    $new->modify('+' . $plus . ' day');
-                    $plus += 1;
+            $result = iterator_to_array(new \DatePeriod($from, new \DateInterval('P1D'), $to));
+            uasort($result, function ($a, $b) use ($date) {
+                $diffA = $date->diff($a)->days;
+                $diffB = $date->diff($b)->days;
+
+                if ($diffA == $diffB) {
+                    return 0;
                 }
-
-                if ($new < new \DateTime('midnight')) {
-                    continue;
-                }
-
-                if ($tariff && $roomType) {
-                    $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')
-                        ->findOneByDate($new, $roomType, $tariff);
-
-                    if ($restriction) {
-                        if ($restriction->getCLosed()) {
-                            continue;
-                        }
-                        if ($departure and $restriction->getClosedOnDeparture()) {
-                            continue;
-                        }
-                        if (!$departure and $restriction->getClosedOnArrival()) {
-                            continue;
-                        }
-                    }
-                }
-
-                $result[$new->format('U')] = $new;
-            }
-
-            ksort($result);
+                return ($diffA < $diffB) ? -1 : 1;
+            });
             return $result;
         };
 
-        $departures = $dates($end, $count, $roomType, $tariff, true);
-        $arrivals = $dates($begin, $count, $roomType, $tariff);
+        $begins = $dates($begin, $range);
+        $ends = $dates($end, $range);
 
-        foreach ($arrivals as $arrival) {
-            foreach ($departures as $departure) {
+        foreach ($begins as $arrival) {
+            foreach ($ends as $departure) {
                 if ($arrival < $departure) {
                     $result[$arrival->format('Y-m-d') . '_' . $departure->format('Y-m-d')] = [$arrival, $departure];
                 }
@@ -207,6 +156,7 @@ class SearchMultipleDates implements SearchInterface
 
         return $result;
     }
+
 
     /**
      * @param SearchQuery $query

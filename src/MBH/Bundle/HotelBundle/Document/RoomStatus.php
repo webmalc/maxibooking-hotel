@@ -6,7 +6,6 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -42,6 +41,8 @@ class RoomStatus extends Base
     /**
      * @return string
      */
+
+
     public function getCode()
     {
         return $this->code;
@@ -82,4 +83,5 @@ class RoomStatus extends Base
         $this->title = $title;
         return $this;
     }
+
 }

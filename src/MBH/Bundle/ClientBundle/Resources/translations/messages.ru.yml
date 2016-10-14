@@ -3,12 +3,12 @@ form.clientConfigType.search_group: Параметры подбора броне
 form.clientConfigType.search_windows: Использовать систему "окна"?
 form.clientConfigType.search_windows_desc: Подбор номеров без создания "окон"
 form.clientConfigType.sms_notification: Смс оповещение?
-form.clientConfigType.search_dates: Дополнительные даты поиска
-form.clientConfigType.search_dates_desc: Количество дополнительных дат для подбора броней. Используются при отсутствии результатов поиска на конкретные даты.
+form.clientConfigType.search_dates: Дополнительные дни поиска
+form.clientConfigType.search_dates_desc: Количество дополнительных дней для подбора броней.
 form.clientConfigType.is_disabled_room_type_category: Группы для типов номеров
 form.clientConfigType.is_enabled_work_shift: Рабочие смены
-form.clientConfigType.instant_search: Быстрый поиск броней
-form.clientConfigType.instant_search_help: Поиск броней сразу при изменении полей?
+form.clientConfigType.instant_search: Быстрый поиск
+form.clientConfigType.instant_search_help: Поиск сразу при изменении полей?
 form.clientConfigType.default_notice_doc: Принимающая сторона
 form.clientConfigType.default_notice_doc_desc: Принимающая сторона иностранного гражданина по умолчанию
 form.clientConfigType.is_sms_notification_turned_on: Включено ли смс оповещение клиентов?

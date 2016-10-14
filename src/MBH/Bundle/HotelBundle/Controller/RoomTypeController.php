@@ -173,7 +173,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         /** @var ClientConfig $config */
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $form = $this->createForm(new RoomTypeType(), $entity, [
             'useRoomTypeCategory' => $config ? $config->getUseRoomTypeCategory() : false,
             'hotel' => $entity->getHotel()

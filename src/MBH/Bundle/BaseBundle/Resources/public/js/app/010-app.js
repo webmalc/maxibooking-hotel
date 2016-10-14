@@ -92,7 +92,10 @@ mbh.datatablesOptions = {
         {
             extend: 'excel',
             text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
-            className: 'btn btn-default btn-sm'
+            className: 'btn btn-default btn-sm',
+            exportOptions: {
+                stripNewlines: false
+            }
         },
         {
             extend: 'pdf',
