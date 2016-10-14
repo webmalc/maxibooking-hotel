@@ -150,12 +150,16 @@
                 : </b> <span id="package-summary-nights">-</span></span>
         <span class="package-summary-row"><b>{{ 'package.index.summary.guests'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-guests">-</span></span>
+        {% if is_granted('ROLE_ADMIN') %}
         <span class="package-summary-row"><b>{{ 'package.index.summary.total'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-total">-</span></span>
+        {% endif %}
         <span class="package-summary-row"><b>{{ 'package.index.summary.paid'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-paid">-</span></span>
+        {% if is_granted('ROLE_ADMIN') %}
         <span class="package-summary-row"><b>{{ 'package.index.summary.debt'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-debt">-</span></span>
+        {% endif %}
     </div>
 
     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
