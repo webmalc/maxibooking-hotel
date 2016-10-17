@@ -139,6 +139,7 @@ ROLE_OSTROVOK: Ostrovok
 ROLE_OKTOGO: Oktogo
 ROLE_HOTELINN: Hotel-inn
 ROLE_MYALLOCATOR: MyAllocator
+ROLE_AIRBNB: Airbnb
 
 ROLE_ONLINE_FORM: Онлайн форма
 ROLE_ONLINE_FORM_VIEW: Просмотр онлайн форм

@@ -382,33 +382,47 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     /**
      * @param $url
      * @param array $data
-     * @param array $headers
+     * @param null $headers
      * @param bool $error
-     * @param $post $error
+     * @param string $method
      * @return mixed
      */
-    public function send($url, $data = [], $headers = null, $error = false, $post = true)
+    public function send($url, $data = [], $headers = null, $error = false, $method = 'POST')
     {
-        $ch = curl_init($url);
+        $ch = curl_init();
 
-        if ($post) {
+        if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
+        }
+        if ($method == 'PUT') {
+            curl_setopt($ch, CURLOPT_PUT, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        }
+        if (static::TEST) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         }
 
         if ($headers) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
-        if ($post && !empty($data)) {
-            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+
+        if (!empty($data)) {
+            if ($method == 'POST' || $method == 'PUT') {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            } elseif ($method == 'GET') {
+                $url = $url. '?' . http_build_query($data);
+            }
+        }
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        if (($method == 'POST' || $method == 'PUT') && !empty($data)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
         curl_setopt($ch, CURLOPT_VERBOSE, 1);
 
-        if (static::TEST) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        }
         $output = curl_exec($ch);
 
         if (!$output && $error) {
@@ -425,13 +439,13 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * @param array $data
      * @param array $headers
      * @param bool $error
-     * @param bool $post
+     * @param string $method
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    public function sendJson($url, $data = [], $headers = null, $error = false, $post = false)
+    public function sendJson($url, $data = [], $headers = null, $error = false, $method = 'get')
     {
-        $result = $this->send($url, json_encode($data), $headers, $error, $post);
+        $result = $this->send($url, json_encode($data), $headers, $error, $method);
         $json = json_decode($result, true);
 
         if (!$json) {

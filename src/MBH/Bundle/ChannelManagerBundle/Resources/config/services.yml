@@ -23,6 +23,17 @@ services:
                 class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
                 arguments: [@service_container]
 
+    mbh.channelmanager.airbnb:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb
+        arguments: ['@service_container']
+
+    mbh.channelmanager.airbnb_request_formatter:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Airbnb\AirbnbRequestFormatter
+
+    mbh.channelmanager.airbnb_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\AirbnbType
+        arguments: ['@service_container']
+
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: [@mbh.currency]

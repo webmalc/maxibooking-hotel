@@ -2,8 +2,12 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Document\Service;
+use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -12,63 +16,56 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
-
-
+use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as MBHValidator;
 
 /**
- * @ODM\Document(collection="MyallocatorConfig")
+ * @ODM\Document(collection="AirbnbConfig")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInterface
+class AirbnbConfig extends Base implements BaseInterface
 {
 
     public function getName()
     {
-        return 'myallocator';
+        return 'airbnb';
     }
 
     use ConfigTrait;
-    
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
      */
     use TimestampableDocument;
 
-    /**$token
+    /**
      * Hook softdeleteable behavior
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
 
-    /** 
+    /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="myallocatorConfig")
-     * @Assert\NotNull(message="document.myallocatorConfig.no_hotel_selected")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="airbnbConfig")
+     * @Assert\NotNull(message="document.airbnbConfig.no_hotel_selected")
      */
     protected $hotel;
 
     /**
+     * В Airbnb данные о размещениях отеля maxibooking привязаны к аккаунту.
+     * Поэтому параметр userId сервиса Airbnb эквивалентен параметру hotelId системы maxibooking
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      */
     protected $hotelId;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string", name="token")
-     */
-    protected $token;
 
     /**
      * @var array
@@ -83,19 +80,16 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
     protected $tariffs;
 
     /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string")
+     * @var array
+     * @ODM\EmbedMany(targetDocument="Service")
      */
-    protected $currency;
+    protected $services;
 
     /**
-     * @var float
-     * @Gedmo\Versioned
-     * @ODM\Field(type="float")
+     * @var string
+     * @ODM\Field(type="string")
      */
-    protected $currencyDefaultRatio;
-
+    protected $accessToken;
 
     /**
      * Set hotel
@@ -117,108 +111,6 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
     public function getHotel()
     {
         return $this->hotel;
-    }
-
-    public function __construct()
-    {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
-    /**
-     * Add room
-     *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Room $room
-     */
-    public function addRoom(\MBH\Bundle\ChannelManagerBundle\Document\Room $room)
-    {
-        $this->rooms[] = $room;
-    }
-
-    /**
-     * Remove room
-     *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Room $room
-     */
-    public function removeRoom(\MBH\Bundle\ChannelManagerBundle\Document\Room $room)
-    {
-        $this->rooms->removeElement($room);
-    }
-
-    /**
-     * Get rooms
-     *
-     * @return \Doctrine\Common\Collections\Collection $rooms
-     */
-    public function getRooms()
-    {
-        return $this->rooms;
-    }
-
-    /**
-     * Add tariff
-     *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff
-     */
-    public function addTariff(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff)
-    {
-        $this->tariffs[] = $tariff;
-    }
-
-    /**
-     * Remove tariff
-     *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff
-     */
-    public function removeTariff(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff)
-    {
-        $this->tariffs->removeElement($tariff);
-    }
-
-    /**
-     * Get tariffs
-     *
-     * @return \Doctrine\Common\Collections\Collection $tariffs
-     */
-    public function getTariffs()
-    {
-        return $this->tariffs;
-    }
-
-    /**
-     * @return $this
-     */
-    public function removeAllRooms()
-    {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function removeAllTariffs()
-    {
-        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getToken()
-    {
-        return $this->token;
-    }
-
-    /**
-     * @param string $token
-     */
-    public function setToken($token)
-    {
-        $this->token = $token;
     }
 
     /**
@@ -243,41 +135,147 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
         return $this->hotelId;
     }
 
+    public function __construct()
+    {
+        $this->rooms = new ArrayCollection();
+        $this->tariffs = new ArrayCollection();
+        $this->services = new ArrayCollection();
+    }
+
+    /**
+     * Add room
+     *
+     * @param Room $room
+     */
+    public function addRoom(Room $room)
+    {
+        $this->rooms[] = $room;
+    }
+
+    /**
+     * Remove room
+     *
+     * @param Room $room
+     */
+    public function removeRoom(Room $room)
+    {
+        $this->rooms->removeElement($room);
+    }
+
+    /**
+     * Get rooms
+     *
+     * @return \Doctrine\Common\Collections\Collection $rooms
+     */
+    public function getRooms()
+    {
+        return $this->rooms;
+    }
+
+    /**
+     * Add tariff
+     *
+     * @param Tariff $tariff
+     */
+    public function addTariff(Tariff $tariff)
+    {
+        $this->tariffs[] = $tariff;
+    }
+
+    /**
+     * Remove tariff
+     *
+     * @param Tariff $tariff
+     */
+    public function removeTariff(Tariff $tariff)
+    {
+        $this->tariffs->removeElement($tariff);
+    }
+
+    /**
+     * Get tariffs
+     *
+     * @return \Doctrine\Common\Collections\Collection $tariffs
+     */
+    public function getTariffs()
+    {
+        return $this->tariffs;
+    }
+
+    /**
+     * @return $this
+     */
+    public function removeAllRooms()
+    {
+        $this->rooms = new ArrayCollection();
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function removeAllTariffs()
+    {
+        $this->tariffs = new ArrayCollection();
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function removeAllServices()
+    {
+        $this->services = new ArrayCollection();
+
+        return $this;
+    }
+
+    /**
+     * Add service
+     *
+     * @param Service $service
+     */
+    public function addService(Service $service)
+    {
+        $this->services[] = $service;
+    }
+
+    /**
+     * Remove service
+     *
+     * @param Service $service
+     */
+    public function removeService(Service $service)
+    {
+        $this->services->removeElement($service);
+    }
+
+    /**
+     * Get services
+     *
+     * @return \Doctrine\Common\Collections\Collection $services
+     */
+    public function getServices()
+    {
+        return $this->services;
+    }
+
     /**
      * @return string
      */
-    public function getCurrency()
+    public function getAccessToken()
     {
-        return $this->currency;
+        return $this->accessToken;
     }
 
     /**
-     * @param string $currency
-     * @return self
+     * @param string $accessToken
      */
-    public function setCurrency($currency)
+    public function setAccessToken($accessToken)
     {
-        $this->currency = $currency;
-
-        return $this;
+        $this->accessToken = $accessToken;
     }
 
-    /**
-     * @return float
-     */
-    public function getCurrencyDefaultRatio()
-    {
-        return $this->currencyDefaultRatio;
-    }
-
-    /**
-     * @param float $currencyDefaultRatio
-     * @return self
-     */
-    public function setCurrencyDefaultRatio($currencyDefaultRatio)
-    {
-        $this->currencyDefaultRatio = $currencyDefaultRatio;
-
-        return $this;
-    }
 }

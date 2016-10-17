@@ -190,6 +190,9 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig", mappedBy="hotel") */
     protected $myallocatorConfig;
 
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig", mappedBy="hotel") */
+    protected $airbnbConfig;
+
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
     protected $ingredientCategories;
 
@@ -1242,5 +1245,21 @@ class Hotel extends Base implements \JsonSerializable
     public function addDishMenuCategories(DishMenuCategory $dishMenuCategory)
     {
         $this->dishMenuCategories->add($dishMenuCategory);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAirbnbConfig()
+    {
+        return $this->airbnbConfig;
+    }
+
+    /**
+     * @param mixed $airbnbConfig
+     */
+    public function setAirbnbConfig($airbnbConfig)
+    {
+        $this->airbnbConfig = $airbnbConfig;
     }
 }

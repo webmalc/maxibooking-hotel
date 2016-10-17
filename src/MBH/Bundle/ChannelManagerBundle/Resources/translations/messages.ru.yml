@@ -61,6 +61,16 @@ form.myallocatorType.hotels: Отели
 controller.myallocatorController.settings_saved_success: Настройки успешно сохранены
 controller.myallocatorController.invalid_credentials: Неверные логин/пароль для от личного кабинета
 
+#airbnb
+form.airbnb.isEnabled: Включен?
+form.airbnb.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+controller.airbnbController.settings_saved_success: Настройки успешно сохранены
+form.airbnb.password.label: Пароль
+form.airbnb.password.help: Пароль для входа в аккаунт Airbnb
+form.airbnb.password.placeholder: Пароль
+form.airbnb.email.label: E-mail
+form.airbnb.email.help: Адрес электронной почты для входа в аккаунт Airbnb
+form.airbnb.email.placeholder: Адрес электронной почты
 
 form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkOut: При выезде
