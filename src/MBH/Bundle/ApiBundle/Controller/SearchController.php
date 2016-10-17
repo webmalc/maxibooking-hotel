@@ -29,15 +29,16 @@ class SearchController extends Controller implements LanguageInterface
     public function getFormAction(FormConfig $formConfig)
     {
         // TODO: @Cache(expires="tomorrow", public=true)
-
         $query = new SearchQuery();
         $query->begin = new \DateTime();
         $query->end = new \DateTime("+1 day");
+        $query->hotels = count($formConfig->getHotels()) > 1 ? [] : $formConfig->getHotels();
         $form = $this->createForm('mbh_api_search_type', $query, ['config' => $formConfig]);
 
         return [
             'config' => $formConfig,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'restrictions' => json_encode($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut()),
         ];
     }
 }

@@ -101,10 +101,10 @@ class SearchType extends AbstractType
                             ->field('deletedAt')->equals(null)
                             ->sort(['fullTitle' => 'asc', 'title' => 'asc']);
                     },
-                    'empty_data' => count($hotels) > 1 ? [] : $hotels,
+                    'group_by' => count($hotels) > 1 ? 'hotelName' : null,
                     'property' => 'fullTitle',
                     'multiple' => true,
-                    'attr' => ['class' => 'manual'],
+                    'attr' => ['class' => 'manual', 'data-type' => $this->manager->useCategories ? 'category_' : ''],
             ]);
 
         }

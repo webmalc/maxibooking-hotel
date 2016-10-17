@@ -195,6 +195,11 @@ class RoomType extends Base implements RoomTypeInterface
         return $this->hotel;
     }
 
+    public function getHotelName()
+    {
+        return $this->getHotel()->getFullTitle();
+    }
+
     /**
      * Set hotel
      *

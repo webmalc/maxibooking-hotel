@@ -9,3 +9,12 @@
     {{ form_end(form) }}
 
 {% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        mbh = {
+            restrictions: {{ restrictions|raw }}
+        }
+    </script>
+{% endblock %}

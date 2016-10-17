@@ -13,6 +13,11 @@ interface RoomTypeInterface
     public function getHotel();
 
     /**
+     * @return string
+     */
+    public function getHotelName();
+
+    /**
      * @param Hotel|null $hotel
      */
     public function setHotel(Hotel $hotel);

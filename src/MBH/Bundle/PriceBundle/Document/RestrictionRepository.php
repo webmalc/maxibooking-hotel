@@ -29,7 +29,7 @@ class RestrictionRepository extends DocumentRepository
             $roomTypeIds[] = $roomType->getId();
         }
 
-        $data = $hotels = [];
+        $data = $hotels = $categories = [];
         $qb = $this->createQueryBuilder('q');
         $qb
             ->field('date')->gte(new \DateTime('midnight'))
@@ -45,6 +45,7 @@ class RestrictionRepository extends DocumentRepository
                     ->field('closedOnDeparture')->equals(true)
             );
 
+        // roomTypes
         foreach ($qb->getQuery()->execute() as $restriction)
         {
             if ($restriction->getTariff()->getIsDefault()) {
@@ -54,13 +55,27 @@ class RestrictionRepository extends DocumentRepository
                 $data[$restriction->getRoomType()->getId()][$dateStr] = $dateStr;
                 $data['allrooms_' . $hotel->getId()][$dateStr] = $dateStr;
                 $hotels[$hotel->getId()] = $hotel;
+                $category = $restriction->getRoomType()->getCategory();
+                if ($category) {
+                    $data['category_' . $category->getId()][$dateStr] = $dateStr;
+                    $categories[$category->getId()] = $category;
+                }
             }
         };
 
+
+        // hotels
         foreach ($hotels as $hotel) {
             foreach ($hotel->getRoomTypes() as $roomType) {
                 isset($data[$roomType->getId()]) ? $dates = $data[$roomType->getId()] : $dates = [];
                 $data['allrooms_' . $hotel->getId()] = array_intersect($data['allrooms_' . $hotel->getId()], $dates);
+            }
+        }
+        // roomTypeCategories
+        foreach ($categories as $category) {
+            foreach ($category->getTypes() as $roomType) {
+                isset($data[$roomType->getId()]) ? $dates = $data[$roomType->getId()] : $dates = [];
+                $data['category_' . $category->getId()] = array_intersect($data['category_' . $category->getId()], $dates);
             }
         }
 
