@@ -37,7 +37,7 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
      */
     use TimestampableDocument;
 
-    /**$token
+    /**
      * Hook softdeleteable behavior
      * deletedAt field
      */

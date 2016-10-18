@@ -16,28 +16,34 @@ class RequestInfo
 
     /**
      * @param mixed $methodName
+     * @return $this
      */
     public function setMethodName($methodName)
     {
         $this->methodName = $methodName;
+        return $this;
     }
 
     /**
      * @param $parameterName
      * @param $data
+     * @return $this
      */
     public function addRequestParameter($parameterName, $data)
     {
         $this->requestData[$parameterName] = $data;
+        return $this;
     }
 
     /**
      * @param $headerName
      * @param $data
+     * @return $this
      */
     public function addHeader($headerName, $data)
     {
         $this->headersList[] = "$headerName: $data";
+        return $this;
     }
 
     /**
@@ -74,10 +80,12 @@ class RequestInfo
 
     /**
      * @param mixed $url
+     * @return $this
      */
     public function setUrl($url)
     {
         $this->url = $url;
+        return $this;
     }
 
 }

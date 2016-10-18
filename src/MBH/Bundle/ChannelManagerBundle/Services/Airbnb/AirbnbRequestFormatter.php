@@ -4,6 +4,8 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
 
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Model\Airbnb\ClosedPeriod;
+use MBH\Bundle\ChannelManagerBundle\Model\Airbnb\PricePeriod;
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
 
 class AirbnbRequestFormatter
@@ -16,14 +18,8 @@ class AirbnbRequestFormatter
     const USER_ID_PARAMETER_NAME = 'user_id';
     const HAS_AVAILABILITY_PARAMETER_NAME = 'has_availability';
 
-
     /** @var  AirbnbConfig */
     private $config;
-
-    public function __construct()
-    {
-
-    }
 
     public function setInitData(ChannelManagerConfigInterface $config)
     {
@@ -32,35 +28,94 @@ class AirbnbRequestFormatter
         return $this;
     }
 
-    public function formatAuthorizeRequest($username, $password)
+    public function formatAuthorizeRequest($username, $password) : RequestInfo
     {
         $requestInfo = new RequestInfo();
-        $requestInfo->setUrl(self::BASE_URL . 'v1/authorize');
-        $requestInfo->addRequestParameter('username', $username);
-        $requestInfo->addRequestParameter('password', $password);
-        $requestInfo->addRequestParameter(self::API_KEY_PARAMETER_NAME, self::API_KEY);
+        $requestInfo
+            ->setUrl(self::BASE_URL . 'v1/authorize')
+            ->addRequestParameter('username', $username)
+            ->addRequestParameter('password', $password);
+        $requestInfo = $this->addAPIKey($requestInfo);
         $requestInfo->setMethodName(RequestInfo::POST_METHOD_NAME);
 
         return $requestInfo;
     }
 
-    public function formatGetUserInfoRequest()
+    public function formatGetUserInfoRequest() : RequestInfo
     {
         $requestInfo = new RequestInfo();
         $requestInfo->setUrl(self::BASE_URL . 'v1/account/active');
-        $requestInfo->addHeader(self::AUTH_TOKEN_HEADER_NAME, $this->config->getAccessToken());
-        $requestInfo->addRequestParameter(self::API_KEY_PARAMETER_NAME, self::API_KEY);
+        $requestInfo = $this->addAccessToken($requestInfo);
+        $requestInfo = $this->addAPIKey($requestInfo);
+
         return $requestInfo;
     }
 
-    public function formatGetListingsRequests()
+    public function formatGetListingsRequests() : RequestInfo
     {
         $requestInfo = new RequestInfo();
-        $requestInfo->setUrl(self::BASE_URL . 'v2/listings');
-        $requestInfo->addHeader(self::AUTH_TOKEN_HEADER_NAME, $this->config->getAccessToken());
-        $requestInfo->addRequestParameter(self::USER_ID_PARAMETER_NAME, $this->config->getHotelId());
-        $requestInfo->addRequestParameter(self::HAS_AVAILABILITY_PARAMETER_NAME, 'false');
+        $requestInfo
+            ->setUrl(self::BASE_URL . 'v2/listings')
+            ->addRequestParameter(self::USER_ID_PARAMETER_NAME, $this->config->getHotelId())
+            ->addRequestParameter(self::HAS_AVAILABILITY_PARAMETER_NAME, 'false');
+        $requestInfo = $this->addAccessToken($requestInfo);
 
+        return $requestInfo;
+    }
+
+    public function formatUpdatePricesRequest(PricePeriod $pricePeriod, $listingId) : RequestInfo
+    {
+        $requestInfo = $this->getDailyInfoRequest($pricePeriod->getStartDate(), $pricePeriod->getEndDate(), $listingId);
+        $requestInfo
+            ->addRequestParameter('daily_price', $pricePeriod->getPrice())
+            ->addRequestParameter('demand_based_pricing_overridden', 'true');
+
+        return $requestInfo;
+    }
+
+    public function formatUpdateAvailabilityRequest(ClosedPeriod $closedPeriod, $listingId) : RequestInfo
+    {
+        $requestInfo = $this->getDailyInfoRequest($closedPeriod->getStartDate(), $closedPeriod->getEndDate(), $listingId);
+        $requestInfo->addRequestParameter('availability', $closedPeriod->isAvailable());
+
+        return $requestInfo;
+    }
+
+    public function formatDeactivateListingRequest($listingId) : RequestInfo
+    {
+        $requestInfo = new RequestInfo();
+        $requestInfo
+            ->setUrl(self::BASE_URL . 'v1/listings/' . $listingId . '/update')
+            ->setMethodName(RequestInfo::POST_METHOD_NAME)
+            ->addRequestParameter('listing', [self::HAS_AVAILABILITY_PARAMETER_NAME => 'true']);
+        $requestInfo = $this->addAccessToken($requestInfo);
+        $requestInfo = $this->addAPIKey($requestInfo);
+
+        return $requestInfo;
+    }
+
+    private function getDailyInfoRequest(\DateTime $startDate, \DateTime $endDate, $listingId)
+    {
+        $requestInfo = new RequestInfo();
+        $endDateString = $endDate->format('Y-m-d');
+        $startDateString = $startDate->format('Y-m-d');
+        $requestInfo->setMethodName(RequestInfo::PUT_METHOD_NAME);
+        $requestInfo->setUrl(self::BASE_URL . 'calendars/' . $listingId . '/' . $endDateString . '/' . $startDateString);
+        $requestInfo = $this->addAccessToken($requestInfo);
+        $requestInfo = $this->addAPIKey($requestInfo);
+
+        return $requestInfo;
+    }
+
+    private function addAccessToken(RequestInfo $requestInfo)
+    {
+        $requestInfo->addHeader(self::AUTH_TOKEN_HEADER_NAME, $this->config->getAccessToken());
+        return $requestInfo;
+    }
+
+    private function addAPIKey(RequestInfo $requestInfo)
+    {
+        $requestInfo->addRequestParameter(self::API_KEY_PARAMETER_NAME, self::API_KEY);
         return $requestInfo;
     }
 
