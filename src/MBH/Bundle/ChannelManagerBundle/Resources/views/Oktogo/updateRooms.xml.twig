@@ -1,0 +1,17 @@
+
+<request>
+    <username>{{ config.username }} </username>
+        {% for roomId, roomInfo in data %}
+            <room id="{{ roomId }}">
+                {% for date, dateInfo in roomInfo %}
+                    <update>
+                        <date value="{{ date }}"/>
+                        <roomstosell>{{ dateInfo.roomstosell }}</roomstosell>
+                        {% if dateInfo.closed is defined %}
+                            <closed>{{ dateInfo.closed }}</closed>
+                        {% endif %}
+                    </update>
+                {% endfor %}
+            </room>
+        {% endfor %}
+</request>
