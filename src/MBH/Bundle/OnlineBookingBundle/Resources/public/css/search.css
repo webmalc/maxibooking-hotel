@@ -74,6 +74,9 @@
   text-transform: capitalize;
   color: #2196F3;
 }
+#online-booking-search .roomname {
+  font-weight: bold;
+}
 #online-booking-search .infocontainer {
   overflow: hidden;
 }
@@ -83,7 +86,7 @@
   position: absolute;
   left: -65px;
   top: 0px;
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.27);
 }
 #online-booking-search .guests {
   text-transform: capitalize;

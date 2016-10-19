@@ -468,7 +468,8 @@
             <link rel="stylesheet" href="../../../../admin-lte/plugins/iCheck/all.css">
 
             <?php
-            $content = file_get_contents('http://az.maxibooking.ru/online_booking/form?'.http_build_query($_GET));
+            $content = file_get_contents('http://mbh.local/app_dev.php/online_booking/form?'.http_build_query($_GET));
+//            $content = file_get_contents('http://az.maxibooking.ru/online_booking/form?'.http_build_query($_GET));
             echo $content;
             ?>
 
@@ -695,7 +696,8 @@
 <!--                    <p><b>Смотрите также:</b> <a href="http://azovsky.ru/special/" title="Спецпредложения">Спецпредложения</a>-->
 <!--                    </p>-->
                     <?php
-                    $content = file_get_contents('http://az.maxibooking.ru/online_booking?'.http_build_query($_GET));
+                    $content = file_get_contents('http://mbh.local/app_dev.php/online_booking?'.http_build_query($_GET));
+//                    $content = file_get_contents('http://az.maxibooking.ru/app_dev.php/online_booking?'.http_build_query($_GET));
                     echo $content;
                     ?>
                 </div>

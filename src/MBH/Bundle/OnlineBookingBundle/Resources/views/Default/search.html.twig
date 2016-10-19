@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/search.css') }}">
+<link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/search.css', null, true) }}">
 <div id="online-booking-search">
 {% for result in searchResults %}
 <div class="row oneblock room-type-row">
@@ -8,7 +8,7 @@
         {% for searchResult in result.results if not renderedImage %}
             {% if searchResult.roomType.mainImage %}
                 <a class="fancybox" href="{{ asset(searchResult.roomType.mainImage.path, null, true) }}" rel="cat{{ loop.parent.loop.index }}">
-                    <img class="oblimg" src="{{ searchResult.roomType.mainImage.path|imagine_filter('thumb_275x210') }}">
+                    <img class="oblimg" src="{{ asset(searchResult.roomType.mainImage.path|imagine_filter('thumb_275x210'), null, true) }}">
                 </a>
                 {% set renderedImage = true %}
             {% endif %}
@@ -24,7 +24,7 @@
 
                         {% if not image.ismain %}
                         <a href="{{ asset(image.path, null, true) }}" class="fancybox" rel="cat{{ loop.parent.loop.index }}">
-                            <img src="{{ asset(image.path|imagine_filter('thumb_40x40')) }}" alt="{{ result.results|first.roomType.name }}">
+                            <img src="{{ asset(image.path|imagine_filter('thumb_40x40'), null, true) }}" alt="{{ result.results|first.roomType.name }}">
                         </a>
                         {% endif %}
                 {% endfor %}
@@ -71,9 +71,9 @@
                 {% set searchResult = result.results|first %}
                 <div class=" pull-right">
                     <div style="text-align: left;">СТОИМОСТЬ</div>
-                    <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}<i class="fa fa-ruble rublesize"></i></span>
-                    {% if result.results|length > 1 %}
-                    <span class="oldprice">{{ result.results|last.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}<i class="fa fa-ruble rublesize"></i></span>
+                    <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}&nbsp;<i class="fa fa-ruble rublesize"></i></span>
+                    {% if result.results|length > 1 %}&nbsp;
+                    <span class="oldprice">{{ result.results|last.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}&nbsp;<i class="fa fa-ruble rublesize"></i></span>
                     {% endif %}
                 </div>
             </div>
@@ -88,21 +88,17 @@
         <table class="table table-hover table-striped">
             <thead>
             <tr>
-                <th>
-                    <i class="fa fa-tag"></i>
-                    Тариф
+                <th style="width:220px;">
+                    <i class="fa fa-tag"></i>&nbsp;Тариф
                 </th>
                 <th>
-                    <i class="fa fa-calendar"></i>
-                    Дата
+                    <i class="fa fa-calendar"></i>&nbsp;Дата
                 </th>
-                <th style="width: 75px">
-                    <i class="fa fa-clock-o"></i>
-                    Ночи
+                <th >
+                    <i class="fa fa-clock-o"></i>&nbsp;Ночи
                 </th>
                 <th>
-                    <i class="fa fa-ruble"></i>
-                    Цена
+                    <i class="fa fa-ruble"></i>&nbsp;Цена
                 </th>
                 <th></th>
             </tr>
@@ -110,8 +106,10 @@
             <tbody>
             {% for searchResult in result.results %}
             <tr class="tariff-row" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}&form[infants]={{ searchResult.infants }}">
-                <td>{{ searchResult.tariff.fullTitle }}
-                    <i class="fa fa-question-circle" data-toggle="tooltip" title="{{ searchResult.tariff.description }}"></i>
+                <td >{{ searchResult.tariff.fullTitle }}
+                    {% if searchResult.tariff.description is not empty  %}
+                        <i class="fa fa-question-circle" data-toggle="tooltip" title="{{ searchResult.tariff.description }}"></i>
+                    {% endif %}
                 </td>
 
                 <td>
@@ -120,14 +118,17 @@
                     {% else %}
                         {% set format = 'd MMM y' %}
                     {% endif %}
+                    <span style="white-space: nowrap;">
                     {{ searchResult.begin|localizeddate('medium', 'none', 'ru', null, format) }}
-                    -
+                    </span><br>
                     {% if searchResult.end|date('Y') == 'now'|date('Y') %}
                         {% set format = 'd MMM' %}
                     {% else %}
                         {% set format = 'd MMM y' %}
                     {% endif %}
+                    <span style="white-space: nowrap;">
                     {{ searchResult.end|localizeddate('medium', 'none', 'ru', null, format) }}
+                    </span>
                 </td>
                 <td class="text-center">
                     {{ searchResult.nights }}
@@ -156,7 +157,12 @@
 
 {% if searchResults|length == 0 %}
     <div style="background-color: #FFFFFF; padding: 15px">
-        <strong><i class="fa fa-exclamation"></i> По вашему запросу ничего не найдено</strong>
+        <strong><i class="fa fa-exclamation"></i> Варианты не найдены.</strong>
+            <p>Пожалуйста, проверьте даты заезда и выезда.</p>
+            <p>Или свяжитесь с нами: по телефону 8 (800) 775-15-41 (звонок бесплатный по всей России) или написав нам через форму обратной связи.</p>
+            <p>Мы обязательно Вам поможем!</p>
+            <p>Спасибо, что выбираете Курортную сеть «Азовский»</p>
+        <p><strong>Смотрите также: </strong><a href="http://azovsky.ru/specpredlojenia-dnia/">Спецпредложения</a></p>
     </div>
 {% endif %}
 
@@ -190,6 +196,8 @@
 {#<link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">#}
 {#<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>#}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Readmore.js/2.2.0/readmore.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
+
 <script>
     $(function () {
         $('.descr').readmore({
@@ -198,11 +206,11 @@
             collapsedHeight: 45
         });
 
-        $('.table').readmore({
-            moreLink: '<div class="more-link"><a href="#">еще предложения <i class="fa fa-caret-right"></i></a></div>',
-            lessLink: '<div class="less-link"><a href="#">... <i class="fa fa-caret-up"></i></a></div>',
-            collapsedHeight: 120
-        });
+//        $('.table').readmore({
+//            moreLink: '<div class="more-link"><a href="#">еще предложения <i class="fa fa-caret-right"></i></a></div>',
+//            lessLink: '<div class="less-link"><a href="#">... <i class="fa fa-caret-up"></i></a></div>',
+//            collapsedHeight: 120
+//        });
     });
 </script>
 <script>

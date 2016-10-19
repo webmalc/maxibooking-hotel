@@ -26,6 +26,13 @@ class DefaultController extends BaseController
 {
     /*const RECAPCHA_SECRET = '6Lcj9gcUAAAAAH_zLNfIhoNHvbMRibwDl3d3Thx9';*/
 
+
+    const ALLOWED_ONLINE_PAYMENT = [
+        'online_100',
+        'online_40',
+        'online_30'
+    ];
+
     /**
      * @Route("/", name="online_booking")
      * @param Request $request
@@ -157,7 +164,8 @@ class DefaultController extends BaseController
         if ($reservation) {
             $form = $this->createForm(ReservationType::class);
         } else {
-            $form = $this->createForm(SignType::class);
+            $options['total'] = $request->get('form')['total']??'';
+            $form = $this->createForm(SignType::class, null, $options);
         }
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
 
@@ -203,17 +211,10 @@ class DefaultController extends BaseController
                 return $this->render('@MBHOnlineBooking/Default/reservation-success.html.twig');
             }
             $payment = $formData['payment'];
-            $cash = ['total' => 0];
-            $total = (int)$formData['total'];
-            //todo pass $formData['promotion']
-            if ($payment != 'in_hotel') {
-                if ($payment == 'online_full') {
-                    $cash['total'] = $total;
-                }
-                if ($payment == 'online_half') {
-                    $cash['total'] = $total / 2;
-                }
-            }
+            //OnlinePayment  - оплаченая цена
+            $onlinePaymentSum = (int)$formData['onlinePayment'];
+            $cash = ['total' => $onlinePaymentSum];
+
 
             $data['onlinePaymentType'] = $payment;
             try {
@@ -226,15 +227,16 @@ class DefaultController extends BaseController
                     'payButtonHtml' => $payButtonHtml,
                 ]);
             }
-            //$order = new Order();
-            //$order->addCashDocument(new CashDocument());
+
+//            $order = new Order();
+//            $order->addCashDocument(new CashDocument());
 
             $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
             $this->sendNotifications($order);
 
             $payButtonHtml = '';
-            if (!in_array($payment, ['in_hotel', 'by_receipt', 'in_office']) && $clientConfig->getPaymentSystem()) {
+            if (in_array($payment, self::ALLOWED_ONLINE_PAYMENT) && $clientConfig->getPaymentSystem()) {
                 $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
                     'data' => array_merge([
                         'test' => false,
@@ -303,15 +305,13 @@ class DefaultController extends BaseController
     private function sendNotifications(Order $order, $arrival = '12:00', $departure = '12:00')
     {
         try {
-
             //backend
             $notifier = $this->container->get('mbh.notifier');
             $tr = $this->get('translator');
             $message = $notifier::createMessage();
             $hotel = $order->getPackages()[0]->getRoomType()->getHotel();
             $message
-                ->setText('mailer.online.backend.text')
-                ->setTranslateParams(['%orderID%' => $order->getId()])
+                ->setText($tr->trans('mailer.online.backend.text',['%orderID%', $order->getId()]))
                 ->setFrom('online_form')
                 ->setSubject('mailer.online.backend.subject')
                 ->setType('info')

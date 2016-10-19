@@ -30,8 +30,8 @@ rsync -avz --delete --exclude-from=scripts/$IGNORE * -e ssh $SERVER:$FOLDER
 #ssh $SERVER 'setfacl -R -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs '$FOLDER'protectedUpload '$FOLDER'web/media'
 #ssh $SERVER 'setfacl -dR -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs '$FOLDER'protectedUpload '$FOLDER'web/media'
 
-echo -e "${GREEN}Start clear:cache${NC}"
-ssh $SERVER $CACHE
+#echo -e "${GREEN}Start clear:cache${NC}"
+#ssh $SERVER $CACHE
 
 #echo -e "${GREEN}Start doctrine:mongodb:generate:hydrators${NC}"
 #ssh $SERVER $HYDRATORS

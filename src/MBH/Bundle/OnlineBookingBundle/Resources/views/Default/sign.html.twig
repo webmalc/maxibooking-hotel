@@ -1,4 +1,5 @@
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
+{% form_theme form.offerta '@MBHOnlineBooking/Form/offero.html.twig' %}
 
 <div id="sign-page" class="col-md-8">
 
@@ -16,7 +17,7 @@
     <hr>
     {#<div class="g-recaptcha" data-sitekey="6Lcj9gcUAAAAAKRFMX1YdoK4yyIUIHea4pUIXiKI"></div>#}
 
-
+    <div><p class="reqinfo">* - поля обязательные к заполнению</p></div>
     <div class="submit">
         <button type="submit" name="submit" value="1" class="bkbutton" >
             {% if form.reservation is defined %}
@@ -112,7 +113,7 @@
         <div class="row" style="margin-top: 15px">
             <div class="title" style="display: inline-block;">Стоимость</div>
             <div class="pull-right"
-                 style="color: #41bc19; display: inline-block; font-weight: bold; font-size: 18px">{{ data.total|number_format(2) }}
+                 style="color: #41bc19; display: inline-block; font-weight: bold; font-size: 18px">{{ data.total|number_format(0, thousandSep=' ')  }}
                 <i class="fa fa-ruble"></i></div>
         </div>
     </div>
