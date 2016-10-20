@@ -63,9 +63,9 @@ class AirbnbRequestFormatter
         return $requestInfo;
     }
 
-    public function formatUpdatePricesRequest(PricePeriod $pricePeriod, $listingId) : RequestInfo
+    public function formatUpdatePricesRequest(PricePeriod $pricePeriod) : RequestInfo
     {
-        $requestInfo = $this->getDailyInfoRequest($pricePeriod->getStartDate(), $pricePeriod->getEndDate(), $listingId);
+        $requestInfo = $this->getDailyInfoRequest($pricePeriod->getStartDate(), $pricePeriod->getEndDate(), $pricePeriod->getListingId());
         $requestInfo
             ->addRequestParameter('daily_price', $pricePeriod->getPrice())
             ->addRequestParameter('demand_based_pricing_overridden', 'true');
@@ -73,10 +73,10 @@ class AirbnbRequestFormatter
         return $requestInfo;
     }
 
-    public function formatUpdateAvailabilityRequest(ClosedPeriod $closedPeriod, $listingId) : RequestInfo
+    public function formatUpdateAvailabilityRequest(ClosedPeriod $closedPeriod) : RequestInfo
     {
-        $requestInfo = $this->getDailyInfoRequest($closedPeriod->getStartDate(), $closedPeriod->getEndDate(), $listingId);
-        $requestInfo->addRequestParameter('availability', $closedPeriod->isAvailable());
+        $requestInfo = $this->getDailyInfoRequest($closedPeriod->getStartDate(), $closedPeriod->getEndDate(), $closedPeriod->getListingId());
+        $requestInfo->addRequestParameter('availability', $closedPeriod->getIsClosed() ? 'unavailable' : 'available');
 
         return $requestInfo;
     }
@@ -99,10 +99,13 @@ class AirbnbRequestFormatter
         $requestInfo = new RequestInfo();
         $endDateString = $endDate->format('Y-m-d');
         $startDateString = $startDate->format('Y-m-d');
-        $requestInfo->setMethodName(RequestInfo::PUT_METHOD_NAME);
-        $requestInfo->setUrl(self::BASE_URL . 'calendars/' . $listingId . '/' . $endDateString . '/' . $startDateString);
+        $requestInfo
+            ->setMethodName(RequestInfo::PUT_METHOD_NAME)
+            ->addHeader('Content-Type', 'application/json; charset=UTF-8');
         $requestInfo = $this->addAccessToken($requestInfo);
         $requestInfo = $this->addAPIKey($requestInfo);
+
+        $requestInfo->setUrl(self::BASE_URL . 'v2/calendars/' . $listingId . '/' . $startDateString . '/' . $endDateString);
 
         return $requestInfo;
     }
@@ -118,5 +121,4 @@ class AirbnbRequestFormatter
         $requestInfo->addRequestParameter(self::API_KEY_PARAMETER_NAME, self::API_KEY);
         return $requestInfo;
     }
-
 }

@@ -395,7 +395,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             curl_setopt($ch, CURLOPT_POST, 1);
         }
         if ($method == 'PUT') {
-            curl_setopt($ch, CURLOPT_PUT, 1);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
         }
         if (static::TEST) {

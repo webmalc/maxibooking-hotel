@@ -163,6 +163,7 @@ class AirbnbController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $config->removeAllRooms();
+            $this->dm->flush();
             foreach ($form->getData() as $id => $roomType) {
                 if ($roomType) {
                     $configRoom = new Room();
@@ -194,7 +195,10 @@ class AirbnbController extends Controller
      */
     public function testAction()
     {
-        $errorMessage = $this->get('mbh.channelmanager.airbnb')->testRequest();
+        $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find('57dfe9d593f1d94e3b1fdfca');
+        $firstDate = \DateTime::createFromFormat('d.m.Y', '4.3.2017');
+        $secondTime = \DateTime::createFromFormat('d.m.Y', '10.3.2017');
+        $errorMessage = $this->get('mbh.channelmanager.airbnb')->updateRestrictions($firstDate, $secondTime, $roomType);
         return [];
     }
 }

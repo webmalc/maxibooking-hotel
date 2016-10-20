@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
@@ -19,6 +20,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Airbnb extends AbstractChannelManagerService
 {
+    /**
+     * Config class
+     */
+    const CONFIG = 'AirbnbConfig';
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -46,48 +52,49 @@ class Airbnb extends AbstractChannelManagerService
             //$roomTypes array[roomId => [roomId('syncId'), RoomType('doc')]]
             $roomTypes = $this->getRoomTypes($config);
             //$priceCaches array [roomTypeId][tariffId][date => PriceCache]
-            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetchQueryBuilder(
+            $priceCachesByRoomTypes = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
                 $begin,
                 $end,
                 $config->getHotel(),
                 $this->getRoomTypeArray($roomType),
                 [$airbnbTariff->getId()],
                 true
-            )->getQuery()->execute();
-
+            );
             $pricePeriods = [];
 
-            foreach ($priceCaches as $priceCache) {
-                /** @var PriceCache $priceCache */
-                // Listing в airbnb эквивалентен типу номера
-                $airbnbListingInfo = $roomTypes[$priceCache->getRoomType()->getId()];
-                if ($airbnbListingInfo === null) {
-                    continue;
-                }
-                $listingId = $airbnbListingInfo['syncId'];
+            foreach ($priceCachesByRoomTypes as $roomTypeId => $priceCachesByRoomType) {
+                $priceCachesByDates = current($priceCachesByRoomType);
                 /** @var PricePeriod $currentPricePeriod */
-                $currentPricePeriod = $pricePeriods[$airbnbListingInfo];
-                if ($currentPricePeriod != null) {
-                    $currentPricePeriod->increaseEndDate();
-                } else {
-                    $pricePeriods[$listingId] = new PricePeriod(
-                        $priceCache->getRoomType(),
-                        $priceCache->getPrice(),
-                        $priceCache->getDate(),
-                        $priceCache->getDate()
-                    );
+                $currentPricePeriod = null;
+                $listingId = $roomTypes[$roomTypeId]['syncId'];
+                foreach ($priceCachesByDates as $date => $priceCache) {
+                    /** @var PriceCache $priceCache */
+                    $date = \DateTime::createFromFormat('d.m.Y', $date);
+                    if ($currentPricePeriod
+                        && date_diff($currentPricePeriod->getEndDate(), $date)->d == 1
+                        && $priceCache === $currentPricePeriod->getPrice() ) {
+                        $currentPricePeriod->increaseEndDate();
+                    } else {
+                        $currentPricePeriod = new PricePeriod(
+                            $priceCache->getRoomType(),
+                            $priceCache->getPrice(),
+                            $priceCache->getDate(),
+                            $listingId
+                        );
+                        $pricePeriods[] = $currentPricePeriod;
+                    }
                 }
             }
 
-            foreach ($pricePeriods as $listingId => $pricePeriod) {
+            foreach ($pricePeriods as $pricePeriod) {
                 /** @var AirbnbRequestFormatter $requestFormatter */
                 $requestFormatter = $this->getRequestFormatter($config);
-                $requestInfo = $requestFormatter->formatUpdatePricesRequest($pricePeriod, $listingId);
+                $requestInfo = $requestFormatter->formatUpdatePricesRequest($pricePeriod);
                 $response = $this->sendRequestAndGetJsonResponse($requestInfo);
 
                 $result = $this->checkResponse($response);
 
-                $this->log($response);
+                $this->log(serialize($response));
             }
         }
 
@@ -168,47 +175,50 @@ class Airbnb extends AbstractChannelManagerService
             //$roomTypes array[roomId => [roomId('syncId'), RoomType('doc')]]
             $roomTypes = $this->getRoomTypes($config);
             //$priceCaches array [roomTypeId][tariffId][date => PriceCache]
-            $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetchQueryBuilder(
+            $restrictionsByRoomTypes = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
                 $begin,
                 $end,
                 $config->getHotel(),
                 $this->getRoomTypeArray($roomType),
-                [$airbnbTariff->getId()]
-            )->getQuery()->execute();
+                [$airbnbTariff->getId()],
+                true
+            );
 
             $restrictionPeriods = [];
 
-            foreach ($restrictions as $restriction) {
-                /** @var Restriction $restriction */
-                // Listing в airbnb эквивалентен типу номера
-                $airbnbListingInfo = $roomTypes[$restriction->getRoomType()->getId()];
-                if ($airbnbListingInfo === null) {
-                    continue;
-                }
-                $listingId = $airbnbListingInfo['syncId'];
-                /** @var PricePeriod $currentPricePeriod */
-                $currentPricePeriod = $restrictionPeriods[$airbnbListingInfo];
-                if ($currentPricePeriod != null) {
-                    $currentPricePeriod->increaseEndDate();
-                } else {
-                    $pricePeriods[$listingId] = new ClosedPeriod(
-                        $restriction->getRoomType(),
-                        $restriction->getClosed() ? 1 : 0,
-                        \DateTime::createFromFormat('Y-m-d',$restriction->getDate()),
-                        \DateTime::createFromFormat('Y-m-d',$restriction->getDate())
-                    );
+            foreach ($restrictionsByRoomTypes as $roomTypeId => $restrictionsByRoomType) {
+                $restrictionsByDates = current($restrictionsByRoomType);
+                /** @var ClosedPeriod $currentClosedPeriod */
+                $currentClosedPeriod = null;
+                $listingId = $roomTypes[$roomTypeId]['syncId'];
+                foreach ($restrictionsByDates as $date => $restriction) {
+                    /** @var Restriction $restriction */
+                    $date = \DateTime::createFromFormat('d.m.Y', $date);
+                    if ($currentClosedPeriod
+                        && date_diff($currentClosedPeriod->getEndDate(), $date)->d == 1
+                        && $restriction->getClosed() === $currentClosedPeriod->getIsClosed()) {
+                        $currentClosedPeriod->increaseEndDate();
+                    } else {
+                        $currentClosedPeriod = new ClosedPeriod(
+                            $restriction->getRoomType(),
+                            $restriction->getClosed(),
+                            $restriction->getDate(),
+                            $listingId
+                        );
+                        $restrictionPeriods[] = $currentClosedPeriod;
+                    }
                 }
             }
 
-            foreach ($restrictionPeriods as $listingId => $restrictionPeriod) {
+            foreach ($restrictionPeriods as $restrictionPeriod) {
                 /** @var AirbnbRequestFormatter $requestFormatter */
                 $requestFormatter = $this->getRequestFormatter($config);
-                $requestInfo = $requestFormatter->formatUpdateAvailabilityRequest($restrictionPeriod, $listingId);
+                $requestInfo = $requestFormatter->formatUpdateAvailabilityRequest($restrictionPeriod);
                 $response = $this->sendRequestAndGetJsonResponse($requestInfo);
 
                 $result = $this->checkResponse($response);
 
-                $this->log($response);
+                $this->log(serialize($response));
             }
         }
 
@@ -238,16 +248,21 @@ class Airbnb extends AbstractChannelManagerService
      * Pull rooms from service server
      * @param ChannelManagerConfigInterface $config
      * @return array
+     * @throws Exception
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
         $requestInfo = $this->getRequestFormatter($config)->formatGetListingsRequests();
         $response = $this->sendRequestAndGetJsonResponse($requestInfo);
-
+        if (!$this->checkResponse($response)) {
+            throw new Exception($response['error_message']);
+        }
         $rooms = [];
         if ($response['metadata']['listing_count'] > 0) {
             foreach ($response['listings'] as $roomType) {
-                $rooms[$roomType['id']] = $roomType['listing_descriptions'][0]['name'];
+                if (count($roomType['listing_descriptions']) > 0) {
+                    $rooms[$roomType['id']] = $roomType['listing_descriptions'][0]['name'];
+                }
             }
         }
 
@@ -261,18 +276,13 @@ class Airbnb extends AbstractChannelManagerService
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
-        $requestFormatter = $this->getRequestFormatter($config);
-        $requestInfo = $requestFormatter->formatGetListingsRequests();
-        $response = $this->sendRequestAndGetJsonResponse($requestInfo);
-
-        foreach ($response['data']['rooms'] as $roomType) {
-            foreach ($roomType['placements'] as $placement) {
-                $result[$placement['id']] = [
-                    'title' => $placement['name'] . "\n(". $roomType['name'] .')',
-                    'rooms' => [$roomType['id']]
-                ];
-            }
+        $airbnbTariffTitle = $this->container->get('translator')->trans('form.airbnb.tariffTitle.label');
+        $roomTypeIds = [];
+        foreach ($config->getRooms() as $room) {
+            /** @var Room $room */
+            $roomTypeIds[] = $room->getRoomId();
         }
+        $result[] = ['title' => $airbnbTariffTitle, 'rooms' => $roomTypeIds];
 
         return $result;
     }
@@ -355,13 +365,6 @@ class Airbnb extends AbstractChannelManagerService
         return '';
     }
 
-    public function testRequest()
-    {
-        $param = $this->send('https://api.airbnb.com/v1/authorize', ['password' => '44834631TRye2009', 'client_id' => '3092nxybyb0otqw18e8nh5nty', 'username'=> 'faainttt@gmail.com'], null, true, 'POST');
-        $ar = 123;
-        return $param;
-    }
-
     private function setUserIdAndGetErrorMessage(AirbnbConfig $config) : string
     {
         $requestInfo = $this->getRequestFormatter($config)->formatGetUserInfoRequest();
@@ -388,7 +391,7 @@ class Airbnb extends AbstractChannelManagerService
     {
         $jsonResponse = $this->send(
             $requestInfo->getUrl(),
-            $requestInfo->getRequestData(),
+            json_encode($requestInfo->getRequestData()),
             $requestInfo->getHeadersList(),
             true,
             $requestInfo->getMethodName());
