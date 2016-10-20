@@ -1,9 +1,12 @@
+var getRestictions;
 $(function () {
 
     var $hotelSelect = $("#search_form_hotel");
     var $roomTypeSelect = $("#search_form_roomType");
     var roomTypeList = [];
     var updateRoomList = function () {
+        console.log('сработал updateRoomList');
+
         var $options = $roomTypeSelect.find("option");
         $options.each(function () {
             var roomType = {
@@ -19,6 +22,7 @@ $(function () {
     };
 
     var updateRoomListView = function (roomTypes) {
+        console.log('сработал updateRoomListView');
         if (!roomTypes.length) {
             $roomTypeSelect.prop("disabled", true);
         } else {
@@ -38,6 +42,8 @@ $(function () {
     };
 
     var updateSelectView = function () {
+        console.log('сработал updateSelectView');
+
         var hotelID = $hotelSelect.val();
         var roomTypes = [];
         if (hotelID) {
@@ -46,7 +52,7 @@ $(function () {
 
         updateRoomListView(roomTypes);
     };
-    return;
+
     updateRoomList();
     updateSelectView();
 
@@ -98,8 +104,25 @@ $(function () {
             maxDate: maxDate,
             startDate: startDate,
             endDate: endDate
+            // isInvalidDate: testfunc
         };
 
+    };
+
+
+    getRestrictions = function() {
+        var allHotels = $.map($("#search_form_hotel").find("option"), function(el, index) {
+            return $(el).val()||null
+        });
+         var $currentRoomType = $("#search_form_roomType").find("option:selected").val(),
+             $currentHotel = $("#search_form_hotel").find("option:selected").val();
+        if($.isEmptyObject($currentHotel)) {
+            var prefix = 'allrooms_';
+            $.each(allHotels, function(id) {
+
+            })
+        }
+        console.log(allHotels);
     };
 
     var defaults = RangePickerDefault();

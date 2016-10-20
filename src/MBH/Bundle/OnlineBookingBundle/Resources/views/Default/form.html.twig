@@ -5,14 +5,15 @@
     {{ form_label(form.hotel) }}
     <div class="input-group">
         {{ form_widget(form.hotel) }}
-        <span class="input-group-addon bcy  clickable"><i class="fa fa-home"></i></span>
+        <span class="input-group-addon bcy"><i class="fa fa-home"></i></span>
     </div>
 </div>
 <div class="form-group">
-    {{ form_label(form.roomType) }}
+    {#{{ form_label(form.roomType) }}#}
     <div class="input-group">
-        {{ form_widget(form.roomType, {attr: {'data-value': form.roomType.vars.value}}) }}
-        <span class="input-group-addon bcy  clickable"><i class="fa fa-tag clickable"></i></span>
+        {{ form_widget(form.roomType) }}
+        {#{{ form_widget(form.roomType, {attr: {'data-value': form.roomType.vars.value}}) }}#}
+        <span class="input-group-addon bcy  clickable"><i class="fa fa-tag"></i></span>
     </div>
 </div>
 
@@ -20,7 +21,7 @@
     {{ form_label(form.range) }}
     <div class="input-group">
         {{ form_widget(form.range) }}
-        <span class="input-group-addon bcy"><i class="fa fa-calendar clickable"></i></span>
+        <span class="input-group-addon bcy"><i class="fa fa-calendar"></i></span>
     </div>
 </div>
 
@@ -46,6 +47,8 @@
 <div class="hinform h2" style="padding:16px 0 11px; margin-top: 26px;"><a href="{{ payOnlineUrl }}" target="_blank"><img src="http://azovsky.ru/images/vzmc.png" style="margin-right:10px;height:30px;">Внести оплату Online</a></div>
 {{ form_end(form, {render_rest: false}) }}
 
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.24/daterangepicker.min.css">
 <link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/form.css', null, true) }}">
@@ -53,9 +56,8 @@
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment-with-locales.min.js"></script>
-{#<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment-with-locales.min.js"></script>#}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.24/daterangepicker.min.js"></script>
-{#<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>#}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
 <script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>
 <script>
     var mbh = {
