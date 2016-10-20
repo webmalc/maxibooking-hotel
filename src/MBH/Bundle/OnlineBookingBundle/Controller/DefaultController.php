@@ -65,7 +65,8 @@ class DefaultController extends BaseController
         return [
             'form' => $form->createView(),
             'requestSearchUrl' => $requestSearchUrl,
-            'payOnlineUrl' => $payOnlineUrl
+            'payOnlineUrl' => $payOnlineUrl,
+            'restrictions' => json_encode($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut())
         ];
 
     }

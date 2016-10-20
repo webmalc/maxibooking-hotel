@@ -1,13 +1,11 @@
 $(function () {
-    moment.locale("ru");
+
     var $hotelSelect = $("#search_form_hotel");
     var $roomTypeSelect = $("#search_form_roomType");
-
     var roomTypeList = [];
     var updateRoomList = function () {
         var $options = $roomTypeSelect.find("option");
         $options.each(function () {
-            console.log(this);
             var roomType = {
                 id: this.value,
                 title: this.innerHTML,
@@ -48,7 +46,7 @@ $(function () {
 
         updateRoomListView(roomTypes);
     };
-
+    return;
     updateRoomList();
     updateSelectView();
 
