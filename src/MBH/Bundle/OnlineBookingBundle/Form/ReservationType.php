@@ -31,7 +31,8 @@ class ReservationType extends SignType
             ->remove('payment')
             ->remove('offerta')
             ->remove('patronymic')
-            ;
+            ->remove('onlinePayment')
+        ;
     }
 
     /**

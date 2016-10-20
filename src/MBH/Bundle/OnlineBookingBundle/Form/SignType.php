@@ -123,14 +123,19 @@ class SignType extends AbstractType
             ->add('total', HiddenType::class)
             ->add('promotion', HiddenType::class)
         ;
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($options){
+        $builder->get('onlinePayment')->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($options){
+            /*
             $data = $event->getData();
             $paymentType = $data['payment'];
             $sum = $this->countDiscount($paymentType, $options['total']);
             $data['onlinePayment'] = $sum;
             $event->setData($data);
-
-
+            */
+            if (!$event->getData()) {
+                $paymentType = $event->getForm()->getParent()->get('payment')->getData()??null;
+                $sum = $this->countDiscount($paymentType, $options['total']);
+                $event->setData( (string)$sum);
+            }
         });
         $builder->get('promotion')->addViewTransformer(new EntityToIdTransformer($this->dm, Promotion::class));
     }

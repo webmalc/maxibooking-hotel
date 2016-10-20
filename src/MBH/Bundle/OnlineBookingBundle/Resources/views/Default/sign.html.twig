@@ -1,5 +1,7 @@
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
-{% form_theme form.offerta '@MBHOnlineBooking/Form/offero.html.twig' %}
+{% if form.offerta is defined %}
+    {% form_theme form.offerta '@MBHOnlineBooking/Form/offero.html.twig' %}
+{% endif %}
 
 <div id="sign-page" class="col-md-8">
 
