@@ -113,8 +113,7 @@ class DefaultController extends BaseController
             $searchQuery->end = $formData['end'];
             $searchQuery->adults = (int)$formData['adults'];
             $searchQuery->children = (int)$formData['children'];
-            //$searchQuery->accommodations = true;
-            //$searchQuery->forceRoomTypes = true;
+
             $searchQuery->isOnline = true;
 
             $searchQuery->accommodations = true;
@@ -227,9 +226,6 @@ class DefaultController extends BaseController
                     'payButtonHtml' => $payButtonHtml,
                 ]);
             }
-
-//            $order = new Order();
-//            $order->addCashDocument(new CashDocument());
 
             $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
@@ -423,74 +419,5 @@ class DefaultController extends BaseController
                 ->notify();
         }
     }
-
-//
-//
-//
-//    public function payRestAction()
-//    {
-//
-//    }
-//
-//    /**
-//     * @param Request $request
-//     * @return array
-//     * @Route("payer", name="payrest_payer", options={"expose"=true}, methods={"POST"})
-//     * @Template()
-//     *
-//     */
-//    public function payerAction (Request $request)
-//    {
-//        $form = $this->createForm(PaymentFormType::class);
-//        $form->handleRequest($request);
-//
-//        $error = '';
-//        $result = false;
-//        $data = '';
-//        if ($form->isSubmitted() && $form->isValid()) {
-//            /** @var SearchOrderParams $searchParams */
-//            $searchParams = $form->getData();
-//            $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(['id' => $searchParams->getNumber()]);
-//            if ($order) {
-//                $payer = $order->getPayer();
-//                if ($payer && ($payer->getEmail() === $searchParams->getEmail() || $payer->getPhone() === Tourist::formatPhone($searchParams->getPhone()))) {
-//                    if ($searchParams->getSum() > $order->getDebt()) {
-//                        $error = 'Максимальная сумма для оплаты составляет ' . $order->getDebt();
-//                    } else {
-//                        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-//                        $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
-//                            'data' => array_merge([
-//                                'test' => false,
-//                                'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
-//                                    ['%total%' => number_format($order->getDebt(), 2), '%order_id%' => $order->getId()],
-//                                    'MBHOnlineBundle')
-//                            ], $clientConfig->getFormData($order->getCashDocuments()[0],
-//                                $this->container->getParameter('online_form_result_url'),
-//                                $this->generateUrl('online_form_check_order', [], true)))
-//                        ]);
-//                        $result = true;
-//                        $data = $payButtonHtml;
-//                    }
-//                }
-//            } else {
-//                $error = 'Заказ не найден, пожалуйста уточните номер заказа у менеджера.';
-//            }
-//
-//        } else {
-//            $errors = $form->getErrors();
-//        }
-//
-//        return [
-//            'succes' => $result,
-//            'error' => $error,
-//            'data' => $data
-//        ];
-//
-//
-//
-////        $fullName = $payer->getName();
-////        $maxCash = $order->get
-//
-//    }
 
 }
