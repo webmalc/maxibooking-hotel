@@ -14,5 +14,10 @@ class ExpediaRequestFormatter
         $this->requestInfo = new RequestInfo();
     }
 
+    public function formatUpdatePricesRequest()
+    {
+
+    }
+
 
 }

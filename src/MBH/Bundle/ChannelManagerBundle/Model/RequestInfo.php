@@ -12,6 +12,23 @@ class RequestInfo
     private $requestData = [];
     private $headersList = [];
     private $url;
+    private $rowData;
+
+    /**
+     * @return mixed
+     */
+    public function getRowData()
+    {
+        return $this->rowData;
+    }
+
+    /**
+     * @param mixed $rowData
+     */
+    public function setRowData($rowData)
+    {
+        $this->rowData = $rowData;
+    }
 
     /**
      * @param mixed $methodName
