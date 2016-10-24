@@ -85,8 +85,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             }
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.oktogoController.settings_saved_success'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.oktogoController.settings_saved_success'));
 
 //            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
 
@@ -235,8 +234,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
 
         if ($result) {
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.oktogoController.rooms_sync_success'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.oktogoController.rooms_sync_success'));
 
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
@@ -246,8 +244,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
         } else {
             $request->getSession()->getFlashBag()
-                ->set('danger', $this->get('translator')->trans('controller.oktogoController.sync_error'))
-            ;
+                ->set('danger', $this->get('translator')->trans('controller.oktogoController.sync_error'));
         }
 
         return $this->redirect($this->generateUrl('oktogo_room'));
@@ -272,8 +269,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
 
         if ($result) {
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.oktogoController.tariffs_sync_success'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.oktogoController.tariffs_sync_success'));
 
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
@@ -283,8 +279,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
         } else {
             $request->getSession()->getFlashBag()
-                ->set('danger', $this->get('translator')->trans('controller.oktogoController.sync_error'))
-            ;
+                ->set('danger', $this->get('translator')->trans('controller.oktogoController.sync_error'));
         }
 
         return $this->redirect($this->generateUrl('oktogo_tariff'));
@@ -304,8 +299,9 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         if (!$config) {
             throw $this->createNotFoundException();
         }
-
+        $this->get('mbh.channelmanager.oktogo')->pullOrders();
         $this->get('mbh.channelmanager.oktogo')->updateRooms();
+        $this->get('mbh.channelmanager.oktogo')->updatePrices();
 
         $form = $this->createForm(new TariffsType(), $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
@@ -389,8 +385,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             $dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', 'Настройки успешно сохранены.')
-            ;
+                ->set('success', 'Настройки успешно сохранены.');
 
             $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
 

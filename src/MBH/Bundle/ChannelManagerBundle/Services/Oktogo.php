@@ -52,25 +52,171 @@ class Oktogo extends Base
      */
     public function pullOrders()
     {
+        $result = true;
+
+        foreach ($this->getConfig() as $config) {
+
+            $request = $this->templating->render(
+                'MBHChannelManagerBundle:Oktogo:reservations.xml.twig',
+                ['config' => $config]
+            );
+
+            $sendResult = $this->sendXml(static::BASE_URL . 'reservations', $request, $this->getHeaders(), true);
+            dump($sendResult);
+            dump($request);
+            exit();
+            $this->log('Reservations count: ' . count($sendResult->reservation));
+
+            foreach ($sendResult->reservation as $reservation) {
+
+                if ((string)$reservation->status == 'modified') {
+                    if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                        $this->dm->getFilterCollection()->disable('softdeleteable');
+                    }
+                }
+                //old order
+                $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
+                    [
+                        'channelManagerId' => (string)$reservation->id,
+                        'channelManagerType' => 'oktogo'
+                    ]
+                );
+                if ((string)$reservation->status == 'modified') {
+                    if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                        $this->dm->getFilterCollection()->enable('softdeleteable');
+                    }
+                }
+
+                //new
+                if ((string)$reservation->status == 'new' && !$order) {
+                    $result = $this->createPackage($reservation, $config, $order);
+                    $this->notify($result, 'booking', 'new');
+                }
+                //edit
+                if ((string)$reservation->status == 'modified' && $order) {
+                    $result = $this->createPackage($reservation, $config, $order);
+                    $this->notify($result, 'booking', 'edit');
+                }
+                //delete
+                if ((string)$reservation->status == 'cancelled' && $order) {
+                    $order->setChannelManagerStatus('cancelled');
+                    $this->dm->persist($order);
+                    $this->dm->flush();
+                    $this->notify($order, 'booking', 'delete');
+                    $this->dm->remove($order);
+                    $this->dm->flush();
+                    $result = true;
+
+                };
+
+                if (in_array((string)$reservation->status, ['modified', 'cancelled']) && !$order) {
+                    $this->notifyError(
+                        'booking',
+                        '#' . $reservation->id . ' ' .
+                        $reservation->customer->last_name . ' ' . $reservation->customer->first_name
+                    );
+                }
+            };
+        }
+
+        return $result;
+    }
+
+    public function closeAll()
+    {
 
     }
 
-    public function closeAll() {
+    public function sync()
+    {
 
     }
 
-    public function sync() {
+    public function checkResponse($response, array $params = null)
+    {
 
+        if (!$response) {
+            return false;
+        }
+
+        return $response == '<ok />' ? true : false;
     }
 
-    public function checkResponse($response, array $params = null) {
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
+        $result = true;
+        $begin = $this->getDefaultBegin($begin);
+        $end = $this->getDefaultEnd($begin, $end);
 
+        // iterate hotels
+        foreach ($this->getConfig() as $config) {
+
+            $roomTypes = $this->getRoomTypes($config);
+            $tariffs = $this->getTariffs($config);
+            $serviceTariffs = $this->pullTariffs($config);
+            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                $begin,
+                $end,
+                $config->getHotel(),
+                $this->getRoomTypeArray($roomType),
+                [],
+                true,
+                $this->roomManager->useCategories
+            );
+
+            foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
+
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                    foreach ($tariffs as $tariffId => $tariff) {
+
+                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+
+                            $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
+
+                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
+                                'id_tariff' => $tariff['syncId'],
+                                'price' => $info->getPrice() ? $info->getPrice() : null,
+                                'persons' => $info->getRoomType()->getPlaces(),
+                            ];
+
+                        } else {
+                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
+                                'roomstosell' => 0
+                            ];
+                        }
+                    }
+                }
+
+            }
+
+            if (!isset($data)) {
+                continue;
+            }
+
+            $request = $this->templating->render(
+                'MBHChannelManagerBundle:Oktogo:updatePrices.xml.twig',
+                [
+                    'config' => $config,
+                    'data' => $data,
+                    'begin' => $begin,
+                    'end' => $end
+                ]
+            );
+
+            $sendResult = $this->send(static::BASE_URL . 'availability', $request, $this->getHeaders(), true);
+
+            if ($result) {
+                $result = $this->checkResponse($sendResult);
+            }
+
+            $this->log($sendResult);
+        }
+
+        return $result;
     }
 
-    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){
-
-    }
-    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
@@ -87,21 +233,13 @@ class Oktogo extends Base
                 true
             );
 
-
-//
-//            dump($roomTypes);
-//            dump($roomCaches);
-////            exit();
-
-            foreach($roomTypes as $roomTypeId => $roomTypeInfo){
+            foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
 
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
 
-                    if(isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])){
+                    if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
 
                         $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
-//                        dump($info);
-//                        dump($roomTypeInfo);
 
                         $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
                             'roomstosell' => $info->getLeftRooms() > 0 ? $info->getLeftRooms() : 0,
@@ -116,28 +254,6 @@ class Oktogo extends Base
                 }
 
             }
-            dump($data);
-//            exit();
-//            foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
-//
-//                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
-//
-//                    if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
-//
-//                        $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
-//                        $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
-//                            'roomstosell' => $info->getLeftRooms() > 0 ? $info->getLeftRooms() : 0
-//                        ];
-//
-//                    } else {
-//
-//                        $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
-//                            'roomstosell' => 0
-//                        ];
-//
-//                    }
-//                }
-//            }
 
             if (!isset($data)) {
                 continue;
@@ -150,12 +266,9 @@ class Oktogo extends Base
                     'data' => $data,
                 ]
             );
-            dump($request);
-
-            $sendResult = $this->send(static::BASE_URL.'availability', $request, $this->base64Encodes($config), true);
-
-            dump($sendResult);
-            exit();
+            dump($this->getHeaders());
+            $sendResult = $this->send(static::BASE_URL . 'availability', $request, $this->getHeaders(), true);
+//            dump($sendResult);exit();
             if ($result) {
                 $result = $this->checkResponse($sendResult);
             }
@@ -165,7 +278,9 @@ class Oktogo extends Base
 
         return $result;
     }
-    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){
+
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
 
     }
 
@@ -207,13 +322,15 @@ class Oktogo extends Base
     /**
      * @return array
      */
-    private function getHeaders(OktogoConfig $config)
+    private function getHeaders()
     {
-        $auth = 'Authorization: Basic ' . base64_encode($config->getUsername() . ':' . $config->getPassword());
-        if(static::TEST) {
+        $config = $this->getConfig();
+        $auth = '';
+//        $auth = 'Authorization: Basic ' . base64_encode($config[0]->getUsername() . ':' . $config[0]->getPassword());
+        if (static::TEST) {
             $auth = 'Authorization: Basic ' . base64_encode('Oktogo:Oktogo');
         }
-        $xAuth = 'X-Oktogo-Authorization: Basic ' . base64_encode($config->getUsername() . ':' . $config->getPassword());
+        $xAuth = 'X-Oktogo-Authorization: Basic ' . base64_encode($config[0]->getLogin() . ':' . $config[0]->getPassword());
 
         return array_merge($this->headers, [$auth, $xAuth]);
     }
@@ -242,7 +359,8 @@ class Oktogo extends Base
     /**
      * {@inheritDoc}
      */
-    public function pullRooms(ChannelManagerConfigInterface $config) {
+    public function pullRooms(ChannelManagerConfigInterface $config)
+    {
 
         $result = [];
         $request = $this->templating->render(
@@ -250,23 +368,13 @@ class Oktogo extends Base
             ['config' => $config]
         );
 
-//        $response = $this->send(static::BASE_URL.'rooms', $request,$this->base64Encodes($config));
+        $response = $this->sendXml(static::BASE_URL . 'rooms', $request, $this->getHeaders());
 
-        $response = $this->sendXml(static::BASE_URL.'rooms',$request,$this->base64Encodes($config));
-
-        dump($response);
-
-        //$this->log($response->asXML());
-//        dump($response->room[2]->attributes());
-//        exit();
-        foreach ($response->room as $rooms ) {
-
-
+        foreach ($response->room as $rooms) {
             $attr = $rooms->attributes();
             $result[(string)$attr['id']] = $attr['room_name'];
         }
-//        dump($result);
-//        exit();
+
         return $result;
     }
 
@@ -275,41 +383,25 @@ class Oktogo extends Base
      * @param ChannelManagerConfigInterface $config
      * @return array
      */
-    public function pullTariffs(ChannelManagerConfigInterface $config) {
+    public function pullTariffs(ChannelManagerConfigInterface $config)
+    {
         $result = [];
         $request = $this->templating->render(
             'MBHChannelManagerBundle:Oktogo:getRoomsTariffs.xml.twig',
             ['config' => $config]
         );
 
-        $response = $this->sendXml(static::BASE_URL.'rateplans',$request,$this->base64Encodes($config));
+        $response = $this->sendXml(static::BASE_URL . 'rateplans', $request, $this->getHeaders());
 
-        dump($response);
-
-
-
-            foreach ($response->rateplan as $rate) {
-                    dump((string)$rate );
-
-                    $attr = $rate->attributes();
-//                dump($rate[0]);
-//                if (isset($result[(string)$rate['id']]['rooms'])) {
-//                    $rooms = $result[(string)$rate['id']]['rooms'];
-//                } else {
-//                    $rooms = [];
-//                }
-//
-//                $rooms[(string)$room['id']] = (string)$room['id'];
-
-
-                $result[(string)$attr['id']] = [
-                    'title' => (string)$rate,
-                    'readonly' => empty((int)$rate['readonly']) ? false : true,
-                    'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
-                    'rooms' => $attr['room_id']
-                ];
-            }
-
+        foreach ($response->rateplan as $rate) {
+            $attr = $rate->attributes();
+            $result[(string)$attr['id']] = [
+                'title' => (string)$rate,
+                'readonly' => empty((int)$rate['readonly']) ? false : true,
+                'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
+                'rooms' => $attr['room_id']
+            ];
+        }
 
         return $result;
     }
@@ -341,14 +433,6 @@ class Oktogo extends Base
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
 
         return $this;
-    }
-
-    private function base64Encodes($config){
-        if(self::TEST){
-            $this->headers[] =  'Authorization: Basic '.base64_encode('Oktogo:Oktogo');
-            $this->headers[] =  'X-Oktogo-Authorization: Basic '.base64_encode($config->getLogin().':'.$config->getPassword());
-            return $this->headers;
-        }
     }
 
 }

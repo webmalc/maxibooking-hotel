@@ -1,0 +1,18 @@
+<request>
+    <username>{{ config.username }} </username>
+    {% for roomId, roomInfo in data %}
+        <room id="{{ roomId }}">
+            {% for date, dateInfo in roomInfo %}
+                {% if dateInfo |length > 1 %}
+                    {% for tariffInfo in dateInfo %}
+                        <update>
+                            <date value="{{ date }}"/>
+                            <rate rateplan_id="{{ tariffInfo.id_tariff }}" adults="{{ tariffInfo.persons }}"
+                                  price="{{ tariffInfo.price }}"/>
+                        </update>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </room>
+    {% endfor %}
+</request>
