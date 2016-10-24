@@ -69,7 +69,7 @@ class PackageCsvType extends AbstractType
                 'group' => 'csv.form.group',
             ])
             ->add('price', CheckboxType::class, [
-                'label' => 'csv.form.pric',
+                'label' => 'csv.form.price',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',
