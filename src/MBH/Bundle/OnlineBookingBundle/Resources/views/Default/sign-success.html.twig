@@ -1,8 +1,11 @@
-<div style="background-color: #FFFFFF; padding: 15px">
-    <strong>{{ text }}</strong>
-    <div style="margin-top: 15px">
-        {% if payButtonHtml %}
-            {{ payButtonHtml|raw }}
-        {% endif %}
-    </div>
-</div>
+{#<div style="background-color: #FFFFFF; padding: 15px">#}
+    {#<strong>{{ text }}</strong>#}
+    {#<div style="margin-top: 15px">#}
+        {#{% if payButtonHtml %}#}
+            {#{{ payButtonHtml|raw }}#}
+        {#{% endif %}#}
+    {#</div>#}
+{#</div>#}
+<script>
+    window.location.href = window.location.href.split('?')[0]+'?redirect=true&order={{ order|default('') }}&cash={{ cash|default('') }}';
+</script>

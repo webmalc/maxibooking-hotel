@@ -119,13 +119,14 @@ class DefaultController extends BaseController
 
             $searchQuery->accommodations = true;
             $searchQuery->forceRoomTypes = false;
+            $searchQuery->range = 2;
 
             if ($formData['children_age']) {
                 $searchQuery->setChildrenAges($formData['children_age']);
             };
 
             $searchResults = $this->get('mbh.package.search')
-                ->setAdditionalDates()
+                ->setAdditionalDates(2)
                 ->setWithTariffs()
                 ->search($searchQuery);
 
@@ -154,7 +155,43 @@ class DefaultController extends BaseController
         ]);
     }
 
-
+    /**
+     * @Route("/success", name="online_booking_success")
+     * @Template()
+     */
+    public function lastStepAction(Request $request)
+    {
+        $type = '';
+        $payButtonHtml ='';
+        $orderId = $request->get('order');
+        $cash = $request->get('cash');
+        if (!$orderId || !$cash) {
+            $type = 'reservation';
+        } else {
+            $type = 'online';
+            $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+            if ($orderId && $cash && $clientConfig->getPaymentSystem()) {
+                $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(['id' => $orderId]);
+                if ($order) {
+                    $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
+                        'data' => array_merge([
+                            'test' => false,
+                            'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
+                                ['%total%' => number_format($cash, 2), '%order_id%' => $order->getId()],
+                                'MBHOnlineBundle')
+                        ], $clientConfig->getFormData($order->getCashDocuments()[0],
+                            $this->container->getParameter('online_form_result_url'),
+                            $this->generateUrl('online_form_check_order', [], true)))
+                    ]);
+                }
+            }
+        }
+        return [
+            'type' => $type,
+            'order' => $orderId,
+            'payButtonHtml' => $payButtonHtml
+        ];
+    }
     /**
      * @Route("/sign", name="online_booking_sign")
      */
@@ -205,50 +242,49 @@ class DefaultController extends BaseController
                 'status' => 'online',
                 'confirmed' => false
             ];
+            //--> Если по телефону - сюда
             if ($reservation) {
                 $data['total'] = $formData['total']??0;
                 $this->reserveNotification($data);
-                return $this->render('@MBHOnlineBooking/Default/reservation-success.html.twig');
+                return $this->render('@MBHOnlineBooking/Default/sign-success.html.twig');
             }
             $payment = $formData['payment'];
-            //OnlinePayment  - оплаченая цена
+            //OnlinePayment  - оплаченая цена (формируется взависимости от выбора. Искать в форме)
             $onlinePaymentSum = (int)$formData['onlinePayment'];
             $cash = ['total' => $onlinePaymentSum];
-
-
             $data['onlinePaymentType'] = $payment;
+
+            //Создаем бронь.
             try {
                 $order = $orderManger->createPackages($data, null, null, $cash);
             } catch (Exception $e) {
                 $text = 'Произошла ошибка при бронировании, пожалуйста, позвоните нам.';
-                $payButtonHtml = '';
-                return $this->render('MBHOnlineBookingBundle:Default:sign-success.html.twig', [
-                    'text' => $text,
-                    'payButtonHtml' => $payButtonHtml,
+                return $this->render('MBHOnlineBookingBundle:Default:sign-false.html.twig', [
+                    'text' => $text
                 ]);
             }
 
-            $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-
+//            $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
             $this->sendNotifications($order);
 
-            $payButtonHtml = '';
-            if (in_array($payment, self::ALLOWED_ONLINE_PAYMENT) && $clientConfig->getPaymentSystem()) {
-                $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
-                    'data' => array_merge([
-                        'test' => false,
-                        'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
-                            ['%total%' => number_format($cash['total'], 2), '%order_id%' => $order->getId()],
-                            'MBHOnlineBundle')
-                    ], $clientConfig->getFormData($order->getCashDocuments()[0],
-                        $this->container->getParameter('online_form_result_url'),
-                        $this->generateUrl('online_form_check_order', [], true)))
-                ]);
-            }
-            $text = 'Заказ успешно создан №' . $order->getId();
+//            $payButtonHtml = '';
+//            if ($payment && in_array($payment, self::ALLOWED_ONLINE_PAYMENT) && $clientConfig->getPaymentSystem()) {
+//                $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
+//                    'data' => array_merge([
+//                        'test' => false,
+//                        'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
+//                            ['%total%' => number_format($cash['total'], 2), '%order_id%' => $order->getId()],
+//                            'MBHOnlineBundle')
+//                    ], $clientConfig->getFormData($order->getCashDocuments()[0],
+//                        $this->container->getParameter('online_form_result_url'),
+//                        $this->generateUrl('online_form_check_order', [], true)))
+//                ]);
+//            }
+//            $text = 'Заказ успешно создан №' . $order->getId();
+            //--> Сюда если онлайн.
             return $this->render('MBHOnlineBookingBundle:Default:sign-success.html.twig', [
-                'text' => $text,
-                'payButtonHtml' => $payButtonHtml,
+                'order' => $order->getId(),
+                'cash' => $cash['total']
             ]);
         } else {
             $data = $isSubmit ? $form->getData() : $request->get('form');

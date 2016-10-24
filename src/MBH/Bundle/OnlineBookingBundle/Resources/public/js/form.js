@@ -1,12 +1,52 @@
-var getRestictions;
 $(function () {
+    var restrictions,
+    updateRestrictions = function () {
+        restrictions = getRestrictions();
+    };
 
     var $hotelSelect = $("#search_form_hotel");
     var $roomTypeSelect = $("#search_form_roomType");
     var roomTypeList = [];
-    var updateRoomList = function () {
-        console.log('сработал updateRoomList');
+    var getRestrictions = function () {
+            var prefix, id,
+                allHotels = getAllOptionsValues($("#search_form_hotel")),
+                currentRoomType = $("#search_form_roomType").find("option:selected").val(),
+                currentHotel = $("#search_form_hotel").find("option:selected").val();
 
+            if (!$.isEmptyObject(currentRoomType)) {
+                prefix = 'category_';
+                id = currentRoomType;
+                console.log(id)
+            } else {
+                if (!$.isEmptyObject(currentHotel)) {
+                    prefix = 'allrooms_';
+                    id = currentHotel;
+                    console.log(id);
+                } else {
+                    prefix = 'allrooms_';
+                    var data = [];
+                    $.each(allHotels, function (index, id) {
+                        $.merge(data, $.map(mbh.restrictions[prefix + id], function (val) {
+                            return val;
+                        }));
+                    });
+                    return data;
+
+                }
+            }
+
+            return $.map(mbh.restrictions[prefix + id], function (val) {
+                return val;
+            });
+
+        },
+
+        getAllOptionsValues = function ($name) {
+            return $.map($name.find("option"), function (el, index) {
+                return $(el).val() || null
+            });
+        };
+    var updateRoomList = function () {
         var $options = $roomTypeSelect.find("option");
         $options.each(function () {
             var roomType = {
@@ -22,7 +62,6 @@ $(function () {
     };
 
     var updateRoomListView = function (roomTypes) {
-        console.log('сработал updateRoomListView');
         if (!roomTypes.length) {
             $roomTypeSelect.prop("disabled", true);
         } else {
@@ -42,8 +81,6 @@ $(function () {
     };
 
     var updateSelectView = function () {
-        console.log('сработал updateSelectView');
-
         var hotelID = $hotelSelect.val();
         var roomTypes = [];
         if (hotelID) {
@@ -61,6 +98,8 @@ $(function () {
     }
 
     $hotelSelect.on("change", updateSelectView);
+    $hotelSelect.on("change", updateRestrictions());
+    $roomTypeSelect.on("change", updateRestrictions());
 
     var $beginInput = $('#search_form_begin');
     var $endInput = $('#search_form_end');
@@ -73,25 +112,26 @@ $(function () {
     //         minDate: moment(defaultDate)
     //     }
     // };
+    moment.locale("ru");
     var RangePickerDefault = function () {
         var searchStart = getQueryVariable('begin'),
             searchEnd = getQueryVariable('end'),
             searchStartDate, searchEndDate;
-        if(searchStart && searchStart.length) {
+        if (searchStart && searchStart.length) {
             searchStartDate = moment(searchStart, "DD.MM.YYYY", true);
         }
-        if(searchEnd && searchEnd.length) {
+        if (searchEnd && searchEnd.length) {
             searchEndDate = moment(searchEnd, "DD.MM.YYYY", true);
         }
 
-        var defaultMinDate = '01.07.2017',
+        var defaultMinDate = '15.06.2017',
             minDate = moment(defaultMinDate, "DD.MM.YYYY", true),
             now = moment(),
             startDate = moment(Math.max(minDate, now)),
             maxDate = startDate.clone().add(1, 'year'),
             endDate = startDate.clone().add(1, 'day');
-            startDate = searchStartDate || startDate;
-            endDate = searchEndDate || endDate;
+        startDate = searchStartDate || startDate;
+        endDate = searchEndDate || endDate;
 
         return {
             locale: {
@@ -103,27 +143,21 @@ $(function () {
             minDate: minDate,
             maxDate: maxDate,
             startDate: startDate,
-            endDate: endDate
-            // isInvalidDate: testfunc
+            endDate: endDate,
+            isInvalidDate: function (date) {
+                if ($.inArray(date.format("DD.MM.YYYY"), restrictions) != -1)
+                {
+                    return true;
+                }
+
+            }
         };
 
     };
 
 
-    getRestrictions = function() {
-        var allHotels = $.map($("#search_form_hotel").find("option"), function(el, index) {
-            return $(el).val()||null
-        });
-         var $currentRoomType = $("#search_form_roomType").find("option:selected").val(),
-             $currentHotel = $("#search_form_hotel").find("option:selected").val();
-        if($.isEmptyObject($currentHotel)) {
-            var prefix = 'allrooms_';
-            $.each(allHotels, function(id) {
 
-            })
-        }
-        console.log(allHotels);
-    };
+
 
     var defaults = RangePickerDefault();
     $rangeInput.daterangepicker(defaults);
@@ -239,8 +273,9 @@ $(function () {
             return arr[1] + '.' + arr[0] + '.' + arr[2];
         }
 
-    };
+    }
 });
+
 
 
 

@@ -1,0 +1,10 @@
+<p>Спасибо Вам за ваш заказ.</p>
+
+{% if type == 'reservation' %}
+    <p>В скором времени с Вами свяжутся наши менеджеры.</p>
+{% elseif  type == 'online' %}
+    <p>Номер вашего заказа {{ order }}</p>
+    {% if payButtonHtml is not empty %}
+        Ссылка для оплаты Онлайн {{ payButtonHtml|raw }}
+    {% endif %}
+{% endif %}

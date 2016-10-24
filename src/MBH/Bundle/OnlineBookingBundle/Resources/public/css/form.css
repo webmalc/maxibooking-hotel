@@ -1,3 +1,13 @@
+select#search_form_hotel,
+select#search_form_roomType {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
+}
+.input-group {
+  width: 100%;
+}
 #children-icon {
   position: relative;
   bottom: 15px;
@@ -45,6 +55,6 @@
 .bgnd {
   background: #f4f4f4 url(../images/fico4.png) no-repeat scroll right center / auto 100% !important;
 }
-.hinform {
-  margin-top: 48px;
+.break {
+  height: 25px;
 }
