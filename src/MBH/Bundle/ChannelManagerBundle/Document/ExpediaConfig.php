@@ -5,9 +5,6 @@ namespace MBH\Bundle\ChannelManagerBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\ChannelManagerBundle\Document\Room;
-use MBH\Bundle\ChannelManagerBundle\Document\Service;
-use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -55,7 +52,7 @@ class ExpediaConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="expediaConfig")
-     * @Assert\NotNull(message="document.expediaConfig.no_hotel_selected")
+     * @Assert\NotNull(message="validator.document.expediaConfig.no_hotel_selected")
      */
     protected $hotel;
 

@@ -61,6 +61,8 @@ form.myallocatorType.hotels: Отели
 controller.myallocatorController.settings_saved_success: Настройки успешно сохранены
 controller.myallocatorController.invalid_credentials: Неверные логин/пароль для от личного кабинета
 
+#expedia
+controller.expediaController.settings_saved_success: 'Настройки успешно сохранены.'
 
 form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkOut: При выезде
