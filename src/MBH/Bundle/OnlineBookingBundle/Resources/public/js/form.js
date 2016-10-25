@@ -1,12 +1,45 @@
 $(function () {
     var restrictions,
-    updateRestrictions = function () {
-        restrictions = getRestrictions();
+        updateRestrictions = function () {
+            restrictions = getRestrictions();
+        };
+    var resdays = {
+        '17.06.2017': 7,
+        '21.06.2017': 14
     };
-
     var $hotelSelect = $("#search_form_hotel");
     var $roomTypeSelect = $("#search_form_roomType");
     var roomTypeList = [];
+
+
+    var getMinStay = function (minstay) {
+        var currentRoomType = $("#search_form_roomType").find("option:selected").val(),
+            currentHotel = $("#search_form_hotel").find("option:selected").val(),
+            allHotels = getAllOptionsValues($("#search_form_hotel")),
+            result;
+        console.log(minstay);
+        if (!$.isEmptyObject(currentRoomType)) {
+            result =  minstay['hotel_' + currentHotel]['category_' + currentRoomType];
+        } else {
+            if (!$.isEmptyObject(currentHotel)) {
+                $.each(minstay['hotel_' + currentHotel], function (id, val) {
+                    result = Math.min(result, val);
+                });
+            } else {
+                $.each(minstay, function (id, category) {
+                    $.each(category, function (id, val) {
+                        if(!result) {
+                            //Первая итерация иначе result будет всегда 0
+                            result = val;
+                        }
+                        result = Math.min(result, val);
+                    })
+                })
+            }
+        }
+
+        return result;
+    };
     var getRestrictions = function () {
             var prefix, id,
                 allHotels = getAllOptionsValues($("#search_form_hotel")),
@@ -16,12 +49,10 @@ $(function () {
             if (!$.isEmptyObject(currentRoomType)) {
                 prefix = 'category_';
                 id = currentRoomType;
-                console.log(id)
             } else {
                 if (!$.isEmptyObject(currentHotel)) {
                     prefix = 'allrooms_';
                     id = currentHotel;
-                    console.log(id);
                 } else {
                     prefix = 'allrooms_';
                     var data = [];
@@ -100,91 +131,103 @@ $(function () {
     $hotelSelect.on("change", updateSelectView);
     $hotelSelect.on("change", updateRestrictions());
     $roomTypeSelect.on("change", updateRestrictions());
+//////////////////////////////////////////////
+    var $search_form_begin = $("#search_form_begin"),
+        $search_form_end = $("#search_form_end");
+    $search_form_begin.mask('99.99.9999');
+    $search_form_end.mask('99.99.9999');
 
-    var $beginInput = $('#search_form_begin');
-    var $endInput = $('#search_form_end');
-    var $rangeInput = $('#search_form_range');
-
-
-    // var Dates = function () {
-    //     var defaultDate = "01.07.2017";
-    //     return {
-    //         minDate: moment(defaultDate)
-    //     }
-    // };
     moment.locale("ru");
-    var RangePickerDefault = function () {
-        var searchStart = getQueryVariable('begin'),
-            searchEnd = getQueryVariable('end'),
-            searchStartDate, searchEndDate;
-        if (searchStart && searchStart.length) {
-            searchStartDate = moment(searchStart, "DD.MM.YYYY", true);
-        }
-        if (searchEnd && searchEnd.length) {
-            searchEndDate = moment(searchEnd, "DD.MM.YYYY", true);
-        }
-
-        var defaultMinDate = '15.06.2017',
-            minDate = moment(defaultMinDate, "DD.MM.YYYY", true),
-            now = moment(),
-            startDate = moment(Math.max(minDate, now)),
-            maxDate = startDate.clone().add(1, 'year'),
-            endDate = startDate.clone().add(1, 'day');
-        startDate = searchStartDate || startDate;
-        endDate = searchEndDate || endDate;
-
-        return {
-            locale: {
-                applyLabel: 'Принять',
-                cancelLabel: 'Отмена',
-                format: 'DD.MM.YYYY'
-            },
-            autoApply: true,
-            minDate: minDate,
-            maxDate: maxDate,
-            startDate: startDate,
-            endDate: endDate,
-            isInvalidDate: function (date) {
-                if ($.inArray(date.format("DD.MM.YYYY"), restrictions) != -1)
-                {
-                    return true;
+    var dateBeginDefaults = function () {
+            var defaultMinDate = '28.04.2017',
+                minDate = moment(defaultMinDate, "DD.MM.YYYY", true),
+                now = moment(),
+                startDate = moment(Math.max(minDate, now)),
+                endDate = startDate.clone().add(1, 'year');
+                while($.inArray(startDate.format("DD.MM.YYYY"), restrictions) != -1) {
+                    startDate.add(1, "day");
                 }
-
+            return {
+                format: 'dd.mm.yyyy',
+                language: 'ru',
+                autoclose: true,
+                startDate: startDate.format('DD.MM.YYYY'),
+                endDate: endDate.format('DD.MM.YYYY'),
+                todayHighlight: true,
+                beforeShowDay: function (date) {
+                    if($.inArray(moment(date.valueOf()).format("DD.MM.YYYY"), restrictions) != -1) {
+                        return false;
+                    }
+                }
             }
+        },
+        dateEndDefaults = function () {
+            var defaults = dateBeginDefaults(),
+                startDate = $search_form_begin.datepicker("getDate"),
+                minPeriodDays = 1;
+            if(minPeriodDays) {
+                startDate = moment(startDate.valueOf()).add(minPeriodDays, 'days');
+            }
+            while($.inArray(startDate.format("DD.MM.YYYY"), restrictions) != -1) {
+                startDate.add(1, "day");
+            }
+            defaults.startDate = startDate.toDate();
+
+            return defaults;
+        },
+
+        updateEndPicker = function(timestamp) {
+            var minstay, result, date = moment.unix(timestamp);
+            var url = Routing.generate('online_booking_min_stay', {'timestamp': timestamp}, true);
+            var jqxhr = $.get(url)
+                .done(function (data) {
+                    minstay = $.parseJSON(data)['minstay'];
+                    result = getMinStay(minstay)||1;
+                    if(result) {
+                        date.add(result, 'day');
+                        while($.inArray(date.format("DD.MM.YYYY"), restrictions) != -1) {
+                            date.add(1, "day");
+                        }
+                        $search_form_end.datepicker("setDate", date.toDate());
+                        $search_form_end.datepicker("setStartDate", date.toDate());
+                    }
+                })
+                .fail(function (data) {
+                    console.error(data);
+                });
         };
 
-    };
 
+    $search_form_begin.val(dateBeginDefaults()["startDate"]).datepicker(dateBeginDefaults());
 
+    date_end_defaults = dateEndDefaults();
+    $search_form_end.val(moment(date_end_defaults["startDate"].valueOf()).format("DD.MM.YYYY")).datepicker(date_end_defaults);
 
+    $search_form_begin.datepicker().on("changeDate", function (e) {
+        updateEndPicker(moment(e.date).unix());
 
-
-    var defaults = RangePickerDefault();
-    $rangeInput.daterangepicker(defaults);
-
-
-// $("#form_begin, #form_end").datepicker({language: "ru"});
-
-    $rangeInput.on("apply.daterangepicker", function (ev, picker) {
-        $beginInput.val(picker.startDate.format('DD.MM.YYYY'));
-        $endInput.val(picker.endDate.format('DD.MM.YYYY'));
     });
 
-    $beginInput.val($rangeInput.data('daterangepicker').startDate.format('DD.MM.YYYY'));
-    $endInput.val($rangeInput.data('daterangepicker').endDate.format('DD.MM.YYYY'));
-
-    $rangeInput.on('cancel.daterangepicker', function (ev, picker) {
-        $beginInput.val("");
-        $endInput.val("");
-    });
-
-    var dateRangePicker = $rangeInput.data("daterangepicker");
-    if ($beginInput.val()) {
-        dateRangePicker.setStartDate($beginInput.val());
-    }
-    if ($endInput.val()) {
-        dateRangePicker.setEndDate($endInput.val());
-    }
+    // $rangeInput.on("apply.daterangepicker", function (ev, picker) {
+    //     $beginInput.val(picker.startDate.format('DD.MM.YYYY'));
+    //     $endInput.val(picker.endDate.format('DD.MM.YYYY'));
+    // });
+    //
+    // $beginInput.val($rangeInput.data('daterangepicker').startDate.format('DD.MM.YYYY'));
+    // $endInput.val($rangeInput.data('daterangepicker').endDate.format('DD.MM.YYYY'));
+    //
+    // $rangeInput.on('cancel.daterangepicker', function (ev, picker) {
+    //     $beginInput.val("");
+    //     $endInput.val("");
+    // });
+    //
+    // var dateRangePicker = $rangeInput.data("daterangepicker");
+    // if ($beginInput.val()) {
+    //     dateRangePicker.setStartDate($beginInput.val());
+    // }
+    // if ($endInput.val()) {
+    //     dateRangePicker.setEndDate($endInput.val());
+    // }
 
     var $children = $("#search_form_children");
     var $childrenIcon = $("#children-icon");
@@ -275,6 +318,79 @@ $(function () {
 
     }
 });
+
+// function datePicker()
+// {
+//     var allDates = getAllDates();
+//
+//     $('#dateBegin').datepicker({
+//         format: 'dd.mm.yyyy',
+//         language: 'ru',
+//         autoclose: true,
+//         startDate: allDates['minInDate'],
+//         endDate: allDates['maxInDate'],
+//         beforeShowDay: function(date)
+//         {
+//             if($.inArray(date.valueOf(), allDates['inDates']) < 0){
+//                 return 'disabled';
+//             }else{
+//                 return '';
+//             }
+//         }
+//     });
+//
+//     $('#dateEnd').datepicker({
+//         format: 'dd.mm.yyyy',
+//         language: 'ru',
+//         autoclose: true,
+//         weekStart: 1,
+//         startDate: allDates['minOutDate'],
+//         endDate: allDates['maxOutDate'],
+//         beforeShowDay: function(date)
+//         {
+//             if($.inArray(date.valueOf(), allDates['outDates']) < 0){
+//                 return 'disabled';
+//             }else{
+//                 return '';
+//             }
+//         }
+//     });
+//
+//     // $('#dateBegin').datepicker('update', allDates['minInDate']);
+//     $('#dateBegin').datepicker('update', (postDateBegin != ''?postDateBegin:allDates['minInDate']) );
+//     // $('#dateEnd').datepicker('update', allDates['minOutDate']);
+//     $('#dateEnd').datepicker('update', (postDateEnd != ''?postDateEnd:allDates['minOutDate']) );
+//
+//     //$('#dateBegin').datepicker('update', '');
+//     //$('#dateEnd').datepicker('update', '');
+//
+//     $('#dateBegin').datepicker().on('changeDate', function(e){
+//
+//         var dateBeginDateTmp = $('#dateBegin').datepicker('getDate');
+//         var newDateForEnd = false;
+//
+//         $('#dateEnd').datepicker('startDate', dateBeginDateTmp);
+//
+//         $.each(allDates['outDates'], function(key, val){
+//             var tmpCheckdate = new Date(val);
+//
+//             if(tmpCheckdate > dateBeginDateTmp){
+//                 newDateForEnd = tmpCheckdate;
+//
+//                 return false;
+//             }
+//         });
+//
+//         if(newDateForEnd !== false){
+//             $('#dateEnd').datepicker('update', newDateForEnd);
+//         }
+//
+//         $('#dateEnd').datepicker('show');
+//
+//     });
+//
+// }
+
 
 
 

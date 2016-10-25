@@ -66,11 +66,11 @@ class SearchFormType extends AbstractType
                     return ['data-hotel' => $hotelIds[$roomType]];
                 }
             ])
-            ->add('range', TextType::class, [
-                'label' => 'Даты заезда - выезда',
-                'required' => false,
-                'mapped' => false
-            ])
+//            ->add('range', TextType::class, [
+//                'label' => 'Даты заезда - выезда',
+//                'required' => false,
+//                'mapped' => false
+//            ])
             ->add('begin', DateType::class, [
                 'label' => 'Заезд',
                 'widget' => 'single_text',
@@ -79,6 +79,9 @@ class SearchFormType extends AbstractType
                 'constraints' => [
                     new NotBlank()
                 ],
+                'attr' => [
+                    'class' => 'input-small'
+                ]
             ])
             ->add('end', DateType::class, [
                 'label' => 'Выезд',
@@ -88,6 +91,9 @@ class SearchFormType extends AbstractType
                 'constraints' => [
                     new NotBlank()
                 ],
+                'attr' => [
+                    'class' => 'input-small'
+                ]
             ])
             ->add('adults', IntegerType::class, [
                 'label' => 'Взрослые',

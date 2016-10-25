@@ -13,8 +13,10 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -53,6 +55,7 @@ class DefaultController extends BaseController
      * @Template()
      * @param Request $request
      * @return array
+     * @Cache(expires="tomorrow", public=true)
      */
     public function formAction(Request $request)
     {
@@ -66,7 +69,8 @@ class DefaultController extends BaseController
             'form' => $form->createView(),
             'requestSearchUrl' => $requestSearchUrl,
             'payOnlineUrl' => $payOnlineUrl,
-            'restrictions' => json_encode($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut())
+            'restrictions' => json_encode($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut()),
+//            'minStay' => json_encode($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchMinStay()),
         ];
 
     }
@@ -119,14 +123,14 @@ class DefaultController extends BaseController
 
             $searchQuery->accommodations = true;
             $searchQuery->forceRoomTypes = false;
-            $searchQuery->range = 2;
+//            $searchQuery->range = 2;
 
             if ($formData['children_age']) {
                 $searchQuery->setChildrenAges($formData['children_age']);
             };
 
             $searchResults = $this->get('mbh.package.search')
-                ->setAdditionalDates(2)
+                ->setAdditionalDates()
                 ->setWithTariffs()
                 ->search($searchQuery);
 
@@ -455,6 +459,24 @@ class DefaultController extends BaseController
                 ->setMessage($message)
                 ->notify();
         }
+    }
+
+    /**
+     * @Route("/minstay/{timestamp}", name="online_booking_min_stay", options={"expose" = true})
+     * @Cache(expires="tomorrow", public=true)
+     */
+    public function getMinStayAjax(Request $request, $timestamp)
+    {
+        $date = new \DateTime();
+        $date->setTimestamp($timestamp);
+
+        $minStays = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetchMinStay($date);
+        $data = [
+            'success' => true,
+            'minstay' => $minStays
+        ];
+
+        return new JsonResponse(json_encode($data));
     }
 
 }

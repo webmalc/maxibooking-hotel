@@ -8,6 +8,14 @@ select#search_form_roomType {
 .input-group {
   width: 100%;
 }
+#search_form_begin {
+  background: #f4f4f4 url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%;
+  cursor: pointer;
+}
+#search_form_end {
+  background: #f4f4f4 url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%;
+  cursor: pointer;
+}
 #children-icon {
   position: relative;
   bottom: 15px;

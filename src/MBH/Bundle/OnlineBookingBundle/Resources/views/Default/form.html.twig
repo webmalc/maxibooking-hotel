@@ -11,16 +11,33 @@
     {#{{ form_label(form.roomType) }}#}
     <div class="input-group">
         {{ form_widget(form.roomType,{attr: {'style': 'background: url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%'}}) }}
-        {#<span class="input-group-addon bcy  clickable"><i class="fa fa-tag clickable"></i></span>#}
     </div>
 </div>
 
-<div class="form-group">
-    {{ form_label(form.range) }}
-    <div class="input-group">
-        {{ form_widget(form.range, {attr: {'style': 'background: url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%'}}) }}
+{#<div class="form-group">#}
+    {#{{ form_label(form.range) }}#}
+    {#<div class="input-group">#}
+        {#{{ form_widget(form.range, {attr: {'style': 'background: url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%'}}) }}#}
+    {#</div>#}
+{#</div>#}
+<div class="row sbrw">
+    <div class="col-md-6 col-xs-12">
+        <p>{{ form_label(form.begin) }}</p>
+        {{ form_widget(form.begin) }}
+        {#<p>Заезд</p>#}
+        {#<input type="text" required="required" name='begin' class="frst" id="dateBegin" value='28.09.2016'/>#}
+    </div>
+    <div class="col-md-6 col-xs-12">
+        <p>{{ form_label(form.end) }}</p>
+        {{ form_widget(form.end) }}
+        {#<p>Выезд</p>#}
+        {#<input type="text" required="required" name='end' class="input-small" id="dateEnd"#}
+               {#value='28.09.2016'/>#}
     </div>
 </div>
+    {{ form_widget(form.begin) }}
+    {{ form_widget(form.end) }}
+
 
 
 <div class="form-group row">
@@ -36,8 +53,9 @@
 </div>
 
 
-{{ form_widget(form.begin, {attr: {class: 'hide'}}) }}
-{{ form_widget(form.end, {attr: {class: 'hide'}}) }}
+{#{{ form_widget(form.begin, {attr: {class: 'hide'}}) }}#}
+{#{{ form_widget(form.end, {attr: {class: 'hide'}}) }}#}
+
 
 <input type="submit" name="submit" value="Найти" id="rsc" style="margin-top: 26px;">
 <div class="break"></div>
@@ -56,6 +74,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.24/daterangepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
 <script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>
+<script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+<script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
 <script>
     var mbh = {
         restrictions: {{ restrictions|raw }}

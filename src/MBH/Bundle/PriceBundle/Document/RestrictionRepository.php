@@ -9,6 +9,51 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class RestrictionRepository extends DocumentRepository
 {
+
+    public function fetchMinStay(\DateTime $date)
+    {
+        $date->modify('midnight');
+        $tariffsIds = $hotelIds = $roomTypeIds = [];
+        foreach ($this->dm->getRepository('MBHPriceBundle:Tariff')->findBy(['deletedAt' => null]) as $tariff) {
+            $tariffsIds[] = $tariff->getId();
+        }
+
+        foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findBy(['deletedAt' => null]) as $hotel) {
+            $hotelIds[] = $hotel->getId();
+        }
+
+        foreach ($this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['deletedAt' => null]) as $roomType) {
+            $roomTypeIds[] = $roomType->getId();
+        }
+
+        $qb = $this->createQueryBuilder();
+        $qb
+            ->field('date')->equals($date)
+            ->field('tariff.id')->in($tariffsIds)
+            ->field('hotel.id')->in($hotelIds)
+            ->field('roomType.id')->in($roomTypeIds)
+            ->field('isEnabled')->equals(true)
+        ;
+
+        $data = $hotels = $categories = [];
+
+        // roomTypes
+        /** @var Restriction $restriction */
+        $dateStr = $date->format('d.m.Y');
+        foreach ($qb->getQuery()->execute() as $restriction) {
+            if ($restriction->getTariff()->getIsDefault()) {
+                $minStay = $restriction->getMinStay();
+                $hotel = $restriction->getRoomType()->getHotel();
+                $data['hotel_' . $hotel->getId()]['category_' . $restriction->getRoomType()->getCategory()->getId()] = $minStay;
+//                $data[$restriction->getRoomType()->getId()][$dateStr] = $minStay;
+
+            }
+        };
+
+
+
+        return $data;
+    }
     /**
      * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
