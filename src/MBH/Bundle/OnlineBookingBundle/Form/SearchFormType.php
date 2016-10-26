@@ -66,11 +66,6 @@ class SearchFormType extends AbstractType
                     return ['data-hotel' => $hotelIds[$roomType]];
                 }
             ])
-//            ->add('range', TextType::class, [
-//                'label' => 'Даты заезда - выезда',
-//                'required' => false,
-//                'mapped' => false
-//            ])
             ->add('begin', DateType::class, [
                 'label' => 'Заезд',
                 'widget' => 'single_text',
@@ -106,11 +101,22 @@ class SearchFormType extends AbstractType
                 'required' => false
             ])
             ->add('children_age', CollectionType::class, [
-                'label' => 'Возраста детей',
+                'label' => 'Возраст детей на момент заезда',
+                'label_attr' => [
+                    'class' => 'children_age_label hidden'
+                ],
                 'required' => false,
-                'type' => IntegerType::class,
+                'entry_type' => ChoiceType::class,
+                'entry_options' => [
+                    'label' => false,
+                    'choices' => range(0,18),
+                    'attr' => [
+                        'class' => 'children_age_row'
+                    ]
+                ],
                 'prototype' => true,
                 'allow_add' => true,
+                'allow_delete' => true
             ]);
     }
 

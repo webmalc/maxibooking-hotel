@@ -40,7 +40,7 @@ select#search_form_roomType {
   font-size: 10px;
 }
 .form-group {
-  margin: 5px 7% 15px !important;
+  margin: 5px 7% 15px;
 }
 .bronirovanie select {
   margin: 0 !important;
@@ -69,4 +69,26 @@ select#search_form_roomType {
 .break {
   clear: both;
   height: 55px;
+}
+#children_age_container {
+  clear: both;
+}
+#children_age_container .children_age_label {
+  margin: 7px 0 0 20px;
+}
+#children_age_container #search_form_children_age {
+  overflow: hidden;
+  -webkit-transition: height 0.3s;
+  -moz-transition: height 0.3s;
+  -ms-transition: height 0.3s;
+  -o-transition: height 0.3s;
+  transition: height 0.3s;
+}
+#children_age_container #search_form_children_age .form-group {
+  margin: 10px 5px 0 13px;
+  float: left;
+}
+.nights {
+  height: 20px;
+  margin-left: 16px;
 }
