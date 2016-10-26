@@ -133,7 +133,7 @@ class Mailer implements \SplObserver
         }
 
         $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy(
-            [$category . 's' => true, 'enabled' => true, 'locked' => false]
+            [$category . 's' => true, 'enabled' => true, 'locked' => false, 'username' => ['$ne'=>'mb']]
         );
 
         if ($hotel) {
