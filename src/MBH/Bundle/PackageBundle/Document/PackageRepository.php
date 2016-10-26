@@ -30,18 +30,18 @@ class PackageRepository extends DocumentRepository
             ->field('begin')->lte($end)
             ->field('end')->gte($begin)
             ->field('virtualRoom')->notEqual(null)
-            ->field('deletedAt')->equals(null)
-        ;
-        
+            ->field('deletedAt')->equals(null);
+
         if ($roomType) {
             $qb->field('roomType')->references($roomType);
         }
-        
+
         $packages = $qb->getQuery()->execute();
-        
+
         if ($group) {
             $result = [];
-            foreach ($packages as $package) {;
+            foreach ($packages as $package) {
+                ;
 
                 $roomType = $package->getRoomType();
                 $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
@@ -50,7 +50,7 @@ class PackageRepository extends DocumentRepository
 
             return $result;
         }
-        
+
         return $packages;
     }
 
@@ -819,5 +819,23 @@ class PackageRepository extends DocumentRepository
             ->field('end')->gte(new \DateTime('midnight'));
 
         return $queryPackage->getQuery()->execute();
+    }
+
+    public function getNumbers(\DateTime $day, RoomType $roomType):array
+    {
+        $packages = $this->createQueryBuilder()
+            ->select('numberWithPrefix')
+            ->field('begin')->lte($day)
+            ->field('end')->gte($day)
+            ->field('roomType')->references($roomType)
+            ->field('deletedAt')->equals(null)
+            ->hydrate(false)
+            ->getQuery()
+            ->execute();
+
+        return array_map(function ($package) {
+            return $package['numberWithPrefix'];
+        }, iterator_to_array($packages));
+
     }
 }

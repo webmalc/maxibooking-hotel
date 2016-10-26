@@ -24,8 +24,7 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
     {
         $this
             ->setName('azovsky:cache:compare')
-            ->setDescription('Compare 1C room cache')
-        ;
+            ->setDescription('Compare 1C room cache');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -41,7 +40,7 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                 $completed ? 'completed' : 'aborted',
                 $time->format('%H:%I:%S'),
                 count($this->result)
-                )
+            )
         );
     }
 
@@ -88,7 +87,7 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
 
                 return false;
             }
-            
+
             $caches = $dm->getRepository('MBHPriceBundle:RoomCache')->fetch($begin, $end, $hotel, [], false, true);
 
             foreach ($hotelXml->ROOM as $roomXml) {
@@ -111,8 +110,9 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                     $entry->total = (int)$entryXml->TOTAL;
                     $entry->sold = (int)$entryXml->SOLD;
                     $entry->remain = (int)$entryXml->REMAIN;
+                    $entry->numbers = (array)$entryXml->ORDERS->NUMBER;
 
-                    if (!$entry->total){
+                    if (!$entry->total) {
                         continue;
                     }
 
@@ -131,12 +131,14 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                             $entry->soldMB = $cache->getPackagesCount();
                             $entry->remainMB = $cache->getleftRooms();
                             $this->result[] = $entry;
+                            $entry->numbersMB = $dm->getRepository('MBHPackageBundle:Package')
+                                ->getNumbers($entry->date, $entry->roomType);
+                            $entry->numbersDiff = array_merge(array_diff($entry->numbersMB, $entry->numbers), array_diff($entry->numbers, $entry->numbersMB));
                         }
                     }
                 }
             }
         }
-
         $this->sendMessage(['result' => $this->result]);
 
         return true;
@@ -155,12 +157,10 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
             ->setAdditionalData($data)
             ->setTemplate('MBHBaseBundle:Mailer:compare1C.html.twig')
             ->setAutohide(false)
-            ->setEnd(new \DateTime('+1 minute'))
-        ;
+            ->setEnd(new \DateTime('+1 minute'));
         $notifier
             ->setMessage($message)
-            ->notify()
-        ;
+            ->notify();
     }
 
 }
