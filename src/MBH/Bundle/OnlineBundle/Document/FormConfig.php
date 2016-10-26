@@ -10,10 +10,14 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
+
 /**
  * @ODM\Document(collection="FormConfig", repositoryClass="MBH\Bundle\OnlineBundle\Document\FormConfigRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @ExclusionPolicy("all")
  */
 class FormConfig extends Base
 {
@@ -63,6 +67,7 @@ class FormConfig extends Base
      * @var array
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
      * @Assert\NotNull()
+     * @Expose
      */
     protected $hotels;
 
@@ -72,6 +77,7 @@ class FormConfig extends Base
      * @ODM\Boolean()
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @Expose
      */
     protected $enabled = true;
 

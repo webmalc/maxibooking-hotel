@@ -1,10 +1,17 @@
 _bazinga_jstranslation:
     resource: "@BazingaJsTranslationBundle/Resources/config/routing/routing.yml"
 
+#mbh_api:
+#    resource: "@MBHApiBundle/Controller/"
+#    type:     annotation
+#    prefix:   /api
+
 mbh_api:
-    resource: "@MBHApiBundle/Controller/"
+    resource: "@MBHApiBundle/Controller/REST/"
     type:     annotation
-    prefix:   /api
+    prefix:   /api/rest
+    defaults:
+      _format: json
 
 mbh_warehouse:
     resource: "@MBHWarehouseBundle/Controller/"

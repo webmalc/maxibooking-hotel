@@ -243,3 +243,15 @@ parameters:
 bazinga_js_translation:
     default_domain: messages
     locale_fallback: ru
+
+fos_rest:
+    body_listener: true
+    view:
+      view_response_listener: true
+    serializer:
+        serialize_null: true
+    body_converter:
+        enabled: true
+    format_listener:
+        rules:
+            - { path: '^/api',  priorities: ['json'], fallback_format: json, prefer_extension: true }

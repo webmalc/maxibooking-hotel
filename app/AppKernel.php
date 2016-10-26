@@ -33,6 +33,8 @@ class AppKernel extends Kernel
             new Ornicar\GravatarBundle\OrnicarGravatarBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+            new FOS\RestBundle\FOSRestBundle(),
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),

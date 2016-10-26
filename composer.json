@@ -25,6 +25,7 @@
     "gedmo/doctrine-extensions": "dev-master as 2.4.13",
     "stof/doctrine-extensions-bundle": "dev-master",
     "friendsofsymfony/user-bundle": "*@dev",
+    "friendsofsymfony/rest-bundle": "*@stable",
     "friendsofsymfony/jsrouting-bundle": "*@stable",
     "knplabs/knp-menu": "*@stable",
     "knplabs/knp-menu-bundle": "*@stable",
@@ -44,7 +45,8 @@
     "leaseweb/memcache-bundle": "^2.1",
     "sonata-project/google-authenticator": "^1.0",
     "google/recaptcha": "^1.1",
-    "willdurand/js-translation-bundle": "^2.6"
+    "willdurand/js-translation-bundle": "^2.6",
+    "jms/serializer-bundle": "^1.1"
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3"
