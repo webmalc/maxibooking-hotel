@@ -3,10 +3,7 @@ $(function () {
         updateRestrictions = function () {
             restrictions = getRestrictions();
         };
-    var resdays = {
-        '17.06.2017': 7,
-        '21.06.2017': 14
-    };
+
     var $hotelSelect = $("#search_form_hotel");
     var $roomTypeSelect = $("#search_form_roomType");
     var roomTypeList = [];
@@ -17,7 +14,6 @@ $(function () {
             currentHotel = $("#search_form_hotel").find("option:selected").val(),
             allHotels = getAllOptionsValues($("#search_form_hotel")),
             result;
-        console.log(minstay);
         if (!$.isEmptyObject(currentRoomType)) {
             result =  minstay['hotel_' + currentHotel]['category_' + currentRoomType];
         } else {
@@ -154,6 +150,7 @@ $(function () {
                 startDate: startDate.format('DD.MM.YYYY'),
                 endDate: endDate.format('DD.MM.YYYY'),
                 todayHighlight: true,
+                orientation: "bottom right",
                 beforeShowDay: function (date) {
                     if($.inArray(moment(date.valueOf()).format("DD.MM.YYYY"), restrictions) != -1) {
                         return false;
@@ -199,7 +196,6 @@ $(function () {
 
 
     $search_form_begin.val(dateBeginDefaults()["startDate"]).datepicker(dateBeginDefaults());
-
     date_end_defaults = dateEndDefaults();
     $search_form_end.val(moment(date_end_defaults["startDate"].valueOf()).format("DD.MM.YYYY")).datepicker(date_end_defaults);
 
@@ -207,27 +203,6 @@ $(function () {
         updateEndPicker(moment(e.date).unix());
 
     });
-
-    // $rangeInput.on("apply.daterangepicker", function (ev, picker) {
-    //     $beginInput.val(picker.startDate.format('DD.MM.YYYY'));
-    //     $endInput.val(picker.endDate.format('DD.MM.YYYY'));
-    // });
-    //
-    // $beginInput.val($rangeInput.data('daterangepicker').startDate.format('DD.MM.YYYY'));
-    // $endInput.val($rangeInput.data('daterangepicker').endDate.format('DD.MM.YYYY'));
-    //
-    // $rangeInput.on('cancel.daterangepicker', function (ev, picker) {
-    //     $beginInput.val("");
-    //     $endInput.val("");
-    // });
-    //
-    // var dateRangePicker = $rangeInput.data("daterangepicker");
-    // if ($beginInput.val()) {
-    //     dateRangePicker.setStartDate($beginInput.val());
-    // }
-    // if ($endInput.val()) {
-    //     dateRangePicker.setEndDate($endInput.val());
-    // }
 
     var $children = $("#search_form_children");
     var $childrenIcon = $("#children-icon");

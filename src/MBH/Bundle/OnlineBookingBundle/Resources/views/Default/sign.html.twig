@@ -88,7 +88,7 @@
         <div class="guests">
 
             {#<div>Гости: {{ data.adults }} взрослых {{ data.children }} ребёнок</div>#}
-            <div>Гости: {{ data.adults }} {{ data.infants?' + '~data.infants }}</div>
+            <div>Гости: {{ data.adults }}{{ data.children?'+'~data.children }}{{ data.infants?'+'~data.infants }}</div>
             <div>Тариф: {{ tariff.fullTitle }}</div>
         </div>
 

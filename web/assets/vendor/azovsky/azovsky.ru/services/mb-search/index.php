@@ -371,8 +371,8 @@
 
             <link rel="stylesheet" type="text/css"
                   href="http://azovsky.ru/services/mb-search/vendor/chosen_v1.0.0/chosen.css">
-            <link rel="stylesheet" type="text/css"
-                  href="http://azovsky.ru/services/mb-search/vendor/bootstrap-datepicker-master/css/datepicker.css">
+<!--            <link rel="stylesheet" type="text/css"-->
+<!--                  href="http://azovsky.ru/services/mb-search/vendor/bootstrap-datepicker-master/css/datepicker.css">-->
             <link rel="stylesheet" type="text/css"
                   href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.1/css/jquery.dataTables.css">
 
@@ -457,8 +457,8 @@
 
             <script src="http://azovsky.ru/services/mb-search/js/jquery.maskedinput.min.js"></script>
             <script src="http://azovsky.ru/services/mb-search/vendor/chosen_v1.0.0/chosen.jquery.js"></script>
-            <script src="http://azovsky.ru/services/mb-search/vendor/bootstrap-datepicker-master/js/bootstrap-datepicker.js"></script>
-            <script src="http://azovsky.ru/services/mb-search/vendor/bootstrap-datepicker-master/js/bootstrap-datepicker.utf.js"></script>
+<!--            <script src="http://azovsky.ru/services/mb-search/vendor/bootstrap-datepicker-master/js/bootstrap-datepicker.js"></script>-->
+<!--            <script src="http://azovsky.ru/services/mb-search/vendor/bootstrap-datepicker-master/js/bootstrap-datepicker.utf.js"></script>-->
             <script src="http://azovsky.ru/services/mb-search/js/jquery.dataTables.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
             <script src="http://azovsky.ru/services/mb-search/js/jquery.dataTables.min.js"></script>

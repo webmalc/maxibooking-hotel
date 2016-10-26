@@ -64,7 +64,7 @@
                 <div class="guests pull-left">
                 <i class="fa fa-users"></i> Гости <br/>
                 {% if result.results|first.adults is defined %}
-                    <span class="guestslist">{{ result.results|first.adults }} {{ result.results|first.children?'+ '~result.results|first.children }} {{ result.results|first.infants?'+ '~result.results|first.infants }}</span>
+                    <span class="guestslist">{{ result.results|first.adults }} {{ result.results|first.children?'+'~result.results|first.children }} {{ result.results|first.infants?'+'~result.results|first.infants }}</span>
                 {% endif %}
                 </div>
 

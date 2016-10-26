@@ -18,7 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-
+use Symfony\Component\HttpFoundation\Response;
 
 
 /**
@@ -55,7 +55,6 @@ class DefaultController extends BaseController
      * @Template()
      * @param Request $request
      * @return array
-     * @Cache(expires="tomorrow", public=true)
      */
     public function formAction(Request $request)
     {
@@ -70,7 +69,6 @@ class DefaultController extends BaseController
             'requestSearchUrl' => $requestSearchUrl,
             'payOnlineUrl' => $payOnlineUrl,
             'restrictions' => json_encode($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut()),
-//            'minStay' => json_encode($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchMinStay()),
         ];
 
     }
@@ -463,10 +461,10 @@ class DefaultController extends BaseController
 
     /**
      * @Route("/minstay/{timestamp}", name="online_booking_min_stay", options={"expose" = true})
-     * @Cache(expires="tomorrow", public=true)
      */
-    public function getMinStayAjax(Request $request, $timestamp)
+    public function getMinStayAjax($timestamp)
     {
+
         $date = new \DateTime();
         $date->setTimestamp($timestamp);
 
@@ -476,7 +474,10 @@ class DefaultController extends BaseController
             'minstay' => $minStays
         ];
 
-        return new JsonResponse(json_encode($data));
+        $response = new JsonResponse(json_encode($data));
+        $response->headers->set('Access-Control-Allow-Origin', 'http://t.azovsky.ru');
+
+        return $response;
     }
 
 }

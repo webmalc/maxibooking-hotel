@@ -14,25 +14,17 @@
     </div>
 </div>
 
-{#<div class="form-group">#}
-    {#{{ form_label(form.range) }}#}
-    {#<div class="input-group">#}
-        {#{{ form_widget(form.range, {attr: {'style': 'background: url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%'}}) }}#}
-    {#</div>#}
-{#</div>#}
+
 <div class="row sbrw">
     <div class="col-md-6 col-xs-12">
         <p>{{ form_label(form.begin) }}</p>
         {{ form_widget(form.begin) }}
-        {#<p>Заезд</p>#}
-        {#<input type="text" required="required" name='begin' class="frst" id="dateBegin" value='28.09.2016'/>#}
+
     </div>
     <div class="col-md-6 col-xs-12">
         <p>{{ form_label(form.end) }}</p>
         {{ form_widget(form.end) }}
-        {#<p>Выезд</p>#}
-        {#<input type="text" required="required" name='end' class="input-small" id="dateEnd"#}
-               {#value='28.09.2016'/>#}
+
     </div>
 </div>
     {{ form_widget(form.begin) }}
@@ -40,7 +32,7 @@
 
 
 
-<div class="form-group row">
+
     <div class="col-sm-6">
         {{ form_label(form.adults) }}
         {{ form_widget(form.adults, {attr: {class:"bgnd"}}) }}
@@ -50,32 +42,37 @@
         {{ form_widget(form.children,{attr: {class:"bgnd"}}) }}
         <div id="children-icon" data-value="{{ form.children_age.vars.value|json_encode }}" style="visibility: hidden" title="Возраст"></div>
     </div>
-</div>
 
 
-{#{{ form_widget(form.begin, {attr: {class: 'hide'}}) }}#}
-{#{{ form_widget(form.end, {attr: {class: 'hide'}}) }}#}
 
-
-<input type="submit" name="submit" value="Найти" id="rsc" style="margin-top: 26px;">
 <div class="break"></div>
+<input type="submit" name="submit" value="Найти" id="rsc" style="margin-top: 26px;">
 <div class="hinform h2" style="padding:16px 0 11px; margin-top: 26px;"><a href="{{ payOnlineUrl }}" target="_blank"><img src="http://azovsky.ru/images/vzmc.png" style="margin-right:10px;height:30px;">Внести оплату Online</a></div>
 {{ form_end(form, {render_rest: false}) }}
 
 
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.24/daterangepicker.min.css">
 <link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/form.css', null, true) }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
-
+{#<link rel="stylesheet" type="text/css" href="http://www.azovsky.ru/services/mb-search/vendor/bootstrap-datepicker-master/css/datepicker.css">#}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css">
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment-with-locales.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.24/daterangepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
+<script src="http://www.azovsky.ru/services/mb-search/js/jquery.maskedinput-1.2.2.js"></script>
+<script src="http://www.azovsky.ru/services/mb-search/vendor/chosen_v1.0.0/chosen.jquery.js"></script>
+
+{#<script src="http://www.azovsky.ru/services/mb-search/vendor/bootstrap-datepicker-master/js/bootstrap-datepicker.js"></script>#}
+{#<script src="http://www.azovsky.ru/services/mb-search/vendor/bootstrap-datepicker-master/js/bootstrap-datepicker.ru.js"></script>#}
+{#<script src="http://azovsky.ru/services/mb-search/vendor/bootstrap-datepicker-master/js/bootstrap-datepicker.utf.js"></script>#}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.ru.min.js"></script>
+
 <script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>
-<script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+<script src="{{ asset('bundles/fosjsrouting/js/router.js', null, true) }}"></script>
 <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+{#<script src="{{ asset('js/fos_js_routes.js', null, true) }}"></script>#}
 <script>
     var mbh = {
         restrictions: {{ restrictions|raw }}
