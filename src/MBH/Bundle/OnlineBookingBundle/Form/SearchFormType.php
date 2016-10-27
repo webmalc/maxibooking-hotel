@@ -109,7 +109,7 @@ class SearchFormType extends AbstractType
                 'entry_type' => ChoiceType::class,
                 'entry_options' => [
                     'label' => false,
-                    'choices' => range(0,18),
+                    'choices' => range(0,17),
                     'attr' => [
                         'class' => 'children_age_row'
                     ]

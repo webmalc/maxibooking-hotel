@@ -64,13 +64,13 @@
                 <div class="guests pull-left">
                 <i class="fa fa-users"></i> Гости <br/>
                 {% if result.results|first.adults is defined %}
-                    <span class="guestslist">{{ result.results|first.adults }} {{ result.results|first.children?'+'~result.results|first.children }} {{ result.results|first.infants?'+'~result.results|first.infants }}</span>
+                    <span class="guestslist">{{ result.results|first.adults }}{{ result.results|first.children?'+'~result.results|first.children }}{{ result.results|first.infants?'+'~result.results|first.infants }}</span>
                 {% endif %}
                 </div>
 
                 {% set searchResult = result.results|first %}
                 <div class=" pull-right">
-                    <div style="text-align: left;">СТОИМОСТЬ</div>
+                    <div style="text-align: center;">СТОИМОСТЬ</div>
                     <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}&nbsp;<i class="fa fa-ruble rublesize"></i></span>
                     {% if result.results|length > 1 %}&nbsp;
                     <span class="oldprice">{{ result.results|last.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}&nbsp;<i class="fa fa-ruble rublesize"></i></span>

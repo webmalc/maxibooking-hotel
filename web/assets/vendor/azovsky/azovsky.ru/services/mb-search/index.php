@@ -469,7 +469,7 @@
 
             <?php
             $az = $_GET['az']??false;
-            $env = $_GET['az']??false;
+            $env = $_GET['env']??false;
 
             $env = $env?'':'/app_dev.php';
             $url = $az?'http://az.maxibooking.ru':'http://mbh.local';

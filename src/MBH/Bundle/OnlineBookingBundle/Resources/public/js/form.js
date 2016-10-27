@@ -139,6 +139,7 @@ $(function () {
                 now = moment(),
                 startDate = moment(Math.max(minDate, now)),
                 endDate = startDate.clone().add(1, 'year');
+
             while ($.inArray(startDate.format("DD.MM.YYYY"), restrictions) != -1) {
                 startDate.add(1, "day");
             }
@@ -187,7 +188,7 @@ $(function () {
                         var endDate = moment($search_form_end.datepicker('getDate').valueOf());
                         $search_form_end.datepicker("setStartDate", date.toDate());
                         var diff = endDate.diff(date);
-                        if(diff < 0) {
+                        if (diff < 0) {
                             $search_form_end.datepicker("setDate", date.toDate());
                         }
                     }
@@ -202,21 +203,40 @@ $(function () {
         drawNights = function () {
             var begin = $search_form_begin.datepicker('getDate').valueOf(),
                 end = $search_form_end.datepicker('getDate').valueOf(),
-                nights = nightsCalculate(begin, end);
-            if(nights) {
-                if($("#nights_amount_container").hasClass('hidden')) {
+                nights = parseInt(nightsCalculate(begin, end));
+            if (nights) {
+                if ($("#nights_amount_container").hasClass('hidden')) {
                     $("#nights_amount_container").removeClass('hidden');
                 }
-                console.log(nights)
                 $("#nights_amount").html(nights);
             }
         };
 
+    //init datepicker
+    //Учитываем если дата уже выбрана
+    $search_form_begin.datepicker(dateBeginDefaults());
+    if(!$search_form_begin.val().length) {
+        $search_form_begin.datepicker("update", $search_form_begin.datepicker("getStartDate"));
+        // $search_form_begin.datepicker("setDate", $search_form_begin.datepicker("getStartDate"));
+    } else {
+        var currentStartDate = moment($search_form_begin.val(), "DD.MM.YYYY", true),
+            setDate = moment(Math.max(currentStartDate, $search_form_begin.datepicker("getStartDate")));
+        $search_form_begin.datepicker("update", setDate.toDate());
+        // $search_form_begin.datepicker("setDate", setDate.toDate());
+    }
 
-    $search_form_begin.val(dateBeginDefaults()["startDate"]).datepicker(dateBeginDefaults());
     var date_end_defaults = dateEndDefaults();
-    $search_form_end.val(moment(date_end_defaults["startDate"].valueOf()).format("DD.MM.YYYY")).datepicker(date_end_defaults);
-
+    $search_form_end.datepicker(date_end_defaults);
+    if(!$search_form_end.val().length) {
+        $search_form_end.datepicker("update", $search_form_end.datepicker("getStartDate"));
+        // $search_form_end.datepicker("setDate", $search_form_end.datepicker("getStartDate"));
+    } else {
+        var currentEndDate = moment($search_form_end.val(), "DD.MM.YYYY", true),
+            setEndDate = moment(Math.max(currentEndDate, $search_form_end.datepicker("getStartDate")));
+        $search_form_end.datepicker("update", setEndDate.toDate());
+        // $search_form_end.datepicker("setDate", setEndDate.toDate());
+    }
+    drawNights();
     $search_form_begin.datepicker().on("changeDate", function (e) {
         updateEndPicker(moment(e.date).unix());
         drawNights();
@@ -224,78 +244,11 @@ $(function () {
     $search_form_end.datepicker().on("changeDate", function (e) {
         drawNights();
     });
-/////////////////////////////Чилдрены//////////////////////
-//     var $children = $("#search_form_children");
-//     var $childrenIcon = $("#children-icon");
-//     $childrenIcon.popover({
-//         html: true,
-//         content: ""
-//
-//     });
-//     var childrenValues = $childrenIcon.data("value");
-//     if (!childrenValues) {
-//         childrenValues = [];
-//     }
-//     $childrenIcon.on("shown.bs.popover", function () {
-//         var popoverContent = $childrenIcon.next('div.popover').children('div.popover-content');
-//         popoverContent.find('input').on('change', function () {
-//             childrenValues = [];
-//             popoverContent.find('input').each(function (index, input) {
-//                 childrenValues.push(input.value);
-//             })
-//         });
-//     });
-//
-//
-//     var popoverShow = false;
-//     $childrenIcon.on('hide.bs.popover', function () {
-//         popoverShow = false;
-//     });
-//
-//     $children.on('keyup mouseup', function (e) {
-//         var value = parseInt($children.val());
-//         if (value && Math.min(value, 5) != value) {
-//             value = 5;
-//             $children.val(value);
-//         }
-//
-//         if (isNaN(value)) {
-//             value = 0;
-//         }
-//         if (value) {
-//             var content = "";
-//             for (var i = 0; i < value; i++) {
-//                 var inputValue = childrenValues[i];
-//                 if (undefined === inputValue) {
-//                     inputValue = 0;
-//                 }
-//                 content = content + '<input name="search_form[children_age][' + i + ']" type="number" value="' + inputValue + '" min="1" max="18" class="form-control input-sm" style="display: inline-block">';
-//             }
-//             if (content) {
-//                 content = '<div>' + content + '</div>';
-//             }
-//
-//             var popover = $childrenIcon.data('bs.popover');
-//             popover.options.content = content;
-//             var popoverContent = $childrenIcon.next('div.popover').children('div.popover-content');
-//             popoverContent.html(content);
-//             if (!popoverShow) {
-//                 $childrenIcon.popover('show');
-//                 popoverShow = true
-//             }
-//         } else {
-//             $childrenIcon.popover('hide');
-//         }
-//     });
-//
-//     if (childrenValues) {
-//         setTimeout(function () {
-//             $children.trigger('change');
-//         }, 1000)
-//     }
+
     var $children = $("#search_form_children"),
         $ageHolder = $("#search_form_children_age"),
         index;
+
     index = $ageHolder.find(':input').length;
 
     var checkShowAgeLabel = function () {
@@ -306,10 +259,26 @@ $(function () {
             $label.removeClass('hidden').hide().fadeIn(300);
         }
     };
-
     checkShowAgeLabel();
+
     $ageHolder.data('index', index);
-    var countChildrenAge = function (value) {
+    var drawChildrenAge = function (index) {
+            var prototype = $ageHolder.data("prototype"),
+                newAge = prototype.replace(/__name__/g, index);
+            $ageHolder.append($(newAge).hide().fadeIn(300));
+        },
+        deleteChildrenAge = function (index) {
+            var prototype = $ageHolder.data("prototype"),
+                newAge = prototype.replace(/__name__/g, index);
+            $.each($ageHolder.children(), function (id, value) {
+                if ($(newAge).find('select').attr('id') == $(this).find('select').attr('id')) {
+                    $(this).fadeOut(300, function () {
+                        $(this).remove();
+                    });
+                }
+            })
+        },
+        countChildrenAge = function (value) {
             if (value > index) {
                 var current, i;
                 for (i = index; i < value; i++) {
@@ -323,40 +292,20 @@ $(function () {
                 }
             }
             index = value;
-        },
-        drawChildrenAge = function (index) {
-            var prototype = $ageHolder.data("prototype"),
-                newAge = prototype.replace(/__name__/g, index);
-            $ageHolder.append($(newAge).hide().fadeIn(300));
         };
-
-    deleteChildrenAge = function (index) {
-        var prototype = $ageHolder.data("prototype"),
-            newAge = prototype.replace(/__name__/g, index);
-        $.each($ageHolder.children(), function (id, value) {
-            if ($(newAge).find('select').attr('id') == $(this).find('select').attr('id')) {
-                $(this).fadeOut(300, function () {
-                    $(this).remove();
-                });
-            }
-        });
-
-    };
 
     $children.on('keyup mouseup', function (e) {
         var target = e.target;
-        var value = $(target).val(),
-            min = $(target).attr('min'),
-            max = $(target).attr('max');
-
-        if (value && value != index) {
+        var value = parseInt($(target).val()) || 0,
+            min = parseInt($(target).attr('min')),
+            max = parseInt($(target).attr('max'));
+        if (value != index) {
             if (value >= min && value <= max) {
                 countChildrenAge(value)
             }
         }
         checkShowAgeLabel();
     });
-
 
 
 });

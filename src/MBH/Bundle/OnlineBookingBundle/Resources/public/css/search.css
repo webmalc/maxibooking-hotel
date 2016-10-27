@@ -18,9 +18,11 @@
 #online-booking-search .oldprice {
   color: #90b738;
   text-decoration: line-through;
+  font-size: 20px;
 }
 #online-booking-search .newprice {
   color: red;
+  font-size: 20px;
 }
 #online-booking-search .title .round {
   background-color: #8a8a8a;
@@ -99,4 +101,7 @@
   margin-left: 5px;
   color: #8a8a8a;
   font-size: 12px;
+}
+#online-booking-search span.guestslist {
+  font-size: 20px;
 }
