@@ -51,7 +51,7 @@
 
 
 <input type="submit" name="submit" value="Найти" id="rsc" style="margin-top: 26px;">
-<div class="hinform h2" style="padding:16px 0 11px; margin-top: 26px;"><a href="{{ payOnlineUrl }}" target="_blank"><img src="http://azovsky.ru/images/vzmc.png" style="margin-right:10px;height:30px;">Внести оплату Online</a></div>
+<div class="hinform newmargin h2" style="padding:16px 0 11px; margin-top: 26px;"><a href="{{ payOnlineUrl }}" target="_blank"><img src="http://azovsky.ru/images/vzmc.png" style="margin-right:10px;height:30px;">Внести оплату Online</a></div>
 {{ form_end(form, {render_rest: false}) }}
 
 {#временно!#}
@@ -74,8 +74,8 @@
 
 <script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>
 <script src="{{ asset('bundles/fosjsrouting/js/router.js', null, true) }}"></script>
-<script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
-{#<script src="{{ asset('js/fos_js_routes.js', null, true) }}"></script>#}
+{#<script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>#}
+<script src="{{ asset('js/fos_js_routes.js', null, true) }}"></script>
 <script>
     var mbh = {
         restrictions: {{ restrictions|raw }}

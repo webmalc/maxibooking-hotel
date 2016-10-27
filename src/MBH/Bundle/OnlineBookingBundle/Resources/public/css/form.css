@@ -92,3 +92,10 @@ select#search_form_roomType {
   height: 20px;
   margin-left: 16px;
 }
+.newmargin {
+  margin-top: 61px!important;
+}
+.formmainpage {
+  position: absolute !important;
+  z-index: 100;
+}
