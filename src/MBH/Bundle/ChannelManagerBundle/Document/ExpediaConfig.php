@@ -97,6 +97,52 @@ class ExpediaConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     protected $services;
 
     /**
+     * @var string
+     * @ODM\Field()
+     * @Assert\NotNull(message="validator.document.expediaConfig.username_not_specified")
+     */
+    protected $username;
+
+    /**
+     * @var string
+     * @ODM\Field()
+     * @Assert\NotNull(message="validator.document.expediaConfig.password_not_specified")
+     */
+    protected $password;
+
+    /**
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param string $username
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    /**
      * Set hotel
      *
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel

@@ -6,17 +6,18 @@ use MBH\Bundle\ChannelManagerBundle\Lib\Response;
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\HttpFoundation\Request;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\Order;
 
-//TODO: Сменить название
-class ExtendedAbstractChannelManager extends AbstractChannelManagerService
+abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerService
 {
-
     /** @var AbstractRequestFormatter $requestFormatter */
     protected $requestFormatter;
-    /** @var AbstractResponseHandler $responseHandler */
-    protected $responseHandler;
     /** @var AbstractRequestDataFormatter $requestDataFormatter */
     protected $requestDataFormatter;
+
+    abstract protected function getResponseHandler($response) : AbstractResponseHandler;
+    abstract protected function getOrderInfo($serviceOrder, $config, $tariffs, $roomTypes) : AbstractOrderInfoService;
 
     /**
      * @param \DateTime $begin
@@ -116,7 +117,7 @@ class ExtendedAbstractChannelManager extends AbstractChannelManagerService
      */
     public function createPackages()
     {
-        // TODO: Implement createPackages() method.
+        return $this->pullOrders();
     }
 
     /**
@@ -135,7 +136,10 @@ class ExtendedAbstractChannelManager extends AbstractChannelManagerService
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
-        // TODO: Implement pullRooms() method.
+        $requestInfo = $this->requestFormatter->formatPullRoomsRequest($config);
+        $response = $this->sendRequestAndGetResponse($requestInfo);
+        $responseHandler = $this->getResponseHandler($response);
+        return $responseHandler->getRoomTypesData();
     }
 
     /**
@@ -145,7 +149,10 @@ class ExtendedAbstractChannelManager extends AbstractChannelManagerService
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
-        // TODO: Implement pullTariffs() method.
+        $requestInfo = $this->requestFormatter->formatPullTariffsRequest($config);
+        $response = $this->sendRequestAndGetResponse($requestInfo);
+        $responseHandler = $this->getResponseHandler($response);
+        return $responseHandler->getTariffsData();
     }
 
     /**
@@ -159,7 +166,7 @@ class ExtendedAbstractChannelManager extends AbstractChannelManagerService
         if (!$response) {
             return false;
         }
-        return $this->responseHandler->isResponseCorrect($response);
+        return $this->getResponseHandler($response)->isResponseCorrect();
     }
 
     /**
@@ -169,7 +176,11 @@ class ExtendedAbstractChannelManager extends AbstractChannelManagerService
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
-        // TODO: Implement closeForConfig() method.
+        $requestData = $this->requestDataFormatter->formatCloseForConfigData();
+        $requestInfo = $this->requestFormatter->formatCloseForConfigRequest($config);
+        $response = $this->sendRequestAndGetResponse($requestInfo);
+        $responseHandler = $this->getResponseHandler($response);
+        return $responseHandler->getTariffsData();
     }
 
     /**
@@ -178,10 +189,12 @@ class ExtendedAbstractChannelManager extends AbstractChannelManagerService
      */
     public function pushResponse(Request $request)
     {
-        // TODO: Implement pushResponse() method.
+        $this->log($request->getContent());
+
+        return new Response('OK');
     }
 
-    private function sendRequestAndGetResponse(RequestInfo $requestInfo)
+    protected function sendRequestAndGetResponse(RequestInfo $requestInfo)
     {
         return $this->send(
             $requestInfo->getUrl(),
@@ -190,5 +203,86 @@ class ExtendedAbstractChannelManager extends AbstractChannelManagerService
             true,
             $requestInfo->getMethodName()
         );
+    }
+
+    public function createOrder(AbstractOrderInfoService $orderInfo, Order $order = null)
+    {
+        //order
+        if (!$order) {
+            $order = new Order();
+            $order->setChannelManagerStatus('new');
+        } else {
+            foreach ($order->getPackages() as $package) {
+                $this->dm->remove($package);
+                $this->dm->flush();
+            }
+            foreach ($order->getFee() as $cashDoc) {
+                $this->dm->remove($cashDoc);
+                $this->dm->flush();
+            }
+            $order->setChannelManagerStatus('modified');
+            $order->setDeletedAt(null);
+        }
+
+        $order->setChannelManagerType($orderInfo->getChannelManagerDisplayedName())
+            ->setChannelManagerId($orderInfo->getChannelManagerOrderId())
+            ->setMainTourist($orderInfo->getPayer())
+            ->setConfirmed(false)
+            ->setStatus('channel_manager')
+            ->setPrice($orderInfo->getPrice())
+            ->setOriginalPrice($orderInfo->getOriginalPrice())
+            ->setTotalOverwrite($orderInfo->getPrice());
+
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        foreach ($orderInfo->getCashDocuments() as $cashDocument) {
+            $this->dm->persist($cashDocument);
+        }
+        $this->dm->flush();
+
+
+        foreach ($orderInfo->getPackagesData() as $packageInfo) {
+            $package = $this->createPackage($packageInfo, $order);
+            $order->addPackage($package);
+            $this->dm->persist($package);
+        }
+        $this->dm->flush();
+
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        return $order;
+    }
+
+    /**
+     * @param AbstractPackageInfo $packageInfo
+     * @param Order $order
+     * @return Package
+     */
+    protected function createPackage(AbstractPackageInfo $packageInfo, Order $order)
+    {
+        $package = new Package();
+        $package
+            ->setChannelManagerType($order->getChannelManagerType())
+            ->setBegin($packageInfo->getBeginDate())
+            ->setEnd($packageInfo->getEndDate())
+            ->setRoomType($packageInfo->getRoomType())
+            ->setTariff($packageInfo->getTariff())
+            ->setAdults($packageInfo->getAdultsCount())
+            ->setChildren($packageInfo->getChildrenCount())
+            ->setPrices($packageInfo->getPrices())
+            ->setPrice($packageInfo->getPrice())
+            ->setOriginalPrice($packageInfo->getOriginalPrice())
+            ->setTotalOverwrite($packageInfo->getPrice())
+            ->setNote($packageInfo->getNote())
+            ->setOrder($order)
+            ->setCorrupted($packageInfo->getIsCorrupted());
+
+        foreach ($packageInfo->getTourists() as $tourist)
+        {
+            $package->addTourist($tourist);
+        }
+        return $package;
     }
 }

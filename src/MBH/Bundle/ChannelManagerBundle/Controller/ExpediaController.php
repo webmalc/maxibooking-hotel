@@ -58,19 +58,29 @@ class ExpediaController extends Controller
             $config = new ExpediaConfig();
             $config->setHotel($this->hotel);
         }
+
         $form = $this->createForm($this->get('mbh.channelmanager.expedia_type'), $config);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /* @var $dm DocumentManager; */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($config);
-            $dm->flush();
 
-            $this->get('mbh.channelmanager')->updateInBackground();
+            $errorMessage = $this->get('mbh.channelmanager.expedia')
+                ->safeConfigDataAndGetErrorMessage($form->get('username'), $form->get('password'), $config);
 
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.expediaController.settings_saved_success'));
+            if ($errorMessage === '') {
+
+                /* @var $dm DocumentManager; */
+                $dm = $this->get('doctrine_mongodb')->getManager();
+                $dm->persist($config);
+                $dm->flush();
+
+                $this->get('mbh.channelmanager')->updateInBackground();
+
+                $this->addFlash('success',
+                    $this->get('translator')->trans('controller.expediaController.settings_saved_success'));
+            } else {
+                $this->addFlash('danger', $this->get('translator')->trans($errorMessage));
+            }
         }
         return $this->redirectToRoute('expedia');
     }
@@ -187,7 +197,7 @@ class ExpediaController extends Controller
         $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find('57dfe9d593f1d94e3b1fdfca');
         $firstDate = \DateTime::createFromFormat('d.m.Y', '4.3.2017');
         $secondTime = \DateTime::createFromFormat('d.m.Y', '10.3.2017');
-        $errorMessage = $this->get('mbh.channelmanager.expedia')->updateRestrictions($firstDate, $secondTime, $roomType);
+        $errorMessage = $this->get('mbh.channelmanager.expedia')->updatePrices($firstDate, $secondTime, $roomType);
         return [];
     }
 }

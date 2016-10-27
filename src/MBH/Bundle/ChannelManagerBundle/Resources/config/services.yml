@@ -40,6 +40,14 @@ services:
     mbh.channelmanager.expedia_response_handler:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaResponseHandler
 
+    mbh.channelmanager.expedia_order_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\OrderInfo
+        arguments: ['@service_container']
+
+    mbh.channelmanager.expedia_package_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\PackageInfo
+        arguments: ['@service_container']
+
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: [@mbh.currency]

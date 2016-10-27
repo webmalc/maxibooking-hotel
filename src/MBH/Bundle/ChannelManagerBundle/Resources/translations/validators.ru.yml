@@ -16,3 +16,5 @@ validator.default_currency: Курс по умолчанию обязателе�
 document.myallocatorConfig.no_hotel_selected: Не выбран отель
 validator.document.expediaConfig.no_hotel_id_specified: Не указан id отеля
 validator.document.expediaConfig.no_hotel_selected: Не выбран отель
+validator.document.expediaConfig.username_not_specified: Не указано имя пользователя
+validator.document.expediaConfig.password_not_specified: Не указан пароль
