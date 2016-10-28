@@ -131,27 +131,56 @@ class ServiceController extends BaseController
         /** @var \MBH\Bundle\PackageBundle\Document\PackageService[] $results */
         $results = $queryBuilder->getQuery()->execute()->toArray();
 
-        $totals = [
-            'nights' => 0,
-            'guests' => 0,
-            'amount' => 0,
-            'result' => 0,
-            'payment' => 0,
-            'dept' => 0,
-        ];
+        $queryBuilder
+            ->group(
+                ['id' => 1],
+                [
+                    'result' => 0,
+                    'amount' => 0,
+                    'nights' => 0,
+                    'guests' => 0,
+                ]
+            )->reduce(
+                'function (obj, prev) {
+                    var price = 0;
+                    var amount = 0;
+                    var nights = 0;
+                    var persons = 0;
 
-        foreach ($results as $service) {
-            if ($service->getCalcType() == 'per_night')
-                $totals['nights'] += intval($service->getNights());
-            if ($service->getCalcType() != 'not_applicable') {
-                $totals['guests'] += intval($service->getPersons());
-            }
-            $totals['amount'] += intval($service->getAmount());
-            $totals['result'] += $service->getTotal();
+                    if (obj.totalOverwrite) {
+                        price = obj.totalOverwrite;
+                    } else {
+                        price = obj.total;
+                    }
+                    if (!isNaN(parseInt(obj.amount))) {
+                        amount = parseInt(obj.amount);
+                    }
+                    if (!isNaN(parseInt(obj.nights))) {
+                        nights = parseInt(obj.nights);
+                    }
+                    if (!isNaN(parseInt(obj.persons))) {
+                        persons = parseInt(obj.persons);
+                    }
+            
+                    prev.result += parseInt(price) !== NaN ? parseInt(price) : 0;
+                    prev.amount += amount;
+                    prev.nights += nights;
+                    prev.guests += persons;
+                }'
+            );
+
+        $totals = iterator_to_array($queryBuilder->getQuery()->execute());
+        if (isset($totals[0])) {
+            $totals = $totals[0];
+            $totals['result'] = number_format($totals['result'], 2);
+        } else {
+            $totals = [
+                'nights' => 0,
+                'guests' => 0,
+                'amount' => 0,
+                'result' => 0
+            ];
         }
-
-        $totals['result'] = number_format($totals['result'], 2);
-        $totals = json_encode($totals);
 
         if ($request->get('deleted') == 'on') {
             $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -160,7 +189,7 @@ class ServiceController extends BaseController
         return [
             'results' => $results,
             'recordsFiltered' => $count,
-            'totals' => $totals,
+            'totals' => json_encode($totals),
             'config' => $this->container->getParameter('mbh.services'),
         ];
     }
