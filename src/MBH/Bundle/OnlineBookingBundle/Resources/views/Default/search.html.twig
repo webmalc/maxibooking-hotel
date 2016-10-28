@@ -200,6 +200,8 @@
 
 <script>
     $(function () {
+        console.log($("#search_form").serialize());
+
         $('.descr').readmore({
             moreLink: '<div class="more-link"><a href="#">... <i class="fa fa-caret-right"></i></a></div>',
             lessLink: '<div class="less-link"><a href="#">... <i class="fa fa-caret-up"></i></a></div>',
@@ -214,7 +216,6 @@
     });
 </script>
 <script>
-
     //Send notification
 
     //BuyOnline
@@ -283,7 +284,7 @@
     {
         var href = this.selectedTariffRow.bookingHref;
         if (this.selectedTariffRow.$promotionSelect.val()) {
-            href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val();
+            href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val()+ $("#search_form").serialize();
         }
         this.$bookingButton.removeClass('disabled').attr('href', href);
     }
