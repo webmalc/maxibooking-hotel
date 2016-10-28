@@ -34,6 +34,8 @@ class CsvGenerate
         'guests' => ['title' => 'csv.type.guests', 'method' => 'getMainTourist'],
         'adults' => ['title' => 'csv.type.adults', 'method' => 'getAdults'],
         'children' => ['title' => 'csv.type.children', 'method' => 'getChildren'],
+        'countNight' => ['title' => 'csv.form.countNight', 'method' => 'getNights'],
+        'countPersons' => ['title' => 'csv.form.countPersons', 'method' => 'countPersons'],
         'price' => ['title' => 'csv.type.price', 'method' => 'getPrice'],
         'tariff' => ['title' => 'csv.type.tariff', 'method' => 'getTariff'],
         'createdAt' => ['title' => 'csv.type.createdAt', 'method' => 'getCreatedAt'],
@@ -67,12 +69,20 @@ class CsvGenerate
                 if (!empty($formData[$key])) {
 
                     $method = $item['method'];
-                    $call = $entity->$method();
 
-                    if ($call instanceof \DateTime) {
-                        $dataCsv[] = $entity->$method()->format('d.m.Y');
+                    if ($method == 'countPersons') {
+
+                        $dataCsv[] = $entity->getAdults() + $entity->getChildren();
+
                     } else {
-                        $method == 'getStatus' ? $dataCsv[] = $translator->trans('manager.' . $entity->$method()) : $dataCsv[] = $entity->$method();
+
+                        $call = $entity->$method();
+
+                        if ($call instanceof \DateTime) {
+                            $dataCsv[] = $entity->$method()->format('d.m.Y');
+                        } else {
+                            $method == 'getStatus' ? $dataCsv[] = $translator->trans('manager.' . $entity->$method()) : $dataCsv[] = $entity->$method();
+                        }
                     }
 
                 }

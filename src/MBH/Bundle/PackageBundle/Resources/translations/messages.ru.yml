@@ -382,3 +382,5 @@ csv.form.createdBy: Создал
 csv.form.modal_title: Генерация документа
 csv.form.modal_close: Закрыть
 csv.form.modal_generate: Сгенерировать
+csv.form.countNight: Кол-во Ночей
+csv.form.countPersons: Кол-во Людей
