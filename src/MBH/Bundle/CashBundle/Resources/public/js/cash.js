@@ -19,6 +19,7 @@ var cashDocumentConfirmation = function (link) {
 
 var cashDocumentPay = function (link) {
     'use strict';
+
     var icon = link.find('i');
     $('#entity-delete-confirmation').modal('hide');
     icon.attr('class', 'fa fa-spin fa-spinner');
@@ -41,7 +42,7 @@ var cashDocumentPay = function (link) {
 
 $(document).ready(function () {
     'use strict';
-
+    var eventDispatcher = null;
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
         min: 0.1,
@@ -147,7 +148,6 @@ $(document).ready(function () {
     tableSwitcher.prototype.draw = function () {
         $cashTable.closest('.cash-table-item').css('display', !this.byDay ? 'block' : 'none');
         $cashTableByDay.closest('.cash-table-item').css('display', this.byDay ? 'block' : 'none');
-
         if (this.byDay) {
             $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
             $deletedCheckbox.bootstrapSwitch('toggleDisabled');
@@ -162,11 +162,13 @@ $(document).ready(function () {
                 ];
                 $cashTableByDay.dataTable(options);
                 this.initTableByDay = true;
+                return true;
             }
         } else {
-            if(!this.initCashTable) {
+            if (!this.initCashTable) {
                 $cashTable.dataTable(dataTableOptions);
                 this.initCashTable = true;
+                return true;
             }
             if ($showNoPaidCheckbox.prop('disabled')) {
                 $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
@@ -175,9 +177,8 @@ $(document).ready(function () {
                 $deletedCheckbox.bootstrapSwitch('toggleDisabled');
             }
         }
-
         this.currentTable().dataTable().fnDraw();
-    }
+    };
 
     tableSwitcher.prototype.switch = function () {
         this.byDay = !this.byDay;
@@ -188,14 +189,18 @@ $(document).ready(function () {
     sw.draw();
 
     $('#cash-filter-form input,select').not('#by_day').on('switchChange.bootstrapSwitch change', function () {
-        sw.currentTable().dataTable().fnDraw();
+        if (eventDispatcher) clearTimeout(eventDispatcher);
+        eventDispatcher = setTimeout(function () {
+            sw.currentTable().dataTable().fnDraw();
+        }, 300);
+
     });
 
     /**
      * @TODO create tableProcessing = false, too much ajax request
      */
     var isAutoSwitchDeletedCheckbox = false;
-    $filterSelectElement.on('change', function(){
+    $filterSelectElement.on('change', function () {
         var value = $filterSelectElement.select2('val');
         var isDeletedValue = value == 'deletedAt';
 
@@ -203,8 +208,8 @@ $(document).ready(function () {
             $deletedCheckbox.bootstrapSwitch('toggleDisabled'); //enable
         }
 
-        if(isDeletedValue) {
-            if (!$deletedCheckbox.bootstrapSwitch('state')){
+        if (isDeletedValue) {
+            if (!$deletedCheckbox.bootstrapSwitch('state')) {
                 $deletedCheckbox.bootstrapSwitch('state', true);
                 isAutoSwitchDeletedCheckbox = true;
             } else {
@@ -227,7 +232,7 @@ $(document).ready(function () {
         sw.switch();
     });
 
-    $('#1c-export').on('click', function (e){
+    $('#1c-export').on('click', function (e) {
         e.preventDefault();
         var data = getFormData();
         var href = $(this).attr('href');
