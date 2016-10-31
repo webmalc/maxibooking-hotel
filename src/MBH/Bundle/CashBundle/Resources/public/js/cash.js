@@ -83,7 +83,7 @@ $(document).ready(function () {
                 by_day: $byDayCheckbox.prop("checked") ? 1 : 0,
                 deleted: $deletedCheckbox.prop("checked") ? 1 : 0,
                 user: $user.val(),
-                type: $typeSelect.val(),
+                type: $typeSelect.val()
             };
         },
         drawCallback = function (settings) {
@@ -134,16 +134,16 @@ $(document).ready(function () {
             {"bSortable": false, "class": "table-actions-td"} // actions
         ],
         "drawCallback": drawCallback
-    }
+    };
 
     var tableSwitcher = function () {
         this.byDay = $byDayCheckbox.bootstrapSwitch('state');
         this.initCashTable = false;
         this.initTableByDay = false;
-    }
+    };
     tableSwitcher.prototype.currentTable = function () {
         return this.byDay ? $cashTableByDay : $cashTable;
-    }
+    };
 
     tableSwitcher.prototype.draw = function () {
         $cashTable.closest('.cash-table-item').css('display', !this.byDay ? 'block' : 'none');
@@ -183,17 +183,23 @@ $(document).ready(function () {
     tableSwitcher.prototype.switch = function () {
         this.byDay = !this.byDay;
         this.draw();
-    }
+    };
 
     var sw = new tableSwitcher();
     sw.draw();
 
-    $('#cash-filter-form input,select').not('#by_day').on('switchChange.bootstrapSwitch change', function () {
+    $('#cash-filter-form input,select').not('#by_day, #begin, #end').on('switchChange.bootstrapSwitch change', function (e) {
         if (eventDispatcher) clearTimeout(eventDispatcher);
         eventDispatcher = setTimeout(function () {
             sw.currentTable().dataTable().fnDraw();
-        }, 300);
+        }, 500);
 
+    });
+    $("#begin, #end").on('changeDate', function (e) {
+        if (eventDispatcher) clearTimeout(eventDispatcher);
+        eventDispatcher = setTimeout(function () {
+            sw.currentTable().dataTable().fnDraw();
+        }, 500);
     });
 
     /**
