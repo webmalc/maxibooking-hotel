@@ -109,7 +109,7 @@ class SearchFormType extends AbstractType
 //            ])
             ->add('adults', ChoiceType::class, [
                 'label' => 'Взрослые',
-                'choices' => range(0,10),
+                'choices' => range(1,10),
                 'data' => 1
             ])
             ->add('children', ChoiceType::class, [
