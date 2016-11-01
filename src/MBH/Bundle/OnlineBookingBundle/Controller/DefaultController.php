@@ -13,6 +13,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Lib\PaymentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -27,13 +28,6 @@ use Symfony\Component\HttpFoundation\Response;
 class DefaultController extends BaseController
 {
     /*const RECAPCHA_SECRET = '6Lcj9gcUAAAAAH_zLNfIhoNHvbMRibwDl3d3Thx9';*/
-
-
-    const ALLOWED_ONLINE_PAYMENT = [
-        'online_100',
-        'online_40',
-        'online_30'
-    ];
 
     /**
      * @Route("/", name="online_booking")
@@ -203,8 +197,9 @@ class DefaultController extends BaseController
         if ($reservation) {
             $form = $this->createForm(ReservationType::class);
         } else {
-            $options['total'] = $request->get('form')['total']??'';
-            $form = $this->createForm(SignType::class, null, $options);
+            ///////////////
+            $form = $this->createForm(SignType::class);
+            ///////////////
         }
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
 
@@ -250,11 +245,12 @@ class DefaultController extends BaseController
                 $this->reserveNotification($data);
                 return $this->render('@MBHOnlineBooking/Default/sign-success.html.twig');
             }
-            $payment = $formData['payment'];
+            //Price online pay
+            $paymentType = PaymentType::PAYMENT_TYPE_LIST[$formData['paymentType']];
             //OnlinePayment  - оплаченая цена (формируется взависимости от выбора. Искать в форме)
-            $onlinePaymentSum = (int)$formData['onlinePayment'];
+            $onlinePaymentSum = (int)$formData['total']/100*$paymentType['value'];
             $cash = ['total' => $onlinePaymentSum];
-            $data['onlinePaymentType'] = $payment;
+            $data['onlinePaymentType'] = $paymentType['description'];
 
             //Создаем бронь.
             try {

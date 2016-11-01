@@ -6,6 +6,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Form;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\OnlineBookingBundle\Controller\DefaultController;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Lib\PaymentType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -46,11 +47,6 @@ class SignType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $allowedPayment = DefaultController::ALLOWED_ONLINE_PAYMENT;
-        $paymentTypes = array_filter($this->container->getParameter('mbh.online.form')['payment_types'], function ($key) use ($allowedPayment) {
-            return in_array($key, $allowedPayment);
-        }, ARRAY_FILTER_USE_KEY);
-
         $builder
             ->add('firstName', TextType::class, [
                 'label' => 'Имя',
@@ -74,8 +70,7 @@ class SignType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'constraints' => [
-                    new Email(),
-                    new NotBlank()
+                    new Email()
                 ],
                 'required' => false
             ])
@@ -95,7 +90,12 @@ class SignType extends AbstractType
                 ],
                 'label' => 'Принимаю условия <a href="https://yadi.sk/i/thkaoWkPoVMxK" target="_blank">договора-оферты.</a>',
             ])
-            //->add('step', 'hidden', [])
+            ->add('cash', TextType::class, [
+                'disabled' => true,
+                'required' => false,
+                'label' => 'Первая сумма к оплате согласно тарифа',
+                'mapped' => false
+            ])
             ->add('adults', HiddenType::class, [])
             ->add('children', HiddenType::class, [])
             ->add('begin', HiddenType::class, [
@@ -110,40 +110,21 @@ class SignType extends AbstractType
             ])
             ->add('roomType', HiddenType::class, [])
             ->add('tariff', HiddenType::class, [])
-            //Вывод суммы через форму, не через яваскрипт как было
-            ->add('payment', ChoiceType::class, [
-                'label' => 'Сумма оплаты',
-                'choices' => $paymentTypes,
-                'choice_label' => function ($currentPaymentType) use ($paymentTypes, $options) {
-                    $sum = $this->countDiscount($currentPaymentType, $options['total']);
-                    return $paymentTypes[$currentPaymentType].' '.$sum.' руб.';
-                }
-            ])
-            ->add('onlinePayment', HiddenType::class)
+            ->add('paymentType', HiddenType::class, [])
             ->add('total', HiddenType::class)
             ->add('promotion', HiddenType::class)
         ;
-        $builder->get('onlinePayment')->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($options){
-            /*
-            $data = $event->getData();
-            $paymentType = $data['payment'];
-            $sum = $this->countDiscount($paymentType, $options['total']);
-            $data['onlinePayment'] = $sum;
-            $event->setData($data);
-            */
-            if (!$event->getData()) {
-                $paymentType = $event->getForm()->getParent()->get('payment')->getData()??null;
-                $sum = $this->countDiscount($paymentType, $options['total']);
-                $event->setData( (string)$sum);
+        $builder->get('cash')->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event){
+            $data = $event->getForm()->getParent()->getData();
+            if ($paymentType = $data['paymentType']) {
+                $total = $data['total'];
+                $percent = PaymentType::PAYMENT_TYPE_LIST[$paymentType]['value'];
+                $event->setData($total/100*$percent.' руб. ('.$percent.'% от '.$total.' руб.)');
+
             }
+
         });
         $builder->get('promotion')->addViewTransformer(new EntityToIdTransformer($this->dm, Promotion::class));
-    }
-
-    private function countDiscount($currentPaymentType,$total)
-    {
-        $percent = explode("_", $currentPaymentType)[1];
-        return round($total * $percent / 100);
     }
 
     /**
@@ -155,7 +136,6 @@ class SignType extends AbstractType
             ->setDefaults([
                 'csrf_protection' => false,
                 'method' => Request::METHOD_GET,
-                'total' => 0
             ]);
     }
 

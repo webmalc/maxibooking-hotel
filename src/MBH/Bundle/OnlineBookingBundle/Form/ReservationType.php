@@ -28,10 +28,9 @@ class ReservationType extends SignType
                 'data' => 'true',
                 'mapped' => false
             ])
-            ->remove('payment')
             ->remove('offerta')
             ->remove('patronymic')
-            ->remove('onlinePayment')
+            ->remove('paymentType')
         ;
     }
 

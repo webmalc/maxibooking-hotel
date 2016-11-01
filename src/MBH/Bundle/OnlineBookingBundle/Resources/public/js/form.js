@@ -294,7 +294,7 @@ $(function () {
             index = value;
         };
 
-    $children.on('keyup mouseup', function (e) {
+    $children.on('change', function (e) {
         var target = e.target;
         var value = parseInt($(target).val()) || 0,
             min = parseInt($(target).attr('min')),
@@ -306,6 +306,4 @@ $(function () {
         }
         checkShowAgeLabel();
     });
-
-
 });

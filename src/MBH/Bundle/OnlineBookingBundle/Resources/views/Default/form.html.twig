@@ -37,11 +37,13 @@
 
     <div class="col-sm-6">
         {{ form_label(form.adults) }}
-        {{ form_widget(form.adults, {attr: {class:"bgnd"}}) }}
+        {#{{ form_widget(form.adults, {attr: {class:"bgnd"}}) }}#}
+        {{ form_widget(form.adults) }}
     </div>
     <div class="col-sm-6">
         {{ form_label(form.children) }}
-        {{ form_widget(form.children,{attr: {class:"bgnd"}}) }}
+        {#{{ form_widget(form.children,{attr: {class:"bgnd"}}) }}#}
+        {{ form_widget(form.children) }}
     </div>
     <div id="children_age_container">
         {{ form_label(form.children_age) }}

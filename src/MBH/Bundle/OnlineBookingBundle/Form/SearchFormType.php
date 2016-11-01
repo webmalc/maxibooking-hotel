@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Form;
 
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -55,7 +56,13 @@ class SearchFormType extends AbstractType
                 'required' => false,
                 'empty_value' => 'Все пансионаты',
                 'class' => Hotel::class,
-                'property' => 'fullTitle'
+                'property' => 'fullTitle',
+                'query_builder' => function (DocumentRepository $documentRepository) {
+                    return $documentRepository->createQueryBuilder()
+                        ->field('_id')->in(['56fbd22174eb5383728b4567', '5705190e74eb53461c8b4916'])
+                        ->sort('fullTitle', 'DESC');
+                }
+
             ])
             ->add('roomType', ChoiceType::class, [
                 'label' => 'Тип номера',
@@ -90,15 +97,26 @@ class SearchFormType extends AbstractType
                     'class' => 'input-small'
                 ]
             ])
-            ->add('adults', IntegerType::class, [
+//            ->add('adults', IntegerType::class, [
+//                'label' => 'Взрослые',
+//                'attr' => ['min' => 1],
+//                'data' => 1,
+//            ])
+//            ->add('children', IntegerType::class, [
+//                'label' => 'Дети',
+//                'attr' => ['min' => 0, 'max' => 5],
+//                'required' => false
+//            ])
+            ->add('adults', ChoiceType::class, [
                 'label' => 'Взрослые',
-                'attr' => ['min' => 1],
-                'data' => 1,
+                'choices' => range(0,10),
+                'data' => 1
             ])
-            ->add('children', IntegerType::class, [
+            ->add('children', ChoiceType::class, [
                 'label' => 'Дети',
-                'attr' => ['min' => 0, 'max' => 5],
-                'required' => false
+                'choices' => range(0, 5),
+                'attr' => ['min' => 0, 'max' => 5]
+
             ])
             ->add('children_age', CollectionType::class, [
                 'label' => 'Возраст детей на момент заезда',
