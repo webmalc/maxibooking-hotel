@@ -228,6 +228,11 @@ parameters:
           api_password: VCuMhanjdxiC
           vendor_password: 0Rp0XJGubJ9rfoUy4niNGcBPErf20VJZ
           url: http://mbhs.maxibooking.ru/client/channelmanager/push/myallocator
+        oktogo:
+          title: 'Oktogo'
+          service: 'mbh.channelmanager.oktogo'
+          api_username: .maxiBooking_api
+          api_password: qdcmBz9K
 
     #параметры логов
     mbh.logs.max: 100

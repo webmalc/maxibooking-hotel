@@ -2,8 +2,16 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig;
+use MBH\Bundle\PackageBundle\Document\CreditCard;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use Symfony\Component\HttpFoundation\Request;
+use MBH\Bundle\ChannelManagerBundle\Document\Service;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
@@ -26,6 +34,13 @@ class Oktogo extends Base
      */
     const TEST = true;
 
+    public $servicesConfig = [
+        'parking' => 'Parking space',
+        'cot' => 'Babycot',
+        'DoubleBed' => 'DoubleBed',
+        'TwoBed' => 'TwoBed',
+    ];
+
     /**
      * Get roomTypes & tariffs template file
      */
@@ -42,9 +57,15 @@ class Oktogo extends Base
         'Cache-Control: no-cache',
     ];
 
+    /**
+     * @var array
+     */
+    private $params;
+
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
+        $this->params = $container->getParameter('mbh.channelmanager.services')['oktogo'];
     }
 
     /**
@@ -61,10 +82,15 @@ class Oktogo extends Base
                 ['config' => $config]
             );
 
-            $sendResult = $this->sendXml(static::BASE_URL . 'reservations', $request, $this->getHeaders(), true);
+//            $sendResult = $this->sendXml(static::BASE_URL . 'reservations', $request, $this->getHeaders(), true);
+
+            $sendResult = simplexml_load_string($this->templating->render('MBHChannelManagerBundle:Oktogo:test.xml.twig'));
+
             dump($sendResult);
+
             dump($request);
-            exit();
+
+
             $this->log('Reservations count: ' . count($sendResult->reservation));
 
             foreach ($sendResult->reservation as $reservation) {
@@ -81,6 +107,7 @@ class Oktogo extends Base
                         'channelManagerType' => 'oktogo'
                     ]
                 );
+
                 if ((string)$reservation->status == 'modified') {
                     if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -88,48 +115,32 @@ class Oktogo extends Base
                 }
 
                 //new
-                if ((string)$reservation->status == 'new' && !$order) {
+                if ((string)$reservation->status == 'Confirmed' && !$order && !isset($reservation->modification_date)) {
+
                     $result = $this->createPackage($reservation, $config, $order);
-                    $this->notify($result, 'booking', 'new');
+                    $this->notify($result, 'oktogo', 'new');
                 }
                 //edit
-                if ((string)$reservation->status == 'modified' && $order) {
+                if ((string)$reservation->status == 'Confirmed' && $order && isset($reservation->modification_date)) {
                     $result = $this->createPackage($reservation, $config, $order);
-                    $this->notify($result, 'booking', 'edit');
+                    $this->notify($result, 'oktogo', 'edit');
                 }
                 //delete
-                if ((string)$reservation->status == 'cancelled' && $order) {
+                if ((string)$reservation->status == 'Cancelled' && $order && isset($reservation->modification_date)) {
                     $order->setChannelManagerStatus('cancelled');
                     $this->dm->persist($order);
                     $this->dm->flush();
-                    $this->notify($order, 'booking', 'delete');
+                    $this->notify($order, 'oktogo', 'delete');
                     $this->dm->remove($order);
                     $this->dm->flush();
                     $result = true;
 
                 };
 
-                if (in_array((string)$reservation->status, ['modified', 'cancelled']) && !$order) {
-                    $this->notifyError(
-                        'booking',
-                        '#' . $reservation->id . ' ' .
-                        $reservation->customer->last_name . ' ' . $reservation->customer->first_name
-                    );
-                }
             };
         }
 
         return $result;
-    }
-
-    public function closeAll()
-    {
-
-    }
-
-    public function sync()
-    {
-
     }
 
     public function checkResponse($response, array $params = null)
@@ -163,7 +174,6 @@ class Oktogo extends Base
                 true,
                 $this->roomManager->useCategories
             );
-
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
 
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
@@ -266,9 +276,10 @@ class Oktogo extends Base
                     'data' => $data,
                 ]
             );
-            dump($this->getHeaders());
+
+
             $sendResult = $this->send(static::BASE_URL . 'availability', $request, $this->getHeaders(), true);
-//            dump($sendResult);exit();
+
             if ($result) {
                 $result = $this->checkResponse($sendResult);
             }
@@ -281,42 +292,92 @@ class Oktogo extends Base
 
     public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
+        $result = true;
+        $begin = $this->getDefaultBegin($begin);
+        $end = $this->getDefaultEnd($begin, $end);
+        // iterate hotels
+        foreach ($this->getConfig() as $config) {
+            $roomTypes = $this->getRoomTypes($config);
+            $tariffs = $this->getTariffs($config);
+            $serviceTariffs = $this->pullTariffs($config);
+            $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
+                $begin,
+                $end,
+                $config->getHotel(),
+                $roomType ? [$roomType->getId()] : [],
+                [],
+                true
+            );
+            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                $begin,
+                $end,
+                $config->getHotel(),
+                $roomType ? [$roomType->getId()] : [],
+                [],
+                true
+            );
 
-    }
+            foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                    foreach ($tariffs as $tariffId => $tariff) {
 
-    /**
-     * @param OktogoConfig $config
-     * @return bool
-     */
-    public function roomSync(OktogoConfig $config)
-    {
-        $sendResult = $this->send(
-            static::BASE_URL . 'rooms',
-            $this->templating->render(static::GET_ROOMS_TARIFFS_TEMPLATE, ['config' => $config]),
-            $this->getHeaders($config),
-            true
-        );
+                        if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
+                            continue;
+                        }
 
-        $xml = simplexml_load_string($sendResult);
+                        if (!empty($serviceTariffs[$tariff['syncId']]['rooms']) && !in_array($roomTypeInfo['syncId'], $serviceTariffs[$tariff['syncId']]['rooms'])) {
+                            continue;
+                        }
 
-        if (!$xml instanceof \SimpleXMLElement) {
-            return false;
-        }
+                        $price = false;
+                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                            $price = true;
+                        }
 
-        $roomTypes = $config->getHotel()->getRoomTypes();
-        $config->removeAllRooms();
+                        if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                            $info = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
 
-        foreach ($xml->children() as $room) {
+                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
+                                'closed' => $info->getClosed() || !$price ? 1 : 0,
+                                'id_tariff' => $tariff['syncId'],
+                                'persons' => $info->getRoomType()->getPlaces(),
+                            ];
 
-            foreach ($roomTypes as $roomType) {
-                if ($roomType->getFullTitle() == (string)$room) {
-                    $configRoom = new Room();
-                    $configRoom->setRoomType($roomType)->setRoomId((string)$room->attributes()->id);
-                    $config->addRoom($configRoom);
+                        } else {
+                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
+                                'closed' => !$price ? 1 : 0,
+                                'id_tariff' => $tariff['syncId'],
+                                'persons' => $roomTypeInfo['doc']->getPlaces(),
+                            ];
+                        }
+                    }
                 }
             }
+
+            if (!isset($data)) {
+                continue;
+            }
+
+            $request = $this->templating->render(
+                'MBHChannelManagerBundle:Oktogo:updateRestrictions.xml.twig',
+                [
+                    'config' => $config,
+                    'data' => $data,
+                    'begin' => $begin,
+                    'end' => $end
+                ]
+            );
+
+            $sendResult = $this->send(static::BASE_URL . 'availability', $request, $this->getHeaders(), true);
+
+            if ($result) {
+                $result = $this->checkResponse($sendResult);
+            }
+
+            $this->log($sendResult);
         }
-        return true;
+
+        return $result;
     }
 
     /**
@@ -324,37 +385,283 @@ class Oktogo extends Base
      */
     private function getHeaders()
     {
-        $config = $this->getConfig();
         $auth = '';
-//        $auth = 'Authorization: Basic ' . base64_encode($config[0]->getUsername() . ':' . $config[0]->getPassword());
         if (static::TEST) {
             $auth = 'Authorization: Basic ' . base64_encode('Oktogo:Oktogo');
         }
-        $xAuth = 'X-Oktogo-Authorization: Basic ' . base64_encode($config[0]->getLogin() . ':' . $config[0]->getPassword());
+        $xAuth = 'X-Oktogo-Authorization: Basic ' . base64_encode($this->params['api_username'] . ':' . $this->params['api_password']);
 
         return array_merge($this->headers, [$auth, $xAuth]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
-    {
-        return true;
-    }
 
     public function createPackages()
     {
-        return new Response();
+        return $this->pullOrders();
     }
 
     /**
-     * {@inheritDoc}
+     * @param \SimpleXMLElement $reservation
+     * @param ChannelManagerConfigInterface $config
+     * @param Order $order
+     * @return Order
      */
-    public function getRooms(ChannelManagerConfigInterface $config)
+    private function createPackage(
+        \SimpleXMLElement $reservation,
+        ChannelManagerConfigInterface $config,
+        Order $order = null
+    )
     {
-    }
 
+        $helper = $this->container->get('mbh.helper');
+        $roomTypes = $this->getRoomTypes($config, true);
+        $tariffs = $this->getTariffs($config, true);
+        $services = $this->getServices($config);
+
+        if ($reservation->customer && (string)$reservation->postpay == 'false') {
+            $customer = $reservation->customer;
+            $payerNote = 'country=' . (string)$customer->countrycode;
+            $payerNote .= '; city=' . (string)$customer->city;
+            $payerNote .= '; company=' . (string)$customer->company;
+            $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                (string)$customer->last_name,
+                (string)$customer->first_name,
+                null,
+                null,
+                empty((string)$customer->email) ? null : (string)$customer->email,
+                empty((string)$customer->telephone) ? null : (string)$customer->telephone,
+                empty((string)$customer->address) ? null : (string)$customer->address,
+                empty($payerNote) ? null : $payerNote
+            );
+
+        } else {
+            $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+        }
+        //order
+        if (!$order) {
+            $order = new Order();
+            $order->setChannelManagerStatus('new');
+        } else {
+            foreach ($order->getPackages() as $package) {
+                $this->dm->remove($package);
+                $this->dm->flush();
+            }
+            foreach ($order->getFee() as $cashDoc) {
+                $this->dm->remove($cashDoc);
+                $this->dm->flush();
+            }
+            $order->setChannelManagerStatus('modified');
+            $order->setDeletedAt(null);
+        }
+
+        $order->setChannelManagerType('oktogo')
+            ->setChannelManagerId((string)$reservation->id)
+            ->setChannelManagerHumanId(empty((string)$reservation->id) ? null : (string)$reservation->id)
+            ->setMainTourist($payer)
+            ->setConfirmed(false)
+            ->setStatus('channel_manager')
+            ->setPrice((string)$reservation->totalprice)
+            ->setOriginalPrice((float)$reservation->totalprice)
+            ->setTotalOverwrite((string)$reservation->totalprice);
+
+        if (!empty((string)$reservation->customer)) {
+            $customer = $reservation->customer;
+            $card = new CreditCard();
+            $card->setType($customer->cc_type)
+                ->setNumber($customer->cc_number)
+                ->setDate($customer->cc_expiration_date)
+                ->setCardholder($customer->cc_name)
+                ->setCvc($customer->cc_cvc);
+
+            $order->setCreditCard($card);
+        }
+
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        //in
+        if (!empty((float)$reservation->totalprice && $reservation->customer && (string)$reservation->postpay == 'false' )) {
+
+            $in = new CashDocument();
+            $in->setIsConfirmed(false)
+                ->setIsPaid(false)
+                ->setMethod('electronic')
+                ->setOperation('in')
+                ->setOrder($order)
+                ->setTouristPayer($payer)
+                ->setTotal((float)$reservation->totalprice);
+            $this->dm->persist($in);
+            $this->dm->flush();
+        }
+
+        //fee
+        if (!empty((float)$reservation->commissionamount)) {
+
+            $fee = new CashDocument();
+            $fee->setIsConfirmed(false)
+                ->setIsPaid(false)
+                ->setMethod('electronic')
+                ->setOperation('fee')
+                ->setOrder($order)
+                ->setTouristPayer($payer)
+                ->setTotal((float)$reservation->commissionamount);
+            $this->dm->persist($fee);
+            $this->dm->flush();
+        }
+
+        //packages
+        foreach ($reservation->room as $room) {
+
+            //packages
+            $corrupted = false;
+            $errorMessage = '';
+
+            //roomType
+            if (isset($roomTypes[(string)$room->id])) {
+                $roomType = $roomTypes[(string)$room->id]['doc'];;
+            } else {
+                $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
+                    [
+                        'hotel.id' => $config->getHotel()->getId(),
+                        'isEnabled' => true,
+                        'deletedAt' => null
+                    ]
+                );
+                $corrupted = true;
+                $errorMessage = 'ERROR: invalid roomType #' . (string)$room->id . '. ';
+
+                if (!$roomType) {
+                    continue;
+                }
+            }
+            $countChildren = 0;
+            //guests
+            foreach ($room->guest as $guest) {
+
+                if ($guest) {
+                    $guests[] = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                        $guest->last_name,
+                        $guest->first_name,
+                        null,
+                        null,
+                        null,
+                        null
+                    );
+                    if ((int)$guest->child_age) {
+                        $countChildren++;
+                    }
+                }
+            }
+
+            //prices
+            $total = 0;
+            $tariff = $rateId = null;
+            $pricesByDate = $packagePrices = [];
+            $price = $room->price->attributes();
+
+            if (!$rateId) {
+                $rateId = (string)$price['rate_id'];
+            }
+            if (!$tariff && isset($tariffs[$rateId])) {
+                $tariff = $tariffs[$rateId]['doc'];
+            }
+            if (!$tariff) {
+                $tariff = $this->createTariff($config, $rateId);
+
+                if (!$tariff) {
+                    continue;
+                }
+                $corrupted = true;
+                $errorMessage .= 'ERROR: Not mapped rate <' . $tariff->getName() . '>. ';
+            }
+
+            $total += (float)$room->totalprice;
+            $date = $helper->getDateFromString((string)$price->date, 'Y-m-d');
+
+            $pricesByDate[$date->format('d_m_Y')] = (float)$room->price;
+            $packagePrices[] = new PackagePrice($date, (float)$room->price, $tariff);
+
+            $packageNote = 'remarks: ' . $room->remarks . '; MealType: ' . $room->meal . '; time = ' . $room->time . '; ' . ' contact_details = ' . $reservation->contract_details . '; ';
+            $packageNote .= ' commissionamount=' . $room->commissionamount . '; currencycode = ' . $room->currencycode . '; ' . ' totalprice = ' . $room->totalprice . '; ';
+            $packageNote .= $errorMessage;
+
+            if (isset($reservation->special_request)) {
+                $special = $reservation->special_request->attributes();
+            } else {
+                $special['smoking'] = '';
+            }
+
+            $packageTotal = (float)$total;
+            $package = new Package();
+            $package
+                ->setChannelManagerId((string)$room->roomreservation_id)
+                ->setChannelManagerType('oktogo')
+                ->setBegin($helper->getDateFromString((string)$room->arrival_date, 'Y-m-d'))
+                ->setEnd($helper->getDateFromString((string)$room->departure_date, 'Y-m-d'))
+                ->setRoomType($roomType)
+                ->setTariff($tariff)
+                ->setAdults((int)$room->numberofguests - $countChildren)
+                ->setChildren($countChildren)
+                ->setIsSmoking(($special['smoking'] == 'Smoking') ? true : false)
+                ->setPricesByDate($pricesByDate)
+                ->setPrices($packagePrices)
+                ->setPrice($packageTotal)
+                ->setOriginalPrice((float)$total)
+                ->setTotalOverwrite($packageTotal)
+                ->setNote($packageNote)
+                ->setOrder($order)
+                ->setCorrupted($corrupted);
+
+            foreach ($guests as $key => $tourist) {
+
+                $package->addTourist($tourist);
+            }
+
+            //services
+            $servicesTotal = 0;
+            if (isset($special['parking']) || isset($special['cot']) || isset($special['bed_type'])) {
+                foreach ($special as $service => $value) {
+                    if (isset($this->servicesConfig[$service]) || isset($this->servicesConfig[(string)$value])) {
+                        $packageService = new PackageService();
+                        $packageService
+                            ->setService(isset($services[$service]['doc']) ? $services[$service]['doc'] : $services[(string)$value]['doc'])
+                            ->setIsCustomPrice(true)
+                            ->setNights(empty((string)$package->getNights()) ? null : (int)$package->getNights())
+                            ->setPersons(null)
+                            ->setPrice(null)
+                            ->setTotalOverwrite(null)
+                            ->setPackage($package);
+                        $this->dm->persist($packageService);
+                        $package->addService($packageService);
+                    }
+                }
+            }
+
+
+            $package->setServicesPrice(0);
+            $package->setTotalOverwrite(0);
+
+            $order->addPackage($package);
+            $this->dm->persist($package);
+            $this->dm->persist($order);
+        }
+        $this->dm->flush();
+
+        $order->setTotalOverwrite((float)$reservation->totalprice);
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        return $order;
+    }
 
     /**
      * {@inheritDoc}
@@ -413,7 +720,27 @@ class Oktogo extends Base
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
-        // TODO: Implement closeForConfig() method.
+        foreach ($this->pullTariffs($config) as $key => $tariff) {
+
+            if (!$tariff['readonly'] || !$tariff['is_child_rate']) {
+                $tariffs[$key] = $tariff;
+            }
+        }
+
+        $request = $this->templating->render(
+            'MBHChannelManagerBundle:Oktogo:close.xml.twig',
+            [
+                'config' => $config,
+                'rooms' => $this->pullRooms($config),
+                'rates' => $tariffs
+            ]
+        );
+
+        $sendResult = $this->send(static::BASE_URL . 'availability', $request, $this->getHeaders(), true);
+
+        $this->log($sendResult);
+
+        return $this->checkResponse($sendResult);
     }
 
     /**
@@ -422,17 +749,36 @@ class Oktogo extends Base
      */
     public function pushResponse(Request $request)
     {
-        // TODO: Implement pushResponse() method.
+        $this->log($request->getContent());
+
+        return new Response('OK');
     }
 
     /**
-     * @return $this
+     * @param ChannelManagerConfigInterface $config
      */
-    public function removeAllRooms()
+    public function syncServices(ChannelManagerConfigInterface $config)
     {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+        $config->removeAllServices();
+        foreach ($this->servicesConfig as $serviceKey => $serviceName) {
+            $serviceDoc = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy(
+                [
+                    'code' => $serviceName
+                ]
+            );
 
-        return $this;
+            if (empty($serviceDoc) || $serviceDoc->getCategory()->getHotel()->getId() != $config->getHotel()->getId()) {
+                continue;
+            }
+
+            $service = new Service();
+            $service->setServiceId($serviceKey)->setService($serviceDoc);
+            $config->addService($service);
+            $this->dm->persist($config);
+        }
+
+        $this->dm->flush();
+
     }
 
 }

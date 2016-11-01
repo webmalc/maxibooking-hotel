@@ -1,6 +1,6 @@
-
+<?xml version="1.0" encoding="utf-8"?>
 <request>
-    <username>{{ config.username }} </username>
+    <username>{{ config.hotelId }} </username>
         {% for roomId, roomInfo in data %}
             <room id="{{ roomId }}">
                 {% for date, dateInfo in roomInfo %}

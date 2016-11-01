@@ -1,15 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
 <request>
-    <username>{{ config.username }} </username>
+    <username>{{ config.hotelId }}</username>
     {% for roomId, roomInfo in data %}
         <room id="{{ roomId }}">
             {% for date, dateInfo in roomInfo %}
-                {% if dateInfo |length > 1 %}
+                {% if dateInfo|length > 1 %}
                     {% for tariffInfo in dateInfo %}
-                        <update>
-                            <date value="{{ date }}"/>
-                            <rate rateplan_id="{{ tariffInfo.id_tariff }}" adults="{{ tariffInfo.persons }}"
-                                  price="{{ tariffInfo.price }}"/>
-                        </update>
+                        {% if tariffInfo.id_tariff is defined %}
+                            <update>
+                                <date value="{{ date }}"/>
+                                <rate rateplan_id="{{ tariffInfo.id_tariff }}" adults="{{ tariffInfo.persons }}"
+                                      price="{{ tariffInfo.price }}" />
+                            </update>
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
             {% endfor %}

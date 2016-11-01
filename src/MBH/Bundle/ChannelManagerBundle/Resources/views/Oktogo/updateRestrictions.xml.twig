@@ -1,0 +1,20 @@
+<request>
+    {#{% if dateInfo.closed is defined %}#}
+        {#<closed>{{ dateInfo.closed }}</closed>#}
+    {#{% else %}#}
+        {#<closed>{{ dateInfo.closed }}</closed>#}
+    {#{% endif %}#}
+    <username>{{ config.hotelId }} </username>
+    {% for roomId, roomInfo in data %}
+        <room id="{{ roomId }}">
+            {% for date, dateInfo in roomInfo %}
+                <update>
+                    <date value="{{ date }}"/>
+                    {% for dateItem in dateInfo %}
+                            <rate rateplan_id="{{ dateItem.id_tariff  }}" adults="{{ dateItem.persons  }}"  closed="{{ dateItem.closed  }}" />
+                    {% endfor %}
+                </update>
+            {% endfor %}
+        </room>
+    {% endfor %}
+</request>

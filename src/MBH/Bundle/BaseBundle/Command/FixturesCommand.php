@@ -59,6 +59,8 @@ class FixturesCommand extends ContainerAwareCommand
           'Internet' => ['name' => 'Интернет', 'calcType' => 'per_night', 'enabled' => false],
           'Parking space' => ['name' => 'Парковка', 'calcType' => 'per_night', 'enabled' => false],
           'Babycot' => ['name' => 'Детская кровать', 'calcType' => 'per_night', 'enabled' => false],
+          'DoubleBed' => ['name' => 'Одна двухспальная', 'calcType' => 'per_night', 'enabled' => false],
+          'TwoBed' => ['name' => 'Две односпальные', 'calcType' => 'per_night', 'enabled' => false],
 
       ],
       'Трансфер' => [
