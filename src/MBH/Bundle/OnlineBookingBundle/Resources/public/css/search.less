@@ -1,16 +1,24 @@
+// Color variables (appears count calculates by raw css)
+@color0: #ebb630; // Appears 4 times
+@color1: #2196f3; // Appears 3 times
+@color2: #8a8a8a; // Appears 3 times
+
+
+
 #online-booking-search {
   .rublesize {
     font-size: 19px;
   }
   .logo {
-    padding: 0;
   }
   .right-info {
     padding: 0 5px 0 10px;
   }
   .oblimg {
-    width: auto;
+    border: 1px solid #CCCCCC;
     height: auto;
+    margin-bottom: 0;
+    width: auto;
   }
   .miniimages {
     margin: 0;
@@ -18,73 +26,71 @@
   }
   .oldprice {
     color: #90b738;
-    text-decoration: line-through;
     font-size: 20px;
+    text-decoration: line-through;
   }
   .newprice {
     color: red;
     font-size: 20px;
   }
   .title {
-
     .round {
-      background-color: #8a8a8a;
+      -moz-border-radius: 35px;
+      background-color: @color2;
+      border-radius: 35px;
       display: inline-block;
       height: 10px;
       width: 10px;
-      -moz-border-radius: 35px;
-      border-radius: 35px;
     }
     .star {
-      background-color: #ebb630;
+      background-color: @color0;
     }
   }
   .table {
     margin-bottom: 0;
     th {
+      color: @color1;
       font-weight: normal;
-      color: #2196F3;
     }
     i {
-      color: #ebb630;
+      color: @color0;
     }
   }
   .descr {
-    width: auto;
     margin: 0;
-
+    width: auto;
   }
   .btmactions {
     float: right;
+    margin: 15px 0 5px 0;
     a {
-      text-transform: uppercase;
+      border-radius: 0;
       color: white;
       font-size: 12px;
-      border-radius: 0;
-      &.btn-default {
-        background-color: #8a8a8a;
-      }
+      text-transform: uppercase;
     }
-
+    a.btn-default {
+      background-color: @color2;
+    }
   }
-
-  .more-link, .less-link {
-    padding: 5px 0 0 5px;
+  .more-link {
     float: left;
     font-size: 12px;
-
+    padding: 5px 0 0 5px;
   }
-
+  .less-link {
+    float: left;
+    font-size: 12px;
+    padding: 5px 0 0 5px;
+  }
   .numicon {
-    color: #ebb630;
-    margin-top: 8px;
+    color: @color0;
     margin-right: 10px;
-
+    margin-top: 8px;
   }
-
   .roomtype {
+    color: @color1;
     text-transform: capitalize;
-    color: #2196F3;
   }
   .roomname {
     font-weight: bold;
@@ -101,36 +107,23 @@
     overflow: hidden;
   }
   .hotellogo {
-    width: 50px;
-    height: 50px;
-    position: absolute;
-    left: -65px;
-    top: 0px;
     background-color: rgba(255, 255, 255, 0.27);
+    height: 50px;
+    left: -65px;
+    position: absolute;
+    top: 0px;
+    width: 50px;
   }
-  //.beforesubtitle {
-  //  float: left;
-  //  margin-top: 8px;
-  //  color: #ebb630;
-  //  &+.subtitle {
-  //    float: left;
-  //  }
-  //}
-  //.aftersubtitle {
-  //  float:left;
-  //  margin-top: 8px;
-  //  margin-left: 10px;
-  //}
   .guests {
-    .roomtype;
+    color: @color1;
+    text-transform: capitalize;
     i {
-      color: #ebb630;
-      & + .guestslist {
-        margin-left: 5px;
-
-        color: #8a8a8a;
-        font-size: 12px;
-      }
+      color: @color0;
+    }
+    i+.guestslist {
+      color: @color2;
+      font-size: 12px;
+      margin-left: 5px;
     }
   }
   span.guestslist {
@@ -138,19 +131,7 @@
   }
 }
 .oneblock {
-  border: 1px solid #bec8d2;
   border-radius: 3px;
-  padding:10px 3px;
-  box-shadow: 3px 3px 8px #888888;
-}
-
-.infoIncludeN {
-  margin: 10px 15px 23px 0;
-  text-align: right;
-}
-.restitle {
-  font-size: 20px;
-  text-align: center;
-  color: #8a8a8a;
-  font-weight: bold;
+  border: 1px solid #bec8d2;
+  padding: 10px 3px;
 }

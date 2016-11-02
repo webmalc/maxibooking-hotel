@@ -110,12 +110,14 @@ class SearchFormType extends AbstractType
             ->add('adults', ChoiceType::class, [
                 'label' => 'Взрослые',
                 'choices' => range(1,10),
-                'data' => 1
+                'data' => 1,
+                'empty_value' => false
             ])
             ->add('children', ChoiceType::class, [
                 'label' => 'Дети',
                 'choices' => range(0, 5),
-                'attr' => ['min' => 0, 'max' => 5]
+                'attr' => ['min' => 0, 'max' => 5],
+                'empty_value' => false
 
             ])
             ->add('children_age', CollectionType::class, [
@@ -130,11 +132,13 @@ class SearchFormType extends AbstractType
                     'choices' => range(0,17),
                     'attr' => [
                         'class' => 'children_age_row'
-                    ]
+                    ],
+                    'empty_value' => false,
+                    'data' => 0
                 ],
                 'prototype' => true,
                 'allow_add' => true,
-                'allow_delete' => true
+                'allow_delete' => true,
             ]);
     }
 

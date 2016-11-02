@@ -1,6 +1,6 @@
 {% form_theme form '@MBHOnlineBooking/Form/children_age_entry_widget.twig' %}
 {{ form_start(form, {attr: {id: 'search-form', class: 'bronirovanie'}, action: requestSearchUrl }) }}
-<div class="hinform h2">Онлайн бронирование</div>
+<div class="hinform h2">Расчет стоимости</div>
 <div class="form-group">
     {{ form_label(form.hotel) }}
     <div class="input-group">
@@ -52,7 +52,7 @@
 
 
 
-<input type="submit" name="submit" value="Найти" id="rsc" style="margin-top: 26px;">
+<input type="submit" name="submit" value="Узнать цены" id="rsc" style="margin-top: 26px;">
 <div class="spinn"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
 <div class="hinform newmargin h2" style="padding:16px 0 11px; margin-top: 26px;"><a href="{{ payOnlineUrl }}" target="_blank"><img src="http://azovsky.ru/images/vzmc.png" style="margin-right:10px;height:30px;">Внести оплату Online</a></div>
 {{ form_end(form, {render_rest: false}) }}
