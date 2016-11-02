@@ -347,3 +347,40 @@ package.tourist_in_unwelcome: Гость находится в черном сп
 package.payer_in_unwelcome: Плательщик находится в черном списке
 
 report.windows.title: 'окна'
+
+manager.offline: Оффлайн
+manager.online: Онлайн
+manager.channel_manager: Channel manager
+
+csv.type.package: Тип брони
+csv.type.begin: С
+csv.type.end: По
+csv.type.tariffType: Тип номера
+csv.type.tariffAccomodation: Размещение
+csv.type.guests: Плательщик
+csv.type.adults: Взрослых
+csv.type.children: Детей
+csv.type.price: Стоимость
+csv.type.tariff: Тариф
+csv.type.createdAt: Дата создания
+csv.type.createdBy: Создал
+
+csv.form.group: Параметры генерации CSV файла
+csv.form.type: Тип брони
+csv.form.numberWithPrefix: Название брони
+csv.form.dateBegin: С
+csv.form.dateEnd: По
+csv.form.tariffType: Тип номера
+csv.form.tariffAccomodation: Размещение
+csv.form.guests: Плательщик
+csv.form.adults: Взрослые
+csv.form.children: Дети
+csv.form.price: Стоимость
+csv.form.tariff: Тариф
+csv.form.createdAt: Дата создания
+csv.form.createdBy: Создал
+csv.form.modal_title: Генерация документа
+csv.form.modal_close: Закрыть
+csv.form.modal_generate: Сгенерировать
+csv.form.countNight: Кол-во Ночей
+csv.form.countPersons: Кол-во Людей
