@@ -79,6 +79,16 @@
 #online-booking-search .roomname {
   font-weight: bold;
 }
+#online-booking-search .roomname > a {
+  color: #8a8a8a;
+  cursor: pointer;
+}
+#online-booking-search .roomname > a:hover,
+#online-booking-search .roomname > a:focus,
+#online-booking-search .roomname > a:visited,
+#online-booking-search .roomname > a:link {
+  text-decoration: none;
+}
 #online-booking-search .infocontainer {
   overflow: hidden;
 }
@@ -110,4 +120,14 @@
   border-radius: 3px;
   padding: 10px 3px;
   box-shadow: 3px 3px 8px #888888;
+}
+.infoIncludeN {
+  margin: 10px 15px 23px 0;
+  text-align: right;
+}
+.restitle {
+  font-size: 20px;
+  text-align: center;
+  color: #8a8a8a;
+  font-weight: bold;
 }

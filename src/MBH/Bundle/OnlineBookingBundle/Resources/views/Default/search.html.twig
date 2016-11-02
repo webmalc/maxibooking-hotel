@@ -1,5 +1,8 @@
 <link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/search.css', null, true) }}">
+
 <div id="online-booking-search">
+    <p class="restitle">Курортная сеть "Азовский": варианты размещения в выбранные объекты</p>
+    <div class="infoIncludeN">Что входит в стоимость путевки: <a href="http://azovsky.ru/putevka-v-Crimea/" style="" target="_blank">Азовский</a>, <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a></div>
 {% for result in searchResults %}
 <div class="row oneblock room-type-row">
     <!--<div class="sale"></div>-->
@@ -47,7 +50,15 @@
                         {#<i class="fa fa-h-square numicon"></i>#}
                         <div class="pull-right roomcon">
                             <div class="roomtype">тип номера</div>
-                            <div class="roomname">{{ result.roomType.fullTitle }}</div>
+                            <div class="roomname">
+
+                                {% if result.roomType.descriptionurl is defined and result.roomType.descriptionurl is not empty %}
+                                    <a href="{{ result.roomType.descriptionUrl }}" target="_blank">{{ result.roomType.fullTitle }}</a>
+                                    {% else %}
+                                    {{ result.roomType.fullTitle }}
+                                {% endif %}
+
+                            </div>
                         </div>
 
                     </div>
@@ -153,13 +164,17 @@
     </div>
 </div>
 {% endfor %}
+    {% if searchResults|length != 0 %}
+    <div class="infoIncludeN">Что входит в стоимость путевки: <a href="http://azovsky.ru/putevka-v-Crimea/" style="" target="_blank">Азовский</a>, <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a></div>
+    {% endif %}
+
 </div>
 
 {% if searchResults|length == 0 %}
     <div style="background-color: #FFFFFF; padding: 15px">
         <strong><i class="fa fa-exclamation"></i> Варианты не найдены.</strong>
             <p>Пожалуйста, проверьте даты заезда и выезда.</p>
-            <p>Или свяжитесь с нами: по телефону 8 (800) 775-15-41 (звонок бесплатный по всей России) или написав нам через форму обратной связи.</p>
+            <p>Или свяжитесь с нами: по телефону 8 (800) 775-15-41 (звонок бесплатный по всей России) или написав нам через <a href="/mail-us">форму обратной связи</a>.</p>
             <p>Мы обязательно Вам поможем!</p>
             <p>Спасибо, что выбираете Курортную сеть «Азовский»</p>
         <p><strong>Смотрите также: </strong><a href="http://azovsky.ru/specpredlojenia-dnia/">Спецпредложения</a></p>

@@ -127,6 +127,9 @@ $(function () {
     $hotelSelect.on("change", updateRestrictions());
     $roomTypeSelect.on("change", updateRestrictions());
 //////////////////////////////////////////////
+    $("form#search-form").on('submit', function (e) {
+        $(".spinn").css('display', 'block');
+    });
     var $search_form_begin = $("#search_form_begin"),
         $search_form_end = $("#search_form_end");
     $search_form_begin.mask('99.99.9999');
@@ -150,7 +153,7 @@ $(function () {
                 startDate: startDate.format('DD.MM.YYYY'),
                 endDate: endDate.format('DD.MM.YYYY'),
                 todayHighlight: true,
-                orientation: "bottom right",
+                orientation: "auto",
                 beforeShowDay: function (date) {
                     if ($.inArray(moment(date.valueOf()).format("DD.MM.YYYY"), restrictions) != -1) {
                         return false;

@@ -77,6 +77,17 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
     protected $description;
 
     /**
+     * @var
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="string", name="descriptionUrl")
+     * @Assert\Length(
+     *     min=2,
+     *     max=512
+     * )
+     */
+    protected $descriptionUrl;
+
+    /**
      * @var RoomType[]|ArrayCollection
      * @ODM\ReferenceMany(targetDocument="\MBH\Bundle\HotelBundle\Document\RoomType", mappedBy="category")
      */
@@ -230,4 +241,21 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDescriptionUrl()
+    {
+        return $this->descriptionUrl;
+    }
+
+    /**
+     * @param mixed $descriptionUrl
+     */
+    public function setDescriptionUrl($descriptionUrl)
+    {
+        $this->descriptionUrl = $descriptionUrl;
+    }
+
 }

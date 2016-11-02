@@ -88,6 +88,14 @@
   }
   .roomname {
     font-weight: bold;
+    & > a {
+      color: #8a8a8a;
+      cursor: pointer;
+      &:hover, &:focus, &:visited, &:link {
+        text-decoration: none;
+
+      }
+    }
   }
   .infocontainer {
     overflow: hidden;
@@ -134,4 +142,15 @@
   border-radius: 3px;
   padding:10px 3px;
   box-shadow: 3px 3px 8px #888888;
+}
+
+.infoIncludeN {
+  margin: 10px 15px 23px 0;
+  text-align: right;
+}
+.restitle {
+  font-size: 20px;
+  text-align: center;
+  color: #8a8a8a;
+  font-weight: bold;
 }
