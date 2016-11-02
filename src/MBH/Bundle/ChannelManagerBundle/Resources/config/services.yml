@@ -45,11 +45,11 @@ services:
         arguments: ['@service_container']
 
     mbh.channelmanager.expedia_order_info:
-        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\OrderInfo
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaOrderInfo
         arguments: ['@service_container']
 
     mbh.channelmanager.expedia_package_info:
-        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\PackageInfo
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaPackageInfo
         arguments: ['@service_container']
 
     mbh.channelmanager.booking_type:

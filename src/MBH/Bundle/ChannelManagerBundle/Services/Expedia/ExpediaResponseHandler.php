@@ -23,7 +23,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     /**
      * Ленивая загрузка массива объектов, содержащих данные о заказах, полученных от сервиса
      *
-     * @return OrderInfo[]
+     * @return ExpediaOrderInfo[]
      */
     public function getOrderInfos() {
 

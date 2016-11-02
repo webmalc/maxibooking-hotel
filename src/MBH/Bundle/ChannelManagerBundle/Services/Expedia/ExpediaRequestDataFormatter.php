@@ -259,7 +259,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
     public function formatNotifyServiceData(AbstractOrderInfo $orderInfo, $config)
     {
-        /** @var OrderInfo $orderInfo */
+        /** @var ExpediaOrderInfo $orderInfo */
         $confirmNumbersElement = new \SimpleXMLElement('BookingConfirmNumbers');
         $confirmNumberElement = $confirmNumbersElement->addChild('BookingConfirmNumber');
         $confirmNumberElement->addAttribute('bookingID', $orderInfo->getChannelManagerOrderId());

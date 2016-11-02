@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 
-class OrderInfo extends AbstractOrderInfo
+class ExpediaOrderInfo extends AbstractOrderInfo
 {
     /** @var  ContainerInterface $container */
     private $container;

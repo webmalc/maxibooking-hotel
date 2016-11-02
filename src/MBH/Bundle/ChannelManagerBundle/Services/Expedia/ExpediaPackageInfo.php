@@ -8,7 +8,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
-class PackageInfo extends AbstractPackageInfo
+class ExpediaPackageInfo extends AbstractPackageInfo
 {
     /** @var  ContainerInterface $container */
     private $container;
@@ -42,7 +42,7 @@ class PackageInfo extends AbstractPackageInfo
      * @param $tariffs
      * @param $roomTypes
      * @param $payer
-     * @return PackageInfo
+     * @return ExpediaPackageInfo
      */
     public function setInitData($packageData, $config, $tariffs, $roomTypes, $payer)
     {
