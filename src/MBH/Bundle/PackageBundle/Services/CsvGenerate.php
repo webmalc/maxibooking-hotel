@@ -42,6 +42,8 @@ class CsvGenerate
         'createdBy' => ['title' => 'csv.type.createdBy', 'method' => 'getCreatedBy'],
     ];
 
+    const DELIMETER = ";";
+
 
     public function __construct(ContainerInterface $container)
     {
@@ -53,7 +55,7 @@ class CsvGenerate
     {
         $translator = $this->container->get('translator');
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
-
+        $title = '';
         foreach (self::DATA as $key => $item) {
             if (!empty($formData[$key])) {
 
@@ -61,8 +63,8 @@ class CsvGenerate
             }
         }
 
-        $rows[] = implode(',', $title);
-
+        $rows[] = implode(self::DELIMETER, $title);
+        $dataCsv = [];
         foreach ($entities as $entity) {
             foreach (self::DATA as $key => $item) {
 
@@ -88,7 +90,7 @@ class CsvGenerate
                 }
             }
 
-            $rows[] = implode(',', $dataCsv);
+            $rows[] = implode(self::DELIMETER, $dataCsv);
             $dataCsv = [];
         }
 
