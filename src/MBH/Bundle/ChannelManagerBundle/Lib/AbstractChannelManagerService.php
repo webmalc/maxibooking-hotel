@@ -200,22 +200,25 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     public function createTariff(ChannelManagerConfigInterface $config, $id)
     {
         $tariffsInfo = $this->pullTariffs($config);
+        $info = null;
 
-        if (!isset($tariffsInfo[$id])) {
+        if (isset($tariffsInfo[$id])) {
+            $info = $tariffsInfo[$id];
+
+            $oldTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy([
+                'title' => $info['title']
+            ]);
+            if ($oldTariff) {
+                return $oldTariff;
+            }
+
             return null;
         }
-        $info = $tariffsInfo[$id];
 
-        $oldTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy([
-            'title' => $info['title']
-        ]);
-        if ($oldTariff) {
-            return $oldTariff;
-        }
 
         $tariff = new Tariff();
-        $tariff->setTitle($info['title'])
-            ->setFullTitle($info['title'])
+        $tariff->setTitle($info ? $info['title'] : 'Automatically generated rate: undefined')
+            ->setFullTitle($info ? $info['title'] : 'Automatically generated rate: undefined')
             ->setIsDefault(false)
             ->setIsOnline(false)
             ->setHotel($config->getHotel())

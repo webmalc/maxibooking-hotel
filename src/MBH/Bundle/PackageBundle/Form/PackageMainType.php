@@ -2,13 +2,16 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use MBH\Bundle\BaseBundle\Form\Extension\DateType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
@@ -23,7 +26,7 @@ class PackageMainType extends AbstractType
         $package = $options['package'];
 
         $builder
-            ->add('begin', 'date', [
+            ->add('begin', DateType::class, [
                 'label' => 'Заезд',
                 'group' => 'Заезд/отъезд',
                 'widget' => 'single_text',
@@ -35,7 +38,7 @@ class PackageMainType extends AbstractType
                     'data-date-format' => 'dd.mm.yyyy'
                 )
             ])
-            ->add('end', 'date', [
+            ->add('end', DateType::class, [
                 'label' => 'Отъезд',
                 'group' => 'Заезд/отъезд',
                 'widget' => 'single_text',
@@ -47,13 +50,13 @@ class PackageMainType extends AbstractType
                     'data-date-format' => 'dd.mm.yyyy'
                 )
             ])
-            ->add('isForceBooking', 'checkbox', [
+            ->add('isForceBooking', CheckboxType::class, [
                 'label' => 'Принудительное бронирование?',
                 'required' => false,
                 'group' => 'Заезд/отъезд',
                 'help' => 'Игнорировать условия и ограничения при поиске доступного номера?'
             ])
-            ->add('roomType', 'document', [
+            ->add('roomType', DocumentType::class, [
                 'label' => 'Тип номера',
                 'class' => 'MBHHotelBundle:RoomType',
                 'group' => 'Номер',
@@ -64,8 +67,21 @@ class PackageMainType extends AbstractType
                         ->sort(['fullTitle' => 'asc', 'title' => 'asc']);
                 },
                 'required' => true
-            ])
-            ->add('adults', 'choice', [
+            ]);
+            if ($options['virtualRooms']) {
+                $builder
+                    ->add('virtualRoom', DocumentType::class, [
+                        'label' => 'Виртуальный номер',
+                        'class' => 'MBHHotelBundle:Room',
+                        'group' => 'Номер',
+                        'query_builder' => function (DocumentRepository $dr) use ($package) {
+                            return $dr->getVirtualRoomsForPackageQB($package);
+                        },
+                        'required' => false
+                    ]);
+            }
+            $builder
+            ->add('adults', ChoiceType::class, [
                 'label' => 'Взрослых',
                 'group' => 'Номер',
                 'required' => true,
@@ -74,7 +90,7 @@ class PackageMainType extends AbstractType
                 'choices' => range(0, 10),
                 'attr' => array('class' => 'input-xxs plain-html'),
             ])
-            ->add('children', 'choice', [
+            ->add('children', ChoiceType::class, [
                 'label' => 'Детей',
                 'group' => 'Номер',
                 'required' => true,
@@ -83,7 +99,7 @@ class PackageMainType extends AbstractType
                 'choices' => range(0, 10),
                 'attr' => array('class' => 'input-xxs plain-html'),
             ])
-            ->add('isSmoking', 'checkbox', [
+            ->add('isSmoking', CheckboxType::class, [
                 'label' => 'Курящий?',
                 'required' => false,
                 'group' => 'Номер',
@@ -95,7 +111,7 @@ class PackageMainType extends AbstractType
             }
             if (count($options['promotions'])) {
                 $builder
-                    ->add('promotion', 'document', [
+                    ->add('promotion', DocumentType::class, [
                         'label' => 'form.packageMainType.promotion',
                         'class' => 'MBH\Bundle\PriceBundle\Document\Promotion',
                         'required' => false,
@@ -105,7 +121,7 @@ class PackageMainType extends AbstractType
             }
         }
         if (!$package->getTotalOverwrite() && $options['price']) {
-            $builder->add('price', 'text', [
+            $builder->add('price', TextType::class, [
                 'label' => 'form.packageMainType.price',
                 'required' => true,
                 'group' => 'Цена',
@@ -119,24 +135,24 @@ class PackageMainType extends AbstractType
 
         if($options['discount']) {
             $builder
-                ->add('discount', 'text', [
+                ->add('discount', TextType::class, [
                     'label' => 'form.packageMainType.discount',
                     'required' => false,
                     'group' => 'Скидка'
                 ])
-                ->add('isPercentDiscount', 'checkbox', [
+                ->add('isPercentDiscount', CheckboxType::class, [
                     'label' => 'form.packageMainType.isPercentDiscount',
                     'required' => false,
                     'group' => 'Скидка'
                 ]);
         }
         $builder
-            ->add('numberWithPrefix', 'text', [
+            ->add('numberWithPrefix', TextType::class, [
                 'label' => 'Номер брони',
                 'group' => 'Информация',
                 'required' => true,
             ])
-            ->add('note', 'textarea', [
+            ->add('note', TextareaType::class, [
                 'label' => 'form.packageMainType.comment',
                 'group' => 'Информация',
                 'required' => false,
@@ -144,7 +160,7 @@ class PackageMainType extends AbstractType
 
         if ($options['corrupted']) {
             $builder
-                ->add('corrupted', 'checkbox', [
+                ->add('corrupted', CheckboxType::class, [
                     'label' => 'Повреждена?',
                     'required' => false,
                     'group' => 'Информация',
@@ -163,7 +179,8 @@ class PackageMainType extends AbstractType
             'promotion' => false,
             'promotions' => [],
             'package' => null,
-            'price' => false
+            'price' => false,
+            'virtualRooms'=> false
          ]);
     }
 
