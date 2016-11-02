@@ -95,7 +95,7 @@ class CsvGenerate
         }
 
         $content = implode("\n", $rows);
-        return $content;
+        return iconv('UTF-8','CP1251', $content);
 
     }
 
