@@ -2,17 +2,24 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractRequestDataFormatter;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 {
     const EXPEDIA_MIN_STAY = 1;
     const EXPEDIA_MAX_STAY = 28;
+    const BOOKING_RETRIEVAL_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BR/2014/01';
+
+    /**
+     * В Expedia невозможно установить данные более чем на 2 года вперед
+     */
 
     /**
      * Переопределенный метод форматирования результирующего массива данных о ценах, полученных из Maxibooking
@@ -32,14 +39,16 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         &$resultArray,
         \DateTime $day)
     {
-        if ($priceCache) {
-            $priceCalculationService = $this->container->get('mbh.calculation');
-            $pricesByOccupantsCount = ['prices' => $priceCalculationService->calcPrices($roomType, $tariff, $day, $day)];
-        } else {
-            $pricesByOccupantsCount = ['prices' => []];
-        }
+        if (date_diff(new \DateTime(), $day)->y < 2) {
+            if ($priceCache) {
+                $priceCalculationService = $this->container->get('mbh.calculation');
+                $pricesByOccupantsCount = ['prices' => $priceCalculationService->calcPrices($roomType, $tariff, $day, $day)];
+            } else {
+                $pricesByOccupantsCount = ['prices' => []];
+            }
 
-        $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId][] = $pricesByOccupantsCount;
+            $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId][] = $pricesByOccupantsCount;
+        }
     }
 
     /**
@@ -67,7 +76,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $ratePlanElement->addAttribute('id', $tariffId);
 
                     $rateElement = $ratePlanElement->addChild('Rate');
-                    $rateElement->addAttribute('currency', $this->container->getParameter('locale.currency'));
+                    $rateElement->addAttribute('currency', strtoupper($this->container->getParameter('locale.currency')));
 
                     foreach ($tariffPricesInfo['prices'] as $price) {
                         $perOccupancyElement = $rateElement->addChild('PerOccupancy');
@@ -79,7 +88,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
             $xmlElements[] = $xmlRoomTypeData;
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config)->asXML();
+        return $this->formatTemplateRequest($xmlElements, $config, 'AvailRateUpdateRQ')->asXML();
     }
 
     /**
@@ -112,8 +121,10 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
             $xmlElements[] = $xmlRoomTypeData;
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config)->asXML();
+        return $this->formatTemplateRequest($xmlElements, $config, 'AvailRateUpdateRQ')->asXML();
     }
+
+
 
     /**
      * Переопределенный метод форматирования результирующего массива данных об ограничениях, полученных из Maxibooking
@@ -135,11 +146,13 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $isPriceSet,
         \DateTime $day)
     {
-        $isClosed = $restriction ? ($restriction->getClosed() || !$isPriceSet) : !$isPriceSet;
+        if (date_diff(new \DateTime(), $day)->y < 2) {
+            $isClosed = $restriction ? ($restriction->getClosed() || !$isPriceSet) : !$isPriceSet;
 
-        $restrictionData = ['restriction' => $restriction, 'isClosed' => $isClosed];
+            $restrictionData = ['restriction' => $restriction, 'isClosed' => $isClosed];
 
-        $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId][] = $restrictionData;
+            $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId][] = $restrictionData;
+        }
     }
 
     /**
@@ -189,23 +202,22 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
             $xmlElements[] = $xmlRoomTypeData;
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config)->asXML();
+        return $this->formatTemplateRequest($xmlElements, $config, 'AvailRateUpdateRQ')->asXML();
     }
 
     /**
-     * Форматирование шаблона в формате xml, в который доблавяются данные для запросов обновления цен, ограничений и квот комнат
-     * @param $elementsArray
+     * Форматирование шаблона в формате xml
+     * @param Массив SimpleXMLElement объектов, добавляемых в тело xml-запроса $elementsArray
      * @param ChannelManagerConfigInterface $config
+     * @param $rootNodeName
      * @return \SimpleXMLElement
      */
-    private function formatTemplateRequest($elementsArray, ChannelManagerConfigInterface $config) : \SimpleXMLElement
+    private function formatTemplateRequest($elementsArray, ChannelManagerConfigInterface $config, $rootNodeName) : \SimpleXMLElement
     {
         $requestXML = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>');
 
-        $rootNode = $requestXML->addChild('AvailRateUpdateRQ');
-
-        $xmlns = 'http://www.expediaconnect.com/EQC/BR/2014/01';
-        $rootNode->addAttribute('xmlns', $xmlns);
+        $rootNode = $requestXML->addChild($rootNodeName);
+        $rootNode->addAttribute('xmlns', self::BOOKING_RETRIEVAL_REQUEST_NAMESPACE);
 
         $authNode = $rootNode->addChild('Authentication');
         $authNode->addAttribute('username', $config->getUsername());
@@ -221,8 +233,39 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         return $requestXML;
     }
 
-    public function formatCloseForConfigData()
+    public function formatCloseForConfigData(ChannelManagerConfigInterface $config)
     {
-        // TODO: Implement formatCloseForConfigData() method.
+        $roomTypesData = $this->container->get('mbh.channelmanager.helper')->getRoomTypesSyncData($config);
+
+        $requestData = [];
+        foreach ($roomTypesData as $roomTypeData) {
+            $xmlRoomTypeData = new \SimpleXMLElement('AvailRateUpdate');
+
+            $startDate = \DateTime::createFromFormat('Y-m-d', new \DateTime());
+            $endDate = \DateTime::createFromFormat('Y-m-d', new \DateTime('+2 years'));
+            $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
+            $dateRangeElement->addAttribute('from', $startDate);
+            $dateRangeElement->addAttribute('to', $endDate);
+
+            $roomTypeElement = $xmlRoomTypeData->addChild('RoomType');
+            $roomTypeElement->addAttribute('id', $roomTypeData['id']);
+            $roomTypeElement->addAttribute('closed', 'false');
+
+            $requestData[] = $xmlRoomTypeData;
+        }
+
+        return $this->formatTemplateRequest($requestData, $config, 'AvailRateUpdateRQ');
+    }
+
+    public function formatNotifyServiceData(AbstractOrderInfo $orderInfo, $config)
+    {
+        /** @var OrderInfo $orderInfo */
+        $confirmNumbersElement = new \SimpleXMLElement('BookingConfirmNumbers');
+        $confirmNumberElement = $confirmNumbersElement->addChild('BookingConfirmNumber');
+        $confirmNumberElement->addAttribute('bookingID', $orderInfo->getChannelManagerOrderId());
+        $confirmNumberElement->addAttribute('bookingType', $orderInfo->getOrderStatusType());
+        $confirmNumberElement->addAttribute('confirmNumber', $orderInfo->getConfirmNumber());
+
+        return $this->formatTemplateRequest([$confirmNumbersElement], $config, 'BookingConfirmRQ');
     }
 }

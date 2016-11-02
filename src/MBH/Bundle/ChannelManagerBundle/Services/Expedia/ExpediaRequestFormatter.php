@@ -8,7 +8,6 @@ use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
 
 class ExpediaRequestFormatter extends AbstractRequestFormatter
 {
-    //TODO: Уточнить URL
     const BASE_URL = 'https://services.expediapartnercentral.com/eqc/ar';
     const PRODUCT_API_BASE_URL = 'https://services.expediapartnercentral.com/products/properties/';
 
@@ -27,19 +26,49 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
         return $this->getXMLRequestInfo($roomData);
     }
 
-    public function formatGetOrdersRequest()
+    public function formatGetOrdersRequest($getOrdersData)
     {
-        
+        return $this->getXMLRequestInfo($getOrdersData);
     }
 
-    public function formatGetHotelInfoRequest($username, $password)
+    public function formatGetHotelInfoRequest(ChannelManagerConfigInterface $config)
     {
-        $requestInfo = new RequestInfo();
-        $requestInfo
-            ->setUrl(self::PRODUCT_API_BASE_URL)
-            ->addHeader('Authorization', 'Basic ' . base64_encode("$username: $password"))
-        ;
-        return $requestInfo;
+        $url = self::PRODUCT_API_BASE_URL;
+
+        return $this->getJsonRequestInfo($config, $url);
+    }
+
+    public function formatPullRoomsRequest(ChannelManagerConfigInterface $config)
+    {
+        $url = self::PRODUCT_API_BASE_URL . "/{$config->getHotelId()}/roomTypes/";
+
+        return $this->getJsonRequestInfo($config, $url);
+    }
+
+    /**
+     * @param ChannelManagerConfigInterface $config
+     * @param array $roomTypesData
+     * @return \MBH\Bundle\ChannelManagerBundle\Model\RequestInfo[]
+     */
+    public function formatPullTariffsRequest(ChannelManagerConfigInterface $config, $roomTypesData = [])
+    {
+        $requestInfos = [];
+        foreach ($roomTypesData as $roomTypeId => $roomTypeData) {
+            $url = self::PRODUCT_API_BASE_URL . "/{$config->getHotelId()}/roomTypes/{$roomTypeId}/ratePlans/";
+            $requestInfos[] = $this->getJsonRequestInfo($config, $url);
+        }
+
+        return $requestInfos;
+    }
+
+    public function formatCloseForConfigRequest($requestData)
+    {
+        return $this->getXMLRequestInfo($requestData);
+    }
+
+    public function formatNotifyServiceRequest($requestData)
+    {
+        return $this->getXMLRequestInfo($requestData);
     }
 
     /**
@@ -55,18 +84,10 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
             ->addHeader("Content-Type", 'text/xml');
     }
 
-    public function formatPullRoomsRequest(ChannelManagerConfigInterface $config)
+    private function getJsonRequestInfo(ChannelManagerConfigInterface $config, $url) : RequestInfo
     {
-        // TODO: Implement formatPullRoomsRequest() method.
-    }
-
-    public function formatPullTariffsRequest(ChannelManagerConfigInterface $config)
-    {
-        // TODO: Implement formatPullTariffsRequest() method.
-    }
-
-    public function formatCloseForConfigRequest(ChannelManagerConfigInterface $config)
-    {
-        // TODO: Implement formatCloseForConfigRequest() method.
+        return (new RequestInfo())
+            ->addHeader('Authorization', 'Basic ' . base64_encode("{$config->getUsername()}:{$config->getPassword()}"))
+            ->setUrl($url);
     }
 }

@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
+use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaResponseHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -64,8 +65,10 @@ class ExpediaController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $errorMessage = $this->get('mbh.channelmanager.expedia')
-                ->safeConfigDataAndGetErrorMessage($form->get('username'), $form->get('password'), $config);
+            $config->setUsername($form->get('username'));
+            $config->setPassword($form->get('password'));
+
+            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
 
             if ($errorMessage === '') {
 
@@ -194,10 +197,18 @@ class ExpediaController extends Controller
      */
     public function testAction()
     {
-        $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find('57dfe9d593f1d94e3b1fdfca');
-        $firstDate = \DateTime::createFromFormat('d.m.Y', '4.3.2017');
-        $secondTime = \DateTime::createFromFormat('d.m.Y', '10.3.2017');
-        $errorMessage = $this->get('mbh.channelmanager.expedia')->updatePrices($firstDate, $secondTime, $roomType);
+//        $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find('57dfe9d593f1d94e3b1fdfca');
+//        $firstDate = \DateTime::createFromFormat('d.m.Y', '4.3.2017');
+//        $secondTime = \DateTime::createFromFormat('d.m.Y', '10.3.2017');
+//        $errorMessage = $this->get('mbh.channelmanager.expedia')->updatePrices($firstDate, $secondTime, $roomType);
+
+        $xml = '<BookingRetrievalRS xmlns="http://www.expediaconnect.com/EQC/BR/2014/01">
+    <Bookings>
+        <Booking id="619" type="Book" createDateTime="2013-12-12T00:01:00Z" source="A-Hotels.com" status="pending">
+        </Booking>
+        </Bookings>
+        </BookingRetrievalRS>';
+        dump((string)$xml); exit();
         return [];
     }
 }

@@ -76,8 +76,13 @@ form.expedia.password.placeholder: Пароль
 form.expedia.username.label: Имя пользователя
 form.expedia.username.help: Имя пользователя для входа в аккаунт Expedia
 form.expedia.username.placeholder: Имя пользователя
-
+order_info.expedia.need_сonfirm_cash_payment_document: Необходимо подвердить кассовый документ о платеже
+order_info.expedia.need_сonfirm_cash_tax_document: Необходимо подвердить кассовый документ о комиссии
+order_info.expedia.required_data_missing: Ошибка при обработке синхронизации броней. В полученных от сервиса данных отсутствуют %elementDescription%
+order_info.expedia.required_order_data: 'обязательные данные: "%dataAttribute% заказа"'
+order_info.expedia.required_hotel_id: 'данные об id отеля'
 
 form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkOut: При выезде
 form.roomTypeTasks.daily: Каждые n дней проживания
+

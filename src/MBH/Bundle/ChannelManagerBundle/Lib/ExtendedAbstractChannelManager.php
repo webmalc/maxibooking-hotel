@@ -15,9 +15,9 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     protected $requestFormatter;
     /** @var AbstractRequestDataFormatter $requestDataFormatter */
     protected $requestDataFormatter;
+    protected $isNotifyServiceAboutReservation;
 
-    abstract protected function getResponseHandler($response) : AbstractResponseHandler;
-    abstract protected function getOrderInfo($serviceOrder, $config, $tariffs, $roomTypes) : AbstractOrderInfoService;
+    abstract protected function getResponseHandler($response, $config = null) : AbstractResponseHandler;
 
     /**
      * @param \DateTime $begin
@@ -121,25 +121,21 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     }
 
     /**
-     * Pull orders from service server
-     * @return mixed
-     */
-    public function pullOrders()
-    {
-        // TODO: Implement pullOrders() method.
-    }
-
-    /**
      * Pull rooms from service server
      * @param ChannelManagerConfigInterface $config
      * @return array
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
-        $requestInfo = $this->requestFormatter->formatPullRoomsRequest($config);
-        $response = $this->sendRequestAndGetResponse($requestInfo);
-        $responseHandler = $this->getResponseHandler($response);
-        return $responseHandler->getRoomTypesData();
+        $roomTypes = [];
+        //Получаем список объектов RequestInfo, содержащих данные о запросе.
+        foreach ($this->requestFormatter->formatPullRoomsRequest($config) as $requestInfo) {
+            $response = $this->sendRequestAndGetResponse($requestInfo);
+            $responseHandler = $this->getResponseHandler($response, $config);
+            array_merge($roomTypes, $responseHandler->getRoomTypesData());
+        }
+
+        return $roomTypes;
     }
 
     /**
@@ -149,10 +145,17 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
-        $requestInfo = $this->requestFormatter->formatPullTariffsRequest($config);
-        $response = $this->sendRequestAndGetResponse($requestInfo);
-        $responseHandler = $this->getResponseHandler($response);
-        return $responseHandler->getTariffsData();
+        $tariffs = [];
+        $roomTypes = $this->pullRooms($config);
+        //Получаем список объектов RequestInfo, содержащих данные о запросе.
+        foreach ($this->requestFormatter->formatPullTariffsRequest($config, $roomTypes) as $requestInfo) {
+            $response = $this->sendRequestAndGetResponse($requestInfo);
+            $responseHandler = $this->getResponseHandler($response, $config);
+
+            array_merge($tariffs, $responseHandler->getTariffsData());
+        }
+
+        return $tariffs;
     }
 
     /**
@@ -166,6 +169,8 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         if (!$response) {
             return false;
         }
+
+        //TODO: Изменить
         return $this->getResponseHandler($response)->isResponseCorrect();
     }
 
@@ -176,10 +181,11 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
-        $requestData = $this->requestDataFormatter->formatCloseForConfigData();
-        $requestInfo = $this->requestFormatter->formatCloseForConfigRequest($config);
+        $requestData = $this->requestDataFormatter->formatCloseForConfigData($config);
+        $requestInfo = $this->requestFormatter->formatCloseForConfigRequest($requestData);
         $response = $this->sendRequestAndGetResponse($requestInfo);
-        $responseHandler = $this->getResponseHandler($response);
+        $responseHandler = $this->getResponseHandler($response, $config);
+
         return $responseHandler->getTariffsData();
     }
 
@@ -205,7 +211,87 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         );
     }
 
-    public function createOrder(AbstractOrderInfoService $orderInfo, Order $order = null)
+    public function pullOrders()
+    {
+        $result = true;
+
+        foreach ($this->getConfig() as $config) {
+
+            $request = $this->requestFormatter->formatGetOrdersRequest($config);
+
+            $response = $this->sendRequestAndGetResponse($request);
+            $responseHandler = $this->getResponseHandler($response, $config);
+
+            if (!$this->checkResponse($response)) {
+                $this->log($responseHandler->getErrorMessage());
+
+                return false;
+            }
+
+            $this->log('Reservations count: ' . $responseHandler->getOrdersCount());
+
+            foreach ($responseHandler->getOrderInfos() as $orderInfo) {
+                /** @var AbstractOrderInfo $orderInfo */
+
+                if ($orderInfo->isOrderModified()) {
+                    if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                        $this->dm->getFilterCollection()->disable('softdeleteable');
+                    }
+                }
+                //old order
+                $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
+                    [
+                        'channelManagerId' => $orderInfo->getChannelManagerOrderId(),
+                        'channelManagerType' => $orderInfo->getChannelManagerDisplayedName()
+                    ]
+                );
+                if ($orderInfo->isOrderModified()) {
+                    if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                        $this->dm->getFilterCollection()->enable('softdeleteable');
+                    }
+                }
+                //new
+                if ($orderInfo->isHandleAsNew($order)) {
+                    $result = $this->createOrder($orderInfo, $order);
+                    $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'new');
+                }
+
+                //edited
+                if ($orderInfo->isHandleAsModified($order)) {
+                    $result = $this->createOrder($orderInfo, $order);
+                    if ($orderInfo->getModifiedDate()) {
+                        $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
+                    }
+                    $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'edit');
+                }
+
+                //delete
+                if ($orderInfo->isHandleAsCancelled($order)) {
+                    $order->setChannelManagerStatus('cancelled');
+                    $this->dm->persist($order);
+                    $this->dm->flush();
+                    $this->notify($order, $orderInfo->getChannelManagerDisplayedName(), 'delete');
+                    $this->dm->remove($order);
+                    $this->dm->flush();
+                    $result = true;
+                };
+
+                if (($orderInfo->isOrderModified() || $orderInfo->isOrderCancelled()) && !$order) {
+                    $this->notifyError(
+                        $orderInfo->getChannelManagerDisplayedName(),
+                        '#' . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName()
+                    );
+                }
+                if ($this->isNotifyServiceAboutReservation) {
+                    $this->notifyServiceAboutReservation($orderInfo, $config);
+                }
+            };
+        }
+
+        return $result;
+    }
+
+    public function createOrder(AbstractOrderInfo $orderInfo, Order $order = null)
     {
         //order
         if (!$order) {
@@ -229,6 +315,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             ->setMainTourist($orderInfo->getPayer())
             ->setConfirmed(false)
             ->setStatus('channel_manager')
+            ->setNote($orderInfo->getNote())
             ->setPrice($orderInfo->getPrice())
             ->setOriginalPrice($orderInfo->getOriginalPrice())
             ->setTotalOverwrite($orderInfo->getPrice());
@@ -236,7 +323,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $this->dm->persist($order);
         $this->dm->flush();
 
-        foreach ($orderInfo->getCashDocuments() as $cashDocument) {
+        foreach ($orderInfo->getCashDocuments($order) as $cashDocument) {
             $this->dm->persist($cashDocument);
         }
         $this->dm->flush();
@@ -247,12 +334,16 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $order->addPackage($package);
             $this->dm->persist($package);
         }
-        $this->dm->flush();
+
+        $creditCard = $orderInfo->getCreditCard();
+        if ($creditCard) {
+            $order->setCreditCard($orderInfo->getCreditCard());
+        }
 
         $this->dm->persist($order);
         $this->dm->flush();
 
-        return $order;
+        return true;
     }
 
     /**
@@ -277,12 +368,29 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             ->setTotalOverwrite($packageInfo->getPrice())
             ->setNote($packageInfo->getNote())
             ->setOrder($order)
-            ->setCorrupted($packageInfo->getIsCorrupted());
+            ->setCorrupted($packageInfo->getIsCorrupted())
+            ->setIsSmoking($packageInfo->getIsSmoking());
 
         foreach ($packageInfo->getTourists() as $tourist)
         {
             $package->addTourist($tourist);
         }
+
         return $package;
     }
+
+    /**
+     * Метод, добавляющий функциональность после обработки полученной брони
+     * По дефолту не используется, потому пуст
+     *
+     * @param AbstractOrderInfo $orderInfo
+     * @param $config
+     * @return null
+     * @internal param $responseHandler
+     */
+    protected function notifyServiceAboutReservation(AbstractOrderInfo $orderInfo, $config)
+    {
+        return null;
+    }
+
 }

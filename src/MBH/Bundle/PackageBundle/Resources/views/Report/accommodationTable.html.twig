@@ -68,7 +68,7 @@
                             {% for package in roomData['packages'] %}
                                 <li class="tile-title tile-not-selected tile-package-info"
                                     data-content="{% include 'MBHPackageBundle:Report:accommodationTablePackage.html.twig' with {'data': package } %}"
-                                    data-original-title="{{ package.doc.numberWithPrefix }} {{ package.doc.payer.shortName }}" data-placement="top" data-container="body"
+                                    data-original-title="{{ package.doc.numberWithPrefix }} {% if package.doc.prayer is defined %} {{ package.doc.payer.shortName }} {% endif %} " data-placement="top" data-container="body"
                                     data-toggle="popover" style="left: {{ headerWidth + package.margin + package.padding }}px; display: list-item;">{{ package.name }}</li>
                             {% endfor %}
 

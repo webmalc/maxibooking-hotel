@@ -17,16 +17,18 @@ class PackageInfo extends AbstractPackageInfo
     /** @var ChannelManagerConfigInterface $config */
     private $config;
     /**
-     * Данные о брони, в виде SimpleXML-элемента
+     * Данные о брони, в виде объекта SimpleXMLElement
      * @var \SimpleXMLElement $orderDataXMLElement
      */
     private $packageDataXMLElement;
     private $roomTypes;
     private $tariffs;
+    private $payer;
     private $errorMessage = '';
     private $isCorrupted = false;
     private $isPricesInit = false;
     private $prices = [];
+    private $isSmoking = false;
 
     public function __construct(ContainerInterface $container)
     {
@@ -34,8 +36,17 @@ class PackageInfo extends AbstractPackageInfo
         $this->dm = $container->get('doctrine_mongodb')->getManager();
     }
 
-    public function setInitData($packageData, $config, $tariffs, $roomTypes)
+    /**
+     * @param $packageData
+     * @param $config
+     * @param $tariffs
+     * @param $roomTypes
+     * @param $payer
+     * @return PackageInfo
+     */
+    public function setInitData($packageData, $config, $tariffs, $roomTypes, $payer)
     {
+        $this->payer = $payer;
         $this->config = $config;
         $this->packageDataXMLElement = $packageData;
         $this->tariffs = $tariffs;
@@ -84,7 +95,7 @@ class PackageInfo extends AbstractPackageInfo
                 ]
             );
             $this->errorMessage .= $this->container->get('translator')
-                ->trans('services.expedia.invalid_room_type_id');
+                ->trans('services.expedia.invalid_room_type_id') . "\n";
             $this->isCorrupted = true;
         }
         if (!$roomType) {
@@ -108,7 +119,7 @@ class PackageInfo extends AbstractPackageInfo
                     'deletedAt' => null
                 ]
             );
-            $this->errorMessage .= $this->container->get('translator')->trans('services.expedia.invalid_tariff_id');
+            $this->errorMessage .= $this->container->get('translator')->trans('services.expedia.invalid_tariff_id') . "\n";
             $this->isCorrupted = true;
 
         }
@@ -122,6 +133,7 @@ class PackageInfo extends AbstractPackageInfo
     {
         /** @var PackagePrice $firstPackagePrice */
         $firstPackagePrice = current($this->getPrices());
+
         return $firstPackagePrice->getDate();
     }
 
@@ -129,6 +141,7 @@ class PackageInfo extends AbstractPackageInfo
     {
         /** @var PackagePrice $lastPackagePrice */
         $lastPackagePrice = end($this->getPrices());
+
         return date_add($lastPackagePrice->getDate(), new \DateInterval('P1D'));
     }
 
@@ -154,17 +167,27 @@ class PackageInfo extends AbstractPackageInfo
 
     public function getNote()
     {
-        // TODO: Implement getNote() method.
+        return $this->errorMessage;
     }
 
     public function getIsCorrupted()
     {
-        // TODO: Implement getIsCorrupted() method.
+        return $this->isCorrupted;
     }
 
     public function getTourists()
     {
-        // TODO: Implement getTourists() method.
+        return [$this->payer];
+    }
+
+    public function setIsSmoking($isSmoking)
+    {
+        $this->isSmoking = $isSmoking;
+    }
+
+    public function getIsSmoking()
+    {
+        return $this->isSmoking;
     }
 
 }

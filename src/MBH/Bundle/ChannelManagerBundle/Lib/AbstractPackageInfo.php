@@ -16,6 +16,7 @@ abstract class AbstractPackageInfo
     abstract public function getNote();
     abstract public function getIsCorrupted();
     abstract public function getTourists();
+    abstract public function getIsSmoking();
 
     public function getOriginalPrice()
     {

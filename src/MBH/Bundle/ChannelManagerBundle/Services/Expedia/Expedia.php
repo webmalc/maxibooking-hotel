@@ -3,10 +3,9 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
-use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfoService;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\ExtendedAbstractChannelManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractResponseHandler;
 
 class Expedia extends ExtendedAbstractChannelManager
@@ -20,116 +19,41 @@ class Expedia extends ExtendedAbstractChannelManager
         $this->requestDataFormatter = $container->get('mbh.channelmanager.expedia_request_data_formatter');
     }
 
-    public function pullOrders()
+    public function safeConfigDataAndGetErrorMessage(ExpediaConfig $config)
     {
-        $result = true;
-
-        foreach ($this->getConfig() as $config) {
-
-            //TODO: Сформировать и отправить запрос
-            $request = $this->requestFormatter->formatGetOrdersRequest();
-
-            $response = $this->sendRequestAndGetResponse($request);
-            $responseHandler = $this->getResponseHandler($response);
-
-            if (!$this->checkResponse($response)) {
-                $this->log($responseHandler->getErrorMessage());
-                return false;
-            }
-
-            $this->log('Reservations count: ' . $responseHandler->getOrdersCount());
-
-            //TODO: Получение данных о тарифах и типах комнат вообще желательно вынести в отдельный сервис, конечно.
-            $tariffs = $this->getTariffs($config, true);
-            $roomTypes = $this->getRoomTypes($config, true);
-
-            foreach ($responseHandler->getOrderInfoArray() as $serviceOrder) {
-
-                /** @var AbstractOrderInfoService $orderInfo */
-                $orderInfo = $this->getOrderInfo($serviceOrder, $config, $tariffs, $roomTypes);
-
-                if ($orderInfo->isOrderModified()) {
-                    if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-                        $this->dm->getFilterCollection()->disable('softdeleteable');
-                    }
-                }
-                //old order
-                $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
-                    [
-                        'channelManagerId' => $orderInfo->getChannelManagerOrderId(),
-                        'channelManagerType' => $orderInfo->getChannelManagerDisplayedName()
-                    ]
-                );
-                if ($orderInfo->isOrderModified()) {
-                    if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-                        $this->dm->getFilterCollection()->enable('softdeleteable');
-                    }
-                }
-                //new
-                if ($orderInfo->isOrderCreated() && !$order) {
-                    $result = $this->createOrder($orderInfo, $order);
-                    $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'new');
-                }
-
-                //edited
-                //TODO: Придумать общие статусы
-                if ($orderInfo->isOrderModified() && $order
-                    && $order->getChannelManagerEditDateTime() != $orderInfo->getModifiedDate()) {
-                    $result = $this->createOrder($orderInfo, $order);
-                    $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
-                    $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'edit');
-                }
-
-                //delete
-                if ($orderInfo->isOrderCancelled() && $order) {
-                    $order->setChannelManagerStatus('cancelled');
-                    $this->dm->persist($order);
-                    $this->dm->flush();
-                    $this->notify($order, $orderInfo->getChannelManagerDisplayedName(), 'delete');
-                    $this->dm->remove($order);
-                    $this->dm->flush();
-                    $result = true;
-                };
-
-                if (($orderInfo->isOrderModified() || $orderInfo->isOrderCancelled()) && !$order) {
-                    $this->notifyError(
-                        $orderInfo->getChannelManagerDisplayedName(),
-                        '#' . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName()
-                    );
-                }
-            };
+        $requestInfo = $this->requestFormatter->formatGetHotelInfoRequest($config);
+        $response = $this->sendRequestAndGetResponse($requestInfo);
+        $responseHandler = $this->getResponseHandler($response);
+        if ($responseHandler->isResponseCorrect()) {
+            $hotelId = $response['entity']['resourceId'];
+            $config->setHotelId($hotelId);
+            return '';
         }
 
-        return $result;
-    }
-
-    public function safeConfigDataAndGetErrorMessage($username, $password, ExpediaConfig $config)
-    {
-        $requestInfo = $this->requestFormatter->formatGetHotelInfoRequest($username, $password);
-        $jsonResponse = $this->sendRequestAndGetResponse($requestInfo);
-        $response = json_decode($jsonResponse, true);
-        if (isset($response['errors'])) {
-            if ($response['errors']['code'] == 1001) {
-                return 'services.expedia.invalid_authorization_data';
-            } else {
-                return $response['errors']['message'];
-            }
-        }
-        $hotelId = $response['entity']['resourceId'];
-        $config->setHotelId($hotelId);
-        return '';
+        return $responseHandler->getErrorMessage();
     }
     
-    protected function getResponseHandler($response) : AbstractResponseHandler
+    protected function getResponseHandler($response, $config = null) : AbstractResponseHandler
     {
-        return $this->container->get('mbh.channelmanager.expedia_response_handler')->setInitData($response);
+        return $this->container->get('mbh.channelmanager.expedia_response_handler')->setInitData($response, $config);
     }
 
-    protected function getOrderInfo($serviceOrder, $config, $tariffs, $roomTypes) : AbstractOrderInfoService
+    public function notifyServiceAboutReservation(AbstractOrderInfo $orderInfo, $config)
     {
-        $this->container->get('mbh.channelmanager.expedia_order_info')
-            ->setInitData($serviceOrder, $config, $tariffs, $roomTypes);
-    }
+        /** @var OrderInfo $orderInfo */
+        if ($orderInfo->getConfirmNumber()) {
+            $requestData = $this->requestDataFormatter->formatNotifyServiceData($orderInfo, $config);
+            $requestInfo = $this->requestFormatter->formatNotifyServiceRequest($requestData);
 
+            $response = $this->sendRequestAndGetResponse($requestInfo);
+            $responseHandler = $this->getResponseHandler($response);
+
+            if (!$responseHandler->isResponseCorrect()) {
+                $this->notifyError($orderInfo->getChannelManagerDisplayedName(),
+                    'Ошибка в оповещении сервиса о принятия заказа ' . '#'
+                    . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName());
+            }
+        }
+    }
 
 }

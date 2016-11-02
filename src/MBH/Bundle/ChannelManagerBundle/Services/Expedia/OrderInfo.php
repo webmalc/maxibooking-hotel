@@ -4,11 +4,15 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerException;
+use MBH\Bundle\PackageBundle\Document\CreditCard;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfoService;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 
-class OrderInfo extends AbstractOrderInfoService
+class OrderInfo extends AbstractOrderInfo
 {
     /** @var  ContainerInterface $container */
     private $container;
@@ -20,17 +24,22 @@ class OrderInfo extends AbstractOrderInfoService
     private $orderDataXMLElement;
     private $roomTypes;
     private $tariffs;
+    private $isPackagesDataInit = false;
+    private $packagesData = [];
+    private $orderNote = '';
+    private $translator;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
+        $this->translator = $container->get('translator');
     }
 
-    public function setInitData($orderInfoArray, $config, $tariffs, $roomTypes)
+    public function setInitData($orderInfoElement, $config, $tariffs, $roomTypes)
     {
         $this->config = $config;
-        $this->orderDataXMLElement = $orderInfoArray;
+        $this->orderDataXMLElement = $orderInfoElement;
         $this->tariffs = $tariffs;
         $this->roomTypes = $roomTypes;
         return $this;
@@ -38,22 +47,19 @@ class OrderInfo extends AbstractOrderInfoService
 
     public function getChannelManagerOrderId()
     {
-        return $this->getCommonOrderData('id');
-    }
-
-    public function getOrderStatus()
-    {
-        return $this->getCommonOrderData('status');
+        return (int)$this->getCommonOrderData('id');
     }
 
     public function getHotelId()
     {
-        return $this->orderDataXMLElement->Hotel->attributes()['id'];
+        return (int)$this->getMandatoryDataByXPath($this->orderDataXMLElement, '/Booking/Hotel/@id',
+            $this->translator->trans('order_info.expedia.required_hotel_id'));
     }
 
     private function getCommonOrderData($param)
     {
-        return (string)$this->orderDataXMLElement->attributes()[$param];
+        return $this->getMandatoryDataByXPath($this->orderDataXMLElement, "/Booking/@$param",
+            $this->translator->trans('order_info.expedia.required_order_data', ['%dataAttribute%' => $param]));
     }
 
     public function getPayer() : Tourist
@@ -73,36 +79,76 @@ class OrderInfo extends AbstractOrderInfoService
         return $payer;
     }
 
-    /**
-     * @return PackageInfo
-     */
-    public function getPackagesData()
-    {
-        $packageData = $this->orderDataXMLElement->RoomStay;
 
-        return $this->container->get('mbh.channelmanager.expedia_package_info')
-            ->setInitData($packageData, $this->config, $this->tariffs, $this->roomTypes);
+    public function getPackagesData() {
+        if (!$this->isPackagesDataInit) {
+
+            $packageDataElement = $this->orderDataXMLElement->RoomStay;
+
+            //Создаем и добавляем объект, хранящий данные о брони. Добавляется один, так как в принимаемых из expedia заказах содержится только 1 бронь
+            $this->packagesData[] = $this->container->get('mbh.channelmanager.expedia_package_info')
+                ->setInitData($packageDataElement, $this->config, $this->tariffs, $this->roomTypes, $this->getPayer())
+                ->setIsSmoking($this->getIsSmokingValue());
+
+            $this->isPackagesDataInit = true;
+        }
+        return $this->packagesData;
     }
 
-    public function getCashDocuments()
+    private function getIsSmokingValue()
     {
-        //TODO: Реализовать
-//        $fee = new CashDocument();
-//        $fee->setIsConfirmed(false)
-//            ->setIsPaid(true)
-//            ->setMethod('electronic')
-//            ->setOperation('fee')
-//            ->setOrder($order)
-//            ->setTouristPayer($orderInfo->getPayer())
-//            ->setTotal($orderInfo->getOrderPrice());
-//        if ($orderInfo->getPayType() == 2) {
-//            $fee->setIsPaid(false);
-//        }
+        $isSmokingElement = $this->orderDataXMLElement->xpath('/SpecialRequest[starts-with(@code, "2")]');
+
+        $isSmoking = false;
+        if ($isSmokingElement) {
+            $isSmokingString = (string)$isSmokingElement;
+            //2.2 Smoking
+            if ($isSmokingString === '2.2') {
+                $isSmoking = true;
+            }
+        }
+
+        return $isSmoking;
+    }
+
+    public function getCashDocuments(Order $order)
+    {
+        $cashDocuments = [];
+        /** @var \SimpleXMLElement $cardElement */
+        //Если указаны данные платежной карты, то создаю кассовые документы для платежа и комисии
+        $cardElement = $this->orderDataXMLElement->RoomStay->PaymentCard;
+        if ($cardElement !== null) {
+
+            $cashDocument = new CashDocument();
+            $cashDocuments[] = $cashDocument->setIsConfirmed(false)
+                ->setIsPaid(true)
+                ->setMethod('electronic')
+                ->setOperation('in')
+                ->setOrder($order)
+                ->setTouristPayer($this->getPayer())
+                ->setTotal($this->getPrice());
+            $this->orderNote .= $this->translator->trans('order_info.expedia.need_сonfirm_cash_payment_document') . "\n";
+
+            $amountOfTaxes = $this->orderDataXMLElement->xpath('/RoomStay/Total/@amountOfTaxes');
+            if ($amountOfTaxes !== null) {
+                $cashDocument = new CashDocument();
+                $cashDocuments[] = $cashDocument->setIsConfirmed(false)
+                    ->setIsPaid(true)
+                    ->setMethod('electronic')
+                    ->setOperation('fee')
+                    ->setOrder($order)
+                    ->setTouristPayer($this->getPayer())
+                    ->setTotal($amountOfTaxes);
+                $this->orderNote .= $this->translator->trans('order_info.expedia.need_сonfirm_cash_tax_document') . "\n";
+            }
+        }
+
+        return $cashDocuments;
     }
 
     public function getChannelManagerDisplayedName()
     {
-        return $this->getCommonOrderData('source');
+        return (string)$this->getCommonOrderData('source');
     }
 
     public function isOrderModified()
@@ -120,25 +166,175 @@ class OrderInfo extends AbstractOrderInfoService
         return $this->checkOrderStatusType('Cancel');
     }
 
+    /**
+     * Может быть 'Book', 'Modify', 'Cancel'
+     * @return string
+     */
+    public function getOrderStatusType()
+    {
+        return (string)$this->getCommonOrderData('type');
+    }
+
     private function checkOrderStatusType($status)
     {
-        return (string)$this->orderDataXMLElement->attributes()['type'] === $status ? true : false;
+        return $this->getOrderStatusType() === $status;
     }
 
     public function getServices()
     {
         foreach ($this->orderDataXMLElement->SpecialRequest as $serviceXMLElement) {
-            //TODO: Реализовать
+            switch (((string)$serviceXMLElement->attributes()['code'])[0]) {
+                case 0:
+                    echo "i равно 0";
+                    break;
+            }
         }
+
+//        $servicesTotal = 0;
+//
+//        if ($room->addons->addon) {
+//            foreach ($room->addons->addon as $addon) {
+//                $servicesTotal += (float)$addon->totalprice;
+//                if (empty($services[(int)$addon->type])) {
+//                    continue;
+//                }
+//
+//                $packageService = new PackageService();
+//                $packageService
+//                    ->setService($services[(int)$addon->type]['doc'])
+//                    ->setIsCustomPrice(true)
+//                    ->setNights(empty((string)$addon->nights) ? null : (int)$addon->nights)
+//                    ->setPersons(empty((string)$addon->persons) ? null : (int)$addon->persons)
+//                    ->setPrice(
+//                        empty((string)$addon->price_per_unit) ? null : $this->currencyConvertToRub(
+//                            $config,
+//                            (float)$addon->price_per_unit
+//                        )
+//                    )
+//                    ->setTotalOverwrite($this->currencyConvertToRub($config, (float)$addon->totalprice))
+//                    ->setPackage($package);
+//                $this->dm->persist($packageService);
+//                $package->addService($packageService);
+//            }
+//        }
+//
+//        $package->setServicesPrice($this->currencyConvertToRub($config, (float)$servicesTotal));
+//        $package->setTotalOverwrite($this->currencyConvertToRub($config, (float)$room->totalprice));
     }
 
     public function getPrice()
     {
-        return $this->getPackagesData()->getPrice();
+        return current($this->getPackagesData())->getPrice();
     }
 
     public function getOriginalPrice()
     {
-        return $this->getPackagesData()->getOriginalPrice();
+        return current($this->getPackagesData())->getOriginalPrice();
+    }
+
+    /**
+     * Обрабатывать ли данный заказ как новый?
+     * @param Order $order
+     * @return bool
+     */
+    public function isHandleAsNew(Order $order)
+    {
+        return $this->checkOrderStatusType('Book') && !$order;
+    }
+
+    /**
+     * Обрабатывать ли данный заказ как измененный?
+     * @param Order $order
+     * @return bool
+     */
+    public function isHandleAsModified(Order $order)
+    {
+        return $this->isOrderModified() && $order;
+    }
+
+    /**
+     * Обрабатывать ли данный заказ как законченный
+     * @param Order $order
+     * @return bool
+     */
+    public function isHandleAsCancelled(Order $order)
+    {
+        return $this->isOrderCancelled() && $order;
+    }
+
+    /**
+     * Возвращает время изменения заказа.
+     * @return \DateTime|null
+     */
+    public function getModifiedDate()
+    {
+        return null;
+    }
+
+    /**
+     * Возвращает данные о кредитной карте, если указаны.
+     * @return CreditCard|null
+     */
+    public function getCreditCard()
+    {
+        /** @var \SimpleXMLElement $cardElement */
+        $cardElement = $this->orderDataXMLElement->RoomStay->PaymentCard;
+        $card = null;
+
+        if ($cardElement !== null) {
+            $cardElementAttributes = $cardElement->attributes();
+            $card = new CreditCard();
+
+            $card->setNumber($cardElementAttributes['cardNumber'])
+                ->setDate($cardElementAttributes['expireDate'])
+                ->setCvc($cardElementAttributes['seriesCode'])
+                ->setCardholder($cardElement->CardHolder->attributes()['name']);
+        }
+
+        return $card;
+    }
+
+    private function getMandatoryDataByXPath(\SimpleXMLElement $element, $xpath, $exceptionMessage)
+    {
+        $mandatoryData = $element->xpath($xpath);
+        if ($mandatoryData) {
+            return $mandatoryData[0];
+        }
+
+        throw new ChannelManagerException($this->translator->trans('order_info.expedia.required_data_missing',
+            ['%elementDescription%' => $exceptionMessage]));
+    }
+
+    /**
+     * Возвращает значение, необходимое для подтверждения получения брони с сервера
+     * @return null|string
+     */
+    public function getConfirmNumber()
+    {
+        $confirmNumberElement = $this->orderDataXMLElement->xpath("/Booking/@confirmNumber");
+        if ($confirmNumberElement) {
+
+            return (string)$confirmNumberElement;
+        }
+
+        return null;
+    }
+
+    public function getNote()
+    {
+        foreach ($this->orderDataXMLElement->SpecialRequest as $specialRequest) {
+            $codeString = (string)$specialRequest->attributes()['code'];
+            $code = (int)$codeString[0];
+            /**
+             * 1.xx : bedding preferences, different codes for beddings
+             * 4 : Free text
+             */
+            //TODO: Акции как обрабатывать?
+            if ($code == 1 || $code == 4 || $code == 6) {
+                $this->orderNote .= (string)$specialRequest . "\n";
+            }
+        }
+
+        return $this->orderNote;
     }
 }
