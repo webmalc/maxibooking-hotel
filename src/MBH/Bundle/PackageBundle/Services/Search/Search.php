@@ -443,9 +443,8 @@ class Search implements SearchInterface
         $end = clone $result->getEnd();
         $preferredRoom = null;
         $emptyRoom = null;
-        $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')->
-        findOneByDate($begin, $roomType, $tariff, $this->memcached)
-        ;
+        $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')
+            ->findOneByDate($begin, $roomType, $tariff, $this->memcached);
 
         if ($restriction && $restriction->getMinStayArrival()) {
             $begin->modify('-' . $restriction->getMinStayArrival() . ' days');
