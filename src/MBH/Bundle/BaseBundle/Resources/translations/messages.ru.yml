@@ -399,3 +399,7 @@ menu.hotel_new.label: Создать новый отель
 
 menu.help.noarrival: Количество незаехавших броней
 menu.help.nodepart: Количество невыехавших броней
+
+save: сохранить
+show: показать
+cancel: отмена
