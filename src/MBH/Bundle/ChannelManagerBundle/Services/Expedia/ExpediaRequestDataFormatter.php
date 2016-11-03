@@ -21,10 +21,6 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
     const CONFIRM_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BC/2007/09';
 
     /**
-     * В Expedia невозможно установить данные более чем на 2 года вперед
-     */
-
-    /**
      * Переопределенный метод форматирования результирующего массива данных о ценах, полученных из Maxibooking
      * @param PriceCache|null $priceCache
      * @param RoomType $roomType
@@ -42,7 +38,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         &$resultArray,
         \DateTime $day)
     {
-        if (date_diff(new \DateTime(), $day)->y < 2) {
+        $dateDifferenceInYears = date_diff(new \DateTime(), $day);
+        //В Expedia невозможно установить данные более чем на 2 года вперед
+        if ($dateDifferenceInYears->y < 2) {
             if ($priceCache) {
                 $priceCalculationService = $this->container->get('mbh.calculation');
                 $pricesByOccupantsCount = ['prices' => $priceCalculationService->calcPrices($roomType, $tariff, $day, $day)];
@@ -151,7 +149,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $isPriceSet,
         \DateTime $day)
     {
-        if (date_diff(new \DateTime(), $day)->y < 2) {
+        $dateDifferenceInYears = date_diff(new \DateTime(), $day);
+        //В Expedia невозможно установить данные более чем на 2 года вперед
+        if ($dateDifferenceInYears->y < 2) {
             $isClosed = $restriction ? ($restriction->getClosed() || !$isPriceSet) : !$isPriceSet;
 
             $restrictionData = ['restriction' => $restriction, 'isClosed' => $isClosed];

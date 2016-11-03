@@ -67,7 +67,6 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         if ($this->isXMLResponse()) {
             $xmlResponse = new \SimpleXMLElement($this->response);
 
-            //TODO: Проверить в каком виде приходит сообщение
             return (string)$xmlResponse->xpath('//Error');
         }
         $jsonResponse = json_decode($this->response, true);

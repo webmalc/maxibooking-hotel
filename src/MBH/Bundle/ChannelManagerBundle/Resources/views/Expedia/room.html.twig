@@ -5,7 +5,7 @@
 
 {% block content %}
 
-    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 2, 'entity': config, 'base': 'expedia'} %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 2, 'entity': config, 'base': 'expedia', 'services' : false} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">

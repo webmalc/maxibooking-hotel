@@ -31,10 +31,42 @@ abstract class AbstractRequestDataFormatter
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
     }
 
+    /**
+     * Форматирование данных, отправляемых в запросе обновления цен сервиса
+     * @param $requestData
+     * @param ChannelManagerConfigInterface $config
+     * @return mixed
+     */
     abstract public function formatPriceRequestData($requestData, ChannelManagerConfigInterface $config);
+
+    /**
+     * Форматирование данных, отправляемых в запросе обновления квот на комнаты
+     * @param $requestData
+     * @param ChannelManagerConfigInterface $config
+     * @return mixed
+     */
     abstract public function formatRoomRequestData($requestData, ChannelManagerConfigInterface $config);
+
+    /**
+     * Форматирование данных, отправляемых в запросе обновления ограничений
+     * @param $requestData
+     * @param ChannelManagerConfigInterface $config
+     * @return mixed
+     */
     abstract public function formatRestrictionRequestData($requestData, ChannelManagerConfigInterface $config);
+
+    /**
+     * Форматирование данных, отправляемых в запросе закрытия продаж
+     * @param ChannelManagerConfigInterface $config
+     * @return mixed
+     */
     abstract public function formatCloseForConfigData(ChannelManagerConfigInterface $config);
+
+    /**
+     * Форматирование данных, отправляемых в запросе получения броней
+     * @param ChannelManagerConfigInterface $config
+     * @return mixed
+     */
     abstract public function formatGetBookingsData(ChannelManagerConfigInterface $config);
 
     /**
@@ -42,7 +74,7 @@ abstract class AbstractRequestDataFormatter
      * @param $begin
      * @param $end
      * @param RoomType $roomType
-     * @param $serviceTariffs
+     * @param $serviceTariffs Массив актуальных данных о тарифах, полученный с сервиса
      * @param ChannelManagerConfigInterface $config
      * @return array
      */
@@ -70,16 +102,7 @@ abstract class AbstractRequestDataFormatter
                 $currentPricePeriod = null;
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     /** @var \DateTime $day */
-                    if (!isset($serviceTariffs[$tariff['syncId']])
-                        || (isset($serviceTariffs[$tariff['syncId']]['readonly']) && $serviceTariffs[$tariff['syncId']]['readonly'])
-                        || (isset($serviceTariffs[$tariff['syncId']]['is_child_rate']) && $serviceTariffs[$tariff['syncId']]['is_child_rate'])
-                    ) {
-                        continue;
-                    }
-
-                    if (!empty($serviceTariffs[$tariff['syncId']]['rooms']) && !in_array($roomTypeInfo['syncId'],
-                            $serviceTariffs[$tariff['syncId']]['rooms'])
-                    ) {
+                    if (!$this->checkTariff($serviceTariffs, $tariff['syncId'], $roomTypeInfo['syncId'])) {
                         continue;
                     }
 
@@ -160,16 +183,7 @@ abstract class AbstractRequestDataFormatter
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     /** @var \DateTime $day */
 
-                    if (!isset($serviceTariffs[$tariff['syncId']])
-                        || (isset($serviceTariffs[$tariff['syncId']]['readonly']) && $serviceTariffs[$tariff['syncId']]['readonly'])
-                        || (isset($serviceTariffs[$tariff['syncId']]['is_child_rate']) && $serviceTariffs[$tariff['syncId']]['is_child_rate'])
-                    ) {
-                        continue;
-                    }
-
-                    if (!empty($serviceTariffs[$tariff['syncId']]['rooms']) && !in_array($roomTypeInfo['syncId'],
-                            $serviceTariffs[$tariff['syncId']]['rooms'])
-                    ) {
+                    if (!$this->checkTariff($serviceTariffs, $tariff['syncId'], $roomTypeInfo['syncId'])) {
                         continue;
                     }
 
@@ -262,6 +276,32 @@ abstract class AbstractRequestDataFormatter
     protected function formatRoomData(RoomCache $roomCache, $serviceRoomTypeId, &$resultArray, \DateTime $day)
     {
         $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][] = $roomCache;
+    }
+
+    /**
+     * Метод проверки актуальности текущего тарифа.
+     * Для добавления дополнительных проверок можно переопределить.
+     * @param $serviceTariffs Массив, содержащий актуальные данные о тарифах, полученных с сервиса
+     * @param int $serviceTariffId id текущего тарифа, полученного с сервиса
+     * @param int $serviceRoomTypeId id текущего типа комнаты, полученного с сервиса
+     * @return bool
+     */
+    protected function checkTariff($serviceTariffs, $serviceTariffId, $serviceRoomTypeId)
+    {
+        if (!isset($serviceTariffs[$serviceTariffId])
+            || (isset($serviceTariffs[$serviceTariffId]['readonly']) && $serviceTariffs[$serviceTariffId]['readonly'])
+            || (isset($serviceTariffs[$serviceTariffId]['is_child_rate']) && $serviceTariffs[$serviceTariffId]['is_child_rate'])
+        ) {
+            return false;
+        }
+
+        if (!empty($serviceTariffs[$serviceTariffId]['rooms'])
+            && !in_array($serviceRoomTypeId, $serviceTariffs[$serviceTariffId]['rooms'])
+        ) {
+            false;
+        }
+
+        return true;
     }
 
     /**

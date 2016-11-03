@@ -15,7 +15,8 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     protected $requestFormatter;
     /** @var AbstractRequestDataFormatter $requestDataFormatter */
     protected $requestDataFormatter;
-    protected $isNotifyServiceAboutReservation;
+    /** Нужно ли уведомлять сервис о получениии брони? */
+    protected $isNotifyServiceAboutReservation = false;
 
     abstract protected function getResponseHandler($response, $config = null) : AbstractResponseHandler;
 
@@ -24,7 +25,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      * @param \DateTime $end
      * @param RoomType $roomType
      * @return boolean
-     * @throw \Exception
      */
     public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
@@ -55,7 +55,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      * @param \DateTime $end
      * @param RoomType $roomType
      * @return boolean
-     * @throw \Exception
      */
     public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
@@ -84,7 +83,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      * @param \DateTime $end
      * @param RoomType $roomType
      * @return boolean
-     * @throw \Exception
      */
     public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
@@ -170,7 +168,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             return false;
         }
 
-        //TODO: Изменить
         return $this->getResponseHandler($response)->isResponseCorrect();
     }
 
@@ -356,6 +353,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     {
         $package = new Package();
         $package
+            ->setChannelManagerId($packageInfo->)
             ->setChannelManagerType($order->getChannelManagerType())
             ->setBegin($packageInfo->getBeginDate())
             ->setEnd($packageInfo->getEndDate())

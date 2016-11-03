@@ -129,6 +129,7 @@ class TouristRepository extends DocumentRepository
      * @param string $note
      * @param string $communicationLanguage
      * @return Tourist
+     * @throws \Exception
      */
     public function fetchOrCreate(
         $lastName,
@@ -143,8 +144,11 @@ class TouristRepository extends DocumentRepository
     ) {
         $dm = $this->getDocumentManager();
         $tourist  = null;
-        $lastName = mb_convert_case(mb_strtolower($lastName), MB_CASE_TITLE);
-        $firstName = mb_convert_case(mb_strtolower($firstName), MB_CASE_TITLE);
+        $lastName = trim(mb_convert_case(mb_strtolower($lastName), MB_CASE_TITLE));
+        $firstName = trim(mb_convert_case(mb_strtolower($firstName), MB_CASE_TITLE));
+        if (empty($lastName)) {
+            throw new \Exception('Empty tourist last name');
+        }
         !$patronymic ?: $patronymic = mb_convert_case(mb_strtolower($patronymic), MB_CASE_TITLE);
         !$phone ?: $phone = Tourist::cleanPhone($phone);
 
