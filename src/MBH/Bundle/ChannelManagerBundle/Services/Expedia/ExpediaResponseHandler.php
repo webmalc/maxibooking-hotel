@@ -83,7 +83,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
             $requestedUrl = $tariffInfo['_links']['self']['href'];
             $tariffs['resourceId'] = [
                 'title' => $tariffInfo['name'],
-                'rooms' => [$this->getRoomTypeIdFromUrlString($requestedUrl)]
+                'rooms' => [$this->getRoomTypeIdFromUrlString($requestedUrl)],
             ];
         }
     }

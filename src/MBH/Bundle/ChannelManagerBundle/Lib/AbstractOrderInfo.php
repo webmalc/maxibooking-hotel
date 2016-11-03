@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 
 abstract class AbstractOrderInfo
@@ -18,6 +19,10 @@ abstract class AbstractOrderInfo
      * @return AbstractPackageInfo[]
      */
     abstract public function getPackagesData();
+
+    /**
+     * @return PackageService[]
+     */
     abstract public function getServices();
 
     /**

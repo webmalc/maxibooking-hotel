@@ -43,7 +43,7 @@ class Expedia extends ExtendedAbstractChannelManager
         /** @var ExpediaOrderInfo $orderInfo */
         if ($orderInfo->getConfirmNumber()) {
             $requestData = $this->requestDataFormatter->formatNotifyServiceData($orderInfo, $config);
-            $requestInfo = $this->requestFormatter->formatNotifyServiceRequest($requestData);
+            $requestInfo = $this->requestFormatter->formatBookingConfirmationRequest($requestData);
 
             $response = $this->sendRequestAndGetResponse($requestInfo);
             $responseHandler = $this->getResponseHandler($response);

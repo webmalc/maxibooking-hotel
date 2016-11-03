@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
+use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractRequestDataFormatter;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
@@ -15,7 +16,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 {
     const EXPEDIA_MIN_STAY = 1;
     const EXPEDIA_MAX_STAY = 28;
+    const AVAILABILITY_AND_RATES_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/AR/2011/06';
     const BOOKING_RETRIEVAL_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BR/2014/01';
+    const CONFIRM_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BC/2007/09';
 
     /**
      * В Expedia невозможно установить данные более чем на 2 года вперед
@@ -88,7 +91,8 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
             $xmlElements[] = $xmlRoomTypeData;
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config, 'AvailRateUpdateRQ')->asXML();
+        return $this->formatTemplateRequest($xmlElements, $config,
+            'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
     }
 
     /**
@@ -121,7 +125,8 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
             $xmlElements[] = $xmlRoomTypeData;
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config, 'AvailRateUpdateRQ')->asXML();
+        return $this->formatTemplateRequest($xmlElements, $config,
+            'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
     }
 
 
@@ -202,35 +207,13 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
             $xmlElements[] = $xmlRoomTypeData;
         }
 
-        return $this->formatTemplateRequest($xmlElements, $config, 'AvailRateUpdateRQ')->asXML();
+        return $this->formatTemplateRequest($xmlElements, $config,
+            'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
     }
 
-    /**
-     * Форматирование шаблона в формате xml
-     * @param Массив SimpleXMLElement объектов, добавляемых в тело xml-запроса $elementsArray
-     * @param ChannelManagerConfigInterface $config
-     * @param $rootNodeName
-     * @return \SimpleXMLElement
-     */
-    private function formatTemplateRequest($elementsArray, ChannelManagerConfigInterface $config, $rootNodeName) : \SimpleXMLElement
+    public function formatGetBookingsData(ChannelManagerConfigInterface $config)
     {
-        $requestXML = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>');
-
-        $rootNode = $requestXML->addChild($rootNodeName);
-        $rootNode->addAttribute('xmlns', self::BOOKING_RETRIEVAL_REQUEST_NAMESPACE);
-
-        $authNode = $rootNode->addChild('Authentication');
-        $authNode->addAttribute('username', $config->getUsername());
-        $authNode->addAttribute('password', $config->getPassword());
-
-        $hotelNode = $rootNode->addChild('Hotel');
-        $hotelNode->addAttribute('id', $config->getHotelId());
-
-        foreach ($elementsArray as $element) {
-            $rootNode->addChild($element);
-        }
-
-        return $requestXML;
+        return $this->formatTemplateRequest([], $config, 'BookingRetrievalRQ', self::BOOKING_RETRIEVAL_REQUEST_NAMESPACE);
     }
 
     public function formatCloseForConfigData(ChannelManagerConfigInterface $config)
@@ -249,12 +232,13 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
             $roomTypeElement = $xmlRoomTypeData->addChild('RoomType');
             $roomTypeElement->addAttribute('id', $roomTypeData['id']);
-            $roomTypeElement->addAttribute('closed', 'false');
+            $roomTypeElement->addAttribute('closed', 'true');
 
             $requestData[] = $xmlRoomTypeData;
         }
 
-        return $this->formatTemplateRequest($requestData, $config, 'AvailRateUpdateRQ');
+        return $this->formatTemplateRequest($requestData, $config, 'AvailRateUpdateRQ',
+            self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
     }
 
     public function formatNotifyServiceData(AbstractOrderInfo $orderInfo, $config)
@@ -265,7 +249,39 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $confirmNumberElement->addAttribute('bookingID', $orderInfo->getChannelManagerOrderId());
         $confirmNumberElement->addAttribute('bookingType', $orderInfo->getOrderStatusType());
         $confirmNumberElement->addAttribute('confirmNumber', $orderInfo->getConfirmNumber());
+        $confirmNumberElement->addAttribute('confirmTime', new \DateTime('now', new DateTimeZone("UTC")));
 
-        return $this->formatTemplateRequest([$confirmNumbersElement], $config, 'BookingConfirmRQ');
+        return $this->formatTemplateRequest([$confirmNumbersElement], $config,
+            'BookingConfirmRQ', self::CONFIRM_REQUEST_NAMESPACE);
+    }
+
+    /**
+     * Форматирование шаблона в формате xml
+     * @param $elementsArray
+     * @param ChannelManagerConfigInterface $config
+     * @param $rootNodeName
+     * @param $xmlns
+     * @return \SimpleXMLElement Массив объектов, добавляемых в тело xml-запроса $elementsArray
+     */
+    private function formatTemplateRequest($elementsArray, ChannelManagerConfigInterface $config, $rootNodeName, $xmlns) : \SimpleXMLElement
+    {
+        /** @var ExpediaConfig $config */
+        $requestXML = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>');
+
+        $rootNode = $requestXML->addChild($rootNodeName);
+        $rootNode->addAttribute('xmlns', $xmlns);
+
+        $authNode = $rootNode->addChild('Authentication');
+        $authNode->addAttribute('username', $config->getUsername());
+        $authNode->addAttribute('password', $config->getPassword());
+
+        $hotelNode = $rootNode->addChild('Hotel');
+        $hotelNode->addAttribute('id', $config->getHotelId());
+
+        foreach ($elementsArray as $element) {
+            $rootNode->addChild($element);
+        }
+
+        return $requestXML->asXML();
     }
 }

@@ -35,6 +35,7 @@ abstract class AbstractRequestDataFormatter
     abstract public function formatRoomRequestData($requestData, ChannelManagerConfigInterface $config);
     abstract public function formatRestrictionRequestData($requestData, ChannelManagerConfigInterface $config);
     abstract public function formatCloseForConfigData(ChannelManagerConfigInterface $config);
+    abstract public function formatGetBookingsData(ChannelManagerConfigInterface $config);
 
     /**
      * Возвращает массив данных, отправляемых в запросе обновления цен

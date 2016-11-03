@@ -217,7 +217,8 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
 
         foreach ($this->getConfig() as $config) {
 
-            $request = $this->requestFormatter->formatGetOrdersRequest($config);
+            $requestData = $this->requestDataFormatter->formatGetBookingsData($config);
+            $request = $this->requestFormatter->formatGetOrdersRequest($requestData);
 
             $response = $this->sendRequestAndGetResponse($request);
             $responseHandler = $this->getResponseHandler($response, $config);

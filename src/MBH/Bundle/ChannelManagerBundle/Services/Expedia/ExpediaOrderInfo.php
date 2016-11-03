@@ -7,6 +7,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerException;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
@@ -180,48 +181,6 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $this->getOrderStatusType() === $status;
     }
 
-    public function getServices()
-    {
-        foreach ($this->orderDataXMLElement->SpecialRequest as $serviceXMLElement) {
-            switch (((string)$serviceXMLElement->attributes()['code'])[0]) {
-                case 0:
-                    echo "i равно 0";
-                    break;
-            }
-        }
-
-//        $servicesTotal = 0;
-//
-//        if ($room->addons->addon) {
-//            foreach ($room->addons->addon as $addon) {
-//                $servicesTotal += (float)$addon->totalprice;
-//                if (empty($services[(int)$addon->type])) {
-//                    continue;
-//                }
-//
-//                $packageService = new PackageService();
-//                $packageService
-//                    ->setService($services[(int)$addon->type]['doc'])
-//                    ->setIsCustomPrice(true)
-//                    ->setNights(empty((string)$addon->nights) ? null : (int)$addon->nights)
-//                    ->setPersons(empty((string)$addon->persons) ? null : (int)$addon->persons)
-//                    ->setPrice(
-//                        empty((string)$addon->price_per_unit) ? null : $this->currencyConvertToRub(
-//                            $config,
-//                            (float)$addon->price_per_unit
-//                        )
-//                    )
-//                    ->setTotalOverwrite($this->currencyConvertToRub($config, (float)$addon->totalprice))
-//                    ->setPackage($package);
-//                $this->dm->persist($packageService);
-//                $package->addService($packageService);
-//            }
-//        }
-//
-//        $package->setServicesPrice($this->currencyConvertToRub($config, (float)$servicesTotal));
-//        $package->setTotalOverwrite($this->currencyConvertToRub($config, (float)$room->totalprice));
-    }
-
     public function getPrice()
     {
         return current($this->getPackagesData())->getPrice();
@@ -336,5 +295,13 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         }
 
         return $this->orderNote;
+    }
+
+    /**
+     * @return PackageService[]
+     */
+    public function getServices()
+    {
+        return [];
     }
 }
