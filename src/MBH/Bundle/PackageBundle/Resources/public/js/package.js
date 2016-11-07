@@ -219,6 +219,51 @@ var docReadyPackages = function () {
                 exportOptions: {
                     stripNewlines: false
                 }
+            },
+            {
+                text: '<i class="fa fa-file-excel-o" title="CSV" data-toggle="tooltip" data-placement="bottom"></i>',
+                className: 'btn btn-default btn-sm',
+                action: function ( e, dt, button, config ) {
+                    $.ajax({
+                        url: Routing.generate('package_csv'),
+                        type:'POST',
+                        data: {
+                        } ,
+                        success: function (response) {
+
+                            $('<div id="template-document-csv-modal" class="modal"> </div> ').insertAfter($('.content-wrapper'));
+                            var $modal = $('#template-document-csv-modal');
+                            var $body = $modal.find('.modal-body');
+
+                            $modal.html(response);
+                            $modal.modal('show');
+
+                            $modal.find('input[type=checkbox]').bootstrapSwitch({
+                                'size': 'mini',
+                                'onColor' : 'success',
+                                'onText': 'да',
+                                'offText': 'нет'
+                            });
+                            var form = $modal.find("form");
+
+                            form.submit(function(){
+                                $('#mbh_bundle_packagebundle_package_csv_type_roomType').val($('#package-filter-roomType').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_status').val($('#package-filter-status').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_deleted').val($('#package-filter-deleted').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_begin').val($('#package-filter-begin').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_end').val($('#package-filter-end').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_dates').val($('#package-filter-dates').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_paid').val($('#package-filter-paid').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_confirmed').val($('#package-filter-confirmed').val())
+                                $('#mbh_bundle_packagebundle_package_csv_type_deleted').val(($('#package-filter-deleted').is(':checked')) ? 1 : 0)
+                                $('#mbh_bundle_packagebundle_package_csv_type_quick_link').val($('#package-table-quick-links .btn-primary').attr('data-value'))
+                                $('.modal.in').modal('hide')
+                            });
+
+                        }
+                    });
+
+                }
             }
         ],
         "processing": true,
@@ -268,6 +313,7 @@ var docReadyPackages = function () {
             $('#package-summary-guests').html(settings.json.package_summary_guests || '-');
         }
     });
+
 
     // package datatable filter
     (function () {
