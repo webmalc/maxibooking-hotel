@@ -42,6 +42,38 @@ class PackageServiceType extends AbstractType
                 'constraints' => new NotBlank(),
                 'attr' => ['class' => 'price-spinner sm']
             ])
+            ->add(
+                'begin',
+                'date',
+                array(
+                    'label' => 'form.packageServiceType.begin',
+                    'group' => 'form.packageServiceType.add_service',
+                    'widget' => 'single_text',
+                    'format' => 'dd.MM.yyyy',
+                    'help' => 'form.packageServiceType.date_add_begin',
+                    'required' => false,
+                    'attr' => array(
+                        'class' => 'datepicker begin-datepicker input-small',
+                        'data-date-format' => 'dd.mm.yyyy',
+                    ),
+                )
+            )
+            ->add(
+                'end',
+                'date',
+                array(
+                    'label' => 'form.packageServiceType.end',
+                    'group' => 'form.packageServiceType.add_service',
+                    'widget' => 'single_text',
+                    'format' => 'dd.MM.yyyy',
+                    'help' => 'form.packageServiceType.date_add_end',
+                    'required' => false,
+                    'attr' => array(
+                        'class' => 'datepicker end-datepicker input-small',
+                        'data-date-format' => 'dd.mm.yyyy',
+                    ),
+                )
+            )
             ->add('nights', 'text', [
                 'label' => 'form.packageServiceType.nights_amount',
                 'required' => true,
@@ -59,13 +91,6 @@ class PackageServiceType extends AbstractType
                 'error_bubbling' => true,
                 'constraints' => new NotBlank(),
                 'attr' => ['class' => 'spinner sm']
-            ])
-            ->add('begin', 'date', [
-                'label' => 'Дата',
-                'group' => 'form.packageServiceType.add_service',
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
             ])
             ->add('time', 'time', [
                 'label' => 'form.packageServiceType.time',
@@ -90,7 +115,7 @@ class PackageServiceType extends AbstractType
                 'group' => 'form.packageServiceType.add_service',
                 'required' => false,
             ])
-            ;
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

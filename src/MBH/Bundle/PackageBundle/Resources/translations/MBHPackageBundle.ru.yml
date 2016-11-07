@@ -256,6 +256,8 @@ package.service.guests: Гостей
 package.service.amount: Количество
 package.service.short_amount: Кол.
 package.service.package: Бронь
+package.service.begin: Дата начала
+package.service.end: Дата окончания
 package.service.tourist: Заказчик
 package.service.title: Наименование
 package.service.order: Заказ

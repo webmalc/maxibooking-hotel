@@ -561,6 +561,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $packageService = new PackageService();
         $packageService
             ->setBegin($package->getBegin())
+            ->setEnd($package->getEnd())
+            ->setNights($package->getNights())
+            ->setPersons(count($package->getTourists()))
             ->setTime($package->getBegin())
             ->setPackage($package);
 

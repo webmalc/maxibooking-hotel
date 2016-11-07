@@ -14,8 +14,11 @@ var docReadyServices = function () {
             personsInput = $('#mbh_bundle_packagebundle_package_service_type_persons'),
             personsDiv = personsInput.closest('div.form-group'),
             dateInput = $('#mbh_bundle_packagebundle_package_service_type_begin'),
+            dateOutput = $('#mbh_bundle_packagebundle_package_service_type_end'),
             dateDiv = dateInput.closest('div.form-group'),
+            dateDivEnd = dateOutput.closest('div.form-group'),
             dateDefault = dateInput.val(),
+            dateDefaultEnd = dateOutput.val(),
             serviceInput = $('#mbh_bundle_packagebundle_package_service_type_service'),
             serviceHelp = serviceInput.next('span.help-block'),
             amountInput = $('#mbh_bundle_packagebundle_package_service_type_amount'),
@@ -26,8 +29,10 @@ var docReadyServices = function () {
                 nightsDiv.hide();
                 personsDiv.hide();
                 dateDiv.hide();
+                dateDivEnd.hide();
                 timeDiv.hide();
                 dateInput.val(dateInput.val() || dateDefault);
+                dateOutput.val(dateOutput.val() || dateDefaultEnd);
                 personsInput.val(personsInput.val() || 1);
                 nightsInput.val(nightsInput.val() || 1);
                 amountInput.closest('div.input-group').next('span.help-block').html('');
@@ -58,6 +63,7 @@ var docReadyServices = function () {
                 amountInput.show();
                 if (info.date) {
                     dateDiv.show();
+                    dateDivEnd.show();
                 }
                 if (info.time) {
                     timeDiv.show();

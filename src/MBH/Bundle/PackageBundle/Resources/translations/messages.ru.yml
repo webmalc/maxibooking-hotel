@@ -73,6 +73,10 @@ form.packageServiceType.service: Услуга
 form.packageServiceType.add_service: 'Добавить услугу'
 form.packageServiceType.edit_service: 'Редактирование услуги'
 form.packageServiceType.reservation_add_service: Услуга для добавления к броне
+form.packageServiceType.begin: Начало
+form.packageServiceType.end: Конец
+form.packageServiceType.date_add_begin: С какого числа используется услуга?
+form.packageServiceType.date_add_end: По какое число используется услуга?
 form.packageServiceType.price: Цена
 form.packageServiceType.nights_amount: Количество суток
 form.packageServiceType.guests_amount: Количество гостей
