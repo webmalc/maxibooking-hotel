@@ -190,4 +190,8 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         return $this->isSmoking;
     }
 
+    public function getChannelManagerId()
+    {
+        // TODO: Implement getChannelManagerId() method.
+    }
 }

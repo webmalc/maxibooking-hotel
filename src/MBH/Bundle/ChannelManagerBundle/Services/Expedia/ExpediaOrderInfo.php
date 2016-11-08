@@ -67,10 +67,14 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     {
         /** @var \SimpleXMLElement $primaryGuestDataElement */
         $primaryGuestDataElement = $this->orderDataXMLElement->PrimaryGuest;
+        $lastNameString = trim((string)$primaryGuestDataElement->Name->attributes['surname']);
+        $firstNameString = trim((string)$primaryGuestDataElement->Name->attributes['givenName']);
+
+        $lastName = empty($lastNameString) ? $this->getChannelManagerOrderId() : $lastNameString;
 
         $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-            (string)$primaryGuestDataElement->Name->attributes['surname'],
-            (string)$primaryGuestDataElement->Name->attributes['givenName'],
+            $lastName,
+            empty($firstNameString) ? null : $firstNameString,
             null,
             null,
             null,

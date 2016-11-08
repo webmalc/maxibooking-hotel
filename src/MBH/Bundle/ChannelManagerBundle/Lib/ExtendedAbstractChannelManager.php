@@ -353,7 +353,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     {
         $package = new Package();
         $package
-            ->setChannelManagerId($packageInfo->)
+            ->setChannelManagerId($packageInfo->getChannelManagerId())
             ->setChannelManagerType($order->getChannelManagerType())
             ->setBegin($packageInfo->getBeginDate())
             ->setEnd($packageInfo->getEndDate())

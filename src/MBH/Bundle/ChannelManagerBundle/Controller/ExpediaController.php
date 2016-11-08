@@ -211,4 +211,13 @@ class ExpediaController extends Controller
         dump((string)$xml); exit();
         return [];
     }
+
+    /**
+     * @Route("/testCanvas")
+     * @Template()
+     */
+    public function testCanvasAction()
+    {
+        return [];
+    }
 }

@@ -17,6 +17,7 @@ abstract class AbstractPackageInfo
     abstract public function getIsCorrupted();
     abstract public function getTourists();
     abstract public function getIsSmoking();
+    abstract public function getChannelManagerId();
 
     public function getOriginalPrice()
     {
