@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -64,6 +65,49 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'data' => $generator->generate($request, $this->hotel),
             'error' => $generator->getError()
         ];
+    }
+
+    /**
+     * Windows package info.
+     *
+     * @Route("/windows/package/{id}", name="report_windows_package", options={"expose"=true})
+     * @Method({"GET", "PUT"})
+     * @ParamConverter("package", class="MBHPackageBundle:Package")
+     * @Security("is_granted('ROLE_PACKAGE_EDIT') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
+     * @Template()
+     * @param $request Request
+     * @param $package Package
+     * @return array
+     */
+    public function windowPackageAction(Request $request, Package $package)
+    {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
+            throw $this->createNotFoundException();
+        }
+
+        $response = ['package' => $package];
+
+        if ($this->clientConfig->getSearchWindows()) {
+            $form = $this->createForm(new PackageVirtualRoomType(), $package, [
+                'package' => $package
+            ]);
+
+            if ($request->isMethod('PUT')) {
+                $form->submit($request->request->get($form->getName()));
+
+                if ($form->isValid()) {
+                    $this->dm->persist($package);
+                    $this->dm->flush();
+                    $this->addFlash('success', 'controller.packageController.record_edited_success');
+
+                    return $this->redirectToRoute('report_windows');
+                }
+            }
+
+            $response['form'] = $form->createView();
+        }
+
+        return $response;
     }
 
     /**
