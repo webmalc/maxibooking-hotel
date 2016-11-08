@@ -70,7 +70,7 @@ class TaskTypeType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotelbundle_tasktype';
     }

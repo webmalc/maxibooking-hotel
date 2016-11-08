@@ -2,12 +2,16 @@
 
 namespace MBH\Bundle\ClientBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  * Class DocumentTemplateType
@@ -19,20 +23,20 @@ class DocumentTemplateType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title', 'text', ['label' => 'Название'])
-            ->add('content', 'textarea', [
+            ->add('title', TextType::class, ['label' => 'Название'])
+            ->add('content', TextareaType::class, [
                 'label' => 'Шаблон',
                 'attr' => ['rows' => 30]
             ])
-            ->add('orientation', 'choice', [
+            ->add('orientation', ChoiceType::class, [
                 'label' => 'Ориентация', 'choices' => DocumentTemplate::getOrientations()
             ])
-            ->add('hotel', 'document', [
+            ->add('hotel', DocumentType::class, [
                 'label' => 'Отель',
                 'class' => Hotel::class,
                 'required' => false
             ])
-            ->add('organization', 'document', [
+            ->add('organization', DocumentType::class, [
                 'label' => 'Организация',
                 'class' => Organization::class,
                 'required' => false
@@ -46,7 +50,7 @@ class DocumentTemplateType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_client_document_template';
     }

@@ -6,12 +6,12 @@ namespace MBH\Bundle\PackageBundle\Tests\DocumentGenerator\Xls;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Migration;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\Visa;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\NoticeStayPlaceXlsGenerator;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\HttpFoundation\Response;
 
 /**

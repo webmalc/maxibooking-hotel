@@ -5,15 +5,17 @@ namespace MBH\Bundle\UserBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
+use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
+use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
+use MBH\Bundle\UserBundle\Document\User;
+use MBH\Bundle\UserBundle\Form\UserSecurityType;
+use MBH\Bundle\UserBundle\Form\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\UserBundle\Document\User;
-use MBH\Bundle\UserBundle\Form\UserType;
-use MBH\Bundle\UserBundle\Form\UserSecurityType;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
@@ -167,7 +169,7 @@ class UserController extends Controller
     {
         $entity->getDocumentRelation() ?: $entity->setDocumentRelation(new DocumentRelation());
 
-        $form = $this->createForm('mbh_document_relation', $entity, [
+        $form = $this->createForm(DocumentRelationType::class, $entity, [
             'data_class' => 'MBH\Bundle\UserBundle\Document\User',
             'citizenship' => false,
             'birthplace' => false
@@ -226,7 +228,7 @@ class UserController extends Controller
     {
         $entity->getAddressObjectDecomposed() ?: $entity->setAddressObjectDecomposed(new AddressObjectDecomposed());
 
-        $form = $form = $this->createForm('mbh_address_object_decomposed', $entity->getAddressObjectDecomposed());
+        $form = $form = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
         if($request->isMethod(Request::METHOD_PUT)) {
             $form->submit($request);

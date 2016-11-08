@@ -2,14 +2,19 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\Range;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class RoomCacheGeneratorType extends AbstractType
@@ -18,7 +23,7 @@ class RoomCacheGeneratorType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-                ->add('begin', 'date', array(
+                ->add('begin', DateType::class, array(
                     'label' => 'Начало периода',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
@@ -27,7 +32,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'attr' => array('class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(), new Date()],
                 ))
-                ->add('end', 'date', array(
+                ->add('end', DateType::class, array(
                     'label' => 'Конец периода',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
@@ -35,7 +40,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'attr' => array('class' => 'datepicker end-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(), new Date()],
                 ))
-                ->add('weekdays', 'choice', [
+                ->add('weekdays', ChoiceType::class, [
                     'label' => 'Дни недели',
                     'required' => false,
                     'multiple' => true,
@@ -43,7 +48,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'help' => 'Дни недели для готорых будет произведена генерация наличия мест',
                     'attr' => array('placeholder' => 'Все дни недели'),
                 ])
-                ->add('roomTypes', 'document', [
+                ->add('roomTypes', DocumentType::class, [
                     'label' => 'Типы номеров',
                     'required' => true,
                     'multiple' => true,
@@ -54,13 +59,13 @@ class RoomCacheGeneratorType extends AbstractType
                     'help' => 'Типы номеров для готорых будет произведена генерация наличия мест',
                     'attr' => array('placeholder' => $options['hotel']. ': все типы номеров', 'class' => 'select-all'),
                 ])
-                ->add('quotas', 'checkbox', [
+                ->add('quotas', CheckboxType::class, [
                     'label' => 'Установить квоты?',
                     'value' => true,
                     'required' => false,
                     'help' => 'Установить квоты номеров по тарифам?'
                 ])
-                ->add('tariffs', 'document', [
+                ->add('tariffs', DocumentType::class, [
                     'label' => 'Тарифы',
                     'required' => false,
                     'multiple' => true,
@@ -71,7 +76,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'help' => 'Тарифы для готорых будет произведена генерация квот',
                     'attr' => array('placeholder' => 'Квоты не будут сгенерированы'),
                 ])
-                ->add('rooms', 'text', [
+                ->add('rooms', TextType::class, [
                     'label' => 'Количество мест',
                     'required' => true,
                     'data' => null,
@@ -82,11 +87,6 @@ class RoomCacheGeneratorType extends AbstractType
                     ],
                     'help' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvomest',
                 ])
-                /*->add('isClosed', 'checkbox', [
-                    'label' => 'Закрыто?',
-                    'value' => true,
-                    'required' => false,
-                ])*/
         ;
     }
 
@@ -100,7 +100,7 @@ class RoomCacheGeneratorType extends AbstractType
         }
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'weekdays' => [],
@@ -109,7 +109,7 @@ class RoomCacheGeneratorType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_pricebundle_room_cache_generator_type';
     }

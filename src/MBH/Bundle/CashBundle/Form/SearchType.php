@@ -3,10 +3,13 @@
 namespace MBH\Bundle\CashBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class SearchType
@@ -18,7 +21,7 @@ class SearchType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('begin', 'date', array(
+            ->add('begin', DateType::class, array(
                 'label' => 'C',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
@@ -28,7 +31,7 @@ class SearchType extends AbstractType
                 'attr' => array('class' => 'datepicker begin-datepicker', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()]
             ))
-            ->add('end', 'date', array(
+            ->add('end', DateType::class, array(
                 'label' => 'По',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
@@ -38,28 +41,28 @@ class SearchType extends AbstractType
                 'attr' => array('class' => 'datepicker end-datepicker', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()]
             ))
-            ->add('sort', 'choice', [
+            ->add('sort', ChoiceType::class, [
                 'label' => 'Сортирова',
                 'required' => false,
             ])
-            ->add('pay_type', 'choice', [
+            ->add('pay_type', ChoiceType::class, [
                 'label' => 'Вид платежа',
                 'required' => false,
             ])
-            ->add('show_no_paid', 'checkbox', [
+            ->add('show_no_paid', CheckboxType::class, [
                 'required' => false,
             ])
-            ->add('by_day', 'checkbox', [
+            ->add('by_day', CheckboxType::class, [
                 'required' => false,
             ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 's';
     }

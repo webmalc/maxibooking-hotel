@@ -5,8 +5,8 @@ namespace MBH\Bundle\HotelBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class RoomSubscriber

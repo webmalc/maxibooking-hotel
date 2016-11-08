@@ -2,9 +2,11 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PriceBundle\Document\Service;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -26,7 +28,7 @@ class TariffServiceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('service', 'document', [
+            ->add('service', DocumentType::class, [
                 'label' => 'form.packageServiceType.service',
                 'class' => 'MBHPriceBundle:Service',
                 'empty_value' => '',
@@ -41,7 +43,7 @@ class TariffServiceType extends AbstractType
                 'group' => 'form.packageServiceType.add_service',
                 'help' => 'form.packageServiceType.reservation_add_service'
             ])
-            ->add('nights', 'number', [
+            ->add('nights', NumberType::class, [
                 'label' => 'form.packageServiceType.nights_amount',
                 'required' => false,
                 'attr' => [
@@ -51,7 +53,7 @@ class TariffServiceType extends AbstractType
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
             ])
-            ->add('persons', 'number', [
+            ->add('persons', NumberType::class, [
                 'label' => 'form.packageServiceType.guests_amount',
                 'required' => false,
                 'attr' => [
@@ -61,7 +63,7 @@ class TariffServiceType extends AbstractType
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
             ])
-            ->add('amount', 'number', [
+            ->add('amount', NumberType::class, [
                 'label' => 'form.packageServiceType.amount',
                 'required' => true,
                 'attr' => [
@@ -83,7 +85,7 @@ class TariffServiceType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_price_tariff_service';
     }

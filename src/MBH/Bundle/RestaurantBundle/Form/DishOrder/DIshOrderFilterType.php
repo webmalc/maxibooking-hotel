@@ -49,7 +49,7 @@ class DIshOrderFilterType extends AbstractType
         ;
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'restaurant_dishorder_filter_type';
     }

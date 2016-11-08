@@ -5,8 +5,13 @@ namespace MBH\Bundle\PriceBundle\Form;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TariffType extends AbstractType
 {
@@ -16,20 +21,20 @@ class TariffType extends AbstractType
         $conditions = PromotionConditionFactory::getAvailableConditions();
 
         $builder
-            ->add('fullTitle', 'text', [
+            ->add('fullTitle', TextType::class, [
                 'label' => 'Название',
                 'group' => 'Общая информация',
                 'required' => true,
                 'attr' => ['placeholder' => 'Основной']
             ])
-            ->add('title', 'text', [
+            ->add('title', TextType::class, [
                 'label' => 'Внутреннее название',
                 'group' => 'Общая информация',
                 'required' => false,
                 'attr' => ['placeholder' => 'Основной - лето ' . date('Y')],
                 'help' => 'Название для использования внутри MaxiBooking'
             ])
-            ->add('description', 'textarea', [
+            ->add('description', TextareaType::class, [
                 'label' => 'Описание',
                 'group' => 'Общая информация',
                 'required' => false,
@@ -37,7 +42,7 @@ class TariffType extends AbstractType
             ])
             ->add(
                 'begin',
-                'date',
+                DateType::class,
                 array(
                     'label' => 'Начало',
                     'group' => 'Условия и ограничения',
@@ -54,7 +59,7 @@ class TariffType extends AbstractType
             )
             ->add(
                 'end',
-                'date',
+                DateType::class,
                 array(
                     'label' => 'Конец',
                     'group' => 'Условия и ограничения',
@@ -71,7 +76,7 @@ class TariffType extends AbstractType
             );
         $conditions = PromotionConditionFactory::getAvailableConditions();
         $builder
-            ->add('condition', 'choice', [
+            ->add('condition', ChoiceType::class, [
                 'label' => 'form.promotionType.label.condition',
                 'required' => false,
                 'group' => 'Условия и ограничения',
@@ -80,7 +85,7 @@ class TariffType extends AbstractType
                     return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
-            ->add('condition_quantity', 'number', [
+            ->add('condition_quantity', NumberType::class, [
                 'label' => 'form.promotionType.label.condition_quantity',
                 'group' => 'Условия и ограничения',
                 'required' => false,
@@ -89,7 +94,7 @@ class TariffType extends AbstractType
                     'class' => 'spinner',
                 ],
             ])
-            ->add('additional_condition', 'choice', [
+            ->add('additional_condition', ChoiceType::class, [
                 'label' => 'form.promotionType.label.add_condition',
                 'required' => false,
                 'group' => 'Условия и ограничения',
@@ -98,7 +103,7 @@ class TariffType extends AbstractType
                     return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
-            ->add('additional_condition_quantity', 'number', [
+            ->add('additional_condition_quantity', NumberType::class, [
                 'label' => 'form.promotionType.label.condition_quantity',
                 'group' => 'Условия и ограничения',
                 'required' => false,
@@ -108,7 +113,7 @@ class TariffType extends AbstractType
                 ],
             ]);
         $builder
-            ->add('isOnline', 'checkbox', [
+            ->add('isOnline', CheckboxType::class, [
                 'label' => 'Онлайн?',
                 'group' => 'Настройки',
                 'value' => true,
@@ -117,7 +122,7 @@ class TariffType extends AbstractType
             ])
             ->add(
                 'childAge',
-                'choice',
+                ChoiceType::class,
                 [
                     'label' => 'Ребенок до',
                     'group' => 'Настройки',
@@ -130,7 +135,7 @@ class TariffType extends AbstractType
             )
             ->add(
                 'infantAge',
-                'choice',
+                ChoiceType::class,
                 [
                     'label' => 'Инфант до',
                     'group' => 'Настройки',
@@ -150,7 +155,7 @@ class TariffType extends AbstractType
                     'Использовать для комбинирования тарифов в переходных периодах?<br>
                      По-молчанию спец. тарифы комбинируются с основным тарифом'
             ])
-            ->add('isEnabled', 'checkbox', [
+            ->add('isEnabled', CheckboxType::class, [
                 'label' => 'Включен?',
                 'group' => 'Настройки',
                 'value' => true,
@@ -159,14 +164,14 @@ class TariffType extends AbstractType
             ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\PriceBundle\Document\Tariff'
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_pricebundle_tariff_main_type';
     }

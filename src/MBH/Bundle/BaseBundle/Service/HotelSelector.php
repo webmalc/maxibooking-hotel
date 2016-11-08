@@ -3,9 +3,9 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use MBH\Bundle\BaseBundle\MBHBaseBundle;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;

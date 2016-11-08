@@ -3,16 +3,23 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Date as ConstrainDate;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * Class OrganizationType
@@ -41,7 +48,7 @@ class OrganizationType extends AbstractType
         $id = $options['id'];
 
         if (!$isFull) {
-            $builder->add('organization', 'text', [
+            $builder->add('organization', TextType::class, [
                 'group' => 'form.organizationType.group.search',
                 'label' => 'form.organizationType.name',
                 'required' => false,
@@ -64,47 +71,47 @@ class OrganizationType extends AbstractType
 
         $group = $isFull ? $personalGroup : $addGroup;
 
-        $builder->add('name', 'text', [
+        $builder->add('name', TextType::class, [
             'group' => $group,
             'label' => 'form.organizationType.name',
         ]);
         if ($isFull) {
-            $builder->add('short_name', 'text', [
+            $builder->add('short_name', TextType::class, [
                 'group' => $personalGroup,
                 'label' => 'form.organizationType.short_name',
                 'required' => false,
             ]);
-            $builder->add('director_fio', 'text', [
+            $builder->add('director_fio', TextType::class, [
                 'group' => $personalGroup,
                 'label' => 'form.organizationType.director_fio',
                 'required' => false,
             ]);
-            $builder->add('accountant_fio', 'text', [
+            $builder->add('accountant_fio', TextType::class, [
                 'group' => $personalGroup,
                 'label' => 'form.organizationType.accountant_fio',
                 'required' => false,
             ]);
         }
-        $builder->add('phone', 'text', [
+        $builder->add('phone', TextType::class, [
             'group' => $group,
             'label' => 'form.organizationType.phone',
             'attr' => ['class' => 'input-small'],
             'required' => false,
         ]);
 
-        $builder->add('email', 'email', [
+        $builder->add('email', EmailType::class, [
             'group' => $group,
             'label' => 'form.organizationType.email',
             'required' => false,
         ]);
 
-        $builder->add('inn', 'text', [
+        $builder->add('inn', TextType::class, [
             'group' => $group,
             'label' => 'form.organization.inn.label',
             'attr' => ['class' => 'input-small'],
             'translation_domain' => 'individual'
         ]);
-        $builder->add('kpp', 'text', [
+        $builder->add('kpp', TextType::class, [
             'group' => $isFull ? $registerGroup : $addGroup,
             'label' => 'form.organizationType.kpp',
             'attr' => ['class' => 'input-small'],
@@ -112,7 +119,7 @@ class OrganizationType extends AbstractType
         ]);
 
         if ($isFull) {
-            $builder->add('registration_date', 'date', [
+            $builder->add('registration_date', DateType::class, [
                 'widget' => 'single_text',
                 'group' => $registerGroup,
                 'label' => 'form.organizationType.registration_date',
@@ -121,30 +128,30 @@ class OrganizationType extends AbstractType
                 'constraints' => [new ConstrainDate()],
                 'attr' => ['class' => 'input-small'],
             ]);
-            $builder->add('registration_number', 'text', [
+            $builder->add('registration_number', TextType::class, [
                 'group' => $registerGroup,
                 'label' => 'form.organizationType.registration_number',
                 'required' => false,
                 'attr' => ['class' => 'input-small'],
             ]);
-            $builder->add('activity_code', 'text', [
+            $builder->add('activity_code', TextType::class, [
                 'group' => $registerGroup,
                 'label' => 'form.organizationType.activity_code',
                 'required' => false,
                 'attr' => ['class' => 'input-small'],
             ]);
-            $builder->add('okpo_code', 'text', [
+            $builder->add('okpo_code', TextType::class, [
                 'group' => $registerGroup,
                 'label' => 'form.organizationType.okpo_code',
                 'required' => false,
                 'attr' => ['class' => 'input-small'],
             ]);
-            $builder->add('writer_fio', 'text', [
+            $builder->add('writer_fio', TextType::class, [
                 'group' => $registerGroup,
                 'label' => 'form.organizationType.writer_fio',
                 'required' => false,
             ]);
-            $builder->add('reason', 'text', [
+            $builder->add('reason', TextType::class, [
                 'group' => $registerGroup,
                 'label' => 'form.organizationType.reason',
                 'required' => false,
@@ -153,7 +160,7 @@ class OrganizationType extends AbstractType
 
         $group = $isFull ? $locationGroup : $addGroup;
 
-        $builder->add('city', 'text', [ //'document', [
+        $builder->add('city', TextType::class, [ //'document', [
             'group' => $group,
             'label' => 'form.organizationType.city',
             'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location', 'class' => 'citySelect'],
@@ -162,12 +169,12 @@ class OrganizationType extends AbstractType
         $builder->get('city')->addModelTransformer(new EntityToIdTransformer($this->documentManager,
             'MBHHotelBundle:City'));
 
-        $builder->add('street', 'text', [
+        $builder->add('street', TextType::class, [
             'group' => $group,
             'label' => 'form.organizationType.street',
             'required' => false
         ]);
-        $builder->add('house', 'text', [
+        $builder->add('house', TextType::class, [
             'group' => $group,
             'label' => 'form.organizationType.house',
             'attr' => ['class' => 'input-xs'],
@@ -175,46 +182,46 @@ class OrganizationType extends AbstractType
         ]);
 
         if ($isFull) {
-            $builder->add('corpus', 'text', [
+            $builder->add('corpus', TextType::class, [
                 'group' => $locationGroup,
                 'label' => 'form.organizationType.corpus',
                 'required' => false,
                 'attr' => ['class' => 'input-xs'],
             ]);
-            $builder->add('flat', 'text', [
+            $builder->add('flat', TextType::class, [
                 'group' => $locationGroup,
                 'label' => 'form.organizationType.flat',
                 'required' => false,
                 'attr' => ['class' => 'input-xs'],
             ]);
-            $builder->add('index', 'text', [
+            $builder->add('index', TextType::class, [
                 'group' => $locationGroup,
                 'label' => 'form.organizationType.index',
                 'required' => false,
                 'attr' => ['class' => 'input-xs'],
             ]);
-            $builder->add('bank', 'text', [
+            $builder->add('bank', TextType::class, [
                 'group' => $checkAccountGroup,
                 'label' => 'form.organizationType.bank',
                 'required' => false,
             ]);
-            $builder->add('bank_bik', 'text', [
+            $builder->add('bank_bik', TextType::class, [
                 'group' => $checkAccountGroup,
                 'label' => 'form.organizationType.bank_bik',
                 'required' => false,
                 'attr' => ['class' => 'input-small'],
             ]);
-            $builder->add('bank_address', 'text', [
+            $builder->add('bank_address', TextType::class, [
                 'group' => $checkAccountGroup,
                 'label' => 'form.organizationType.bank_address',
                 'required' => false,
             ]);
-            $builder->add('correspondent_account', 'text', [
+            $builder->add('correspondent_account', TextType::class, [
                 'group' => $checkAccountGroup,
                 'label' => 'form.organizationType.correspondent_account',
                 'required' => false,
             ]);
-            $builder->add('checking_account', 'text', [
+            $builder->add('checking_account', TextType::class, [
                 'group' => $checkAccountGroup,
                 'label' => 'form.organizationType.checking_account',
                 'required' => false,
@@ -223,7 +230,7 @@ class OrganizationType extends AbstractType
 
         if ($isFull) {
             if ($scenario == self::SCENARIO_NEW) {
-                $builder->add('type', 'choice', [
+                $builder->add('type', ChoiceType::class, [
                     'group' => $isFull ? $additionalGroup : $addGroup,
                     'label' => 'form.organizationType.type',
                     'choices' => $options['typeList'],
@@ -267,19 +274,19 @@ class OrganizationType extends AbstractType
 
             $hotelsOptions['group'] = $isFull ? $additionalGroup : $addGroup;
             if($scenario == self::SCENARIO_NEW || ($scenario == self::SCENARIO_EDIT && $options['type'] == 'my')) {
-                $builder->add('hotels', 'document', $hotelsOptions);
+                $builder->add('hotels', DocumentType::class, $hotelsOptions);
             }
         }
 
         if ($isFull) {
-            $builder->add('comment', 'textarea', [
+            $builder->add('comment', TextareaType::class, [
                 'group' => $additionalGroup,
                 'label' => 'form.organizationType.comment',
                 'required' => false,
                 'constraints' => [new Length(['min' => 2, 'max' => 300])]
             ]);
 
-            $builder->add('stamp', 'file', [
+            $builder->add('stamp', FileType::class, [
                 'group' => $additionalGroup,
                 'label' => 'form.organizationType.stamp',
                 'required' => false,
@@ -313,7 +320,7 @@ class OrganizationType extends AbstractType
      *
      * @return string The name of this type
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'organization';
     }

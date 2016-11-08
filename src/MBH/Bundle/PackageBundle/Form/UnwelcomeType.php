@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
@@ -59,7 +60,7 @@ class UnwelcomeType extends AbstractType
             ]);
         }
 
-        $builder->add('comment', 'textarea', [
+        $builder->add('comment', TextareaType::class, [
             'label' => 'form.unwelcomeType.comment',
             'group' => 'form.unwelcomeType.group.common',
             'attr' => ['style' => 'height:150px'],
@@ -88,7 +89,7 @@ class UnwelcomeType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_package_bundle_unwelcome';
     }

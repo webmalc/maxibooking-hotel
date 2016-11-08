@@ -16,6 +16,7 @@ use MBH\Bundle\RestaurantBundle\Document\Table;
 use MBH\Bundle\RestaurantBundle\Form\ChairType;
 use MBH\Bundle\RestaurantBundle\Form\TableType;
 use MBH\Bundle\RestaurantBundle\Form\TableTypeType;
+use MBH\Bundle\RestaurantBundle\Service\TableManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -23,7 +24,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\RestaurantBundle\Service\TableManager;
 
 
 /** @Route("tables") */

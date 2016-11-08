@@ -2,12 +2,16 @@
 
 namespace MBH\Bundle\WarehouseBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use MBH\Bundle\WarehouseBundle\Document\WareItem;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 
 
 class RecordFilterType extends AbstractType
@@ -16,7 +20,7 @@ class RecordFilterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('recordDateFrom', 'date', [
+            ->add('recordDateFrom', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => false,
@@ -26,7 +30,7 @@ class RecordFilterType extends AbstractType
 					'placeholder' => 'с',
                 ],
             ])
-            ->add('recordDateTo', 'date', [
+            ->add('recordDateTo', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => false,
@@ -36,7 +40,7 @@ class RecordFilterType extends AbstractType
 					'placeholder' => 'по',
                 ],
             ])
-			->add('operation', 'choice', [
+			->add('operation', ChoiceType::class, [
                 'required' => false,
                 'choices' => [
                     'in' => 'warehouse.record.in',
@@ -46,16 +50,16 @@ class RecordFilterType extends AbstractType
 					'class' => '',
 				],
             ])
-            ->add('hotel', 'document', [
+            ->add('hotel', DocumentType::class, [
                 'required' => false,
                 'class' => Hotel::class,
             ])
-			->add('wareItem', 'document', [
+			->add('wareItem', DocumentType::class, [
 				'required' => false,
 				'class' => WareItem::class,
 				'group_by' => 'category',
 			])
-            ->add('search', 'text', [
+            ->add('search', TextType::class, [
                 'required' => false
             ])
 		;
@@ -69,7 +73,7 @@ class RecordFilterType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_warehousebundle_recordfiltertype';
     }

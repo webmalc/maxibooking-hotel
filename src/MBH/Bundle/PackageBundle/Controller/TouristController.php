@@ -10,24 +10,28 @@ use MBH\Bundle\PackageBundle\Document\Criteria\TouristQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\TouristRepository;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use MBH\Bundle\PackageBundle\Document\UnwelcomeRepository;
 use MBH\Bundle\PackageBundle\Document\Visa;
+use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
+use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
+use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
 use MBH\Bundle\PackageBundle\Form\UnwelcomeType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\PackageBundle\Document\Tourist;
-use MBH\Bundle\PackageBundle\Form\TouristType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("/tourist")
@@ -68,14 +72,14 @@ class TouristController extends Controller
                 'format' => 'dd.MM.yyyy',
                 'required' => false
             ])
-            ->add('citizenship', 'choice', [
+            ->add('citizenship', ChoiceType::class, [
                 'required' => false,
                 'choices' => [
                     TouristQueryCriteria::CITIZENSHIP_NATIVE => 'Граждане РФ',
                     TouristQueryCriteria::CITIZENSHIP_FOREIGN => 'Иностранные граждане'
                 ]
             ])
-            ->add('search', 'text', [
+            ->add('search', TextType::class, [
                 'required' => false
             ])
             ->getForm();
@@ -182,8 +186,8 @@ class TouristController extends Controller
 
         $form = $this->createForm(new TouristType(), $entity,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
-        $docForm = $this->createForm('mbh_document_relation', $entity);
-        $addressForm = $this->createForm('mbh_address_object_decomposed', $entity->getAddressObjectDecomposed());
+        $docForm = $this->createForm(DocumentRelationType::class, $entity);
+        $addressForm = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
         $form->submit($request);
         $docForm->submit($request);
@@ -338,7 +342,7 @@ class TouristController extends Controller
         $entity->getCitizenship() ?: $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType('vega_russian_passport');
 
-        $form = $this->createForm('mbh_document_relation', $entity, [
+        $form = $this->createForm(DocumentRelationType::class, $entity, [
             'method' => Request::METHOD_PUT
         ]);
 
@@ -572,7 +576,7 @@ class TouristController extends Controller
      */
     public function editAddressAction(Tourist $entity, Request $request)
     {
-        $form = $this->createForm('mbh_address_object_decomposed', $entity->getAddressObjectDecomposed());
+        $form = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
         if ($request->isMethod(Request::METHOD_PUT)) {
             $form->submit($request);

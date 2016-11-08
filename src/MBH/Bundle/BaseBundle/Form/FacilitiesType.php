@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Form;
 
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -16,7 +17,7 @@ class FacilitiesType extends AbstractType
 
     public function getParent()
     {
-        return 'choice';
+        return ChoiceType::class;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -41,7 +42,7 @@ class FacilitiesType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_facilities';
     }

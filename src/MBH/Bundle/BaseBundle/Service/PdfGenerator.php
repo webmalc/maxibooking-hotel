@@ -2,9 +2,9 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\BaseBundle\Lib\Exception;
 
 /**
  * Class PdfGenerator

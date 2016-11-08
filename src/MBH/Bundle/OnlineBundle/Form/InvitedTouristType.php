@@ -3,6 +3,8 @@
 namespace MBH\Bundle\OnlineBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -17,21 +19,21 @@ class InvitedTouristType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('firstName', 'text', [
+            ->add('firstName', TextType::class, [
                 'required' => false,
                 'label' => 'Имя',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
-            ->add('lastName', 'text', [
+            ->add('lastName', TextType::class, [
                 'required' => false,
                 'label' => 'Фамилия',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
-            ->add('sex', 'choice', [
+            ->add('sex', ChoiceType::class, [
                 'required' => false,
                 'label' => 'Обращение',
                 'expanded' => true,
@@ -44,7 +46,7 @@ class InvitedTouristType extends AbstractType
                     new NotBlank()
                 ],
             ])
-            ->add('birthday', 'text', [
+            ->add('birthday', TextType::class, [
                 'required' => false,
                 'label' => 'Дата рождения',
                 //'widget' => 'single_text',
@@ -52,28 +54,28 @@ class InvitedTouristType extends AbstractType
                     new NotBlank()
                 ],
             ])
-            ->add('birthplace', 'text', [
+            ->add('birthplace', TextType::class, [
                 'required' => false,
                 'label' => 'Место рождения',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
-            ->add('citizenship', 'text', [
+            ->add('citizenship', TextType::class, [
                 'required' => false,
                 'label' => 'Гражданство',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
-            ->add('passport', 'text', [
+            ->add('passport', TextType::class, [
                 'required' => false,
                 'label' => 'Паспорт',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
-            ->add('expiry', 'text', [
+            ->add('expiry', TextType::class, [
                 'required' => false,
                 'label' => 'Действует до',
                 //'widget' => 'single_text',
@@ -93,7 +95,7 @@ class InvitedTouristType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_online_bundle_invited_tourist';
     }

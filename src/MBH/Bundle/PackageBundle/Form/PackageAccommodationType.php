@@ -4,6 +4,9 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use MBH\Bundle\HotelBundle\Document\Room;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\EqualTo;
@@ -18,14 +21,14 @@ class PackageAccommodationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('purposeOfArrival', 'choice', [
+            ->add('purposeOfArrival', ChoiceType::class, [
                 'label' => 'form.packageMainType.arrival_purpose',
                 'required' => false,
                 'group' => 'form.packageAccommodationType.choose_placement',
                 'multiple' => false,
                 'choices' => $options['arrivals'],
             ])
-            ->add('isCheckIn', 'checkbox', [
+            ->add('isCheckIn', CheckboxType::class, [
                 'label' => 'form.packageAccommodationType.are_guests_checked_in',
                 'value' => true,
                 'group' => 'form.packageAccommodationType.check_in_group',
@@ -49,7 +52,7 @@ class PackageAccommodationType extends AbstractType
            $arrivalTimeOptions['help'] = 'form.packageAccommodationType.hasEarlyCheckIn';
         }
 
-        $builder->add('arrivalTime', 'datetime', $arrivalTimeOptions);
+        $builder->add('arrivalTime', DateTimeType::class, $arrivalTimeOptions);
 
         $isCheckOutOptions = [
             'label' => 'form.packageAccommodationType.are_guests_checked_out',
@@ -65,7 +68,7 @@ class PackageAccommodationType extends AbstractType
                 new EqualTo(['value' => false])
             ];*/
         }
-        $builder->add('isCheckOut', 'checkbox', $isCheckOutOptions);
+        $builder->add('isCheckOut', CheckboxType::class, $isCheckOutOptions);
 
         $departureTimeOptions = [
             'label' => 'form.packageMainType.check_out_time',
@@ -82,7 +85,7 @@ class PackageAccommodationType extends AbstractType
             $departureTimeOptions['help'] = 'form.packageAccommodationType.hasLateCheckOut';
         }
 
-        $builder->add('departureTime', 'datetime', $departureTimeOptions);
+        $builder->add('departureTime', DateTimeType::class, $departureTimeOptions);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -99,7 +102,7 @@ class PackageAccommodationType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_packagebundle_package_accommodation_type';
     }

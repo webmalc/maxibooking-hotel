@@ -4,16 +4,16 @@ namespace MBH\Bundle\WarehouseBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
-use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use MBH\Bundle\WarehouseBundle\Document\WareCategory;
+use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use MBH\Bundle\WarehouseBundle\Form\WareCategoryType;
 use MBH\Bundle\WarehouseBundle\Form\WareItemType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 
 /**

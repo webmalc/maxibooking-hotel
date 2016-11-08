@@ -7,6 +7,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -40,7 +42,7 @@ class NoticeStayPlaceXlsType extends AbstractType
                 $tourists[$tourist->getId()] = $tourist->getFullName() . ' (' . ($citizenship ? $citizenship->getName() : 'Не указано') . ')';
             }
         }
-        $builder->add('tourist', 'choice', [
+        $builder->add('tourist', ChoiceType::class, [
             'required' => true,
             'label' => 'form.task.tourist',
             'choices' => $tourists,
@@ -49,7 +51,7 @@ class NoticeStayPlaceXlsType extends AbstractType
         ]);
         $builder->get('tourist')->addModelTransformer(new EntityToIdTransformer($this->dm, 'MBH\Bundle\PackageBundle\Document\Tourist'));
 
-        $builder->add('user', 'hidden');
+        $builder->add('user', HiddenType::class);
         $builder->get('user')->addModelTransformer(new EntityToIdTransformer($this->dm, 'MBH\Bundle\UserBundle\Document\User'));
     }
 
@@ -70,7 +72,7 @@ class NoticeStayPlaceXlsType extends AbstractType
      *
      * @return string The name of this type
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'notice_stay_place_xls';
     }

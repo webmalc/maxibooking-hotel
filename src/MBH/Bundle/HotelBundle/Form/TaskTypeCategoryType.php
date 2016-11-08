@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,12 +17,12 @@ class TaskTypeCategoryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fullTitle', 'text', [
+            ->add('fullTitle', TextType::class, [
                 'label' => 'form.taskTypeCategory.fullTitle',
                 'group' => 'form.taskTypeCategory.general_info',
                 'required' => true,
             ])
-            ->add('title', 'text', [
+            ->add('title', TextType::class, [
                 'label' => 'form.taskTypeCategory.title',
                 'group' => 'form.taskTypeCategory.general_info',
                 'required' => false,
@@ -43,7 +44,7 @@ class TaskTypeCategoryType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_hotel_bundle_task_type_category';
     }

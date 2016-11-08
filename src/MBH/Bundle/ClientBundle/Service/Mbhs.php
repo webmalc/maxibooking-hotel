@@ -4,12 +4,12 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\Response;
+use MBH\Bundle\BaseBundle\Document\Message;
 use MBH\Bundle\OnlineBundle\Document\Invite;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\BaseBundle\Document\Message;
-use MBH\Bundle\PackageBundle\Document\Package;
 
 /**
  * Class Mbhs

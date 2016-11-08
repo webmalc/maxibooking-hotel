@@ -68,7 +68,7 @@ class UserSecurityType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_userbundle_usersecuritytype';
     }

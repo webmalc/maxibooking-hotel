@@ -2,15 +2,19 @@
 
 namespace MBH\Bundle\WarehouseBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use \MBH\Bundle\PackageBundle\Document\Organization;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\WarehouseBundle\Document\WareCategory;
 use MBH\Bundle\WarehouseBundle\Document\WareItem;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use \MBH\Bundle\PackageBundle\Document\Organization;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
 class InvoiceType extends AbstractType
@@ -19,18 +23,18 @@ class InvoiceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('operation', 'choice', [
+            ->add('operation', ChoiceType::class, [
                 'label' => 'warehouse.record.operation',
                 'required' => true,
                 'multiple' => false,
                 'expanded' => true,
                 'choices' => $options['operations'],
             ])
-            ->add('docNumber', 'text', [
+            ->add('docNumber', TextType::class, [
                 'label' => 'Document Number',
                 'required' => true,
             ])
-            ->add('invoiceDate', 'date', [
+            ->add('invoiceDate', DateType::class, [
                 'label' => 'Invoice Date',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
@@ -40,12 +44,12 @@ class InvoiceType extends AbstractType
                     'data-date-format' => 'dd.mm.yyyy',
                 ],
             ])
-            ->add('organization', 'document', [
+            ->add('organization', DocumentType::class, [
                 'label' => 'Organization',
                 'required' => true,
                 'class' => Organization::class,
             ])
-            ->add('hotel', 'document', [
+            ->add('hotel', DocumentType::class, [
                 'label' => 'form.hotelType.placeholder_hotel',
                 'required' => false,
                 'class' => Hotel::class,
@@ -68,7 +72,7 @@ class InvoiceType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_warehousebundle_invoicetype';
     }

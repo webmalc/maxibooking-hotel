@@ -2,15 +2,21 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PriceBundle\Validator\Constraints\Tariff;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\Range;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
@@ -43,7 +49,7 @@ class PriceCacheGeneratorType extends AbstractType
         $pricePlaceHolder = 'Укажите сумму или процент (15%) от цены';
 
         $builder
-            ->add('begin', 'date', array(
+            ->add('begin', DateType::class, array(
                 'label' => 'Начало периода',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
@@ -56,7 +62,7 @@ class PriceCacheGeneratorType extends AbstractType
                 ],
                 'constraints' => [new NotBlank(), new Date()],
             ))
-            ->add('end', 'date', array(
+            ->add('end', DateType::class, array(
                 'label' => 'Конец периода',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
@@ -68,7 +74,7 @@ class PriceCacheGeneratorType extends AbstractType
                 ],
                 'constraints' => [new NotBlank(), new Date()],
             ))
-            ->add('weekdays', 'choice', [
+            ->add('weekdays', ChoiceType::class, [
                 'label' => 'Дни недели',
                 'required' => false,
                 'group' => 'Настройки',
@@ -77,7 +83,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'help' => 'Дни недели для готорых будет произведена генерация наличия мест',
                 'attr' => array('placeholder' => 'все дни недели'),
             ])
-            ->add('roomTypes', 'document', [
+            ->add('roomTypes', DocumentType::class, [
                 'label' => 'Типы номеров',
                 'required' => true,
                 'group' => 'Настройки',
@@ -89,7 +95,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'help' => 'Типы номеров для готорых будет произведена генерация цен',
                 'attr' => array('placeholder' => $options['hotel'] . ': все типы номеров', 'class' => 'select-all'),
             ])
-            ->add('tariffs', 'document', [
+            ->add('tariffs', DocumentType::class, [
                 'label' => 'Тарифы',
                 'required' => true,
                 'group' => 'Настройки',
@@ -101,7 +107,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'help' => 'Тарифы для готорых будет произведена генерация цен',
                 'attr' => array('placeholder' => $options['hotel'] . ': все тарифы', 'class' => 'select-all'),
             ])
-            ->add('price', 'text', [
+            ->add('price', TextType::class, [
                 'label' => 'Цена',
                 'group' => 'Цены',
                 'required' => true,
@@ -114,21 +120,21 @@ class PriceCacheGeneratorType extends AbstractType
                     new NotBlank()
                 ],
             ])
-            ->add('isPersonPrice', 'checkbox', [
+            ->add('isPersonPrice', CheckboxType::class, [
                 'label' => 'Цена за человека?',
                 'group' => 'Цены',
                 'value' => true,
                 'required' => false,
                 'help' => 'Цена за человека или за номер?'
             ])
-            ->add('singlePrice', 'hidden', [
+            ->add('singlePrice', HiddenType::class, [
                 'required' => false,
                 'attr' => ['class' => 'hidden-price'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
             ])
-            ->add('singlePriceFake', 'text', [
+            ->add('singlePriceFake', TextType::class, [
                 'label' => 'Цена 1-местного размещения',
                 'group' => 'Цены',
                 'attr' => [
@@ -138,14 +144,14 @@ class PriceCacheGeneratorType extends AbstractType
                 'required' => false,
                 'help' => 'Цена при бронировании номера на одного человека.'
             ])
-            ->add('additionalPrice', 'hidden', [
+            ->add('additionalPrice', HiddenType::class, [
                 'required' => false,
                 'attr' => ['class' => 'hidden-price'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
             ])
-            ->add('additionalPriceFake', 'text', [
+            ->add('additionalPriceFake', TextType::class, [
                 'label' => 'Цена 1-местного размещения',
                 'group' => 'Цены',
                 'attr' => [
@@ -155,14 +161,14 @@ class PriceCacheGeneratorType extends AbstractType
                 'required' => false,
                 'help' => 'Цена при бронировании номера на одного человека.'
             ])
-            ->add('childPrice', 'hidden', [
+            ->add('childPrice', HiddenType::class, [
                 'required' => false,
                 'attr' => ['class' => 'hidden-price'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше минус одного']),
                 ],
             ])
-            ->add('childPriceFake', 'text', [
+            ->add('childPriceFake', TextType::class, [
                 'label' => 'Цена за детское осн. место',
                 'attr' => [
                     'class' => 'text-price',
@@ -171,14 +177,14 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Цены',
                 'required' => false,
             ])
-            ->add('additionalPrice', 'hidden', [
+            ->add('additionalPrice', HiddenType::class, [
                 'required' => false,
                 'attr' => ['class' => 'hidden-price'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
             ])
-            ->add('additionalPriceFake', 'text', [
+            ->add('additionalPriceFake', TextType::class, [
                 'label' => 'Цена взрослого доп. места',
                 'attr' => [
                     'class' => 'text-price',
@@ -187,14 +193,14 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Цены',
                 'required' => false,
             ])
-            ->add('additionalChildrenPrice', 'hidden', [
+            ->add('additionalChildrenPrice', HiddenType::class, [
                 'required' => false,
                 'attr' => ['class' => 'hidden-price'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
             ])
-            ->add('additionalChildrenPriceFake', 'text', [
+            ->add('additionalChildrenPriceFake', TextType::class, [
                 'label' => 'Цена детского доп. места',
                 'attr' => [
                     'class' => 'text-price',
@@ -245,10 +251,10 @@ class PriceCacheGeneratorType extends AbstractType
                         'required' => false
                     ]);
             }
-            $builder->add('additionalPricesCount', 'hidden', ['data' => $isIndividualAdditionalPrices]);
+            $builder->add('additionalPricesCount', HiddenType::class, ['data' => $isIndividualAdditionalPrices]);
         }
 
-        $builder->add('saveForm', 'checkbox', [
+        $builder->add('saveForm', CheckboxType::class, [
             'label' => 'Запомнить?',
             'group' => 'Запомнить для повторного использования',
             'required' => false
@@ -275,7 +281,7 @@ class PriceCacheGeneratorType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_price_bundle_price_cache_generator';
     }

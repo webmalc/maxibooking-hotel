@@ -11,8 +11,8 @@ use MBH\Bundle\RestaurantBundle\Form\DishMenuCategoryType as DishMenuCategoryFor
 use MBH\Bundle\RestaurantBundle\Form\DishMenuItemType as DishMenuItemForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 

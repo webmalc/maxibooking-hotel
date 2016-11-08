@@ -4,12 +4,13 @@ namespace MBH\Bundle\UserBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\UserBundle\Document\Group;
+use MBH\Bundle\UserBundle\Form\GroupType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Group controller.
@@ -49,7 +50,7 @@ class GroupController extends Controller
      */
     public function newAction()
     {
-        $form = $this->createForm('mbh_bundle_userbundle_grouptype', null);
+        $form = $this->createForm(GroupType::class, null);
 
         return array(
             'form' => $form->createView(),
@@ -67,7 +68,7 @@ class GroupController extends Controller
     public function createAction(Request $request)
     {
         $entity = new Group('new');
-        $form = $this->createForm('mbh_bundle_userbundle_grouptype', $entity);
+        $form = $this->createForm(GroupType::class, $entity);
         $form->submit($request);
 
         if ($form->isValid()) {
@@ -100,7 +101,7 @@ class GroupController extends Controller
     public function editAction(Group $entity)
     {
 
-        $form = $this->createForm('mbh_bundle_userbundle_grouptype', $entity);
+        $form = $this->createForm(GroupType::class, $entity);
 
         return array(
             'form' => $form->createView(),
@@ -120,7 +121,7 @@ class GroupController extends Controller
      */
     public function updateAction(Request $request, Group $entity)
     {
-        $form = $this->createForm('mbh_bundle_userbundle_grouptype', $entity);
+        $form = $this->createForm(GroupType::class, $entity);
         $form->submit($request);
 
         if ($form->isValid()) {

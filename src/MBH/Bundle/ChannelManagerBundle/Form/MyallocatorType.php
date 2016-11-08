@@ -2,13 +2,17 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
+use MBH\Bundle\BaseBundle\Service\Currency;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\ChannelManagerBundle\Services\MyAllocator;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use MBH\Bundle\BaseBundle\Service\Currency;
 
 class MyallocatorType extends AbstractType
 {
@@ -38,7 +42,7 @@ class MyallocatorType extends AbstractType
             $builder
                 ->add(
                     'username',
-                    'text',
+                    TextType::class,
                     [
                         'label' => 'form.myallocatorType.username',
                         'mapped' => false,
@@ -49,7 +53,7 @@ class MyallocatorType extends AbstractType
                 )
                 ->add(
                     'password',
-                    'password',
+                    PasswordType::class,
                     [
                         'label' => 'form.myallocatorType.password',
                         'mapped' => false,
@@ -68,7 +72,7 @@ class MyallocatorType extends AbstractType
                 $choices[$hotel['id']] = $hotel['name'];
             }
 
-            $builder->add('hotelId', 'choice', [
+            $builder->add('hotelId', ChoiceType::class, [
                 'label' => 'form.myallocatorType.hotels',
                 'required' => true,
                 'choices' => $choices,
@@ -80,7 +84,7 @@ class MyallocatorType extends AbstractType
         $builder
             ->add(
                 'isEnabled',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.myallocatorType.isEnabled',
                     'value' => true,
@@ -90,7 +94,7 @@ class MyallocatorType extends AbstractType
             )
             ->add(
                 'currency',
-                'choice',
+                ChoiceType::class,
                 [
                     'choices' => $this->currency->codes(),
                     'label' => 'form.bookingType.currency',
@@ -103,7 +107,7 @@ class MyallocatorType extends AbstractType
             )
             ->add(
                 'currencyDefaultRatio',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.bookingType.currencyDefaultRatio',
                     'required' => false,
@@ -116,7 +120,7 @@ class MyallocatorType extends AbstractType
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
             array(
@@ -126,7 +130,7 @@ class MyallocatorType extends AbstractType
         );
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_channelmanagerbundle_myallocator_type';
     }

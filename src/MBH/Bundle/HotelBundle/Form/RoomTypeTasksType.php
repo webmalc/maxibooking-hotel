@@ -2,9 +2,11 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\TaskTypeRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -34,7 +36,7 @@ class RoomTypeTasksType extends AbstractType
         };
 
         $builder
-            ->add('checkIn', 'document', [
+            ->add('checkIn', DocumentType::class, [
                 'label' => 'form.roomTypeTasks.checkIn',
                 'required' => false,
                 'multiple' => true,
@@ -43,14 +45,14 @@ class RoomTypeTasksType extends AbstractType
                 'help' => 'Задачи, создаваемые при заезде гостя',
                 'query_builder' => $queryBuilderFunction
             ])
-            ->add('daily', 'collection', [
+            ->add('daily', CollectionType::class, [
                 'label' => 'form.roomTypeTasks.daily',
                 'required' => false,
                 'type' => new DailyTaskType($hotel),
                 'allow_add' => true,
                 'allow_delete' => true,
             ])
-            ->add('checkOut', 'document', [
+            ->add('checkOut', DocumentType::class, [
                 'label' => 'form.roomTypeTasks.checkOut',
                 'required' => false,
                 'multiple' => true,
@@ -74,7 +76,7 @@ class RoomTypeTasksType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_hotel_bundle_room_type_tasks';
     }

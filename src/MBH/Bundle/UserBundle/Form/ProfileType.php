@@ -3,10 +3,11 @@
 namespace MBH\Bundle\UserBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 
 class ProfileType extends AbstractType
@@ -14,7 +15,7 @@ class ProfileType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-            $builder->add('plainPassword', 'repeated', array(
+            $builder->add('plainPassword', RepeatedType::class, array(
                 'type' => 'password',
                 'group' => 'form.profileType.enter_new_password',
                 'options' => array('translation_domain' => 'FOSUserBundle'),
@@ -39,14 +40,14 @@ class ProfileType extends AbstractType
             ));
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\UserBundle\Document\User'
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_userbundle_profiletype';
     }

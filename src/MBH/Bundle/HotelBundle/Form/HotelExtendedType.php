@@ -4,7 +4,11 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\FacilitiesType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,7 +24,7 @@ class HotelExtendedType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('city', 'text', [
+            ->add('city', TextType::class, [
                 'label' => 'form.hotelExtendedType.city',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => true,
@@ -29,74 +33,74 @@ class HotelExtendedType extends AbstractType
                     'placeholder' => 'form.hotelExtendedType.city',
                 ]
             ])
-            ->add('settlement', 'text', [
+            ->add('settlement', TextType::class, [
                 'label' => 'form.hotelExtendedType.settlement',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,
             ])
-            ->add('street', 'text', [
+            ->add('street', TextType::class, [
                 'label' => 'form.hotelExtendedType.street',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false
             ])
-            ->add('house', 'text', [
+            ->add('house', TextType::class, [
                 'label' => 'form.hotelExtendedType.house',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false
             ])
-            ->add('corpus', 'text', [
+            ->add('corpus', TextType::class, [
                 'label' => 'form.hotelExtendedType.corpus',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false
             ]);
 
-        $builder->add('flat', 'text', [
+        $builder->add('flat', TextType::class, [
                 'label' => 'form.hotelExtendedType.flat',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,
             ]);
         //}
         $builder
-            ->add('latitude', 'text', [
+            ->add('latitude', TextType::class, [
                 'label' => 'form.hotelExtendedType.latitude',
                 'group' => 'form.hotelExtendedType.location',
                 'required' => false,
                 'attr' => ['placeholder' => '55.752014'],
                 'help' => 'form.hotelExtendedType.gps_coordinates_latitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
             ])
-            ->add('longitude', 'text', [
+            ->add('longitude', TextType::class, [
                 'label' => 'form.hotelExtendedType.longitude',
                 'group' => 'form.hotelExtendedType.location',
                 'required' => false,
                 'attr' => ['placeholder' => '37.617515'],
                 'help' => 'form.hotelExtendedType.gps_coordinates_longitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
             ])
-            ->add('rating', 'text', [
+            ->add('rating', TextType::class, [
                 'label' => 'form.hotelExtendedType.how_many_stars_hotel',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
             ])
-            ->add('type', 'choice', [
+            ->add('type', ChoiceType::class, [
                 'label' => 'form.hotelExtendedType.hotel_type',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
                 'choices' => (isset($options['config']['types'])) ? $options['config']['types'] : [],
                 'multiple' => true
             ])
-            ->add('theme', 'choice', [
+            ->add('theme', ChoiceType::class, [
                 'label' => 'form.hotelExtendedType.hotel_theme',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
                 'choices' => (isset($options['config']['themes'])) ? $options['config']['themes'] : [],
                 'multiple' => true
             ])
-            ->add('facilities', 'mbh_facilities', [
+            ->add('facilities', FacilitiesType::class, [
                 'label' => 'form.hotelExtendedType.hotel_amenities',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
             ]);
 
-        $builder->add('vega_address_id', 'number', [
+        $builder->add('vega_address_id', NumberType::class, [
             'label' => 'form.hotelExtendedType.vega_address_id',
             'help' => 'form.hotelExtendedType.vega_address_id_help',
             'group' => 'form.hotelExtendedType.integration',
@@ -116,7 +120,7 @@ class HotelExtendedType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotelbundle_hotel_extended_type';
     }

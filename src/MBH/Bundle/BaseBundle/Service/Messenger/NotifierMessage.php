@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Order;
 
 /**
  * NotifierMessage

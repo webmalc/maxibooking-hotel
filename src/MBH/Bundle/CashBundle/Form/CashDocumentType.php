@@ -2,13 +2,19 @@
 
 namespace MBH\Bundle\CashBundle\Form;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Class CashDocumentType
@@ -45,7 +51,7 @@ class CashDocumentType extends AbstractType
         }
 
         $builder
-            ->add('payer_select', 'choice', [
+            ->add('payer_select', ChoiceType::class, [
                 'label' => 'form.cashDocumentType.payer',
                 'required' => true,
                 'mapped' => false,
@@ -58,13 +64,13 @@ class CashDocumentType extends AbstractType
                 ],
                 'empty_value' => ''
             ])
-            ->add('organizationPayer', 'hidden', [
+            ->add('organizationPayer', HiddenType::class, [
                 'required' => false,
             ])
-            ->add('touristPayer', 'hidden', [
+            ->add('touristPayer', HiddenType::class, [
                 'required' => false,
             ])
-            ->add('operation', 'choice', [
+            ->add('operation', ChoiceType::class, [
                 'label' => 'form.cashDocumentType.operation_type',
                 'required' => true,
                 'multiple' => false,
@@ -72,13 +78,13 @@ class CashDocumentType extends AbstractType
                 'group' => $options['groupName'],
                 'choices' => $options['operations']
             ])
-            ->add('total', 'text', [
+            ->add('total', TextType::class, [
                 'label' => 'form.cashDocumentType.sum',
                 'required' => true,
                 'group' => $options['groupName'],
                 'attr' => ['class' => 'price-spinner'],
             ])
-            ->add('method', 'choice', [
+            ->add('method', ChoiceType::class, [
                 'label' => 'form.cashDocumentType.payment_way',
                 'required' => true,
                 'multiple' => false,
@@ -86,7 +92,7 @@ class CashDocumentType extends AbstractType
                 'group' => $options['groupName'],
                 'choices' => $options['methods']
             ])
-            ->add('document_date', 'date', [
+            ->add('document_date', DateType::class, [
                 'label' => 'form.cashDocumentType.document_date',
                 'required' => true,
                 'group' => $options['groupName'],
@@ -94,12 +100,12 @@ class CashDocumentType extends AbstractType
                 'format' => 'dd.MM.yyyy',
             ])
             ->add(
-                'isPaid', 'checkbox', [
+                'isPaid', CheckboxType::class, [
                 'label' => 'form.cashDocumentType.is_paid',
                 'required' => false,
                 'group' => $options['groupName'],
             ])
-            ->add('paid_date', 'date', [
+            ->add('paid_date', DateType::class, [
                 'label' => 'form.cashDocumentType.paid_date',
                 'required' => false,
                 'group' => $options['groupName'],
@@ -111,7 +117,7 @@ class CashDocumentType extends AbstractType
                 'group' => $options['groupName'],
                 'required' => true,
             ])
-            ->add('note', 'textarea', [
+            ->add('note', TextareaType::class, [
                 'label' => 'form.cashDocumentType.comment',
                 'group' => $options['groupName'],
                 'required' => false,
@@ -134,7 +140,7 @@ class CashDocumentType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_cash_cash_document';
     }
