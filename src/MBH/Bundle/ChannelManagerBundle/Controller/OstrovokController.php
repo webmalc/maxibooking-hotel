@@ -110,7 +110,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomsType(), $entity->getRoomsAsArray(), [
+        $form = $this->createForm(RoomsType::class, $entity->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.ostrovok')->pullRooms($entity),
         ]);
@@ -162,7 +162,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffsType(), $entity->getTariffsAsArray(), [
+        $form = $this->createForm(TariffsType::class, $entity->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.ostrovok')->pullTariffs($entity),
         ]);

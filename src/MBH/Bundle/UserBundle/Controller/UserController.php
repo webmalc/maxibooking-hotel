@@ -93,7 +93,7 @@ class UserController extends Controller
         $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
             $entity
         );
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -160,7 +160,7 @@ class UserController extends Controller
 
     /**
      * @Route("/{id}/edit/document", name="user_document_edit")
-     * @Method({"GET","PUT"})
+     * @Method({"GET","POST"})
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
@@ -175,8 +175,8 @@ class UserController extends Controller
             'birthplace' => false
         ]);
 
-        if($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+        if($request->isMethod(Request::METHOD_POST)) {
+            $form->handleRequest($request);
             if($form->isValid()) {
                 $this->get('fos_user.user_manager')->updateUser($entity);
 
@@ -200,7 +200,7 @@ class UserController extends Controller
      */
     public function editSecurityAction(User $entity, Request $request)
     {
-        $form = $this->createForm(new UserSecurityType(), $entity);
+        $form = $this->createForm(UserSecurityType::class, $entity);
 
         $form->handleRequest($request);
 
@@ -219,7 +219,7 @@ class UserController extends Controller
 
     /**
      * @Route("/{id}/edit/address", name="user_address_edit")
-     * @Method({"GET","PUT"})
+     * @Method({"GET","POST"})
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
@@ -230,8 +230,8 @@ class UserController extends Controller
 
         $form = $form = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
-        if($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+        if($request->isMethod(Request::METHOD_POST)) {
+            $form->handleRequest($request);
             if($form->isValid()) {
                 $this->get('fos_user.user_manager')->updateUser($entity);
 
@@ -250,7 +250,7 @@ class UserController extends Controller
      * Edits an existing entity.
      *
      * @Route("/{id}", name="user_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template("MBHUserBundle:User:edit.html.twig")
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
@@ -261,7 +261,7 @@ class UserController extends Controller
             $entity
         );
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 

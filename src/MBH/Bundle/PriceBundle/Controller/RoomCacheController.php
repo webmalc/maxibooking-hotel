@@ -232,7 +232,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(new RoomCacheGeneratorType(), [], [
+        $form = $this->createForm(RoomCacheGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -254,12 +254,12 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(new RoomCacheGeneratorType(), [], [
+        $form = $this->createForm(RoomCacheGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $request->getSession()->getFlashBag()->set('success', 'Данные успешно сгенерированы.');

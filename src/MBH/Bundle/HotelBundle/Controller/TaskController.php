@@ -160,7 +160,7 @@ class TaskController extends Controller
         $form = $this->createForm(new TaskType($dm), $entity, $this->getFormTaskTypeOptions());
 
         if ($request->isMethod(Request::METHOD_POST)) {
-            if ($form->submit($request)->isValid()) {
+            if ($form->handleRequest($request)->isValid()) {
                 /** @var Room[] $rooms */
                 $rooms = $form['rooms']->getData();
                 $task = null;
@@ -192,7 +192,7 @@ class TaskController extends Controller
      * Edits an existing entity.
      *
      * @Route("/edit/{id}", name="task_edit")
-     * @Method({"GET","PUT"})
+     * @Method({"GET","POST"})
      * @Security("is_granted('ROLE_TASK_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
@@ -206,8 +206,8 @@ class TaskController extends Controller
                 'scenario' => TaskType::SCENARIO_EDIT
             ]);
 
-        if ($request->isMethod(Request::METHOD_PUT)) {
-            if ($form->submit($request)->isValid()) {
+        if ($request->isMethod(Request::METHOD_POST)) {
+            if ($form->handleRequest($request)->isValid()) {
                 $this->dm->persist($entity);
                 $this->dm->flush();
 

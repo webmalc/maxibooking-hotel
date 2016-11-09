@@ -201,7 +201,7 @@ class RecordController extends Controller
 		
 		$items = $this->dm->getRepository('MBHWarehouseBundle:WareItem')->findAll();
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -246,7 +246,7 @@ class RecordController extends Controller
      * Edits an existing record.
      *
      * @Route("/{id}/update", name="warehouse_record_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_WAREHOUSE_RECORD_EDIT')")
      * @Template("MBHWarehouseBundle:Record:edit.html.twig")
      * @ParamConverter(class="MBHWarehouseBundle:Record")
@@ -256,7 +256,7 @@ class RecordController extends Controller
 		
 		$items = $this->dm->getRepository('MBHWarehouseBundle:WareItem')->findAll();
 		
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -298,7 +298,7 @@ class RecordController extends Controller
 	 */
 	private function getForm(Record $entity) {
 		
-        return $this->createForm(new RecordType(), $entity, [
+        return $this->createForm(RecordType::class, $entity, [
             'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 	}

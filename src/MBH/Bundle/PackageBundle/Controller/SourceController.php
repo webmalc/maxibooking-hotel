@@ -46,7 +46,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
         ;
 
         if($request->isMethod('POST')) {
-            $form->submit($request);
+            $form->handleRequest($request);
             $dm->persist($entity);
             $dm->flush();
 
@@ -84,7 +84,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new PackageSourceType(), $entity, []);
+        $form = $this->createForm(PackageSourceType::class, $entity, []);
 
         return [
             'entity' => $entity,
@@ -97,7 +97,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
      * Edits an existing entity.
      *
      * @Route("/{id}", name="package_source_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template("MBHPackageBundle:Source:edit.html.twig")
      *
@@ -112,9 +112,9 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
         if (!$entity) {
             throw $this->createNotFoundException();
         }
-        $form = $this->createForm(new PackageSourceType(), $entity);
+        $form = $this->createForm(PackageSourceType::class, $entity);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 

@@ -69,7 +69,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->templating = $this->container->get('templating');
-        $this->request = $container->get('request');
+        $this->request = $container->get('request_stack')->getCurrentRequest();
         $this->helper = $container->get('mbh.helper');
         $this->logger = $container->get('mbh.channelmanager.logger');
         $this->currency = $container->get('mbh.currency');
@@ -402,7 +402,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
         if ($post && !empty($data)) {
-            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

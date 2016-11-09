@@ -105,7 +105,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomsType(), $config->getRoomsAsArray(), [
+        $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.vashotel')->pullRooms($config),
         ]);
@@ -157,7 +157,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffsType(), $config->getTariffsAsArray(), [
+        $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.vashotel')->pullTariffs($config),
         ]);

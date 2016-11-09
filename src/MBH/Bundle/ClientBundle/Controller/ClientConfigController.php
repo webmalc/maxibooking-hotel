@@ -33,7 +33,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     public function indexAction()
     {
         $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        $form = $this->createForm(new ClientConfigType(), $entity);
+        $form = $this->createForm(ClientConfigType::class, $entity);
 
         return [
             'entity' => $entity,
@@ -57,9 +57,9 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
             $entity = new ClientConfig();
         }
 
-        $form = $this->createForm(new ClientConfigType(), $entity);
+        $form = $this->createForm(ClientConfigType::class, $entity);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 
@@ -90,7 +90,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     {
         $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        $form = $this->createForm(new ClientPaymentSystemType(), $entity, [
+        $form = $this->createForm(ClientPaymentSystemType::class, $entity, [
             'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
             'entity' => $entity,
             'change' => $this->container->getParameter('mbh.payment_systems.change'),
@@ -117,14 +117,14 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     {
         $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        $form = $this->createForm(new ClientPaymentSystemType(), $entity, [
+        $form = $this->createForm(ClientPaymentSystemType::class, $entity, [
             'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
             'entity' => $entity,
             'change' => $this->container->getParameter('mbh.payment_systems.change'),
             'default' => $this->container->getParameter('mbh.payment_systems.default'),
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 

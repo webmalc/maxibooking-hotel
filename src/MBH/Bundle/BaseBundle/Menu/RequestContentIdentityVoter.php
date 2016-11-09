@@ -34,7 +34,7 @@ class RequestContentIdentityVoter implements VoterInterface
      */
     public function matchItem(ItemInterface $item)
     {
-        if ($item->getUri() === $this->container->get('request')->getRequestUri()) {
+        if ($item->getUri() === $this->container->get('request_stack')->getCurrentRequest()->getRequestUri()) {
             return true;
         }
 

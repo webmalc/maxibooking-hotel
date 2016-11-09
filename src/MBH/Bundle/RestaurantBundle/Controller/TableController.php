@@ -63,7 +63,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
         $entity = new \MBH\Bundle\RestaurantBundle\Document\TableType();
         $entity->setHotel($this->hotel);
 
-        $form = $this->createForm(new TableTypeType(), $entity);
+        $form = $this->createForm(TableTypeType::class, $entity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -96,7 +96,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TableTypeType(), $category);
+        $form = $this->createForm(TableTypeType::class, $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -288,7 +288,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
             'type' => false,
         ];
 
-        $form = $this->createForm(new ChairType(), $chairDescription);
+        $form = $this->createForm(ChairType::class, $chairDescription);
 
         $form->handleRequest($request);
 

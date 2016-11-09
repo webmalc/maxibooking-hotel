@@ -160,7 +160,7 @@ class TouristController extends Controller
     {
         $entity = new Tourist();
         $entity->setCommunicationLanguage($this->container->getParameter('locale'));
-        $form = $this->createForm(new TouristType(), $entity, [
+        $form = $this->createForm(TouristType::class, $entity, [
             'genders' => $this->container->getParameter('mbh.gender.types')
         ]);
 
@@ -184,12 +184,12 @@ class TouristController extends Controller
         $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $entity->getDocumentRelation()->setType('vega_russian_passport');
 
-        $form = $this->createForm(new TouristType(), $entity,
+        $form = $this->createForm(TouristType::class, $entity,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
         $docForm = $this->createForm(DocumentRelationType::class, $entity);
         $addressForm = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
-        $form->submit($request);
+        $form->handleRequest($request);
         $docForm->submit($request);
         $addressForm->submit($request);
 
@@ -237,11 +237,11 @@ class TouristController extends Controller
     public function createAction(Request $request)
     {
         $tourist = new Tourist();
-        $form = $this->createForm(new TouristType(), $tourist,
+        $form = $this->createForm(TouristType::class, $tourist,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
         $notUnwelcome = !$tourist->getIsUnwelcome();
-        $form->submit($request);
+        $form->handleRequest($request);
         if ($form->isValid()) {
 
             $this->dm->persist($tourist);
@@ -269,18 +269,18 @@ class TouristController extends Controller
      * Edits an existing entity.
      *
      * @Route("/{id}/edit", name="tourist_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template("MBHPackageBundle:Tourist:edit.html.twig")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
     public function updateAction(Request $request, Tourist $tourist)
     {
-        $form = $this->createForm(new TouristType(), $tourist,
+        $form = $this->createForm(TouristType::class, $tourist,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
         $notUnwelcome = !$tourist->getIsUnwelcome();
-        $form->submit($request);
+        $form->handleRequest($request);
         if ($form->isValid()) {
 
             $this->dm->persist($tourist);
@@ -315,7 +315,7 @@ class TouristController extends Controller
      */
     public function editAction(Tourist $entity)
     {
-        $form = $this->createForm(new TouristType(), $entity, [
+        $form = $this->createForm(TouristType::class, $entity, [
             'genders' => $this->container->getParameter('mbh.gender.types')
         ]);
 
@@ -328,7 +328,7 @@ class TouristController extends Controller
 
     /**
      * @Route("/{id}/edit/document", name="tourist_edit_document")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
@@ -343,10 +343,10 @@ class TouristController extends Controller
         $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType('vega_russian_passport');
 
         $form = $this->createForm(DocumentRelationType::class, $entity, [
-            'method' => Request::METHOD_PUT
+            'method' => Request::METHOD_POST
         ]);
 
-        if ($request->isMethod(Request::METHOD_PUT)) {
+        if ($request->isMethod(Request::METHOD_POST)) {
             $form->handleRequest($request);
 
             if ($form->isValid()) {
@@ -372,7 +372,7 @@ class TouristController extends Controller
     /**
      *
      * @Route("/{id}/edit/visa", name="tourist_edit_visa")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
@@ -388,8 +388,8 @@ class TouristController extends Controller
             ->add('migration', new TouristMigrationType())
             ->getForm();
 
-        if ($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+        if ($request->isMethod(Request::METHOD_POST)) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($entity);
@@ -413,15 +413,15 @@ class TouristController extends Controller
 
     /**
      * @Route("/{id}/edit/unwelcome", name="tourist_edit_unwelcome")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
     public function editUnwelcomeAction(Tourist $tourist, Request $request)
     {
-        $form = $this->createForm(new UnwelcomeType(), null, [
-            'method' => Request::METHOD_PUT
+        $form = $this->createForm(UnwelcomeType::class, null, [
+            'method' => Request::METHOD_POST
         ]);
 
         /** @var UnwelcomeRepository $unwelcomeRepository */
@@ -489,7 +489,7 @@ class TouristController extends Controller
 
     /**
      * @Route("/{id}/delete/unwelcome", name="tourist_delete_unwelcome")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
@@ -569,7 +569,7 @@ class TouristController extends Controller
 
     /**
      * @Route("/{id}/edit/address", name="tourist_edit_address")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
@@ -578,8 +578,8 @@ class TouristController extends Controller
     {
         $form = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
-        if ($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+        if ($request->isMethod(Request::METHOD_POST)) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $entity->setAddressObjectDecomposed($form->getData());

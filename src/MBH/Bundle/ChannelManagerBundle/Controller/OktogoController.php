@@ -67,7 +67,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             new OktogoType(), $entity
         );
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 
@@ -144,7 +144,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             new RoomType(), [], ['entity' => $entity]
         );
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 
@@ -309,7 +309,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             new TariffType(), [], ['entity' => $entity, 'hideDefault' => false]
         );
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 

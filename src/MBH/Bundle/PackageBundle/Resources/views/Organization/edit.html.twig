@@ -11,7 +11,7 @@
 {% set layout = 'box' %}
 
 {% block content %}
-    {{ form_start(form, {'action': path('organization_edit', {id: organization.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('organization_edit', {id: organization.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': organization, 'delete_route': 'organization_delete', confirm_text: 'organizations.confirm_delete'|trans({'%organization_name%': organization.name}, 'MBHPackageBundle')} %}
     {{ form_end(form) }}

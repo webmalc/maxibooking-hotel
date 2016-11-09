@@ -58,7 +58,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
         ]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
-            $form->submit($request);
+            $form->handleRequest($request);
 
             if($form->isValid()) {
                 $this->dm->persist($entity);
@@ -81,7 +81,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
      * Displays a form to edit an existing entity.
      *
      * @Route("/{id}/edit", name="tasktype_edit")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TASK_TYPE_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:TaskType")
@@ -96,8 +96,8 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
             'roles' => $roles
         ]);
 
-        if($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+        if($request->isMethod(Request::METHOD_POST)) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($entity);

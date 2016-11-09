@@ -45,7 +45,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
 
         $entity = new FormConfig();
 
-        $form = $this->createForm(new FormType(), $entity, [
+        $form = $this->createForm(FormType::class, $entity, [
             'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']
         ]);
 
@@ -80,7 +80,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
     {
         $this->setLocaleByRequest();
 
-        $form = $this->createForm(new FormType(), $entity, [
+        $form = $this->createForm(FormType::class, $entity, [
             'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']
         ]);
 

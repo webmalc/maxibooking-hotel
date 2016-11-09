@@ -17,7 +17,6 @@ use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Zend\Stdlib\JsonSerializable;
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -27,7 +26,7 @@ use Zend\Stdlib\JsonSerializable;
  * @ODM\HasLifecycleCallbacks
  * @MongoDBUnique(fields="numberWithPrefix", message="Такой номер брони уже существует")
  */
-class Package extends Base implements JsonSerializable
+class Package extends Base implements \JsonSerializable
 {
     use TimestampableDocument;
     use SoftDeleteableDocument;

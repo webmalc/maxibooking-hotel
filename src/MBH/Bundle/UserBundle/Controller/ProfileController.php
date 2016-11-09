@@ -26,7 +26,7 @@ class ProfileController extends Controller
      */
     public function profileAction()
     {
-        $form = $this->createForm(new ProfileType(), $this->getUser());
+        $form = $this->createForm(ProfileType::class, $this->getUser());
 
         return [
             'form' => $form->createView(),
@@ -37,7 +37,7 @@ class ProfileController extends Controller
      * Profile form
      *
      * @Route("/profile", name="user_profile_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_USER_PROFILE')")
      * @Template("MBHUserBundle:Profile:profile.html.twig")
      */
@@ -45,9 +45,9 @@ class ProfileController extends Controller
     {
         $entity = $this->getUser();
 
-        $form = $this->createForm(new ProfileType(), $entity);
+        $form = $this->createForm(ProfileType::class, $entity);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 

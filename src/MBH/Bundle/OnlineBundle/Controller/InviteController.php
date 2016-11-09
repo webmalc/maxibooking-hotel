@@ -49,7 +49,7 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
     public function formAction(Request $request)
     {
         $invite = new Invite();
-        $form = $this->createForm(new InviteType(), $invite);
+        $form = $this->createForm(InviteType::class, $invite);
         if($request->isMethod(Request::METHOD_POST)) {
             $form->handleRequest($request);
             if($form->isValid()) {

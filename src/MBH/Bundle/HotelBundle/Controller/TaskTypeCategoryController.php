@@ -23,15 +23,15 @@ class TaskTypeCategoryController extends Controller
 {
     /**
      * @Route("/new", name="task_type_category_new")
-     * @Method({"GET","PUT"})
+     * @Method({"GET","POST"})
      * @Security("is_granted('ROLE_TASK_TYPE_CATEGORY_NEW')")
      * @Template()
      */
     public function newAction(Request $request)
     {
         $entity = new TaskTypeCategory();
-        $form = $this->createForm(new TaskTypeCategoryType(), $entity, [
-            'method' => Request::METHOD_PUT
+        $form = $this->createForm(TaskTypeCategoryType::class, $entity, [
+            'method' => Request::METHOD_POST
         ]);
 
         if($form->handleRequest($request)->isValid()){
@@ -66,7 +66,7 @@ class TaskTypeCategoryController extends Controller
         $form = $this->createForm(new TaskTypeCategoryType($this->dm), $entity, []);
 
         if($request->isMethod(Request::METHOD_POST)){
-            if($form->submit($request)->isValid()){
+            if($form->handleRequest($request)->isValid()){
                 //$entity->setIsSystem(false);
                 $this->dm->persist($entity);
                 $this->dm->flush();

@@ -69,7 +69,7 @@ class GroupController extends Controller
     {
         $entity = new Group('new');
         $form = $this->createForm(GroupType::class, $entity);
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 
@@ -114,7 +114,7 @@ class GroupController extends Controller
      * Edits an existing entity.
      *
      * @Route("/{id}", name="group_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_GROUP_EDIT')")
      * @Template("MBHUserBundle:Group:edit.html.twig")
      * @ParamConverter(name="entity", class="MBHUserBundle:Group")
@@ -122,7 +122,7 @@ class GroupController extends Controller
     public function updateAction(Request $request, Group $entity)
     {
         $form = $this->createForm(GroupType::class, $entity);
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 

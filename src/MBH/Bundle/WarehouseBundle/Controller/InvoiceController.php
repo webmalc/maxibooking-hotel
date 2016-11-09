@@ -69,7 +69,7 @@ class InvoiceController extends Controller
     {
         $entity = new Invoice();
 		
-        $form = $this->createForm(new InvoiceType(), $entity, [
+        $form = $this->createForm(InvoiceType::class, $entity, [
             'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 				
@@ -94,7 +94,7 @@ class InvoiceController extends Controller
     {
         $entity = new Invoice();
 		
-        $form = $this->createForm(new InvoiceType(), $entity, [
+        $form = $this->createForm(InvoiceType::class, $entity, [
             'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 				
@@ -129,7 +129,7 @@ class InvoiceController extends Controller
      */
     public function editAction(Invoice $entity)
     {
-        $form = $this->createForm(new InvoiceType(), $entity, [
+        $form = $this->createForm(InvoiceType::class, $entity, [
             'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 				
@@ -153,7 +153,7 @@ class InvoiceController extends Controller
      * @ParamConverter(class="MBHWarehouseBundle:Invoice")
      */
     public function updateAction(Request $request, Invoice $entity) {
-        $form = $this->createForm(new InvoiceType(), $entity, [
+        $form = $this->createForm(InvoiceType::class, $entity, [
             'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 				
@@ -166,7 +166,7 @@ class InvoiceController extends Controller
 			$originalRecords->add($rec);
 		}
 		
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 			foreach ($originalRecords as $rec) {

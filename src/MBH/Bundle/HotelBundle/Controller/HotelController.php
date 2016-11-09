@@ -79,7 +79,7 @@ class HotelController extends Controller
     public function newAction()
     {
         $entity = new Hotel();
-        $form = $this->createForm(new HotelType(), $entity);
+        $form = $this->createForm(HotelType::class, $entity);
 
         return array(
             'form' => $form->createView(),
@@ -98,8 +98,8 @@ class HotelController extends Controller
     public function createAction(Request $request)
     {
         $entity = new Hotel();
-        $form = $this->createForm(new HotelType(), $entity);
-        $form->submit($request);
+        $form = $this->createForm(HotelType::class, $entity);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $entity->uploadFile();
@@ -129,17 +129,17 @@ class HotelController extends Controller
      * Edits an existing entity.
      *
      * @Route("/{id}", name="hotel_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template("MBHHotelBundle:Hotel:edit.html.twig")
      * @ParamConverter("entity", class="MBHHotelBundle:Hotel")
      */
     public function updateAction(Request $request, Hotel $entity)
     {
-        $form = $this->createForm(new HotelType(), $entity);
-        $form->submit($request);
-
+        $form = $this->createForm(HotelType::class, $entity);
+        $form->handleRequest($request);
         if ($form->isValid()) {
+
             $entity->uploadFile();
 
             $this->dm->persist($entity);
@@ -170,7 +170,7 @@ class HotelController extends Controller
      */
     public function editAction(Hotel $entity)
     {
-        $form = $this->createForm(new HotelType(), $entity, [
+        $form = $this->createForm(HotelType::class, $entity, [
             'imageUrl' => $entity->getLogoUrl(),
             'removeImageUrl' => $this->generateUrl('hotel_delete_logo', ['id' => $entity->getId()])
         ]);
@@ -230,7 +230,7 @@ class HotelController extends Controller
      * Save extended config of an existing entity.
      *
      * @Route("/{id}/edit/extended", name="hotel_edit_extended_save")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template("MBHHotelBundle:Hotel:extended.html.twig")
      * @param Hotel $entity
@@ -241,7 +241,7 @@ class HotelController extends Controller
         $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel'),
-            'method' => Request::METHOD_PUT
+            'method' => Request::METHOD_POST
         ]);
 
         $form->handleRequest($request);

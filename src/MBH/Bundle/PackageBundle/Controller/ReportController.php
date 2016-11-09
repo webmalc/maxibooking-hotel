@@ -74,7 +74,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * Windows package info.
      *
      * @Route("/windows/package/{id}", name="report_windows_package", options={"expose"=true})
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @ParamConverter("package", class="MBHPackageBundle:Package")
      * @Security("is_granted('ROLE_PACKAGE_EDIT') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template()
@@ -91,11 +91,11 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $response = ['package' => $package];
 
         if ($this->clientConfig->getSearchWindows()) {
-            $form = $this->createForm(new PackageVirtualRoomType(), $package, [
+            $form = $this->createForm(PackageVirtualRoomType::class, $package, [
                 'package' => $package
             ]);
 
-            if ($request->isMethod('PUT')) {
+            if ($request->isMethod('POST')) {
                 $form->submit($request->request->get($form->getName()));
 
                 if ($form->isValid()) {

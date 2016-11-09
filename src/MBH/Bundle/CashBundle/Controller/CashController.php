@@ -255,7 +255,7 @@ class CashController extends Controller
 
     /**
      * @Route("/new", name="cash_new")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_CASH_NEW')")
      * @Template()
      */
@@ -271,8 +271,8 @@ class CashController extends Controller
             'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
         ]);
 
-        if ($request->isMethod("PUT")) {
-            $form->submit($request);
+        if ($request->isMethod("POST")) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($cashDocument);
@@ -309,7 +309,7 @@ class CashController extends Controller
 
     /**
      * @Route("/{id}/edit", name="cash_edit")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_CASH_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHCashBundle:CashDocument")
@@ -339,8 +339,8 @@ class CashController extends Controller
         }
         $form = $this->createForm($formType, $cashDocument, $options);
 
-        if ($request->isMethod("PUT")) {
-            $form->submit($request);
+        if ($request->isMethod("POST")) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($cashDocument);

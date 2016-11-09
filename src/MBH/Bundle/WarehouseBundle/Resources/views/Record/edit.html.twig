@@ -5,7 +5,7 @@
 
 {% block content %}
 
-    {{ form_start(form, {'action': path('warehouse_record_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('warehouse_record_update', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'warehouse_record_delete' } %}
     {{ form_end(form) }}

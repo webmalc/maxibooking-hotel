@@ -50,7 +50,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $query = new SearchQuery();
         $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $query->range = $clientConfig ? $clientConfig->getSearchDates() : 0;
-        $form = $this->createForm(new SearchType(), $query, [
+        $form = $this->createForm(SearchType::class, $query, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
             'hotel' => $this->hotel,
@@ -66,7 +66,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
 
         return [
             'form' => $form->createView(),
-            'touristForm' => $this->createForm(new TouristType(), null,
+            'touristForm' => $this->createForm(TouristType::class, null,
                 ['genders' => $this->container->getParameter('mbh.gender.types')])
                 ->createView(),
             'documentForm' => $this->createForm(DocumentRelationType::class, $tourist)
@@ -88,7 +88,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
     {
         $query = new SearchQuery();
         $query->accommodations = true;
-        $form = $this->createForm(new SearchType(), $query, [
+        $form = $this->createForm(SearchType::class, $query, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
             'hotel' => $this->hotel,
@@ -97,7 +97,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
 
         // Validate form
         if ($request->get('s')) {
-            $form->submit($request);
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $query->setChildrenAges(

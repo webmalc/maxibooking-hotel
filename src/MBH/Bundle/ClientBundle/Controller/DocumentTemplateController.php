@@ -51,7 +51,7 @@ class DocumentTemplateController extends BaseController
     public function newAction(Request $request)
     {
         $entity = new DocumentTemplate();
-        $form = $this->createForm(new DocumentTemplateType(), $entity);
+        $form = $this->createForm(DocumentTemplateType::class, $entity);
 
         $form->handleRequest($request);
 
@@ -78,10 +78,10 @@ class DocumentTemplateController extends BaseController
      */
     public function editAction(DocumentTemplate $entity, Request $request)
     {
-        $form = $this->createForm(new DocumentTemplateType(), $entity);
+        $form = $this->createForm(DocumentTemplateType::class, $entity);
 
         if($request->isMethod(Request::METHOD_POST)) {
-            $form->submit($request);
+            $form->handleRequest($request);
             if($form->isValid()) {
                 $this->dm->persist($entity);
                 $this->dm->flush();

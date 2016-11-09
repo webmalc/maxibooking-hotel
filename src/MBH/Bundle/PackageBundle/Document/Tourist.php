@@ -14,7 +14,6 @@ use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\VegaBundle\Document\VegaState;
 use Symfony\Component\Validator\Constraints as Assert;
-use Zend\Stdlib\JsonSerializable;
 
 /**
  * @ODM\Document(collection="Tourists", repositoryClass="MBH\Bundle\PackageBundle\Document\TouristRepository")
@@ -22,7 +21,7 @@ use Zend\Stdlib\JsonSerializable;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
-class Tourist extends Base implements JsonSerializable, PayerInterface, RecipientInterface
+class Tourist extends Base implements \JsonSerializable , PayerInterface, RecipientInterface
 {
     /**
      * Hook timestampable behavior

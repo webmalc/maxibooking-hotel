@@ -59,7 +59,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     {
         $entity = new RoomType();
         $entity->setIsHostel($this->hotel->getIsHostel());
-        $form = $this->createForm(new RoomTypeType(), $entity, [
+        $form = $this->createForm(RoomTypeType::class, $entity, [
             'facilities' => $this->getParameter('mbh.hotel')['facilities'],
             'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory(),
             'hotel' => $this->hotel
@@ -82,13 +82,13 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     {
         $entity = new RoomType();
         $entity->setHotel($this->hotel);
-        $form = $this->createForm(new RoomTypeType(), $entity, [
+        $form = $this->createForm(RoomTypeType::class, $entity, [
             'facilities' => $this->getParameter('mbh.hotel')['facilities'],
             'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory(),
             'hotel' => $entity->getHotel()
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
         if ($form->isValid()) {
             $this->dm->persist($entity);
             $this->dm->flush();
@@ -143,7 +143,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
-        $form = $this->createForm(new RoomTypeType(), $entity, [
+        $form = $this->createForm(RoomTypeType::class, $entity, [
             'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory(),
             'hotel' => $entity->getHotel()
         ]);
@@ -161,7 +161,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * Edits an existing entity.
      *
      * @Route("/{id}", name="room_type_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      * @Template("MBHHotelBundle:RoomType:edit.html.twig")
@@ -174,11 +174,11 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         /** @var ClientConfig $config */
         $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        $form = $this->createForm(new RoomTypeType(), $entity, [
+        $form = $this->createForm(RoomTypeType::class, $entity, [
             'useRoomTypeCategory' => $config ? $config->getUseRoomTypeCategory() : false,
             'hotel' => $entity->getHotel()
         ]);
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);

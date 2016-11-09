@@ -260,7 +260,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             }
         }
 
-        $form = $this->createForm(new PriceCacheGeneratorType(), $sessionFormData, [
+        $form = $this->createForm(PriceCacheGeneratorType::class, $sessionFormData, [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $this->hotel,
             'useCategories' => $this->manager->useCategories,
@@ -281,13 +281,13 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      */
     public function generatorSaveAction(Request $request)
     {
-        $form = $this->createForm(new PriceCacheGeneratorType(), [], [
+        $form = $this->createForm(PriceCacheGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $this->hotel,
             'useCategories' => $this->manager->useCategories
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $data = $form->getViewData();

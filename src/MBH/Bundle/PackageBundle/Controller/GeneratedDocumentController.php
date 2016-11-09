@@ -53,7 +53,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
                 $options['tourists'] = $this->dm->getRepository('MBHPackageBundle:Tourist')->getForeignTouristsByPackage($entity);
             }
             $form = $generatorFactory->createFormByType($type, $options);
-            $form->submit($request);
+            $form->handleRequest($request);
             if ($form->isValid()) {
                 $formData = $form->getData();
             } else {

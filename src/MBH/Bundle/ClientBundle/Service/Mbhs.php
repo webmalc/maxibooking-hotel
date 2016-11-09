@@ -48,9 +48,9 @@ class Mbhs
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
-        $this->guzzle = $container->get('guzzle.client');
+        $this->guzzle = null; /*$container->get('guzzle.client');*/
         $this->config = $container->getParameter('mbh.mbhs');
-        $this->request = $container->get('request');
+        $this->request = $container->get('request_stack')->getCurrentRequest();
 
         if (in_array($this->request->getClientIp(), ['95.85.3.188'])) {
             $this->checkIp = false;

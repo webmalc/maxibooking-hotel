@@ -259,7 +259,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             'hotel' => $hotel,
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $request->getSession()->getFlashBag()

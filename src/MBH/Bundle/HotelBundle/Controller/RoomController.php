@@ -70,7 +70,7 @@ class RoomController extends BaseController
 
         $room = new Room();
         $room->setRoomType($roomType);
-        $form = $this->createForm(new RoomForm(), $room , [
+        $form = $this->createForm(RoomForm::class, $room , [
             'hotelId' => $this->hotel->getId()
         ]);
 
@@ -100,10 +100,10 @@ class RoomController extends BaseController
         $room = new Room();
         $room->setRoomType($entity)->setHotel($this->hotel);
 
-        $form = $this->createForm(new RoomForm(), $room, [
+        $form = $this->createForm(RoomForm::class, $room, [
             'hotelId' => $this->hotel->getId()
         ]);
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($room);
@@ -140,7 +140,7 @@ class RoomController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomForm(), $entity, [
+        $form = $this->createForm(RoomForm::class, $entity, [
             'isNew' => false,
             'hotelId' => $entity->getHotel()->getId()
         ]);
@@ -156,7 +156,7 @@ class RoomController extends BaseController
      * Update room.
      *
      * @Route("/{id}/edit", name="room_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_ROOM_EDIT')")
      * @Template("MBHHotelBundle:RoomType:editRoom.html.twig")
      * @ParamConverter(class="MBHHotelBundle:Room")
@@ -167,12 +167,12 @@ class RoomController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomForm(), $entity, [
+        $form = $this->createForm(RoomForm::class, $entity, [
             'isNew' => false,
             'hotelId' => $entity->getHotel()->getId()
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -216,7 +216,7 @@ class RoomController extends BaseController
      */
     public function generateAction(RoomType $entity)
     {
-        $form = $this->createForm(new RoomTypeGenerateRoomsType(), [], [
+        $form = $this->createForm(RoomTypeGenerateRoomsType::class, [], [
             'entity' => $entity,
             'hotel' => $this->hotel
         ]);
@@ -239,10 +239,10 @@ class RoomController extends BaseController
      */
     public function generateProcessAction(Request $request, RoomType $entity)
     {
-        $form = $this->createForm(new RoomTypeGenerateRoomsType(), null, [
+        $form = $this->createForm(RoomTypeGenerateRoomsType::class, null, [
             'hotel' => $this->hotel
         ]);
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $data = $form->getData();

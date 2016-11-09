@@ -53,7 +53,7 @@ class HousingController extends BaseController
 
     /**
      * @Route("/new", name="housing_create")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_HOUSING_NEW')")
      * @Template("MBHHotelBundle:Housing:new.html.twig")
      */
@@ -64,7 +64,7 @@ class HousingController extends BaseController
         $entity->setHotel($currentHotel);
 
         $form = $this->createForm(new HousingType($this->dm), $entity);
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if($form->isValid()) {
             $this->dm->persist($entity);
@@ -108,7 +108,7 @@ class HousingController extends BaseController
     public function updateAction(Housing $entity, Request $request)
     {
         $form = $this->createForm(new HousingType($this->dm), $entity);
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if($form->isValid()) {
             $this->dm->persist($entity);

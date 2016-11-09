@@ -84,7 +84,7 @@ class WarehouseController extends Controller
     public function newEntryAction(WareCategory $entity)
     {
         $entry = new WareItem();
-        $form = $this->createForm(new WareItemType(), $entry);
+        $form = $this->createForm(WareItemType::class, $entry);
 
         return [
             'entry' => $entry,
@@ -107,9 +107,9 @@ class WarehouseController extends Controller
         $entry = new WareItem();
         $entry->setCategory($entity);
 
-        $form = $this->createForm(new WareItemType(), $entry);
+        $form = $this->createForm(WareItemType::class, $entry);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 			
@@ -140,7 +140,7 @@ class WarehouseController extends Controller
      */
     public function editEntryAction(WareItem $entry)
     {
-        $form = $this->createForm(new WareItemType(), $entry);
+        $form = $this->createForm(WareItemType::class, $entry);
 
         return [
             'entry' => $entry,
@@ -154,16 +154,16 @@ class WarehouseController extends Controller
      * Displays a form to edit a new entity.
      *
      * @Route("/{id}/update/entry", name="warehouse_category_entry_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_WAREHOUSE_ITEMS_EDIT')")
      * @Template("MBHWarehouseBundle:Warehouse:editEntry.html.twig")
      * @ParamConverter(class="MBHWarehouseBundle:WareItem")
      */
     public function updateEntryAction(Request $request, WareItem $entry)
     {
-        $form = $this->createForm(new WareItemType(), $entry);
+        $form = $this->createForm(WareItemType::class, $entry);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 		
         if ($form->isValid()) {
             $this->dm->persist($entry);
@@ -197,7 +197,7 @@ class WarehouseController extends Controller
     public function newAction()
     {
         $entity = new WareCategory();
-        $form = $this->createForm(new WareCategoryType(), $entity);
+        $form = $this->createForm(WareCategoryType::class, $entity);
 
         return [
             'entity' => $entity,
@@ -217,8 +217,8 @@ class WarehouseController extends Controller
     {
         $entity = new WareCategory();
 
-        $form = $this->createForm(new WareCategoryType(), $entity);
-        $form->submit($request);
+        $form = $this->createForm(WareCategoryType::class, $entity);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -246,7 +246,7 @@ class WarehouseController extends Controller
      */
     public function editAction(WareCategory $entity)
     {
-        $form = $this->createForm(new WareCategoryType(), $entity);
+        $form = $this->createForm(WareCategoryType::class, $entity);
 
         return [
             'entity' => $entity,
@@ -259,15 +259,15 @@ class WarehouseController extends Controller
      * Edits an existing entity.
      *
      * @Route("/{id}", name="warehouse_category_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_WAREHOUSE_CAT_EDIT')")
      * @Template("MBHWarehouseBundle:Warehouse:edit.html.twig")
      * @ParamConverter(class="MBHWarehouseBundle:WareCategory")
      */
     public function updateAction(Request $request, WareCategory $entity)
     {
-        $form = $this->createForm(new WareCategoryType(), $entity);
-        $form->submit($request);
+        $form = $this->createForm(WareCategoryType::class, $entity);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);

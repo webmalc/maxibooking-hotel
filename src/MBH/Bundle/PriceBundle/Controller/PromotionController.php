@@ -38,15 +38,15 @@ class PromotionController extends BaseController
 
     /**
      * @Route("/new", name="promotion_new")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PROMOTION_NEW')")
      * @Template()
      */
     public function newAction(Request $request)
     {
         $promotion = new Promotion();
-        $form = $this->createForm(new PromotionType(), $promotion, [
-            'method' => Request::METHOD_PUT
+        $form = $this->createForm(PromotionType::class, $promotion, [
+            'method' => Request::METHOD_POST
         ]);
 
         $form->handleRequest($request);
@@ -71,7 +71,7 @@ class PromotionController extends BaseController
      */
     public function editAction(Request $request, Promotion $promotion)
     {
-        $form = $this->createForm(new PromotionType(), $promotion, [
+        $form = $this->createForm(PromotionType::class, $promotion, [
             'method' => Request::METHOD_POST
         ]);
 

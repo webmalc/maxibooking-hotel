@@ -23,26 +23,26 @@ services:
             -  { name: doctrine_mongodb.odm.event_listener, event: loadClassMetadata }
     mbh.user.validator:
         class: MBH\Bundle\UserBundle\Validator\Constraints\UserValidator
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: validator.constraint_validator, alias: mbh.user.validator }
 
-    mbh.user.work_shift_repository:
-        class: Doctrine\ORM\DocumentRepository
-        factory_service: doctrine_mongodb.odm.default_document_manager
-        factory_method: getRepository
-        arguments:
-            - MBH\Bundle\UserBundle\Document\WorkShift
-
-    mbh.user.work_shift_manager:
-        class: MBH\Bundle\UserBundle\Service\WorkShiftManager
-        arguments: [@doctrine_mongodb.odm.default_document_manager, @mbh.hotel.selector]
-
-    mbh.user.work_shift_listener:
-        class: MBH\Bundle\UserBundle\EventListener\WorkShiftListener
-        arguments: [@security.token_storage, @session, @router, @mbh.user.work_shift_repository, @translator.default]
-        tags:
-            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+#    mbh.user.work_shift_repository:
+#        class: Doctrine\ODM\MongoDB\DocumentRepository
+#        factory_service: doctrine_mongodb.odm.default_document_manager
+#        factory_method: getRepository
+#        arguments:
+#            - MBH\Bundle\UserBundle\Document\WorkShift
+#
+#    mbh.user.work_shift_manager:
+#        class: MBH\Bundle\UserBundle\Service\WorkShiftManager
+#        arguments: ['@doctrine_mongodb.odm.default_document_manager', '@mbh.hotel.selector']
+#
+#    mbh.user.work_shift_listener:
+#        class: MBH\Bundle\UserBundle\EventListener\WorkShiftListener
+#        arguments: ['@security.token_storage', '@session', '@router', '@mbh.user.work_shift_repository', '@translator.default']
+#        tags:
+#            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
     # Two factor auth
     mbh.twofactor.email.helper:
@@ -57,7 +57,7 @@ services:
 
     mbh.twofactor.email.request_listener:
               class: MBH\Bundle\UserBundle\Service\TwoFactor\RequestListener
-              arguments: ["@mbh.twofactor.email.helper", "@security.context", "@templating", "@router", "email"]
+              arguments: ["@mbh.twofactor.email.helper", "@security.token_storage", "@templating", "@router", "email"]
               tags:
                 - { name: kernel.event_listener, event: kernel.request, method: onCoreRequest, priority: "-1"}
 
@@ -76,7 +76,7 @@ services:
 
     mbh.twofactor.google.request_listener:
               class: MBH\Bundle\UserBundle\Service\TwoFactor\RequestListener
-              arguments: ["@mbh.twofactor.google.helper", "@security.context", "@templating", "@router", "google"]
+              arguments: ["@mbh.twofactor.google.helper", "@security.token_storage", "@templating", "@router", "google"]
               tags:
                 - { name: kernel.event_listener, event: kernel.request, method: onCoreRequest, priority: "-1"}
 

@@ -105,7 +105,7 @@ class OrganizationController extends Controller
 
     /**
      * @Route("/create", name="create_organization")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ORGANIZATION_NEW')")
      * @Template()
      */
@@ -113,7 +113,7 @@ class OrganizationController extends Controller
     {
         $organization = new Organization();
         //default value
-        if(!$request->isMethod('PUT') && $request->get('type')) {
+        if(!$request->isMethod('POST') && $request->get('type')) {
             $organization->setType($request->get('type'));
         }
 
@@ -121,8 +121,8 @@ class OrganizationController extends Controller
             'typeList' => $this->container->getParameter('mbh.organization.types'),
         ]);
 
-        if ($request->isMethod('PUT')) {
-            $form->submit($request);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($organization);
@@ -141,7 +141,7 @@ class OrganizationController extends Controller
 
     /**
      * @Route("/{id}/edit", name="organization_edit")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ORGANIZATION_EDIT')")
      * @ParamConverter("organization", class="MBHPackageBundle:Organization")
      * @Template()
@@ -158,8 +158,8 @@ class OrganizationController extends Controller
             'imageUrl' => $imageUrl
         ]);
 
-        if ($request->isMethod('PUT')) {
-            $form->submit($request);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($organization);
