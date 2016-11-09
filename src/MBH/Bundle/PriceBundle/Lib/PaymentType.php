@@ -8,7 +8,7 @@
 
 namespace MBH\Bundle\PriceBundle\Lib;
 
-
+/** TODO: Сделать по-человечески. Документом с привязкой к отелям */
 class PaymentType
 {
     const PAYMENT_TYPE_LIST = [

@@ -93,7 +93,7 @@ class SignType extends AbstractType
             ->add('cash', TextType::class, [
                 'disabled' => true,
                 'required' => false,
-                'label' => 'Первая сумма к оплате согласно тарифа',
+                'label' => 'Сумма к оплате согласно тарифа',
                 'mapped' => false
             ])
             ->add('adults', HiddenType::class, [])

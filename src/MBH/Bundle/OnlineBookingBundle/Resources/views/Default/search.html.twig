@@ -63,13 +63,7 @@
 
                     </div>
                 </div>
-                {#<div class="aftersubtitle">#}
-                    {#<div class="beforesubtitle">#}
-                        {#<i class="fa fa-h-square"></i>#}
-                    {#</div>#}
-                    {#<div class="ntype">ТИП НОМЕРА</div><div></div>#}
 
-                {#</div>#}
             </div>
             <div class="col-md-7 col-sm-6 col-xs-12 prices">
                 <div class="guests pull-left">
@@ -116,7 +110,11 @@
             </thead>
             <tbody>
             {% for searchResult in result.results %}
-            <tr class="tariff-row" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}&form[infants]={{ searchResult.infants }}&form[paymentType]={{ searchResult.tariff.paymentType }}">
+            <tr
+                    class="tariff-row"
+                    data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}&form[infants]={{ searchResult.infants }}&form[paymentType]={{ searchResult.tariff.paymentType }}"
+                    data-payment_type = {{ searchResult.tariff.paymentType }}
+            >
                 <td >{{ searchResult.tariff.fullTitle }}
                     {% if searchResult.tariff.description is not empty  %}
                         <i class="fa fa-question-circle" data-toggle="tooltip" title="{{ searchResult.tariff.description }}"></i>
@@ -207,9 +205,9 @@
     </div>
 </div>
 {% endfor %#}
-
 {#<link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">#}
 {#<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>#}
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Readmore.js/2.2.0/readmore.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
 
@@ -226,6 +224,7 @@
 //            lessLink: '<div class="less-link"><a href="#">... <i class="fa fa-caret-up"></i></a></div>',
 //            collapsedHeight: 120
 //        });
+
     });
 </script>
 <script>
@@ -301,8 +300,8 @@
         if (this.selectedTariffRow.$promotionSelect.val()) {
             href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val()/*+ $("#search_form").serialize()*/;
         }
-        this.$bookingButton.removeClass('disabled').attr('href', href);
-        this.$bookingButtonReservation.removeClass('disabled').attr('href', href);
+        this.$bookingButton.attr('href', href);
+        this.$bookingButtonReservation.attr('href', href);
     }
 
     var TariffRow = function($row, roomTypeRow) {
@@ -375,9 +374,15 @@
     });
 
     var start_bron = function(row) {
-        var $button_reservation = $(row).closest("table").siblings(".btmactions").find("a.btn-booking-reservation");
+        var $button_reservation = $(row).closest("table").siblings(".btmactions").find("a.btn-booking-reservation"),
+            $button_online = $(row).closest("table").siblings(".btmactions").find("a.btn-booking");
         if($button_reservation.hasClass("disabled")) {
             $button_reservation.removeClass("disabled");
+        }
+        if($button_online.hasClass("disabled") && $(row).data("payment_type") === "hundred") {
+            $button_online.removeClass("disabled")
+        } else if (!$button_online.hasClass("disabled") && $(row).data("payment_type") !== "hundred") {
+            $button_online.addClass("disabled");
         }
         var href = $(row).data("url");
         href = href + '&reservation=true';
