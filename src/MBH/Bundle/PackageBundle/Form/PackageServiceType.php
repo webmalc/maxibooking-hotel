@@ -101,12 +101,12 @@ class PackageServiceType extends AbstractType
                 'html5' => false
             ])
             ->add('checks', CheckboxType::class, [
-                'label' => 'Разрешить расширение брони',
+                'label' => 'form.packageServiceType.extension_package',
                 'required' => false,
                 'mapped' => false,
                 'group' => 'form.packageServiceType.add_service',
                 'attr' => array('checked' => 'checked'),
-                'help' => 'При расширении брони, стоимость дополнительных суток равна 0',
+                'help' => 'form.packageServiceType.extension_package_help',
             ])
             ->add('amount', 'text', [
                 'label' => 'form.packageServiceType.amount',

@@ -730,10 +730,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                         } elseif ($code == 'Late check-out') {
                             $packageInfo->setEnd($date->modify('+1 day'));
                         }
-                        dump($packageInfo);
+
                         $this->dm->persist($packageInfo);
 
-                        $request->getSession()->getFlashBag()->set('danger', 'При добавлении услуги бронь была расширена');
+                        $request->getSession()->getFlashBag()->set('danger',  
+                            $this->get('translator')->trans('controller.packageController.service_added_danger'));
 
                     }
                 }

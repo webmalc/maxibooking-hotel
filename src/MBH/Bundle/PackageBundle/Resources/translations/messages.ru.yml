@@ -75,6 +75,8 @@ form.packageServiceType.edit_service: 'Редактирование услуги
 form.packageServiceType.reservation_add_service: Услуга для добавления к броне
 form.packageServiceType.begin: Начало
 form.packageServiceType.end: Конец
+form.packageServiceType.extension_package: Разрешить расширение брони
+form.packageServiceType.extension_package_help: При расширении брони, стоимость дополнительных суток равна 0
 form.packageServiceType.date_add_begin: С какого числа используется услуга?
 form.packageServiceType.date_add_end: По какое число используется услуга?
 form.packageServiceType.price: Цена
@@ -153,6 +155,7 @@ controller.packageController.order_created_success:  'Заказ успешно 
 controller.packageController.guest_added_success: 'Гость успешно добавлен.'
 controller.packageController.service_adding_error_refresh_and_try_again:  'Произошла ошибка при добавлении услуги. Обновите страницу и попробуйте еще раз.'
 controller.packageController.service_added_success: 'Услуга успешно добавлена.'
+controller.packageController.service_added_danger: 'При добавлении услуги бронь была расширена'
 controller.packageController.service_edit_success: 'Услуга успешно отредактирована.'
 controller.packageController.service_deleted_success: 'Услуга успешно удалена.'
 controller.packageController.placement_saved_success: 'Размещение успешно сохранено.'
