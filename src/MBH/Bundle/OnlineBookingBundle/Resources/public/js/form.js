@@ -17,6 +17,7 @@ $(function () {
             } else {
                 if (!$.isEmptyObject(currentHotel)) {
                     $.each(minstay['hotel_' + currentHotel], function (id, val) {
+                        if(!result) result = val;
                         result = Math.min(result, val);
                     });
                 } else {
@@ -124,9 +125,11 @@ $(function () {
     }
 
     $hotelSelect.on("change", updateSelectView);
-    $hotelSelect.on("change", updateRestrictions());
-    $roomTypeSelect.on("change", updateRestrictions());
+    $hotelSelect.on("change", updateRestrictions);
+    $roomTypeSelect.on("change", updateRestrictions);
+
 //////////////////////////////////////////////
+
     $("form#search-form").on('submit', function (e) {
         $(".spinn").css('display', 'block');
     });
@@ -217,6 +220,7 @@ $(function () {
 
     //init datepicker
     //Учитываем если дата уже выбрана
+    updateRestrictions();
     $search_form_begin.datepicker(dateBeginDefaults());
     if(!$search_form_begin.val().length) {
         $search_form_begin.datepicker("update", $search_form_begin.datepicker("getStartDate"));

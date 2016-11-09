@@ -97,19 +97,9 @@ class SearchFormType extends AbstractType
                     'class' => 'input-small'
                 ]
             ])
-//            ->add('adults', IntegerType::class, [
-//                'label' => 'Взрослые',
-//                'attr' => ['min' => 1],
-//                'data' => 1,
-//            ])
-//            ->add('children', IntegerType::class, [
-//                'label' => 'Дети',
-//                'attr' => ['min' => 0, 'max' => 5],
-//                'required' => false
-//            ])
             ->add('adults', ChoiceType::class, [
                 'label' => 'Взрослые',
-                'choices' => range(1,10),
+                'choices' => array_combine(range(1,10),range(1,10)),
                 'data' => 1,
                 'empty_value' => false
             ])
