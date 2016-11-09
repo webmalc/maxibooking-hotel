@@ -4,7 +4,6 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use MBH\Bundle\BaseBundle\Form\LanguageType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -45,12 +44,12 @@ class TouristType extends AbstractType
                 'required' => false,
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'),
             ))
-            ->add('sex', ChoiceType::class, [
+            ->add('sex',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.touristType.gender',
                 'group' => 'form.touristType.general_info',
                 'required' => false,
                 'multiple' => false,
-                'empty_value' => '',
+                'placeholder' => '',
                 'choices' => $options['genders']
             ])
             ->add('communication_language', LanguageType::class, [

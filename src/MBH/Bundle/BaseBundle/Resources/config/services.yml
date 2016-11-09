@@ -55,21 +55,6 @@ services:
         class: MBH\Bundle\BaseBundle\Form\Extension\HelpMessageTypeExtension
         tags:
             - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType, alias: form }
-
-    form.type.date:
-        class: MBH\Bundle\BaseBundle\Form\Extension\DateType
-        tags:
-          - { name: form.type, alias: date }
-
-    form.type.time:
-            class: MBH\Bundle\BaseBundle\Form\Extension\TimeType
-            tags:
-              - { name: form.type, alias: time }
-
-    form.type.datetime:
-            class: MBH\Bundle\BaseBundle\Form\Extension\DateTimeType
-            tags:
-              - { name: form.type, alias: datetime }
             
     mbh.form.bottom_extension:
         class: MBH\Bundle\BaseBundle\Form\Extension\BottomMessageTypeExtension

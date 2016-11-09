@@ -7,7 +7,6 @@ use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -28,7 +27,7 @@ class DocumentTemplateType extends AbstractType
                 'label' => 'Шаблон',
                 'attr' => ['rows' => 30]
             ])
-            ->add('orientation', ChoiceType::class, [
+            ->add('orientation',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Ориентация', 'choices' => DocumentTemplate::getOrientations()
             ])
             ->add('hotel', DocumentType::class, [

@@ -5,7 +5,6 @@ namespace MBH\Bundle\PriceBundle\Form;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -76,7 +75,7 @@ class TariffType extends AbstractType
             );
         $conditions = PromotionConditionFactory::getAvailableConditions();
         $builder
-            ->add('condition', ChoiceType::class, [
+            ->add('condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.condition',
                 'required' => false,
                 'group' => 'Условия и ограничения',
@@ -94,7 +93,7 @@ class TariffType extends AbstractType
                     'class' => 'spinner',
                 ],
             ])
-            ->add('additional_condition', ChoiceType::class, [
+            ->add('additional_condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.add_condition',
                 'required' => false,
                 'group' => 'Условия и ограничения',
@@ -121,8 +120,7 @@ class TariffType extends AbstractType
                 'help' => 'Использовать ли тариф в онлайн бронировании?'
             ])
             ->add(
-                'childAge',
-                ChoiceType::class,
+                'childAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
                     'label' => 'Ребенок до',
                     'group' => 'Настройки',
@@ -134,8 +132,7 @@ class TariffType extends AbstractType
                 ]
             )
             ->add(
-                'infantAge',
-                ChoiceType::class,
+                'infantAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
                     'label' => 'Инфант до',
                     'group' => 'Настройки',

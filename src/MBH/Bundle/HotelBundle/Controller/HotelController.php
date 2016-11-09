@@ -170,6 +170,10 @@ class HotelController extends Controller
      */
     public function editAction(Hotel $entity)
     {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity)) {
+            throw $this->createNotFoundException();
+        }
+
         $form = $this->createForm(HotelType::class, $entity, [
             'imageUrl' => $entity->getLogoUrl(),
             'removeImageUrl' => $this->generateUrl('hotel_delete_logo', ['id' => $entity->getId()])
@@ -214,6 +218,10 @@ class HotelController extends Controller
      */
     public function extendedAction(Hotel $entity)
     {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity)) {
+            throw $this->createNotFoundException();
+        }
+
         $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel')
@@ -238,6 +246,10 @@ class HotelController extends Controller
      */
     public function extendedUpdateAction(Request $request, Hotel $entity)
     {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity)) {
+            throw $this->createNotFoundException();
+        }
+
         $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel'),

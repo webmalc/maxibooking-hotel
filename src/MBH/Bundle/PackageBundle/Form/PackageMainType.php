@@ -4,11 +4,10 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\Form\Extension\DateType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -81,7 +80,7 @@ class PackageMainType extends AbstractType
                     ]);
             }
             $builder
-            ->add('adults', ChoiceType::class, [
+            ->add('adults',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Взрослых',
                 'group' => 'Номер',
                 'required' => true,
@@ -90,7 +89,7 @@ class PackageMainType extends AbstractType
                 'choices' => range(0, 10),
                 'attr' => array('class' => 'input-xxs plain-html'),
             ])
-            ->add('children', ChoiceType::class, [
+            ->add('children',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Детей',
                 'group' => 'Номер',
                 'required' => true,

@@ -5,7 +5,6 @@ namespace MBH\Bundle\ChannelManagerBundle\Form;
 use MBH\Bundle\BaseBundle\Service\Currency;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -46,8 +45,7 @@ class BookingType extends AbstractType
                 ]
             )
             ->add(
-                'currency',
-                ChoiceType::class,
+                'currency',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
                     'choices' => $this->currency->codes(),
                     'label' => 'form.bookingType.currency',

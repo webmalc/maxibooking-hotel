@@ -25,7 +25,7 @@ class RoomTypeType extends AbstractType
                     'label' => 'form.roomTypeType.category',
                     'group' => 'form.roomTypeType.general_info',
                     'required' => true,
-                    'empty_value' => '',
+                    'placeholder' => '',
                     'class' => 'MBHHotelBundle:RoomTypeCategory',
                     'query_builder' => function(DocumentRepository $repository) use ($hotel) {
                         $qb = $repository->createQueryBuilder();

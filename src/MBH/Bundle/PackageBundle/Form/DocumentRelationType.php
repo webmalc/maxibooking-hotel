@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\VegaBundle\Service\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -73,7 +72,7 @@ class DocumentRelationType extends AbstractType
                 ]);
         }
         $builder
-            ->add('type', ChoiceType::class, [
+            ->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'choices' => $documentTypes,
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.type',
@@ -154,7 +153,7 @@ class DocumentRelationType extends AbstractType
                 'attr' => ['class' => 'input-small datepicker', 'data-date-format' => 'dd.mm.yyyy'],
                 'property_path' => 'documentRelation.expiry'
             ])
-            ->add('relation', ChoiceType::class, [
+            ->add('relation',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.relation',
                 'choices' => array_combine($dictTypes, $dictTypes),
@@ -172,7 +171,7 @@ class DocumentRelationType extends AbstractType
                     'query_builder' => function(DocumentRepository $repository){
                         return $repository->createQueryBuilder()->sort(['name' => 1]);
                     },
-                    'empty_value' => '',
+                    'placeholder' => '',
                     'required' => false,
                     'property_path' => 'birthplace.country'
                 ])
@@ -189,7 +188,7 @@ class DocumentRelationType extends AbstractType
                     'query_builder' => function(DocumentRepository $repository){
                         return $repository->createQueryBuilder()->sort(['name' => 1]);
                     },
-                    'empty_value' => '',
+                    'placeholder' => '',
                     */
                     'label' => 'form.BirthplaceType.district',
                     'required' => false,

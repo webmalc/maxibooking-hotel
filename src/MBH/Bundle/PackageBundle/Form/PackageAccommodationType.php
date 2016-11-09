@@ -2,15 +2,11 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-use MBH\Bundle\HotelBundle\Document\Room;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\EqualTo;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class PackageAccommodationType
@@ -21,7 +17,7 @@ class PackageAccommodationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('purposeOfArrival', ChoiceType::class, [
+            ->add('purposeOfArrival',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.packageMainType.arrival_purpose',
                 'required' => false,
                 'group' => 'form.packageAccommodationType.choose_placement',

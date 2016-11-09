@@ -3,12 +3,11 @@
 namespace MBH\Bundle\UserBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use MBH\Bundle\BaseBundle\Form\Extension\DateType;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Form\Type\RolesType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -23,7 +22,7 @@ class UserSecurityType extends AbstractType
                 'value' => true,
                 'required' => false,
             ])
-            ->add('twoFactorAuthentication', ChoiceType::class, [
+            ->add('twoFactorAuthentication',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'group' => 'form.userType.settings',
                 'label' => 'form.userType.two_factor',
                 'choices' => array_combine(User::getTwoFactorTypes(), User::getTwoFactorTypes()),

@@ -9,7 +9,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * Class DailyTaskType
@@ -52,7 +51,7 @@ class DailyTaskType extends AbstractType
                     'style' => 'width:250px',
                     'data-placeholder' => 'Выберите услугу'
                 ],
-                'empty_value' => '',
+                'placeholder' => '',
                 'query_builder' => $queryBuilderFunction
             ]);
     }

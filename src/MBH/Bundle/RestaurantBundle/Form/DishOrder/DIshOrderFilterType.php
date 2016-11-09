@@ -4,10 +4,9 @@
 namespace MBH\Bundle\RestaurantBundle\Form\DishOrder;
 
 
-use MBH\Bundle\BaseBundle\Form\Extension\DateType;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderCriteria;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -33,7 +32,7 @@ class DIshOrderFilterType extends AbstractType
                     'class' => 'datepicker end-datepicker'
                 ]
             ])
-            ->add('is_freezed', ChoiceType::class, [
+            ->add('is_freezed',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'required' => false,
                 'choices' => [
                     DishOrderCriteria::ORDER_PAID => 'Оплачено',

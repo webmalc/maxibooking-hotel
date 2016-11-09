@@ -7,7 +7,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -42,7 +41,7 @@ class NoticeStayPlaceXlsType extends AbstractType
                 $tourists[$tourist->getId()] = $tourist->getFullName() . ' (' . ($citizenship ? $citizenship->getName() : 'Не указано') . ')';
             }
         }
-        $builder->add('tourist', ChoiceType::class, [
+        $builder->add('tourist',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
             'required' => true,
             'label' => 'form.task.tourist',
             'choices' => $tourists,

@@ -36,7 +36,7 @@ class PackageServiceType extends AbstractType
                 'label' => 'form.packageServiceType.service',
                 'class' => 'MBHPriceBundle:Service',
                 'choices' => $services,
-                'empty_value' => '',
+                'placeholder' => '',
                 'group' => 'form.packageServiceType.add_service',
                 'help' => 'form.packageServiceType.reservation_add_service',
             ])

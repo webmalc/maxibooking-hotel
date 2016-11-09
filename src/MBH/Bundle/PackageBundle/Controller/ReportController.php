@@ -24,7 +24,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -829,7 +828,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'method' => Request::METHOD_GET
         ])
             ->add('user', DocumentType::class, [
-                'empty_value' => '',
+                'placeholder' => '',
                 'class' => 'MBH\Bundle\UserBundle\Document\User',
                 'query_builder' => function(DocumentRepository $repository) {
                     $repository->createQueryBuilder()->field('isEnabledWorkShift')->equals(true);
@@ -845,8 +844,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy'],
             ])
-            ->add('status', ChoiceType::class, [
-                'empty_value' => '',
+            ->add('status',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+                'placeholder' => '',
                 'choices' => array_combine(WorkShift::getAvailableStatuses(), WorkShift::getAvailableStatuses()),
                 'choice_label' => function($label) {
                     return 'workShift.statuses.'.$label;

@@ -3,7 +3,6 @@
 namespace MBH\Bundle\OnlineBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -33,7 +32,7 @@ class InvitedTouristType extends AbstractType
                     new NotBlank()
                 ],
             ])
-            ->add('sex', ChoiceType::class, [
+            ->add('sex',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'required' => false,
                 'label' => 'Обращение',
                 'expanded' => true,
@@ -41,7 +40,7 @@ class InvitedTouristType extends AbstractType
                     'Господин',
                     'Госпожа'
                 ],
-                'empty_value' => null,
+                'placeholder' => null,
                 'constraints' => [
                     new NotBlank()
                 ],

@@ -6,7 +6,6 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -66,7 +65,7 @@ class SearchType extends AbstractType
                 'data' => $options['orderId'],
                 'attr' => ['class' => 'input-xs only-int'],
             ])
-            ->add('roomType', ChoiceType::class, [
+            ->add('roomType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.searchType.room_type',
                 'required' => false,
                 'mapped' => false,

@@ -5,7 +5,6 @@ namespace MBH\Bundle\CashBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\CashBundle\DataFixtures\MongoDB\CashDocumentArticleData;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentArticle;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
@@ -264,11 +263,12 @@ class CashController extends Controller
         $cashDocument = new CashDocument();
         $cashDocument->setMethod('cash');
 
-        $form = $this->createForm(new NewCashDocumentType($this->dm), $cashDocument, [
+        $form = $this->createForm(NewCashDocumentType::class, $cashDocument, [
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
             'payers' => [],
-            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
+            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER'),
+            'dm' => $this->dm
         ]);
 
         if ($request->isMethod("POST")) {
@@ -326,12 +326,13 @@ class CashController extends Controller
 
         //$cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
-        $formType = $cashDocument->getOrder() ? new CashDocumentType($this->dm) : new NewCashDocumentType($this->dm);
+        $formType = $cashDocument->getOrder() ? CashDocumentType::class : NewCashDocumentType::class;
 
         $options = [
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
-            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
+            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER'),
+            'dm' => $this->dm
         ];
         if($cashDocument->getOrder()) {
             $cashDocumentRepository = $this->dm->getRepository(CashDocument::class);

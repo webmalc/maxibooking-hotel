@@ -8,7 +8,6 @@ use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -27,14 +26,10 @@ class CashDocumentType extends AbstractType
      */
     protected $documentManager;
 
-    public function __construct(DocumentManager $documentManager)
-    {
-        $this->documentManager = $documentManager;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $payers = [];
+        $this->documentManager = $options['dm'];
         foreach ($options['payers'] as $payer) {
             $text = $payer->getName();
             if ($payer instanceof Organization) {
@@ -51,7 +46,7 @@ class CashDocumentType extends AbstractType
         }
 
         $builder
-            ->add('payer_select', ChoiceType::class, [
+            ->add('payer_select', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.cashDocumentType.payer',
                 'required' => true,
                 'mapped' => false,
@@ -62,7 +57,7 @@ class CashDocumentType extends AbstractType
                     'placeholder' => 'form.cashDocumentType.placeholder_fio',
                     'style' => 'min-width: 500px',
                 ],
-                'empty_value' => ''
+                'placeholder' => ''
             ])
             ->add('organizationPayer', HiddenType::class, [
                 'required' => false,
@@ -70,7 +65,7 @@ class CashDocumentType extends AbstractType
             ->add('touristPayer', HiddenType::class, [
                 'required' => false,
             ])
-            ->add('operation', ChoiceType::class, [
+            ->add('operation', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.cashDocumentType.operation_type',
                 'required' => true,
                 'multiple' => false,
@@ -84,7 +79,7 @@ class CashDocumentType extends AbstractType
                 'group' => $options['groupName'],
                 'attr' => ['class' => 'price-spinner'],
             ])
-            ->add('method', ChoiceType::class, [
+            ->add('method', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.cashDocumentType.payment_way',
                 'required' => true,
                 'multiple' => false,
@@ -112,7 +107,7 @@ class CashDocumentType extends AbstractType
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
             ])
-            ->add('number', $options['number'] ? 'text' : 'hidden', [
+            ->add('number', $options['number'] ? TextType::class : HiddenType::class, [
                 'label' => 'form.cashDocumentType.number',
                 'group' => $options['groupName'],
                 'required' => true,
@@ -136,7 +131,8 @@ class CashDocumentType extends AbstractType
             'groupName' => null,
             'payer' => null,
             'payers' => [],
-            'number' => true
+            'number' => true,
+            'dm' => null,
         ]);
     }
 

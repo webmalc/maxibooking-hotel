@@ -3,13 +3,11 @@
 namespace MBH\Bundle\PriceBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PriceBundle\Document\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 
 /**
@@ -31,7 +29,7 @@ class TariffServiceType extends AbstractType
             ->add('service', DocumentType::class, [
                 'label' => 'form.packageServiceType.service',
                 'class' => 'MBHPriceBundle:Service',
-                'empty_value' => '',
+                'placeholder' => '',
                 'attr' => [
                     'style' => 'width:250px',
                     'placeholder' => 'Выберите услугу',

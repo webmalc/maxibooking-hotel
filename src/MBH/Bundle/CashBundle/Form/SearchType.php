@@ -4,7 +4,6 @@ namespace MBH\Bundle\CashBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -41,11 +40,11 @@ class SearchType extends AbstractType
                 'attr' => array('class' => 'datepicker end-datepicker', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()]
             ))
-            ->add('sort', ChoiceType::class, [
+            ->add('sort',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Сортирова',
                 'required' => false,
             ])
-            ->add('pay_type', ChoiceType::class, [
+            ->add('pay_type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Вид платежа',
                 'required' => false,
             ])

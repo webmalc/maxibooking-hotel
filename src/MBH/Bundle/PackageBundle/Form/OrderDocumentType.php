@@ -6,7 +6,6 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -33,25 +32,23 @@ class OrderDocumentType extends AbstractType
         $groupTitle = $mainGroupTitles[$options['scenario']];
 
         $builder->add(
-            'type',
-            ChoiceType::class,
+            'type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
             [
                 'group' => $groupTitle,
                 'label' => 'Тип',
                 'required' => true,
-                'empty_value' => '',
+                'placeholder' => '',
                 'choices' => $options['documentTypes']
             ]
         );
 
         $builder->add(
-            'scanType',
-            ChoiceType::class,
+            'scanType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
             [
                 'group' => $groupTitle,
                 'label' => 'Тип скана',
                 'required' => false,
-                'empty_value' => '',
+                'placeholder' => '',
                 'choices' => $options['scanTypes']
             ]
         );
@@ -66,7 +63,7 @@ class OrderDocumentType extends AbstractType
                 'label' => 'Клиент',
                 'class' => 'MBHPackageBundle:Tourist',
                 'required' => false,
-                'property' => 'generateFullNameWithAge',
+                'choice_label' => 'generateFullNameWithAge',
                 'query_builder' => function(DocumentRepository $er) use($touristIds) {
                     return $er->createQueryBuilder()->field('_id')->in($touristIds);
                 },

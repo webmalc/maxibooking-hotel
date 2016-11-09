@@ -25,7 +25,7 @@ class BirthplaceType extends AbstractType
                 'query_builder' => function(DocumentRepository $repository){
                     return $repository->createQueryBuilder()->sort(['name' => 1]);
                 },
-                'empty_value' => '',
+                'placeholder' => '',
                 'required' => false,
             ])
             ->add('city', TextType::class, [//'mbh_city'
@@ -42,7 +42,7 @@ class BirthplaceType extends AbstractType
                 'query_builder' => function(DocumentRepository $repository){
                     return $repository->createQueryBuilder()->sort(['name' => 1]);
                 },
-                'empty_value' => '',
+                'placeholder' => '',
                 'required' => false,
             ])
             ->add('settlement', TextType::class, [

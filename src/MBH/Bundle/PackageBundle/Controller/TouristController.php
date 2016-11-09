@@ -27,7 +27,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -72,7 +71,7 @@ class TouristController extends Controller
                 'format' => 'dd.MM.yyyy',
                 'required' => false
             ])
-            ->add('citizenship', ChoiceType::class, [
+            ->add('citizenship',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'required' => false,
                 'choices' => [
                     TouristQueryCriteria::CITIZENSHIP_NATIVE => 'Граждане РФ',

@@ -53,7 +53,7 @@ class TaskTypeType extends AbstractType
                 'group' => $group,
                 'required' => false,
                 'class' => 'MBH\Bundle\HotelBundle\Document\RoomStatus',
-                'empty_value' => '',
+                'placeholder' => '',
             ]);
         $builder->get('category')->addViewTransformer(new EntityToIdTransformer($this->dm,
             'MBH\Bundle\HotelBundle\Document\TaskTypeCategory'));

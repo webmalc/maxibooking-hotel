@@ -8,7 +8,6 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class TariffsType extends AbstractType
@@ -28,7 +27,7 @@ class TariffsType extends AbstractType
                     }
                     return $qb;
                 },
-                'empty_value' => '',
+                'placeholder' => '',
                 'required' => false,
                 'attr' => ['placeholder' => 'tarifftype.placeholder']
             ]);

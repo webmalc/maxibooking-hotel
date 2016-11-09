@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ClientBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -52,13 +51,12 @@ class ClientPaymentSystemType extends AbstractType
         } else {
             $builder
                 ->add(
-                    'paymentSystem',
-                    ChoiceType::class,
+                    'paymentSystem',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                     [
                         'label' => 'form.clientPaymentSystemType.payment_system',
                         'choices' => $options['paymentTypes'],
                         'group' => 'form.clientPaymentSystemType.payment_system_group',
-                        'empty_value' => '',
+                        'placeholder' => '',
                         'data' => $default,
                         'required' => true
                     ]

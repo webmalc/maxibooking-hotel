@@ -28,7 +28,7 @@ class RoomsType extends AbstractType
                     }
                     return $qb;
                 },
-                'empty_value' => '',
+                'placeholder' => '',
                 'required' => false,
                 'attr' => ['placeholder' => 'roomtype.placeholder']
             ]);

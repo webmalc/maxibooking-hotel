@@ -4,10 +4,8 @@ namespace MBH\Bundle\PriceBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\PriceBundle\Validator\Constraints\Tariff;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -74,7 +72,7 @@ class PriceCacheGeneratorType extends AbstractType
                 ],
                 'constraints' => [new NotBlank(), new Date()],
             ))
-            ->add('weekdays', ChoiceType::class, [
+            ->add('weekdays',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Дни недели',
                 'required' => false,
                 'group' => 'Настройки',

@@ -7,7 +7,6 @@ use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\ChannelManagerBundle\Services\MyAllocator;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -72,11 +71,11 @@ class MyallocatorType extends AbstractType
                 $choices[$hotel['id']] = $hotel['name'];
             }
 
-            $builder->add('hotelId', ChoiceType::class, [
+            $builder->add('hotelId',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.myallocatorType.hotels',
                 'required' => true,
                 'choices' => $choices,
-                'empty_value' => '',
+                'placeholder' => '',
                 'constraints' => [new NotBlank()]
             ]);
         }
@@ -93,8 +92,7 @@ class MyallocatorType extends AbstractType
                 ]
             )
             ->add(
-                'currency',
-                ChoiceType::class,
+                'currency',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
                     'choices' => $this->currency->codes(),
                     'label' => 'form.bookingType.currency',

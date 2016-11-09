@@ -6,15 +6,12 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
@@ -81,7 +78,7 @@ class PromotionType extends AbstractType
             ]);
         $conditions = PromotionConditionFactory::getAvailableConditions();
         $builder
-            ->add('condition', ChoiceType::class, [
+            ->add('condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.condition',
                 'required' => false,
                 'group' => 'form.promotionType.group.conditions',
@@ -99,7 +96,7 @@ class PromotionType extends AbstractType
                     'class' => 'spinner',
                 ],
             ])
-            ->add('additional_condition', ChoiceType::class, [
+            ->add('additional_condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.add_condition',
                 'required' => false,
                 'group' => 'form.promotionType.group.conditions',

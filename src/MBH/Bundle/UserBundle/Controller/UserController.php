@@ -39,14 +39,6 @@ class UserController extends Controller
      */
     public function indexAction()
     {
-//        $helper = $this->get('mbh.twofactor.google.helper');
-//
-//        $user = $this->getUser();
-//        $user->setGoogleAuthenticatorCode($helper->generateSecret());
-//        $this->dm->persist($user);
-//        $this->dm->flush();
-//        dump($helper->checkCode($user, '875560'));
-
         $entities = $this->dm->getRepository('MBHUserBundle:User')->createQueryBuilder('q')
             ->sort('username', 'asc')
             ->getQuery()
@@ -70,8 +62,8 @@ class UserController extends Controller
     {
         $entity = new User();
 
-        $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, []
+        $form = $this->createForm(UserType::class,
+            $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles')]
         );
 
         return array(
@@ -90,8 +82,8 @@ class UserController extends Controller
     public function createAction(Request $request)
     {
         $entity = new User(array());
-        $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity
+        $form = $this->createForm(UserType::class,
+            $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles')]
         );
         $form->handleRequest($request);
 
@@ -145,8 +137,8 @@ class UserController extends Controller
 
             }
         }
-        $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['hotels' => $hasHotels]
+        $form = $this->createForm(UserType::class,
+            $entity, ['hotels' => $hasHotels, 'roles' => $this->container->getParameter('security.role_hierarchy.roles'), 'isNew' => false]
         );
 
         return array(
@@ -257,8 +249,8 @@ class UserController extends Controller
      */
     public function updateAction(Request $request, User $entity)
     {
-        $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity
+        $form = $this->createForm(UserType::class,
+            $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles'), 'isNew' => false]
         );
 
         $form->handleRequest($request);

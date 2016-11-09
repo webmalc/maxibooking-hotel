@@ -9,8 +9,8 @@
 namespace MBH\Bundle\RestaurantBundle\Form;
 
 
-use MBH\Bundle\BaseBundle\Form\Extension\DateTimeType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class FilterType extends AbstractType

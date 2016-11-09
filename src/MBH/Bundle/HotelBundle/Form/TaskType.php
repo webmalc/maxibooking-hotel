@@ -5,12 +5,11 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\Form\Extension\DateTimeType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -61,7 +60,7 @@ class TaskType extends AbstractType
                 'required' => true,
                 'query_builder' => $queryBuilderSelectedHotelOnly
             ])
-            ->add('priority', ChoiceType::class, [
+            ->add('priority',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.task.priority',
                 'group' => $generalGroup,
                 'choices' => $options['priorities'],
@@ -92,7 +91,7 @@ class TaskType extends AbstractType
                 }
             ]);
             $floors = $this->dm->getRepository('MBHHotelBundle:Room')->getFloorsByHotel($hotel);
-            $builder->add('floor', ChoiceType::class, [
+            $builder->add('floor',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.task.floor',
                 'group' => $generalGroup,
                 'required' => false,
@@ -145,7 +144,7 @@ class TaskType extends AbstractType
                 'group' => 'form.task.group.settings',
                 'required' => false,
             ])
-            ->add('status', ChoiceType::class, [
+            ->add('status',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.task.status',
                 'group' => 'form.task.group.settings',
                 'required' => true,

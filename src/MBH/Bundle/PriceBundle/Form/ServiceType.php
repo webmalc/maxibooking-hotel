@@ -4,7 +4,6 @@ namespace MBH\Bundle\PriceBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -43,11 +42,11 @@ class ServiceType extends AbstractType
                 'group' => 'Общая информация',
                 'help' => 'Описание услуги для онлайн бронирования'
             ])
-            ->add('calcType', ChoiceType::class, [
+            ->add('calcType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Тип расчета',
                 'group' => 'Общая информация',
                 'required' => true,
-                'empty_value' => '',
+                'placeholder' => '',
                 'multiple' => false,
                 'choices' => $options['calcTypes'],
             ])

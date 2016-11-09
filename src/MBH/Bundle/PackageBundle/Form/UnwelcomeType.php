@@ -46,7 +46,7 @@ class UnwelcomeType extends AbstractType
                 'label' => 'form.unwelcomeType.'.$characteristic,
                 'group' => 'form.unwelcomeType.group.common',
                 'expanded' => true,
-                'empty_value' => null,
+                'placeholder' => null,
                 'choices' => $levels,
                 'choice_label' => function($key, $value){
                     return $key == 0 ? 'Нет' : $key;

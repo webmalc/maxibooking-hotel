@@ -33,17 +33,16 @@ class NewCashDocumentType extends CashDocumentType
         $builder->add('article', DocumentType::class, [
             'required' => false,
             'class' => CashDocumentArticle::class,
-            'empty_value' => '',
+            'placeholder' => '',
             'label' => 'form.cashDocumentType.article',
             'group_by' => 'parent',
-            'property' => function (CashDocumentArticle $article) {
+            'choice_label' => function (CashDocumentArticle $article) {
                 return $article->getCode() . ' ' . $article->getTitle();
             },
             //'attr' => ['class' => 'plain-html'],
             'query_builder' => function (DocumentRepository $repository) {
                 return $repository->createQueryBuilder()->field('parent')->exists(true)->sort(['code' => 1]);
             },
-            //'choices' => $list,
         ]);
     }
 

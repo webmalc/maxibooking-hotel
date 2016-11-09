@@ -8,6 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -15,28 +16,23 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Context\ExecutionContext;
 
 class UserType extends AbstractType
 {
     private $isNew;
     private $roles;
 
-    public function __construct($isNew = true, array $roles = [])
-    {
-        $this->isNew = $isNew;
-        $this->roles = [];
-
-        foreach ($roles as $key => $role) {
-            $this->roles[$key] = $key;
-        }
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->isNew = $options['isNew'];
+        $this->roles = [];
+
+        foreach ($options['roles'] as $key => $role) {
+            $this->roles[$key] = $key;
+        }
+
         $builder
             ->add('username', TextType::class, [
                 'label' => 'form.userType.login',
@@ -52,7 +48,7 @@ class UserType extends AbstractType
         if ($this->isNew) {
             $builder->add('plainPassword', RepeatedType::class, [
                 'group' => 'form.userType.authentication_data',
-                'type' => 'password',
+                'type' => PasswordType::class,
                 'first_options' => array(
                     'label' => 'form.password',
                     'attr' => array('autocomplete' => 'off', 'class' => 'password'),
@@ -64,7 +60,7 @@ class UserType extends AbstractType
         } else {
             $builder->add('newPassword', RepeatedType::class, [
                 'group' => 'form.userType.authentication_data',
-                'type' => 'password',
+                'type' => PasswordType::class,
                 'mapped' => false,
                 'required' => false,
                 'first_options' => array(
@@ -85,7 +81,7 @@ class UserType extends AbstractType
                 'required' => false,
                 'data' => $options['hotels'],
                 'class' => 'MBHHotelBundle:Hotel',
-                'property' => 'name',
+                'choice_label' => 'name',
                 'help' => 'form.userType.hotels_user_has_access_to',
                 'attr' => array('class' => "chzn-select")
             ])
@@ -176,7 +172,9 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\UserBundle\Document\User',
-            'hotels' => []
+            'hotels' => [],
+            'roles' => [],
+            'isNew' => true
         ]);
     }
 

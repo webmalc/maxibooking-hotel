@@ -4,7 +4,6 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use MBH\Bundle\OnlineBundle\Document\Invite;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -29,14 +28,14 @@ class InviteType extends AbstractType
                 'format' => 'yyyy-MM-dd',
                 'required' => false,
             ])
-            ->add('type', ChoiceType::class, [
+            ->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'expanded' => true,
                 'choices' => [
                     Invite::TYPE_SINGLE => 'form.inviteType.type.single',
                     Invite::TYPE_TWICE => 'form.inviteType.type.twice',
                 ],
                 'required' => false,
-                'empty_value' => null,
+                'placeholder' => null,
             ])
             ->add('guests', CollectionType::class, [
                 'type' => new InvitedTouristType(),

@@ -6,7 +6,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -80,14 +79,14 @@ class HotelExtendedType extends AbstractType
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
             ])
-            ->add('type', ChoiceType::class, [
+            ->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.hotelExtendedType.hotel_type',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
                 'choices' => (isset($options['config']['types'])) ? $options['config']['types'] : [],
                 'multiple' => true
             ])
-            ->add('theme', ChoiceType::class, [
+            ->add('theme',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.hotelExtendedType.hotel_theme',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,

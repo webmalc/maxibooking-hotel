@@ -9,7 +9,6 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Range;
 
 class PackageCopyType extends AbstractType
 {
@@ -23,13 +22,13 @@ class PackageCopyType extends AbstractType
                     'group' => 'form.packageCopyType.transfer_parameters',
                     'class' => 'MBHPackageBundle:Package',
                     'required' => true,
-                    'property' => 'numberWithPayer',
+                    'choice_label' => 'numberWithPayer',
                     'query_builder' => function(DocumentRepository $er) {
                         return $er->createQueryBuilder('q')
                             ->field('end')->gte(new \DateTime('midnight'))
                             ->sort('createdAt', 'desc');
                     },
-                    'empty_value' => '',
+                    'placeholder' => '',
                     'help' => 'form.packageCopyType.data_transfer_reservation',
                     'constraints' => [
                         new NotBlank(['message' => 'form.packageCopyType.no_data_transfer_reservation_selected'])

@@ -3,13 +3,9 @@
 namespace MBH\Bundle\WarehouseBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use \MBH\Bundle\PackageBundle\Document\Organization;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\WarehouseBundle\Document\WareCategory;
-use MBH\Bundle\WarehouseBundle\Document\WareItem;
+use MBH\Bundle\PackageBundle\Document\Organization;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -23,7 +19,7 @@ class InvoiceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('operation', ChoiceType::class, [
+            ->add('operation',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'warehouse.record.operation',
                 'required' => true,
                 'multiple' => false,
