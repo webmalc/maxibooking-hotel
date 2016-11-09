@@ -58,7 +58,7 @@
 {{ form_end(form, {render_rest: false}) }}
 
 {#временно!#}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+{#<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>#}
 {#dhtvtyyj#}
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
@@ -77,8 +77,8 @@
 
 <script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>
 <script src="{{ asset('bundles/fosjsrouting/js/router.js', null, true) }}"></script>
-<script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
-{#<script src="{{ asset('js/fos_js_routes.js', null, true) }}"></script>#}
+{#<script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>#}
+<script src="{{ asset('js/fos_js_routes.js', null, true) }}"></script>
 {#{{ dump(restrictions) }}#}
 <script>
     var mbh = {

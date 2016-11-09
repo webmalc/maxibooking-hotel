@@ -51,13 +51,21 @@ $(function () {
                     id = currentHotel;
                 } else {
                     prefix = 'allrooms_';
-                    var data = [];
-                    $.each(allHotels, function (index, id) {
-                        $.merge(data, $.map(mbh.restrictions[prefix + id], function (val) {
-                            return val;
-                        }));
+                    var result = false;
+                    $.each(allHotels, function (key, id) {
+                        var dates = mbh.restrictions[prefix + id];
+                        if (dates) {
+                            dates  = $.map(dates, function (val) { return val; });
+                            result = result === false ? dates : result;
+                            result = $.map(dates, function (val) {
+                                return $.inArray(val, result) < 0 ? null : val;
+                            });
+                        } else {
+                            result = [];
+                            return;
+                        }
                     });
-                    return data;
+                    return result;
 
                 }
             }
@@ -124,8 +132,13 @@ $(function () {
         $roomTypeSelect.val($roomTypeSelect.data('value'));
     }
 
-    $hotelSelect.on("change", updateSelectView);
-    $hotelSelect.on("change", updateRestrictions);
+    $hotelSelect.on("change", function() {
+        updateSelectView();
+        updateRestrictions();
+        $search_form_begin.datepicker("update");
+        $search_form_end.datepicker("update");
+
+    });
     $roomTypeSelect.on("change", updateRestrictions);
 
 //////////////////////////////////////////////
@@ -196,6 +209,8 @@ $(function () {
                         var diff = endDate.diff(date);
                         if (diff < 0) {
                             $search_form_end.datepicker("setDate", date.toDate());
+                        } else {
+                            setTimeout(drawNights(), 300);
                         }
                     }
                 })
@@ -241,12 +256,12 @@ $(function () {
         var currentEndDate = moment($search_form_end.val(), "DD.MM.YYYY", true),
             setEndDate = moment(Math.max(currentEndDate, $search_form_end.datepicker("getStartDate")));
         $search_form_end.datepicker("update", setEndDate.toDate());
-        // $search_form_end.datepicker("setDate", setEndDate.toDate());
     }
-    drawNights();
+
     $search_form_begin.datepicker().on("changeDate", function (e) {
         updateEndPicker(moment(e.date).unix());
-        drawNights();
+        // setTimeout(drawNights(), 300);
+
     });
     $search_form_end.datepicker().on("changeDate", function (e) {
         drawNights();
