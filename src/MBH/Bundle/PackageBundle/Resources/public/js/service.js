@@ -15,6 +15,7 @@ var docReadyServices = function () {
             personsDiv = personsInput.closest('div.form-group'),
             dateInput = $('#mbh_bundle_packagebundle_package_service_type_begin'),
             dateOutput = $('#mbh_bundle_packagebundle_package_service_type_end'),
+            check = $('#mbh_bundle_packagebundle_package_service_type_checks'),
             dateDiv = dateInput.closest('div.form-group'),
             dateDivEnd = dateOutput.closest('div.form-group'),
             dateDefault = dateInput.val(),
@@ -26,6 +27,7 @@ var docReadyServices = function () {
             timeDiv = timeInput.closest('div.form-group'),
 
             hide = function () {
+                check.closest('.form-group ').hide();
                 nightsDiv.hide();
                 personsDiv.hide();
                 dateDiv.hide();
@@ -57,6 +59,9 @@ var docReadyServices = function () {
                 if (info.calcType === 'per_night') {
                     nightsInput.val(nightsInput.val() || services.package_duration);
                     nightsDiv.show();
+                }
+                if(info.code == 'Late check-out' || info.code == 'Early check-in'){
+                    check.closest('.form-group ').show();
                 }
                 priceInput.show();
                 //amountInput.val(services.service_amount);

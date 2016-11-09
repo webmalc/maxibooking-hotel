@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -25,7 +26,6 @@ class PackageServiceType extends AbstractType
         $package = $options['package'];
         $services = $this->container->get('doctrine_mongodb')
             ->getRepository('MBHPriceBundle:Service')->getAvailableServicesForPackage($package);
-
         $builder
             ->add('service', 'document', [
                 'label' => 'form.packageServiceType.service',
@@ -99,6 +99,14 @@ class PackageServiceType extends AbstractType
                 'attr' => ['class' => 'sm'],
                 'widget' => 'single_text',
                 'html5' => false
+            ])
+            ->add('checks', CheckboxType::class, [
+                'label' => 'Разрешить расширение брони',
+                'required' => false,
+                'mapped' => false,
+                'group' => 'form.packageServiceType.add_service',
+                'attr' => array('checked' => 'checked'),
+                'help' => 'При расширении брони, стоимость дополнительных суток равна 0',
             ])
             ->add('amount', 'text', [
                 'label' => 'form.packageServiceType.amount',

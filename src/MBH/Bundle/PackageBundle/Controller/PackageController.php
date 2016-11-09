@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
@@ -131,6 +132,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'count' => $count
         ];
     }
+
     /**
      * Lists all entities as json.
      *
@@ -237,6 +239,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'form' => $form->createView(),
         ];
     }
+
     /**
      * Lists all entities as json.
      *
@@ -691,6 +694,50 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $form->submit($request);
 
             if ($form->isValid()) {
+
+                $check = $form->get('checks')->getData();
+                $code = $packageService->getService()->getCode();
+
+                if ($check) {
+                    if ($code == 'Early check-in' || $code == 'Late check-out') {
+
+                        $packageInfo = $packageService->getPackage();
+                        $tariff = $packageInfo->getTariff();
+
+                        if ($code == 'Early check-in') {
+                            $date = $packageInfo->getBegin()->modify('-1 day');
+                            $datePrice = clone $packageInfo->getBegin();
+                        } elseif ($code == 'Late check-out') {
+                            $date = $packageInfo->getEnd();
+                            $datePrice = clone $packageInfo->getEnd();
+                        }
+
+                        $packagePrices = $packageInfo->getPrices()->toArray();
+                        $priceByDate = $packageInfo->getPricesByDate();
+
+                        //priceBydate
+                        $priceByDate[$datePrice->format('d_m_Y')] = (float)0;
+
+                        //packagePrices
+                        $packagePrice = new PackagePrice($datePrice, (float)0, $tariff);
+                        $packagePrices[] = $packagePrice;
+
+                        $packageInfo->setPricesByDate($priceByDate)
+                                    ->setPrices($packagePrices);
+
+                        if ($code == 'Early check-in') {
+                            $packageInfo->setBegin($date);
+                        } elseif ($code == 'Late check-out') {
+                            $packageInfo->setEnd($date->modify('+1 day'));
+                        }
+                        dump($packageInfo);
+                        $this->dm->persist($packageInfo);
+
+                        $request->getSession()->getFlashBag()->set('danger', 'При добавлении услуги бронь была расширена');
+
+                    }
+                }
+
                 $this->dm->persist($packageService);
                 $this->dm->flush();
 
@@ -814,7 +861,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         );
         $flash = $request->getSession()->getFlashBag();
 
-        if(!in_array($room->getId(), $this->helper->toIds($availableRooms))) {
+        if (!in_array($room->getId(), $this->helper->toIds($availableRooms))) {
             $flash->set('danger', $this->get('translator')->trans('controller.packageController.record_edited_fail_accommodation'));
         } else {
             $package->setAccommodation($room);
@@ -899,9 +946,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $hasEarlyCheckIn = false;
         $hasLateCheckOut = false;
-        foreach($package->getServices() as $service) {
+        foreach ($package->getServices() as $service) {
             $code = $service->getService()->getCode();
-            if($code == 'Early check-in') {
+            if ($code == 'Early check-in') {
                 $hasEarlyCheckIn = true;
             } elseif ($code == 'Late check-out') {
                 $hasLateCheckOut = true;
@@ -1056,14 +1103,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$id) {
             return new JsonResponse([]);
         }
-        
+
         $result = [];
         $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
-        
+
         if ($package) {
             $result = [
                 'id' => $package->getId(),
-                'text' => $package->getTitle(true,true)
+                'text' => $package->getTitle(true, true)
             ];
         }
         return new JsonResponse($result);
@@ -1091,7 +1138,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             /** @var Package $item */
             $data[] = [
                 'id' => $item->getId(),
-                'text' => $item->getTitle(true,true)
+                'text' => $item->getTitle(true, true)
             ];
         }
         return new JsonResponse(['results' => $data]);
