@@ -3,7 +3,7 @@
 {% set small_title = 'report.accommodation.placement'|trans({}, 'MBHPackageBundle') %}
 {% set layout = 'box' %}
 
-{% set headerWidth = 170 %}
+{% set headerWidth = 200 %}
 
 
     {% block content %}
@@ -59,7 +59,9 @@
                         <ul class="calendarDates list-unstyled">
                             <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
                                 <div class="title-sub text-right">
-                                    Без номера
+                                    <div class="text-right">
+                                        Без номера
+                                    </div>
                                 </div>
                             </li>
                             {% for day in days %}
@@ -80,7 +82,18 @@
                             <ul class="calendarDates list-unstyled" data-obj="{{ key }}">
                                 <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
                                     <div class="title-sub">
-                                        <a {% if roomData.houseDetails %} data-toggle="tooltip" data-container="body" data-placement="top" title="{{ roomData.houseDetails }}" {% endif %}>{{ roomData.name[0:20] }}</a>
+
+                                        {% set toolTip = '' %}
+                                        {% if roomData.name|length > 20 %} {% set toolTip = toolTip ~ roomData.name ~ "<br>" %}{% endif %}
+                                        {% if roomData.houseDetails %} {% set toolTip = toolTip ~ roomData.houseDetails %}{% endif %}
+
+                                        {% set roomShortInfo = roomData.name %}
+                                        {% if roomData.name|length < 4 and roomData.houseDetails %}
+                                            {% set roomShortInfo = roomShortInfo ~  ' (' ~ roomData.houseDetails[0:16] ~ ')' %}
+                                        {% endif %}
+
+                                        <a {% if toolTip != '' %} data-toggle="tooltip" data-container="body" data-placement="top" title="{{ toolTip }}" data-html="true" {% endif %}>{{ roomShortInfo[0:20]}}</a>
+
                                         <div class="text-right">
                                             {% if roomData.statuses is iterable and roomData.statuses is not empty %}
                                                 {% for status in roomData.statuses %}

@@ -974,6 +974,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 //        dump($builder->getCalendarData());
 //        dump($builder->getDaysCount());
 //        exit();
+        $dsf = $builder->getPackageData();
         return [
             'calendarData' => $builder->getCalendarData(),
             'days' => $builder->getDaysArray(),

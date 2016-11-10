@@ -79,24 +79,26 @@ class ReportDataBuilder
         return $this;
     }
 
-    private function getPackageData()
+    public function getPackageData()
     {
-        $packageData = [];
+        $packagesData = [];
 
-        $packages = $this->getPackages();
+        $packages = $this->getPackages()->toArray();
+
 
         foreach ($packages as $package) {
             /** @var Package $package */
             //TODO: Дополнить необходимыми данными
-            $packageData[] = [
+            $packagesData[] = [
                 //TODO: Плательщик не всегда есть. Что вместо него?
-                'payer' => $package->getPayer(),
+                'payer' => $package->getPayer() ? $package->getPayer() : $package->getName(),
                 'price' => $package->getPrice(),
-                'status' => $package->getStatus(),
                 'begin' => $package->getBegin(),
-                'end' => $package->getEnd()
+                'end' => $package->getEnd(),
+
             ];
         }
+        return $packagesData;
     }
 
     public function getPackages()
@@ -148,6 +150,7 @@ class ReportDataBuilder
                 }
             }
         }
+
         return $roomCacheData;
     }
 
@@ -222,7 +225,7 @@ class ReportDataBuilder
                 /** @var Room $room */
                 $houseDetails = '';
                 if ($room->getHousing()) {
-                    $houseDetails .= 'Корпус "' . $room->getHousing()->getName() . '", ' ;
+                    $houseDetails .= 'Корпус "' . $room->getHousing()->getName() . '"<br>' ;
                 }
                 if ($room->getFloor()) {
                     $houseDetails .= 'Этаж ' . $room->getFloor();
@@ -235,6 +238,7 @@ class ReportDataBuilder
                 ];
             }
         }
+
         return $roomsData;
     }
 
