@@ -347,6 +347,7 @@ package.tourist_in_unwelcome: Гость находится в черном сп
 package.payer_in_unwelcome: Плательщик находится в черном списке
 
 report.windows.title: 'окна'
+report.windows.modal.title: 'Информация'
 
 manager.offline: Оффлайн
 manager.online: Онлайн
