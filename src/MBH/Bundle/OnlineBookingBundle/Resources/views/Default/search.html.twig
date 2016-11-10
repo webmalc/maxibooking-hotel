@@ -78,7 +78,7 @@
                     <div style="text-align: center;">СТОИМОСТЬ</div>
                     <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}&nbsp;<i class="fa fa-ruble rublesize"></i></span>
                     {% if result.results|length > 1 %}&nbsp;
-                    <span class="oldprice">{{ result.results|last.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}&nbsp;<i class="fa fa-ruble rublesize"></i></span>
+                    <span class="oldprice">{{ result.results|last.getPrice(result.results|last.adults, result.results|last.children)|number_format(0, thousandSep=' ') }}&nbsp;<i class="fa fa-ruble rublesize"></i></span>
                     {% endif %}
                 </div>
             </div>
