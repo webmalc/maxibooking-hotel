@@ -1,0 +1,19 @@
+<table class="table not-auto-datatable table-striped">
+    <tbody>
+    <tr><td><strong>#</strong></td><td>{{ package.numberWithPrefix }}</td></tr>
+    <tr><td><strong>Даты</strong></td><td>{{ package.begin|mbh_format }} - {{ package.end|mbh_format }}</td></tr>
+    <tr><td><strong>Тариф</strong></td><td>{{ package.tariff }}</td></tr>
+    <tr><td><strong>Номер</strong></td><td>{{ package.roomType }} - <small>{{ package.roomType.hotel }}</small></td></tr>
+    <tr><td><strong>Гости</strong></td><td>{% if package.order.payer %}{{ package.order.payer.shortName }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a><small><br>{% if package.adults > 0 %}{{ package.adults }} вз.{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} рб.{% endif %} / оформлено: {{ package.tourists|length }}</small></td></tr>
+    <tr><td><strong>Цена</strong></td><td>{{ package.price|number_format(2) }}</td></tr>
+    <tr><td><strong>Размещение</strong></td><td>{{ package.accommodation }}</td></tr>
+    <tr><td><strong>Комментарий</strong></td><td>{{ package.note|nl2br }}</td></tr>
+    </tbody>
+</table>
+
+{% if form is defined %}
+    {% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
+    {{ form_start(form, {'action': path('report_windows_package', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+{% endif %}

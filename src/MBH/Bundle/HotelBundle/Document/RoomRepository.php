@@ -6,6 +6,7 @@ use Doctrine\MongoDB\ArrayIterator;
 use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 use MBH\Bundle\BaseBundle\Service\Cache;
+use MBH\Bundle\PackageBundle\Document\Package;
 
 /**
  * Class RoomRepository
@@ -16,6 +17,32 @@ class RoomRepository extends AbstractBaseRepository
     public function findByCriteria(QueryCriteriaInterface $criteria)
     {
         return;
+    }
+
+    public function getVirtualRoomsForPackageQB(Package $package = null)
+    {
+        $qb = $this->createQueryBuilder();
+        if ($package) {
+            $virtualRoom = $package->getVirtualRoom();
+            $packages = $this
+                ->getDocumentManager()
+                ->getRepository('MBHPackageBundle:Package')
+                ->fetchWithVirtualRooms($package->getBegin(), $package->getEnd(), $package->getRoomType())
+            ;
+
+            $rooms = array_map(function ($p) use ($virtualRoom) {
+                $id = $p->getVirtualRoom()->getId();
+
+                return !$virtualRoom || $id != $virtualRoom->getId() ? $id : null;
+            }, iterator_to_array($packages));
+
+            $qb->field('roomType')->references($package->getRoomType())
+                ->field('id')->notIn($rooms)
+                ->sort(['fullTitle', 'title'])
+            ;
+        }
+
+        return $qb;
     }
 
 

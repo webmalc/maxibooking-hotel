@@ -14,7 +14,6 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Services\ReportDataBuilder;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -287,8 +286,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'total' => $total
         ];
     }
-
-
 
     /**
      * Accommodation report.
@@ -950,37 +947,5 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
-    }
-
-    /**
-     * @Route("/test")
-     */
-    public function testReportAction()
-    {
-        /** @var ReportDataBuilder $builder */
-        $builder = $this->get('mbh.package.report_data_builder')->init($this->hotel, new \DateTime('-30 day'), new \DateTime());
-        dump($builder->getPackages()->toArray()); exit();
-    }
-
-    /**
-     * @Route("/chessBoard")
-     * @Template()
-     * @return array
-     */
-    public function chessBoardAction()
-    {
-        $builder = $this->get('mbh.package.report_data_builder')->init($this->hotel, new \DateTime('-9 day'), new \DateTime('+10 day'));
-        $roomCacheData = $builder->getRoomCacheData();
-//        dump($builder->getCalendarData());
-//        dump($builder->getDaysCount());
-//        exit();
-        $dsf = $builder->getPackageData();
-        return [
-            'calendarData' => $builder->getCalendarData(),
-            'days' => $builder->getDaysArray(),
-            'roomTypesData' => $builder->getRoomTypeData(),
-            'roomCachesData' => $builder->getRoomCacheData(),
-            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons')
-        ];
     }
 }
