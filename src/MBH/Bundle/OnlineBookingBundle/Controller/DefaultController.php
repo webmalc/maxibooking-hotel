@@ -19,7 +19,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 
 /**
@@ -457,6 +456,7 @@ class DefaultController extends BaseController
 
     /**
      * @Route("/minstay/{timestamp}", name="online_booking_min_stay", options={"expose" = true})
+     * @Cache(expires="tomorrow", public=true)
      */
     public function getMinStayAjax($timestamp)
     {
@@ -471,7 +471,7 @@ class DefaultController extends BaseController
         ];
 
         $response = new JsonResponse(json_encode($data));
-        $response->headers->set('Access-Control-Allow-Origin', 'http://t.azovsky.ru');
+        $response->headers->set('Access-Control-Allow-Origin', 'http://azovsky.ru');
 
         return $response;
     }
