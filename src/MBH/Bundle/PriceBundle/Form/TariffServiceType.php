@@ -18,13 +18,10 @@ class TariffServiceType extends AbstractType
 {
     private $services;
 
-    public function __construct(array $services)
-    {
-        $this->services = $services;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->services = $options['services'];
+
         $builder
             ->add('service', DocumentType::class, [
                 'label' => 'form.packageServiceType.service',
@@ -79,6 +76,7 @@ class TariffServiceType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PriceBundle\Document\TariffService',
+            'services' => []
         ]);
     }
 

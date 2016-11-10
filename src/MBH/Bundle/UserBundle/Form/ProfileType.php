@@ -3,6 +3,7 @@
 namespace MBH\Bundle\UserBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,7 +17,7 @@ class ProfileType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
             $builder->add('plainPassword', RepeatedType::class, array(
-                'type' => 'password',
+                'type' => PasswordType::class,
                 'group' => 'form.profileType.enter_new_password',
                 'options' => array('translation_domain' => 'FOSUserBundle'),
                 'first_options' => array('label' => 'form.password', 'attr' => array('autocomplete' => 'off', 'class' => 'password'),),

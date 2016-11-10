@@ -32,9 +32,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
     public function indexAction(Request $request)
     {
         $entity = new PackageSource();
-        $form = $this->createForm(
-            new PackageSourceType(), $entity, []
-        );
+        $form = $this->createForm(PackageSourceType::class, $entity, []);
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();

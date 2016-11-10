@@ -28,14 +28,11 @@ class TableType extends AbstractType
 
     private $container;
 
-    public function __construct(DocumentManager $dm, ContainerInterface $container)
-    {
-        $this->dm = $dm;
-        $this->container = $container;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->dm = $options['dm'];
+        $this->container = $options['container'];
+
         $selector = $this->container->get('mbh.hotel.selector');
         $tableId = $builder->getData()->getId();
 
@@ -86,6 +83,8 @@ class TableType extends AbstractType
         $resolver
             ->setDefaults([
                 'data_class' => 'MBH\Bundle\RestaurantBundle\Document\Table',
+                'dm' => null,
+                'container' => null
             ]);
     }
 

@@ -34,7 +34,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
         $config = $this->hotel->getHotelinnConfig();
 
         $form = $this->createForm(
-            new HotelinnType(), $config
+            HotelinnType::class, $config
         );
 
         return [
@@ -63,7 +63,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
             $config->setHotel($hotel);
         }
         $form = $this->createForm(
-            new HotelinnType(), $config
+            HotelinnType::class, $config
         );
 
         $form->handleRequest($request);

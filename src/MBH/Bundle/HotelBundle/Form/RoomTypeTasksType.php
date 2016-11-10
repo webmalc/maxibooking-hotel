@@ -17,19 +17,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class RoomTypeTasksType extends AbstractType
 {
-    /**
-     * @var Hotel
-     */
-    protected $hotel;
-
-    public function __construct(Hotel $hotel)
-    {
-        $this->hotel = $hotel;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $hotel = $this->hotel;
+        $hotel = $options['hotel'];
 
         $queryBuilderFunction = function(TaskTypeRepository $repository) use($hotel) {
             return $repository->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
@@ -48,7 +38,8 @@ class RoomTypeTasksType extends AbstractType
             ->add('daily', CollectionType::class, [
                 'label' => 'form.roomTypeTasks.daily',
                 'required' => false,
-                'type' => new DailyTaskType($hotel),
+                'entry_type' => DailyTaskType::class,
+                'entry_options' => ['hotel' => $hotel],
                 'allow_add' => true,
                 'allow_delete' => true,
             ])
@@ -72,6 +63,7 @@ class RoomTypeTasksType extends AbstractType
     {
         $resolver->setDefaults([
             'cascade_validation' => true,
+            'hotel' => null
         ]);
     }
 

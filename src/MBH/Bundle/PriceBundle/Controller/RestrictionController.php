@@ -231,7 +231,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $form = $this->createForm(
-            new RestrictionGeneratorType(), [], [
+            RestrictionGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -254,7 +254,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $form = $this->createForm(
-            new RestrictionGeneratorType(), [], [
+            RestrictionGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);

@@ -319,6 +319,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(TariffServicesType::class, $tariff, [
+            'services_all' => $this->dm->getRepository('MBHPriceBundle:Service')->getAvailableServicesForTariff($tariff, true),
             'services' => $this->dm->getRepository('MBHPriceBundle:Service')->getAvailableServicesForTariff($tariff)
         ]);
 

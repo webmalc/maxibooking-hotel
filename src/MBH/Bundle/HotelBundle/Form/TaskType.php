@@ -27,14 +27,10 @@ class TaskType extends AbstractType
      */
     protected $dm;
 
-    public function __construct(DocumentManager $dm)
-    {
-        $this->dm = $dm;
-    }
-
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->dm = $options['dm'];
+
         if($options['scenario'] == self::SCENARIO_NEW) {
             $generalGroup = 'form.task.group.general_add';
         } elseif($options['scenario'] == self::SCENARIO_EDIT) {
@@ -161,7 +157,8 @@ class TaskType extends AbstractType
             'priorities' => [],
             'statuses' => [],
             'scenario' => self::SCENARIO_NEW,
-            'hotel' => null
+            'hotel' => null,
+            'dm' => null
         ]);
     }
 

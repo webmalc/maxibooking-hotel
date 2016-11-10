@@ -32,7 +32,7 @@ class RecordController extends Controller
      */
     public function indexAction()
     {
-		$form = $this->createForm(new RecordFilterType());
+		$form = $this->createForm(RecordFilterType::class);
 		
         return [
 			'form' => $form->createView(),
@@ -67,7 +67,7 @@ class RecordController extends Controller
         $formData = (array) $request->get('form');
         $formData['search'] = $tableParams->getSearch();
 		
-        $form = $this->createForm(new RecordFilterType());
+        $form = $this->createForm(RecordFilterType::class);
 
         $form->submit($formData);
 		
@@ -103,7 +103,7 @@ class RecordController extends Controller
      */
     public function inventoryAction()
     {
-		$form = $this->createForm(new RecordFilterType());
+		$form = $this->createForm(RecordFilterType::class);
 		
         return [
 			'form' => $form->createView(),
@@ -132,7 +132,7 @@ class RecordController extends Controller
         $formData = (array) $request->get('form');
         $formData['search'] = $tableParams->getSearch();
 		
-        $form = $this->createForm(new RecordFilterType());
+        $form = $this->createForm(RecordFilterType::class);
 
         $form->submit($formData);
 		

@@ -104,13 +104,14 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 ->setNumber($cashDocumentRepository->generateNewNumber($cash));
         }
 
-        $form = $this->createForm(new CashDocumentType($this->dm), $cash, [
+        $form = $this->createForm(CashDocumentType::class, $cash, [
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
             'groupName' => $this->get('translator')->trans('controller.orderController.add_cash_register_paper'),
             'payer' => $entity->getMainTourist() ? $entity->getMainTourist()->getId() : null,
             'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity),
-            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
+            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER'),
+            'dm' => $this->dm
         ]);
 
         if ($request->isMethod(Request::METHOD_POST)  &&
@@ -199,9 +200,10 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new OrganizationType($this->dm), null, [
+        $form = $this->createForm(OrganizationType::class, null, [
             'isFull' => false,
             'typeList' => $this->container->getParameter('mbh.organization.types'),
+            'dm' => $this->dm
         ]);
 
         return [
@@ -234,7 +236,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new OrderTouristType());
+        $form = $this->createForm(OrderTouristType::class);
 
         $form->handleRequest($request);
 
@@ -312,10 +314,11 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             $existOrganization->setType('contragents');
         }
 
-        $form = $this->createForm(new OrganizationType($this->dm),
+        $form = $this->createForm(OrganizationType::class,
             $existOrganization, [
                 'isFull' => false,
                 'typeList' => $this->container->getParameter('mbh.organization.types'),
+                'dm' => $this->dm
             ]);
 
         $form->handleRequest($request);

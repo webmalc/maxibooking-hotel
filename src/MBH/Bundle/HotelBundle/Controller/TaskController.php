@@ -157,7 +157,7 @@ class TaskController extends Controller
         /** @var DocumentManager $dm */
         $dm = $this->dm;
 
-        $form = $this->createForm(new TaskType($dm), $entity, $this->getFormTaskTypeOptions());
+        $form = $this->createForm(TaskType::class, $entity, $this->getFormTaskTypeOptions());
 
         if ($request->isMethod(Request::METHOD_POST)) {
             if ($form->handleRequest($request)->isValid()) {
@@ -202,7 +202,7 @@ class TaskController extends Controller
         if (!$this->get('mbh.hotel.selector')->checkPermissions($this->hotel)) {
             throw $this->createNotFoundException();
         }
-        $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions() + [
+        $form = $this->createForm(TaskType::class, $entity, $this->getFormTaskTypeOptions() + [
                 'scenario' => TaskType::SCENARIO_EDIT
             ]);
 
@@ -276,7 +276,8 @@ class TaskController extends Controller
         return [
             'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
             'priorities' => $priorities,
-            'hotel' => $this->hotel
+            'hotel' => $this->hotel,
+            'dm' => $this->dm
         ];
     }
 

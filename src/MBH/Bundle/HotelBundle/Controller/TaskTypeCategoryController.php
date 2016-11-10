@@ -4,7 +4,6 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
-use MBH\Bundle\HotelBundle\Document\TaskTypeRepository;
 use MBH\Bundle\HotelBundle\Form\TaskTypeCategoryType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -63,7 +62,7 @@ class TaskTypeCategoryController extends Controller
      */
     public function editAction(TaskTypeCategory $entity, Request $request)
     {
-        $form = $this->createForm(new TaskTypeCategoryType($this->dm), $entity, []);
+        $form = $this->createForm(TaskTypeCategoryType::class, $entity, []);
 
         if($request->isMethod(Request::METHOD_POST)){
             if($form->handleRequest($request)->isValid()){

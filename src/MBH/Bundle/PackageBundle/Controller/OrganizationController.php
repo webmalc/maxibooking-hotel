@@ -15,7 +15,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -117,8 +116,9 @@ class OrganizationController extends Controller
             $organization->setType($request->get('type'));
         }
 
-        $form = $this->createForm(new OrganizationType($this->dm), $organization, [
+        $form = $this->createForm(OrganizationType::class, $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
+            'dm' => $this->dm
         ]);
 
         if ($request->isMethod('POST')) {
@@ -150,12 +150,13 @@ class OrganizationController extends Controller
     {
         $imageUrl = $organization->getStamp() ? $this->generateUrl('stamp', ['id' => $organization->getId()]) : null;
 
-        $form = $this->createForm(new OrganizationType($this->dm), $organization, [
+        $form = $this->createForm(OrganizationType::class, $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
             'id' => $organization->getId(),
             'type' => $organization->getType(),
             'scenario' => OrganizationType::SCENARIO_EDIT,
-            'imageUrl' => $imageUrl
+            'imageUrl' => $imageUrl,
+            'dm' => $this->dm
         ]);
 
         if ($request->isMethod('POST')) {

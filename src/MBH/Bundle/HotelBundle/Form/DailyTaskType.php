@@ -16,19 +16,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class DailyTaskType extends AbstractType
 {
-    /**
-     * @var Hotel
-     */
-    protected $hotel;
-
-    public function __construct(Hotel $hotel)
-    {
-        $this->hotel = $hotel;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $hotel = $this->hotel;
+        $hotel = $options['hotel'];
         $queryBuilderFunction = function(TaskTypeRepository $repository) use($hotel) {
             return $repository->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
         };
@@ -60,6 +50,7 @@ class DailyTaskType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\HotelBundle\Document\DailyTaskSetting',
+            'hotel' => null
         ]);
     }
 

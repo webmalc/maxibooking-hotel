@@ -22,13 +22,10 @@ class TaskTypeType extends AbstractType
 
     protected $dm;
 
-    public function __construct(DocumentManager $dm)
-    {
-        $this->dm = $dm;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->dm = $options['dm'];
+
         $group = $options['scenario'] == self::SCENARIO_NEW ?
             'form.taskType.general_info' :
             'form.taskType.general_info_edit';
@@ -65,7 +62,8 @@ class TaskTypeType extends AbstractType
             'data_class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
             'types' => [],
             'roles' => [],
-            'scenario' => self::SCENARIO_NEW
+            'scenario' => self::SCENARIO_NEW,
+            'dm' => null
         ));
     }
 

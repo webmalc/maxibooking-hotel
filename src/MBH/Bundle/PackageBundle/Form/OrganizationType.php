@@ -33,16 +33,12 @@ class OrganizationType extends AbstractType
      */
     private $documentManager;
 
-    public function __construct(DocumentManager $documentManager)
-    {
-        $this->documentManager = $documentManager;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $scenario = $options['scenario'];
         $isFull = $options['isFull'];
         $id = $options['id'];
+        $this->documentManager = $options['dm'];
 
         if (!$isFull) {
             $builder->add('organization', TextType::class, [
@@ -308,7 +304,8 @@ class OrganizationType extends AbstractType
             'type' => null,
             'scenario' => self::SCENARIO_NEW,
             'isFull' => true,
-            'imageUrl' => null
+            'imageUrl' => null,
+            'dm' => null
         ]);
     }
 

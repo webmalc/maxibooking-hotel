@@ -33,7 +33,7 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
      */
     public function indexAction()
     {
-        $form = $this->createForm(new SettingsInviteType());
+        $form = $this->createForm(SettingsInviteType::class);
 
         return [
             'form' => $form->createView(),

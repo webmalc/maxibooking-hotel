@@ -40,12 +40,12 @@
             </td>
             <td class="text-center">
                 <div class='btn-list'>
-                    {% if app.security.granted('ROLE_PROMOTION_EDIT') %}
+                    {% if is_granted('ROLE_PROMOTION_EDIT') %}
                         <a href='{{ path('promotion_edit', {'id': promotion.id }) }}' class='btn btn-success btn-xs' title='{{ 'price.views.promotion.index.edit'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'>
                             <i class='fa fa-pencil-square-o'></i>
                         </a>
                     {% endif %}
-                    {% if app.security.granted('ROLE_PROMOTION_DELETE') %}
+                    {% if is_granted('ROLE_PROMOTION_DELETE') %}
                         <a href='{{ path('promotion_delete', {'id': promotion.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'price.views.promotion.index.delete'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'>
                             <i class='fa fa-trash-o'></i>
                         </a>

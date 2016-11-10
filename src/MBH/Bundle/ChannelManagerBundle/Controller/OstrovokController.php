@@ -34,7 +34,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
         $entity = $this->hotel->getOstrovokConfig();
 
         $form = $this->createForm(
-            new OstrovokType(), $entity
+            OstrovokType::class, $entity
         );
 
 
@@ -64,7 +64,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             $entity->setHotel($hotel);
         }
         $form = $this->createForm(
-            new OstrovokType(), $entity
+            OstrovokType::class, $entity
         );
 
         $form->handleRequest($request);

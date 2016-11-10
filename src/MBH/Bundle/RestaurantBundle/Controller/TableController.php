@@ -146,7 +146,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
         $table = new Table();
         $table->setCategory($category);
         $table->setHotel($this->hotel);
-        $form = $this->createForm(new TableType($this->dm, $this->container), $table);
+        $form = $this->createForm(TableType::class, $table, ['dm' => $this->dm, 'container' => $this->container ]);
 
         $form->handleRequest($request);
 
@@ -182,7 +182,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TableType($this->dm, $this->container), $item);
+        $form = $this->createForm(TableType::class, $item, ['dm' => $this->dm, 'container' => $this->container ]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {

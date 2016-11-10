@@ -34,7 +34,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         $entity = $this->get('mbh.hotel.selector')->getSelected()->getOktogoConfig();
 
         $form = $this->createForm(
-            new OktogoType(), $entity
+            OktogoType::class, $entity
         );
 
         return [
@@ -64,7 +64,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-            new OktogoType(), $entity
+            OktogoType::class, $entity
         );
 
         $form->handleRequest($request);
@@ -115,7 +115,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-            new RoomType(), [], ['entity' => $entity]
+            RoomType::class, [], ['entity' => $entity]
         );
 
         return array(
@@ -141,7 +141,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-            new RoomType(), [], ['entity' => $entity]
+            RoomType::class, [], ['entity' => $entity]
         );
 
         $form->handleRequest($request);
@@ -280,7 +280,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-            new TariffType(), [], ['entity' => $entity, 'hideDefault' => false]
+            TariffType::class, [], ['entity' => $entity, 'hideDefault' => false]
         );
 
         return array(
@@ -306,7 +306,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-            new TariffType(), [], ['entity' => $entity, 'hideDefault' => false]
+            TariffType::class, [], ['entity' => $entity, 'hideDefault' => false]
         );
 
         $form->handleRequest($request);

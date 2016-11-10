@@ -45,7 +45,7 @@ class HousingController extends BaseController
      */
     public function newAction()
     {
-        $form = $this->createForm(new HousingType($this->dm));
+        $form = $this->createForm(HousingType::class, new Housing(), ['dm' => $this->dm]);
         return [
             'form' => $form->createView()
         ];
@@ -63,7 +63,7 @@ class HousingController extends BaseController
         $currentHotel = $this->get('mbh.hotel.selector')->getSelected();
         $entity->setHotel($currentHotel);
 
-        $form = $this->createForm(new HousingType($this->dm), $entity);
+        $form = $this->createForm(HousingType::class, $entity, ['dm' => $this->dm]);
         $form->handleRequest($request);
 
         if($form->isValid()) {
@@ -90,7 +90,7 @@ class HousingController extends BaseController
      */
     public function editAction(Housing $entity)
     {
-        $form = $this->createForm(new HousingType($this->dm), $entity);
+        $form = $this->createForm(HousingType::class, $entity, ['dm' => $this->dm]);
         return [
             'form' => $form->createView(),
             'entity' => $entity,
@@ -107,7 +107,7 @@ class HousingController extends BaseController
      */
     public function updateAction(Housing $entity, Request $request)
     {
-        $form = $this->createForm(new HousingType($this->dm), $entity);
+        $form = $this->createForm(HousingType::class, $entity, ['dm' => $this->dm]);
         $form->handleRequest($request);
 
         if($form->isValid()) {

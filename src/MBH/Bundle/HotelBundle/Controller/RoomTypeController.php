@@ -214,7 +214,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if(!$roomType->getTaskSettings()) {
             $roomType->setTaskSettings(new TaskSettings());
         }
-        $form = $this->createForm(new RoomTypeTasksType($roomType->getHotel()), $roomType->getTaskSettings());
+        $form = $this->createForm(RoomTypeTasksType::class, $roomType->getTaskSettings(), ['hotel' => $roomType->getHotel()]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
             $form->handleRequest($request);
@@ -289,7 +289,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
-        $form = $this->createForm(new RoomTypeImageType());
+        $form = $this->createForm(RoomTypeImageType::class);
         $form->handleRequest($request);
 
         if ($request->isMethod(Request::METHOD_POST) && $form->isValid()) {

@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -15,13 +16,10 @@ class HotelExtendedType extends AbstractType
 {
     private $dm;
 
-    public function __construct(DocumentManager $dm)
-    {
-        $this->dm = $dm;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->dm = $options['dm'];
+
         $builder
             ->add('city', TextType::class, [
                 'label' => 'form.hotelExtendedType.city',
@@ -79,14 +77,14 @@ class HotelExtendedType extends AbstractType
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
             ])
-            ->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('type',  InvertChoiceType::class, [
                 'label' => 'form.hotelExtendedType.hotel_type',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
                 'choices' => (isset($options['config']['types'])) ? $options['config']['types'] : [],
                 'multiple' => true
             ])
-            ->add('theme',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('theme',  InvertChoiceType::class, [
                 'label' => 'form.hotelExtendedType.hotel_theme',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
@@ -115,6 +113,7 @@ class HotelExtendedType extends AbstractType
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
             'city' => null,
             'config' => null,
+            'dm' => null
         ]);
     }
 

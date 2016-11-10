@@ -38,12 +38,12 @@ class InviteType extends AbstractType
                 'placeholder' => null,
             ])
             ->add('guests', CollectionType::class, [
-                'type' => new InvitedTouristType(),
+                'entry_type' => InvitedTouristType::class,
                 'allow_add' => true,
                 'prototype' => true
             ])
             ->add('tripRoutes', CollectionType::class, [
-                'type' => new TripRouteType(),
+                'entry_type' => TripRouteType::class,
                 'allow_add' => true,
                 'prototype' => true
             ])

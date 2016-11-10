@@ -222,11 +222,11 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
+        $form = $this->createForm(HotelExtendedType::class, $entity, [
             'city' => $entity->getCity(),
-            'config' => $this->container->getParameter('mbh.hotel')
+            'config' => $this->container->getParameter('mbh.hotel'),
+            'dm' => $this->dm
         ]);
-
         return [
             'entity' => $entity,
             'form' => $form->createView(),
@@ -250,9 +250,10 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
+        $form = $this->createForm(HotelExtendedType::class, $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel'),
+            'dm' => $this->dm,
             'method' => Request::METHOD_POST
         ]);
 

@@ -22,13 +22,10 @@ class HousingType extends AbstractType
      */
     private $dm;
 
-    public function __construct(DocumentManager $dm)
-    {
-        $this->dm = $dm;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->dm = $options['dm'];
+
         $builder
             ->add('name', TextType::class, [
                 'label' => 'views.corpus.name',
@@ -91,7 +88,8 @@ class HousingType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\HotelBundle\Document\Housing'
+            'data_class' => 'MBH\Bundle\HotelBundle\Document\Housing',
+            'dm' => null
         ]);
     }
 
