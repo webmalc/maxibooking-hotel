@@ -56,13 +56,13 @@ class PackageRepository extends DocumentRepository
 
     /**
      * @param PackageQueryCriteria $criteria
+     * @param int $limit
      * @return Package[]
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function findByQueryCriteria(PackageQueryCriteria $criteria)
+    public function findByQueryCriteria(PackageQueryCriteria $criteria, $limit = 50)
     {
+        $criteria->limit = $limit;
         return $this->queryCriteriaToBuilder($criteria)
-            ->limit(50)//todo move to args
             ->getQuery()->execute();
     }
 

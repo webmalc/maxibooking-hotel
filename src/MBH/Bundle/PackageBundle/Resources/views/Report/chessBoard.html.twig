@@ -1,0 +1,114 @@
+{% extends 'MBHPackageBundle::layout.html.twig' %}
+
+{% set small_title = 'report.accommodation.placement'|trans({}, 'MBHPackageBundle') %}
+{% set layout = 'box' %}
+
+{% set headerWidth = 170 %}
+
+
+    {% block content %}
+        <div id="accommodation-chessBoard-content">
+            <div id="calendarWrapper" style="width:{{ days|length * 47 + headerWidth + 1 }}px;">
+                <div class="clearfix" style="background-color: #ecf0f5;">
+                    <ul class="list-unstyled calendarDays">
+                        <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px">
+                            <div class="title" style="height: 81px;"> &nbsp;</div>
+                        </li>
+                        {% for monthDays in calendarData %}
+                            <li class="tile tile-not-selected tile-free both"
+                                style="width:{{ monthDays.daysCount * 47 }}px;">
+                                <div class="month" style="width:{{ monthDays.daysCount * 47 }}px;">
+                                    {{ monthDays.daysCount > 2 ? months[monthDays.month] ~ ', ' ~ monthDays.year }}
+                                </div>
+                            </li>
+                        {% endfor %}
+                        {% for day in days %}
+                            <li class="tile tile-bookable tile-free both">
+                                <div class="day">
+                                    <div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}
+                                        <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+
+                {% for roomTypeId, roomTypeData in roomTypesData %}
+                <!---------------------------- ROOM TYPES ------------------------->
+                <div class="clearfix" style="background-color: #ecf0f5;">
+                    <ul class="list-unstyled calendarDays">
+                        <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
+                            <div class="title"><strong class="text-info">
+                                    <i class="fa fa-bed"></i> {{ roomTypeData.name[0:30] }}</strong></div>
+                        </li>
+                        {% for day in days %}
+                            <li class="tile">
+                                <div class="leftRooms">
+                                    {% if roomCachesData[roomTypeId][day.date|date('d.m.Y')] is defined %} {{ roomCachesData[roomTypeId][day.date|date('d.m.Y')] }} {% endif %}
+                                </div>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+                <!---------------------------- ROOMS ------------------------->
+                <div class="calendarRows clearfix">
+                    <div class="calendarRow clearfix">
+                        <ul class="calendarDates list-unstyled">
+                            <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
+                                <div class="title-sub text-right">
+                                    Без номера
+                                </div>
+                            </li>
+                            {% for day in days %}
+                                {% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}
+                                {% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}
+                                <li class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
+                                    <div class="date">
+                                        <div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}
+                                            <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% for key, roomData in roomTypeData['rooms'] %}
+                        <div class="calendarRow clearfix">
+                            <ul class="calendarDates list-unstyled" data-obj="{{ key }}">
+                                <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
+                                    <div class="title-sub">
+                                        <a {% if roomData.houseDetails %} data-toggle="tooltip" data-container="body" data-placement="top" title="{{ roomData.houseDetails }}" {% endif %}>{{ roomData.name[0:20] }}</a>
+                                        <div class="text-right">
+                                            {% if roomData.statuses is iterable and roomData.statuses is not empty %}
+                                                {% for status in roomData.statuses %}
+                                                    {% if status.code in roomStatusIcons|keys  %}
+                                                        <i style="position: relative; bottom: 10px; font-size: 14px;" data-container="body" class=" fa mbf-{{ roomStatusIcons[status.code] }}" title="{{ status }}" data-toggle="tooltip"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </li>
+                                {% for day in days %}
+                                    {% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}
+                                    {% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}
+                                    <li class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
+                                        <div class="date">
+                                            <div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}
+                                                <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
