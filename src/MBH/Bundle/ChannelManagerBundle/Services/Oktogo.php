@@ -38,7 +38,7 @@ class Oktogo extends Base
         'parking' => 'Parking space',
         'cot' => 'Babycot',
         'DoubleBed' => 'DoubleBed',
-        'TwoBed' => 'TwoBed',
+        'TwoBeds' => 'TwoBeds',
     ];
 
     /**
@@ -82,14 +82,9 @@ class Oktogo extends Base
                 ['config' => $config]
             );
 
-//            $sendResult = $this->sendXml(static::BASE_URL . 'reservations', $request, $this->getHeaders(), true);
+            $sendResult = $this->sendXml(static::BASE_URL . 'reservations', $request, $this->getHeaders(), true);
 
-            $sendResult = simplexml_load_string($this->templating->render('MBHChannelManagerBundle:Oktogo:test.xml.twig'));
-
-            dump($sendResult);
-
-            dump($request);
-
+//            $sendResult = simplexml_load_string($this->templating->render('MBHChannelManagerBundle:Oktogo:test.xml.twig'));
 
             $this->log('Reservations count: ' . count($sendResult->reservation));
 
@@ -100,6 +95,7 @@ class Oktogo extends Base
                         $this->dm->getFilterCollection()->disable('softdeleteable');
                     }
                 }
+
                 //old order
                 $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
                     [
@@ -158,12 +154,11 @@ class Oktogo extends Base
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
-
         // iterate hotels
         foreach ($this->getConfig() as $config) {
 
             $roomTypes = $this->getRoomTypes($config);
-            $tariffs = $this->getTariffs($config);
+            $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
             $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
                 $begin,
@@ -174,26 +169,27 @@ class Oktogo extends Base
                 true,
                 $this->roomManager->useCategories
             );
-            foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
 
+
+            foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
-
-                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
-
-                            $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
-
-                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
-                                'id_tariff' => $tariff['syncId'],
-                                'price' => $info->getPrice() ? $info->getPrice() : null,
-                                'persons' => $info->getRoomType()->getPlaces(),
-                            ];
-
-                        } else {
-                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
-                                'roomstosell' => 0
-                            ];
+                        if (isset($serviceTariffs[$roomTypeInfo['syncId']][$tariff['syncId']])) {
+                            if (isset($priceCaches[$roomTypeId][$tariff['doc']->getId()][$day->format('d.m.Y')])) {
+                                $info = $priceCaches[$roomTypeId][$tariff['doc']->getId()][$day->format('d.m.Y')];
+                                $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
+                                    'id_tariff' => $tariff['syncId'],
+                                    'price' => $info->getPrice() ? $info->getPrice() : null,
+                                    'persons' => $info->getRoomType()->getPlaces(),
+                                ];
+                            } else {
+                                $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
+                                    'roomstosell' => 0
+                                ];
+                            }
                         }
+
+
                     }
                 }
 
@@ -202,6 +198,7 @@ class Oktogo extends Base
             if (!isset($data)) {
                 continue;
             }
+
 
             $request = $this->templating->render(
                 'MBHChannelManagerBundle:Oktogo:updatePrices.xml.twig',
@@ -298,7 +295,7 @@ class Oktogo extends Base
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             $roomTypes = $this->getRoomTypes($config);
-            $tariffs = $this->getTariffs($config);
+            $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
             $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
                 $begin,
@@ -321,34 +318,28 @@ class Oktogo extends Base
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
 
-                        if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
-                            continue;
-                        }
-
-                        if (!empty($serviceTariffs[$tariff['syncId']]['rooms']) && !in_array($roomTypeInfo['syncId'], $serviceTariffs[$tariff['syncId']]['rooms'])) {
-                            continue;
-                        }
 
                         $price = false;
-                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                        if (isset($priceCaches[$roomTypeId][$tariff['doc']->getId()][$day->format('d.m.Y')])) {
                             $price = true;
                         }
+                        if (isset($serviceTariffs[$roomTypeInfo['syncId']][$tariff['syncId']])) {
+                            if (isset($restrictions[$roomTypeId][$tariff['doc']->getId()][$day->format('d.m.Y')])) {
+                                $info = $restrictions[$roomTypeId][$tariff['doc']->getId()][$day->format('d.m.Y')];
 
-                        if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
-                            $info = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
+                                $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
+                                    'closed' => $info->getClosed() || !$price ? 1 : 0,
+                                    'id_tariff' => $tariff['syncId'],
+                                    'persons' => $info->getRoomType()->getPlaces(),
+                                ];
 
-                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
-                                'closed' => $info->getClosed() || !$price ? 1 : 0,
-                                'id_tariff' => $tariff['syncId'],
-                                'persons' => $info->getRoomType()->getPlaces(),
-                            ];
-
-                        } else {
-                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
-                                'closed' => !$price ? 1 : 0,
-                                'id_tariff' => $tariff['syncId'],
-                                'persons' => $roomTypeInfo['doc']->getPlaces(),
-                            ];
+                            } else {
+                                $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
+                                    'closed' => !$price ? 1 : 0,
+                                    'id_tariff' => $tariff['syncId'],
+                                    'persons' => $roomTypeInfo['doc']->getPlaces(),
+                                ];
+                            }
                         }
                     }
                 }
@@ -489,7 +480,7 @@ class Oktogo extends Base
         $this->dm->flush();
 
         //in
-        if (!empty((float)$reservation->totalprice && $reservation->customer && (string)$reservation->postpay == 'false' )) {
+        if (!empty((float)$reservation->totalprice && (string)$reservation->postpay == 'false')) {
 
             $in = new CashDocument();
             $in->setIsConfirmed(false)
@@ -543,6 +534,7 @@ class Oktogo extends Base
                     continue;
                 }
             }
+
             $countChildren = 0;
             //guests
             foreach ($room->guest as $guest) {
@@ -566,31 +558,37 @@ class Oktogo extends Base
             $total = 0;
             $tariff = $rateId = null;
             $pricesByDate = $packagePrices = [];
-            $price = $room->price->attributes();
+            foreach ($room->price as $priceItem) {
 
-            if (!$rateId) {
-                $rateId = (string)$price['rate_id'];
-            }
-            if (!$tariff && isset($tariffs[$rateId])) {
-                $tariff = $tariffs[$rateId]['doc'];
-            }
-            if (!$tariff) {
-                $tariff = $this->createTariff($config, $rateId);
+                $price = $priceItem->attributes();
 
-                if (!$tariff) {
-                    continue;
+                if (!$rateId) {
+                    $rateId = (string)$price['rate_id'];
                 }
-                $corrupted = true;
-                $errorMessage .= 'ERROR: Not mapped rate <' . $tariff->getName() . '>. ';
+                if (!$tariff && isset($tariffs[$rateId])) {
+                    $tariff = $tariffs[$rateId]['doc'];
+                }
+                if (!$tariff) {
+
+                    $tariff = $this->createTariff($config, $rateId);
+
+                    if (!$tariff) {
+
+                        continue;
+                    }
+                    $corrupted = true;
+                    $errorMessage .= 'ERROR: Not mapped rate <' . $tariff->getName() . '>. ';
+                }
+
+                $total += (float)$priceItem;
+                $date = $helper->getDateFromString((string)$price->date, 'Y-m-d');
+
+                $pricesByDate[$date->format('d_m_Y')] = (float)$priceItem;
+                $packagePrices[] = new PackagePrice($date, (float)$priceItem, $tariff);
             }
 
-            $total += (float)$room->totalprice;
-            $date = $helper->getDateFromString((string)$price->date, 'Y-m-d');
 
-            $pricesByDate[$date->format('d_m_Y')] = (float)$room->price;
-            $packagePrices[] = new PackagePrice($date, (float)$room->price, $tariff);
-
-            $packageNote = 'remarks: ' . $room->remarks . '; MealType: ' . $room->meal . '; time = ' . $room->time . '; ' . ' contact_details = ' . $reservation->contract_details . '; ';
+            $packageNote = 'remarks: ' . $room->remarks . 'description: ' . (string)$reservation->special_request->description . '; MealType: ' . $room->meal . '; time = ' . $room->time . '; ' . ' contact_details = ' . $reservation->contract_details . '; ';
             $packageNote .= ' commissionamount=' . $room->commissionamount . '; currencycode = ' . $room->currencycode . '; ' . ' totalprice = ' . $room->totalprice . '; ';
             $packageNote .= $errorMessage;
 
@@ -654,6 +652,7 @@ class Oktogo extends Base
             $this->dm->persist($package);
             $this->dm->persist($order);
         }
+
         $this->dm->flush();
 
         $order->setTotalOverwrite((float)$reservation->totalprice);
@@ -698,19 +697,27 @@ class Oktogo extends Base
             ['config' => $config]
         );
 
-        $response = $this->sendXml(static::BASE_URL . 'rateplans', $request, $this->getHeaders());
+        $response = $this->sendXml(static::BASE_URL . 'roomrates', $request, $this->getHeaders());
 
-        foreach ($response->rateplan as $rate) {
-            $attr = $rate->attributes();
-            $result[(string)$attr['id']] = [
-                'title' => (string)$rate,
-                'readonly' => empty((int)$rate['readonly']) ? false : true,
-                'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
-                'rooms' => $attr['room_id']
-            ];
+        foreach ($response->room as $rates) {
+            $attrRoom = $rates->attributes();
+            foreach ($rates->rates->rate as $rate) {
+                $attrRate = $rate->attributes();
+
+                $result[(int)$attrRoom['id']][(int)$attrRate['id']] = [
+                    'title' => (string)$rate['rateplan_name'],
+                    'readonly' => empty((int)$rate['readonly']) ? false : true,
+                    'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
+                    'rate_id' => (int)$attrRate['id'],
+                    'roomName' => (string)$attrRoom['room_name'],
+                    'rooms' => (string)$attrRoom['id'],
+                ];
+
+            }
         }
 
         return $result;
+
     }
 
     /**

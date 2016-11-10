@@ -3,18 +3,16 @@
     <username>{{ config.hotelId }}</username>
     {% for roomId, roomInfo in data %}
         <room id="{{ roomId }}">
-            {% for date, dateInfo in roomInfo %}
-                {% if dateInfo|length > 1 %}
-                    {% for tariffInfo in dateInfo %}
-                        {% if tariffInfo.id_tariff is defined %}
-                            <update>
-                                <date value="{{ date }}"/>
-                                <rate rateplan_id="{{ tariffInfo.id_tariff }}" adults="{{ tariffInfo.persons }}"
-                                      price="{{ tariffInfo.price }}" />
-                            </update>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
+            {% for date,tariffIds in roomInfo %}
+                {% for tariffId in tariffIds %}
+                    {% if tariffId|length>1 %}
+                        <update>
+                        <date value="{{ date }}"/>
+                        <rate id="{{ tariffId.id_tariff }}" adults="{{ tariffId.persons }}"
+                        price="{{ tariffId.price }}" />
+                        </update>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
         </room>
     {% endfor %}

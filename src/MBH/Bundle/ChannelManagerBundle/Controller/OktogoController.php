@@ -6,6 +6,8 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
+use MBH\Bundle\ChannelManagerBundle\Document\TariffOktogo;
+use MBH\Bundle\ChannelManagerBundle\Form\OktogoTariffsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -193,29 +195,43 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         if (!$config) {
             throw $this->createNotFoundException();
         }
-        $this->get('mbh.channelmanager.oktogo')->syncServices($config);
-        $this->get('mbh.channelmanager.oktogo')->pullOrders();
+
+//          $this->get('mbh.channelmanager.oktogo')->pullTariffs($config);
+//        $this->get('mbh.channelmanager.oktogo')->syncServices($config);
+//        $this->get('mbh.channelmanager.oktogo')->pullOrders();
 //        $this->get('mbh.channelmanager.oktogo')->updateRooms();
 //        $this->get('mbh.channelmanager.oktogo')->updatePrices();
 //        $this->get('mbh.channelmanager.oktogo')->closeForConfig($config);
 //        $this->get('mbh.channelmanager.oktogo')->updateRestrictions();
+//            exit();
 
-        $form = $this->createForm(new TariffsType(), $config->getTariffsAsArray(), [
+        $form = $this->createForm(new OktogoTariffsType(), $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
-            'booking' => $this->get('mbh.channelmanager.oktogo')->pullTariffs($config),
+            'oktogo' => $this->get('mbh.channelmanager.oktogo')->pullTariffs($config),
         ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $config->removeAllTariffs();
-            foreach ($form->getData() as $id => $tariff) {
-                if ($tariff) {
-                    $configTariff = new Tariff();
-                    $configTariff->setTariff($tariff)->setTariffId($id);
-                    $config->addTariff($configTariff);
-                    $this->dm->persist($config);
-                }
+
+               $data = unserialize($form['data']->getData());
+            $idTariffs = $form->getData();
+                unset($idTariffs['data']);
+            foreach ( $idTariffs as $id => $tariff) {
+                    if ($tariff){
+                        foreach ( $data as $idRoom => $idTariffs){
+                            foreach ($idTariffs as $tariffInfo)
+                            if($tariffInfo['rate_id'] == $id ){
+                                $configTariff = new Tariff();
+                                $configTariff->setTariff($tariff)->setTariffId($tariffInfo['rate_id'])->setRoomType($tariffInfo['rooms']);
+                                $config->addTariff($configTariff);
+                                $this->dm->persist($config);
+
+                            }
+                        }
+                    }
             }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
