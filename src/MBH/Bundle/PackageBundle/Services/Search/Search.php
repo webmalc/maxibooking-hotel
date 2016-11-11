@@ -243,6 +243,15 @@ class Search implements SearchInterface
                 if ($restriction->getMaxStayArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y') && $duration > $restriction->getMaxStayArrival()) {
                     $delete = true;
                 }
+
+                //MaxGuest
+                if ($restriction->getMaxGuest() && $query->getTotalPlaces() > $restriction->getMaxGuest() ) {
+                    $delete = true;
+                }
+                //MinGuest
+                if ($restriction->getMinGuest() && $restriction->getMinGuest() > $query->getTotalPlaces()) {
+                    $delete = true;
+                }
                 //ClosedOnArrival
                 if ($restriction->getClosedOnArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y')) {
                     $delete = true;
