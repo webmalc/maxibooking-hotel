@@ -1,7 +1,7 @@
 parameters:
     online_booking:
 #          request_search_url: 'index.php'
-          request_search_url: 'mbresults.php'
+          request_search_url: '/mbresults.php'
           payonlineurl: http://azovsky-billing.com/pay/
 
     online_reservation_manager_email: "zalex@zalex.com.ua"
