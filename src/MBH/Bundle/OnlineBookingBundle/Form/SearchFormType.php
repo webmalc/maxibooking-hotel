@@ -41,7 +41,12 @@ class SearchFormType extends AbstractType
     {
         /** @var DocumentRepository $roomTypeRepository */
         $roomTypeRepository = $this->container->get('mbh.hotel.room_type_manager')->getRepository();
-        $roomTypes = $roomTypeRepository->findAll();
+        $roomTypes = $roomTypeRepository
+            ->createQueryBuilder()
+            ->field('isEnabled')
+            ->equals(true)
+            ->getQuery()
+            ->execute();
         $roomTypeList = [];
         $hotelIds = [];
         /** @var RoomType $roomType */

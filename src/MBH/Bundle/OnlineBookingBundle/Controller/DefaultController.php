@@ -48,6 +48,7 @@ class DefaultController extends BaseController
      * @Template()
      * @param Request $request
      * @return array
+     * @Cache(expires="tomorrow", public=true)
      */
     public function formAction(Request $request)
     {
