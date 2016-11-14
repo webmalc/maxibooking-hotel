@@ -10,6 +10,7 @@ use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
 use Symfony\Component\Security\Acl\Exception\NoAceFoundException;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 /**
  * HotelSelector service
@@ -41,10 +42,17 @@ class HotelSelector
         $user ?: $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
         // Is admin?
-//        $token = new UsernamePasswordToken($user, 'none', 'none', $user->getRoles());
-//        if ($this->container->get('security.access.decision_manager')->decide($token, array('ROLE_ADMIN'))) {
-//            return true;
-//        }
+        $token = new UsernamePasswordToken($user, 'none', 'none', $user->getRoles());
+
+        if ($this->container->get('kernel')->getEnvironment() == 'prod' && $this->container->has('security.access.decision_manager')) {
+            $decision_manager = $this->container->get('security.access.decision_manager');
+        } else {
+            $decision_manager = $this->container->get('debug.security.access.decision_manager');
+        }
+
+        if ($decision_manager->decide($token, array('ROLE_ADMIN'))) {
+            return true;
+        }
 
         // Can edit hotel?
         $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
