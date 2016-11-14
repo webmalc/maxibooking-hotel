@@ -44,7 +44,8 @@
     "leaseweb/memcache-bundle": "^2.1",
     "sonata-project/google-authenticator": "^1.0",
     "google/recaptcha": "^1.1",
-    "dinhkhanh/mongodb-acl-bundle": "dev-master"
+    "dinhkhanh/mongodb-acl-bundle": "dev-master",
+    "guzzlehttp/guzzle": "^6.2"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
 
-//TODO: guzzle || HotelSelector || task datetime
+//TODO: HotelSelector
 
 /** @var \Composer\Autoload\ClassLoader $loader */
 $loader = require __DIR__.'/../app/autoload.php';

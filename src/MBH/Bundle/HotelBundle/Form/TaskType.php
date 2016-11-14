@@ -68,6 +68,7 @@ class TaskType extends AbstractType
                 'html5' => false,
                 'group' => $generalGroup,
                 'required' => false,
+                'date_format' => 'dd.MM.yyyy',
                 'time_widget' => 'single_text',
                 'date_widget' => 'single_text',
                 //'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),

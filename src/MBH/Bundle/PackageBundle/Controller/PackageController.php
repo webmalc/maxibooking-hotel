@@ -141,8 +141,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function csvAction(Request $request)
     {
-//        $this->dm->getFilterCollection()->enable('softdeleteable');
-
         $form = $this->createForm(PackageCsvType::class);
         $form->handleRequest($request);
 

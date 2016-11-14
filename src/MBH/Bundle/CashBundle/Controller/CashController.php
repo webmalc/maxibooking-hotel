@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\CashBundle\Controller;
 
+use GuzzleHttp\Client;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Lib\Exception;
@@ -433,15 +434,13 @@ class CashController extends Controller
         $uniteller = $clientConfig->getPaymentSystemDoc();
 
         try {
-            $request = $this->get('guzzle.client')
-                ->post(Uniteller::DO_CHECK_URL)
-                ->addPostFields($uniteller->getCheckPaymentData($entity))
-                ->send();
+
+            $client = new Client();
+            $client->post(Uniteller::DO_CHECK_URL, ['form_params' => $uniteller->getCheckPaymentData($entity)]);
 
         } catch (Exception $e) {
             throw $this->createNotFoundException();
         }
-        exit();
     }
 
     /**
