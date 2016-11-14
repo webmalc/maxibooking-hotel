@@ -163,8 +163,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     break;
                 case 'paypal':
                     $paypal = new Paypal();
-                    $paypal->setPaypalLogin($form->get('paypalLogin')->getData())
-                           ->setPaypalSecretKey($form->get('paypalSecretKey')->getData());
+                    $paypal->setPaypalLogin($form->get('paypalLogin')->getData());
                     $entity->setPaypal($paypal);
                     break;
                 default:

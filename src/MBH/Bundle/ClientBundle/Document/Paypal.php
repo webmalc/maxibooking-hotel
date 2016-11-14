@@ -30,8 +30,8 @@ class Paypal implements PaymentSystemInterface
         $createdAt->modify('+30 minutes');
 
         return [
-            'action' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
-            'testAction' => 'https://www.sandbox.paypal.com/cgi-bin/websc',
+            'action' => 'https://www.paypal.com/cgi-bin/webscr',
+            'testAction' => 'https://www.paypal.com/cgi-bin/websc',
             'shopId' => $this->getPaypalLogin(),
             'total' => $cashDocument->getTotal(),
             'orderId' => $cashDocument->getId(),
@@ -67,8 +67,7 @@ class Paypal implements PaymentSystemInterface
 
         $dataRequest = $request->request->all();
 
-
-        $test = true;
+        $test = false;
 
         $Ipn = new PaypalIPN();
         $statusResponse = $Ipn->checkPayment($dataRequest, $test);
