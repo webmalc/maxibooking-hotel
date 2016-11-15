@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Document\Traits\NoteTrait;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,6 +19,7 @@ use Zend\Stdlib\JsonSerializable;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -32,6 +34,8 @@ class Package extends Base implements JsonSerializable
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
+
+    use NoteTrait;
 
     const ROOM_STATUS_OPEN = 'open';
     const ROOM_STATUS_WAIT = 'wait'; //Не заехал
@@ -72,6 +76,11 @@ class Package extends Base implements JsonSerializable
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
     protected $accommodation;
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="PackageAccommodation", mappedBy="package")
+     */
+    protected $accommodations;
 
     /**
      * @Gedmo\Versioned
@@ -231,13 +240,7 @@ class Package extends Base implements JsonSerializable
      * )
      */
     protected $servicesPrice;
-    
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string", name="note")
-     */
-    protected $note;
+
 
     /**
      * @var string
@@ -683,27 +686,6 @@ class Package extends Base implements JsonSerializable
         return $this->getOrder()->getStatus();
     }
 
-    /**
-     * Set note
-     *
-     * @param string $note
-     * @return self
-     */
-    public function setNote($note)
-    {
-        $this->note = $note;
-        return $this;
-    }
-
-    /**
-     * Get note
-     *
-     * @return string $note
-     */
-    public function getNote()
-    {
-        return $this->note;
-    }
 
     /**
      * Set purposeOfArrival
@@ -729,8 +711,9 @@ class Package extends Base implements JsonSerializable
    
     public function __construct()
     {
-        $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tourists = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->restarauntSeat = new ArrayCollection();
+        $this->tourists = new ArrayCollection();
+        $this->accommodations = new ArrayCollection();
     }
 
 
@@ -1528,5 +1511,47 @@ class Package extends Base implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @return ArrayCollection
+     */
+    public function getAccommodations(): ArrayCollection
+    {
+        return $this->accommodations;
+    }
 
+    /**
+     * @param ArrayCollection $accommodations
+     * @return Package
+     */
+    public function setAccommodations(ArrayCollection $accommodations): self
+    {
+        $this->accommodations = $accommodations;
+        return $this;
+    }
+
+    /**
+     * Add accommodation
+     *
+     * @param PackageAccommodation $accommodation
+     * @return Package
+     */
+    public function addAccommodation(PackageAccommodation $accommodation): self
+    {
+        $this->accommodations[] = $accommodation;
+
+        return $this;
+    }
+
+    /**
+     * Remove accommodation
+     *
+     * @param PackageAccommodation $accommodation
+     * @return Package
+     */
+    public function removeAccommodations(PackageAccommodation $accommodation)
+    {
+        $this->accommodations->removeElement($accommodation);
+
+        return $this;
+    }
 }
