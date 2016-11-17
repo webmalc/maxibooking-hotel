@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\NoteTrait;
@@ -70,8 +71,8 @@ class Package extends Base implements JsonSerializable
      * @Assert\NotNull(message= "validator.document.package.room_type_not_selected")
      */
     protected $roomType;
-    
-    /** 
+
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
@@ -410,37 +411,15 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Set accommodation
-     *
-     * @param $accommodation
-     * @return self
+     * @param bool $old
+     * @return mixed|null
      */
-    public function setAccommodation($accommodation)
+    public function getAccommodation(bool $old = false)
     {
-        $this->accommodation = $accommodation;
-        return $this;
-    }
-
-    /**
-     * Get accommodation
-     *
-     * @return \MBH\Bundle\HotelBundle\Document\Room $accommodation
-     */
-    public function getAccommodation()
-    {
-        return $this->accommodation;
-    }
-
-    /**
-     * Remove accommodation
-     * @return $this
-     */
-    public function removeAccommodation()
-    {
-        $this->accommodation = null;
-        $this->setIsCheckIn(false);
-
-        return $this;
+        if ($old) {
+            return $this->accommodation;
+        }
+        return $this->accommodations->last() ?? null;
     }
 
     /**
@@ -1512,18 +1491,18 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getAccommodations(): ArrayCollection
+    public function getAccommodations(): Collection
     {
         return $this->accommodations;
     }
 
     /**
-     * @param ArrayCollection $accommodations
+     * @param Collection $accommodations
      * @return Package
      */
-    public function setAccommodations(ArrayCollection $accommodations): self
+    public function setAccommodations(Collection $accommodations): self
     {
         $this->accommodations = $accommodations;
         return $this;

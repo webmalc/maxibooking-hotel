@@ -475,7 +475,7 @@ $(document).ready(function () {
                 docReadyPackages();
                 docReadyCash();
                 docReadyDocs();
-
+                docReadyAccommodations();
             });
         });
     }());

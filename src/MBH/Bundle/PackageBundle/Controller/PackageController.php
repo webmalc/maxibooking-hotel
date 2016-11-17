@@ -4,15 +4,15 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
+use MBH\Bundle\PackageBundle\Form\PackageAccommodationRoomType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
-use MBH\Bundle\PackageBundle\Services\CsvGenerate;
 use MBH\Bundle\PackageBundle\Services\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PackageBundle\Form\PackageCsvType;
@@ -826,27 +826,44 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         return $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);
     }
 
-
     /**
-     * Package relocation (new accommodation)
-     *
-     * @Route("/{id}/relocation/{date}", name="package_relocation", options={"expose"=true})
-     * @Method("GET")
-     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
+     * @Route("/{id}/{room}/accommodation/new/", name="package_accommodation_new", options={"expose"=true})
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW'))")
+     * @ParamConverter("package", class="MBHPackageBundle:Package")
+     * @ParamConverter("room", class="MBHHotelBundle:Room", options={"id" = "room"})
+     * @Template("MBHPackageBundle:Package:accommodationForm.html.twig")
+     * @param Request $request
      * @param Package $package
-     * @param \DateTime $date
      * @return Response
      */
-    public function relocationAction(Package $package, \DateTime $date)
+    public function accommodationNewAction(Request $request, Package $package, Room $room)
     {
-        try {
-            $redirectPackage = $this->get('mbh.order_manager')->relocatePackage($package, $date);
-            $this->addFlash('success', 'controller.packageController.relocation_success');
-        } catch (Exception $e) {
-            $this->addFlash('danger', $e->getMessage());
-            $redirectPackage = $package;
+        $accommodation = new PackageAccommodation();
+        $accommodation
+            ->setPackage($package)
+            ->setRoom($room)
+            ->setBegin($package->getBegin())
+            ->setEnd($package->getEnd())
+        ;
+        $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->dm->persist($accommodation);
+            $this->dm->flush();
+
+            $this->addFlash('success', 'controller.packageController.placement_saved_success');
+            if ($request->isXmlHttpRequest()) {
+                return new Response('', 302);
+            } else {
+                $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);
+            }
         }
-        return $this->redirectToRoute('package_accommodation', ['id' => $redirectPackage->getId()]);
+
+        return [
+            'form' => $form->createView()
+        ];
     }
 
     /**
@@ -966,22 +983,24 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/accommodation/delete", name="package_accommodation_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @ParamConverter("entity", class="MBHPackageBundle:PackageAccommodation")
+     * @param Request $request
+     * @param PackageAccommodation $entity
+     * @return RedirectResponse
      */
-    public function accommodationDeleteAction(Request $request, Package $entity)
+    public function accommodationDeleteAction(Request $request, PackageAccommodation $entity)
     {
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        $package = $entity->getPackage();
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
-
-        $entity->removeAccommodation();
-        $this->dm->persist($entity);
+        $this->dm->remove($entity);
         $this->dm->flush();
 
         $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
 
-        return $this->redirect($this->generateUrl('package_accommodation', ['id' => $entity->getId()]));
+        return $this->redirect($this->generateUrl('package_accommodation', ['id' => $package->getId()]));
     }
 
     /**

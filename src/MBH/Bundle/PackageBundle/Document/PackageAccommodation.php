@@ -27,6 +27,7 @@ use MBH\Bundle\BaseBundle\Annotations as MBH;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
+//TODO: Add validator
 class PackageAccommodation extends Base implements \JsonSerializable
 {
     use TimestampableDocument;
@@ -43,7 +44,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date(name="begin")
-     * @Assert\NotNull()
+     * @Assert\NotNull(message="not_null")
      * @Assert\Date()
      */
     protected $begin;
@@ -52,7 +53,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date(name="end")
-     * @Assert\NotNull()
+     * @Assert\NotNull(message="not_null")
      * @Assert\Date()
      */
     protected $end;
@@ -61,7 +62,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
      * @var Room
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
-     * @Assert\NotNull()
+     * @Assert\NotNull(message="not_null")
      */
     protected $accommodation;
 
@@ -93,7 +94,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
      * @param \DateTime $begin
      * @return PackageAccommodation
      */
-    public function setBegin(\DateTime $begin): PackageAccommodation
+    public function setBegin(\DateTime $begin = null): PackageAccommodation
     {
         $this->begin = $begin;
         return $this;
@@ -111,7 +112,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
      * @param \DateTime $end
      * @return PackageAccommodation
      */
-    public function setEnd(\DateTime $end): PackageAccommodation
+    public function setEnd(\DateTime $end = null): PackageAccommodation
     {
         $this->end = $end;
         return $this;
@@ -133,5 +134,30 @@ class PackageAccommodation extends Base implements \JsonSerializable
     {
         $this->accommodation = $accommodation;
         return $this;
+    }
+
+    /**
+     * @return Room
+     */
+    public function getRoom()
+    {
+        return $this->getAccommodation();
+    }
+
+    /**
+     * @param Room $accommodation
+     * @return PackageAccommodation
+     */
+    public function setRoom(Room $accommodation): self
+    {
+        return $this->setAccommodation($accommodation);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->accommodation->getName();
     }
 }
