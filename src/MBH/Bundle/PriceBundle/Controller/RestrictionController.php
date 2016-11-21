@@ -163,6 +163,8 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                         ->setMaxStayArrival($values['maxStayArrival'] ? (int) $values['maxStayArrival'] : null)
                         ->setMinBeforeArrival($values['minBeforeArrival'] ? (int) $values['minBeforeArrival'] : null)
                         ->setMaxBeforeArrival($values['maxBeforeArrival'] ? (int) $values['maxBeforeArrival'] : null)
+                        ->setMaxGuest($values['maxGuest'] ? (int) $values['maxGuest'] : null)
+                        ->setMinGuest($values['minGuest'] ? (int) $values['minGuest'] : null)
                         ->setClosedOnArrival(isset($values['closedOnArrival']) ? true : false)
                         ->setClosedOnDeparture(isset($values['closedOnDeparture']) ? true : false)
                         ->setClosed(isset($values['closed']) ? true : false)
@@ -194,6 +196,8 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                 ->setMaxStayArrival($values['maxStayArrival'] ? (int) $values['maxStayArrival'] : null)
                 ->setMinBeforeArrival($values['minBeforeArrival'] ? (int) $values['minBeforeArrival'] : null)
                 ->setMaxBeforeArrival($values['maxBeforeArrival'] ? (int) $values['maxBeforeArrival'] : null)
+                ->setMaxGuest($values['maxGuest'] ? (int) $values['maxGuest'] : null)
+                ->setMinGuest($values['minGuest'] ? (int) $values['minGuest'] : null)
                 ->setClosedOnArrival(isset($values['closedOnArrival']) ? true : false)
                 ->setClosedOnDeparture(isset($values['closedOnDeparture']) ? true : false)
                 ->setClosed(isset($values['closed']) ? true : false)
@@ -271,7 +275,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             $this->get('mbh.restriction')->update(
                 $data['begin'], $data['end'], $hotel, $data['minStay'], $data['maxStay'],
                 $data['minStayArrival'], $data['maxStayArrival'], $data['minBeforeArrival'],
-                $data['maxBeforeArrival'], $data['closedOnArrival'], $data['closedOnDeparture'], $data['closed'],
+                $data['maxBeforeArrival'], $data['maxGuest'], $data['minGuest'], $data['closedOnArrival'], $data['closedOnDeparture'], $data['closed'],
                 $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
             );
 

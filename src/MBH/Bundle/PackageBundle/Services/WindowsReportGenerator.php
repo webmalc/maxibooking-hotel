@@ -53,6 +53,11 @@ class WindowsReportGenerator
     private $packages = [];
 
     /**
+     * @var array
+     */
+    private $roomCaches = [];
+
+    /**
      * @var \DateTime
      */
     private $end;
@@ -99,10 +104,15 @@ class WindowsReportGenerator
         $to->modify('+1 day');
 
         $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
-            ->fetch($this->hotel, $request->get('roomType'));
+            ->fetchQuery($this->hotel, $request->get('roomType'))
+            ->sort(['roomType.id' => 'asc', 'id' => 'asc', 'fullTitle' => 'asc'])
+            ->getQuery()->execute();
 
         $this->packages = $this->dm->getRepository('MBHPackageBundle:Package')
             ->fetchWithVirtualRooms($this->begin, $this->end, null, true);
+
+        $this->roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
+            ->fetch($this->begin, $this->end, $this->hotel,  $request->get('roomType') ? [$request->get('roomType')]: [], null, true);
 
         foreach ($rooms as $room) {
             $this->addRoomType($room->getRoomType());
@@ -175,6 +185,14 @@ class WindowsReportGenerator
         $this->dates[$date->format('d.m.Y')] = $date;
 
         return $this;
+    }
+
+    public function getMax($day, $roomType): int
+    {
+        if (isset($this->roomCaches[$roomType->getId()][0][$day->format('d.m.Y')])) {
+            return $this->roomCaches[$roomType->getId()][0][$day->format('d.m.Y')]->getTotalRooms();
+        }
+        return 0;
     }
 
     /**
