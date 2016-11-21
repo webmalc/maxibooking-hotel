@@ -250,7 +250,7 @@ class DefaultController extends BaseController
             //OnlinePayment  - оплаченая цена (формируется взависимости от выбора. Искать в форме)
             $onlinePaymentSum = (int)$formData['total']/100*$paymentType['value'];
             $cash = ['total' => $onlinePaymentSum];
-            $data['onlinePaymentType'] = $paymentType['description'];
+            $data['onlinePaymentType'] = 'online_full';
 
             //Создаем бронь.
             try {
