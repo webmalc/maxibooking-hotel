@@ -119,8 +119,8 @@ class PackageRepository extends DocumentRepository
         }
 
         //roomType
-        if (isset($criteria->roomType)) {
-            $queryBuilder->field('roomType.id')->equals($criteria->roomType->getId());
+        if (count($criteria->getRoomTypeIds()) > 0) {
+            $queryBuilder->field('roomType.id')->in($criteria->getRoomTypeIds());
         }
 
         $dateFilterBy = $criteria->dateFilterBy ? $criteria->dateFilterBy : 'begin';

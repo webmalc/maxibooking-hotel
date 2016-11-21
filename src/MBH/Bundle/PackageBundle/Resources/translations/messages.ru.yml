@@ -385,3 +385,8 @@ csv.form.modal_close: Закрыть
 csv.form.modal_generate: Сгенерировать
 csv.form.countNight: Кол-во Ночей
 csv.form.countPersons: Кол-во Людей
+
+#chessBoard
+form.chessBoard.begin.label: Заезд
+form.chessBoard.end.label: Отъезд
+form.chessBoard.roomType.label: Тип номера

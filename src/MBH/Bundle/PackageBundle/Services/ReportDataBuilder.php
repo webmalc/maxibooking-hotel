@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Housing;
@@ -13,6 +14,7 @@ use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Symfony\Component\Translation\DataCollectorTranslator;
 
 class ReportDataBuilder
 {
@@ -27,54 +29,56 @@ class ReportDataBuilder
     private $beginDate;
     /** @var  \DateTime $endDate */
     private $endDate;
-    /** @var  Housing $housing */
-    private $housing;
+    /** @var  array $housingIds */
+    private $housingIds;
     /** @var  Tariff $tariff */
     private $tariff;
-    /** @var  int $floor */
-    private $floor;
+    /** @var  array $floorIds */
+    private $floorIds;
+    /** @var DataCollectorTranslator $translator */
+    private $translator;
 
     private $isRoomTypesInit = false;
     private $roomTypes;
-    private $isRoomCachesInit = false;
-    private $roomCaches = [];
 
     /**
      * ReportDataBuilder constructor.
      * @param DocumentManager $dm
      * @param Helper $helper
+     * @param DataCollectorTranslator $translator
      */
-    public function __construct(DocumentManager $dm, Helper $helper)
+    public function __construct(DocumentManager $dm, Helper $helper, DataCollectorTranslator $translator)
     {
         $this->dm = $dm;
         $this->helper = $helper;
+        $this->translator = $translator;
     }
 
     /**
      * @param Hotel $hotel
-     * @param int[] $roomTypeIds
      * @param \DateTime $beginDate
      * @param \DateTime $endDate
-     * @param Housing $housing
+     * @param int[] $roomTypeIds
+     * @param array $housingIds
+     * @param array $floorIds
      * @param Tariff $tariff
-     * @param $floor
      * @return ReportDataBuilder
      */
     public function init(Hotel $hotel,
         \DateTime $beginDate,
         \DateTime $endDate,
         $roomTypeIds = [],
-        Housing $housing = null,
-        $floor = null,
+        array $housingIds = [],
+        array $floorIds = [],
         Tariff $tariff = null)
     {
         $this->hotel = $hotel;
         $this->roomTypeIds = $roomTypeIds;
         $this->beginDate = $beginDate;
         $this->endDate = $endDate;
-        $this->housing = $housing;
+        $this->housingIds = $housingIds;
         $this->tariff = $tariff;
-        $this->floor = $floor;
+        $this->floorIds = $floorIds;
 
         return $this;
     }
@@ -85,21 +89,34 @@ class ReportDataBuilder
 
         $packages = $this->getPackages()->toArray();
 
-
         foreach ($packages as $package) {
             /** @var Package $package */
+            // Id строки таблицы шахматки, в которую будет помещаться бронь
+            //Если в брони указаны данные о размещении, указываем соответствующий Id комнаты
+            if ($package->getAccommodation()) {
+                $reportTableLineId = $package->getAccommodation()->getId();
+            //В противном случае указываем Id строки "Без номера" для указанного типа комнаты
+            } else {
+                $reportTableLineId = 'no_accommodation' . $package->getRoomType()->getId();
+            }
+
             //TODO: Дополнить необходимыми данными
             $packagesData[] = [
                 //TODO: Плательщик не всегда есть. Что вместо него?
-                'payer' => $package->getPayer() ? $package->getPayer() : $package->getName(),
+                //При добавлении данных в данный массив, необходимо добавить эти данные при рендеринге в json(в chessBoard.html.twig)
+                'id' => $package->getId(),
+                'payer' => $package->getPayer() ? $package->getPayer()->getName() : $package->getName(),
                 'price' => $package->getPrice(),
                 'begin' => $package->getBegin(),
                 'end' => $package->getEnd(),
-
+                'roomTypeId' => $package->getRoomType()->getId(),
+                'tableLineId' => $reportTableLineId,
             ];
         }
+
         return $packagesData;
     }
+
 
     public function getPackages()
     {
@@ -109,15 +126,13 @@ class ReportDataBuilder
         $packageQueryCriteria->filter = 'live_between';
         $packageQueryCriteria->liveBegin = $this->beginDate;
         $packageQueryCriteria->liveEnd = $this->endDate;
-
-        if ($this->housing !== null || $this->floor !== null) {
-            $rooms = $this->getRooms();
-            $roomIds = $this->helper->toIds($rooms);
-            return $this->dm->getRepository('MBHPackageBundle:Package')
-                ->fetchWithAccommodation($this->beginDate, $this->endDate, $roomIds, null, false);
-        } else {
-            return $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
+        if (count($this->roomTypeIds) > 0) {
+            foreach ($this->roomTypeIds as $roomTypeId) {
+                $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
+            }
         }
+
+        return $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
     }
 
     /**
@@ -192,21 +207,22 @@ class ReportDataBuilder
 
     public function getRoomTypeData()
     {
-        $rooMTypeData = [];
+        $roomTypeData = [];
+        $roomTypes = count($this->roomTypeIds) > 0 ? $this->roomTypeIds : null;
         /** @var array [roomTypeId => RoomType] $roomsByRoomTypeIds */
         $roomsByRoomTypeIds = $this->dm->getRepository('MBHHotelBundle:Room')
-            ->fetch($this->hotel, $this->roomTypeIds, $this->housing, $this->floor, null, null, true);
+            ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->housingIds, null, null, true);
 
         foreach ($this->getRoomTypes() as $roomType) {
 
             /** @var RoomType $roomType */
-            $rooMTypeData[$roomType->getId()] = [
+            $roomTypeData[$roomType->getId()] = [
                 'name' => $roomType->getName(),
                 'rooms' =>$this->getRoomsData($roomsByRoomTypeIds, $roomType)
             ];
         }
 
-        return $rooMTypeData;
+        return $roomTypeData;
     }
 
     /**
@@ -225,7 +241,7 @@ class ReportDataBuilder
                 /** @var Room $room */
                 $houseDetails = '';
                 if ($room->getHousing()) {
-                    $houseDetails .= 'Корпус "' . $room->getHousing()->getName() . '"<br>' ;
+                    $houseDetails .= "Корпус \"" . $room->getHousing()->getName() . "\"<br>" ;
                 }
                 if ($room->getFloor()) {
                     $houseDetails .= 'Этаж ' . $room->getFloor();
@@ -242,22 +258,6 @@ class ReportDataBuilder
         return $roomsData;
     }
 
-    /**
-     * Ленивая загрузка массива объектов Room
-     * @return array
-     */
-    private function getRooms()
-    {
-        if (!$this->isRoomCachesInit) {
-
-            $this->roomCaches = $this->dm->getRepository('MBHHotelBundle:Room')
-                ->fetch($this->hotel, $this->roomTypeIds, $this->housing, $this->floor);
-
-            $this->isRoomCachesInit = true;
-        }
-
-        return $this->roomCaches;
-    }
 
     /**
      * Ленивая загрузка массива объектов RoomType, используемых в данном запросе

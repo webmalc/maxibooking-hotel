@@ -66,9 +66,9 @@ class PackageQueryCriteria extends AbstractQueryCriteria
      */
     public $packageOrders;
     /**
-     * @var RoomType
+     * @var array
      */
-    public $roomType;
+    private $roomTypes;
     /**
      * @var bool
      */
@@ -103,4 +103,26 @@ class PackageQueryCriteria extends AbstractQueryCriteria
      * @var bool
      */
     public $deleted = false;
+
+    /**
+     * @param $roomTypeCriteria
+     * @return PackageQueryCriteria
+     */
+    public function addRoomTypeCriteria($roomTypeCriteria)
+    {
+        if ($roomTypeCriteria instanceof RoomType)
+        {
+            $this->roomTypes[] = $roomTypeCriteria->getId();
+        } else {
+            //TODO: Уточнить
+            $this->roomTypes[] = $roomTypeCriteria;
+        }
+
+        return $this;
+    }
+
+    public function getRoomTypeIds()
+    {
+        return $this->roomTypes;
+    }
 }

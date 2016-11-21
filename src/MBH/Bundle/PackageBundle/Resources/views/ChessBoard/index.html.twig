@@ -1,0 +1,291 @@
+{% extends 'MBHPackageBundle::layout.html.twig' %}
+
+{% set small_title = 'report.accommodation.placement'|trans({}, 'MBHPackageBundle') %}
+{% set layout = 'box' %}
+
+{% set headerWidth = 200 %}
+{% set headerHeight = 81 %}
+{% set dayTableWidth = days|length * 47 %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='uglifyjs2'
+    '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
+    '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {# Передаем данные о бронях для обработки на клиенте #}
+    <script>
+        var packages = [
+            {% for package in packages %}
+            {
+                'id': "{{ package.id }}",
+                "payer": "{{ package.payer }}",
+                "price": "{{ package.price }}",
+                "begin": "{{ package.begin|date('d.m.Y') }}",
+                "end": "{{ package.end|date('d.m.Y') }}",
+                "roomTypeId": "{{ package.roomTypeId }}",
+                "tableLineId": "{{ package.tableLineId }}"
+            },
+            {% endfor %}
+        ];
+        var roomTypes = [];
+        {% for roomTypeID, roomTypeData in roomTypesData %}
+        roomTypes['{{ roomTypeID }}'] = '{{ roomTypeData.name }}';
+        {% endfor %}
+    </script>
+    {% endjavascripts %}
+
+{% endblock %}
+    {% block content %}
+
+        <input type="hidden" name="begin" id="accommodation-report-begin" class="hidden" value="{{ beginDate|date('d.m.Y') }}">
+        <input type="hidden" name="end" id="accommodation-report-end" class="hidden" value="{{ endDate|date('d.m.Y') }}">
+
+        <form method="post" id="accommodation-report-filter" class="form-inline filter-form remember" role="form">
+            <div class="input">
+                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+                <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ beginDate|date('d.m.Y') }}">
+            </div>
+            <div class="input hidden">
+                - &nbsp
+                <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ? 'now'|date_modify("+40 days")|date('d.m.Y') : app.request.get('end') }}">
+            </div>
+            <div class="input">
+                <i class="fa fa-bed"  title='Тип номера' data-toggle='tooltip'></i>&nbsp
+                <select name="roomType[]" multiple data-placeholder="Тип номера" id="accommodation-report-filter-roomType" class="accommodation-report-filter form-control input-sm">
+                    <option></option>
+                    {% for roomType in roomTypes %}
+                        <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if housings|length %}
+                <div class="input">
+                    <i class="fa fa-home" title='Корпус' data-toggle='tooltip'></i>&nbsp  <select name="housing" multiple data-placeholder="Корпус" id="accommodation-report-filter-housing" class="accommodation-report-filter form-control input-sm">
+                        <option></option>
+                        {% for housing in housings %}
+                            <option value="{{ housing.id }}" {% if housing in app.request.get('housings') and housings|length != app.request.get('housings')|length %}selected{% endif %}>{{ housing.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+
+            {% if floors|length %}
+                <div class="input">
+                    <i class="fa fa-home" title='Этаж' data-toggle='tooltip'></i>&nbsp  <select name="floor" multiple data-placeholder="Этаж" id="accommodation-report-filter-floor" class="accommodation-report-filter form-control input-sm">
+                        <option></option>
+                        {% for floor in floors %}
+                            <option value="{{ floor }}" {% if floor in app.request.get('floors') and floors|length != app.request.get('housings')|length %}selected{% endif %}>{{ floor }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+        </form>
+
+
+
+        <div id="accommodation-chessBoard-content" style="overflow: auto; heght: auto; width: auto" class="">
+            <!---------------------------- MONTHS AND DATES ------------------------->
+            <div id="header-title" class="tile tile-not-selected tile-free both"
+                 style="width:{{ headerWidth }}px;">
+                <div class="title" style="height: 81px; background-color: #ecf0f5;">
+                    <div class="tableTitleCell">&nbsp;</div>
+                    <div class="tableTitleCell">
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+            <div id="months-and-dates"
+                 style="background-color: #ecf0f5; position: absolute;  z-index: 200; left: 200px; width:{{ dayTableWidth }}px; height: {{ headerHeight }}px;">
+                <div class="calendarRow clearfix">
+                    <ul class="list-unstyled calendarDays">
+                        {% for monthDays in calendarData %}
+                            <li class="tile tile-not-selected tile-free both"
+                                style="width:{{ monthDays.daysCount * 47 }}px;">
+                                <div class="month" style="width:{{ monthDays.daysCount * 47 }}px;">
+                                    {{ monthDays.daysCount > 2 ? months[monthDays.month] ~ ', ' ~ monthDays.year }}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="calendarRow clearfix">
+                    <ul class="list-unstyled calendarDays">
+                        {% for day in days %}
+                            <li class="tile tile-bookable tile-free both">
+                                <div class="day">
+                                    <div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}
+                                        <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <!---------------------------- ROOM TYPES ------------------------->
+            <div id="roomTypeColumn">
+                {% for roomTypeId, roomTypeData in roomTypesData %}
+                    <div class="clearfix">
+                        <ul class="calendarDays list-unstyled">
+
+                            <li class="tile tile-not-selected tile-free both"
+                                style="width:{{ headerWidth }}px; background-color: #ecf0f5;">
+                                <div class="title"><strong class="text-info">
+                                        <i class="fa fa-bed"></i> {{ roomTypeData.name[0:30] }}</strong></div>
+                            </li>
+                            <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
+                                <div class="title-sub text-right">
+                                    <div class="text-right">
+                                        Без размещения
+                                    </div>
+                                </div>
+                            </li>
+                            {% for key, roomData in roomTypeData['rooms'] %}
+                                <li class="tile tile-not-selected tile-free both"
+                                    style="width:{{ headerWidth }}px;">
+                                    <div class="title-sub">
+                                        {# Настройка названий комнат и тултипов к ним #}
+                                        {% set toolTip = '' %}
+                                        {% if roomData.name|length > 20 %} {% set toolTip =  roomData.name ~ "<br>" %}{% endif %}
+                                        {% if roomData.houseDetails %} {% set toolTip = toolTip ~ roomData.houseDetails %}{% endif %}
+
+                                        {% set roomShortInfo = roomData.name %}
+                                        {% if roomData.name|length < 4 and roomData.houseDetails %}
+                                            {% set roomShortInfo = roomShortInfo ~  ' (' ~ roomData.houseDetails[0:16] ~ ')' %}
+                                        {% endif %}
+
+                                        <a {% if toolTip != '' %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ toolTip }}" {% endif %}>{{ roomShortInfo[0:20] }}</a>
+
+                                        <div class="text-right">
+                                            {% if roomData.statuses is iterable and roomData.statuses is not empty %}
+                                                {% for status in roomData.statuses %}
+                                                    {% if status.code in roomStatusIcons|keys %}
+                                                        <i style="position: relative; bottom: 10px; font-size: 14px;"
+                                                           data-container="body"
+                                                           class=" fa mbf-{{ roomStatusIcons[status.code] }}"
+                                                           title="{{ status }}" data-toggle="tooltip"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+            <div id="calendarWrapper" style="width:{{ dayTableWidth }}px;">
+                <div class="days">
+                    <div class="clearfix" style="display: inline-block;">
+                        <div class="calendarRows clearfix ">
+
+                            <!---------------------------- ROOMS ------------------------->
+                            <div class="rooms" style="margin-top: {{ headerHeight }}px;">
+                                {% for roomTypeId, roomTypeData in roomTypesData %}
+                                    <div class="calendarRow clearfix " style="background-color: #ecf0f5;">
+                                        <ul class="list-unstyled calendarDays">
+                                            {% for day in days %}
+                                                <li class="tile">
+                                                    <div class="leftRooms">
+                                                        {% if roomCachesData[roomTypeId][day.date|date('d.m.Y')] is defined %} {{ roomCachesData[roomTypeId][day.date|date('d.m.Y')] }} {% endif %}
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="roomTypeRooms" id="{{ roomTypeId }}">
+                                        <div class="calendarRow clearfix roomDates">
+                                            <ul class="calendarDates list-unstyled"
+                                                id="{{ 'no_accommodation' ~ roomTypeId }}">
+                                                {% for day in days %}
+                                                    {% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}
+                                                    {% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}
+                                                    <li class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
+                                                        <div class="date">
+                                                            <div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}
+                                                                <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% for key, roomData in roomTypeData['rooms'] %}
+                                            <div class="calendarRow clearfix roomDates">
+                                                <ul class="calendarDates list-unstyled" id="{{ key }}">
+                                                    {% for day in days %}
+                                                        {% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}
+                                                        {% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}
+                                                        <li class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
+                                                            <div class="date">
+                                                                <div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}
+                                                                    <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!---------------------------- Modal ------------------------->
+            <div class="modal fade" id="packageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                <div class="modal-dialog" role="document">
+                    <input type="hidden" id="modalPackageId">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="packageModalTitle">Инфа о брони</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group row">
+                                    <div class="col-md-6">
+                                        <label for="modalRoomTypeName" class="control-label">Тип комнаты</label>
+                                        <select class="form-control" id="modalRoomTypeName" style="width: 254px;">
+                                            {% for roomTypeData in roomTypes %}
+                                                <option value="{{ roomTypeData.id }}">{{ roomTypeData.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-6">
+                                        <label for="modalTableLine" class="control-label">Комната(пока что id)</label>
+                                        <input type="text" class="form-control" id="modalTableLine">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <label for="modalCheckinDate" class="control-label">Заезд</label>
+                                        <input type="date" class="form-control" id="modalCheckinDate"></div>
+                                    <div class="col-md-4">
+                                        <label for="modalCheckoutDate" class="control-label">Выезд</label>
+                                        <input type="date" class="form-control" id="modalCheckoutDate">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" id="packageModalCancelButton"
+                                    data-dismiss="modal">Отмена
+                            </button>
+                            <button type="button" id="packageModalConfirmButton" class="btn btn-primary">
+                                Сохранить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
