@@ -464,13 +464,26 @@ class Search implements SearchInterface
             ->fetchWithVirtualRooms($begin, $end, $roomType)
         ;
 
+        $minRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->getMinTotal(
+            $begin, $end, $roomType, $tariff
+        );
+
+        if (!$minRoomCache) {
+            $minRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->getMinTotal(
+                $begin, $end, $roomType
+            );
+        }
+
         $groupedPackages = [];
         foreach ($packages as $package) {
             $groupedPackages[$package->getVirtualRoom()->getId()][] = $package;
         }
 
-        foreach ($this->dm->getRepository('MBHHotelBundle:Room')->fetch(null, [$result->getRoomType()->getId()]) as $room) {
+        $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
+            ->fetchQuery(null, [$result->getRoomType()->getId()], null, null, null, $minRoomCache)
+            ->sort(['id' => 'asc', 'fullTitle' => 'desc']);
 
+        foreach ($rooms->getQuery()->execute() as $room) {
             if (isset($groupedPackages[$room->getId()])) {
                 foreach ($groupedPackages[$room->getId()] as $package) {
 

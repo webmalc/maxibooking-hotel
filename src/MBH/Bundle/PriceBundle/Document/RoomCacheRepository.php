@@ -5,9 +5,34 @@ namespace MBH\Bundle\PriceBundle\Document;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\BaseBundle\Service\Cache;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class RoomCacheRepository extends DocumentRepository
 {
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @return int
+     */
+    public function getMinTotal(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff = null): int
+    {
+        $qb = $this->createQueryBuilder()
+            ->field('date')->gte($begin)->lte($end)
+            ->field('roomType')->references($roomType)
+            ->sort('totalRooms')->limit(1);
+
+        if ($tariff) {
+            $qb->field('tariff')->references($tariff);
+        } else {
+            $qb->field('tariff')->equals(null);
+        }
+
+        $roomCache = $qb->getQuery()->getSingleResult();
+
+        return $roomCache ? $roomCache->getTotalRooms() : 0;
+    }
+
     /**
      * @param \DateTime|null $begin
      * @param \DateTime|null $end
