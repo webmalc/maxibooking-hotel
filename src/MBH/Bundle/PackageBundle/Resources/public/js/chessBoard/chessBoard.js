@@ -222,6 +222,21 @@ function isPackageOverlapped(packageElement) {
     return overlappedPackages.length > 0;
 }
 
+function adjustElementOffset(packageElement) {
+    'use strict';
+    var packageTopOffset = $(packageElement).offset().top;
+    var roomLineTopOffset;
+    $('.roomDates').each(function (index, obj) {
+        var currentLineTopOffset = $(obj).offset().top;
+        if (packageTopOffset > (currentLineTopOffset - 10) && packageTopOffset < (currentLineTopOffset + 20)) {
+            roomLineTopOffset = currentLineTopOffset;
+        }
+    });
+    if (roomLineTopOffset) {
+        return roomLineTopOffset - $('#calendarWrapper').offset().top;
+    }
+}
+
 function setPackageOffset(packageElement, startDate, roomLineElement, wrapper) {
     'use strict';
     var wrapperOffset = wrapper.offset();
@@ -239,7 +254,8 @@ function createPackageElement(templatePackageElement, packageItem, wrapper) {
 
     var packageStartDate = moment(packageItem.begin, "DD.MM.YYYY");
     var packageEndDate = moment(packageItem.end, "DD.MM.YYYY");
-    var packageWidth = packageEndDate.diff(packageStartDate, 'days') * DATE_ELEMENT_WIDTH;
+    var packageCellCount = packageEndDate.diff(packageStartDate, 'days');
+    var packageWidth = packageCellCount * DATE_ELEMENT_WIDTH;
 
     var roomDatesListElement = $('#' + packageItem.tableLineId);
 
@@ -247,7 +263,7 @@ function createPackageElement(templatePackageElement, packageItem, wrapper) {
     packageDiv.id = packageItem.id;
     var description = document.createElement('div');
     description.style = 'margin: auto; height: 15px; text-align: center; padding: 0.3em 13px;font-size: 0.8em;';
-    description.innerText = packageItem.payer;
+    description.innerText = packageItem.payer.substr(0, packageCellCount * 5);
     packageDiv.appendChild(description);
     return setPackageOffset(packageDiv, packageStartDate, roomDatesListElement, wrapper);
 }

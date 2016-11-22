@@ -15,12 +15,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @Route("/chessBoard")
+ * @Route("/chessboard")
  */
 class ChessBoardController extends BaseController
 {
     /**
-     * @Route("/")
+     * @Route("/", name="chess_board_home")
      * @Template()
      * @param Request $request
      * @return array

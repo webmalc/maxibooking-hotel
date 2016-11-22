@@ -96,6 +96,9 @@ class Builder extends ContainerAware
         $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
             ->setAttributes(['icon' => 'fa fa-table']);
 
+        $menu['porter_links']->addChild('chessboard', ['route' => 'chess_board_home', 'label' => 'ШахматкаТест'])
+            ->setAttributes(['icon' => 'fa fa-table']);
+
         //Prices links
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
             ->setAttributes(['dropdown' => true, 'icon' => $this->container->get('mbh.currency')->info()['icon']]);
