@@ -105,7 +105,7 @@ services:
 
     mbh.package.report_data_builder:
         class: MBH\Bundle\PackageBundle\Services\ReportDataBuilder
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper', '@translator']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper', '@service_container']
 
     mbh.package.windows.report.generator:
       class: MBH\Bundle\PackageBundle\Services\WindowsReportGenerator

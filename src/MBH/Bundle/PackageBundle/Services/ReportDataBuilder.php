@@ -14,7 +14,8 @@ use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ReportDataBuilder
 {
@@ -45,13 +46,13 @@ class ReportDataBuilder
      * ReportDataBuilder constructor.
      * @param DocumentManager $dm
      * @param Helper $helper
-     * @param DataCollectorTranslator $translator
+     * @param ContainerInterface $container
      */
-    public function __construct(DocumentManager $dm, Helper $helper, DataCollectorTranslator $translator)
+    public function __construct(DocumentManager $dm, Helper $helper, $container)
     {
         $this->dm = $dm;
         $this->helper = $helper;
-        $this->translator = $translator;
+        $this->translator = $container->get('translator');
     }
 
     /**
