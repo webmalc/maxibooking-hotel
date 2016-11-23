@@ -70,7 +70,6 @@ class Search implements SearchInterface
      */
     public function search(SearchQuery $query)
     {
-
         $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
 
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_FORCE_BOOKING')) {
@@ -93,6 +92,7 @@ class Search implements SearchInterface
         $beforeArrival = $today->diff($query->begin)->format('%a');
         $helper = $this->container->get('mbh.helper');
 
+
         //roomTypes
         if (empty($query->roomTypes)) {
             $query->roomTypes = [];
@@ -113,6 +113,7 @@ class Search implements SearchInterface
             }
             $query->roomTypes = count($roomTypes) ? $roomTypes : [0];
         }
+
         //roomCache with tariffs
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null,
@@ -480,7 +481,7 @@ class Search implements SearchInterface
 
         $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
             ->fetchQuery(null, [$result->getRoomType()->getId()], null, null, null, $minRoomCache)
-            ->sort(['id' => 'asc', 'fullTitle' => 'desc']);
+            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'desc']);
 
         foreach ($rooms->getQuery()->execute() as $room) {
             if (isset($groupedPackages[$room->getId()])) {
