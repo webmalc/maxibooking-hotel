@@ -699,54 +699,92 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
                 $check = $form->get('checks')->getData();
                 $code = $packageService->getService()->getCode();
-
+                $checks = true;
                 if ($check) {
                     if ($code == 'Early check-in' || $code == 'Late check-out') {
-
                         $packageInfo = $packageService->getPackage();
                         $tariff = $packageInfo->getTariff();
-
-                        if ($code == 'Early check-in') {
-                            $date = $packageInfo->getBegin()->modify('-1 day');
-                            $datePrice = clone $packageInfo->getBegin();
-                        } elseif ($code == 'Late check-out') {
-                            $date = $packageInfo->getEnd();
-                            $datePrice = clone $packageInfo->getEnd();
-                        }
 
                         $packagePrices = $packageInfo->getPrices()->toArray();
                         $priceByDate = $packageInfo->getPricesByDate();
 
-                        //priceBydate
-                        $priceByDate[$datePrice->format('d_m_Y')] = (float)0;
+                        if ($code == 'Early check-in') {
 
-                        //packagePrices
-                        $packagePrice = new PackagePrice($datePrice, (float)0, $tariff);
-                        $packagePrices[] = $packagePrice;
+                            $date = $packageInfo->getBegin();
+                            $newDate = clone $date;
+                            $newDate->modify('-1 day');
+                            $datePrice = clone $newDate;
+                            $dateEnd = clone $packageInfo->getEnd();
+                            //priceBydate
+                            $priceByDate[$datePrice->format('d_m_Y')] = (float)0;
 
-                        $packageInfo->setPricesByDate($priceByDate)
+                            //packagePrices
+                            $packagePrice = new PackagePrice($datePrice, (float)0, $tariff);
+
+                            array_unshift($packagePrices,$packagePrice);
+
+                            $packageNew = clone $packageInfo;
+                            $packageNew->setBegin($newDate);
+
+                            $result = $this->container->get('mbh.order_manager')->updatePackage($packageInfo, $packageNew);
+
+                            if ($result instanceof Package) {
+
+                                $packageInfo->setBegin($newDate)
+                                    ->setPricesByDate($priceByDate)
+                                    ->setEnd($dateEnd)
                                     ->setPrices($packagePrices);
 
-                        if ($code == 'Early check-in') {
-                            $packageInfo->setBegin($date);
+                                $this->dm->persist($packageInfo);
+                                $this->addFlash('success', $this->get('translator')->trans('controller.packageController.service_added_danger_early'));
+
+                            }else {
+                                $checks = false;
+                            }
+
                         } elseif ($code == 'Late check-out') {
-                            $packageInfo->setEnd($date->modify('+1 day'));
+
+                            $date = $packageInfo->getEnd();
+                            $dateNew = clone $date;
+                            $dateNew->modify('+1 day');
+                            $datePrice = clone $date;
+
+                            //priceBydate
+                            $priceByDate[$datePrice->format('d_m_Y')] = (float)0;
+
+                            //packagePrices
+                            $packagePrice = new PackagePrice($datePrice, (float)0, $tariff);
+                            $packagePrices[] = $packagePrice;
+
+                            $packageNew = clone $packageInfo;
+                            $packageNew->setEnd($dateNew);
+
+                            $result = $this->container->get('mbh.order_manager')->updatePackage($packageInfo, $packageNew);
+
+                            if ($result instanceof Package) {
+
+                                $packageInfo->setEnd($dateNew->modify('+1 day'))
+                                    ->setPricesByDate($priceByDate)
+                                    ->setPrices($packagePrices);
+
+                                $this->dm->persist($packageInfo);
+                                $this->addFlash('success', $this->get('translator')->trans('controller.packageController.service_added_danger_late'));
+                            } else {
+                                $checks = false;
+                            }
+
                         }
-
-                        $this->dm->persist($packageInfo);
-
-                        $request->getSession()->getFlashBag()->set('danger',  
-                            $this->get('translator')->trans('controller.packageController.service_added_danger'));
 
                     }
                 }
 
-                $this->dm->persist($packageService);
-                $this->dm->flush();
-
-                $request->getSession()->getFlashBag()->set('success',
-                    $this->get('translator')->trans('controller.packageController.service_added_success')
-                );
+                if ($checks){
+                    $this->dm->persist($packageService);
+                    $this->dm->flush();
+                    $this->addFlash('success', $this->get('translator')->trans('controller.packageController.service_added_success'));
+                } else{
+                    $this->addFlash('danger', $this->get('translator')->trans('controller.packageController.service_added_danger'));
+                }
 
                 return $this->afterSaveRedirect('package', $package->getId(), [], '_service');
             }
