@@ -481,7 +481,7 @@ class Search implements SearchInterface
 
         $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
             ->fetchQuery(null, [$result->getRoomType()->getId()], null, null, null, $minRoomCache)
-            ->sort(['id' => 'asc', 'fullTitle' => 'desc']);
+            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'desc']);
 
         foreach ($rooms->getQuery()->execute() as $room) {
             if (isset($groupedPackages[$room->getId()])) {
