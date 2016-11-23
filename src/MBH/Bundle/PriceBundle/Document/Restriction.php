@@ -94,6 +94,22 @@ class Restriction extends Base
     protected $maxBeforeArrival = null;
 
     /**
+     * @var int
+     * @ODM\Integer()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=1)
+     */
+    protected $maxGuest;
+
+    /**
+     * @var int
+     * @ODM\Integer()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=1)
+     */
+    protected $minGuest;
+
+    /**
      * @var boolean
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
@@ -333,7 +349,38 @@ class Restriction extends Base
     {
         return $this->maxBeforeArrival;
     }
-
+    /**
+     * @return int
+     */
+    public function getMaxGuest()
+    {
+        return $this->maxGuest;
+    }
+    /**
+     * @param int $maxGuest
+     * @return Restriction
+     */
+    public function setMaxGuest($maxGuest)
+    {
+        $this->maxGuest = $maxGuest;
+        return $this;
+    }
+    /**
+     * @return int
+     */
+    public function getMinGuest()
+    {
+        return $this->minGuest;
+    }
+    /**
+     * @param int $minGuest
+     * @return Restriction
+     */
+    public function setMinGuest($minGuest)
+    {
+        $this->minGuest = $minGuest;
+        return $this;
+    }
     /**
      * Set closedOnArrival
      *

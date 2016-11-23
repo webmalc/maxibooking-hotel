@@ -130,6 +130,26 @@ class RestrictionGeneratorType extends AbstractType
                     new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
                 ],
             ])
+            ->add('maxGuest', 'text', [
+                'label' => 'Макс. количество гостей',
+                'group' => 'Ограничение по количеству гостей',
+                'required' => false,
+                'data' => null,
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'constraints' => [
+                    new Range(['min' => 1, 'minMessage' => 'Количество гостей не может быть меньше нуля'])
+                ],
+            ])
+            ->add('minGuest', 'text', [
+                'label' => 'Мин. количество гостей',
+                'group' => 'Ограничение по количеству гостей',
+                'required' => false,
+                'data' => null,
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'constraints' => [
+                    new Range(['min' => 1, 'minMessage' => 'Количество гостей не может быть меньше нуля'])
+                ],
+            ])
             ->add('closedOnArrival', 'checkbox', [
                 'label' => 'Нет заезда?',
                 'group' => 'Ограничение заезда/выезда',
@@ -165,12 +185,28 @@ class RestrictionGeneratorType extends AbstractType
         }
     }
 
+    public function checkGuest($data, ExecutionContextInterface $context)
+    {
+        if ((int)$data['maxGuest'] < (int)$data['minGuest']) {
+            $context->addViolation('Минимальное количество гостей не может быть больше максимального количества гостей');
+        }
+
+    }
+
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults([
             'weekdays' => [],
             'hotel' => null,
-            'constraints' => new Callback([$this, 'checkDates'])
+            'constraints' => [
+                new Callback([
+                    'callback' => [$this, 'checkDates'],
+                ]),
+                new Callback([
+                    'callback' => [$this, 'checkGuest'],
+                ]),
+
+            ],
         ]);
     }
 

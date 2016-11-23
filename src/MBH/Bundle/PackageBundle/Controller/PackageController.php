@@ -389,6 +389,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'package' => $package,
             'hotel' => $package->getRoomType()->getHotel(),
             'corrupted' => $package->getCorrupted(),
+            'virtualRooms' => $this->clientConfig->getSearchWindows()
         ]);
 
         return [
@@ -456,7 +457,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'promotions' => $promotions,
             'package' => $package,
             'hotel' => $package->getRoomType()->getHotel(),
-            'corrupted' => $package->getCorrupted()
+            'corrupted' => $package->getCorrupted(),
+            'virtualRooms' => $this->clientConfig->getSearchWindows()
         ]);
 
         $form->submit($request);
