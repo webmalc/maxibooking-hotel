@@ -39,7 +39,7 @@ services:
 
     mbh.channelmanager.logger_handler:
         class:     Monolog\Handler\StreamHandler
-        arguments: [%kernel.logs_dir%/%kernel.environment%.channelmanager.log, 200]
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.channelmanager.log", 200]
 
     mbh.channelmanager.configs.subscriber:
             class: MBH\Bundle\ChannelManagerBundle\EventListener\ConfigsSubscriber

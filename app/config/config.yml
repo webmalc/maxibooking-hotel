@@ -68,7 +68,7 @@ twig:
 # Assetic Configuration
 assetic:
     debug:          "%kernel.debug%"
-    use_controller: '%use_assetic_controller%'
+    use_controller: "%use_assetic_controller%"
     filters:
         cssrewrite: ~
         uglifycss:
@@ -97,9 +97,9 @@ swiftmailer:
 doctrine_mongodb:
     connections:
         default:
-            server: %mongodb_url%
+            server: "%mongodb_url%"
             options: {}
-    default_database: %mongodb_database%
+    default_database: "%mongodb_database%"
     document_managers:
         default:
             connection: 'default'
@@ -189,7 +189,7 @@ knp_snappy:
 # IamPersistentMongoDBAclBundle Configuration
 dinhkhanh_mongo_db_acl:
     acl_provider:
-        default_database: %mongodb_database%
+        default_database: "%mongodb_database%"
 
 liip_imagine:
     resolvers:
@@ -198,7 +198,7 @@ liip_imagine:
     loaders:
         protected:
             filesystem:
-                data_root: %kernel.root_dir%/../protectedUpload
+                data_root: "%kernel.root_dir%/../protectedUpload"
     filter_sets:
         cache: ~
         thumb_100x100:
@@ -230,9 +230,9 @@ liip_imagine:
 jms_translation:
     configs:
         app:
-            dirs: [%kernel.root_dir%, %kernel.root_dir%/../src]
-            output_dir: %kernel.root_dir%/Resources/translations
-            excluded_dirs: [%kernel.root_dir%/../var/cache, %kernel.root_dir%/../var/logs]
+            dirs: ["%kernel.root_dir%", "%kernel.root_dir%/../src"]
+            output_dir: "%kernel.root_dir%/Resources/translations"
+            excluded_dirs: ["%kernel.root_dir%/../var/cache", "%kernel.root_dir%/../var/logs"]
             excluded_names: ["*TestCase.php", "*Test.php"]
 
 # GravatarBundle

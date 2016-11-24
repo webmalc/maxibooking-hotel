@@ -9,12 +9,12 @@ services:
         class: MBH\Bundle\UserBundle\Form\GroupType
         tags:
           - { name: form.type, alias: mbh_bundle_userbundle_grouptype }
-        arguments: [%security.role_hierarchy.roles%]
+        arguments: ["%security.role_hierarchy.roles%"]
 
     mbh.user.roles.type:
         class: MBH\Bundle\UserBundle\Form\Type\RolesType
         arguments:
-            - %security.role_hierarchy.roles%
+            - "%security.role_hierarchy.roles%"
         tags:
             - { name: form.type, alias: roles }
     mbh.user.metadata_listener:

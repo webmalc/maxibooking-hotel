@@ -7,4 +7,4 @@ services:
 
     mbh.online.logger_handler:
         class:     Monolog\Handler\StreamHandler
-        arguments: [%kernel.logs_dir%/%kernel.environment%.online.log, 200]
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.online.log", 200]
