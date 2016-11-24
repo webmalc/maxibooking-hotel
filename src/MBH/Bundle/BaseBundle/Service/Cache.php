@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
-use Lsw\MemcacheBundle\Cache\MemcacheInterface;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
 
 /**
  * Helper service
@@ -22,16 +22,15 @@ class Cache
     private $isEnabled;
 
     /**
-     * @var \Memcached
+     * @var \ApcuAdapter
      */
-    private $memcached;
+    private $cache;
 
     public function __construct(array $params)
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
-        $this->memcached = new \Memcached();
-        $this->memcached->addServer('localhost', 11211);;
+        $this->cache = new ApcuAdapter();
     }
 
     /**
@@ -39,17 +38,7 @@ class Cache
      */
     public function clear(string $prefix = null)
     {
-        $memcached = $this->memcached;
-
-        $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
-        $keys = array_filter($memcached->getAllKeys() ? $memcached->getAllKeys() : [], function ($val) use ($prefix) {
-            $length = strlen($prefix);
-            return (substr($val, 0, $length) === $prefix);
-        });
-
-        array_walk($keys, function ($val) {
-            $this->memcached->delete($val);
-        });
+        $this->cache->clear();
     }
 
     /**
@@ -96,7 +85,9 @@ class Cache
             return $this;
         }
 
-        $this->memcached->set($this->generateKey($prefix, $keys), $value, self::LIFETIME);
+        $item = $this->cache->getItem($this->generateKey($prefix, $keys));
+        $item->set($value)->expiresAfter(self::LIFETIME);
+        $this->cache->save($item);
 
         return $this;
     }
@@ -112,6 +103,7 @@ class Cache
             return false;
         }
 
-        return $this->memcached->get($this->generateKey($prefix, $keys));
+        $item = $this->cache->getItem($this->generateKey($prefix, $keys));
+        return $item->isHit() ? $item->get() : false;
     }
 }
