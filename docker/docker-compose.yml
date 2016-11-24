@@ -6,15 +6,6 @@ mbh-memcached:
   image: phpdockerio/memcached:latest
   container_name: mbh-memcached
 
-mbh-phpunit:
-  image: phpunit/phpunit:latest
-  container_name: mbh-phpunit
-  volumes:
-      - ..:/var/www/mbh
-  links:
-    - mbh-memcached
-    - mbh-mongo
-
 mbh-webserver:
   image: phpdockerio/nginx:latest
   container_name: mbh-webserver
@@ -43,4 +34,3 @@ mbh-php-fpm:
   links:
     - mbh-memcached
     - mbh-mongo
-    - mbh-phpunit
