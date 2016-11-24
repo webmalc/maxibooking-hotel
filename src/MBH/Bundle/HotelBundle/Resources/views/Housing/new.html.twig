@@ -3,7 +3,7 @@
 {% set layout = "box" %}
 
 {% block content %}
-    {{ form_start(form, {'action': path('housing_create'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('housing_create'),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_end(form) }}

@@ -3,19 +3,19 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Form\OstrovokType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/ostrovok")
@@ -34,7 +34,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
         $entity = $this->hotel->getOstrovokConfig();
 
         $form = $this->createForm(
-            new OstrovokType(), $entity
+            OstrovokType::class, $entity
         );
 
 
@@ -64,7 +64,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             $entity->setHotel($hotel);
         }
         $form = $this->createForm(
-            new OstrovokType(), $entity
+            OstrovokType::class, $entity
         );
 
         $form->handleRequest($request);
@@ -110,7 +110,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomsType(), $entity->getRoomsAsArray(), [
+        $form = $this->createForm(RoomsType::class, $entity->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.ostrovok')->pullRooms($entity),
         ]);
@@ -162,7 +162,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffsType(), $entity->getTariffsAsArray(), [
+        $form = $this->createForm(TariffsType::class, $entity->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.ostrovok')->pullTariffs($entity),
         ]);

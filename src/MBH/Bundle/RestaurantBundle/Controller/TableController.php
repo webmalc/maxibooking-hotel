@@ -16,6 +16,7 @@ use MBH\Bundle\RestaurantBundle\Document\Table;
 use MBH\Bundle\RestaurantBundle\Form\ChairType;
 use MBH\Bundle\RestaurantBundle\Form\TableType;
 use MBH\Bundle\RestaurantBundle\Form\TableTypeType;
+use MBH\Bundle\RestaurantBundle\Service\TableManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -23,7 +24,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\RestaurantBundle\Service\TableManager;
 
 
 /** @Route("tables") */
@@ -63,7 +63,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
         $entity = new \MBH\Bundle\RestaurantBundle\Document\TableType();
         $entity->setHotel($this->hotel);
 
-        $form = $this->createForm(new TableTypeType(), $entity);
+        $form = $this->createForm(TableTypeType::class, $entity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -96,7 +96,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TableTypeType(), $category);
+        $form = $this->createForm(TableTypeType::class, $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -146,7 +146,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
         $table = new Table();
         $table->setCategory($category);
         $table->setHotel($this->hotel);
-        $form = $this->createForm(new TableType($this->dm, $this->container), $table);
+        $form = $this->createForm(TableType::class, $table, ['dm' => $this->dm, 'container' => $this->container ]);
 
         $form->handleRequest($request);
 
@@ -182,7 +182,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TableType($this->dm, $this->container), $item);
+        $form = $this->createForm(TableType::class, $item, ['dm' => $this->dm, 'container' => $this->container ]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -288,7 +288,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
             'type' => false,
         ];
 
-        $form = $this->createForm(new ChairType(), $chairDescription);
+        $form = $this->createForm(ChairType::class, $chairDescription);
 
         $form->handleRequest($request);
 

@@ -2,9 +2,11 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\TaskTypeRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,26 +17,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class RoomTypeTasksType extends AbstractType
 {
-    /**
-     * @var Hotel
-     */
-    protected $hotel;
-
-    public function __construct(Hotel $hotel)
-    {
-        $this->hotel = $hotel;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $hotel = $this->hotel;
+        $hotel = $options['hotel'];
 
         $queryBuilderFunction = function(TaskTypeRepository $repository) use($hotel) {
             return $repository->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
         };
 
         $builder
-            ->add('checkIn', 'document', [
+            ->add('checkIn', DocumentType::class, [
                 'label' => 'form.roomTypeTasks.checkIn',
                 'required' => false,
                 'multiple' => true,
@@ -43,14 +35,15 @@ class RoomTypeTasksType extends AbstractType
                 'help' => 'Задачи, создаваемые при заезде гостя',
                 'query_builder' => $queryBuilderFunction
             ])
-            ->add('daily', 'collection', [
+            ->add('daily', CollectionType::class, [
                 'label' => 'form.roomTypeTasks.daily',
                 'required' => false,
-                'type' => new DailyTaskType($hotel),
+                'entry_type' => DailyTaskType::class,
+                'entry_options' => ['hotel' => $hotel],
                 'allow_add' => true,
                 'allow_delete' => true,
             ])
-            ->add('checkOut', 'document', [
+            ->add('checkOut', DocumentType::class, [
                 'label' => 'form.roomTypeTasks.checkOut',
                 'required' => false,
                 'multiple' => true,
@@ -70,11 +63,12 @@ class RoomTypeTasksType extends AbstractType
     {
         $resolver->setDefaults([
             'cascade_validation' => true,
+            'hotel' => null
         ]);
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_hotel_bundle_room_type_tasks';
     }

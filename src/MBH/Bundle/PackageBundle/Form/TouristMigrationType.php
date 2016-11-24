@@ -4,6 +4,8 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,22 +18,22 @@ class TouristMigrationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('series', 'text', [
+            ->add('series', TextType::class, [
                 'label' => 'tourist.migration.type_series',
                 'group' => 'migration.card',
                 'required' => false,
             ])
-            ->add('number', 'text', [
+            ->add('number', TextType::class, [
                 'label' => 'tourist.migration.type_number',
                 'group' => 'migration.card',
                 'required' => false,
             ])
-            ->add('representative', 'textarea', [
+            ->add('representative', TextareaType::class, [
                 'label' => 'tourist.migration.type_representative',
                 'group' => 'migration.card',
                 'required' => false,
             ])
-            ->add('address', 'textarea', [
+            ->add('address', TextareaType::class, [
                 'label' => 'tourist.migration.type_address',
                 'group' => 'migration.card',
                 'required' => false,
@@ -51,7 +53,7 @@ class TouristMigrationType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_package_tourist_migration';
     }

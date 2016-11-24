@@ -2,23 +2,23 @@
 
 namespace MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber;
 
-use Documents\CustomRepository\Repository;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Documents\CustomRepository\Repository;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\PackageBundle\Document\Order;
-use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\RestaurantBundle\Document\Ingredient;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 
-use Doctrine\ODM\MongoDB\Events;
+use MBH\Bundle\RestaurantBundle\Document\Ingredient;
 
-use Doctrine\Common\EventSubscriber;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Subscriber implements EventSubscriber
 {

@@ -7,14 +7,17 @@ use Knp\Menu\MenuItem;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class Builder
 
  */
-class Builder extends ContainerAware
+class Builder implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function templateDocuments(FactoryInterface $factory, array $options)
     {
         $package = $options['package'];

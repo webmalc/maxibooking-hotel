@@ -3,20 +3,20 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use MBH\Bundle\PriceBundle\Form\PriceCacheGeneratorType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\PriceBundle\Form\PriceCacheGeneratorType;
 
 /**
  * @Route("price_cache")
@@ -260,7 +260,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             }
         }
 
-        $form = $this->createForm(new PriceCacheGeneratorType(), $sessionFormData, [
+        $form = $this->createForm(PriceCacheGeneratorType::class, $sessionFormData, [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $this->hotel,
             'useCategories' => $this->manager->useCategories,
@@ -281,13 +281,13 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      */
     public function generatorSaveAction(Request $request)
     {
-        $form = $this->createForm(new PriceCacheGeneratorType(), [], [
+        $form = $this->createForm(PriceCacheGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $this->hotel,
             'useCategories' => $this->manager->useCategories
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $data = $form->getViewData();

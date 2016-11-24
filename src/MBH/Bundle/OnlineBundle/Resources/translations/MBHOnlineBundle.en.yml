@@ -8,13 +8,13 @@ views.api.form.adults: Adults
 views.api.form.children: Children
 views.api.form.find_room: Find room
 views.api.form.online_reservation_system: online booking system
-views.api.getPaymentType.dates: Date:
-views.api.getPaymentType.days_and_nights: Days/nights:
-views.api.getPaymentType.nomerov: Rooms:
-views.api.getPaymentType.order_result: Booking for:
-views.api.getPaymentType.nomera: Rooms:
-views.api.getPaymentType.services: Options:
-views.api.getPaymentType.tariff: Tariff:
+views.api.getPaymentType.dates: "Date:"
+views.api.getPaymentType.days_and_nights: "Days/nights:"
+views.api.getPaymentType.nomerov: "Rooms:"
+views.api.getPaymentType.order_result: "Booking for:"
+views.api.getPaymentType.nomera: "Rooms:"
+views.api.getPaymentType.services: "Options:"
+views.api.getPaymentType.tariff: "Tariff:"
 views.api.getPaymentType.choose_payment_way: Choose payment method
 views.api.getPaymentType.payment_fine: To pay on arrival to the hotel at reception desk, no fine for no snow or cancellation.
 views.api.getPaymentType.reservation_guarantee_whole_sum: Guaranteed availability, full prepayment before arrival to the hotel
@@ -37,9 +37,9 @@ views.api.getResultsTable.service_type: Option type
 views.api.getResultsTable.amount: Quantity
 views.api.getResultsTable.price_per: price per
 views.api.getResultsTable.day: day
-views.api.getResultsTable.rooms: Rooms:
-views.api.getResultsTable.services: Services:
-views.api.getResultsTable.result: Total:
+views.api.getResultsTable.rooms: "Rooms:"
+views.api.getResultsTable.services: "Services:"
+views.api.getResultsTable.result: "Total:"
 views.api.getResultsTable.continue: Next
 views.api.getResultsTable.nothing_found_for_your_query: Your search returned no results.
 views.api.getUserForm.enter_data_to_continue: Fill in data to continue
@@ -53,7 +53,7 @@ views.api.getUserForm.birth_date: Date of birth
 views.api.getUserForm.check_in_time: Check-in time
 views.api.getUserForm.check_out_time: Check-out time
 views.api.getUserForm.comment: Comment
-views.api.getUserForm.required_fields: - required fields
+views.api.getUserForm.required_fields: "- required fields"
 views.api.getUserForm.choose_other_rooms: Find another rooms
 views.api.getUserForm.continue: Next
 views.api.getUserForm.reservation_error: An error occured while booking.
@@ -63,8 +63,8 @@ views.api.notification.hotel: Hotel
 views.api.notification.dates: Date
 views.api.notification.room_type: Room type
 views.api.notification.client: Client:
-views.api.notification.phone: Phone number:
-views.api.make_payment_for_order_id: Pay %total% \u0440. Booking number: %order_id%
+views.api.notification.phone: "Phone number:"
+views.api.make_payment_for_order_id: "Pay %total% \u0440. Booking number: %order_id%"
 views.api.tariffs.base_tariff: (basic tariff)
 views.api.tariffs.tariffs_and_special_offers: Tariffs and special offers
 views.form.index.settings_in_quotes: "settings"
@@ -72,10 +72,10 @@ views.form.index.settings: Settings
 views.form.index.site_embed_code: Embed code for website
 views.form.index.settings_required: "You must fill in basic settings!"
 views.form.index.site_embed_form_code: Form embed code for website
-views.form.index.to_form_place: To form place:
+views.form.index.to_form_place: "To form place:"
 views.form.index.before_closing_tag: Before closing tag
-views.form.index.search_page_embed_code: Search page embed code:
-views.form.index.to_results_place: To result place:
+views.form.index.search_page_embed_code: "Search page embed code:"
+views.form.index.to_results_place: "To result place:"
 views.form.layout.online_form: Online form
 views.form.period_is_not_filled: Period is empty
 

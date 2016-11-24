@@ -3,11 +3,11 @@
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\HotelBundle\Document\RoomType;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
@@ -69,7 +69,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->templating = $this->container->get('templating');
-        $this->request = $container->get('request');
+        $this->request = $container->get('request_stack')->getCurrentRequest();
         $this->helper = $container->get('mbh.helper');
         $this->logger = $container->get('mbh.channelmanager.logger');
         $this->currency = $container->get('mbh.currency');
@@ -402,7 +402,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
         if ($post && !empty($data)) {
-            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

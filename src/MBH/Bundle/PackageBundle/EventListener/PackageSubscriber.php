@@ -102,7 +102,7 @@ class PackageSubscriber implements EventSubscriber
             }
 
             $this->container->get('mbh.mbhs')
-                ->sendPackageInfo($package, $this->container->get('request')->getClientIp());
+                ->sendPackageInfo($package, $this->container->get('request_stack')->getCurrentRequest()->getClientIp());
         }
     }
 

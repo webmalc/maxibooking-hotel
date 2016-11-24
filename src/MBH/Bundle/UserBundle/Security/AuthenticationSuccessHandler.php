@@ -2,11 +2,11 @@
 
 namespace MBH\Bundle\UserBundle\Security;
 
+use MBH\Bundle\ClientBundle\Service\Mbhs;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\DefaultAuthenticationSuccessHandler;
 use Symfony\Component\Security\Http\HttpUtils;
-use MBH\Bundle\ClientBundle\Service\Mbhs;
 
 /**
  * Custom AuthenticationSuccessHandler

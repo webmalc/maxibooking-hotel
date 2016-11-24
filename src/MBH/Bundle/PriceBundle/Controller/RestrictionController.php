@@ -3,15 +3,15 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Form\RestrictionGeneratorType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 
 /**
  * @Route("restriction")
@@ -235,7 +235,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $form = $this->createForm(
-            new RestrictionGeneratorType(), [], [
+            RestrictionGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -258,12 +258,12 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $form = $this->createForm(
-            new RestrictionGeneratorType(), [], [
+            RestrictionGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $request->getSession()->getFlashBag()

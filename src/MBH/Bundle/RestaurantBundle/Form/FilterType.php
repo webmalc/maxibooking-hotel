@@ -9,8 +9,8 @@
 namespace MBH\Bundle\RestaurantBundle\Form;
 
 
-use MBH\Bundle\BaseBundle\Form\Extension\DateTimeType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class FilterType extends AbstractType
@@ -27,7 +27,7 @@ class FilterType extends AbstractType
             ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'restaurant_dishorder_filter_type';
     }

@@ -16,7 +16,8 @@ framework:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: false
     form:            ~
-    csrf_protection: ~
+    csrf_protection:
+      enabled: true
     validation:      { enable_annotations: true }
     templating:
         engines: ['twig']
@@ -79,7 +80,7 @@ assetic:
         less:
             node: /usr/bin/nodejs
             node_paths: [/usr/local/lib/node_modules/]
-            apply_to: '\.less$'
+            apply_to: ".less$"
         scssphp:
             formatter: 'Leafo\ScssPhp\Formatter\Compressed'
 
@@ -186,7 +187,7 @@ knp_snappy:
         options:    []
 
 # IamPersistentMongoDBAclBundle Configuration
-iam_persistent_mongo_db_acl:
+dinhkhanh_mongo_db_acl:
     acl_provider:
         default_database: %mongodb_database%
 

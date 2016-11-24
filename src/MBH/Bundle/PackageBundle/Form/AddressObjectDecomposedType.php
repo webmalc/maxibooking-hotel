@@ -3,8 +3,10 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -18,7 +20,7 @@ class AddressObjectDecomposedType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('country', 'document', [
+            ->add('country', DocumentType::class, [
                 'label' => 'form.AddressObjectDecomposedType.country',
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
                 'query_builder' => function(DocumentRepository $repository) {
@@ -26,7 +28,7 @@ class AddressObjectDecomposedType extends AbstractType
                 },
                 'required' => false,
             ])
-            ->add('region', 'document', [
+            ->add('region', DocumentType::class, [
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
                 'label' => 'form.AddressObjectDecomposedType.region',
                 'query_builder' => function(DocumentRepository $repository) {
@@ -34,43 +36,39 @@ class AddressObjectDecomposedType extends AbstractType
                 },
                 'required' => false,
             ])
-            ->add('city', 'text', [
+            ->add('city', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.city',
                 'required' => false,
             ])
-            ->add('settlement', 'text', [
+            ->add('settlement', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.settlement',
                 'required' => false,
             ])
-            ->add('district', 'text', [
+            ->add('district', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.district',
                 'required' => false,
             ])
-            /*->add('urbanarea', 'text', [
-                'label' => 'form.AddressObjectDecomposedType.urbanarea',
-                'required' => false,
-            ])*/
-            ->add('street', 'text', [
+            ->add('street', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.street',
                 'required' => false,
             ])
-            ->add('house', 'text', [
+            ->add('house', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.house',
                 'required' => false,
             ])
-            ->add('corpus', 'text', [
+            ->add('corpus', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.corpus',
                 'required' => false,
             ])
-            ->add('flat', 'text', [
+            ->add('flat', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.flat',
                 'required' => false,
             ])
-            ->add('zip_code', 'text', [
+            ->add('zip_code', TextType::class, [
                 'label' => 'form.AddressObjectDecomposedType.zip_code',
                 'required' => false,
             ])
-            ->add('address_object', 'text', [
+            ->add('address_object', TextType::class, [
                 'label' => 'form.TouristExtendedType.address_object',
                 'required' => false,
                 'help' => 'Передача адреса в виде кода (AOID) Федеральной информационной адресной системы (ФИАС)'
@@ -91,7 +89,7 @@ class AddressObjectDecomposedType extends AbstractType
      *
      * @return string The name of this type
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_address_object_decomposed';
     }

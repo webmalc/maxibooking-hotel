@@ -4,13 +4,13 @@ namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
-use MBH\Bundle\PackageBundle\Lib\SearchResult;
-use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
-use MBH\Bundle\ClientBundle\Document\ClientConfig;
 
 /**
  *  Search service

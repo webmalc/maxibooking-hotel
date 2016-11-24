@@ -1,4 +1,4 @@
-validator.constraints.expense_greater_than_income: Сумма расхода по заказу не должна превышать приход. Сумма прихода: %total%
+validator.constraints.expense_greater_than_income: 'Сумма расхода по заказу не должна превышать приход. Сумма прихода: %total%'
 validator.constraints.payer: 'Не указан плательщик'
 validator.document.cashDocument.no_order_selected: Не выбран заказ
 validator.document.cashDocument.wrong_tariff_type: Неверный тип тарифа.

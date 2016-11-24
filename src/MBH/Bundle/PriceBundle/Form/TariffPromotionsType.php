@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -15,7 +16,7 @@ class TariffPromotionsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('promotions', 'document', [
+            ->add('promotions', DocumentType::class, [
                 'label' => 'Доступные акции',
                 'group' => 'Общая информация',
                 'required' => false,
@@ -23,7 +24,7 @@ class TariffPromotionsType extends AbstractType
                 'class' => 'MBH\Bundle\PriceBundle\Document\Promotion',
                 'multiple' => true,
             ])
-            ->add('defaultPromotion', 'document', [
+            ->add('defaultPromotion', DocumentType::class, [
                 'label' => 'Акции по умолчанию',
                 'group' => 'Общая информация',
                 'required' => false,
@@ -41,7 +42,7 @@ class TariffPromotionsType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_price_tariff_promotions';
     }

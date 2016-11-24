@@ -5,14 +5,14 @@ namespace MBH\Bundle\BaseBundle\Command;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\TaskData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\PollQuestion;
-use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Service;
+use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 class FixturesCommand extends ContainerAwareCommand

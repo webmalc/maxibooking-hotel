@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use MBH\Bundle\OnlineBundle\Document\Invite;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,26 +28,25 @@ class InviteType extends AbstractType
                 'format' => 'yyyy-MM-dd',
                 'required' => false,
             ])
-            ->add('type', 'choice', [
+            ->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'expanded' => true,
                 'choices' => [
                     Invite::TYPE_SINGLE => 'form.inviteType.type.single',
                     Invite::TYPE_TWICE => 'form.inviteType.type.twice',
                 ],
                 'required' => false,
-                'empty_value' => null,
+                'placeholder' => null,
             ])
-            ->add('guests', 'collection', [
-                'type' => new InvitedTouristType(),
+            ->add('guests', CollectionType::class, [
+                'entry_type' => InvitedTouristType::class,
                 'allow_add' => true,
                 'prototype' => true
             ])
-            ->add('tripRoutes', 'collection', [
-                'type' => new TripRouteType(),
+            ->add('tripRoutes', CollectionType::class, [
+                'entry_type' => TripRouteType::class,
                 'allow_add' => true,
                 'prototype' => true
             ])
-            //->add('agree', 'checkbox')
         ;
     }
 
@@ -58,7 +58,7 @@ class InviteType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_online_bundle_invite';
     }

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
@@ -13,14 +14,13 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\OrderType;
 use MBH\Bundle\PackageBundle\Form\OrganizationType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 
 /**
  * @Route("/order")
@@ -64,7 +64,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      * Order cash list
      *
      * @Route("/{id}/cash/{packageId}", name="package_order_cash")
-     * @Method({"GET","PUT"})
+     * @Method({"GET","POST"})
      * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', entity) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
@@ -93,7 +93,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             ->execute();
 
         //Defaults
-        if (!$request->isMethod(Request::METHOD_PUT)) {
+        if (!$request->isMethod(Request::METHOD_POST)) {
             $cash
                 ->setOperation('in')
                 ->setMethod('cash')
@@ -104,22 +104,23 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 ->setNumber($cashDocumentRepository->generateNewNumber($cash));
         }
 
-        $form = $this->createForm(new CashDocumentType($this->dm), $cash, [
+        $form = $this->createForm(CashDocumentType::class, $cash, [
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
             'groupName' => $this->get('translator')->trans('controller.orderController.add_cash_register_paper'),
             'payer' => $entity->getMainTourist() ? $entity->getMainTourist()->getId() : null,
             'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity),
-            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
+            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER'),
+            'dm' => $this->dm
         ]);
 
-        if ($request->isMethod(Request::METHOD_PUT)  &&
+        if ($request->isMethod(Request::METHOD_POST)  &&
             $this->container->get('security.authorization_checker')->isGranted('ROLE_ORDER_CASH_DOCUMENTS') && (
                 $this->container->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_EDIT_ALL') ||
                 $this->container->get('security.authorization_checker')->isGranted('EDIT', $entity)
             )
         ) {
-            $form->submit($request);
+            $form->handleRequest($request);
             if ($form->isValid()) {
                 $this->dm->persist($cash);
                 $this->dm->flush();
@@ -165,7 +166,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new OrderTouristType(), ['addToPackage' => true]);
+        $form = $this->createForm(OrderTouristType::class, ['addToPackage' => true]);
 
 
         return [
@@ -199,9 +200,10 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new OrganizationType($this->dm), null, [
+        $form = $this->createForm(OrganizationType::class, null, [
             'isFull' => false,
             'typeList' => $this->container->getParameter('mbh.organization.types'),
+            'dm' => $this->dm
         ]);
 
         return [
@@ -217,7 +219,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      * Order tourist update
      *
      * @Route("/{id}/tourist/update/{packageId}", name="package_order_tourist_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @@Security("is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', $order) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template("MBHPackageBundle:Order:touristEdit.html.twig")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
@@ -234,9 +236,9 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new OrderTouristType());
+        $form = $this->createForm(OrderTouristType::class);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $data = $form->getData();
@@ -286,7 +288,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      * Order tourist update
      *
      * @Route("/{id}/organization/update/{packageId}", name="package_order_organization_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template("MBHPackageBundle:Order:organizationEdit.html.twig")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
@@ -312,13 +314,14 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             $existOrganization->setType('contragents');
         }
 
-        $form = $this->createForm(new OrganizationType($this->dm),
+        $form = $this->createForm(OrganizationType::class,
             $existOrganization, [
                 'isFull' => false,
                 'typeList' => $this->container->getParameter('mbh.organization.types'),
+                'dm' => $this->dm
             ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             /** @var Organization $organization */
@@ -432,7 +435,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new OrderType(), $entity);
+        $form = $this->createForm(OrderType::class, $entity);
 
         return [
             'entity' => $entity,
@@ -448,7 +451,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      * Order update
      *
      * @Route("/{id}/update/{packageId}", name="package_order_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("(is_granted('ROLE_PACKAGE_EDIT_ALL') and is_granted('ROLE_ORDER_EDIT')) or (is_granted('ROLE_ORDER_EDIT') and is_granted('EDIT', entity))")
      * @Template("MBHPackageBundle:Order:edit.html.twig")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
@@ -465,8 +468,8 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new OrderType(), $entity);
-        $form->submit($request);
+        $form = $this->createForm(OrderType::class, $entity);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);

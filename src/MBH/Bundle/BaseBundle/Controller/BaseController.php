@@ -163,4 +163,12 @@ class BaseController extends Controller
         $request->setLocale($locale);
         $this->get('translator')->setLocale($request->getLocale());
     }
+
+    /**
+     * @return null|\Symfony\Component\HttpFoundation\Request
+     */
+    protected function getRequest()
+    {
+        return $this->get('request_stack')->getCurrentRequest();
+    }
 }
