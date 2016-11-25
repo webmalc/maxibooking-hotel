@@ -621,13 +621,18 @@ var select2TemplateResult = {
         if (!state.id) {
             return state.text;
         }
-        var icons = state.element.getAttribute('data-icon').split(';'),
+        var rawIcons = state.element.getAttribute('data-icon'),
             result = '';
-        $.each(icons, function (key, icon) {
-            if (icon) {
-                result += '<i class="fa ' + icon + '"></i>';
-            }
-        });
+        if(rawIcons) {
+            var icons = rawIcons.split(';');
+
+            $.each(icons, function (key, icon) {
+                if (icon) {
+                    result += '<i class="fa ' + icon + '"></i>';
+                }
+            });
+        }
+
         return result ? result : null;
     },
     appendIcon: function (state) {
