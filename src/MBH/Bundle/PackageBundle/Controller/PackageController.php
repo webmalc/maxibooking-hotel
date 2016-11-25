@@ -698,19 +698,29 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             if ($form->isValid()) {
 
                 $check = $form->get('checks')->getData();
-                $code = $packageService->getService()->getCode();
-                $checks = true;
+                $amount = $form->get('amount')->getData();
+                $checks = null;
 
-                if ($check) {
-                    $this->checkCode($packageService->getPackage(), $code) ? null : $checks = false;
+                $code = $packageService->getService()->getCode();
+                $service = [
+                    'Early check-in',
+                    'Late check-out'
+                ];
+
+                if (in_array($code, $service)) {
+                    if ((int)$amount > 1) {
+                        $checks = false;
+                        $this->addFlash('danger', $this->get('translator')->trans('controller.packageController.service_added_amount_danger'));
+                    } else {
+                        $checks = $this->checkCode($packageService->getPackage(), $code, $check);
+                    }
+
                 }
 
-                if ($checks) {
+                if ($checks || $checks === null) {
                     $this->dm->persist($packageService);
                     $this->dm->flush();
                     $this->addFlash('success', $this->get('translator')->trans('controller.packageController.service_added_success'));
-                } else {
-                    $this->addFlash('danger', $this->get('translator')->trans('controller.packageController.service_added_danger'));
                 }
 
                 return $this->afterSaveRedirect('package', $package->getId(), [], '_service');
@@ -725,12 +735,13 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         ];
     }
 
-    private function checkCode(Package $package, $code)
+    private function checkCode(Package $package, $code, $check)
     {
         $tariff = $package->getTariff();
         $type = null;
 
-        if (!$package->isEarlyCheckIn() || !$package->isLateCheckOut()) {
+
+        if ((!$package->isEarlyCheckIn() || !$package->isLateCheckOut()) && $check) {
 
             $code == 'Early check-in' ? $type = true : null;
             $code == 'Late check-out' ? $type = false : null;
@@ -739,11 +750,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $priceByDate = $package->getPricesByDate();
 
             $date = $package->getBegin();
-            $type  ? $date = $package->getBegin() : $date = $package->getEnd();;
+            $type ? $date = $package->getBegin() : $date = $package->getEnd();;
             $newDate = clone $date;
             $type ? $newDate->modify('-1 day') : $newDate->modify('+1 day');
             $type ? $datePrice = clone $newDate : $datePrice = clone $date;
-
 
             $dateEnd = clone $package->getEnd();
 
@@ -773,6 +783,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 return true;
 
             } else {
+                $this->addFlash('danger', $this->get('translator')->trans('controller.packageController.service_added_danger'));
+
                 return false;
             }
         }
