@@ -160,7 +160,7 @@ services:
 
     mbh.cache:
             class: MBH\Bundle\BaseBundle\Service\Cache
-            arguments: ['%mbh_cache%']
+            arguments: ['%mbh_cache%', '@doctrine_mongodb', '@validator']
 
     #mbh.menu.voter.request:
     #    class: MBH\Bundle\BaseBundle\Menu\RequestContentIdentityVoter

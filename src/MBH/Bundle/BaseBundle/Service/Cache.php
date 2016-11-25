@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use MBH\Bundle\BaseBundle\Document\CacheItem;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
-
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Helper service
  */
@@ -26,19 +28,45 @@ class Cache
      */
     private $cache;
 
-    public function __construct(array $params)
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectManager
+     */
+    private $dm;
+
+    /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
+    public function __construct(array $params, ManagerRegistry $dm, ValidatorInterface $validator)
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
         $this->cache = new ApcuAdapter();
+        $this->dm = $dm->getManager();
+        $this->validator = $validator;
     }
 
     /**
      * @param string|null $prefix
+     * @param bool $all
+     * @return self
      */
-    public function clear(string $prefix = null)
+    public function clear(string $prefix = null, bool $all = false): self
     {
-        $this->cache->clear();
+        if (!$this->isEnabled) {
+            return $this;
+        }
+        if ($all) {
+            $this->cache->clear();
+            return $this;
+        }
+
+        $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
+        $this->cache->deleteItems($this->dm->getRepository('MBHBaseBundle:CacheItem')->getKeysByPrefix($prefix));
+        $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix);
+
+        return $this;
     }
 
     /**
@@ -85,9 +113,18 @@ class Cache
             return $this;
         }
 
+        $key = $this->generateKey($prefix, $keys);
         $item = $this->cache->getItem($this->generateKey($prefix, $keys));
         $item->set($value)->expiresAfter(self::LIFETIME);
         $this->cache->save($item);
+
+        //save key to database
+        $cacheItem = new CacheItem($key);
+
+        if (!count($this->validator->validate($cacheItem))) {
+            $this->dm->persist($cacheItem);
+            $this->dm->flush();
+        }
 
         return $this;
     }
