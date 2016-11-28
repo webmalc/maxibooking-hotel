@@ -3,15 +3,16 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Form\RestrictionGeneratorType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 
 /**
  * @Route("restriction")
@@ -20,10 +21,11 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 {
 
     /**
-     * @return Response
+     * @return JsonResponse
      * @Route("/in/out/json", name="restriction_in_out_json", options={"expose"=true}, defaults={"_format": "json"})
      * @Method("GET")
      * @Security("is_granted('ROLE_RESTRICTION_VIEW')")
+     * @Cache(expires="tomorrow", public=true)
      */
     public function inOutJsonAction()
     {
