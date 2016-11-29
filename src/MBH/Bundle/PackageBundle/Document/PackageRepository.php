@@ -838,4 +838,19 @@ class PackageRepository extends DocumentRepository
         }, iterator_to_array($packages));
 
     }
+
+    /**
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    public function getPackageCategory(\DateTime $begin, \DateTime $end, $categoryRoomType = null)
+    {
+        $queryBuilder = $this->createQueryBuilder()
+            ->field('begin')->gte($begin)
+            ->field('end')->lte($end);
+        if ($categoryRoomType) {
+            $queryBuilder->field('roomType.id')->in($categoryRoomType);
+        }
+
+        return $queryBuilder->getQuery()->execute();
+    }
 }
