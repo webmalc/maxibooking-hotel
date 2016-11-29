@@ -8,7 +8,7 @@
     <h3>Персональная информация</h3>
     {{ form_start(form, {attr: {id: 'sign-form', method: 'get' }, action: requestSearchUrl}) }}
     {% if form.offerta is defined %}
-    <div class="error_pay" style="display:block;">Внимание! Оплачивая туристические услуги, Вы соглашаетесь с условиями публичного <a href="https://yadi.sk/i/thkaoWkPoVMxK" target="_blank">договора-оферты.</a></div>
+    <div class="error_pay" style="display:block;">Внимание! Оплачивая туристические услуги, Вы соглашаетесь с условиями публичного <a href="{{ offera }}" target="_blank">договора-оферты.</a></div>
     {% endif %}
     {{ form_widget(form, {attr: {class: 'ss'}}) }}
 

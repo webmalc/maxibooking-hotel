@@ -88,7 +88,7 @@ class SignType extends AbstractType
                     new NotNull(),
                     new NotBlank()
                 ],
-                'label' => 'Принимаю условия <a href="https://yadi.sk/i/thkaoWkPoVMxK" target="_blank">договора-оферты.</a>',
+                'label' => 'Принимаю условия <a href="'.$options['offeraUrl'].'" target="_blank">договора-оферты.</a>',
             ])
             ->add('cash', TextType::class, [
                 'disabled' => true,
@@ -136,6 +136,7 @@ class SignType extends AbstractType
             ->setDefaults([
                 'csrf_protection' => false,
                 'method' => Request::METHOD_GET,
+                'offeraUrl' => $this->container->getParameter('offera')
             ]);
     }
 

@@ -53,7 +53,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'dm' => $this->dm,
             'hotel' => $this->hotel,
             'orderId' => $request->get('order'),
-            'roomManager' => $this->manager
+            'roomManager' => $this->manager,
+            'startDate' => \DateTime::createFromFormat('d.m.Y', '23.04.2017')
         ]);
 
         $tourist = new Tourist();
@@ -61,6 +62,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $tourist->setBirthplace(new BirthPlace());
         $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $tourist->getDocumentRelation()->setType('vega_russian_passport');
+
 
         return [
             'form' => $form->createView(),

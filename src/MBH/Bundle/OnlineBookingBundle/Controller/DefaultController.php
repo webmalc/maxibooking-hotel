@@ -322,6 +322,7 @@ class DefaultController extends BaseController
                 'tariff' => $tariff,
                 'data' => $data,
                 'days' => $days,
+                'offera' => $this->getParameter('offera')
             ]);
         }
     }

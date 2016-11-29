@@ -322,6 +322,8 @@ class OrderManager
         $query->forceRoomTypes = true;
         $query->forceBooking = !empty($data['forceBooking']);
         $query->memcached = false;
+        $query->childrenAges = $data['childrenAges']??null;
+
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
