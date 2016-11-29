@@ -28,9 +28,7 @@ class RoomTypeZipController extends Controller implements CheckHotelControllerIn
     public function indexAction(Request $request)
     {
         $entity = $this->dm->getRepository('MBHClientBundle:RoomTypeZip')->fetchConfig();
-
-        $gg = $this->container->get('mbh_package_zip')->packagesZip();
-        exit();
+        
         if (!$entity) {
             $entity = new RoomTypeZip();
         }
