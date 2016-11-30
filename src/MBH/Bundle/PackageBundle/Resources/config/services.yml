@@ -109,3 +109,11 @@ services:
     mbh.package.csv.generator:
           class: MBH\Bundle\PackageBundle\Services\CsvGenerate
           arguments: ['@service_container']
+
+    mbh.package.package.confirmer:
+        class: MBH\Bundle\PackageBundle\Services\PackageConfirmer
+        arguments: ['@doctrine_mongodb.odm.document_manager']
+
+    mbh.acl_document_owner_maker:
+        class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
+        arguments: ['@security.acl.provider', '@doctrine.odm.mongodb.document_manager']

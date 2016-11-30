@@ -83,7 +83,7 @@ class PollController extends Controller
      * @Route("/api/poll/config", name="online_poll_config")
      * @Method("GET")
      * @Security("is_granted('ROLE_POLLS')")
-     * @Template("")
+     * @Template()
      */
     public function configAction()
     {
@@ -93,7 +93,7 @@ class PollController extends Controller
     /**
      * @Route("/api/poll/js/main", name="online_poll_js", defaults={"_format"="js"})
      * @Method("GET")
-     * @Template("")
+     * @Template()
      */
     public function pollAction()
     {

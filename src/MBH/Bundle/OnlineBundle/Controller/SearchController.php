@@ -18,7 +18,7 @@ class SearchController extends Controller
      * Form action
      * @Route("/form", name="online_form_show")
      * @Method("GET")
-     * @Template("")
+     * @Template()
      */
     public function formAction()
     {

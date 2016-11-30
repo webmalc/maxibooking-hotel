@@ -24,7 +24,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
      * @return JsonResponse
      * @Route("/in/out/json", name="restriction_in_out_json", options={"expose"=true}, defaults={"_format": "json"})
      * @Method("GET")
-     * @Security("is_granted('ROLE_RESTRICTION_VIEW')")
+     * @Security("is_granted('ROLE_RESTRICTION_VIEW') or is_granted('ROLE_SEARCH')")
      * @Cache(expires="tomorrow", public=true)
      */
     public function inOutJsonAction()

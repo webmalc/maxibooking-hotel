@@ -351,6 +351,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @param Package $package
+     * @return array
      */
     public function editAction(Package $package)
     {

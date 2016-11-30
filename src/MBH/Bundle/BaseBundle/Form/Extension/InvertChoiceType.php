@@ -14,7 +14,6 @@ class InvertChoiceType extends ChoiceType
 
             if(is_array(array_values($options['choices'])[0])) {
                 array_walk($options['choices'], function (&$item){
-                    dump($item);
                     $item = array_flip($item);
                 });
             } else {

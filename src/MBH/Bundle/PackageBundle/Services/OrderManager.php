@@ -540,6 +540,7 @@ class OrderManager
 /**
  * Class PackageCreationException
  */
+//TODO: Убрать в нужное место!
 class PackageCreationException extends Exception
 {
     /**

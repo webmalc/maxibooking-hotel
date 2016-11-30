@@ -1,8 +1,14 @@
 {% spaceless %}
     <div class='btn-list text-right'>
-
-        {% if is_granted('ROLE_ORDER_EDIT') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) and not entity.confirmed %}
-            <a href='{{ path('package_order_edit', { 'id': entity.order.id, 'packageId': entity.id }) }}' class='btn btn-primary btn-xs' title='{{ "package.jsonButtons.confirm_order"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
+        {#Ссылка была на редактирование.#}
+        {#{% if (is_granted('ROLE_NO_OWN_ONLINE_VIEW') or (is_granted('ROLE_ORDER_EDIT') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')))) and not entity.confirmed %}#}
+            {#<a href='{{ path('package_order_edit', { 'id': entity.order.id, 'packageId': entity.id }) }}' class='btn btn-primary btn-xs' title='{{ "package.jsonButtons.confirm_order"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>#}
+                {#<i class='fa fa-check'></i>#}
+            {#</a>#}
+        {#{% endif %}#}
+        {#Ссылка на подтверждение и редирект на редактирование#}
+        {% if (is_granted('ROLE_NO_OWN_ONLINE_VIEW') or (is_granted('ROLE_ORDER_EDIT') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')))) and not entity.confirmed %}
+            <a href='{{ path('package_order_confirm', { 'packageId': entity.id }) }}' class='btn btn-primary btn-xs' title='{{ "package.jsonButtons.confirm_order"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
                 <i class='fa fa-check'></i>
             </a>
         {% endif %}

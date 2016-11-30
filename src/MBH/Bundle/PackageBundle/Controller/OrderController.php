@@ -21,6 +21,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 /**
  * @Route("/order")
@@ -424,7 +425,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
      * @param Package $package
-     * @return Response
+     * @return array
      * @Template()
      */
     public function editAction(Order $entity, Package $package)
@@ -515,5 +516,40 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
 
         $response = $this->deleteEntity($entity->getId(), 'MBHPackageBundle:Order', 'package');
         return $response;
+    }
+
+    /**
+     * @Route("{packageId}/confirm", name="package_order_confirm")
+     * @Method("GET")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
+     * @param Package $package
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function confirmAction(Package $package)
+    {
+        $order = $package->getOrder();
+
+        if (!$this->isGranted('ROLE_PACKAGE_VIEW_ALL')) {
+            $this->createAccessDeniedException();
+        } elseif (!$this->isGranted('EDIT', $order) && !$this->isGranted('ROLE_PACKAGE_VIEW')) {
+            $this->createAccessDeniedException();
+        } elseif (!$this->isGranted('ROLE_NO_OWN_ONLINE_VIEW') && !$package->getConfirmed()) {
+            $this->createAccessDeniedException();
+        }
+
+        $user = $this->getUser();
+
+        if ($user) {
+            /** Confirm  */
+            $this->get('mbh.package.package.confirmer')->setPackage($package)->confirm();
+            /** SetOwner && ACL */
+            $om = $this->get('mbh.acl_document_owner_maker');
+            $om->assignOwnerToDocument($user, $order);
+            $om->assignOwnerToDocument($user, $package);
+        } else {
+            throw new AuthenticationException();
+        }
+
+        return $this->redirectToRoute('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]);
     }
 }

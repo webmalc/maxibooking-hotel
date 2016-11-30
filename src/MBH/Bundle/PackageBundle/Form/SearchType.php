@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -141,7 +142,9 @@ class SearchType extends AbstractType
             'orderId' => null,
             'roomManager' => null,
             'startDate' => new \DateTime(),
-            'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery'
+            'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery',
+            'method' => 'GET'
+
         ]);
     }
 
