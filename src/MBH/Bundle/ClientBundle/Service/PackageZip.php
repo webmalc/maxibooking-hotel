@@ -71,7 +71,8 @@ class PackageZip
                     'RoomType_id' => $package->getRoomType()->getId(),
                     'Tariff_id' => $package->getTariff()->getId(),
                     'CreatedBy' => $package->getCreatedBy(),
-                    'NumberWithPrefix' => $package->getNumberWithPrefix()
+                    'NumberWithPrefix' => $package->getNumberWithPrefix(),
+                    'Price' => $package->getPrice()
                 ]);
 
                 $categoryRoomType[] = $package->getRoomType()->getCategory()->getId();
@@ -108,6 +109,7 @@ class PackageZip
                 $oldPackage = clone $package;
                 $newPackage = clone $package;
                 $newPackage->setRoomtype($pick->getRoomType());
+                $overTotalPrice = $package->getPrice();
                 $endDate = clone $package->getEnd();
 
                 $result = $this->container->get('mbh.order_manager')->updatePackage($oldPackage, $newPackage);
@@ -115,6 +117,7 @@ class PackageZip
                 if ($result instanceof Package) {
 
                     $package->setEnd($endDate)
+                        ->setTotalOverwrite($overTotalPrice)
                         ->setRoomtype($pick->getRoomType());
 
                     $this->dm->persist($package);
@@ -128,7 +131,9 @@ class PackageZip
                         'RoomType_id' => $package->getRoomType()->getId(),
                         'Tariff_id' => $package->getTariff()->getId(),
                         'CreatedBy' => $package->getCreatedBy(),
-                        'NumberWithPrefix' => $package->getNumberWithPrefix()
+                        'NumberWithPrefix' => $package->getNumberWithPrefix(),
+                        'Price' => $package->getPrice(),
+                        'TotalPrice' => $package->getTotalOverwrite()
                     ]);
 
                 }
