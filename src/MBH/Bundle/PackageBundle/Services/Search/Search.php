@@ -71,8 +71,8 @@ class Search implements SearchInterface
     public function search(SearchQuery $query)
     {
         $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
-
-        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_FORCE_BOOKING')) {
+        $token = $this->container->get('security.token_storage')->getToken();
+        if ($token && !$this->container->get('security.authorization_checker')->isGranted('ROLE_FORCE_BOOKING')) {
             $query->forceBooking = false;
         }
         if (empty($query->end) || empty($query->begin) || $query->end <= $query->begin) {
@@ -296,7 +296,7 @@ class Search implements SearchInterface
                 continue;
             }
             // check hotel permission
-            if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
+            if ($token && !$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
                 continue;
             }
 
