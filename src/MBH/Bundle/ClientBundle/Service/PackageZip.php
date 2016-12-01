@@ -2,14 +2,15 @@
 namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Services\OrderManager;
+use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\RestaurantBundle\Document\Chair;
-use MBH\Bundle\RestaurantBundle\Document\Table;
-use MBH\Bundle\BaseBundle\Lib\Exception;
-use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 
 class PackageZip
 {
@@ -27,57 +28,73 @@ class PackageZip
      */
     protected $validator;
 
-    public function __construct(DocumentManager $dm, ContainerInterface $container)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var OrderManager
+     */
+    private $orderManager;
+
+    /**
+     * @var SearchFactory
+     */
+    private $packageSearch;
+
+    /**
+     * @var Helper
+     */
+    private $helper;
+
+    const BEGIN = 'midnight';
+
+    const END = '+365 days';
+
+    public function __construct(DocumentManager $dm, ContainerInterface $container, ValidatorInterface $validator, LoggerInterface $logger, OrderManager $orderManager, SearchFactory $packageSearch, Helper $helper)
     {
         $this->dm = $dm;
         $this->container = $container;
-        $this->validator = $container->get('validator');
-        $this->logger = $container->get('mbh.packagezip.logger');
+        $this->validator = $validator;
+        $this->logger = $logger;
+        $this->orderManager = $orderManager;
+        $this->packageSearch = $packageSearch;
+        $this->helper = $helper;
     }
 
     public function packagesZip()
     {
         $this->logger->alert('---------START---------');
         $roomTypeZipConfig = $this->dm->getRepository('MBHClientBundle:RoomTypeZip')->fetchConfig();
-        $clientConfig = $roomTypeZipConfig->getClientConfig();
-        $categoriesId = null;
+        $roomTypesByCategories = $this->roomTypeByCategories($roomTypeZipConfig);
 
-        $categories = $roomTypeZipConfig->getCategories()->toArray();
-
-        foreach ($categories as $category) {
-            $categoriesId[] = $category->getId();
-        }
-        $roomTypesByCategories = $this->dm->getRepository('MBHHotelBundle:RoomType')->roomByCategories($roomTypeZipConfig->getHotel(), $categoriesId);
-        //date update RoomTypes
-        $begin = new \DateTime('-1 day');
-        $end = new \DateTime('+365 day');
-
-        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->getPackageCategory($begin, $end, $roomTypesByCategories ? array_keys($roomTypesByCategories->toArray()) : null);
+        $packages = $this
+            ->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->getPackageCategory(
+                new \DateTime(self::BEGIN),
+                new \DateTime(self::END),
+                $roomTypesByCategories ? array_keys($roomTypesByCategories->toArray()) : null
+            );
 
         foreach ($packages as $package) {
-            $countPersons = (int)$package->getAdults() + (int)$package->getChildren();
+
+            $countPersons = $package->getCountPersons();
             $countRoom = $package->getRoomType()->getTotalPlaces();
 
             if ($countPersons < $countRoom) {
 
                 $this->logger->alert('---------BEGIN Package---------');
+
                 $beginLog = clone $package->getBegin();
                 $endLog = clone $package->getEnd();
 
-                $this->logger->info('BEGIN PACKAGE INFO', [
-                    'Begin' => $beginLog->format('d-m-Y'),
-                    'End' => $endLog->format('d-m-Y'),
-                    'id' => $package->getId(),
-                    'RoomType_id' => $package->getRoomType()->getId(),
-                    'Tariff_id' => $package->getTariff()->getId(),
-                    'CreatedBy' => $package->getCreatedBy(),
-                    'NumberWithPrefix' => $package->getNumberWithPrefix(),
-                    'Price' => $package->getPrice()
-                ]);
+                $this->LogPackage('BEGIN PACKAGE INFO', $beginLog, $endLog, $package);
 
                 $categoryRoomType[] = $package->getRoomType()->getCategory()->getId();
                 $roomTypesByCategory = $this->dm->getRepository('MBHHotelBundle:RoomType')->roomByCategories($roomTypeZipConfig->getHotel(), $categoryRoomType);
-
+                //query Search
                 $query = new SearchQuery();
 
                 foreach ($roomTypesByCategory as $roomTypeCategory) {
@@ -92,56 +109,67 @@ class PackageZip
                 $query->children = $package->getChildren();
                 $query->forceRoomTypes = true;
 
-                $groupedResult = $this->container->get('mbh.package.search')
-                    ->search($query);
+                $groupedResult = $this->packageSearch->search($query);
 
-                foreach ($groupedResult as $resultSearch) {
-
-                    $countRoomToSearch = $resultSearch->getRoomType()->getTotalPlaces();
-                    if (!isset($pick)) {
-                        $pick = $resultSearch;
-                    } elseif (isset($pick) && ($countRoomToSearch < $pick->getRoomType()->getTotalPlaces())) {
-                        $pick = $resultSearch;
+                usort($groupedResult, function ($a, $b) {
+                    if ($a->getRoomType()->getTotalPlaces() == $b->getRoomType()->getTotalPlaces()) {
+                        return 0;
                     }
-
-                }
+                    return ($a->getRoomType()->getTotalPlaces() < $b->getRoomType()->getTotalPlaces()) ? -1 : 1;
+                });
 
                 $oldPackage = clone $package;
                 $newPackage = clone $package;
-                $newPackage->setRoomtype($pick->getRoomType());
+                $newPackage->setRoomtype($groupedResult[0]->getRoomType());
                 $overTotalPrice = $package->getPrice();
+                $servicePrice = $package->getServicesPrice();
                 $endDate = clone $package->getEnd();
 
-                $result = $this->container->get('mbh.order_manager')->updatePackage($oldPackage, $newPackage);
+                $result = $this->orderManager->updatePackage($oldPackage, $newPackage);
 
                 if ($result instanceof Package) {
 
                     $package->setEnd($endDate)
+                        ->setServicesPrice($servicePrice)
                         ->setTotalOverwrite($overTotalPrice)
-                        ->setRoomtype($pick->getRoomType());
+                        ->setRoomtype($groupedResult[0]->getRoomType());
 
                     $this->dm->persist($package);
 
                     $beginLog2 = clone $package->getBegin();
                     $endLog2 = clone $package->getEnd();
-                    $this->logger->info('CHANGED PACKAGE INFO', [
-                        'Begin' => $beginLog2->format('d-m-Y'),
-                        'End' => $endLog2->format('d-m-Y'),
-                        'id' => $package->getId(),
-                        'RoomType_id' => $package->getRoomType()->getId(),
-                        'Tariff_id' => $package->getTariff()->getId(),
-                        'CreatedBy' => $package->getCreatedBy(),
-                        'NumberWithPrefix' => $package->getNumberWithPrefix(),
-                        'Price' => $package->getPrice(),
-                        'TotalPrice' => $package->getTotalOverwrite()
-                    ]);
+
+                    $this->LogPackage('CHANGED PACKAGE INFO', $beginLog2, $endLog2, $package);
 
                 }
 
             }
         }
+
         $this->logger->alert('---------END---------');
         $this->dm->flush();
+    }
+
+    protected function roomTypeByCategories($config)
+    {
+
+        return $this->dm->getRepository('MBHHotelBundle:RoomType')->roomByCategories($config->getHotel(), $this->helper->toIds($config->getCategories()));
+
+    }
+
+    protected function LogPackage($message, $begin, $end, $package)
+    {
+        $this->logger->info($message, [
+            'Begin' => $begin->format('d-m-Y'),
+            'End' => $end->format('d-m-Y'),
+            'id' => $package->getId(),
+            'RoomType_id' => $package->getRoomType()->getId(),
+            'Tariff_id' => $package->getTariff()->getId(),
+            'CreatedBy' => $package->getCreatedBy(),
+            'NumberWithPrefix' => $package->getNumberWithPrefix(),
+            'Price' => $package->getPrice(),
+            'TotalPrice' => $package->getTotalOverwrite()
+        ]);
     }
 
 }

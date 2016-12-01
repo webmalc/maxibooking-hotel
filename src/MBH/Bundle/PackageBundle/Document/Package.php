@@ -555,6 +555,13 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
+     * @return int
+     */
+    public function getCountPersons():int
+    {
+        return $this->getAdults() + $this->getChildren();
+    }
+    /**
      * Set begin
      *
      * @param \DateTime $begin

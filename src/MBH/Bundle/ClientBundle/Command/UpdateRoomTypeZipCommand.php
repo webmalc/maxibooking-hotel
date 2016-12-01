@@ -5,8 +5,6 @@ namespace MBH\Bundle\ClientBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Validator\Constraints\DateTime;
-
 
 class UpdateRoomTypeZipCommand extends ContainerAwareCommand
 {
@@ -15,7 +13,7 @@ class UpdateRoomTypeZipCommand extends ContainerAwareCommand
      */
     private $dm;
 
-    const maxMin = 10;
+    const MAX = 60*10;
 
     protected function configure()
     {
@@ -33,32 +31,21 @@ class UpdateRoomTypeZipCommand extends ContainerAwareCommand
 
         //roomTypeZip
         $setting = $this->dm->getRepository('MBHClientBundle:RoomTypeZip')->fetchConfig();
-        $times = $setting->getTimes();
 
-        foreach ($setting->getTime() as $time) {
+        foreach ($setting->getTimeDataTimeType() as $time) {
 
-            $time = $times[$time];
-            $dated = \DateTime::createFromFormat('H:i', $time);
-            $lastedTime= $dated->diff($todayTime);
+            $diff = $todayTime->getTimestamp() - $time->getTimestamp();
 
-            if ((int)$lastedTime->format('%H') == 0 && (int)$lastedTime->format('%i') < self::maxMin){
+            if (abs($diff) < self::MAX){
 
-                $roomResponse = $this->getContainer()->get('mbh_package_zip')->packagesZip();
+                $this->getContainer()->get('mbh_package_zip')->packagesZip();
 
                 $output->writeln(['yes']);
 
             } else {
+                $output->writeln(['no']);
                 continue;
             }
-
-            // outputs multiple lines to the console (adding "\n" at the end of each line)
-            $output->writeln([
-                (string)$todayTime->format('H:i'),
-                (string)$dated->format('H:i'),
-                (int)$lastedTime->format('%H'),
-                (int)$lastedTime->format('%i'),
-
-            ]);
 
         }
 

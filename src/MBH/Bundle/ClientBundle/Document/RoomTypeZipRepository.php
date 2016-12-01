@@ -15,7 +15,7 @@ class RoomTypeZipRepository extends DocumentRepository
     public function fetchConfig()
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
         $config = $qb->getQuery()->getSingleResult();
 
         if (!$config) {

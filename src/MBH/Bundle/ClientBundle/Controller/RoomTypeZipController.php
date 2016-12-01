@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ClientBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\RoomTypeZip;
 use MBH\Bundle\ClientBundle\Form\RoomTypeZipType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

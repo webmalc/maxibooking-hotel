@@ -5,7 +5,7 @@ services:
 
     mbh_package_zip:
           class: MBH\Bundle\ClientBundle\Service\PackageZip
-          arguments: ['@doctrine.odm.mongodb.document_manager','@service_container']
+          arguments: ['@doctrine.odm.mongodb.document_manager','@service_container','@validator','@mbh.packageZip.logger','@mbh.order_manager','@mbh.package.search','@mbh.helper']
 
     mbh.packageZip.logger:
           class:     Symfony\Bridge\Monolog\Logger

@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -39,12 +40,10 @@ class RoomTypeZip extends Base
     use BlameableDocument;
 
     /**
-     * @var Hotel
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
-     * @Assert\NotNull(message="validator.document.table.hotel")
+     * Hook Hotable behavior
+     * set,get Hotel
      */
-    protected $hotel;
+    use HotelableDocument;
 
     /**
      * @var ClientConfig $clientConfig
@@ -73,24 +72,6 @@ class RoomTypeZip extends Base
     public function __construct()
     {
         $this->categories = new ArrayCollection();
-    }
-
-    /**
-     * @return Hotel
-     */
-    public function getHotel()
-    {
-        return $this->hotel;
-    }
-
-    /**
-     * @param Hotel $hotel
-     * @return self
-     */
-    public function setHotel(Hotel $hotel)
-    {
-        $this->hotel = $hotel;
-        return $this;
     }
 
     /**
@@ -138,7 +119,7 @@ class RoomTypeZip extends Base
     }
 
     /**
-     * @param string $time
+     * @var array
      */
     public function setTime($time)
     {
@@ -146,12 +127,17 @@ class RoomTypeZip extends Base
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public static function getValidateChoice()
     {
-        $hours = range(0, 23);
-        return $hours;
+        return range(0, 23);
     }
 
+    /**
+     * @return array
+     */
     public static function getTimes()
     {
         $hours = range(0, 23);
@@ -160,6 +146,18 @@ class RoomTypeZip extends Base
             $value > 9 ? $hours[$item] = (string)$value . ':00' : $hours[$item] = '0' . (string)$value . ':00';
         }
         return $hours;
+    }
+
+    /**
+     * @return array DateTime
+     */
+    public function getTimeDataTimeType()
+    {
+        foreach ($this->getTime() as $time) {
+            $dated[] = \DateTime::createFromFormat('H:i', $this->getTimes()[$time]);
+        }
+
+        return $dated;
     }
 
 }

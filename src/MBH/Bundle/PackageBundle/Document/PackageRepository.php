@@ -840,7 +840,7 @@ class PackageRepository extends DocumentRepository
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     * @return Package
      */
     public function getPackageCategory(\DateTime $begin, \DateTime $end, $categoryRoomType = null)
     {
