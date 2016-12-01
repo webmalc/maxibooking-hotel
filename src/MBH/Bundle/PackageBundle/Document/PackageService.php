@@ -428,13 +428,12 @@ class PackageService extends Base
         if (!$service->getTime()) {
             $this->setTime(null);
         }
-//        $end = clone $this->getBegin();
-            $end = $this->getEnd();
-        if (!$service->getDate()) {
-//            $end->modify('+' . $this->getNights() . ' days');
-            $end = $this->getEnd();
+
+        if (!$service->getDate() || !$this->getEnd()) {
+            $end = clone $this->getBegin();
+            $end->modify('+' . $this->getNights() . ' days');
+            $this->setEnd($end);
         }
-        $this->setEnd($end);
 
         $this->total = $this->calcTotal();
     }
