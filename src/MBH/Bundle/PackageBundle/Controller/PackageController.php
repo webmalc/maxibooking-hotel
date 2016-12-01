@@ -824,6 +824,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($request->getMethod() == Request::METHOD_PUT) {
             $form->submit($request);
             if ($form->isValid()) {
+                $begin = $form['begin']->getData();
+                $end = $form['end']->getData();
+                $service->setBegin($begin);
+                $service->setEnd($end);
                 $this->dm->persist($service);
                 $this->dm->flush();
 
