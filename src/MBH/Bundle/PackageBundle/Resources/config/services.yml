@@ -106,13 +106,10 @@ services:
     mbh.package.windows.report.generator:
       class: MBH\Bundle\PackageBundle\Services\WindowsReportGenerator
       arguments: ['@mbh.helper', '@doctrine_mongodb']
+
     mbh.package.csv.generator:
           class: MBH\Bundle\PackageBundle\Services\CsvGenerate
           arguments: ['@service_container']
-
-    mbh.package.package.confirmer:
-        class: MBH\Bundle\PackageBundle\Services\PackageConfirmer
-        arguments: ['@doctrine_mongodb.odm.document_manager']
 
     mbh.acl_document_owner_maker:
         class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker

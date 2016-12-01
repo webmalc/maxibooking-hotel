@@ -519,36 +519,25 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     }
 
     /**
-     * @Route("{packageId}/confirm", name="package_order_confirm")
+     * @Route("/{packageId}/confirm/{id}", name="package_order_confirm", defaults={"confirmed": false})
      * @Method("GET")
-     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or is_granted('ROLE_NO_OWN_ONLINE_VIEW') or (is_granted('EDIT', order) and is_granted('ROLE_PACKAGE_VIEW'))")
+     * @ParamConverter("order", options={"mapping": {"id": "id", "confirmed": "confirmed"}})
+     * @ParamConverter("package", options={"id" = "packageId"})
+     * @param Order $order
      * @param Package $package
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function confirmAction(Package $package)
+    public function confirmAction(Order $order, Package $package)
     {
-        $order = $package->getOrder();
-
-        if (!$this->isGranted('ROLE_PACKAGE_VIEW_ALL')) {
-            $this->createAccessDeniedException();
-        } elseif (!$this->isGranted('EDIT', $order) && !$this->isGranted('ROLE_PACKAGE_VIEW')) {
-            $this->createAccessDeniedException();
-        } elseif (!$this->isGranted('ROLE_NO_OWN_ONLINE_VIEW') && !$package->getConfirmed()) {
-            $this->createAccessDeniedException();
-        }
-
         $user = $this->getUser();
+        $order->setConfirmed(true);
+        $this->dm->flush();
 
-        if ($user) {
-            /** Confirm  */
-            $this->get('mbh.package.package.confirmer')->setPackage($package)->confirm();
-            /** SetOwner && ACL */
-            $om = $this->get('mbh.acl_document_owner_maker');
-            $om->assignOwnerToDocument($user, $order);
-            $om->assignOwnerToDocument($user, $package);
-        } else {
-            throw new AuthenticationException();
-        }
+        /** SetOwner && ACL */
+        $om = $this->get('mbh.acl_document_owner_maker');
+        $om->assignOwnerToDocument($user, $order);
+        $om->assignOwnerToDocument($user, $package);
 
         return $this->redirectToRoute('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]);
     }
