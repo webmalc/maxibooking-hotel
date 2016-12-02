@@ -3,8 +3,10 @@
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class VashotelType extends AbstractType
 {
@@ -14,7 +16,7 @@ class VashotelType extends AbstractType
         $builder
             ->add(
                 'isEnabled',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.vashotelType.in_included',
                     'value' => true,
@@ -24,7 +26,7 @@ class VashotelType extends AbstractType
             )
             ->add(
                 'hotelId',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.vashotelType.hotel_id',
                     'required' => true,
@@ -35,7 +37,7 @@ class VashotelType extends AbstractType
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
             array(
@@ -44,7 +46,7 @@ class VashotelType extends AbstractType
         );
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_channelmanagerbundle_vashotel_type';
     }

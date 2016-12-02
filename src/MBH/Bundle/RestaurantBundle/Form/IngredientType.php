@@ -11,7 +11,6 @@ namespace MBH\Bundle\RestaurantBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -52,10 +51,10 @@ class IngredientType extends AbstractType
                 'group' => 'restaurant.collectprice'
 
             ])
-            ->add('calcType', ChoiceType::class, [
+            ->add('calcType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'restaurant.ingredient.form.calcType.label',
                 'required' => true,
-                'empty_value' => '',
+                'placeholder' => '',
                 'multiple' => false,
                 'choices' => array_combine($options['calcTypes'],$options['calcTypes']),
                 'help' => 'restaurant.ingredient.form.calcType.help',
@@ -84,7 +83,7 @@ class IngredientType extends AbstractType
         );
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_restaurant_ingredient_type';
     }

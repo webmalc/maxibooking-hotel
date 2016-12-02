@@ -3,21 +3,22 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PackageSourceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-                ->add('fullTitle', 'text', [
+                ->add('fullTitle', TextType::class, [
                     'label' => 'form.packageSourceType.name',
                     'group' => 'form.packageSourceType.add_source',
                     'required' => true,
                     'attr' => ['placeholder' => 'form.packageSourceType.adds']
                 ])
-                ->add('title', 'text', [
+                ->add('title', TextType::class, [
                     'label' => 'form.packageSourceType.inner_name',
                     'group' => 'form.packageSourceType.add_source',
                     'required' => false,
@@ -26,14 +27,14 @@ class PackageSourceType extends AbstractType
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\PackageBundle\Document\PackageSource',
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_packagebundle_packagepackagesourecetype';
     }

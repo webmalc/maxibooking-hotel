@@ -3,11 +3,11 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
  * Class PackageVirtualRoomType
@@ -41,7 +41,7 @@ class PackageVirtualRoomType extends AbstractType
          ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_packagebundle_package_virtual_room_type';
     }

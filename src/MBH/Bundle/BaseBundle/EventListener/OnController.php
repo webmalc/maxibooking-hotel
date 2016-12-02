@@ -4,12 +4,12 @@ namespace MBH\Bundle\BaseBundle\EventListener;
 
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\BaseBundle\Controller\HotelableControllerInterface;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 
 class OnController
 {

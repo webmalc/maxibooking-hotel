@@ -2,18 +2,18 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 
 /**
  *  Calculation service

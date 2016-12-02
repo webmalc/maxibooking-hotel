@@ -3,8 +3,10 @@
 namespace MBH\Bundle\ClientBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ClientPaymentSystemType extends AbstractType
 {
@@ -41,7 +43,7 @@ class ClientPaymentSystemType extends AbstractType
             $builder
                 ->add(
                     'paymentSystem',
-                    'hidden',
+                    HiddenType::class,
                     [
                         'data' => $default,
                     ]
@@ -49,13 +51,12 @@ class ClientPaymentSystemType extends AbstractType
         } else {
             $builder
                 ->add(
-                    'paymentSystem',
-                    'choice',
+                    'paymentSystem',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                     [
                         'label' => 'form.clientPaymentSystemType.payment_system',
                         'choices' => $options['paymentTypes'],
                         'group' => 'form.clientPaymentSystemType.payment_system_group',
-                        'empty_value' => '',
+                        'placeholder' => '',
                         'data' => $default,
                         'required' => true
                     ]
@@ -64,7 +65,7 @@ class ClientPaymentSystemType extends AbstractType
         $builder
             ->add(
                 'robokassaMerchantLogin',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.shop_login',
                     'required' => false,
@@ -76,7 +77,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'robokassaMerchantPass1',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.password_one',
                     'required' => false,
@@ -88,7 +89,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'robokassaMerchantPass2',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.password_two',
                     'required' => false,
@@ -100,7 +101,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'payanywayMntId',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.extended_account_number',
                     'required' => false,
@@ -112,7 +113,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'payanywayKey',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.data_integrity_code',
                     'required' => false,
@@ -124,7 +125,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'moneymailShopIDP',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.moneymail_shop_id',
                     'required' => false,
@@ -136,7 +137,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'moneymailKey',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.moneymail_key',
                     'required' => false,
@@ -148,7 +149,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'unitellerShopIDP',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.uniteller_shop_id',
                     'required' => false,
@@ -160,7 +161,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'unitellerPassword',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.uniteller_password',
                     'required' => false,
@@ -172,7 +173,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'rbkEshopId',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.rbk_eshop_id',
                     'required' => false,
@@ -184,7 +185,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'rbkSecretKey',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.rbk_secret_key',
                     'required' => false,
@@ -196,7 +197,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'successUrl',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.successUrl',
                     'help' => 'form.clientPaymentSystemType.successUrlDesc',
@@ -206,7 +207,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'failUrl',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.failUrl',
                     'help' => 'form.clientPaymentSystemType.failUrlDesc',
@@ -218,7 +219,7 @@ class ClientPaymentSystemType extends AbstractType
 
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\ClientBundle\Document\ClientConfig',
@@ -229,7 +230,7 @@ class ClientPaymentSystemType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_clientbundle_client_payment_system_type';
     }

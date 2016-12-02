@@ -1,48 +1,48 @@
 services:
     mbh.channelmanager:
         class: MBH\Bundle\ChannelManagerBundle\Services\ChannelManager
-        arguments: [@service_container]
+        arguments: ['@service_container']
 
     mbh.channelmanager.vashotel:
             class: MBH\Bundle\ChannelManagerBundle\Services\Vashotel
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.channelmanager.oktogo:
             class: MBH\Bundle\ChannelManagerBundle\Services\Oktogo
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.channelmanager.booking:
                 class: MBH\Bundle\ChannelManagerBundle\Services\Booking
-                arguments: [@service_container]
+                arguments: ['@service_container']
 
     mbh.channelmanager.myallocator:
                     class: MBH\Bundle\ChannelManagerBundle\Services\MyAllocator
-                    arguments: [@service_container]
+                    arguments: ['@service_container']
 
     mbh.channelmanager.ostrovok:
                 class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
-                arguments: [@service_container]
+                arguments: ['@service_container']
 
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
-      arguments: [@mbh.currency]
+      arguments: ['@mbh.currency']
 
     mbh.channelmanager.myallocator_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\MyallocatorType
-      arguments: [@mbh.channelmanager.myallocator, @mbh.currency]
+      arguments: ['@mbh.channelmanager.myallocator', '@mbh.currency']
 
     mbh.channelmanager.logger:
         class:     Symfony\Bridge\Monolog\Logger
         arguments: [app]
         calls:
-            - [pushHandler, [@mbh.channelmanager.logger_handler]]
+            - [pushHandler, ['@mbh.channelmanager.logger_handler']]
 
     mbh.channelmanager.logger_handler:
         class:     Monolog\Handler\StreamHandler
-        arguments: [%kernel.logs_dir%/%kernel.environment%.channelmanager.log, 200]
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.channelmanager.log", 200]
 
     mbh.channelmanager.configs.subscriber:
             class: MBH\Bundle\ChannelManagerBundle\EventListener\ConfigsSubscriber
-            arguments: [@service_container]
+            arguments: ['@service_container']
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}

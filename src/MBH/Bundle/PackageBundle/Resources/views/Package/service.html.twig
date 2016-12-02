@@ -91,7 +91,7 @@
             {% endif %}
 
                  {% if is_granted('ROLE_PACKAGE_SERVICES') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                    {{ form_start(form, {'action': path('package_service', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
+                    {{ form_start(form, {'action': path('package_service', {'id': package.id}),  'attr': {'class': 'form-horizontal' }}) }}
                     {{ form_widget(form) }}
                 {% endif %}
 

@@ -4,12 +4,13 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\Type;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\ExecutionContextInterface;
 
 class RoomTypeGenerateRoomsType extends AbstractType
@@ -31,7 +32,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
         $entity = $options['entity'];
 
         $builder
-            ->add('from', 'text', [
+            ->add('from', TextType::class, [
                 'label' => 'form.roomTypeGenerateRoomsType.first_room_number',
                 'required' => true,
                 'attr' => ['placeholder' => '1', 'class' => 'spinner'],
@@ -40,7 +41,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
                     new Type(['type' => 'numeric', "message" => 'form.roomTypeGenerateRoomsType.field_must_be_number'])
                 ]
             ])
-            ->add('to', 'text', [
+            ->add('to', TextType::class, [
                 'label' => 'form.roomTypeGenerateRoomsType.last_room_number',
                 'required' => true,
                 'attr' => ['placeholder' => '100', 'class' => 'spinner'],
@@ -62,16 +63,16 @@ class RoomTypeGenerateRoomsType extends AbstractType
             };
         }
         $builder
-            ->add('housing', 'document', $housingOptions);
+            ->add('housing', DocumentType::class, $housingOptions);
 
         $builder
-            ->add('floor', 'text', [
+            ->add('floor', TextType::class, [
                 'label' => 'form.roomTypeGenerateRoomsType.floor',
                 'required' => false,
                 'attr' => ['placeholder' => '3'],
                 'constraints' => new Length(['max' => 20])
             ])
-            ->add('prefix', 'text', [
+            ->add('prefix', TextType::class, [
                 'label' => 'form.roomTypeGenerateRoomsType.prefix',
                 'required' => false,
                 'data' => '',
@@ -81,7 +82,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
             ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
             [
@@ -94,7 +95,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
         );
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotelbundle_room_type_generate_rooms_type';
     }

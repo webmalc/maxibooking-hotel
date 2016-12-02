@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template\Type;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
@@ -18,22 +19,22 @@ class ConfirmationTemplateType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('hasFull', 'checkbox', [
+            ->add('hasFull', CheckboxType::class, [
                 'required' => false,
                 'label' => 'templateDocument.form.confirmation.hasFull'
             ])
-            ->add('hasServices', 'checkbox', [
+            ->add('hasServices', CheckboxType::class, [
                 'required' => false,
                 'label' => 'templateDocument.form.confirmation.hasServices'
             ])
-            ->add('hasStamp', 'checkbox', [
+            ->add('hasStamp', CheckboxType::class, [
                 'required' => false,
                 'label' => 'templateDocument.form.confirmation.hasStamp'
             ]);
 
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'confirmation_template';
     }

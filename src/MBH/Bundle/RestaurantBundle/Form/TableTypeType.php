@@ -27,7 +27,7 @@ class TableTypeType extends  AbstractType
         ;
 
     }
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_restaurantbundle_table_category_type';
     }

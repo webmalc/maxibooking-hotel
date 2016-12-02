@@ -3,19 +3,19 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Form\HotelinnType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/hotelinn")
@@ -34,7 +34,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
         $config = $this->hotel->getHotelinnConfig();
 
         $form = $this->createForm(
-            new HotelinnType(), $config
+            HotelinnType::class, $config
         );
 
         return [
@@ -63,7 +63,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
             $config->setHotel($hotel);
         }
         $form = $this->createForm(
-            new HotelinnType(), $config
+            HotelinnType::class, $config
         );
 
         $form->handleRequest($request);
@@ -109,7 +109,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomsType(), $config->getRoomsAsArray(), [
+        $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'hotelinn' => $this->get('mbh.channelmanager.hotelinn')->pullRooms($config),
         ]);
@@ -161,7 +161,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffsType(), $config->getTariffsAsArray(), [
+        $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'hotelinn' => $this->get('mbh.channelmanager.hotelinn')->pullTariffs($config),
         ]);

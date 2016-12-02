@@ -8,13 +8,13 @@ use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\ClientBundle\Form\DocumentTemplateType;
 use MBH\Bundle\ClientBundle\Service\TemplateFormatter;
 use MBH\Bundle\PackageBundle\Document\Package;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\Response;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 
 /**
@@ -51,7 +51,7 @@ class DocumentTemplateController extends BaseController
     public function newAction(Request $request)
     {
         $entity = new DocumentTemplate();
-        $form = $this->createForm(new DocumentTemplateType(), $entity);
+        $form = $this->createForm(DocumentTemplateType::class, $entity);
 
         $form->handleRequest($request);
 
@@ -78,10 +78,10 @@ class DocumentTemplateController extends BaseController
      */
     public function editAction(DocumentTemplate $entity, Request $request)
     {
-        $form = $this->createForm(new DocumentTemplateType(), $entity);
+        $form = $this->createForm(DocumentTemplateType::class, $entity);
 
         if($request->isMethod(Request::METHOD_POST)) {
-            $form->submit($request);
+            $form->handleRequest($request);
             if($form->isValid()) {
                 $this->dm->persist($entity);
                 $this->dm->flush();

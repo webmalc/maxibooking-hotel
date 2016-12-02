@@ -2,9 +2,9 @@
 
 namespace MBH\Bundle\PackageBundle\Validator\Constraints;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PackageValidator extends ConstraintValidator
 {

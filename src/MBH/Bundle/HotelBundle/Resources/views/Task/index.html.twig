@@ -7,7 +7,7 @@
 
 {% block content %}
 
-    {% if app.security.granted('ROLE_TASK_MANAGER') %}
+    {% if is_granted('ROLE_TASK_MANAGER') %}
 
         {% include 'MBHBaseBundle:Partials:filter.html.twig' with {id: 'task-table-filter-widget'} %}
             <form id="task-table-filter" class="form-inline icon-label-form ">
@@ -84,7 +84,7 @@
 
         <tbody>
     </table>
-    {% if app.security.granted('ROLE_TASK_MANAGER') %}
+    {% if is_granted('ROLE_TASK_MANAGER') %}
         {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'task_new', role: 'TASK'} %}
     {% endif %}
 {% endblock %}

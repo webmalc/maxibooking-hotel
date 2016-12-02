@@ -2,9 +2,9 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use MBH\Bundle\BaseBundle\Document\Base;
 use Symfony\Component\Validator\Constraints as Assert;
 
 

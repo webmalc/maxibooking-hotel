@@ -22,6 +22,3 @@ parameters:
           api_password: VCuMhanjdxiC
           vendor_password: 0Rp0XJGubJ9rfoUy4niNGcBPErf20VJZ
           url: http://mbhs.maxibooking.ru/client/channelmanager/push/myallocator
-    mbh.mbhs:
-          mbhs: 'aHR0cDovL21iaHMuaC9hcHBfZGV2LnBocC8=' #http://mbhs.h/app_dev.php/
-          key: 2743004999743693560727430049997436935607

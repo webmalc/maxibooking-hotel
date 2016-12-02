@@ -5,7 +5,7 @@
 
 {% block content %}
 
-    {{ form_start(form, {'action': path('task_type_category_new'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('task_type_category_new'),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_end(form) }}
