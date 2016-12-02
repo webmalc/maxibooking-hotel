@@ -19,3 +19,8 @@ security:
             http_basic: ~
             form_login: false
             remember_me: false
+
+liip_functional_test:
+  authentication:
+    username: "admin"
+    password: "admin"

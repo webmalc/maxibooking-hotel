@@ -2,21 +2,31 @@
 
 namespace Tests\Bundle\BaseBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\NullOutput;
 
 class BaseControllerTest extends WebTestCase
 {
-    public static function setUpBeforeClass()
-    {
+    public static function command(string $name) {
         self::bootKernel();
         $application = new Application(self::$kernel);
         $application->setAutoExit(false);
-        $input = new ArrayInput(['command' => 'mbh:base:fixtures']);
+
+        $input = new ArrayInput(['command' => $name]);
         $output = new NullOutput();
         $application->run($input, $output);
+    }
+
+    public static function setUpBeforeClass()
+    {
+        self::command('mbh:base:fixtures');
+    }
+
+    public static function tearDownAfterClass()
+    {
+        self::command('doctrine:mongodb:schema:drop');
     }
 
     /**
@@ -24,15 +34,13 @@ class BaseControllerTest extends WebTestCase
      * @dataProvider urlProvider
      * @param string $url
      */
-    public function testBasicRoutes(string $url)
+    public function testBasicGetRoutes(string $url)
     {
-        $client = self::createClient([], [
-            'PHP_AUTH_USER' => 'admin',
-            'PHP_AUTH_PW'   => 'admin',
-        ]);
+        $client = static::makeClient(true);
         $client->request('GET', $url);
+        $this->isSuccessful($client->getResponse());
+        $this->assertGreaterThan(0, mb_strlen($client->getResponse()->getContent()));
 
-        $this->assertTrue($client->getResponse()->isSuccessful());
     }
 
     /**
