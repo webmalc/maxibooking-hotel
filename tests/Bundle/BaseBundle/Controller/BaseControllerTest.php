@@ -3,9 +3,22 @@
 namespace Tests\Bundle\BaseBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Output\NullOutput;
 
 class BaseControllerTest extends WebTestCase
 {
+    public static function setUpBeforeClass()
+    {
+        self::bootKernel();
+        $application = new Application(self::$kernel);
+        $application->setAutoExit(false);
+        $input = new ArrayInput(['command' => 'mbh:base:fixtures']);
+        $output = new NullOutput();
+        $application->run($input, $output);
+    }
+
     /**
      * Test all routes
      * @dataProvider urlProvider
@@ -13,7 +26,10 @@ class BaseControllerTest extends WebTestCase
      */
     public function testBasicRoutes(string $url)
     {
-        $client = self::createClient();
+        $client = self::createClient([], [
+            'PHP_AUTH_USER' => 'admin',
+            'PHP_AUTH_PW'   => 'admin',
+        ]);
         $client->request('GET', $url);
 
         $this->assertTrue($client->getResponse()->isSuccessful());
@@ -26,11 +42,8 @@ class BaseControllerTest extends WebTestCase
     public function urlProvider(): array
     {
         return array(
-            array('/'),
-            array('/posts'),
-            array('/post/fixture-post-1'),
-            array('/blog/category/fixture-category'),
-            array('/archives'),
+            'package' => array('/package/'),
+            'posts12' => array('/posts12'),
         );
     }
 }
