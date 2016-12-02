@@ -390,3 +390,33 @@ csv.form.countPersons: Кол-во Людей
 form.chessBoard.begin.label: Заезд
 form.chessBoard.end.label: Отъезд
 form.chessBoard.roomType.label: Тип номера
+form.chessBoard.adults.label: Взрослых
+form.chessBoard.children.label: Детей
+form.chessBoard.accommodation.label: Комната
+form.chessBoard.tariff.label: Тариф
+form.chessBoard.price.label: Цена
+modal.chessBoard.close: Закрыть
+modal.chessBoard.delete: Удалить
+modal.chessBoard.edit: Редактировать
+modal.chessBoard.package_info: Информация о брони
+modal.chessBoard.package_source: Источник брони
+modal.chessBoard.manager: Менеджер
+modal.chessBoard.booked: Забронировано
+modal.chessBoard.begin: Заезд
+modal.chessBoard.end: Отъезд
+modal.chessBoard.is_check_in: Заехали
+modal.chessBoard.is_check_out: Выехали
+modal.chessBoard.yes: Да
+modal.chessBoard.no: Нет
+modal.chessBoard.guests: Гости
+modal.chessBoard.not_specified: Не указаны
+modal.chessBoard.roomType: Тип номера
+modal.chessBoard.room_number: Номер
+modal.chessBoard.without_accommodation: Без размещения
+modal.chessBoard.services: Услуги
+modal.chessBoard.price: Стоимость
+modal.chessBoard.serices_price: Стоимость услуг
+modal.chessBoard.payed: Оплачено
+controller.chessboard.package_create.success: Бронь успешно создана
+controller.chessboard.package_update.success: Бронь успешно обновлена
+controller.chessboard.package_remove.success: Бронь успешно удалена

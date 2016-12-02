@@ -348,7 +348,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * Displays a form to edit an existing entity.
      *
-     * @Route("/{id}/edit", name="package_edit")
+     * @Route("/{id}/edit", name="package_edit", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @Template()
@@ -551,6 +551,18 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             };
 
             return [];
+        }
+
+        if($request->isXmlHttpRequest()) {
+            return new JsonResponse(json_encode([
+                'success' => true,
+                'messages' => [
+                    $this->get('translator')->trans('controller.chessboard.package_create.success')
+                ],
+                'data' => [
+                    'packageId' => $order->getPackages()[0]->getId()
+                ]
+            ]));
         }
 
         $request->getSession()->getFlashBag()

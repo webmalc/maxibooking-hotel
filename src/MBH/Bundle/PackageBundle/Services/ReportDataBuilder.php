@@ -104,20 +104,50 @@ class ReportDataBuilder
             //TODO: Дополнить необходимыми данными
             $packagesData[] = [
                 //TODO: Плательщик не всегда есть. Что вместо него?
-                //При добавлении данных в данный массив, необходимо добавить эти данные при рендеринге в json(в chessBoard.html.twig)
                 'id' => $package->getId(),
                 'payer' => $package->getPayer() ? $package->getPayer()->getName() : $package->getName(),
                 'price' => $package->getPrice(),
                 'begin' => $package->getBegin(),
                 'end' => $package->getEnd(),
                 'roomTypeId' => $package->getRoomType()->getId(),
-                'tableLineId' => $reportTableLineId,
+                'accommodation' => $reportTableLineId,
             ];
         }
 
         return $packagesData;
     }
 
+    public function getDayNoAccommodationPackageCounts()
+    {
+        $counts = [];
+        $roomTypes = $this->getRoomTypes();
+        $daysArray = $this->getDaysArray();
+
+        foreach ($roomTypes as $roomType) {
+            foreach ($daysArray as $day) {
+                $counts[$roomType->getId()][$day->format('d.m.Y')] = 0;
+            }
+        }
+
+        foreach ($this->getPackages() as $package) {
+            if (!$package->getAccommodation()) {
+                $minDate = max($this->beginDate, $package->getBegin());
+                $maxDate = min($this->endDate, $package->getEnd());
+
+                foreach (new \DatePeriod($minDate, new \DateInterval('P1D'), $maxDate) as $day) {
+                    /** @var \DateTime $day */
+                    $counts[$package->getRoomType()->getId()][$day->format('d.m.Y')]++;
+                }
+            }
+        }
+
+        foreach ($counts as $roomTypeId => $roomTypeCounts) {
+            $counts[$roomTypeId] = array_values($roomTypeCounts);
+        }
+//        dump($counts);exit();
+
+        return $counts;
+    }
 
     public function getPackages()
     {
@@ -139,7 +169,7 @@ class ReportDataBuilder
     /**
      * @return array [roomTypeId => date string(d.m.Y) => left rooms count]
      */
-    public function getRoomCacheData()
+    public function getLeftRoomCounts()
     {
         $roomCacheData = [];
 
@@ -153,16 +183,23 @@ class ReportDataBuilder
                 true
             );
 
+        $endDate = (clone $this->endDate)->add(new \DateInterval('P1D'));
+
         foreach ($this->getRoomTypes() as $roomType) {
 
             if (isset($roomCaches[$roomType->getId()])) {
                 //Данные о комнатах могут быть получены либо для всех тарифов, и массив, содержащий их будет иметь индекс 0,
                 // либо для одного и будет иметь индекс тарифа, для которого искали данные
                 $roomCachesByDates = current($roomCaches[$roomType->getId()]);
-                foreach ($roomCachesByDates as $dateString => $roomCacheByDate) {
-
-                    /** @var RoomCache $roomCacheByDate */
-                    $roomCacheData[$roomType->getId()][$dateString] = $roomCacheByDate->getLeftRooms();
+                foreach (new \DatePeriod($this->beginDate, new \DateInterval('P1D'), $endDate) as $day) {
+                    /** @var \DateTime $day */
+                    if (isset($roomCachesByDates[$day->format('d.m.Y')])) {
+                        /** @var RoomCache $currentDateRoomCache */
+                        $currentDateRoomCache = $roomCachesByDates[$day->format('d.m.Y')];
+                        $roomCacheData[$roomType->getId()][] = $currentDateRoomCache->getLeftRooms();
+                    } else {
+                        $roomCacheData[$roomType->getId()][] = '';
+                    }
                 }
             }
         }
