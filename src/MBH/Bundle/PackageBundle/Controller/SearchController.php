@@ -96,6 +96,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'hotel' => $this->hotel,
             'roomManager' => $this->manager
         ]);
+        $groupedResult = [];
 
         // Validate form
         if ($request->get('s')) {
@@ -129,7 +130,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                     ->search($query);
             } else {
                 $errors = $form->getErrors();
-                $groupedResult = [];
             }
         }
 

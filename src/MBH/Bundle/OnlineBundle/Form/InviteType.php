@@ -18,12 +18,12 @@ class InviteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('arrival', new DateType(), [
+            ->add('arrival', DateType::class, [
                 'widget' => 'single_text',
                 //'format' => 'yyyy-MM-dd',
                 'required' => false,
             ])
-            ->add('departure', new DateType(), [
+            ->add('departure', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'yyyy-MM-dd',
                 'required' => false,

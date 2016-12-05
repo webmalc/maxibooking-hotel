@@ -712,7 +712,8 @@ class PackageRepository extends DocumentRepository
      */
     protected function getQueryBuilderByType($type)
     {
-        return $this->{'get' . ucfirst($type) . 'QueryBuilder'}();
+        $method = 'get' . ucfirst($type) . 'QueryBuilder';
+        return method_exists($this, $method) ? $this->$method() : null;
     }
 
     /**
@@ -724,6 +725,10 @@ class PackageRepository extends DocumentRepository
     public function findByType($type, Hotel $hotel = null)
     {
         $queryBuilder = $this->getQueryBuilderByType($type);
+
+        if (!$queryBuilder) {
+            return [];
+        }
 
         if ($hotel) {
             $roomTypes = [];

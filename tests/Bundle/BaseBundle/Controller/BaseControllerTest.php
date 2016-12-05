@@ -2,35 +2,28 @@
 
 namespace Tests\Bundle\BaseBundle\Controller;
 
-use Liip\FunctionalTestBundle\Test\WebTestCase;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Output\NullOutput;
+use MBH\Bundle\BaseBundle\Lib\WebTestCase;
+use Symfony\Component\Routing\Route;
 
 class BaseControllerTest extends WebTestCase
 {
-    public static function command(string $name) {
-        self::bootKernel();
-        $application = new Application(self::$kernel);
-        $application->setAutoExit(false);
-
-        $input = new ArrayInput(['command' => $name]);
-        $output = new NullOutput();
-        $application->run($input, $output);
-    }
-
     public static function setUpBeforeClass()
     {
-        self::command('mbh:base:fixtures');
+        self::baseFixtures();
     }
 
     public static function tearDownAfterClass()
     {
-        self::command('doctrine:mongodb:schema:drop');
+        self::clearDB();
+    }
+
+    public function setUp()
+    {
+
     }
 
     /**
-     * Test all routes
+     * Test basic get routes (without params)
      * @dataProvider urlProvider
      * @param string $url
      */
@@ -38,20 +31,32 @@ class BaseControllerTest extends WebTestCase
     {
         $client = static::makeClient(true);
         $client->request('GET', $url);
-        $this->isSuccessful($client->getResponse());
-        $this->assertGreaterThan(0, mb_strlen($client->getResponse()->getContent()));
-
+        $response = $client->getResponse();
+        if ($response->getStatusCode() != 404 && !$response->isRedirect()) {
+            $this->isSuccessful($response);
+            $this->assertGreaterThan(0, mb_strlen($response->getContent()));
+        }
     }
 
     /**
      * Get urls
      * @return array
      */
-    public function urlProvider(): array
+    public function urlProvider()
     {
-        return array(
-            'package' => array('/package/'),
-            'posts12' => array('/posts12'),
-        );
+        $routers = array_filter($this->getContainer()->get('router')->getRouteCollection()->all(), function (Route $route) {
+            $path = $route->getPath();
+            if (isset($path[1]) && $path[1] == '_') {
+                return false;
+            }
+            if (mb_strpos($path, '{') !== false) {
+                return false;
+            }
+            return !$route->getMethods() || in_array('GET', $route->getMethods());
+        });
+
+        return array_map(function($route) {
+            return [$route->getPath()];
+        }, $routers);
     }
 }

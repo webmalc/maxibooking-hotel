@@ -344,6 +344,10 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     {
         $request = $this->getRequest();
         $chart = new Highchart();
+        if (!$request->get('type')) {
+            return $chart;
+        }
+
         if ($request->get('months')) {
             $chart->chart->type('column');
         }

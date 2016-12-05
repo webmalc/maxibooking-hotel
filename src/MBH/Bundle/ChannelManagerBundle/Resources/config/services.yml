@@ -26,10 +26,14 @@ services:
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: ['@mbh.currency']
+      tags:
+              - { name: form.type }
 
     mbh.channelmanager.myallocator_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\MyallocatorType
       arguments: ['@mbh.channelmanager.myallocator', '@mbh.currency']
+      tags:
+              - { name: form.type }
 
     mbh.channelmanager.logger:
         class:     Symfony\Bridge\Monolog\Logger

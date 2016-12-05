@@ -61,12 +61,12 @@ class TouristController extends Controller
         $form = $this->createFormBuilder(null, [
             'data_class' => TouristQueryCriteria::class
         ])
-            ->add('begin', new DateType(), [
+            ->add('begin', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => false
             ])
-            ->add('end', new DateType(), [
+            ->add('end', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => false

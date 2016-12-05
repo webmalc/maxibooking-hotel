@@ -140,7 +140,7 @@ class ApiController extends Controller
         $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         if (!$config || !$config->getSuccessUrl()) {
-            return $this->createNotFoundException();
+            throw $this->createNotFoundException();
         }
 
         return $this->redirect($config->getSuccessUrl());
@@ -156,7 +156,7 @@ class ApiController extends Controller
         $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         if (!$config || !$config->getFailUrl()) {
-            return $this->createNotFoundException();
+            throw $this->createNotFoundException();
         }
         return $this->redirect($config->getFailUrl());
     }

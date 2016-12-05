@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
+use MBH\Bundle\ChannelManagerBundle\Form\MyallocatorType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
@@ -33,7 +34,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
         $config = $this->hotel->getMyallocatorConfig();
 
         $form = $this->createForm(
-            $this->get('mbh.channelmanager.myallocator_type'), $config, ['config' => $config]
+            MyallocatorType::class, $config, ['config' => $config]
         );
 
         return [
@@ -62,7 +63,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
         }
 
         $form = $this->createForm(
-            $this->get('mbh.channelmanager.myallocator_type'), $config, ['config' => $config]
+            MyallocatorType::class, $config, ['config' => $config]
         );
         $form->handleRequest($request);
 
@@ -136,6 +137,10 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     {
         $config = $this->hotel->getMyallocatorConfig();
 
+        if (!$config) {
+            throw $this->createNotFoundException();
+        }
+
         $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.myallocator')->roomList($config, true),
@@ -184,6 +189,10 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     {
         $config = $this->hotel->getMyallocatorConfig();
 
+        if (!$config) {
+            throw $this->createNotFoundException();
+        }
+
         $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.myallocator')->pullTariffs($config),
@@ -224,14 +233,13 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
      * @Route("/service", name="channels_service")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_MYALLOCATOR')")
-     * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function serviceAction(Request $request)
     {
-
+        throw $this->createNotFoundException();
     }
 
     /**

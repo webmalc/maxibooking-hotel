@@ -47,6 +47,9 @@ class InvoiceController extends Controller
 		$amounts = [];
 		
 		foreach ($res as $v) {
+		    if (!is_object($v['_id'])) {
+		        continue;
+            }
 			$amounts[$v['_id']['$id']->{'$id'}] = $v['value'];
 		}
 		
