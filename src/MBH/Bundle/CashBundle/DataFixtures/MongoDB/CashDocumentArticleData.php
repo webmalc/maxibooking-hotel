@@ -2,13 +2,14 @@
 
 namespace MBH\Bundle\CashBundle\DataFixtures\MongoDB;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\CashBundle\Document\CashDocumentArticle;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class CashDocumentArticleData implements FixtureInterface, ContainerAwareInterface
+class CashDocumentArticleData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
@@ -63,5 +64,10 @@ class CashDocumentArticleData implements FixtureInterface, ContainerAwareInterfa
         }
 
         $manager->flush();
+    }
+
+    public function getOrder()
+    {
+        return 9997;
     }
 }
