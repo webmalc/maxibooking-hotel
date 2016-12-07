@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -19,19 +20,19 @@ class TariffInheritanceType extends AbstractType
         $group = 'Наследование от тарифа <' . $options['parent'] . '>';
 
         $builder
-            ->add('inheritPrices', 'checkbox', [
+            ->add('inheritPrices', CheckboxType::class, [
                 'label' => 'Цены',
                 'group' => $group,
                 'required' => false,
                 'help' => 'Наследовать ли цены от родительского тарифа'
             ])
-            ->add('inheritRestrictions', 'checkbox', [
+            ->add('inheritRestrictions', CheckboxType::class, [
                 'label' => 'Условия и ограничения',
                 'group' => $group,
                 'required' => false,
                 'help' => 'Наследовать ли условия и ограничения от родительского тарифа'
             ])
-            ->add('inheritRooms', 'checkbox', [
+            ->add('inheritRooms', CheckboxType::class, [
                 'label' => 'Квоты',
                 'group' => $group,
                 'required' => false,
@@ -49,7 +50,7 @@ class TariffInheritanceType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_price_tariff_child_options';
     }

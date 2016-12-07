@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Lib;
 
-use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Query\Builder;
 
 class QueryBuilder extends Builder
 {

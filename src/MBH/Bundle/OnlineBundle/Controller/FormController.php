@@ -3,15 +3,15 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\OnlineBundle\Document\FormConfig;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\OnlineBundle\Form\FormType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/form")
@@ -45,7 +45,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
 
         $entity = new FormConfig();
 
-        $form = $this->createForm(new FormType(), $entity, [
+        $form = $this->createForm(FormType::class, $entity, [
             'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']
         ]);
 
@@ -80,7 +80,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
     {
         $this->setLocaleByRequest();
 
-        $form = $this->createForm(new FormType(), $entity, [
+        $form = $this->createForm(FormType::class, $entity, [
             'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']
         ]);
 

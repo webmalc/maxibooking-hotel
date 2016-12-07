@@ -3,9 +3,9 @@
 namespace MBH\Bundle\PriceBundle\Services;
 
 
+use \MBH\Bundle\PriceBundle\Document\RoomCache as RoomCacheDoc;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use \MBH\Bundle\PriceBundle\Document\RoomCache as RoomCacheDoc;
 
 
 /**

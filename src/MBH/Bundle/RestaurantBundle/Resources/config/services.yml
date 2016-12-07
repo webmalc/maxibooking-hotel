@@ -37,6 +37,6 @@ services:
             - { name: form.type }
   mbh.table.validator:
         class: MBH\Bundle\RestaurantBundle\Validator\Constraints\TableValidator
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: validator.constraint_validator, alias: mbh.table.validator }

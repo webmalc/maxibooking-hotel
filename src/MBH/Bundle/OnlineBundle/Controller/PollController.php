@@ -6,12 +6,12 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\OrderPollQuestion;
 use MBH\Bundle\PackageBundle\Document\Tourist;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 class PollController extends Controller
 {
@@ -83,7 +83,7 @@ class PollController extends Controller
      * @Route("/api/poll/config", name="online_poll_config")
      * @Method("GET")
      * @Security("is_granted('ROLE_POLLS')")
-     * @Template("")
+     * @Template()
      */
     public function configAction()
     {
@@ -93,7 +93,7 @@ class PollController extends Controller
     /**
      * @Route("/api/poll/js/main", name="online_poll_js", defaults={"_format"="js"})
      * @Method("GET")
-     * @Template("")
+     * @Template()
      */
     public function pollAction()
     {

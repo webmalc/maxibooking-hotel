@@ -3,9 +3,9 @@
 namespace MBH\Bundle\PriceBundle\Services;
 
 
+use \MBH\Bundle\PriceBundle\Document\RoomCache as RoomCacheDoc;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use \MBH\Bundle\PriceBundle\Document\RoomCache as RoomCacheDoc;
 
 
 /**
@@ -64,6 +64,8 @@ class Restriction
         $maxStayArrival = null,
         $minBeforeArrival = null,
         $maxBeforeArrival = null,
+        $maxGuest = null,
+        $minGuest = null,
         $closedOnArrival = false,
         $closedOnDeparture = false,
         $closed = false,
@@ -81,6 +83,7 @@ class Restriction
         if (
             empty($minStay) && empty($maxStay) && empty($minStayArrival) &&
             empty($maxStayArrival) && empty($minBeforeArrival) && empty($maxBeforeArrival) &&
+            empty($maxGuest) && empty($minGuest) &&
             empty($closedOnArrival) && empty($closedOnDeparture) && empty($closed)
         ) {
             $empty = true;
@@ -113,6 +116,8 @@ class Restriction
                         'maxStayArrival' => !empty($maxStayArrival) ? (int) $maxStayArrival : null,
                         'minBeforeArrival' => !empty($minBeforeArrival) ? (int) $minBeforeArrival : null,
                         'maxBeforeArrival' => !empty($maxBeforeArrival) ? (int) $maxBeforeArrival : null,
+                        'maxGuest' => !empty($maxGuest) ? (int) $maxGuest : null,
+                        'minGuest' => !empty($minGuest) ? (int) $minGuest : null,
                         'closedOnArrival' => !empty($closedOnArrival) ? true : false,
                         'closedOnDeparture' => !empty($closedOnDeparture) ? true : false,
                         'closed' => !empty($closed) ? true : false,
@@ -146,6 +151,8 @@ class Restriction
                         'maxStayArrival' => !empty($maxStayArrival) ? (int) $maxStayArrival : null,
                         'minBeforeArrival' => !empty($minBeforeArrival) ? (int) $minBeforeArrival : null,
                         'maxBeforeArrival' => !empty($maxBeforeArrival) ? (int) $maxBeforeArrival : null,
+                        'maxGuest' => !empty($maxGuest) ? (int) $maxGuest : null,
+                        'minGuest' => !empty($minGuest) ? (int) $minGuest : null,
                         'closedOnArrival' => !empty($closedOnArrival) ? true : null,
                         'closedOnDeparture' => !empty($closedOnDeparture) ? true : null,
                         'closed' => !empty($closed) ? true : false,

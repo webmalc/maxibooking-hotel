@@ -10,13 +10,12 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use MBH\Bundle\BaseBundle\Form\Extension\DateType;
 use MBH\Bundle\UserBundle\Document\Group;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -55,32 +54,32 @@ class SearchTaskType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm end-datepicker'],
             ])
-            ->add('dateCriteriaType', ChoiceType::class, [
-                'empty_value' => '',
+            ->add('dateCriteriaType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+                'placeholder' => '',
                 'choices' => [ 'date' => 'form.searchTask.performance', 'createdAt' => 'form.searchTask.creation'],
                 'data' => 'date',
             ])
-            ->add('status', ChoiceType::class, [
-                'empty_value' => '',
+            ->add('status',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+                'placeholder' => '',
                 'choices' => array_combine(array_keys($statuses),array_keys($statuses)),
                 'choice_label' => function ($status) {
                     return 'task.filter.task.'. $status;
                 }
             ])
-            ->add('priority', ChoiceType::class, [
-                'empty_value' => '',
+            ->add('priority',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+                'placeholder' => '',
                 'choices' => $options['priority'],
                 'choice_label' => function ($index) use ($options){
                     return 'task.filter.prior.'. $options['priority'][$index];
                 }
             ])
             ->add('userGroups', DocumentType::class, [
-                'empty_value' => '',
+                'placeholder' => '',
                 'multiple' => true,
                 'class' => Group::class
             ])
             ->add('performer', DocumentType::class, [
-                'empty_value' => '',
+                'placeholder' => '',
                 'class' => User::class
             ])
             ->add('deleted', CheckboxType::class)

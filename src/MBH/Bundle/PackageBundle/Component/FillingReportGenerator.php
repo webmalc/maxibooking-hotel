@@ -352,10 +352,10 @@ class FillingReportGenerator
             //$totals['packagesCount'] = $totals['packagesCount'] / $roomTypeCount;
             //$totals['notPaidRooms'] = $totals['notPaidRooms'] / $roomTypeCount;
             //$totals['guests'] = $totals['guests'] / $roomTypeCount;
-            $totals['roomGuests'] = $totals['roomGuests'] / $roomTypeCount;
-            $totals['packagesCountPercent'] = $totals['packagesCountPercent'] / $roomTypeCount;
-            $totals['paidPercent'] = $totals['paidPercent'] / $roomTypeCount;
-            $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / $roomTypeCount;
+            $totals['roomGuests'] = isset($totals['roomGuests']) ? $totals['roomGuests'] / $roomTypeCount : 0;
+            $totals['packagesCountPercent'] = isset($totals['packagesCountPercent']) ? $totals['packagesCountPercent'] / $roomTypeCount : 0;
+            $totals['paidPercent'] =  isset($totals['paidPercent']) ? $totals['paidPercent'] / $roomTypeCount : 0;
+            $totals['maxIncomePercent'] = isset($totals['maxIncomePercent']) ? $totals['maxIncomePercent'] / $roomTypeCount : 0;
         }
 
         $totalTableData = [

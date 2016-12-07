@@ -42,12 +42,13 @@ class ServiceRepository extends DocumentRepository
 
     /**
      * @param Tariff $tariff
+     * @param boolean $all
      * @return \Doctrine\Common\Collections\Collection|Service[]
      */
-    public function getAvailableServicesForTariff(Tariff $tariff)
+    public function getAvailableServicesForTariff(Tariff $tariff, $all = false)
     {
         $services = iterator_to_array($tariff->getServices());
-        if (count($services) == 0) {
+        if (count($services) == 0 || $all) {
             $serviceCategories = $tariff->getHotel()->getServicesCategories();
             foreach ($serviceCategories as $category) {
                 $services = array_merge($services, iterator_to_array($category->getServices()));

@@ -38,29 +38,29 @@ services.channelManager.sync_error_check_interaction_settings: ': ошибка �
 channelManager.booking.notification.subject.new: Новый заказ Booking.com
 channelManager.booking.notification.subject.edit: Изменен заказ Booking.com
 channelManager.booking.notification.subject.delete: Удален заказ Booking.com
-channelManager.booking.notification.new: Новый заказ %order% из booking.com. Номера броней: %packages%
-channelManager.booking.notification.edit: Изменен заказ %order% из booking.com. Номера броней: %packages%
-channelManager.booking.notification.delete: Удален заказ %order% из booking.com. Номера броней: %packages%
+channelManager.booking.notification.new: "Новый заказ %order% из booking.com. Номера броней: %packages%"
+channelManager.booking.notification.edit: "Изменен заказ %order% из booking.com. Номера броней: %packages%"
+channelManager.booking.notification.delete: "Удален заказ %order% из booking.com. Номера броней: %packages%"
 channelManager.booking.notification.error.subject: Ошибка Booking.com
-channelManager.booking.notification.error: Ошибка при обработке заказа Booking.com. Информация: %info%
+channelManager.booking.notification.error: "Ошибка при обработке заказа Booking.com. Информация: %info%"
 
 channelManager.myallocator.notification.subject.new: Новый заказ Myallocator.com
 channelManager.myallocator.notification.subject.edit: Изменен заказ Myallocator.com
 channelManager.myallocator.notification.subject.delete: Удален заказ Myallocator.com
-channelManager.myallocator.notification.new: Новый заказ %order% из Myallocator.com. Номера броней: %packages%
-channelManager.myallocator.notification.edit: Изменен заказ %order% из Myallocator.com. Номера броней: %packages%
-channelManager.myallocator.notification.delete: Удален заказ %order% из Myallocator.com. Номера броней: %packages%
+channelManager.myallocator.notification.new: "Новый заказ %order% из Myallocator.com. Номера броней: %packages%"
+channelManager.myallocator.notification.edit: "Изменен заказ %order% из Myallocator.com. Номера броней: %packages%"
+channelManager.myallocator.notification.delete: "Удален заказ %order% из Myallocator.com. Номера броней: %packages%"
 channelManager.myallocator.notification.error.subject: Ошибка Myallocator.com
-channelManager.myallocator.notification.error: Ошибка при обработке заказа Myallocator.com. Информация: %info%
+channelManager.myallocator.notification.error: "Ошибка при обработке заказа Myallocator.com. Информация: %info%"
 
 channelManager.vashotel.notification.subject.new: Новый заказ Vashotel.ru
 channelManager.vashotel.notification.subject.edit: Изменен заказ Vashotel.ru
 channelManager.vashotel.notification.subject.delete: Удален заказ Vashotel.ru
-channelManager.vashotel.notification.new: Новый заказ %order% из ВашОтель.RU. Номера броней: %packages%
-channelManager.vashotel.notification.edit: Изменен заказ %order% из ВашОтель.RU. Номера броней: %packages%
-channelManager.vashotel.notification.delete: Удален заказ %order% из ВашОтель.RU. Номера броней: %packages%
+channelManager.vashotel.notification.new: "Новый заказ %order% из ВашОтель.RU. Номера броней: %packages%"
+channelManager.vashotel.notification.edit: "Изменен заказ %order% из ВашОтель.RU. Номера броней: %packages%"
+channelManager.vashotel.notification.delete: "Удален заказ %order% из ВашОтель.RU. Номера броней: %packages%"
 channelManager.vashotel.notification.error.subject: Ошибка Vashotel.ru
-channelManager.vashotel.notification.error: Ошибка при обработке заказа Vashotel.ru. Информация: %info%
+channelManager.vashotel.notification.error: "Ошибка при обработке заказа Vashotel.ru. Информация: %info%"
 
 channelManager.booking.notification.bottom: Внимание! Требуется ручная обработка ситуации.
 

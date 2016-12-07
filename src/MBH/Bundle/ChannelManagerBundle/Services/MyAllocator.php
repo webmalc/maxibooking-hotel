@@ -4,22 +4,22 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\CashBundle\Validator\Constraints\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MyAllocator\phpsdk\src\Api\BookingList;
-use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
-use MyAllocator\phpsdk\src\Api\VendorSet;
+use MyAllocator\phpsdk\src\Api\ARIUpdate;
 use MyAllocator\phpsdk\src\Api\AssociateUserToPMS;
-use MyAllocator\phpsdk\src\Object\Auth;
+use MyAllocator\phpsdk\src\Api\BookingList;
 use MyAllocator\phpsdk\src\Api\MaApi;
 use MyAllocator\phpsdk\src\Api\PropertyList;
 use MyAllocator\phpsdk\src\Api\RoomList;
-use MyAllocator\phpsdk\src\Api\ARIUpdate;
+use MyAllocator\phpsdk\src\Api\VendorSet;
+use MyAllocator\phpsdk\src\Object\Auth;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 
 /**

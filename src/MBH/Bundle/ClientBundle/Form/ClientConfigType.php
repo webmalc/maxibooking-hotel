@@ -56,7 +56,7 @@ class ClientConfigType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_clientbundle_client_config_type';
     }

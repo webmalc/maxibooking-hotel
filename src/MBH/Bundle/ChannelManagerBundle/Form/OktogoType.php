@@ -3,8 +3,10 @@
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class OktogoType extends AbstractType
 {
@@ -14,7 +16,7 @@ class OktogoType extends AbstractType
         $builder
             ->add(
                 'enabled',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.oktogoType.is_included',
                     'value' => true,
@@ -24,7 +26,7 @@ class OktogoType extends AbstractType
             )
             ->add(
                 'login',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.oktogoType.login',
                     'required' => true,
@@ -34,7 +36,7 @@ class OktogoType extends AbstractType
             )
             ->add(
                 'password',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.oktogoType.password',
                     'required' => true,
@@ -44,7 +46,7 @@ class OktogoType extends AbstractType
             )
             ->add(
                 'username',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.oktogoType.username',
                     'required' => true,
@@ -55,7 +57,7 @@ class OktogoType extends AbstractType
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
             array(
@@ -64,7 +66,7 @@ class OktogoType extends AbstractType
         );
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_channelmanagerbundle_oktogo_type';
     }

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -30,6 +31,11 @@ class BaseController extends Controller
      */
     protected $helper;
 
+    /**
+     * @var ClientConfig
+     */
+    protected $clientConfig;
+
     public function setContainer(ContainerInterface $container = null)
     {
         parent::setContainer($container);
@@ -37,6 +43,7 @@ class BaseController extends Controller
         $this->dm = $this->get('doctrine_mongodb')->getManager();
         $this->hotel = $this->get('mbh.hotel.selector')->getSelected();
         $this->helper = $this->get('mbh.helper');
+        $this->clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
     }
 
     /**
@@ -155,5 +162,13 @@ class BaseController extends Controller
         $request = $this->get('request_stack')->getCurrentRequest();
         $request->setLocale($locale);
         $this->get('translator')->setLocale($request->getLocale());
+    }
+
+    /**
+     * @return null|\Symfony\Component\HttpFoundation\Request
+     */
+    protected function getRequest()
+    {
+        return $this->get('request_stack')->getCurrentRequest();
     }
 }

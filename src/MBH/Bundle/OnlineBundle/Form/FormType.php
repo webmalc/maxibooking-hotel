@@ -2,9 +2,11 @@
 
 namespace MBH\Bundle\OnlineBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class FormType extends AbstractType
 {
@@ -14,7 +16,7 @@ class FormType extends AbstractType
         $builder
             ->add(
                 'hotels',
-                'document',
+                DocumentType::class,
                 [
                     'label' => 'form.formType.hotels',
                     'class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
@@ -27,7 +29,7 @@ class FormType extends AbstractType
             )
             ->add(
                 'enabled',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.formType.is_turned_on',
                     'group' => 'form.formType.parameters',
@@ -38,7 +40,7 @@ class FormType extends AbstractType
             )
             ->add(
                 'roomTypes',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.formType.room_types',
                     'group' => 'form.formType.parameters',
@@ -50,7 +52,7 @@ class FormType extends AbstractType
             $builder
                 ->add(
                     'tourists',
-                    'checkbox',
+                    CheckboxType::class,
                     [
                         'label' => 'form.formType.are_there_guests',
                         'group' => 'form.formType.parameters',
@@ -63,7 +65,7 @@ class FormType extends AbstractType
         $builder
             ->add(
                 'nights',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.formType.should_we_use_nights_field',
                     'group' => 'form.formType.parameters',
@@ -73,8 +75,7 @@ class FormType extends AbstractType
                 ]
             )
             ->add(
-                'paymentTypes',
-                'choice',
+                'paymentTypes',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
                     'group' => 'form.formType.payment',
                     'choices' => $options['paymentTypes'],
@@ -86,7 +87,7 @@ class FormType extends AbstractType
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
             array(
@@ -96,7 +97,7 @@ class FormType extends AbstractType
         );
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_onlinebundle_form_type';
     }

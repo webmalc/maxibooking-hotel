@@ -4,6 +4,8 @@ price.views.restriction.table.maxStayArrival: 'Макс. длина брони (
 price.views.restriction.table.minStay: 'Мин. длина брони (сквозное)'
 price.views.restriction.table.maxStay: 'Макс. длина брони (сквозное)'
 price.views.restriction.table.minBeforeArrival: 'Мин. дней до заезда'
+price.views.restriction.table.maxGuest: 'Макс. количество гостей'
+price.views.restriction.table.minGuest: 'Мин. количество гостей'
 price.views.restriction.table.maxBeforeArrival: 'Макс. дней до заезда'
 price.views.restriction.table.closedOnArrival: 'Нет заезда'
 price.views.restriction.table.closedOnDeparture: 'Нет выезда'

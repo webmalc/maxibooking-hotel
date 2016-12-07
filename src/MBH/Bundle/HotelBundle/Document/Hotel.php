@@ -2,9 +2,15 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\Common\Collections\ArrayCollection;
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -13,12 +19,6 @@ use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 
 /**
  * @ODM\Document(collection="Hotels")

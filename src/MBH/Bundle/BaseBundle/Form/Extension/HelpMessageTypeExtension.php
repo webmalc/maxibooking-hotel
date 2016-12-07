@@ -3,9 +3,11 @@
 namespace MBH\Bundle\BaseBundle\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class HelpMessageTypeExtension extends AbstractTypeExtension
@@ -22,17 +24,14 @@ class HelpMessageTypeExtension extends AbstractTypeExtension
         $view->vars['addon'] = $form->getConfig()->getAttribute('addon');
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'help' => null,
-            'addon' => null,
-        ));
+        $resolver->setDefined(['help', 'addon'])->setDefaults(['help' => null, 'addon' => null]);
     }
 
     public function getExtendedType()
     {
-        return 'form';
+        return FormType::class;
     }
 }
 ?>

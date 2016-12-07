@@ -119,7 +119,7 @@
 
 
             {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', order) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                {{ form_start(form, {'action': path('package_order_tourist_update', {'id': order.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+                {{ form_start(form, {'action': path('package_order_tourist_update', {'id': order.id, 'packageId': package.id}),  'attr': {'class': 'form-horizontal'}}) }}
                 {{ form_widget(form) }}
             {% endif %}
 

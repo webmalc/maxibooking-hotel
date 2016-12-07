@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
-use Lsw\MemcacheBundle\Cache\MemcacheInterface;
-
+use MBH\Bundle\BaseBundle\Document\CacheItem;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Helper service
  */
@@ -22,34 +24,49 @@ class Cache
     private $isEnabled;
 
     /**
-     * @var \Memcached
+     * @var \ApcuAdapter
      */
-    private $memcached;
+    private $cache;
 
-    public function __construct(array $params)
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectManager
+     */
+    private $dm;
+
+    /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
+    public function __construct(array $params, ManagerRegistry $dm, ValidatorInterface $validator)
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
-        $this->memcached = new \Memcached();
-        $this->memcached->addServer('localhost', 11211);;
+        $this->cache = new ApcuAdapter();
+        $this->dm = $dm->getManager();
+        $this->validator = $validator;
     }
 
     /**
      * @param string|null $prefix
+     * @param bool $all
+     * @return self
      */
-    public function clear(string $prefix = null)
+    public function clear(string $prefix = null, bool $all = false): self
     {
-        $memcached = $this->memcached;
+        if (!$this->isEnabled) {
+            return $this;
+        }
+        if ($all) {
+            $this->cache->clear();
+            return $this;
+        }
 
         $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
-        $keys = array_filter($memcached->getAllKeys() ? $memcached->getAllKeys() : [], function ($val) use ($prefix) {
-            $length = strlen($prefix);
-            return (substr($val, 0, $length) === $prefix);
-        });
+        $this->cache->deleteItems($this->dm->getRepository('MBHBaseBundle:CacheItem')->getKeysByPrefix($prefix));
+        $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix);
 
-        array_walk($keys, function ($val) {
-            $this->memcached->delete($val);
-        });
+        return $this;
     }
 
     /**
@@ -96,7 +113,18 @@ class Cache
             return $this;
         }
 
-        $this->memcached->set($this->generateKey($prefix, $keys), $value, self::LIFETIME);
+        $key = $this->generateKey($prefix, $keys);
+        $item = $this->cache->getItem($this->generateKey($prefix, $keys));
+        $item->set($value)->expiresAfter(self::LIFETIME);
+        $this->cache->save($item);
+
+        //save key to database
+        $cacheItem = new CacheItem($key);
+
+        if (!count($this->validator->validate($cacheItem))) {
+            $this->dm->persist($cacheItem);
+            $this->dm->flush();
+        }
 
         return $this;
     }
@@ -112,6 +140,7 @@ class Cache
             return false;
         }
 
-        return $this->memcached->get($this->generateKey($prefix, $keys));
+        $item = $this->cache->getItem($this->generateKey($prefix, $keys));
+        return $item->isHit() ? $item->get() : false;
     }
 }

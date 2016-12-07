@@ -11,12 +11,12 @@
 
 namespace MBH\Bundle\BaseBundle\Validator\Constraints;
 
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as UniqueEntity;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Exception\UnexpectedTypeException;
-use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 use Symfony\Component\Validator\ConstraintValidator;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as UniqueEntity;
+use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
  * Unique Entity Validator checks if one or a set of fields contain unique values.
@@ -143,7 +143,7 @@ class UniqueEntityValidator extends ConstraintValidator
 
         $errorPath = null !== $constraint->errorPath ? $constraint->errorPath : $fields[0];
 
-        $this->buildViolation($constraint->message)
+        $this->context->buildViolation($constraint->message)
             ->atPath($errorPath)
             ->setInvalidValue($criteria[$fields[0]])
             ->addViolation();

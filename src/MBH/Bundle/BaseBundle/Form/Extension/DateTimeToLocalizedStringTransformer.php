@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Form\Extension;
 
-use Symfony\Component\Form\Extension\Core\DataTransformer\BaseDateTimeTransformer;
 use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\Form\Extension\Core\DataTransformer\BaseDateTimeTransformer;
 
 /**
  * Transforms between a normalized time and a localized time string

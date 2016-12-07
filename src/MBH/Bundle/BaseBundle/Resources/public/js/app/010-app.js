@@ -50,6 +50,13 @@ mbh.loader = {
     }
 }
 
+mbh.error = {
+    html: '<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Произолшла ошибка во время запроса. Попробуйте еще раз.</div>',
+    acceptTo: function($container) {
+        $container.html(this.html);
+    }
+}
+
 mbh.alert = {
     $alert: $('#entity-delete-confirmation'),
     show: function(href, header, text, buttonText, buttonIcon, buttonClass, action, $this)
@@ -252,9 +259,9 @@ $(document).ready(function () {
 
         $('.sidebar-toggle').click(function () {
             if ($('body').hasClass('sidebar-collapse')) {
-                localStorage.setItem('sidebar-collapse', 'close');
-            } else {
                 localStorage.setItem('sidebar-collapse', 'open');
+            } else {
+                localStorage.setItem('sidebar-collapse', 'close');
             }
         });
     }());

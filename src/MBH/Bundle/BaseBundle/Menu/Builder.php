@@ -3,15 +3,16 @@
 namespace MBH\Bundle\BaseBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
-use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
-use MBH\Bundle\UserBundle\Document\User;
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Knp\Menu\ItemInterface;
-use JMS\SecurityExtraBundle\Metadata\Driver\AnnotationDriver;
+use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class Builder extends ContainerAware
+class Builder implements ContainerAwareInterface
 {
+
+    use ContainerAwareTrait;
 
     /**
      * @var \MBH\Bundle\ClientBundle\Document\ClientConfig

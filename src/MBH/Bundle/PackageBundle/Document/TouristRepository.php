@@ -149,6 +149,7 @@ class TouristRepository extends DocumentRepository
         if (empty($lastName)) {
             throw new \Exception('Empty tourist last name');
         }
+
         !$patronymic ?: $patronymic = mb_convert_case(mb_strtolower($patronymic), MB_CASE_TITLE);
         !$phone ?: $phone = Tourist::cleanPhone($phone);
 

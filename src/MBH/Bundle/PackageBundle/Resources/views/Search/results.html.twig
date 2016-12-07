@@ -78,7 +78,7 @@
                         <select class="form-control input-sm search-room-select">
                             <option></option>
                             {% for room in  result.rooms %}
-                                <option  {% if room.status is iterable and room.status is not empty %}data-icon="{% for status in room.status %}{% if status.code in roomStatusIcons|keys  %}mbf-{{ roomStatusIcons[status.code] }};{% endif %}{% endfor %} "{% endif %}
+                                <option  {% if room.status is iterable and room.status is not empty %}data-icon="{% for status in room.status %}{% if status.code in roomStatusIcons|keys  %}mbf-{{ roomStatusIcons[status.code] }};{% endif %}{% endfor %} "{% else %}data-icon=""{% endif %}
                                         {% if query.room == room.id %}selected{% endif %}
                                         value="{{ room.id }}">
                                     {{ room }}

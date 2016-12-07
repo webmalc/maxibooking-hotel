@@ -24,17 +24,18 @@
                 </thead>
 
                 <tbody>
-                {% for room in data.rooms(roomType) %}
+                {% set rooms = data.rooms(roomType) %}
+                {% for room in rooms %}
                     <tr>
                         <td class="text-center text-muted mbh-graph-cell"><small>{{ room }}</small></td>
                         {% for date in data.dates %}
                             {% set info = data.getInfo(date, room) %}
 
-                            <td class="mbh-graph-cell mbh-graph-cell-padding">
+                            <td class="mbh-graph-cell mbh-graph-cell-padding {% if data.max(date, roomType) and rooms|length - data.max(date, roomType) >= loop.parent.loop.index %}mbh-graph-cell-danger{% endif %}">
                             {% if info %}
                                 {% for entry in info %}
-                                    <a style="display: block;" href="{{ path('package_edit', {'id': entry.package.id}) }}" target="_blank" class="bg-green {{ entry.begin ? 'pull-right' }} {{ entry.end ? 'pull-left' }} {{ not entry.regular ? 'mbh-graph-div' }}"
-                                         data-toggle="tooltip" data-placement="top" data-html="true" title="{{ entry.tooltip }}">
+                                    <a style="display: block;" href="{{ path('package_edit', {'id': entry.package.id}) }}" target="_blank" class="windows-package-info-link bg-green {{ entry.begin ? 'pull-right' }} {{ entry.end ? 'pull-left' }} {{ not entry.regular ? 'mbh-graph-div' }}"
+                                         data-toggle="tooltip" data-placement="top" data-html="true" data-id="{{ entry.package.id }}" title="{{ entry.tooltip }}">
                                         &nbsp;
                                     </a>
                                 {% endfor %}

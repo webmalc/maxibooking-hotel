@@ -8,13 +8,13 @@ views.api.form.adults: Взрослые
 views.api.form.children: Дети
 views.api.form.find_room: Найти номер
 views.api.form.online_reservation_system: система онлайн бронирования
-views.api.getPaymentType.dates: Даты:
-views.api.getPaymentType.days_and_nights: Дни/ночи:
-views.api.getPaymentType.nomerov: Всего:
-views.api.getPaymentType.order_result: Заказ на сумму:
-views.api.getPaymentType.nomera:  Проживание:
-views.api.getPaymentType.services:  Услуги:
-views.api.getPaymentType.tariff: Тариф:
+views.api.getPaymentType.dates: "Даты:"
+views.api.getPaymentType.days_and_nights: "Дни/ночи:"
+views.api.getPaymentType.nomerov: "Всего:"
+views.api.getPaymentType.order_result: "Заказ на сумму:"
+views.api.getPaymentType.nomera:  "Проживание:"
+views.api.getPaymentType.services:  "Услуги:"
+views.api.getPaymentType.tariff: "Тариф:"
 views.api.getPaymentType.choose_payment_way: Выберите способ оплаты
 views.api.getPaymentType.payment_fine: Оплата по прибытию в гостиницу на стойке размещения
 views.api.getPaymentType.reservation_guarantee_whole_sum:  Гарантированное бронирование, предоплата 100% всей стоимости проживания до заезда в отель
@@ -37,9 +37,9 @@ views.api.getResultsTable.price: Цена
 views.api.getResultsTable.amount: Количество
 views.api.getResultsTable.price_per: цена за
 views.api.getResultsTable.day: день
-views.api.getResultsTable.rooms: Номера:
-views.api.getResultsTable.services: Услуги:
-views.api.getResultsTable.result: Итого:
+views.api.getResultsTable.rooms: "Номера:"
+views.api.getResultsTable.services: "Услуги:"
+views.api.getResultsTable.result: "Итого:"
 views.api.getResultsTable.continue: Продолжить
 views.api.getResultsTable.nothing_found_for_your_query: По вашему запросу ничего не найдено.
 views.api.getUserForm.enter_data_to_continue: Заполните данные для продолжения
@@ -53,7 +53,7 @@ views.api.getUserForm.birth_date: День рождения
 views.api.getUserForm.check_in_time: Время заезда
 views.api.getUserForm.check_out_time: Время отъезда
 views.api.getUserForm.comment: Комментарий
-views.api.getUserForm.required_fields: - поля обязательные для заполнения
+views.api.getUserForm.required_fields: "- поля обязательные для заполнения"
 views.api.getUserForm.choose_other_rooms: Выбрать другие номера
 views.api.getUserForm.continue: Продолжить
 views.api.getUserForm.reservation_error: Произошла ошибка во время бронирования.
@@ -62,9 +62,9 @@ views.api.notification.new_reservations_made_with_online_form: Оформлен�
 views.api.notification.hotel: Отель
 views.api.notification.dates: Даты
 views.api.notification.room_type: Тип номера
-views.api.notification.client: Клиент:
-views.api.notification.phone: Телефон:
-views.api.make_payment_for_order_id: Оплатить %total%. Номера заказа: %order_id%
+views.api.notification.client: "Клиент:"
+views.api.notification.phone: "Телефон:"
+views.api.make_payment_for_order_id: "Оплатить %total%. Номера заказа: %order_id%"
 views.api.tariffs.base_tariff: (базовый тариф)
 views.api.tariffs.tariffs_and_special_offers: Тарифы и спецпредложения
 views.form.index.list: "список"
@@ -74,10 +74,10 @@ views.form.index.settings: Настройки
 views.form.index.site_embed_code: Код для сайта
 views.form.index.settings_required: "Необходимо заполнить основные настройки!"
 views.form.index.site_embed_form_code: Код формы для вставки на сайт
-views.form.index.to_form_place: На место для формы:
+views.form.index.to_form_place: "На место для формы:"
 views.form.index.before_closing_tag: Перед закрывающим тегом
-views.form.index.search_page_embed_code: Код страницы поиска для вставки на сайт:
-views.form.index.to_results_place: На место для результатов:
+views.form.index.search_page_embed_code: "Код страницы поиска для вставки на сайт:"
+views.form.index.to_results_place: "На место для результатов:"
 views.form.layout.online_form: "Онлайн форма"
 views.form.layout.online_polls: "Оценки"
 views.form.layout.invite: "Визовое приглашение"
