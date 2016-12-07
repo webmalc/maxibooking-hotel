@@ -70,12 +70,12 @@ class ChannelManagerHelper
                 }
 
                 if ($byService) {
-                    $result[$configTariff->getTariffId()] = [
+                    $this->tariffsSyncData[$configTariff->getTariffId()] = [
                         'syncId' => $configTariff->getTariffId(),
                         'doc' => $tariff
                     ];
                 } else {
-                    $result[$tariff->getId()] = [
+                    $this->tariffsSyncData[$tariff->getId()] = [
                         'syncId' => $configTariff->getTariffId(),
                         'doc' => $tariff
                     ];

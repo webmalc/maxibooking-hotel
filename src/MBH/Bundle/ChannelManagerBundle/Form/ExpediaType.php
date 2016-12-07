@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -21,6 +22,11 @@ class ExpediaType extends AbstractType
                     'help' => 'form.expedia.should_we_use_in_channel_manager'
                 ]
             )
+            ->add('hotelId', IntegerType::class,[
+                'label' => 'form.expedia.hotel_id',
+                'required' => true,
+                'help' => 'form.expedia.hotel_id.help',
+            ])
             ->add('username', TextType::class, [
                 'label' => 'form.expedia.username.label',
                 'required' => true,

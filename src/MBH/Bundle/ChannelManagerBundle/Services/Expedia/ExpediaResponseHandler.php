@@ -7,6 +7,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
 class ExpediaResponseHandler extends AbstractResponseHandler
 {
+    const OCCUPANCY_BASED_PRICING = 'OccupancyBasedPricing';
     private $response;
     private $config;
     private $isOrderInfosInit = false;
@@ -80,11 +81,19 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         $response = json_decode($this->response, true);
         foreach ($response['entity'] as $tariffInfo) {
             $requestedUrl = $tariffInfo['_links']['self']['href'];
-            $tariffs['resourceId'] = [
-                'title' => $tariffInfo['name'],
-                'rooms' => [$this->getRoomTypeIdFromUrlString($requestedUrl)],
-            ];
+            foreach ($tariffInfo['distributionRules'] as $data) {
+                if ($data['manageable'] == true) {
+                    $tariffs[$data['expediaId']] = [
+                        //TODO: Поменять название
+                        'title' => $tariffInfo['name'] . $this->getRoomTypeIdFromUrlString($requestedUrl),
+                        'rooms' => [$this->getRoomTypeIdFromUrlString($requestedUrl)],
+                        'readonly' => $tariffInfo['pricingModel'] === self::OCCUPANCY_BASED_PRICING ? false : true
+                    ];
+                }
+            }
         }
+
+        return $tariffs;
     }
 
     public function getRoomTypesData()
@@ -102,7 +111,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     {
         $result = simplexml_load_string($this->response, 'SimpleXmlElement', LIBXML_NOERROR+LIBXML_ERR_FATAL+LIBXML_ERR_NONE);
 
-        return $result === false ? false : true;
+        return $result->__toString() === '' ? false : true;
     }
 
     /**
@@ -117,4 +126,5 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         $roomTypeIdStringLength = $roomTypeIdEndPosition - $roomTypeIdStartPosition;
         return substr($url, $roomTypeIdStartPosition, $roomTypeIdStringLength);
     }
+
 }

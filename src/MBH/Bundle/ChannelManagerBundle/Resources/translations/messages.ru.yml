@@ -70,6 +70,8 @@ services.expedia.nor_one_room_type: Не найдено ни одного тип
 services.expedia.invalid_authorization_data: Введены некорректные имя пользователя или пароль
 form.expedia.isEnabled: Включен?
 form.expedia.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.expedia.hotel_id: ID отеля
+form.expedia.hotel_id.help: ID отеля в Expedia Partner Central
 form.expedia.password.label: Пароль
 form.expedia.password.help: Пароль для входа в аккаунт Expedia
 form.expedia.password.placeholder: Пароль
@@ -81,6 +83,8 @@ order_info.expedia.need_сonfirm_cash_tax_document: Необходимо под�
 order_info.expedia.required_data_missing: Ошибка при обработке синхронизации броней. В полученных от сервиса данных отсутствуют %elementDescription%
 order_info.expedia.required_order_data: 'обязательные данные: "%dataAttribute% заказа"'
 order_info.expedia.required_hotel_id: 'данные об id отеля'
+
+
 
 form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkOut: При выезде

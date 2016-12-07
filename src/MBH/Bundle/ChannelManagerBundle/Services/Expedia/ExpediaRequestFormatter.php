@@ -16,8 +16,8 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
 
     public function formatUpdatePricesRequest($priceData)
     {
-        return $this->getXMLRequestInfo($priceData)
-            ->setUrl(self::AVAILABILITY_AND_RATES_API_URL);
+        return [$this->getXMLRequestInfo($priceData)
+            ->setUrl(self::AVAILABILITY_AND_RATES_API_URL)];
     }
 
     public function formatUpdateRestrictionsRequest($restrictionData)
@@ -49,8 +49,8 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
     {
         $url = self::PRODUCT_API_URL . "/{$config->getHotelId()}/roomTypes/";
 
-        return $this->getJsonRequestInfo($config, $url)
-            ->addHeader('limit', 200);
+        return [$this->getJsonRequestInfo($config, $url)
+            ->addHeader('limit', 200)];
     }
 
     /**

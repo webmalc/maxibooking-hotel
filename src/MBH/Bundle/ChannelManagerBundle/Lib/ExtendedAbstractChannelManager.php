@@ -36,8 +36,11 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         foreach ($this->getConfig() as $config) {
 
             $serviceTariffs = $this->pullTariffs($config);
-            $pricesData = $this->requestDataFormatter->getPriceData($begin, $end, $roomType, $serviceTariffs, $config);
+            $pricesData = $this->requestDataFormatter->formatPriceRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdatePricesRequest($pricesData);
+
+            dump($requestInfoArray);
+            exit();
 
             foreach ($requestInfoArray as $requestInfo) {
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
@@ -64,8 +67,11 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
-            $roomsData = $this->requestDataFormatter->getRoomData($begin, $end, $roomType, $config);
+            $roomsData = $this->requestDataFormatter->formatRoomRequestData($begin, $end, $roomType, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdateRoomsRequest($roomsData);
+
+            dump($requestInfoArray);
+            exit();
 
             foreach ($requestInfoArray as $requestInfo) {
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
@@ -74,6 +80,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 $this->log($sendResult);
             }
         }
+
 
         return $result;
     }
@@ -91,11 +98,14 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $end = $this->getDefaultEnd($begin, $end);
 
         // iterate hotels
-        foreach ($this->getConfig() as $config) {
-
+        foreach ($this->getConfig() as $config)
+        {
             $serviceTariffs = $this->pullTariffs($config);
-            $restrictionsData = $this->requestDataFormatter->getRestrictionData($begin, $end, $roomType, $serviceTariffs, $config);
+            $restrictionsData = $this->requestDataFormatter->formatRestrictionRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdateRestrictionsRequest($restrictionsData);
+
+            dump($requestInfoArray);
+            exit();
 
             foreach ($requestInfoArray as $requestInfo) {
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
@@ -126,11 +136,15 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
         $roomTypes = [];
-        //Получаем список объектов RequestInfo, содержащих данные о запросе.
-        foreach ($this->requestFormatter->formatPullRoomsRequest($config) as $requestInfo) {
+
+        //Получаем список объектов RequestInfo, содержащих данные о запросах.
+        $requestInfoList = $this->requestFormatter->formatPullRoomsRequest($config);
+
+        foreach ($requestInfoList as $requestInfo) {
             $response = $this->sendRequestAndGetResponse($requestInfo);
             $responseHandler = $this->getResponseHandler($response, $config);
-            array_merge($roomTypes, $responseHandler->getRoomTypesData());
+            $roomTypesData = $responseHandler->getRoomTypesData();
+            $roomTypes += $roomTypesData;
         }
 
         return $roomTypes;
@@ -145,12 +159,15 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     {
         $tariffs = [];
         $roomTypes = $this->pullRooms($config);
-        //Получаем список объектов RequestInfo, содержащих данные о запросе.
-        foreach ($this->requestFormatter->formatPullTariffsRequest($config, $roomTypes) as $requestInfo) {
+
+        //Получаем список объектов RequestInfo, содержащих данные о запросах.
+        $requestInfoList = $this->requestFormatter->formatPullTariffsRequest($config, $roomTypes);
+
+        foreach ($requestInfoList as $requestInfo) {
             $response = $this->sendRequestAndGetResponse($requestInfo);
             $responseHandler = $this->getResponseHandler($response, $config);
-
-            array_merge($tariffs, $responseHandler->getTariffsData());
+            $tariffsData = $responseHandler->getTariffsData();
+            $tariffs += $tariffsData;
         }
 
         return $tariffs;

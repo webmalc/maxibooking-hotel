@@ -22,11 +22,9 @@ class Expedia extends ExtendedAbstractChannelManager
     public function safeConfigDataAndGetErrorMessage(ExpediaConfig $config)
     {
         $requestInfo = $this->requestFormatter->formatGetHotelInfoRequest($config);
-        $response = $this->sendRequestAndGetResponse($requestInfo);
-        $responseHandler = $this->getResponseHandler($response);
+        $jsonResponse = $this->sendRequestAndGetResponse($requestInfo);
+        $responseHandler = $this->getResponseHandler($jsonResponse);
         if ($responseHandler->isResponseCorrect()) {
-            $hotelId = $response['entity']['resourceId'];
-            $config->setHotelId($hotelId);
             return '';
         }
 

@@ -65,9 +65,6 @@ class ExpediaController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $config->setUsername($form->get('username'));
-            $config->setPassword($form->get('password'));
-
             $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
 
             if ($errorMessage === '') {
@@ -85,6 +82,7 @@ class ExpediaController extends Controller
                 $this->addFlash('danger', $this->get('translator')->trans($errorMessage));
             }
         }
+
         return $this->redirectToRoute('expedia');
     }
 
@@ -157,9 +155,11 @@ class ExpediaController extends Controller
             throw $this->createNotFoundException();
         }
 
+        $roomTypeData = $this->get('mbh.channelmanager.expedia')->pullRooms($config);
+
         $form = $this->createForm(new RoomsType(), $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
-            'booking' => $this->get('mbh.channelmanager.expedia')->pullRooms($config),
+            'booking' => $roomTypeData,
         ]);
 
         $form->handleRequest($request);
@@ -197,18 +197,6 @@ class ExpediaController extends Controller
      */
     public function testAction()
     {
-//        $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find('57dfe9d593f1d94e3b1fdfca');
-//        $firstDate = \DateTime::createFromFormat('d.m.Y', '4.3.2017');
-//        $secondTime = \DateTime::createFromFormat('d.m.Y', '10.3.2017');
-//        $errorMessage = $this->get('mbh.channelmanager.expedia')->updatePrices($firstDate, $secondTime, $roomType);
-
-        $xml = '<BookingRetrievalRS xmlns="http://www.expediaconnect.com/EQC/BR/2014/01">
-    <Bookings>
-        <Booking id="619" type="Book" createDateTime="2013-12-12T00:01:00Z" source="A-Hotels.com" status="pending">
-        </Booking>
-        </Bookings>
-        </BookingRetrievalRS>';
-        dump((string)$xml); exit();
         return [];
     }
 
@@ -218,6 +206,12 @@ class ExpediaController extends Controller
      */
     public function testCanvasAction()
     {
-        return [];
+        /** @var ExpediaConfig $config */
+        $config = $this->hotel->getExpediaConfig();
+
+        $beginDate = new \DateTime('midnight');
+        $endDate = (clone $beginDate)->add(new \DateInterval('P1D'));
+
+        $roomTypeData = $this->get('mbh.channelmanager.expedia')->updatePrices($beginDate, $endDate);
     }
 }

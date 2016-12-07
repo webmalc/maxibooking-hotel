@@ -30,40 +30,52 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * @param $resultArray
      * @param \DateTime $day
      */
-    protected function formatPriceData(PriceCache $priceCache,
+    protected function formatPriceData(
+        $priceCache,
         RoomType $roomType,
         Tariff $tariff,
         $serviceRoomTypeId,
         $serviceTariffId,
         &$resultArray,
-        \DateTime $day)
-    {
+        \DateTime $day
+    ) {
         $dateDifferenceInYears = date_diff(new \DateTime(), $day);
         //В Expedia невозможно установить данные более чем на 2 года вперед
         if ($dateDifferenceInYears->y < 2) {
             if ($priceCache) {
                 $priceCalculationService = $this->container->get('mbh.calculation');
-                $pricesByOccupantsCount = ['prices' => $priceCalculationService->calcPrices($roomType, $tariff, $day, $day)];
+                $pricesByOccupantsCount = $priceCalculationService->calcPrices($roomType, $tariff, $day, $day);
             } else {
-                $pricesByOccupantsCount = ['prices' => []];
+                $pricesByOccupantsCount = [];
             }
 
-            $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId][] = $pricesByOccupantsCount;
+            $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId]['prices'] = $pricesByOccupantsCount;
         }
     }
 
     /**
      * Форматирование данных в формате xml, отправляемых в запросе обновления цен сервиса
-     * @param $requestDataArray
+     * @param $begin
+     * @param ChannelManagerConfigInterface $end
+     * @param $roomTypes
+     * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
      * @return mixed
      */
-    public function formatPriceRequestData($requestDataArray, ChannelManagerConfigInterface $config)
-    {
+    public function formatPriceRequestData(
+        $begin,
+        $end,
+        $roomTypes,
+        $serviceTariffs,
+        ChannelManagerConfigInterface $config
+    ) {
+        $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
         $xmlElements = [];
         foreach ($requestDataArray as $roomTypeId => $pricesByDates) {
-            $xmlRoomTypeData = new \SimpleXMLElement('AvailRateUpdate');
+
             foreach ($pricesByDates as $dateString => $pricesByTariffs) {
+                $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
+
                 $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
                 $dateRangeElement->addAttribute('from', $dateString);
                 $dateRangeElement->addAttribute('to', $dateString);
@@ -72,21 +84,24 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 $roomTypeElement->addAttribute('id', $roomTypeId);
 
                 foreach ($pricesByTariffs as $tariffId => $tariffPricesInfo) {
+                    $hasPriceList = isset($tariffPricesInfo['prices']) && count($tariffPricesInfo['prices']) > 0;
 
                     $ratePlanElement = $roomTypeElement->addChild('RatePlan');
                     $ratePlanElement->addAttribute('id', $tariffId);
+                    $ratePlanElement->addAttribute('closed', $hasPriceList ? 'false' : 'true');
 
                     $rateElement = $ratePlanElement->addChild('Rate');
-                    $rateElement->addAttribute('currency', strtoupper($this->container->getParameter('locale.currency')));
+                    $rateElement->addAttribute('currency',
+                        strtoupper($this->container->getParameter('locale.currency')));
 
                     foreach ($tariffPricesInfo['prices'] as $price) {
                         $perOccupancyElement = $rateElement->addChild('PerOccupancy');
-                        //TODO: Доделать и проверить какие данные приходят
-                        $perOccupancyElement->addAttribute('rate', $price->getPrice());
+                        $perOccupancyElement->addAttribute('rate', $price['total']);
+                        $perOccupancyElement->addAttribute('occupancy', $price['adults']);
                     }
                 }
+                $xmlElements[] = $xmlRoomTypeData;
             }
-            $xmlElements[] = $xmlRoomTypeData;
         }
 
         return $this->formatTemplateRequest($xmlElements, $config,
@@ -95,19 +110,23 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
     /**
      * Форматирование данных в формате xml, отправляемых в запросе обновления квот на комнаты
-     * @param $requestDataArray
+     * @param $begin
+     * @param $end
+     * @param $roomTypes
      * @param ChannelManagerConfigInterface $config
      * @return mixed
      */
-    public function formatRoomRequestData($requestDataArray, ChannelManagerConfigInterface $config)
+    public function formatRoomRequestData($begin, $end, $roomTypes, ChannelManagerConfigInterface $config)
     {
         $xmlElements = [];
+        $requestDataArray = $this->getRoomData($begin, $end, $roomTypes, $config);
+
         foreach ($requestDataArray as $roomTypeId => $roomQuotasByDates) {
-            $xmlRoomTypeData = new \SimpleXMLElement('AvailRateUpdate');
+            $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
 
             foreach ($roomQuotasByDates as $dateString => $roomCache) {
 
-                /** @var RoomCache $roomCache*/
+                /** @var RoomCache $roomCache */
                 $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
                 $dateRangeElement->addAttribute('from', $dateString);
                 $dateRangeElement->addAttribute('to', $dateString);
@@ -128,7 +147,6 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
     }
 
 
-
     /**
      * Переопределенный метод форматирования результирующего массива данных об ограничениях, полученных из Maxibooking
      * @param Restriction $restriction
@@ -140,37 +158,44 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * @param $isPriceSet
      * @param \DateTime $day
      */
-    protected function formatRestrictionData(Restriction $restriction,
+    protected function formatRestrictionData(
+        $restriction,
         RoomType $roomType,
         Tariff $tariff,
         $serviceRoomTypeId,
         $serviceTariffId,
         &$resultArray,
         $isPriceSet,
-        \DateTime $day)
-    {
+        \DateTime $day
+    ) {
         $dateDifferenceInYears = date_diff(new \DateTime(), $day);
         //В Expedia невозможно установить данные более чем на 2 года вперед
         if ($dateDifferenceInYears->y < 2) {
             $isClosed = $restriction ? ($restriction->getClosed() || !$isPriceSet) : !$isPriceSet;
 
-            $restrictionData = ['restriction' => $restriction, 'isClosed' => $isClosed];
+            $restrictionData = ['restriction' => $restriction, 'isClosed' => $isClosed ? 'true' : 'false'];
 
-            $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId][] = $restrictionData;
+            $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId] = $restrictionData;
         }
     }
 
     /**
      * Форматирование данных в формате xml, отправляемых в запросе обновления ограничений
-     * @param $requestDataArray
+     * @param $begin
+     * @param $end
+     * @param $roomTypes
+     * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
      * @return mixed
      */
-    public function formatRestrictionRequestData($requestDataArray, ChannelManagerConfigInterface $config)
+    public function formatRestrictionRequestData($begin, $end, $roomTypes, $serviceTariffs, ChannelManagerConfigInterface $config)
     {
         $xmlElements = [];
+
+        $requestDataArray = $this->getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, $config);
+
         foreach ($requestDataArray as $roomTypeId => $restrictionsByDates) {
-            $xmlRoomTypeData = new \SimpleXMLElement('AvailRateUpdate');
+            $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
             foreach ($restrictionsByDates as $dateString => $restrictionsByTariffs) {
 
                 $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
@@ -194,9 +219,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                         //TODO: Что делать если не установлены значения?
                         //TODO: Как обрабатывать ситуации, если устанавливается значение больше 28? По дефолту будет приходить ошибка
                         $restrictionsElement->addAttribute('closedToArrival',
-                            $restriction->getClosedOnArrival() ? true : false);
+                            $restriction->getClosedOnArrival() ? 'true' : 'false');
                         $restrictionsElement->addAttribute('closedToDeparture',
-                            $restriction->getClosedOnDeparture() ? true : false);
+                            $restriction->getClosedOnDeparture() ? 'true' : 'false');
                         $restrictionsElement->addAttribute('minLOS',
                             $restriction->getMinStay() ? $restriction->getMinStay() : self::EXPEDIA_MIN_STAY);
                         $restrictionsElement->addAttribute('maxLOS',
@@ -213,7 +238,8 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
     public function formatGetBookingsData(ChannelManagerConfigInterface $config)
     {
-        return $this->formatTemplateRequest([], $config, 'BookingRetrievalRQ', self::BOOKING_RETRIEVAL_REQUEST_NAMESPACE);
+        return $this->formatTemplateRequest([], $config, 'BookingRetrievalRQ',
+            self::BOOKING_RETRIEVAL_REQUEST_NAMESPACE);
     }
 
     public function formatCloseForConfigData(ChannelManagerConfigInterface $config)
@@ -222,7 +248,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
         $requestData = [];
         foreach ($roomTypesData as $roomTypeData) {
-            $xmlRoomTypeData = new \SimpleXMLElement('AvailRateUpdate');
+            $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
 
             $startDate = \DateTime::createFromFormat('Y-m-d', new \DateTime());
             $endDate = \DateTime::createFromFormat('Y-m-d', new \DateTime('+2 years'));
@@ -263,12 +289,11 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * @param $xmlns
      * @return \SimpleXMLElement Массив объектов, добавляемых в тело xml-запроса $elementsArray
      */
-    private function formatTemplateRequest($elementsArray, ChannelManagerConfigInterface $config, $rootNodeName, $xmlns) : \SimpleXMLElement
+    private function formatTemplateRequest($elementsArray, ChannelManagerConfigInterface $config, $rootNodeName, $xmlns)
     {
         /** @var ExpediaConfig $config */
-        $requestXML = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>');
+        $rootNode = new \SimpleXMLElement('<' . $rootNodeName . '/>');
 
-        $rootNode = $requestXML->addChild($rootNodeName);
         $rootNode->addAttribute('xmlns', $xmlns);
 
         $authNode = $rootNode->addChild('Authentication');
@@ -278,10 +303,14 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $hotelNode = $rootNode->addChild('Hotel');
         $hotelNode->addAttribute('id', $config->getHotelId());
 
+        //Добавляем в шаблон данные, преобразуя при этом SimpleXmlElement-ы в DomDocument-ы
+        $rootNodeDomDocument = dom_import_simplexml($rootNode);
         foreach ($elementsArray as $element) {
-            $rootNode->addChild($element);
+            $elementDomDocument = dom_import_simplexml($element);
+            $rootNodeDomDocument->appendChild($rootNodeDomDocument->ownerDocument->importNode($elementDomDocument,
+                true));
         }
 
-        return $requestXML->asXML();
+        return $rootNode->asXML();
     }
 }

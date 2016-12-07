@@ -33,27 +33,47 @@ abstract class AbstractRequestDataFormatter
 
     /**
      * Форматирование данных, отправляемых в запросе обновления цен сервиса
-     * @param $requestData
+     * @param $begin
+     * @param $end
+     * @param $roomTypes
+     * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
      * @return mixed
      */
-    abstract public function formatPriceRequestData($requestData, ChannelManagerConfigInterface $config);
+    abstract public function formatPriceRequestData(
+        $begin,
+        $end,
+        $roomTypes,
+        $serviceTariffs,
+        ChannelManagerConfigInterface $config
+    );
 
     /**
      * Форматирование данных, отправляемых в запросе обновления квот на комнаты
-     * @param $requestData
+     * @param $begin
+     * @param $end
+     * @param $roomTypes
      * @param ChannelManagerConfigInterface $config
      * @return mixed
      */
-    abstract public function formatRoomRequestData($requestData, ChannelManagerConfigInterface $config);
+    abstract public function formatRoomRequestData($begin, $end, $roomTypes, ChannelManagerConfigInterface $config);
 
     /**
      * Форматирование данных, отправляемых в запросе обновления ограничений
-     * @param $requestData
+     * @param $begin
+     * @param $end
+     * @param $roomTypes
+     * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
      * @return mixed
      */
-    abstract public function formatRestrictionRequestData($requestData, ChannelManagerConfigInterface $config);
+    abstract public function formatRestrictionRequestData(
+        $begin,
+        $end,
+        $roomTypes,
+        $serviceTariffs,
+        ChannelManagerConfigInterface $config
+    );
 
     /**
      * Форматирование данных, отправляемых в запросе закрытия продаж
@@ -73,48 +93,49 @@ abstract class AbstractRequestDataFormatter
      * Возвращает массив данных, отправляемых в запросе обновления цен
      * @param $begin
      * @param $end
-     * @param RoomType $roomType
+     * @param $roomTypes
      * @param $serviceTariffs Массив актуальных данных о тарифах, полученный с сервиса
      * @param ChannelManagerConfigInterface $config
      * @return array
      */
-    public function getPriceData($begin, $end, RoomType $roomType, $serviceTariffs, ChannelManagerConfigInterface $config)
+    protected function getPriceData($begin, $end, $roomTypes, $serviceTariffs, ChannelManagerConfigInterface $config)
     {
         $resultData = [];
 
         $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
-        $roomTypes = $channelManagerHelper->getRoomTypesSyncData($config);
-        $tariffs = $channelManagerHelper->getTariffsSyncData($config);
+        $roomTypeSyncData = $channelManagerHelper->getRoomTypesSyncData($config);
+        $tariffs = $channelManagerHelper->getTariffsSyncData($config, true);
 
         $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
             $begin,
             $end,
             $config->getHotel(),
-            $this->getRoomTypeArray($roomType),
+            $this->getRoomTypeArray($roomTypes),
             [],
             true,
             $this->roomManager->useCategories
         );
 
-        foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
-            foreach ($tariffs as $tariffId => $tariff) {
-                /** @var PricePeriod $currentPricePeriod */
-                $currentPricePeriod = null;
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
-                    /** @var \DateTime $day */
-                    if (!$this->checkTariff($serviceTariffs, $tariff['syncId'], $roomTypeInfo['syncId'])) {
-                        continue;
-                    }
+        foreach ($roomTypeSyncData as $roomTypeId => $roomTypeInfo) {
+            foreach ($tariffs as $serviceTariffId => $tariffInfo) {
+                if (!$this->checkTariff($serviceTariffs, $tariffInfo['syncId'], $roomTypeInfo['syncId'])) {
+                    continue;
+                }
+                /** @var Tariff $tariff */
+                $tariff = $tariffInfo['doc'];
+                $tariffId = $tariff->getId();
 
+                /** @var PriceCache $priceCache */
+                $priceCache = null;
+                foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+                    /** @var \DateTime $day */
                     if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                         /** @var PriceCache $priceCache */
                         $priceCache = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
-                        $this->formatPriceData($priceCache, $roomTypeInfo['doc'], $tariff['doc'],
-                            $roomTypeInfo['syncId'], $tariff['syncId'], $resultData, $day);
-                    } else {
-                        $this->formatPriceData(null, $roomTypeInfo['doc'], $tariff['doc'],
-                            $roomTypeInfo['syncId'], $tariff['syncId'], $resultData, $day);
                     }
+
+                    $this->formatPriceData($priceCache, $roomTypeInfo['doc'], $tariffInfo['doc'],
+                        $roomTypeInfo['syncId'], $tariffInfo['syncId'], $resultData, $day);
                 }
             }
         }
@@ -133,14 +154,15 @@ abstract class AbstractRequestDataFormatter
      * @param $resultArray
      * @param \DateTime $day
      */
-    protected function formatPriceData(PriceCache $priceCache,
+    protected function formatPriceData(
+        $priceCache,
         RoomType $roomType,
         Tariff $tariff,
         $serviceRoomTypeId,
         $serviceTariffId,
         &$resultArray,
-        \DateTime $day)
-    {
+        \DateTime $day
+    ) {
         $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId][] = $priceCache;
     }
 
@@ -148,24 +170,24 @@ abstract class AbstractRequestDataFormatter
      * Возвращает массив данных, отправляемых в запросе обновления ограничений
      * @param $begin
      * @param $end
-     * @param RoomType $roomType
+     * @param $roomTypes
      * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
      * @return array
      */
-    public function getRestrictionData($begin, $end, RoomType $roomType, $serviceTariffs, ChannelManagerConfigInterface $config)
+    protected function getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, ChannelManagerConfigInterface $config)
     {
         $resultData = [];
 
         $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
-        $roomTypes = $channelManagerHelper->getRoomTypesSyncData($config);
+        $roomTypesSyncData = $channelManagerHelper->getRoomTypesSyncData($config);
         $tariffs = $channelManagerHelper->getTariffsSyncData($config);
 
         $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
             $begin,
             $end,
             $config->getHotel(),
-            $roomType ? [$roomType->getId()] : [],
+            $this->getRoomTypeArray($roomTypes),
             [],
             true
         );
@@ -173,14 +195,14 @@ abstract class AbstractRequestDataFormatter
             $begin,
             $end,
             $config->getHotel(),
-            $roomType ? [$roomType->getId()] : [],
+            $this->getRoomTypeArray($roomTypes),
             [],
             true
         );
 
-        foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
+        foreach ($roomTypesSyncData as $roomTypeId => $roomTypeInfo) {
             foreach ($tariffs as $tariffId => $tariff) {
-                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
                     /** @var \DateTime $day */
 
                     if (!$this->checkTariff($serviceTariffs, $tariff['syncId'], $roomTypeInfo['syncId'])) {
@@ -218,41 +240,48 @@ abstract class AbstractRequestDataFormatter
      * @param $isPriceSet
      * @param \DateTime $day
      */
-    protected function formatRestrictionData(Restriction $restriction, RoomType $roomType, Tariff $tariff,
-        $serviceRoomTypeId, $serviceTariffId, &$resultArray, $isPriceSet, \DateTime $day)
-    {
+    protected function formatRestrictionData(
+        $restriction,
+        RoomType $roomType,
+        Tariff $tariff,
+        $serviceRoomTypeId,
+        $serviceTariffId,
+        &$resultArray,
+        $isPriceSet,
+        \DateTime $day
+    ) {
         //TODO: Стоит ли так делать?
         if ($restriction) {
             $restriction->setClosed($restriction->getClosed() || (!$isPriceSet ? true : false));
         }
-        $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId][] = $restriction;
+        $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId] = $restriction;
     }
 
     /**
      * Возвращает массив данных, отправляемых в запросе обновления количества свободных комнат
      * @param $begin
      * @param $end
-     * @param RoomType $roomType
+     * @param $roomTypes
      * @param ChannelManagerConfigInterface $config
      * @return array
      */
-    public function getRoomData($begin, $end, RoomType $roomType, ChannelManagerConfigInterface $config)
+    protected function getRoomData($begin, $end, $roomTypes, ChannelManagerConfigInterface $config)
     {
         $resultData = [];
 
         $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
-        $roomTypes = $channelManagerHelper->getRoomTypesSyncData($config);
+        $roomTypesSyncData = $channelManagerHelper->getRoomTypesSyncData($config);
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $begin,
             $end,
             $config->getHotel(),
-            $roomType ? [$roomType->getId()] : [],
+            $this->getRoomTypeArray($roomTypes),
             null,
             true
         );
 
-        foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
-            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+        foreach ($roomTypesSyncData as $roomTypeId => $roomTypeInfo) {
+            foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
                 /** @var \DateTime $day */
                 $roomCache = null;
                 if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
@@ -273,9 +302,9 @@ abstract class AbstractRequestDataFormatter
      * @param $resultArray
      * @param \DateTime $day
      */
-    protected function formatRoomData(RoomCache $roomCache, $serviceRoomTypeId, &$resultArray, \DateTime $day)
+    protected function formatRoomData($roomCache, $serviceRoomTypeId, &$resultArray, \DateTime $day)
     {
-        $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][] = $roomCache;
+        $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')] = $roomCache;
     }
 
     /**
@@ -298,7 +327,7 @@ abstract class AbstractRequestDataFormatter
         if (!empty($serviceTariffs[$serviceTariffId]['rooms'])
             && !in_array($serviceRoomTypeId, $serviceTariffs[$serviceTariffId]['rooms'])
         ) {
-            false;
+            return false;
         }
 
         return true;
