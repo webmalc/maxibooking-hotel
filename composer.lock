@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "87f6b248fe744dbf810457954ea533f6",
-    "content-hash": "1eba714d34f18d47df262233af6b1a3c",
+    "hash": "998333a37c32e9dfc3a2a2860dcd84c6",
+    "content-hash": "2447d06879a77ac9749a371a92333389",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1340,29 +1340,30 @@
         },
         {
             "name": "gedmo/doctrine-extensions",
-            "version": "dev-master",
+            "version": "v2.4.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Atlantic18/DoctrineExtensions.git",
-                "reference": "95b915a29d7257a2d42d1a39f5b19c786c8feb65"
+                "reference": "a7f7243a19f79a99ac83a3570444d8795f665eef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/95b915a29d7257a2d42d1a39f5b19c786c8feb65",
-                "reference": "95b915a29d7257a2d42d1a39f5b19c786c8feb65",
+                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/a7f7243a19f79a99ac83a3570444d8795f665eef",
+                "reference": "a7f7243a19f79a99ac83a3570444d8795f665eef",
                 "shasum": ""
             },
             "require": {
                 "behat/transliterator": "~1.0",
                 "doctrine/common": "~2.4",
-                "php": ">=5.4"
+                "php": ">=5.3.2"
             },
             "require-dev": {
                 "doctrine/common": ">=2.5.0",
-                "doctrine/mongodb-odm": "~1.0",
+                "doctrine/mongodb-odm": ">=1.0.2",
                 "doctrine/orm": ">=2.5.0",
-                "phpunit/phpunit": "*",
-                "symfony/yaml": "~2.6|~3.0"
+                "phpunit/phpunit": "~4.4",
+                "phpunit/phpunit-mock-objects": "~2.3",
+                "symfony/yaml": "~2.6"
             },
             "suggest": {
                 "doctrine/mongodb-odm": "to use the extensions with the MongoDB ODM",
@@ -1371,7 +1372,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0.x-dev"
+                    "dev-master": "2.4.x-dev"
                 }
             },
             "autoload": {
@@ -1414,7 +1415,7 @@
                 "tree",
                 "uploadable"
             ],
-            "time": "2016-10-20 13:15:23"
+            "time": "2016-10-11 18:03:37"
         },
         {
             "name": "google/recaptcha",
@@ -4845,14 +4846,7 @@
             "time": "2016-08-19 06:48:39"
         }
     ],
-    "aliases": [
-        {
-            "alias": "2.4.13",
-            "alias_normalized": "2.4.13.0",
-            "version": "9999999-dev",
-            "package": "gedmo/doctrine-extensions"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "symfony/symfony": 0,
@@ -4866,7 +4860,7 @@
         "doctrine/mongodb": 20,
         "doctrine/mongodb-odm": 20,
         "doctrine/mongodb-odm-bundle": 20,
-        "gedmo/doctrine-extensions": 20,
+        "gedmo/doctrine-extensions": 0,
         "stof/doctrine-extensions-bundle": 20,
         "friendsofsymfony/user-bundle": 20,
         "friendsofsymfony/jsrouting-bundle": 0,

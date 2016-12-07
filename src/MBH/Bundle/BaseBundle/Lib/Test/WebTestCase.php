@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\DomCrawler\Form;
 
 abstract class WebTestCase extends Base
 {
@@ -351,11 +352,7 @@ abstract class WebTestCase extends Base
         $url = $url ?? $this->getListUrl();
         $title = $title ?? $this->getEditTitle();
         $count = $count ?? $this->getListItemsCount();
-
-        $crawler = $this->fetchCrawler($url, 'GET', true);
-        $link = $crawler->filter('table a[data-text="Вы действительно хотите удалить запись «' . $title . '»?"]')->link();
-        $this->client->click($link);
-        $crawler = $this->client->followRedirect();
+        $crawler = $this->clickLinkInList($url, 'table a[data-text="Вы действительно хотите удалить запись «' . $title . '»?"]', true);
         $this->assertSame($count, $crawler->filter('table a[rel="main"]')->count());
     }
 
@@ -409,9 +406,7 @@ abstract class WebTestCase extends Base
         $formName = $formName ?? $this->getFormName();
         $values = $values ?? $this->getEditFormValues();
 
-        $crawler = $this->fetchCrawler($url, 'GET', true);
-        $link = $crawler->filter('table a:contains("' . $title. '")')->link();
-        $crawler = $this->client->click($link);
+        $crawler = $this->clickLinkInList($url, 'table a:contains("' . $title . '")');
 
         $form = $crawler->filter('form[name="' . $formName . '"]')->form();
 
@@ -422,5 +417,40 @@ abstract class WebTestCase extends Base
 
         //check saved object
         $this->assertSame(1, $crawler->filter('table a:contains("' . $titleEdited . '")')->count());
+    }
+
+    /**
+     * @param string $url
+     * @param string $filter
+     * @param bool $redirect
+     * @return \Symfony\Component\DomCrawler\Crawler
+     */
+    protected function clickLinkInList(string $url, string $filter, bool $redirect = false)
+    {
+        $crawler = $this->fetchCrawler($url, 'GET', true);
+        $link = $crawler->filter($filter)->link();
+
+        $crawler = $this->client->click($link);
+        if ($redirect) {
+            $crawler =  $this->client->followRedirect();
+        }
+
+        return $crawler;
+    }
+
+    /**
+     * @param Form $form
+     * @param array $values
+     * @return bool
+     */
+    public static function checkValuesInForm(Form $form, array $values): bool
+    {
+        $formValues = $form->getValues();
+        foreach ($values as $key => $value) {
+            if (!isset($formValues[$key]) || $value != $formValues[$key]) {
+                return false;
+            }
+        }
+        return true;
     }
 }
