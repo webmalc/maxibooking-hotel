@@ -126,14 +126,14 @@ class Extension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            'mbh_format' => new \Twig_Filter_Method($this, 'format', ['is_safe' => array('html')]),
-            'mbh_md5' => new \Twig_Filter_Method($this, 'md5'),
-            'num2str' => new \Twig_Filter_Method($this, 'num2str'),
-            'num2enStr' => new \Twig_Filter_Method($this, 'num2enStr'),
-            'transToLat' => new \Twig_Filter_Method($this, 'translateToLat'),
-            'convertMongoDate' => new \Twig_Filter_Method($this, 'convertMongoDate'),
-            'friendly_interval' => new \Twig_Filter_Method($this, 'friendlyInterval'),
-            'initial' => new \Twig_Filter_Method($this, 'initial'),
+            'mbh_format' => new \Twig_SimpleFilter('mbh_format', [$this, 'format'], ['is_safe' => array('html')]),
+            'mbh_md5' => new \Twig_SimpleFilter('mbh_md5', [$this, 'md5']),
+            'num2str' => new \Twig_SimpleFilter('num2str', [$this, 'num2str']),
+            'num2enStr' => new \Twig_SimpleFilter('num2enStr', [$this, 'num2enStr']),
+            'transToLat' => new \Twig_SimpleFilter('transToLat', [$this, 'translateToLat']),
+            'convertMongoDate' => new \Twig_SimpleFilter('convertMongoDate', [$this, 'convertMongoDate']),
+            'friendly_interval' => new \Twig_SimpleFilter('friendly_interval', [$this, 'friendlyInterval']),
+            'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
         ];
     }
 
@@ -167,11 +167,11 @@ class Extension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            'currency' => new \Twig_Function_Method($this, 'currency', ['is_safe' => ['html']]),
-            'user_cash' => new \Twig_Function_Method($this, 'cashDocuments', ['is_safe' => ['html']]),
-            'client_config' => new \Twig_Function_Method($this, 'clientConfig'),
-            'currentWorkShift' => new \Twig_Function_Method($this, 'currentWorkShift'),
-            'mbh_timezone_offset_get' => new \Twig_Filter_Method($this, 'timezoneOffsetGet', ['is_safe' => ['html']]),
+            'currency' => new \Twig_SimpleFunction('currency', [$this, 'currency'], ['is_safe' => ['html']]),
+            'user_cash' => new \Twig_SimpleFunction('user_cash', [$this, 'cashDocuments'], ['is_safe' => ['html']]),
+            'client_config' => new \Twig_SimpleFunction('client_config', [$this, 'clientConfig']),
+            'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
+            'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
         ];
     }
 
