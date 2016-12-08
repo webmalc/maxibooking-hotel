@@ -30,7 +30,7 @@ class ChessBoardController extends BaseController
         $builder = $this->get('mbh.package.report_data_builder')
             ->init($this->hotel, $filterData['begin'], $filterData['end'], $filterData['roomTypeIds']);
 
-        $form = $this->createForm(new SearchType(), null, [
+        $form = $this->createForm(SearchType::class, null, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
             'hotel' => $this->hotel,

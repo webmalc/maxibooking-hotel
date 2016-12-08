@@ -193,13 +193,27 @@
                                 {% for roomTypeId, roomTypeData in roomTypesData %}
                                     <div class="calendarRow clearfix leftRoomsLine" data-roomTypeId="{{ roomTypeId }}" style="background-color: yellowgreen">
                                         <ul class="list-unstyled calendarDays">
-                                            {% for leftRoomsCount in leftRoomsData[roomTypeId] %}
-                                                <li class="tile">
-                                                    <div class="leftRooms">
-                                                        {{ leftRoomsCount }}
-                                                    </div>
-                                                </li>
-                                            {% endfor %}
+                                            {% if leftRoomsData[roomTypeId] is defined %}
+                                                {% for leftRoomsCount in leftRoomsData[roomTypeId] %}
+                                                    <li class="tile">
+                                                        <div class="leftRooms">
+                                                            {{ leftRoomsCount }}
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            {% else %}
+                                                {% for day in days %}
+                                                    {#{% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}#}
+                                                    {#{% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}#}
+                                                    <li class=" tile tile-bookable tile-free both">
+                                                        <div class="no-accommodation-date" data-container="body" data-placement="bottom" data-html="true" title="Брони без размещения" tabindex="0" data-date="{{ day|date('d.m.Y') }}"  data-toggle="popover" >
+                                                            {#<div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}#}
+                                                            {#<span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>#}
+                                                            {#</div>#}
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            {% endif %}
                                         </ul>
                                     </div>
                                     <div class="roomTypeRooms" id="{{ roomTypeId }}">
