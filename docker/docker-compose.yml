@@ -18,8 +18,8 @@ mbh-php-fpm:
   container_name: mbh-php-fpm
   volumes:
     - ..:/var/www/mbh
-    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.0/fpm/conf.d/99-overrides.ini
-    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.0/cli/conf.d/99-overrides.ini
+    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
+    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/cli/conf.d/99-overrides.ini
     - /tmp/:/tmp/
   links:
     - mbh-memcached
