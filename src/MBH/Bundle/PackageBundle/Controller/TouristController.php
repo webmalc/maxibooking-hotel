@@ -10,24 +10,27 @@ use MBH\Bundle\PackageBundle\Document\Criteria\TouristQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\TouristRepository;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use MBH\Bundle\PackageBundle\Document\UnwelcomeRepository;
 use MBH\Bundle\PackageBundle\Document\Visa;
+use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
+use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
+use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
 use MBH\Bundle\PackageBundle\Form\UnwelcomeType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\PackageBundle\Document\Tourist;
-use MBH\Bundle\PackageBundle\Form\TouristType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("/tourist")
@@ -58,24 +61,24 @@ class TouristController extends Controller
         $form = $this->createFormBuilder(null, [
             'data_class' => TouristQueryCriteria::class
         ])
-            ->add('begin', new DateType(), [
+            ->add('begin', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => false
             ])
-            ->add('end', new DateType(), [
+            ->add('end', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => false
             ])
-            ->add('citizenship', 'choice', [
+            ->add('citizenship',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'required' => false,
                 'choices' => [
                     TouristQueryCriteria::CITIZENSHIP_NATIVE => 'Граждане РФ',
                     TouristQueryCriteria::CITIZENSHIP_FOREIGN => 'Иностранные граждане'
                 ]
             ])
-            ->add('search', 'text', [
+            ->add('search', TextType::class, [
                 'required' => false
             ])
             ->getForm();
@@ -156,7 +159,7 @@ class TouristController extends Controller
     {
         $entity = new Tourist();
         $entity->setCommunicationLanguage($this->container->getParameter('locale'));
-        $form = $this->createForm(new TouristType(), $entity, [
+        $form = $this->createForm(TouristType::class, $entity, [
             'genders' => $this->container->getParameter('mbh.gender.types')
         ]);
 
@@ -180,12 +183,12 @@ class TouristController extends Controller
         $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $entity->getDocumentRelation()->setType('vega_russian_passport');
 
-        $form = $this->createForm(new TouristType(), $entity,
+        $form = $this->createForm(TouristType::class, $entity,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
-        $docForm = $this->createForm('mbh_document_relation', $entity);
-        $addressForm = $this->createForm('mbh_address_object_decomposed', $entity->getAddressObjectDecomposed());
+        $docForm = $this->createForm(DocumentRelationType::class, $entity);
+        $addressForm = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
-        $form->submit($request);
+        $form->handleRequest($request);
         $docForm->submit($request);
         $addressForm->submit($request);
 
@@ -233,11 +236,11 @@ class TouristController extends Controller
     public function createAction(Request $request)
     {
         $tourist = new Tourist();
-        $form = $this->createForm(new TouristType(), $tourist,
+        $form = $this->createForm(TouristType::class, $tourist,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
         $notUnwelcome = !$tourist->getIsUnwelcome();
-        $form->submit($request);
+        $form->handleRequest($request);
         if ($form->isValid()) {
 
             $this->dm->persist($tourist);
@@ -265,18 +268,18 @@ class TouristController extends Controller
      * Edits an existing entity.
      *
      * @Route("/{id}/edit", name="tourist_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template("MBHPackageBundle:Tourist:edit.html.twig")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
     public function updateAction(Request $request, Tourist $tourist)
     {
-        $form = $this->createForm(new TouristType(), $tourist,
+        $form = $this->createForm(TouristType::class, $tourist,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
         $notUnwelcome = !$tourist->getIsUnwelcome();
-        $form->submit($request);
+        $form->handleRequest($request);
         if ($form->isValid()) {
 
             $this->dm->persist($tourist);
@@ -311,7 +314,7 @@ class TouristController extends Controller
      */
     public function editAction(Tourist $entity)
     {
-        $form = $this->createForm(new TouristType(), $entity, [
+        $form = $this->createForm(TouristType::class, $entity, [
             'genders' => $this->container->getParameter('mbh.gender.types')
         ]);
 
@@ -324,7 +327,7 @@ class TouristController extends Controller
 
     /**
      * @Route("/{id}/edit/document", name="tourist_edit_document")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
@@ -338,11 +341,11 @@ class TouristController extends Controller
         $entity->getCitizenship() ?: $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType('vega_russian_passport');
 
-        $form = $this->createForm('mbh_document_relation', $entity, [
-            'method' => Request::METHOD_PUT
+        $form = $this->createForm(DocumentRelationType::class, $entity, [
+            'method' => Request::METHOD_POST
         ]);
 
-        if ($request->isMethod(Request::METHOD_PUT)) {
+        if ($request->isMethod(Request::METHOD_POST)) {
             $form->handleRequest($request);
 
             if ($form->isValid()) {
@@ -368,7 +371,7 @@ class TouristController extends Controller
     /**
      *
      * @Route("/{id}/edit/visa", name="tourist_edit_visa")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
@@ -384,8 +387,8 @@ class TouristController extends Controller
             ->add('migration', new TouristMigrationType())
             ->getForm();
 
-        if ($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+        if ($request->isMethod(Request::METHOD_POST)) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($entity);
@@ -409,15 +412,15 @@ class TouristController extends Controller
 
     /**
      * @Route("/{id}/edit/unwelcome", name="tourist_edit_unwelcome")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
     public function editUnwelcomeAction(Tourist $tourist, Request $request)
     {
-        $form = $this->createForm(new UnwelcomeType(), null, [
-            'method' => Request::METHOD_PUT
+        $form = $this->createForm(UnwelcomeType::class, null, [
+            'method' => Request::METHOD_POST
         ]);
 
         /** @var UnwelcomeRepository $unwelcomeRepository */
@@ -485,7 +488,7 @@ class TouristController extends Controller
 
     /**
      * @Route("/{id}/delete/unwelcome", name="tourist_delete_unwelcome")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
@@ -565,17 +568,17 @@ class TouristController extends Controller
 
     /**
      * @Route("/{id}/edit/address", name="tourist_edit_address")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
     public function editAddressAction(Tourist $entity, Request $request)
     {
-        $form = $this->createForm('mbh_address_object_decomposed', $entity->getAddressObjectDecomposed());
+        $form = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
-        if ($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+        if ($request->isMethod(Request::METHOD_POST)) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $entity->setAddressObjectDecomposed($form->getData());

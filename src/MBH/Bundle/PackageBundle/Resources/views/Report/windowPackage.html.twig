@@ -13,7 +13,7 @@
 
 {% if form is defined %}
     {% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
-    {{ form_start(form, {'action': path('report_windows_package', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('report_windows_package', {'id': package.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {{ form_end(form) }}
 {% endif %}

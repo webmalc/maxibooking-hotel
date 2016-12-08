@@ -3,12 +3,12 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
-use MBH\Bundle\HotelBundle\Document\RoomType;
-use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 
 /**

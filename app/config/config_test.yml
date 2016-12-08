@@ -4,13 +4,23 @@ imports:
 framework:
     test: ~
     session:
-        storage_id: session.storage.mock_file
-    profiler:
-        collect: false
-
-web_profiler:
-    toolbar: false
-    intercept_redirects: false
+        storage_id: session.storage.php_bridge
 
 swiftmailer:
     disable_delivery: true
+
+parameters:
+    mongodb_url: 'mongodb://mbh-mongo:27017/db_test'
+    mongodb_database: db_test
+
+security:
+    firewalls:
+        main:
+            http_basic: ~
+            form_login: false
+            remember_me: false
+
+liip_functional_test:
+  authentication:
+    username: "admin"
+    password: "admin"

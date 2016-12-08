@@ -3,8 +3,11 @@
 namespace MBH\Bundle\PriceBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class ServiceType
@@ -14,67 +17,67 @@ class ServiceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fullTitle', 'text', [
+            ->add('fullTitle', TextType::class, [
                 'label' => 'Название',
                 'required' => true,
                 'group' => 'Общая информация',
                 'attr' => ['placeholder' => 'Сейф']
             ])
-            ->add('title', 'text', [
+            ->add('title', TextType::class, [
                 'label' => 'Внутреннее название',
                 'group' => 'Общая информация',
                 'required' => false,
                 'attr' => ['placeholder' => 'Сейф - лето ' . date('Y')],
                 'help' => 'Название для использования внутри MaxiBooking'
             ])
-            ->add('international_title', 'text', [
+            ->add('international_title', TextType::class, [
                 'label' => 'form.roomTypeType.international_title',
                 'required' => false,
                 'group' => 'Общая информация',
                 //'help' => 'Международное название'
             ])
-            ->add('description', 'textarea', [
+            ->add('description', TextareaType::class, [
                 'label' => 'Описание',
                 'required' => false,
                 'group' => 'Общая информация',
                 'help' => 'Описание услуги для онлайн бронирования'
             ])
-            ->add('calcType', 'choice', [
+            ->add('calcType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Тип расчета',
                 'group' => 'Общая информация',
                 'required' => true,
-                'empty_value' => '',
+                'placeholder' => '',
                 'multiple' => false,
                 'choices' => $options['calcTypes'],
             ])
-            ->add('price', 'text', [
+            ->add('price', TextType::class, [
                 'label' => 'Цена',
                 'group' => 'Общая информация',
                 'required' => false,
                 'attr' => ['placeholder' => 'Услуга не используется', 'class' => 'spinner price-spinner'],
             ])
-            ->add('date', 'checkbox', [
+            ->add('date', CheckboxType::class, [
                 'label' => 'Дата?',
                 'group' => 'Настройки',
                 'value' => true,
                 'required' => false,
                 'help' => 'Использовать ли дату при добавлении услуги к брони?'
             ])
-            ->add('time', 'checkbox', [
+            ->add('time', CheckboxType::class, [
                 'label' => 'Время?',
                 'group' => 'Настройки',
                 'value' => true,
                 'required' => false,
                 'help' => 'Использовать ли время при добавлении услуги к брони?'
             ])
-            ->add('isOnline', 'checkbox', [
+            ->add('isOnline', CheckboxType::class, [
                 'label' => 'Онлайн?',
                 'value' => true,
                 'group' => 'Настройки',
                 'required' => false,
                 'help' => 'Использовать ли услугу в онлайн бронировании?'
             ])
-            ->add('isEnabled', 'checkbox', [
+            ->add('isEnabled', CheckboxType::class, [
                 'label' => 'Включена?',
                 'group' => 'Настройки',
                 'value' => true,
@@ -83,7 +86,7 @@ class ServiceType extends AbstractType
             ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\PriceBundle\Document\Service',
@@ -91,7 +94,7 @@ class ServiceType extends AbstractType
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_pricebundle_service_type';
     }

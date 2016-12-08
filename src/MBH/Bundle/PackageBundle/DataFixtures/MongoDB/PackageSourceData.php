@@ -1,14 +1,15 @@
 <?php
 
-namespace MBH\Bundle\RestaurantBundle\DataFixtures\MongoDB;
+namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 
 
-class PackageSourceData implements FixtureInterface
+class PackageSourceData extends AbstractFixture implements OrderedFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
@@ -43,5 +44,10 @@ class PackageSourceData implements FixtureInterface
             'Постоянный клиент' => 'regular_customer',
             'Рекомендация знакомых' => 'recommendet_friend',
         ];
+    }
+
+    public function getOrder()
+    {
+        return 9998;
     }
 }

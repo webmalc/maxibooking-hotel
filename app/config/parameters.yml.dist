@@ -8,7 +8,7 @@ parameters:
   from_email: robot@example.com
 
   #MongoBD
-  mongodb_url: 'mongodb://mbh:password@localhost:27017/mbh'
+  mongodb_url: 'mongodb://mbh-mongo:27017/mbh'
   mongodb_database: mbh
 
   #Security
@@ -21,7 +21,7 @@ parameters:
   locale.currency: rub
   debug_toolbar: true
   debug_redirects: false
-  use_assetic_controller: true
+  use_assetic_controller: false
   router.request_context.host: 'example.com'
   router.request_context.scheme: http
   router.request_context.base_url: null

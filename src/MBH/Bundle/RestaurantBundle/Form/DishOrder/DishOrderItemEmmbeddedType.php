@@ -130,7 +130,7 @@ class DishOrderItemEmmbeddedType extends AbstractType
             ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_restaurantbundle_dishorder_dishitemembedded_type';
     }

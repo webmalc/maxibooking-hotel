@@ -3,58 +3,58 @@ services:
     #begin: search
     mbh.package.search:
             class: MBH\Bundle\PackageBundle\Services\Search\SearchFactory
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.package.search_simple:
             class: MBH\Bundle\PackageBundle\Services\Search\Search
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.package.search_with_tariffs:
             class: MBH\Bundle\PackageBundle\Services\Search\SearchWithTariffs
 
     mbh.package.search_multiple_dates:
             class: MBH\Bundle\PackageBundle\Services\Search\SearchMultipleDates
-            arguments: [@service_container]
+            arguments: ['@service_container']
     #end: search
 
     mbh.tourists.messenger:
             class: MBH\Bundle\PackageBundle\Services\TouristsMessenger
-            arguments: [@service_container]
+            arguments: ['@service_container']
         
     mbh.calculation:
             class: MBH\Bundle\PackageBundle\Services\Calculation
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.order_manager:
             class: MBH\Bundle\PackageBundle\Services\OrderManager
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.package.permissions:
             class: MBH\Bundle\PackageBundle\Services\Permissions
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.package.subscriber:
             class: MBH\Bundle\PackageBundle\EventListener\PackageSubscriber
-            arguments: [@service_container]
+            arguments: ['@service_container']
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.package.order.subscriber:
             class: MBH\Bundle\PackageBundle\EventListener\OrderSubscriber
-            arguments: [@service_container]
+            arguments: ['@service_container']
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.package.subscriber.tourist:
             class: MBH\Bundle\PackageBundle\EventListener\TouristSubscriber
             calls:
-                - [setContainer, [@service_container]]
+                - [setContainer, ['@service_container']]
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.package.validator:
             class: MBH\Bundle\PackageBundle\Validator\Constraints\PackageValidator
-            arguments: [@service_container]
+            arguments: ['@service_container']
             tags:
                 - { name: validator.constraint_validator, alias: mbh.package.validator }
 
@@ -71,37 +71,37 @@ services:
     mbh.package.form.type.document_relation:
             class: MBH\Bundle\PackageBundle\Form\DocumentRelationType
             calls:
-                   - [setDictionaryProvider, [@mbh.vega.dictionary_provider]]
-                   - [setManagerRegistry, [@doctrine_mongodb]]
+                   - [setDictionaryProvider, ['@mbh.vega.dictionary_provider']]
+                   - [setManagerRegistry, ['@doctrine_mongodb']]
             tags:
                 - { name: form.type, alias: mbh_document_relation }
     mbh.package.document_tempalte_factory:
             class: MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory
             calls:
-                   - [setContainer, [@service_container]]
+                   - [setContainer, ['@service_container']]
     mbh.package.document_xls_factory:
             class: MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory
             calls:
-                   - [setContainer, [@service_container]]
+                   - [setContainer, ['@service_container']]
     mbh.package.document_factory:
             class: MBH\Bundle\PackageBundle\DocumentGenerator\ChainGeneratorFactory
             calls:
-                   - [addFactory, [@mbh.package.document_tempalte_factory]]
-                   - [addFactory, [@mbh.package.document_xls_factory]]
-                   - [setContainer, [@service_container]]
+                   - [addFactory, ['@mbh.package.document_tempalte_factory']]
+                   - [addFactory, ['@mbh.package.document_xls_factory']]
+                   - [setContainer, ['@service_container']]
 
     mbh.package.unwelcome_repository:
             class: MBH\Bundle\PackageBundle\Document\UnwelcomeRepository
-            arguments: [@mbh.mbhs]
+            arguments: ['@mbh.mbhs']
 
     mbh.package.report.filling_report_generator:
             class: MBH\Bundle\PackageBundle\Component\FillingReportGenerator
             calls:
-                   - [setContainer, [@service_container]]
+                   - [setContainer, ['@service_container']]
     mbh.package.payer_repository:
             class: MBH\Bundle\PackageBundle\Document\PayerRepository
             calls:
-                   - [setContainer, [@service_container]]
+                   - [setContainer, ['@service_container']]
 
     mbh.package.report_data_builder:
         class: MBH\Bundle\PackageBundle\Services\ReportDataBuilder
@@ -109,7 +109,12 @@ services:
 
     mbh.package.windows.report.generator:
       class: MBH\Bundle\PackageBundle\Services\WindowsReportGenerator
-      arguments: [@mbh.helper, @doctrine_mongodb]
+      arguments: ['@mbh.helper', '@doctrine_mongodb']
+
     mbh.package.csv.generator:
           class: MBH\Bundle\PackageBundle\Services\CsvGenerate
-          arguments: [@service_container]
+          arguments: ['@service_container']
+
+    mbh.acl_document_owner_maker:
+        class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
+        arguments: ['@security.acl.provider', '@doctrine.odm.mongodb.document_manager']

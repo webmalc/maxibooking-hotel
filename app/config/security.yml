@@ -20,16 +20,17 @@ security:
                 default_target_path: /
                 use_referer: true
                 provider: fos_userbundle
-                csrf_provider: form.csrf_provider
+                csrf_token_generator: security.csrf.token_manager
                 login_path:  /user/login
                 check_path:  /user/login_check
                 require_previous_session: true
+                remember_me: true
             logout:       
                 path:   /user/logout
                 target: /
             anonymous:    true
             remember_me:
-                key:      "%secret%"
+                secret:      "%secret%"
                 lifetime: 3600
                 path:     /
                 domain:   ~

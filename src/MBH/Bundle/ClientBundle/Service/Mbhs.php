@@ -4,12 +4,13 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\Response;
+use GuzzleHttp\Client;
+use MBH\Bundle\BaseBundle\Document\Message;
 use MBH\Bundle\OnlineBundle\Document\Invite;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\BaseBundle\Document\Message;
-use MBH\Bundle\PackageBundle\Document\Package;
 
 /**
  * Class Mbhs
@@ -28,7 +29,7 @@ class Mbhs
     protected $dm;
 
     /**
-     * @var \Guzzle\Service\Client
+     * @var Client
      */
     protected $guzzle;
 
@@ -48,9 +49,9 @@ class Mbhs
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
-        $this->guzzle = $container->get('guzzle.client');
+        $this->guzzle = new Client();
         $this->config = $container->getParameter('mbh.mbhs');
-        $this->request = $container->get('request');
+        $this->request = $container->get('request_stack')->getCurrentRequest();
 
         if (in_array($this->request->getClientIp(), ['95.85.3.188'])) {
             $this->checkIp = false;
@@ -73,14 +74,15 @@ class Mbhs
         }
 
         try {
-            $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/sms/send');
-            $request->getQuery()->set('url', $this->getSchemeAndHttpHost());
-            $request->getQuery()->set('key', $this->config['key']);
-            $request->getQuery()->set('sms', $text);
-            $request->getQuery()->set('phone', $phone);
-
-            $response = $request->send();
-            $json = $response->json();
+            $response = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/sms/send', [
+                'query' => [
+                    'url' => $this->getSchemeAndHttpHost(),
+                    'key' => $this->config['key'],
+                    'sms' => $text,
+                    'phone' => $phone
+                ]
+            ]);
+            $json = json_decode($response->getBody(), true);
 
         } catch (\Exception $e) {
             $result->error = true;
@@ -130,16 +132,17 @@ class Mbhs
         }
 
         try {
-            $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/login');
-            $request->getQuery()->set('url', $this->getSchemeAndHttpHost());
-            $request->getQuery()->set('key', $this->config['key']);
-            $request->getQuery()->set('ip', $ip);
-
-            $request->send();
-
+            $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/login', [
+                'query' => [
+                    'url' => $this->getSchemeAndHttpHost(),
+                    'key' => $this->config['key'],
+                    'ip' => $ip
+                ]
+            ]);
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 dump($e);
+                exit();
             };
             return false;
         }
@@ -161,15 +164,13 @@ class Mbhs
 
         try {
             $request = $this->guzzle
-                ->post(base64_decode($this->config['mbhs']) . 'client/package/log')
-                ->setBody(json_encode(array_merge($package->toArray(), [
-                    'url' => $this->getSchemeAndHttpHost(),
-                    'key' => $this->config['key'],
-                    'ip' => $ip
-                ])))
-                ->setHeader('Content-Type', 'application/json')
-                ->send()
-            ;
+                ->post(
+                    base64_decode($this->config['mbhs']) . 'client/package/log',
+                    ['json' => array_merge($package->toArray(), [
+                        'url' => $this->getSchemeAndHttpHost(),
+                        'key' => $this->config['key'],
+                        'ip' => $ip
+                    ])]);
 
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
@@ -281,22 +282,19 @@ class Mbhs
     /**
      * @param array $requestData
      * @param string $url
-     * @param string $method
      * @return array|null
      */
-    private function exchangeJson(array $requestData, $url, $method = 'POST')
+    private function exchangeJson(array $requestData, $url)
     {
         $requestData = array_merge($requestData, $this->getAuthorizationData());
         $uri = base64_decode($this->config['mbhs']) . $url;
-
-        $jsonDate = $this->container->get('serializer')->encode($requestData, 'json');
         try {
             /** @var Response $response */
             $response = $this->guzzle
-                ->createRequest($method, $uri)
-                ->setBody($jsonDate)
-                ->setHeader('Content-Type', 'application/json')
-                ->send()
+                ->post(
+                    $uri,
+                    ['json' => $requestData
+                    ]);
             ;
             $responseData = $this->container->get('serializer')->decode($response->getBody(true), 'json');
             if(!$responseData['status']) {

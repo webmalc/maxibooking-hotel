@@ -2,28 +2,28 @@ services:
 #roomCache generator
   mbh.room.cache.graph.generator:
     class: MBH\Bundle\PriceBundle\Services\RoomCacheGraphGenerator
-    arguments: [@mbh.helper, @doctrine_mongodb]
+    arguments: ['@mbh.helper', '@doctrine_mongodb']
 
   mbh.tariff.subscriber:
     class: MBH\Bundle\PriceBundle\EventListener\TariffSubscriber
-    arguments: [@service_container]
+    arguments: ['@service_container']
     tags:
       - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
   mbh.room_cache.subscriber:
       class: MBH\Bundle\PriceBundle\EventListener\RoomCacheSubscriber
-      arguments: [@service_container]
+      arguments: ['@service_container']
       tags:
         - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
   mbh.room.cache:
           class: MBH\Bundle\PriceBundle\Services\RoomCache
-          arguments: [@service_container]
+          arguments: ['@service_container']
 
   mbh.price.cache:
           class: MBH\Bundle\PriceBundle\Services\PriceCache
-          arguments: [@service_container]
+          arguments: ['@service_container']
 
   mbh.restriction:
             class: MBH\Bundle\PriceBundle\Services\Restriction
-            arguments: [@service_container]
+            arguments: ['@service_container']

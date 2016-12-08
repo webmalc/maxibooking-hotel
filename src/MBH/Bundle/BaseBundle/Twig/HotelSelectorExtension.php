@@ -65,9 +65,9 @@ class HotelSelectorExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'selected_hotel' => new \Twig_Function_Method($this, 'getSelectedHotel', array('is_safe' => array('html'))),
-            'hotels' => new \Twig_Function_Method($this, 'getHotels', array('is_safe' => array('html'))),
-            'checkPermissions' => new \Twig_Function_Method($this, 'checkPermissions', array('is_safe' => array('html'))),
+            'selected_hotel' => new \Twig_SimpleFunction('selected_hotel', [$this, 'getSelectedHotel'], array('is_safe' => array('html'))),
+            'hotels' => new \Twig_SimpleFunction('hotels', [$this, 'getHotels'], array('is_safe' => array('html'))),
+            'checkPermissions' => new \Twig_SimpleFunction('checkPermissions', [$this, 'checkPermissions'], array('is_safe' => array('html'))),
         );
     }
 

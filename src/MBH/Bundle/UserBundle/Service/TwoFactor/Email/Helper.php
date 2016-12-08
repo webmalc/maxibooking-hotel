@@ -2,11 +2,11 @@
 
 namespace MBH\Bundle\UserBundle\Service\TwoFactor\Email;
 
-use MBH\Bundle\UserBundle\Document\User;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
+use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Service\TwoFactor\HelperInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 
 class Helper implements HelperInterface
 {

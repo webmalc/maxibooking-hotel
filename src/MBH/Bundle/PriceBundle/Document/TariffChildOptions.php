@@ -3,9 +3,9 @@
 namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ODM\EmbeddedDocument

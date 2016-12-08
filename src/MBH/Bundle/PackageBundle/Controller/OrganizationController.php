@@ -8,15 +8,14 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Form\OrganizationType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * Class OrganizationController
@@ -105,7 +104,7 @@ class OrganizationController extends Controller
 
     /**
      * @Route("/create", name="create_organization")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ORGANIZATION_NEW')")
      * @Template()
      */
@@ -113,16 +112,17 @@ class OrganizationController extends Controller
     {
         $organization = new Organization();
         //default value
-        if(!$request->isMethod('PUT') && $request->get('type')) {
+        if(!$request->isMethod('POST') && $request->get('type')) {
             $organization->setType($request->get('type'));
         }
 
-        $form = $this->createForm(new OrganizationType($this->dm), $organization, [
+        $form = $this->createForm(OrganizationType::class, $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
+            'dm' => $this->dm
         ]);
 
-        if ($request->isMethod('PUT')) {
-            $form->submit($request);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($organization);
@@ -141,7 +141,7 @@ class OrganizationController extends Controller
 
     /**
      * @Route("/{id}/edit", name="organization_edit")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ORGANIZATION_EDIT')")
      * @ParamConverter("organization", class="MBHPackageBundle:Organization")
      * @Template()
@@ -150,16 +150,17 @@ class OrganizationController extends Controller
     {
         $imageUrl = $organization->getStamp() ? $this->generateUrl('stamp', ['id' => $organization->getId()]) : null;
 
-        $form = $this->createForm(new OrganizationType($this->dm), $organization, [
+        $form = $this->createForm(OrganizationType::class, $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
             'id' => $organization->getId(),
             'type' => $organization->getType(),
             'scenario' => OrganizationType::SCENARIO_EDIT,
-            'imageUrl' => $imageUrl
+            'imageUrl' => $imageUrl,
+            'dm' => $this->dm
         ]);
 
-        if ($request->isMethod('PUT')) {
-            $form->submit($request);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($organization);

@@ -3,6 +3,10 @@
 namespace MBH\Bundle\HotelBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -18,38 +22,38 @@ class HotelType extends AbstractType
         }
 
         $builder
-            ->add('fullTitle', 'text', [
+            ->add('fullTitle', TextType::class, [
                 'label' => 'form.hotelType.name',
                 'group' => 'form.hotelType.general_info',
                 'required' => true,
                 'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel']
             ])
-            ->add('title', 'text', [
+            ->add('title', TextType::class, [
                 'label' => 'form.hotelType.inner_name',
                 'group' => 'form.hotelType.general_info',
                 'required' => false,
                 'attr' => ['placeholder' => 'form.hotelType.placeholder_hotel'],
                 'help' => 'form.hotelType.maxibooking_inner_name'
             ])
-            ->add('internationalTitle', 'text', [
+            ->add('internationalTitle', TextType::class, [
                 'label' => 'form.hotelType.international_title',
                 'group' => 'form.hotelType.general_info',
                 'required' => false
             ])
-            ->add('prefix', 'text', [
+            ->add('prefix', TextType::class, [
                 'label' => 'form.hotelType.prefix',
                 'group' => 'form.hotelType.general_info',
                 'required' => false,
                 'attr' => ['placeholder' => 'HTL'],
                 'help' => 'form.hotelType.document_use_name'
             ])
-            ->add('description', 'textarea', [
+            ->add('description', TextareaType::class, [
                 'label' => 'form.hotelType.description',
                 'group' => 'form.hotelType.general_info',
                 'attr' => ['class' => 'tinymce'],
                 'required' => false
             ])
-            ->add('file', 'file', [
+            ->add('file', FileType::class, [
                 'label' => 'form.hotelType.logo',
                 'group' => 'form.hotelType.settings',
                 'help' => $logoHelp,
@@ -58,14 +62,14 @@ class HotelType extends AbstractType
                     new \Symfony\Component\Validator\Constraints\Image()
                 ]
             ])
-            ->add('isHostel', 'checkbox', [
+            ->add('isHostel', CheckboxType::class, [
                 'label' => 'form.hotelType.hostel',
                 'group' => 'form.hotelType.settings',
                 'value' => true,
                 'required' => false,
                 'help' => 'form.hotelType.hostel_hotel_or_not'
             ])
-            ->add('isDefault', 'checkbox', [
+            ->add('isDefault', CheckboxType::class, [
                 'label' => 'form.hotelType.is_default',
                 'group' => 'form.hotelType.settings',
                 'value' => true,
@@ -84,7 +88,7 @@ class HotelType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotelbundle_hoteltype';
     }

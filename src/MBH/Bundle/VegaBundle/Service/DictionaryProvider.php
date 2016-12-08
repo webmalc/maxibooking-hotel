@@ -48,7 +48,7 @@ class DictionaryProvider
     private function getDictionary($name)
     {
         if(!isset($this->cache[$name])){
-            $list = Yaml::parse(__DIR__.'/../Resources/config/'.$name.'.yml')[$name];
+            $list = Yaml::parse(file_get_contents(__DIR__.'/../Resources/config/'.$name.'.yml'))[$name];
             $this->cache[$name] = $list;
         }
 
