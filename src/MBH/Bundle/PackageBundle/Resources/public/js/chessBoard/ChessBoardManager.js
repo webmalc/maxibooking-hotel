@@ -268,7 +268,7 @@ var ChessBoardManager = (function () {
             revert: function (is_valid_drop) {
                 if (self.isDraggableRevert(this, is_valid_drop)) {
                     this.css('background-color', this.css('background-color'));
-                    ChessBoardManager.deletePackageElement(this.get(0).id);
+                    self.updatePackageData();
                     return true;
                 }
                 else {
