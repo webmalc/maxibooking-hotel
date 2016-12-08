@@ -138,6 +138,34 @@ class ClientConfig extends Base
     protected $isInstantSearch = true;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0, max=365)
+     */
+     protected $noticeUnpaid = 0;
+
+    /**
+     * @return boolean
+     */
+    public function getNoticeUnpaid()
+    {
+        return $this->noticeUnpaid;
+    }
+
+    /**
+     * @param boolean $noticeUnpaid
+     * @return ClientConfig
+     */
+    public function setNoticeUnpaid($noticeUnpaid)
+    {
+        $this->noticeUnpaid = $noticeUnpaid;
+        return $this;
+    }
+
+    /**
      * Set sendSms
      *
      * @param boolean $isSendSms

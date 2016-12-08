@@ -23,6 +23,12 @@ class ClientConfigType extends AbstractType
                 'required' => false,
                 'help' => 'form.clientConfigType.is_sms_notification_turned_on'
             ])
+            ->add('NoticeUnpaid', TextType::class, [
+                'label' => 'form.clientConfigType.notice_unpaid',
+                'group' => 'form.clientConfigType.main_group',
+                'help' => 'form.clientConfigType.is_notice_unpaid',
+                'required' => true
+            ])
             ->add('is_instant_search', CheckboxType::class, [
                 'label' => 'form.clientConfigType.instant_search',
                 'group' => 'form.clientConfigType.main_group',

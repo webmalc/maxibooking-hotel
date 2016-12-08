@@ -131,4 +131,19 @@ class OrderRepository extends DocumentRepository
         return $docs;
     }
 
+    /**
+     * @param \DateTime $deadlineDate
+     * @return array
+     */
+    public function getUnpaidOrders(\DateTime $deadlineDate)
+    {
+
+        $qb = $this->createQueryBuilder('s')->field('createdAt')->lte($deadlineDate);
+        $query = $qb->getQuery();
+        $orders = $query->execute();
+        $ordersArray = $orders->toArray();
+        return $ordersArray;
+
+    }
+
 }

@@ -3,6 +3,8 @@ form.clientConfigType.search_group: Параметры подбора броне
 form.clientConfigType.search_windows: Использовать систему "окна"?
 form.clientConfigType.search_windows_desc: Подбор номеров без создания "окон"
 form.clientConfigType.sms_notification: Смс оповещение?
+form.clientConfigType.notice_unpaid: Уведомление
+form.clientConfigType.is_notice_unpaid: Отправлять уведомление о неоплаченной брони, через указанное колличество дней
 form.clientConfigType.search_dates: Дополнительные дни поиска
 form.clientConfigType.search_dates_desc: Количество дополнительных дней для подбора броней.
 form.clientConfigType.is_disabled_room_type_category: Группы для типов номеров

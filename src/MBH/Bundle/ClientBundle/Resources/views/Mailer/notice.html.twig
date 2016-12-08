@@ -1,0 +1,8 @@
+<h1>Оплата просрочена!</h1>
+
+<p>Брони ожидают оплаты:</p>
+<ul>
+{% for data in arrayData %}
+    <li>Бронь №<a href="{{ data.url }}">{{ data.packageId }}</a> ожидает оплаты</li>
+{% endfor %}
+</ul>
