@@ -153,8 +153,8 @@
             </tbody>
         </table>
         <div class="btmactions">
-            <a href="#" tabindex="0" class="btn btn-default btn-booking-reservation" title="Отправить заявку" >Отправить заявку</a>
-            <a href="#" tabindex="0" class="btn btn-warning btn-booking" title="Купить онлайн">Купить онлайн</a>
+            <a href="javascript:void(0)" tabindex="0" class="btn btn-default btn-booking-reservation" title="Отправить заявку" >Отправить заявку</a>
+            <a href="javascript:void(0)" tabindex="0" class="btn btn-warning btn-booking" title="Купить онлайн">Купить онлайн</a>
         </div>
 
 
@@ -179,34 +179,24 @@
     </div>
 {% endif %}
 
-
-{#% for result in searchResults %}
-<div class="row" id="online-booking-search">
-    <div class="well col-lg-12 room-type-row">
-        <h4></h4>
-        <div class="row">
-            <div class="col-md-10">
-                {% for searchResult in result.results %}
-                <div class="row tariff-row" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">
-                    <div class="col-md-4" style="font-weight: bold">Тариф: {{ searchResult.tariff }}</div>
-                    <div class="col-md-4">
-                        Взрослых: <br>
-                        Даты: <br>
-                        Количество комнат: {{ searchResult.roomsCount }}<br>
-                        Цена: {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}
-                    </div>
-                </div>
-                {% endfor %}
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Внимание!</h4>
             </div>
-        </div>
-        <div class="pull-right">
-            <a class="btn btn-success btn-sm" href="">Бронировать</a>
+            <div class="modal-body">
+                Для того, чтобы [отправить заявку]/[купить онлайн] выберите, пожалуйста, интересующий Вас тариф.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
-{% endfor %#}
-{#<link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">#}
-{#<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>#}
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Readmore.js/2.2.0/readmore.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
@@ -276,8 +266,8 @@
 
     RoomTypeRow.prototype.notAlreadyBooking = function()
     {
-        this.$bookingButton.addClass('disabled').attr('href', '');
-        this.$bookingButtonReservation.addClass('disabled').attr('href', '');
+        /*this.$bookingButton.addClass('disabled').attr('href', '');
+        this.$bookingButtonReservation.addClass('disabled').attr('href', '');*/
         /*this.tariffRows.forEach(function(index, t) {
             tariffRow.notSelected();
         })*/
@@ -374,8 +364,8 @@
     });
 
     var start_bron = function(row) {
-        var $button_reservation = $(row).closest("table").siblings(".btmactions").find("a.btn-booking-reservation"),
-            $button_online = $(row).closest("table").siblings(".btmactions").find("a.btn-booking");
+        //Отключение disabled кнопочек. Но так как семь пятниц на неделе, не удаляем, пока комментим.
+            /*$button_online = $(row).closest("table").siblings(".btmactions").find("a.btn-booking");
         if($button_reservation.hasClass("disabled")) {
             $button_reservation.removeClass("disabled");
         }
@@ -383,26 +373,21 @@
             $button_online.removeClass("disabled")
         } else if (!$button_online.hasClass("disabled") && $(row).data("payment_type") !== "hundred") {
             $button_online.addClass("disabled");
-        }
-        var href = $(row).data("url");
+        }*/
+        var $button_reservation = $(row).closest("table").siblings(".btmactions").find("a.btn-booking-reservation"),
+            href = $(row).data("url");
         href = href + '&reservation=true';
         $button_reservation.attr("href", href )
 
     };
 
-//    popover оставил на потом
-//    $(".btmactions a").popover({
-//        'title': 'Пожалуйста сделайте сначала выбор',
-//        'placement': 'top',
-//        'trigger': 'focus'
-//    });
-//    $(".btmactions").on('click', function (e) {
-//        if($(e.target).find("a").hasClass("disabled")) {
-//            e.stopPropagation();
-//            $(this).closest("a").popover("show");
-//
-//        }
-//    })
+    $(".btmactions").on('click', function (e) {
+        if($(e.target).attr('href') === 'javascript:void(0)') {
+            e.preventDefault();
+            $("#myModal").modal("show");
+        }
+
+    })
 
 </script>
 
