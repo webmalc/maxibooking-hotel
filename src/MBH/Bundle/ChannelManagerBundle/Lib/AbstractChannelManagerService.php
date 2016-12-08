@@ -3,11 +3,11 @@
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\HotelBundle\Document\RoomType;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
@@ -69,7 +69,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->templating = $this->container->get('templating');
-        $this->request = $container->get('request');
+        $this->request = $container->get('request_stack')->getCurrentRequest();
         $this->helper = $container->get('mbh.helper');
         $this->logger = $container->get('mbh.channelmanager.logger');
         $this->currency = $container->get('mbh.currency');
@@ -222,8 +222,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             ->setIsDefault(false)
             ->setIsOnline(false)
             ->setHotel($config->getHotel())
-            ->setDescription('Automatically generated rate.')
-        ;
+            ->setDescription('Automatically generated rate.');
         $this->dm->persist($tariff);
         $this->dm->flush();
 
@@ -254,7 +253,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     {
         if (!$end || $end < new \DateTime('midnight')) {
             $end = clone $begin;
-            $end->modify('+' . static::DEFAULT_PERIOD .' days');
+            $end->modify('+' . static::DEFAULT_PERIOD . ' days');
         }
 
         return $end;
@@ -415,7 +414,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             if ($method == 'POST' || $method == 'PUT') {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             } elseif ($method == 'GET') {
-                $url = $url. '?' . http_build_query($data);
+                $url = $url . '?' . http_build_query($data);
             }
         }
 
@@ -501,8 +500,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             $tr = $this->container->get('translator');
             $message = $notifier::createMessage();
 
-            $text = 'channelManager.'.$service.'.notification.'.$type;
-            $subject = 'channelManager.'.$service.'.notification.subject.' . $type;
+            $text = 'channelManager.' . $service . '.notification.' . $type;
+            $subject = 'channelManager.' . $service . '.notification.subject.' . $type;
 
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -522,7 +521,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             }
 
             $message
-                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ',  $packages)], 'MBHChannelManagerBundle'))
+                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ', $packages)],
+                    'MBHChannelManagerBundle'))
                 ->setFrom('channelmanager')
                 ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
                 ->setType($type == 'delete' ? 'danger' : 'info')
@@ -531,8 +531,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setHotel($hotel)
                 ->setOrder($order)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
-                ->setEnd(new \DateTime('+10 minute'))
-            ;
+                ->setEnd(new \DateTime('+10 minute'));
 
             $notifier->setMessage($message)->notify();
 

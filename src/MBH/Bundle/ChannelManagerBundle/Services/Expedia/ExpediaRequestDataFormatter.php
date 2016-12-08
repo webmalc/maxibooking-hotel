@@ -188,15 +188,21 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * @param ChannelManagerConfigInterface $config
      * @return mixed
      */
-    public function formatRestrictionRequestData($begin, $end, $roomTypes, $serviceTariffs, ChannelManagerConfigInterface $config)
-    {
+    public function formatRestrictionRequestData(
+        $begin,
+        $end,
+        $roomTypes,
+        $serviceTariffs,
+        ChannelManagerConfigInterface $config
+    ) {
         $xmlElements = [];
 
         $requestDataArray = $this->getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, $config);
 
         foreach ($requestDataArray as $roomTypeId => $restrictionsByDates) {
-            $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
+
             foreach ($restrictionsByDates as $dateString => $restrictionsByTariffs) {
+                $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
 
                 $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
                 $dateRangeElement->addAttribute('from', $dateString);
@@ -213,23 +219,20 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
                     /** @var Restriction $restriction */
                     $restriction = $restrictionData['restriction'];
+                    $isClosedToArrival = $restriction && !$restriction->getClosedOnArrival() ? 'false' : 'true';
+                    $isClosedToDeparture = $restriction && !$restriction->getClosedOnDeparture() ? 'false' : 'true';
+                    $minStay = $restriction && $restriction->getMinStay() ? $restriction->getMinStay() : self::EXPEDIA_MIN_STAY;
+                    $maxStay = $restriction && $restriction->getMaxStay() ? $restriction->getMaxStay() : self::EXPEDIA_MAX_STAY;
 
-                    if ($restriction) {
-                        $restrictionsElement = $ratePlanElement->addChild('Restrictions');
-                        //TODO: Что делать если не установлены значения?
-                        //TODO: Как обрабатывать ситуации, если устанавливается значение больше 28? По дефолту будет приходить ошибка
-                        $restrictionsElement->addAttribute('closedToArrival',
-                            $restriction->getClosedOnArrival() ? 'true' : 'false');
-                        $restrictionsElement->addAttribute('closedToDeparture',
-                            $restriction->getClosedOnDeparture() ? 'true' : 'false');
-                        $restrictionsElement->addAttribute('minLOS',
-                            $restriction->getMinStay() ? $restriction->getMinStay() : self::EXPEDIA_MIN_STAY);
-                        $restrictionsElement->addAttribute('maxLOS',
-                            $restriction->getMaxStay() ? $restriction->getMaxStay() : self::EXPEDIA_MAX_STAY);
-                    }
+                    $restrictionsElement = $ratePlanElement->addChild('Restrictions');
+                    //TODO: Как обрабатывать ситуации, если устанавливается значение больше 28? По дефолту будет приходить ошибка
+                    $restrictionsElement->addAttribute('closedToArrival', $isClosedToArrival);
+                    $restrictionsElement->addAttribute('closedToDeparture', $isClosedToDeparture);
+                    $restrictionsElement->addAttribute('minLOS', $minStay);
+                    $restrictionsElement->addAttribute('maxLOS', $maxStay);
                 }
+                $xmlElements[] = $xmlRoomTypeData;
             }
-            $xmlElements[] = $xmlRoomTypeData;
         }
 
         return $this->formatTemplateRequest($xmlElements, $config,

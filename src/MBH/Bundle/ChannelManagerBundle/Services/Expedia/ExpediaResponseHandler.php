@@ -16,7 +16,10 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     public function setInitData($response, ChannelManagerConfigInterface $config = null)
     {
         $this->response = $response;
-        $this->config = $config;
+        //Так как данный класс получается из контейнера, возможно затирание данных конфига
+        if ($config) {
+            $this->config = $config;
+        }
 
         return $this;
     }
@@ -51,7 +54,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         if ($this->isXMLResponse()) {
             $xmlResponse = new \SimpleXMLElement($this->response);
 
-            return $xmlResponse->xpath('//Success') ? true : false;
+            return $xmlResponse->xpath('//Error') ? false: true;
         }
         $jsonResponse = json_decode($this->response, true);
 

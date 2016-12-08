@@ -17,7 +17,7 @@ class ChannelManagerHelper
      *
      * @param ChannelManagerConfigInterface $config
      * @param bool $byService
-     * @return mixed
+     * @return array
      */
     public function getRoomTypesSyncData(ChannelManagerConfigInterface $config, $byService = false)
     {

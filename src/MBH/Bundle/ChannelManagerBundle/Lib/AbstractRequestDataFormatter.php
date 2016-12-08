@@ -181,7 +181,7 @@ abstract class AbstractRequestDataFormatter
 
         $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
         $roomTypesSyncData = $channelManagerHelper->getRoomTypesSyncData($config);
-        $tariffs = $channelManagerHelper->getTariffsSyncData($config);
+        $tariffs = $channelManagerHelper->getTariffsSyncData($config, true);
 
         $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
             $begin,
@@ -201,14 +201,16 @@ abstract class AbstractRequestDataFormatter
         );
 
         foreach ($roomTypesSyncData as $roomTypeId => $roomTypeInfo) {
-            foreach ($tariffs as $tariffId => $tariff) {
+            foreach ($tariffs as $serviceTariffId => $tariffInfo) {
+                if (!$this->checkTariff($serviceTariffs, $serviceTariffId, $roomTypeInfo['syncId'])) {
+                    continue;
+                }
+                /** @var Tariff $tariff */
+                $tariff = $tariffInfo['doc'];
+                $tariffId = $tariff->getId();
+
                 foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
                     /** @var \DateTime $day */
-
-                    if (!$this->checkTariff($serviceTariffs, $tariff['syncId'], $roomTypeInfo['syncId'])) {
-                        continue;
-                    }
-
                     $isPriceSet = false;
                     if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                         $isPriceSet = true;
@@ -219,8 +221,8 @@ abstract class AbstractRequestDataFormatter
                         $restriction = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
                     }
 
-                    $this->formatRestrictionData($restriction, $roomTypeInfo['doc'], $tariff['doc'],
-                        $roomTypeInfo['syncId'], $tariff['syncId'], $resultData, $isPriceSet, $day);
+                    $this->formatRestrictionData($restriction, $roomTypeInfo['doc'], $tariff,
+                        $roomTypeInfo['syncId'], $serviceTariffId, $resultData, $isPriceSet, $day);
                 }
             }
         }

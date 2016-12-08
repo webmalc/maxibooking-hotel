@@ -236,18 +236,20 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
 
             $response = $this->sendRequestAndGetResponse($request);
             $responseHandler = $this->getResponseHandler($response, $config);
-
             if (!$this->checkResponse($response)) {
                 $this->log($responseHandler->getErrorMessage());
-
                 return false;
             }
 
-            $this->log('Reservations count: ' . $responseHandler->getOrdersCount());
 
+            $this->log('Reservations count: ' . $responseHandler->getOrdersCount());
+            
+            dump($response);
+            dump($responseHandler->getOrderInfos());
+            exit();
+            
             foreach ($responseHandler->getOrderInfos() as $orderInfo) {
                 /** @var AbstractOrderInfo $orderInfo */
-
                 if ($orderInfo->isOrderModified()) {
                     if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->disable('softdeleteable');

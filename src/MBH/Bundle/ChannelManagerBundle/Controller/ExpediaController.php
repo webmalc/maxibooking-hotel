@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
+use MBH\Bundle\ChannelManagerBundle\Form\ExpediaType;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaResponseHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -34,7 +35,7 @@ class ExpediaController extends Controller
     {
         $config = $this->hotel->getExpediaConfig();
 
-        $form = $this->createForm($this->get('mbh.channelmanager.expedia_type'), $config);
+        $form = $this->createForm(ExpediaType::class, $config);
 
         return [
             'form' => $form->createView(),
@@ -60,7 +61,7 @@ class ExpediaController extends Controller
             $config->setHotel($this->hotel);
         }
 
-        $form = $this->createForm($this->get('mbh.channelmanager.expedia_type'), $config);
+        $form = $this->createForm(ExpediaType::class, $config);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -103,7 +104,7 @@ class ExpediaController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffsType(), $config->getTariffsAsArray(), [
+        $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.expedia')->pullTariffs($config),
         ]);
@@ -157,7 +158,7 @@ class ExpediaController extends Controller
 
         $roomTypeData = $this->get('mbh.channelmanager.expedia')->pullRooms($config);
 
-        $form = $this->createForm(new RoomsType(), $config->getRoomsAsArray(), [
+        $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $roomTypeData,
         ]);
@@ -209,9 +210,12 @@ class ExpediaController extends Controller
         /** @var ExpediaConfig $config */
         $config = $this->hotel->getExpediaConfig();
 
-        $beginDate = new \DateTime('midnight');
-        $endDate = (clone $beginDate)->add(new \DateInterval('P1D'));
+        $date = new \DateTime('midnight');
 
+        $beginDate = (clone $date);
+        $endDate = (clone $beginDate)->add(new \DateInterval('P5D'));
         $roomTypeData = $this->get('mbh.channelmanager.expedia')->updatePrices($beginDate, $endDate);
+//        $roomTypeData = $this->get('mbh.channelmanager.expedia')->m();
     }
+
 }
