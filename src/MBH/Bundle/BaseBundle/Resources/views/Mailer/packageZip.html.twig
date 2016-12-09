@@ -1,0 +1,10 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+
+{% block subject %}
+    {% set subject = text %}
+    <div>
+        <p>{{ 'mailer.packageZip.error'|trans }}{{ error }}</p>
+        <p>{{ 'mailer.packageZip.amount'|trans }}:{{ amount }}</p>
+    </div>
+
+{% endblock %}

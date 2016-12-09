@@ -13,7 +13,7 @@ class UpdateRoomTypeZipCommand extends ContainerAwareCommand
      */
     private $dm;
 
-    const MAX = 60*10;
+    const MAX = 60 * 700;
 
     protected function configure()
     {
@@ -32,23 +32,60 @@ class UpdateRoomTypeZipCommand extends ContainerAwareCommand
         //roomTypeZip
         $setting = $this->dm->getRepository('MBHClientBundle:RoomTypeZip')->fetchConfig();
 
-        foreach ($setting->getTimeDataTimeType() as $time) {
+        if ($setting->getTime()) {
+            foreach ($setting->getTimeDataTimeType() as $time) {
 
-            $diff = $todayTime->getTimestamp() - $time->getTimestamp();
+                $diff = $todayTime->getTimestamp() - $time->getTimestamp();
 
-            if (abs($diff) < self::MAX){
+                if (abs($diff) < self::MAX) {
 
-                $this->getContainer()->get('mbh_package_zip')->packagesZip();
+                    $info = $this->getContainer()->get('mbh_package_zip')->packagesZip();
 
-                $output->writeln(['yes']);
+                    $this->sendMessage($info);
 
-            } else {
-                $output->writeln(['no']);
-                continue;
+                    $output->writeln(['completed']);
+
+                } else {
+                    $output->writeln(['failed, please chahge time']);
+                    continue;
+                }
+
             }
 
+        } else {
+            $output->writeln(['error, not search Config. Please install ConfigRoomTypeZip']);
         }
 
+
+    }
+
+    /**
+     * @param $service
+     */
+    private function sendMessage($info)
+    {
+        $container = $this->getContainer();
+
+        $notifier = $container->get('mbh.notifier.mailer');
+
+        $message = $notifier::createMessage();
+        $message
+            ->setText('mailer.packageZip.text')
+            ->setFrom('system')
+            ->setSubject('mailer.packageZip.subject')
+            ->setType('info')
+            ->setCategory('notification')
+            ->setTemplate('MBHBaseBundle:Mailer:packageZip.html.twig')
+            ->setAdditionalData([
+                'error' => $info['error'],
+                'amount' => $info['amount'],
+            ])
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'));
+
+        $notifier
+            ->setMessage($message)
+            ->notify();
     }
 
 }
