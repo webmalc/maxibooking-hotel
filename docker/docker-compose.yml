@@ -6,11 +6,21 @@ mbh-memcached:
   image: phpdockerio/memcached:latest
   container_name: mbh-memcached
 
-mbh-phpunit:
-  image: phpunit/phpunit:latest
-  container_name: mbh-phpunit
+mbh-mongo:
+  image: mongo:latest
+  container_name: mbh-mongo
+  ports:
+     - "27018:27017"
+
+mbh-php-fpm:
+  build: .
+  dockerfile: php-fpm/Dockerfile
+  container_name: mbh-php-fpm
   volumes:
-      - ..:/var/www/mbh
+    - ..:/var/www/mbh
+    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
+    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/cli/conf.d/99-overrides.ini
+    - /tmp/:/tmp/
   links:
     - mbh-memcached
     - mbh-mongo
@@ -25,22 +35,3 @@ mbh-webserver:
    - "9090:80"
   links:
    - mbh-php-fpm
-
-mbh-mongo:
-  image: mongo:latest
-  container_name: mbh-mongo
-  ports:
-     - "27018:27017"
-
-mbh-php-fpm:
-  build: .
-  dockerfile: php-fpm/Dockerfile
-  container_name: mbh-php-fpm
-  volumes:
-    - ..:/var/www/mbh
-    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.0/fpm/conf.d/99-overrides.ini
-    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.0/cli/conf.d/99-overrides.ini
-  links:
-    - mbh-memcached
-    - mbh-mongo
-    - mbh-phpunit
