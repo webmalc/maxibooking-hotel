@@ -6,6 +6,8 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,63 +22,60 @@ class HousingType extends AbstractType
      */
     private $dm;
 
-    public function __construct(DocumentManager $dm)
-    {
-        $this->dm = $dm;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->dm = $options['dm'];
+
         $builder
-            ->add('name', 'text', [
+            ->add('name', TextType::class, [
                 'label' => 'views.corpus.name',
                 'group' => 'views.form.corpus.group.main',
                 'translation_domain' => 'MBHHotelBundle'
             ])
-            ->add('internalName', 'text', [
+            ->add('internalName', TextType::class, [
                 'required' => false,
                 'group' => 'views.form.corpus.group.main',
                 'label' => 'views.corpus.internal_name',
                 'translation_domain' => 'MBHHotelBundle'
             ])
-            ->add('city', 'text', [
+            ->add('city', TextType::class, [
                 'required' => false,
                 'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.city',
                 'translation_domain' => 'MBHHotelBundle',
                 'attr' => ['class' => 'citySelect']
             ])
-            ->add('settlement', 'text', [
+            ->add('settlement', TextType::class, [
                 'required' => false,
                 'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.settlement',
                 'translation_domain' => 'MBHHotelBundle'
             ])
-            ->add('street', 'text', [
+            ->add('street', TextType::class, [
                 'required' => false,
                 'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.street',
                 'translation_domain' => 'MBHHotelBundle'
             ])
-            ->add('house', 'text', [
+            ->add('house', TextType::class, [
                 'required' => false,
                 'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.house',
                 'translation_domain' => 'MBHHotelBundle'
             ])
-            ->add('corpus', 'text', [
+            ->add('corpus', TextType::class, [
                 'required' => false,
                 'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.corpus',
                 'translation_domain' => 'MBHHotelBundle'
             ])
-            ->add('flat', 'text', [
+            ->add('flat', TextType::class, [
                 'required' => false,
                 'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.flat',
                 'translation_domain' => 'MBHHotelBundle'
             ])
-            ->add('vega_address_id', 'number', [
+            ->add('vega_address_id', NumberType::class, [
                 'label' => 'form.hotelExtendedType.vega_address_id',
                 'help' => 'form.hotelExtendedType.vega_address_id_help',
                 'group' => 'views.form.corpus.group.config',
@@ -89,14 +88,15 @@ class HousingType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\HotelBundle\Document\Housing'
+            'data_class' => 'MBH\Bundle\HotelBundle\Document\Housing',
+            'dm' => null
         ]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_corpus';
     }

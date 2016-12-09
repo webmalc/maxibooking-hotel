@@ -1,9 +1,9 @@
 <?php
 namespace MBH\Bundle\UserBundle\Service\ReCaptcha;
 
-use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
-use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use \ReCaptcha\ReCaptcha;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 class InteractiveLoginListener
 {

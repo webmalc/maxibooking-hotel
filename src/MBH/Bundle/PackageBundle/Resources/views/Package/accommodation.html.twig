@@ -167,7 +167,7 @@
             </div>
         {% endif %}
 
-        {{ form_start(form, {'action': path('package_accommodation', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_start(form, {'action': path('package_accommodation', {'id': package.id}),  'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}
         {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_ACCOMMODATION'} %}
         {{ form_end(form) }}

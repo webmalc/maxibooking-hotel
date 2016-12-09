@@ -2,13 +2,18 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
+use MBH\Bundle\BaseBundle\Form\LanguageType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class OrderTouristType extends AbstractType
 {
@@ -16,13 +21,13 @@ class OrderTouristType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('tourist', 'text', [
+            ->add('tourist', TextType::class, [
                 'label' => 'form.orderTouristType.fio',
                 'required' => false,
                 'group' => 'form.orderTouristType.find_guest',
                 'attr' => ['placeholder' => 'form.orderTouristType.placeholder_fio', 'style' => 'min-width: 500px', 'class' => 'findGuest']
             ])
-            ->add('lastName', 'text', [
+            ->add('lastName', TextType::class, [
                 'label' => 'form.orderTouristType.surname',
                 'required' => true,
                 'group' => 'form.orderTouristType.add_guest',
@@ -34,7 +39,7 @@ class OrderTouristType extends AbstractType
                     'maxMessage' => 'form.orderTouristType.max_name'
                 ])]
             ])
-            ->add('firstName', 'text', [
+            ->add('firstName', TextType::class, [
                 'label' => 'form.orderTouristType.name',
                 'required' => true,
                 'group' => 'form.orderTouristType.add_guest',
@@ -46,7 +51,7 @@ class OrderTouristType extends AbstractType
                     'maxMessage' => 'form.orderTouristType.max_surname'
                 ])]
             ])
-            ->add('patronymic', 'text', [
+            ->add('patronymic', TextType::class, [
                 'label' => 'form.orderTouristType.second_name',
                 'required' => false,
                 'group' => 'form.orderTouristType.add_guest',
@@ -58,21 +63,21 @@ class OrderTouristType extends AbstractType
                     'maxMessage' => 'form.orderTouristType.max_second_name'
                 ])]
             ])
-            ->add('phone', 'text', array(
+            ->add('phone', TextType::class, array(
                 'label' => 'form.orderTouristType.phone',
                 'group' => 'form.orderTouristType.add_guest',
                 'required' => false,
                 'attr' => array('class' => 'guestPhone', 'placeholder' => '+7 (987) 654-32-10'),
                 'constraints' => []
             ))
-            ->add('email', 'email', array(
+            ->add('email', EmailType::class, array(
                 'label' => 'form.orderTouristType.email',
                 'group' => 'form.orderTouristType.add_guest',
                 'required' => false,
                 'attr' => array('class' => 'guestEmail'),
                 'constraints' => [new Email()]
             ))
-            ->add('birthday', 'date', array(
+            ->add('birthday', DateType::class, array(
                 'label' => 'form.orderTouristType.birth_date',
                 'widget' => 'single_text',
                 'group' => 'form.orderTouristType.add_guest',
@@ -81,7 +86,7 @@ class OrderTouristType extends AbstractType
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'guestBirthday'),
                 'constraints' => [new Date()]
             ))
-            ->add('communicationLanguage', 'mbh_language', [
+            ->add('communicationLanguage', LanguageType::class, [
                 'label' => 'form.touristType.communication_language',
                 'group' => 'form.orderTouristType.add_guest',
                 'attr' => ['class' => 'guestCommunicationLanguage'],
@@ -90,7 +95,7 @@ class OrderTouristType extends AbstractType
         ;
 
         if ($options['guest']) {
-            $builder->add('addToPackage', 'checkbox', [
+            $builder->add('addToPackage', CheckboxType::class, [
                 'label' => 'form.orderTouristType.add_to_package',
                 'group' => 'form.orderTouristType.add_guest',
                 'required' => false
@@ -110,7 +115,7 @@ class OrderTouristType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_packagebundle_package_order_tourist_type';
     }

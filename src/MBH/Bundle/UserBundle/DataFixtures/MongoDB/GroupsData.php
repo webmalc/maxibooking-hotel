@@ -1,13 +1,14 @@
 <?php
 namespace MBH\Bundle\UserBundle\DataFixtures\MongoDB;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 
-class GroupsData implements FixtureInterface, ContainerAwareInterface
+class GroupsData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     const GROUPS = [
         'admin' => [
@@ -163,9 +164,17 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
 
         foreach(self::GROUPS as $code => $info) {
             if (!in_array($code, $codes)) {
-                $manager->persist(new Group($info['title'], $code, $info['roles']));
+                $group = new Group($info['title'], $code, $info['roles']);
+                $manager->persist($group);
+                $manager->flush();
+                $this->setReference('group-' . $code, $group);
             }
         }
-        $manager->flush();
+
+    }
+
+    public function getOrder()
+    {
+        return -1;
     }
 }

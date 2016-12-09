@@ -2,12 +2,12 @@
 
 namespace MBH\Bundle\UserBundle\Service\TwoFactor\Google;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Google\Authenticator\GoogleAuthenticator as BaseGoogleAuthenticator;
+use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Service\TwoFactor\HelperInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 
 class Helper implements HelperInterface
 {

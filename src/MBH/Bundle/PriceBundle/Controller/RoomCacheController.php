@@ -3,15 +3,15 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PriceBundle\Document\RoomCache;
-use MBH\Bundle\PriceBundle\Lib\RoomCacheGraphGenerator;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Form\RoomCacheGeneratorType;
+use MBH\Bundle\PriceBundle\Lib\RoomCacheGraphGenerator;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("room_cache")
@@ -232,7 +232,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(new RoomCacheGeneratorType(), [], [
+        $form = $this->createForm(RoomCacheGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -254,12 +254,12 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(new RoomCacheGeneratorType(), [], [
+        $form = $this->createForm(RoomCacheGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $request->getSession()->getFlashBag()->set('success', 'Данные успешно сгенерированы.');

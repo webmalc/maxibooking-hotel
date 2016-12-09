@@ -17,7 +17,7 @@ class LanguageType extends AbstractType
 
     public function getParent()
     {
-        return 'choice';
+        return  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -35,7 +35,7 @@ class LanguageType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_language';
     }

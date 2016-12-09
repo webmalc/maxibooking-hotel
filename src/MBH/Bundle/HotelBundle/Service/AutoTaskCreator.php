@@ -2,20 +2,20 @@
 
 namespace MBH\Bundle\HotelBundle\Service;
 
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use MBH\Bundle\HotelBundle\Document\TaskType;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
+
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
+use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
+use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
-use MBH\Bundle\HotelBundle\Document\Task;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class AutoTaskCreator

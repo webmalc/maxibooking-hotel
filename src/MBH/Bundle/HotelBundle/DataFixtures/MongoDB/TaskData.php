@@ -1,7 +1,8 @@
 <?php
 namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomStatus;
@@ -15,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  * Class TaskData
 
  */
-class TaskData implements FixtureInterface, ContainerAwareInterface
+class TaskData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
@@ -109,5 +110,10 @@ class TaskData implements FixtureInterface, ContainerAwareInterface
             $manager->persist($taskType);
         }
         $manager->flush();
+    }
+
+    public function getOrder()
+    {
+        return 9999;
     }
 }

@@ -24,16 +24,27 @@ class RoomRepository extends AbstractBaseRepository
         $qb = $this->createQueryBuilder();
         if ($package) {
             $virtualRoom = $package->getVirtualRoom();
+            $begin = $package->getBegin();
+            $end = $package->getEnd();
             $packages = $this
                 ->getDocumentManager()
                 ->getRepository('MBHPackageBundle:Package')
-                ->fetchWithVirtualRooms($package->getBegin(), $package->getEnd(), $package->getRoomType())
+                ->fetchWithVirtualRooms($begin, $end, $package->getRoomType())
             ;
 
-            $rooms = array_map(function ($p) use ($virtualRoom) {
+            $rooms = array_map(function ($p) use ($virtualRoom, $begin, $end) {
                 $id = $p->getVirtualRoom()->getId();
 
-                return !$virtualRoom || $id != $virtualRoom->getId() ? $id : null;
+                if ($p->getBegin() == $end || $p->getEnd() == $begin) {
+                    return null;
+                }
+
+                if (!$virtualRoom || $id != $virtualRoom->getId()) {
+                    return $id;
+                }
+
+                return null;
+
             }, iterator_to_array($packages));
 
             $qb->field('roomType')->references($package->getRoomType())

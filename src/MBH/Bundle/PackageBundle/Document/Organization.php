@@ -3,7 +3,13 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -12,12 +18,6 @@ use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
  * Class Organization

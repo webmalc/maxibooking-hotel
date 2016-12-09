@@ -10,8 +10,8 @@ use MBH\Bundle\RestaurantBundle\Form\IngredientCategoryType as IngredientCategor
 use MBH\Bundle\RestaurantBundle\Form\IngredientType as IngredientForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
@@ -59,7 +59,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
     public function newCategoryAction()
     {
         $entity = new IngredientCategory();
-        $form = $this->createForm(new IngredientCategoryForm(), $entity);
+        $form = $this->createForm(IngredientCategoryForm::class, $entity);
         return [
             'form' => $form->createView()
         ];
@@ -80,8 +80,8 @@ class IngredientController extends BaseController implements CheckHotelControlle
         $entity = new IngredientCategory();
         $entity->setHotel($this->hotel);
 
-        $form = $this->createForm(new IngredientCategoryForm(), $entity);
-        $form->submit($request);
+        $form = $this->createForm(IngredientCategoryForm::class, $entity);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -112,7 +112,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new IngredientCategoryForm(), $entity);
+        $form = $this->createForm(IngredientCategoryForm::class, $entity);
 
         return [
             'entity' => $entity,
@@ -125,7 +125,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * Edits an existing entity.
      *
      * @Route("/{id}", name="restaurant_ingredient_category_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_RESTAURANT_CATEGORY_EDIT')")
      * @Template("MBHRestaurantBundle:Ingredient:editCategory.html.twig")
      * @ParamConverter(class="MBHRestaurantBundle:IngredientCategory")
@@ -139,8 +139,8 @@ class IngredientController extends BaseController implements CheckHotelControlle
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new IngredientCategoryForm(), $entity);
-        $form->submit($request);
+        $form = $this->createForm(IngredientCategoryForm::class, $entity);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -186,7 +186,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
         
         $ingredient = new Ingredient();
 
-        $form = $this->createForm(new IngredientForm(), $ingredient, [
+        $form = $this->createForm(IngredientForm::class, $ingredient, [
             'calcTypes' => $this->container->getParameter('mbh.units')
         ]);
 
@@ -218,11 +218,11 @@ class IngredientController extends BaseController implements CheckHotelControlle
         $ingredient = new Ingredient();
         $ingredient->setCategory($category);
 
-        $form = $this->createForm(new IngredientForm(), $ingredient, [
+        $form = $this->createForm(IngredientForm::class, $ingredient, [
             'calcTypes' => $this->container->getParameter('mbh.units')
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($ingredient);
@@ -257,7 +257,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new IngredientForm(), $ingredient, [
+        $form = $this->createForm(IngredientForm::class, $ingredient, [
             'calcTypes' => $this->container->getParameter('mbh.units')
         ]);
 
@@ -272,7 +272,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * Displays a form to edit a new entity.
      *
      * @Route("/{id}/ingredient/update", name="restaurant_ingredient_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
      * @Template("MBHRestaurantBundle:Ingredient:editIngredient.html.twig")
      * @ParamConverter(class="MBHRestaurantBundle:Ingredient")
@@ -286,11 +286,11 @@ class IngredientController extends BaseController implements CheckHotelControlle
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new IngredientForm(), $ingredient, [
+        $form = $this->createForm(IngredientForm::class, $ingredient, [
             'calcTypes' => $this->container->getParameter('mbh.units')
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
         if ($form->isValid()) {
             $this->dm->persist($ingredient);
             $this->dm->flush();

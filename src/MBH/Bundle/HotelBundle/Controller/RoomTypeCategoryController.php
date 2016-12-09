@@ -5,11 +5,11 @@ namespace MBH\Bundle\HotelBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Form\RoomTypeCategoryType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -34,7 +34,7 @@ class RoomTypeCategoryController extends BaseController
 
     /**
      * @Route("/new", name="room_type_category_new")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ROOM_TYPE_CATEGORY_NEW')")
      * @Template()
      */
@@ -42,8 +42,8 @@ class RoomTypeCategoryController extends BaseController
     {
         $category = new RoomTypeCategory();
         $category->setHotel($this->hotel);
-        $form = $this->createForm(new RoomTypeCategoryType(), $category, [
-            'method' => Request::METHOD_PUT
+        $form = $this->createForm(RoomTypeCategoryType::class, $category, [
+            'method' => Request::METHOD_POST
         ]);
 
         $form->handleRequest($request);
@@ -68,7 +68,7 @@ class RoomTypeCategoryController extends BaseController
      */
     public function editAction(Request $request, RoomTypeCategory $category)
     {
-        $form = $this->createForm(new RoomTypeCategoryType(), $category, [
+        $form = $this->createForm(RoomTypeCategoryType::class, $category, [
             'method' => Request::METHOD_POST
         ]);
 

@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\EventListener;
 
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 
 class OnRequest

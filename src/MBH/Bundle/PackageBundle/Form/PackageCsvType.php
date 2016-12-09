@@ -142,7 +142,7 @@ class PackageCsvType extends AbstractType
             ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_packagebundle_package_csv_type';
     }

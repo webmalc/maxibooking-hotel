@@ -12,16 +12,16 @@ use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
 use MBH\Bundle\HotelBundle\Form\SearchTaskType;
+use MBH\Bundle\HotelBundle\Form\TaskType;
 use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\HotelBundle\Form\TaskType;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -157,10 +157,10 @@ class TaskController extends Controller
         /** @var DocumentManager $dm */
         $dm = $this->dm;
 
-        $form = $this->createForm(new TaskType($dm), $entity, $this->getFormTaskTypeOptions());
+        $form = $this->createForm(TaskType::class, $entity, $this->getFormTaskTypeOptions());
 
         if ($request->isMethod(Request::METHOD_POST)) {
-            if ($form->submit($request)->isValid()) {
+            if ($form->handleRequest($request)->isValid()) {
                 /** @var Room[] $rooms */
                 $rooms = $form['rooms']->getData();
                 $task = null;
@@ -192,7 +192,7 @@ class TaskController extends Controller
      * Edits an existing entity.
      *
      * @Route("/edit/{id}", name="task_edit")
-     * @Method({"GET","PUT"})
+     * @Method({"GET","POST"})
      * @Security("is_granted('ROLE_TASK_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
@@ -202,12 +202,12 @@ class TaskController extends Controller
         if (!$this->get('mbh.hotel.selector')->checkPermissions($this->hotel)) {
             throw $this->createNotFoundException();
         }
-        $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions() + [
+        $form = $this->createForm(TaskType::class, $entity, $this->getFormTaskTypeOptions() + [
                 'scenario' => TaskType::SCENARIO_EDIT
             ]);
 
-        if ($request->isMethod(Request::METHOD_PUT)) {
-            if ($form->submit($request)->isValid()) {
+        if ($request->isMethod(Request::METHOD_POST)) {
+            if ($form->handleRequest($request)->isValid()) {
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
@@ -276,7 +276,8 @@ class TaskController extends Controller
         return [
             'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
             'priorities' => $priorities,
-            'hotel' => $this->hotel
+            'hotel' => $this->hotel,
+            'dm' => $this->dm
         ];
     }
 

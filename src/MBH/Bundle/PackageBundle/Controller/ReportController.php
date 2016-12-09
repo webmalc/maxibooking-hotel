@@ -2,10 +2,12 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
@@ -17,15 +19,15 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Document\WorkShift;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("/report")
@@ -71,7 +73,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * Windows package info.
      *
      * @Route("/windows/package/{id}", name="report_windows_package", options={"expose"=true})
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @ParamConverter("package", class="MBHPackageBundle:Package")
      * @Security("is_granted('ROLE_PACKAGE_EDIT') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template()
@@ -88,11 +90,11 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $response = ['package' => $package];
 
         if ($this->clientConfig->getSearchWindows()) {
-            $form = $this->createForm(new PackageVirtualRoomType(), $package, [
+            $form = $this->createForm(PackageVirtualRoomType::class, $package, [
                 'package' => $package
             ]);
 
-            if ($request->isMethod('PUT')) {
+            if ($request->isMethod('POST')) {
                 $form->submit($request->request->get($form->getName()));
 
                 if ($form->isValid()) {
@@ -825,25 +827,25 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         return $this->createFormBuilder(null, [
             'method' => Request::METHOD_GET
         ])
-            ->add('user', 'document', [
-                'empty_value' => '',
+            ->add('user', DocumentType::class, [
+                'placeholder' => '',
                 'class' => 'MBH\Bundle\UserBundle\Document\User',
                 'query_builder' => function(DocumentRepository $repository) {
                     $repository->createQueryBuilder()->field('isEnabledWorkShift')->equals(true);
                 }
             ])
-            ->add('begin', 'date', [
+            ->add('begin', DateTimeType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy'],
             ])
-            ->add('end', 'date', [
+            ->add('end', DateTimeType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy'],
             ])
-            ->add('status', 'choice', [
-                'empty_value' => '',
+            ->add('status',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+                'placeholder' => '',
                 'choices' => array_combine(WorkShift::getAvailableStatuses(), WorkShift::getAvailableStatuses()),
                 'choice_label' => function($label) {
                     return 'workShift.statuses.'.$label;

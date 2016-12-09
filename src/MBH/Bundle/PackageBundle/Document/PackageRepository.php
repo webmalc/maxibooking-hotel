@@ -5,9 +5,9 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\MongoDB\CursorInterface;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
@@ -537,7 +537,12 @@ class PackageRepository extends DocumentRepository
         }
 
         if (isset($data['createdBy']) && $data['createdBy'] != null) {
-            $qb->field('createdBy')->equals($data['createdBy']);
+//            $qb->field('createdBy')->equals($data['createdBy']);
+            $qb->addOr(
+                $qb->expr()
+                    ->field('createdBy')->equals($data['createdBy'])
+                    ->field('createdBy')->equals(null)
+            );
         }
 
         //query
@@ -707,7 +712,8 @@ class PackageRepository extends DocumentRepository
      */
     protected function getQueryBuilderByType($type)
     {
-        return $this->{'get' . ucfirst($type) . 'QueryBuilder'}();
+        $method = 'get' . ucfirst($type) . 'QueryBuilder';
+        return method_exists($this, $method) ? $this->$method() : null;
     }
 
     /**
@@ -719,6 +725,10 @@ class PackageRepository extends DocumentRepository
     public function findByType($type, Hotel $hotel = null)
     {
         $queryBuilder = $this->getQueryBuilderByType($type);
+
+        if (!$queryBuilder) {
+            return [];
+        }
 
         if ($hotel) {
             $roomTypes = [];

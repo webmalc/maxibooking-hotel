@@ -6,14 +6,14 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\WarehouseBundle\Document\Invoice;
 use MBH\Bundle\WarehouseBundle\Document\Record;
-use MBH\Bundle\WarehouseBundle\Form\RecordType;
 use MBH\Bundle\WarehouseBundle\Form\InvoiceType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use MBH\Bundle\WarehouseBundle\Form\RecordType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 
 /**
@@ -47,6 +47,9 @@ class InvoiceController extends Controller
 		$amounts = [];
 		
 		foreach ($res as $v) {
+		    if (!is_object($v['_id'])) {
+		        continue;
+            }
 			$amounts[$v['_id']['$id']->{'$id'}] = $v['value'];
 		}
 		
@@ -69,7 +72,7 @@ class InvoiceController extends Controller
     {
         $entity = new Invoice();
 		
-        $form = $this->createForm(new InvoiceType(), $entity, [
+        $form = $this->createForm(InvoiceType::class, $entity, [
             'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 				
@@ -94,7 +97,7 @@ class InvoiceController extends Controller
     {
         $entity = new Invoice();
 		
-        $form = $this->createForm(new InvoiceType(), $entity, [
+        $form = $this->createForm(InvoiceType::class, $entity, [
             'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 				
@@ -129,7 +132,7 @@ class InvoiceController extends Controller
      */
     public function editAction(Invoice $entity)
     {
-        $form = $this->createForm(new InvoiceType(), $entity, [
+        $form = $this->createForm(InvoiceType::class, $entity, [
             'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 				
@@ -153,7 +156,7 @@ class InvoiceController extends Controller
      * @ParamConverter(class="MBHWarehouseBundle:Invoice")
      */
     public function updateAction(Request $request, Invoice $entity) {
-        $form = $this->createForm(new InvoiceType(), $entity, [
+        $form = $this->createForm(InvoiceType::class, $entity, [
             'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 				
@@ -166,7 +169,7 @@ class InvoiceController extends Controller
 			$originalRecords->add($rec);
 		}
 		
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 			foreach ($originalRecords as $rec) {

@@ -2,22 +2,22 @@
 
 namespace MBH\Bundle\CashBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBBundleUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\CashBundle\Validator\Constraints as MBHValidator;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\CashBundle\Validator\Constraints as MBHValidator;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBBundleUnique;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
-use MBH\Bundle\PackageBundle\Document\Order;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 
 /**
  * @ODM\Document(collection="CashDocuments", repositoryClass="MBH\Bundle\CashBundle\Document\CashDocumentRepository")

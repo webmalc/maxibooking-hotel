@@ -2,11 +2,11 @@
 
 namespace MBH\Bundle\PackageBundle\Lib;
 
-use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class SearchResult
 {

@@ -5,11 +5,13 @@ namespace MBH\Bundle\PriceBundle\Form;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
@@ -21,36 +23,36 @@ class PromotionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fullTitle', 'text', [
+            ->add('fullTitle', TextType::class, [
                 'label' => 'form.promotionType.label.fullTitle',
                 'group' => 'form.promotionType.group.main',
             ])
-            ->add('title', 'text', [
+            ->add('title', TextType::class, [
                 'label' => 'form.promotionType.label.title',
                 'group' => 'form.promotionType.group.main',
                 'required' => false
             ])
-            ->add('isIndividual', 'checkbox', [
+            ->add('isIndividual', CheckboxType::class, [
                 'label' => 'form.promotionType.label.isIndividual',
                 'group' => 'form.promotionType.group.main',
                 'required' => false
             ])
-            ->add('discount', 'number', [
+            ->add('discount', NumberType::class, [
                 'label' => 'form.promotionType.label.discount',
                 'group' => 'form.promotionType.group.main',
                 'required' => false,
             ])
-            ->add('isPercentDiscount', 'checkbox', [
+            ->add('isPercentDiscount', CheckboxType::class, [
                 'label' => 'form.promotionType.label.isPercentDiscount',
                 'group' => 'form.promotionType.group.main',
                 'required' => false
             ])
-            ->add('comment', 'textarea', [
+            ->add('comment', TextareaType::class, [
                 'label' => 'form.promotionType.label.comment',
                 'group' => 'form.promotionType.group.main',
                 'required' => false
             ])
-            ->add('freeAdultsQuantity', 'number', [
+            ->add('freeAdultsQuantity', NumberType::class, [
                 'label' => 'form.promotionType.label.freeAdultsQuantity',
                 'group' => 'form.promotionType.group.main',
                 'required' => false,
@@ -58,7 +60,7 @@ class PromotionType extends AbstractType
                     'class' => 'spinner',
                 ],
             ])
-            ->add('freeChildrenQuantity', 'number', [
+            ->add('freeChildrenQuantity', NumberType::class, [
                 'label' => 'form.promotionType.label.freeChildrenQuantity',
                 'group' => 'form.promotionType.group.main',
                 'required' => false,
@@ -66,7 +68,7 @@ class PromotionType extends AbstractType
                     'class' => 'spinner',
                 ],
             ])
-            ->add('childrenDiscount', 'number', [
+            ->add('childrenDiscount', NumberType::class, [
                 'label' => 'form.promotionType.label.childrenDiscount',
                 'group' => 'form.promotionType.group.main',
                 'required' => false,
@@ -76,7 +78,7 @@ class PromotionType extends AbstractType
             ]);
         $conditions = PromotionConditionFactory::getAvailableConditions();
         $builder
-            ->add('condition', 'choice', [
+            ->add('condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.condition',
                 'required' => false,
                 'group' => 'form.promotionType.group.conditions',
@@ -85,7 +87,7 @@ class PromotionType extends AbstractType
                     return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
-            ->add('condition_quantity', 'number', [
+            ->add('condition_quantity', NumberType::class, [
                 'label' => 'form.promotionType.label.condition_quantity',
                 'group' => 'form.promotionType.group.conditions',
                 'required' => false,
@@ -94,7 +96,7 @@ class PromotionType extends AbstractType
                     'class' => 'spinner',
                 ],
             ])
-            ->add('additional_condition', 'choice', [
+            ->add('additional_condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.add_condition',
                 'required' => false,
                 'group' => 'form.promotionType.group.conditions',
@@ -103,7 +105,7 @@ class PromotionType extends AbstractType
                     return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
-            ->add('additional_condition_quantity', 'number', [
+            ->add('additional_condition_quantity', NumberType::class, [
                 'label' => 'form.promotionType.label.condition_quantity',
                 'group' => 'form.promotionType.group.conditions',
                 'required' => false,
@@ -138,7 +140,7 @@ class PromotionType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_price_promotion';
     }

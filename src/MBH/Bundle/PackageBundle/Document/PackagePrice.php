@@ -3,9 +3,9 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Validator\Constraints as Assert;
-use MBH\Bundle\PriceBundle\Document\Promotion;
 
 /**
  * @ODM\EmbeddedDocument

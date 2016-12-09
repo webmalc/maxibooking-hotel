@@ -91,7 +91,7 @@ class RoomType extends AbstractType
                         ->field('hotel.id')->equals($options['hotelId']);
                 },
                 'class' => 'MBH\Bundle\HotelBundle\Document\RoomStatus',
-                'empty_value' => '',
+                'placeholder' => '',
                 'multiple' => 'true',
 
             ]);
@@ -106,7 +106,7 @@ class RoomType extends AbstractType
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotelbundle_room_type';
     }

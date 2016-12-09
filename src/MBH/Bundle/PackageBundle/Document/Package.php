@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use MBH\Bundle\BaseBundle\Document\Base;
@@ -11,13 +12,17 @@ use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
-use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Annotations as MBH;
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Zend\Stdlib\JsonSerializable;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
+use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
+use MBH\Bundle\PriceBundle\Document\Promotion;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
@@ -30,7 +35,7 @@ use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
  * @ODM\HasLifecycleCallbacks
  * @MongoDBUnique(fields="numberWithPrefix", message="Такой номер брони уже существует")
  */
-class Package extends Base implements JsonSerializable
+class Package extends Base implements \JsonSerializable
 {
     use TimestampableDocument;
     use SoftDeleteableDocument;
