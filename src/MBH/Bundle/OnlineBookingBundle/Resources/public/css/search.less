@@ -56,6 +56,19 @@
       color: @color0;
     }
   }
+  .table-row tr.tariff-row:hover {
+    background-color: #f3dfaf;
+  }
+
+  .alerting {
+    background-color: #f3dfaf;
+  }
+
+  .alerting-tr {
+    tr:first-child.tariff-row {
+      .alerting;
+    }
+  }
   .descr {
     margin: 0;
     width: auto;
@@ -135,3 +148,5 @@
   border: 1px solid #bec8d2;
   padding: 10px 3px;
 }
+
+

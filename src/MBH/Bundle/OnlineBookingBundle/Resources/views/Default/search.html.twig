@@ -90,7 +90,7 @@
             </div>
         </div>
 
-        <table class="table table-hover table-striped">
+        <table class="table table-hover table-row">
             <thead>
             <tr>
                 <th style="width:220px;">
@@ -153,8 +153,8 @@
             </tbody>
         </table>
         <div class="btmactions">
-            <a href="javascript:void(0)" tabindex="0" class="btn btn-default btn-booking-reservation" title="Отправить заявку" >Отправить заявку</a>
-            <a href="javascript:void(0)" tabindex="0" class="btn btn-warning btn-booking" title="Купить онлайн">Купить онлайн</a>
+            <a href="javascript:void(0)" tabindex="0" class="btn btn-default btn-booking-reservation" title="Отправить заявку" >ОТПРАВИТЬ ЗАЯВКУ</a>
+            <a href="javascript:void(0)" tabindex="0" class="btn btn-warning btn-booking" title="Купить онлайн">КУПИТЬ ОНЛАЙН</a>
         </div>
 
 
@@ -188,7 +188,7 @@
                 <h4 class="modal-title" id="myModalLabel">Внимание!</h4>
             </div>
             <div class="modal-body">
-                Для того, чтобы [отправить заявку]/[купить онлайн] выберите, пожалуйста, интересующий Вас тариф.
+                Для того, чтобы <span id="action"></span> выберите, пожалуйста, интересующий Вас тариф.
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -353,7 +353,6 @@
         $roomTypeRows.each(function() {
             var roomTypeRow = new RoomTypeRow($(this));
             roomTypeRow.init();
-
             roomTypeRow.tariffRows.forEach(function(tariffRow) {
                 tariffRow.$row.on('click', function() {
                     tariffRow.selected();
@@ -361,10 +360,11 @@
                 });
             })
         });
+
+        isReturned();
     });
 
     var start_bron = function(row) {
-        //Отключение disabled кнопочек. Но так как семь пятниц на неделе, не удаляем, пока комментим.
             /*$button_online = $(row).closest("table").siblings(".btmactions").find("a.btn-booking");
         if($button_reservation.hasClass("disabled")) {
             $button_reservation.removeClass("disabled");
@@ -378,16 +378,33 @@
             href = $(row).data("url");
         href = href + '&reservation=true';
         $button_reservation.attr("href", href )
+        $(row).siblings().removeClass("alerting");
+        $(row).addClass("alerting");
 
     };
 
-    $(".btmactions").on('click', function (e) {
+    $("#myModal").on('hide.bs.modal', function (e) {
+        $("table").removeClass('alerting-tr');
+    });
+
+    $(".btmactions a").on('click', function (e) {
         if($(e.target).attr('href') === 'javascript:void(0)') {
             e.preventDefault();
+            var $action = $("#action");
+            $(this).parent().siblings('table').addClass("alerting-tr");
+            $action.text(($(this).text()));
             $("#myModal").modal("show");
         }
 
     })
+
+    var isReturned = function () {
+        var $checked = $("input[type=radio]:checked");
+        if($checked.length) {
+            $checked.trigger('click');
+        }
+    };
+
 
 </script>
 
