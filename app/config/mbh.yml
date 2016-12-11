@@ -233,6 +233,7 @@ parameters:
           title: 'Expedia'
           service: 'mbh.channelmanager.expedia'
 
+
     #параметры логов
     mbh.logs.max: 100
 

@@ -19,6 +19,8 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
     const AVAILABILITY_AND_RATES_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/AR/2011/06';
     const BOOKING_RETRIEVAL_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BR/2014/01';
     const CONFIRM_REQUEST_NAMESPACE = 'http://www.expediaconnect.com/EQC/BC/2007/09';
+    const CONFIRMATION_DATE_FORMAT_STRING = 'Y-m-d\TH:i:s\Z';
+    const EXPEDIA_DEFAULT_DATE_FORMAT_STRING = 'Y-m-d';
 
     /**
      * Переопределенный метод форматирования результирующего массива данных о ценах, полученных из Maxibooking
@@ -49,7 +51,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 $pricesByOccupantsCount = [];
             }
 
-            $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId]['prices'] = $pricesByOccupantsCount;
+            $resultArray[$serviceRoomTypeId][$day->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING)][$serviceTariffId]['prices'] = $pricesByOccupantsCount;
         }
     }
 
@@ -84,7 +86,9 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 $roomTypeElement->addAttribute('id', $roomTypeId);
 
                 foreach ($pricesByTariffs as $tariffId => $tariffPricesInfo) {
-                    $hasPriceList = isset($tariffPricesInfo['prices']) && count($tariffPricesInfo['prices']) > 0;
+                    $hasPriceList = isset($tariffPricesInfo['prices'])
+                        && $tariffPricesInfo['prices']
+                        && count($tariffPricesInfo['prices']) > 0;
 
                     $ratePlanElement = $roomTypeElement->addChild('RatePlan');
                     $ratePlanElement->addAttribute('id', $tariffId);
@@ -93,11 +97,12 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $rateElement = $ratePlanElement->addChild('Rate');
                     $rateElement->addAttribute('currency',
                         strtoupper($this->container->getParameter('locale.currency')));
-
-                    foreach ($tariffPricesInfo['prices'] as $price) {
-                        $perOccupancyElement = $rateElement->addChild('PerOccupancy');
-                        $perOccupancyElement->addAttribute('rate', $price['total']);
-                        $perOccupancyElement->addAttribute('occupancy', $price['adults']);
+                    if ($hasPriceList) {
+                        foreach ($tariffPricesInfo['prices'] as $price) {
+                            $perOccupancyElement = $rateElement->addChild('PerOccupancy');
+                            $perOccupancyElement->addAttribute('rate', $price['total']);
+                            $perOccupancyElement->addAttribute('occupancy', $price['adults']);
+                        }
                     }
                 }
                 $xmlElements[] = $xmlRoomTypeData;
@@ -122,10 +127,8 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $requestDataArray = $this->getRoomData($begin, $end, $roomTypes, $config);
 
         foreach ($requestDataArray as $roomTypeId => $roomQuotasByDates) {
-            $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
-
             foreach ($roomQuotasByDates as $dateString => $roomCache) {
-
+                $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
                 /** @var RoomCache $roomCache */
                 $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
                 $dateRangeElement->addAttribute('from', $dateString);
@@ -137,15 +140,13 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
                 $inventoryElement = $roomTypeElement->addChild('Inventory');
                 $inventoryElement->addAttribute('totalInventoryAvailable', $roomCache ? $roomCache->getLeftRooms() : 0);
+                $xmlElements[] = $xmlRoomTypeData;
             }
-
-            $xmlElements[] = $xmlRoomTypeData;
         }
 
         return $this->formatTemplateRequest($xmlElements, $config,
             'AvailRateUpdateRQ', self::AVAILABILITY_AND_RATES_REQUEST_NAMESPACE);
     }
-
 
     /**
      * Переопределенный метод форматирования результирующего массива данных об ограничениях, полученных из Maxibooking
@@ -175,7 +176,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
             $restrictionData = ['restriction' => $restriction, 'isClosed' => $isClosed ? 'true' : 'false'];
 
-            $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId] = $restrictionData;
+            $resultArray[$serviceRoomTypeId][$day->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING)][$serviceTariffId] = $restrictionData;
         }
     }
 
@@ -196,9 +197,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         ChannelManagerConfigInterface $config
     ) {
         $xmlElements = [];
-
         $requestDataArray = $this->getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, $config);
-
         foreach ($requestDataArray as $roomTypeId => $restrictionsByDates) {
 
             foreach ($restrictionsByDates as $dateString => $restrictionsByTariffs) {
@@ -219,13 +218,23 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
                     /** @var Restriction $restriction */
                     $restriction = $restrictionData['restriction'];
-                    $isClosedToArrival = $restriction && !$restriction->getClosedOnArrival() ? 'false' : 'true';
-                    $isClosedToDeparture = $restriction && !$restriction->getClosedOnDeparture() ? 'false' : 'true';
+                    $isClosedToArrival = $restriction && $restriction->getClosedOnArrival() ? 'true' : 'false';
+                    $isClosedToDeparture = $restriction && $restriction->getClosedOnDeparture() ? 'true' : 'false';
                     $minStay = $restriction && $restriction->getMinStay() ? $restriction->getMinStay() : self::EXPEDIA_MIN_STAY;
-                    $maxStay = $restriction && $restriction->getMaxStay() ? $restriction->getMaxStay() : self::EXPEDIA_MAX_STAY;
+                    //TODO: Уточнить какое из ограничений
+                    if ($restriction && $restriction->getMaxStay()) {
+                        if ($restriction->getMaxStay() > self::EXPEDIA_MAX_STAY) {
+                            $flashBag = $this->container->get('session')->getFlashBag();
+                            $flashBag->clear();
+                            $flashBag->add('danger',
+                                $this->container->get('translator')->trans('expedia_request_data_formatter.max_stay.error'));
+                        }
+                        $maxStay = $restriction->getMaxStay();
+                    } else {
+                        $maxStay = self::EXPEDIA_MAX_STAY;
+                    }
 
                     $restrictionsElement = $ratePlanElement->addChild('Restrictions');
-                    //TODO: Как обрабатывать ситуации, если устанавливается значение больше 28? По дефолту будет приходить ошибка
                     $restrictionsElement->addAttribute('closedToArrival', $isClosedToArrival);
                     $restrictionsElement->addAttribute('closedToDeparture', $isClosedToDeparture);
                     $restrictionsElement->addAttribute('minLOS', $minStay);
@@ -253,14 +262,14 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         foreach ($roomTypesData as $roomTypeData) {
             $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
 
-            $startDate = \DateTime::createFromFormat('Y-m-d', new \DateTime());
-            $endDate = \DateTime::createFromFormat('Y-m-d', new \DateTime('+2 years'));
+            $startDate = new \DateTime();
+            $endDate = new \DateTime('+2 years');
             $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
-            $dateRangeElement->addAttribute('from', $startDate);
-            $dateRangeElement->addAttribute('to', $endDate);
+            $dateRangeElement->addAttribute('from', $startDate->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING));
+            $dateRangeElement->addAttribute('to', $endDate->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING));
 
             $roomTypeElement = $xmlRoomTypeData->addChild('RoomType');
-            $roomTypeElement->addAttribute('id', $roomTypeData['id']);
+            $roomTypeElement->addAttribute('id', $roomTypeData['syncId']);
             $roomTypeElement->addAttribute('closed', 'true');
 
             $requestData[] = $xmlRoomTypeData;
@@ -273,12 +282,17 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
     public function formatNotifyServiceData(AbstractOrderInfo $orderInfo, $config)
     {
         /** @var ExpediaOrderInfo $orderInfo */
-        $confirmNumbersElement = new \SimpleXMLElement('BookingConfirmNumbers');
+        $confirmNumbersElement = new \SimpleXMLElement('<BookingConfirmNumbers/>');
         $confirmNumberElement = $confirmNumbersElement->addChild('BookingConfirmNumber');
         $confirmNumberElement->addAttribute('bookingID', $orderInfo->getChannelManagerOrderId());
         $confirmNumberElement->addAttribute('bookingType', $orderInfo->getOrderStatusType());
-        $confirmNumberElement->addAttribute('confirmNumber', $orderInfo->getConfirmNumber());
-        $confirmNumberElement->addAttribute('confirmTime', new \DateTime('now', new DateTimeZone("UTC")));
+
+        $confirmTime = new \DateTime('now', new \DateTimeZone("UTC"));
+        $confirmNumberElement->addAttribute('confirmTime', $confirmTime->format(self::CONFIRMATION_DATE_FORMAT_STRING));
+
+        if ($orderInfo->getConfirmNumber()) {
+            $confirmNumberElement->addAttribute('confirmNumber', $orderInfo->getConfirmNumber());
+        }
 
         return $this->formatTemplateRequest([$confirmNumbersElement], $config,
             'BookingConfirmRQ', self::CONFIRM_REQUEST_NAMESPACE);

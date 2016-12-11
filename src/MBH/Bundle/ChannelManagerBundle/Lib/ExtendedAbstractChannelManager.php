@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\Response;
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -39,9 +40,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $pricesData = $this->requestDataFormatter->formatPriceRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdatePricesRequest($pricesData);
 
-            dump($requestInfoArray);
-            exit();
-
             foreach ($requestInfoArray as $requestInfo) {
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $result = $this->checkResponse($sendResult);
@@ -69,9 +67,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         foreach ($this->getConfig() as $config) {
             $roomsData = $this->requestDataFormatter->formatRoomRequestData($begin, $end, $roomType, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdateRoomsRequest($roomsData);
-
-            dump($requestInfoArray);
-            exit();
 
             foreach ($requestInfoArray as $requestInfo) {
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
@@ -103,9 +98,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $serviceTariffs = $this->pullTariffs($config);
             $restrictionsData = $this->requestDataFormatter->formatRestrictionRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdateRestrictionsRequest($restrictionsData);
-
-            dump($requestInfoArray);
-            exit();
 
             foreach ($requestInfoArray as $requestInfo) {
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
@@ -166,7 +158,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         foreach ($requestInfoList as $requestInfo) {
             $response = $this->sendRequestAndGetResponse($requestInfo);
             $responseHandler = $this->getResponseHandler($response, $config);
-            $tariffsData = $responseHandler->getTariffsData();
+            $tariffsData = $responseHandler->getTariffsData($roomTypes);
             $tariffs += $tariffsData;
         }
 
@@ -235,19 +227,17 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $request = $this->requestFormatter->formatGetOrdersRequest($requestData);
 
             $response = $this->sendRequestAndGetResponse($request);
+            //TODO: Добвить try catch для Exception и ChannelManagerException
             $responseHandler = $this->getResponseHandler($response, $config);
             if (!$this->checkResponse($response)) {
                 $this->log($responseHandler->getErrorMessage());
+
                 return false;
             }
-
-
+            //TODO: Убрать
+            $this->log($response);
             $this->log('Reservations count: ' . $responseHandler->getOrdersCount());
-            
-            dump($response);
-            dump($responseHandler->getOrderInfos());
-            exit();
-            
+
             foreach ($responseHandler->getOrderInfos() as $orderInfo) {
                 /** @var AbstractOrderInfo $orderInfo */
                 if ($orderInfo->isOrderModified()) {
@@ -271,6 +261,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 if ($orderInfo->isHandleAsNew($order)) {
                     $result = $this->createOrder($orderInfo, $order);
                     $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'new');
+
                 }
 
                 //edited
@@ -284,7 +275,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
 
                 //delete
                 if ($orderInfo->isHandleAsCancelled($order)) {
-                    $order->setChannelManagerStatus('cancelled');
                     $this->dm->persist($order);
                     $this->dm->flush();
                     $this->notify($order, $orderInfo->getChannelManagerDisplayedName(), 'delete');
@@ -295,7 +285,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
 
                 if (($orderInfo->isOrderModified() || $orderInfo->isOrderCancelled()) && !$order) {
                     $this->notifyError(
-                        $orderInfo->getChannelManagerDisplayedName(),
+                        $orderInfo->getChannelManagerName(),
                         '#' . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName()
                     );
                 }
@@ -308,9 +298,9 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         return $result;
     }
 
-    public function createOrder(AbstractOrderInfo $orderInfo, Order $order = null)
+    public function createOrder(AbstractOrderInfo $orderInfo, Order $order = null) : Order
     {
-        //order
+        $this->log('creating order');
         if (!$order) {
             $order = new Order();
             $order->setChannelManagerStatus('new');
@@ -337,11 +327,32 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             ->setOriginalPrice($orderInfo->getOriginalPrice())
             ->setTotalOverwrite($orderInfo->getPrice());
 
+        if ($orderInfo->getSource()) {
+            $order->setSource($orderInfo->getSource());
+        }
         $this->dm->persist($order);
         $this->dm->flush();
 
-        foreach ($orderInfo->getCashDocuments($order) as $cashDocument) {
-            $this->dm->persist($cashDocument);
+        foreach ($orderInfo->getCashDocuments($order) as $newCashDocument) {
+            /** @var CashDocument $newCashDocument */
+            if (count($order->getCashDocuments()) > 0) {
+                foreach ($order->getCashDocuments() as $cashDocument) {
+                    /** @var CashDocument $cashDocument */
+                    if (!($cashDocument->getTotal() == $newCashDocument->getTotal()
+                        && $cashDocument->getMethod() == $newCashDocument->getMethod()
+                        && $cashDocument->getTouristPayer() == $newCashDocument->getTouristPayer()
+                        && $cashDocument->getOperation() == $newCashDocument->getOperation()
+                    )) {
+                        $this->dm->remove($cashDocument);
+                        $this->dm->persist($newCashDocument);
+                    } else {
+                        $this->dm->persist($newCashDocument);
+                    }
+                }
+
+            } else {
+                $this->dm->persist($newCashDocument);
+            }
         }
         $this->dm->flush();
 
@@ -360,7 +371,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $this->dm->persist($order);
         $this->dm->flush();
 
-        return true;
+        return $order;
     }
 
     /**
@@ -368,7 +379,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      * @param Order $order
      * @return Package
      */
-    protected function createPackage(AbstractPackageInfo $packageInfo, Order $order)
+    protected function createPackage(AbstractPackageInfo $packageInfo, Order $order) : Package
     {
         $package = new Package();
         $package

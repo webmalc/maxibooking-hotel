@@ -13,13 +13,10 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     private $isOrderInfosInit = false;
     private $orderInfos = [];
 
-    public function setInitData($response, ChannelManagerConfigInterface $config = null)
+    public function setInitData($response, ?ChannelManagerConfigInterface $config = null)
     {
         $this->response = $response;
-        //Так как данный класс получается из контейнера, возможно затирание данных конфига
-        if ($config) {
-            $this->config = $config;
-        }
+        $this->config = $config;
 
         return $this;
     }
@@ -32,15 +29,15 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     public function getOrderInfos() {
 
         if (!$this->isOrderInfosInit) {
-
-            $responseXML = new \SimpleXMLElement($this->response);
+            $response = $this->removeXmlnsString($this->response);
+            $responseXML = new \SimpleXMLElement($response);
             $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
             $tariffsSyncData = $channelManagerHelper->getTariffsSyncData($this->config, true);
             $roomTypesSyncData = $channelManagerHelper->getRoomTypesSyncData($this->config, true);
-
-            foreach ($responseXML->Bookings->booking as $orderInfoElement) {
-                $orderInfos[] = $this->container->get('mbh.channelmanager.expedia_order_info')
-                    ->setInitData($orderInfoElement, $this->config, $tariffsSyncData, $roomTypesSyncData);
+            
+            foreach ($responseXML->Bookings->Booking as $bookingElement) {
+                $this->orderInfos[] = $this->container->get('mbh.channelmanager.expedia_order_info')
+                    ->setInitData($bookingElement, $this->config, $tariffsSyncData, $roomTypesSyncData);
             }
 
             $this->isOrderInfosInit = true;
@@ -52,7 +49,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     public function isResponseCorrect()
     {
         if ($this->isXMLResponse()) {
-            $xmlResponse = new \SimpleXMLElement($this->response);
+            $xmlResponse = new \SimpleXMLElement($this->removeXmlnsString($this->response));
 
             return $xmlResponse->xpath('//Error') ? false: true;
         }
@@ -69,7 +66,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
     public function getErrorMessage()
     {
         if ($this->isXMLResponse()) {
-            $xmlResponse = new \SimpleXMLElement($this->response);
+            $xmlResponse = new \SimpleXMLElement($this->removeXmlnsString($this->response));
 
             return (string)$xmlResponse->xpath('//Error');
         }
@@ -78,7 +75,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         return $jsonResponse['errors']['message'];
     }
 
-    public function getTariffsData()
+    public function getTariffsData(array $roomTypes)
     {
         $tariffs = [];
         $response = json_decode($this->response, true);
@@ -86,10 +83,10 @@ class ExpediaResponseHandler extends AbstractResponseHandler
             $requestedUrl = $tariffInfo['_links']['self']['href'];
             foreach ($tariffInfo['distributionRules'] as $data) {
                 if ($data['manageable'] == true) {
+                    $roomTypeName = $roomTypes[$this->getRoomTypeIdFromUrlString($requestedUrl)];
                     $tariffs[$data['expediaId']] = [
-                        //TODO: Поменять название
-                        'title' => $tariffInfo['name'] . $this->getRoomTypeIdFromUrlString($requestedUrl),
-                        'rooms' => [$this->getRoomTypeIdFromUrlString($requestedUrl)],
+                        'title' => $tariffInfo['name'] . " ( $roomTypeName, {$data['distributionModel']} )" ,
+                        'rooms' => [$roomTypeName],
                         'readonly' => $tariffInfo['pricingModel'] === self::OCCUPANCY_BASED_PRICING ? false : true
                     ];
                 }
@@ -128,6 +125,16 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         $roomTypeIdEndPosition = strpos($url, '/ratePlans');
         $roomTypeIdStringLength = $roomTypeIdEndPosition - $roomTypeIdStartPosition;
         return substr($url, $roomTypeIdStartPosition, $roomTypeIdStringLength);
+    }
+
+    private function removeXmlnsString($xmlString)
+    {
+        $xmlnsStringStartPosition = strpos($xmlString, 'xmlns');
+        $firstQuotesPosition = $xmlnsStringStartPosition + 8;
+        $xmlnsStringEndPosition = strpos($xmlString, '"', $firstQuotesPosition) + 1;
+        $xmlnsString = substr($xmlString, $xmlnsStringStartPosition, $xmlnsStringEndPosition - $xmlnsStringStartPosition);
+
+        return str_replace($xmlnsString, "", $xmlString);
     }
 
 }

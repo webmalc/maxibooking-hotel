@@ -14,22 +14,22 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
     const BOOKING_CONFIRMATION_API_URL = 'https://services.expediapartnercentral.com/eqc/bc';
     const PRODUCT_API_URL = 'https://services.expediapartnercentral.com/products/properties/';
 
-    public function formatUpdatePricesRequest($priceData)
+    public function formatUpdatePricesRequest($priceData) : array
     {
         return [$this->getXMLRequestInfo($priceData)
             ->setUrl(self::AVAILABILITY_AND_RATES_API_URL)];
     }
 
-    public function formatUpdateRestrictionsRequest($restrictionData)
+    public function formatUpdateRestrictionsRequest($restrictionData) : array
     {
-        return $this->getXMLRequestInfo($restrictionData)
-            ->setUrl(self::AVAILABILITY_AND_RATES_API_URL);
+        return [$this->getXMLRequestInfo($restrictionData)
+            ->setUrl(self::AVAILABILITY_AND_RATES_API_URL)];
     }
 
-    public function formatUpdateRoomsRequest($roomData)
+    public function formatUpdateRoomsRequest($roomData) : array
     {
-        return $this->getXMLRequestInfo($roomData)
-            ->setUrl(self::AVAILABILITY_AND_RATES_API_URL);
+        return [$this->getXMLRequestInfo($roomData)
+            ->setUrl(self::AVAILABILITY_AND_RATES_API_URL)];
     }
 
     public function formatGetOrdersRequest($getOrdersData)

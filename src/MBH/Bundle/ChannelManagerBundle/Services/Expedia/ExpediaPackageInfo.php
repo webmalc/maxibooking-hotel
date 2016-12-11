@@ -29,6 +29,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
     private $isPricesInit = false;
     private $prices = [];
     private $isSmoking = false;
+    private $channelManagerId;
 
     public function __construct(ContainerInterface $container)
     {
@@ -70,7 +71,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
      */
     public function getPrices() {
         if (!$this->isPricesInit) {
-            foreach ($this->packageDataXMLElement->PerDayRates as $perDayRate) {
+            foreach ($this->packageDataXMLElement->PerDayRates->PerDayRate as $perDayRate) {
                 /** @var \SimpleXMLElement $perDayRate */
                 $currentDate = \DateTime::createFromFormat('Y-m-d', $perDayRate->attributes()['stayDate']);
                 $price = (float)$perDayRate->attributes()['baseRate'];
@@ -126,23 +127,26 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         if (!isset($tariff)) {
             throw new \Exception($this->container->get('translator')->trans('services.expedia.nor_one_tariff'));
         }
+
         return $tariff;
     }
 
     public function getBeginDate()
     {
+        $prices = $this->getPrices();
         /** @var PackagePrice $firstPackagePrice */
-        $firstPackagePrice = current($this->getPrices());
+        $firstPackagePrice = current($prices);
 
         return $firstPackagePrice->getDate();
     }
 
     public function getEndDate()
     {
+        $prices = $this->getPrices();
         /** @var PackagePrice $lastPackagePrice */
-        $lastPackagePrice = end($this->getPrices());
+        $lastPackagePriceDate = clone (end($prices)->getDate());
 
-        return date_add($lastPackagePrice->getDate(), new \DateInterval('P1D'));
+        return ($lastPackagePriceDate->add(new \DateInterval('P1D')));
     }
 
     public function getAdultsCount()
@@ -180,9 +184,15 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         return [$this->payer];
     }
 
+    /**
+     * @param $isSmoking
+     * @return ExpediaPackageInfo
+     */
     public function setIsSmoking($isSmoking)
     {
         $this->isSmoking = $isSmoking;
+
+        return $this;
     }
 
     public function getIsSmoking()
@@ -190,8 +200,19 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         return $this->isSmoking;
     }
 
+    /**
+     * @param $channelManagerId
+     * @return ExpediaPackageInfo
+     */
+    public function setChannelManagerId($channelManagerId)
+    {
+        $this->channelManagerId = $channelManagerId;
+
+        return $this;
+    }
+
     public function getChannelManagerId()
     {
-        // TODO: Implement getChannelManagerId() method.
+        return $this->channelManagerId;
     }
 }

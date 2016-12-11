@@ -43,14 +43,17 @@ services:
     mbh.channelmanager.expedia_response_handler:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaResponseHandler
         arguments: ['@service_container']
+        shared: false
 
     mbh.channelmanager.expedia_order_info:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaOrderInfo
         arguments: ['@service_container']
+        shared: false
 
     mbh.channelmanager.expedia_package_info:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaPackageInfo
         arguments: ['@service_container']
+        shared: false
 
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType

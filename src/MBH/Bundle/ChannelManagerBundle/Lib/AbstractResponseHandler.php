@@ -18,6 +18,6 @@ abstract class AbstractResponseHandler
     abstract public function isResponseCorrect();
     abstract public function getOrdersCount();
     abstract public function getErrorMessage();
-    abstract public function getTariffsData();
+    abstract public function getTariffsData(array $roomTypes);
     abstract public function getRoomTypesData();
 }

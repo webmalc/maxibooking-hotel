@@ -11,6 +11,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\AbstractResponseHandler;
 class Expedia extends ExtendedAbstractChannelManager
 {
     const CONFIG = 'ExpediaConfig';
+    protected $isNotifyServiceAboutReservation = true;
 
     public function __construct(ContainerInterface $container)
     {
@@ -30,7 +31,7 @@ class Expedia extends ExtendedAbstractChannelManager
 
         return $responseHandler->getErrorMessage();
     }
-    
+
     protected function getResponseHandler($response, $config = null) : AbstractResponseHandler
     {
         return $this->container->get('mbh.channelmanager.expedia_response_handler')->setInitData($response, $config);
@@ -39,18 +40,17 @@ class Expedia extends ExtendedAbstractChannelManager
     public function notifyServiceAboutReservation(AbstractOrderInfo $orderInfo, $config)
     {
         /** @var ExpediaOrderInfo $orderInfo */
-        if ($orderInfo->getConfirmNumber()) {
-            $requestData = $this->requestDataFormatter->formatNotifyServiceData($orderInfo, $config);
-            $requestInfo = $this->requestFormatter->formatBookingConfirmationRequest($requestData);
 
-            $response = $this->sendRequestAndGetResponse($requestInfo);
-            $responseHandler = $this->getResponseHandler($response);
+        $requestData = $this->requestDataFormatter->formatNotifyServiceData($orderInfo, $config);
+        $requestInfo = $this->requestFormatter->formatBookingConfirmationRequest($requestData);
 
-            if (!$responseHandler->isResponseCorrect()) {
-                $this->notifyError($orderInfo->getChannelManagerDisplayedName(),
-                    'Ошибка в оповещении сервиса о принятия заказа ' . '#'
-                    . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName());
-            }
+        $response = $this->sendRequestAndGetResponse($requestInfo);
+        $responseHandler = $this->getResponseHandler($response);
+
+        if (!$responseHandler->isResponseCorrect()) {
+            $this->notifyError($orderInfo->getChannelManagerDisplayedName(),
+                'Ошибка в оповещении сервиса о принятия заказа ' . '#'
+                . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName());
         }
     }
 

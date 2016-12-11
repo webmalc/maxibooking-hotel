@@ -83,7 +83,12 @@ order_info.expedia.need_сonfirm_cash_tax_document: Необходимо под�
 order_info.expedia.required_data_missing: Ошибка при обработке синхронизации броней. В полученных от сервиса данных отсутствуют %elementDescription%
 order_info.expedia.required_order_data: 'обязательные данные: "%dataAttribute% заказа"'
 order_info.expedia.required_hotel_id: 'данные об id отеля'
-
+order_info.expedia.user_comment: 'Комментарий заказчика'
+order_info.expedia.add_promotion: 'Доп. услуга'
+order_info.expedia.payment_instructions: 'Тип платежа'
+order_info.expedia.bedding_preferences: 'Предпочитаемый тип кровати'
+order_info.expedia.multi_room_booking_info: 'Доп.информация о множественном бронировании'
+expedia_request_data_formatter.max_stay.error: 'В сервисе Expedia.com невозможно установить максимальный срок брони больше 28 дней'
 
 
 form.roomTypeTasks.checkIn: При заселении
