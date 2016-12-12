@@ -839,16 +839,22 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @ParamConverter("room", class="MBHHotelBundle:Room", options={"id" = "room"})
      * @Template("MBHPackageBundle:Package:accommodationForm.html.twig")
      * @param Request $request
-     * @param Package $package
+     * @param $id
+     * @param Room $room
      * @return Response
      */
-    public function accommodationNewAction(Request $request, Package $package, Room $room)
+    public function accommodationNewAction(Request $request, $id, Room $room)
     {
+        if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
+
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
         $accommodation = new PackageAccommodation();
         $accommodation
             ->setPackage($package)
             ->setRoom($room)
-            ->setBegin($package->getBegin())
+            ->setBegin($package->getCurrentAccommodationBegin())
             ->setEnd($package->getEnd())
         ;
         $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);

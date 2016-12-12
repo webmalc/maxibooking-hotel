@@ -177,7 +177,7 @@ class RoomRepository extends AbstractBaseRepository
             $hotelRoomTypes[] = $roomType->getId();
         }
 
-        //packages with accommodation
+        //packages with accommodation //Как тут быть, когда accomodation выбраны.
         $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
             $newBegin->modify('+1 day'), $newEnd->modify('-1 day'), $rooms, $excludePackages);
         foreach ($packages as $package) {

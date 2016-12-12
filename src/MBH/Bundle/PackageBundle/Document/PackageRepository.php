@@ -253,9 +253,12 @@ class PackageRepository extends DocumentRepository
         $departure = true
     )
     {
-        $qb = $this->createQueryBuilder('s');
-        $qb->field('accommodation')->exists(true)
-            ->field('accommodation')->notEqual(null);
+        $qb = $this->createQueryBuilder();
+        /*$qb->field('accommodation')->exists(true)
+            ->field('accommodation')->notEqual(null);*/
+        $qb->field('accommodations')->exists(true)
+            ->field('accommodations')->notEqual(null);
+
 
         if ($departure) {
             $qb->addOr($qb->expr()->field('departureTime')->exists(false))
@@ -268,6 +271,7 @@ class PackageRepository extends DocumentRepository
         if ($end) {
             $qb->field('begin')->lte($end);
         }
+        //????
         if ($rooms) {
             is_array($rooms) ? $rooms : $rooms = [$rooms];
             $qb->field('accommodation.id')->in($rooms);
