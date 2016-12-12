@@ -138,7 +138,7 @@ class ClientConfig extends Base
     protected $isInstantSearch = true;
 
     /**
-     * @var boolean
+     * @var integer
      * @Gedmo\Versioned
      * @ODM\Integer()
      * @Assert\NotNull()
@@ -148,15 +148,15 @@ class ClientConfig extends Base
      protected $noticeUnpaid = 0;
 
     /**
-     * @return boolean
+     * @return integer
      */
-    public function getNoticeUnpaid()
+    public function getNoticeUnpaid(): int
     {
-        return $this->noticeUnpaid;
+        return $this->noticeUnpaid ?? 0;
     }
 
     /**
-     * @param boolean $noticeUnpaid
+     * @param integer $noticeUnpaid
      * @return ClientConfig
      */
     public function setNoticeUnpaid($noticeUnpaid)

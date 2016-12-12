@@ -11,6 +11,7 @@ use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
+use MBH\Bundle\ClientBundle\Service\Notice;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -34,7 +35,8 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     {
         $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $form = $this->createForm(ClientConfigType::class, $entity);
-
+dump($this->get('mbh.notice')->unpaidOrder());
+exit();
         return [
             'entity' => $entity,
             'form' => $form->createView(),

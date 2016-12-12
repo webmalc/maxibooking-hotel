@@ -375,6 +375,13 @@ class Package extends Base implements \JsonSerializable
         return $this->tariff;
     }
 
+    public function allowPercentagePrice($price)
+    {
+        $minPerPay = $this->getTariff()->getMinPerPrepay();
+
+        return $price * $minPerPay / 100;
+    }
+
     /**
      * Set roomType
      *

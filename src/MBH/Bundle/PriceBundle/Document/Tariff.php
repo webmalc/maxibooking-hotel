@@ -72,6 +72,7 @@ class Tariff extends Base implements ConditionsInterface
      * @var int
      * @Gedmo\Versioned
      * @ODM\Field(type="int", name="minPerPrepay")
+     * @Assert\Range(min=0, max=100)
      */
     protected $minPerPrepay;
 
@@ -87,7 +88,7 @@ class Tariff extends Base implements ConditionsInterface
      * )
      */
     protected $title;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -100,7 +101,7 @@ class Tariff extends Base implements ConditionsInterface
      * )
      */
     protected $description;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -109,7 +110,7 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\Type(type="boolean")
      */
     protected $isDefault = false;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -284,13 +285,13 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @return int
      */
-    public function getMinPerPrepay()
+    public function getMinPerPrepay(): int
     {
-        return $this->minPerPrepay;
+        return $this->minPerPrepay ?? 0;
     }
 
     /**
-     * @param int $minPrepay
+     * @param int $minPerPrepay
      */
     public function setMinPerPrepay(int $minPerPrepay)
     {
@@ -694,6 +695,5 @@ class Tariff extends Base implements ConditionsInterface
         $this->roomCaches = $roomCaches;
         return $this;
     }
-    
-    
+
 }

@@ -4,7 +4,7 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 
 class Notice
 {
@@ -21,32 +21,27 @@ class Notice
     /**
      * @var \Swift_Mailer
      */
-    protected $mailer;
+    protected $notifier;
 
     /**
      * @var array
      */
     protected  $params;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ManagerRegistry $dm, Notifier $notifier)
     {
-        $this->mailer = $container->get('mailer');
-        $this->container = $container;
-        $this->params = $container->getParameter('mbh.mailer');
-        $this->dm = $container->get('doctrine_mongodb')->getManager();
+        $this->notifier = $notifier;
+        $this->dm = $dm->getManager();
     }
 
     /**
      * Orders are expected to notice
-     * Returned packageId, orderId and price
      *
      * @return array
      */
     public function unpaidOrder()
     {
-        $order = [];
-
-        $currentDay = new \DateTime(); // Current day
+        $currentDay = new \DateTime('midnight'); // Current day
 
         // Number of days after which a payment is considered overdue
         $dateUnpaid = $this->dm->getRepository('MBHClientBundle:ClientConfig')
@@ -60,27 +55,15 @@ class Notice
             ->getRepository('MBHPackageBundle:Order')
             ->getUnpaidOrders($deadlineDate);
 
-        foreach ($unpaidOrders as $unpaidOrder) {
-            $orderId = $unpaidOrder->getId(); // Order Id
-            $packageByOrderId = $this->dm->getRepository('MBHPackageBundle:Package')->findOneBy(['order.id' => $orderId]); // Package by order Id
-            $packageId = $packageByOrderId->getId(); // Package Id
-            $tariffId = $packageByOrderId->getTariff()->getId(); // Tariff id
-            $tariffById = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['id' => $tariffId]); // Search tariff
-            $percent = $tariffById->getMinPerPrepay(); // Minimum prepayment percentage
+        return array_filter($unpaidOrders, function($order) {
+            return array_reduce($order->getPackages()->toArray(), function(&$res, $item) {
+                $price = $item->getPrice();
+                $paid = $item->getPaid();
+                $percentageValue = $item->allowPercentagePrice($price);
 
-            $price = $unpaidOrder->getPrice();
-            $paid = $unpaidOrder->getPaid();
-
-            if(($paid < $price) && ($percent > 0)) {
-                $percentageValue = $price * $percent / 100;
-
-                if($percentageValue >= $paid) {
-                    $order[] = ['orderId' => $orderId, 'packageId' => $packageId, 'price' => $price]; // Unpaid orders
-                }
-            }
-        }
-
-        return $order;
+                return ($paid < $price) && ($percentageValue >= $paid);
+            }, 0);
+        });
 
     }
 
@@ -92,30 +75,22 @@ class Notice
      */
     public function sendNotice()
     {
-        $unpaidOrder = $this->unpaidOrder();
-
-        foreach ($unpaidOrder as $itemOrder) {
-            $data[] = [
-                'url' => "/package/order/{$itemOrder['orderId']}/cash/{$itemOrder['packageId']}",
-                'packageId' => $itemOrder['packageId'],
-            ];
-        }
+        $message = $this->notifier->createMessage();
 
         try {
-            $message = \Swift_Message::newInstance()
-                ->setSubject('Брони ожидают оплаты')
-                ->setFrom($this->params['fromMail'])
-                ->setTo('a.bobkov@maxi-booking.ru') // todo Specify the address of the recipient
-                ->setBody(
-                    $this->container->get('twig')->render(
-                        'MBHClientBundle:Mailer:notice.html.twig',
-                        ['arrayData' => $data]
-                    ),
-                    'text/html'
-                );
-            $this->mailer->send($message);
+            $message
+                ->setText('hello world!')
+                ->setFrom('system')
+                ->setSubject('Hello world')
+                ->setType('info')
+                ->setCategory('notification')
+                ->setAutohide(false)
+                ->setEnd(new \DateTime('+1 minute'));
 
-            return true;
+            $this->notifier
+                ->setMessage($message)
+                ->notify();
+
         } catch (Exception $e) {
             return false;
         }
