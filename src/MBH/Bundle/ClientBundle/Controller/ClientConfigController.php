@@ -35,8 +35,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     {
         $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $form = $this->createForm(ClientConfigType::class, $entity);
-dump($this->get('mbh.notice')->unpaidOrder());
-exit();
+
         return [
             'entity' => $entity,
             'form' => $form->createView(),
