@@ -101,6 +101,10 @@ mailer.online.payment.user: "Ваш платеж по заказу #%order% пр
 mailer.online.payment.subject: "Платеж по заказу #%order%"
 
 mailer.compare.1c.subject: "Отчет сверки остатков 1С"
+mailer.packageZip.subject: "Отчет Автообновления броний"
+mailer.packageZip.text: "Автообновление броней"
+mailer.packageZip.error: "Ошибок"
+mailer.packageZip.amount: "Автообно броней"
 
 mailer.online.user.subject: "Добро пожаловать в «%hotel%»"
 mailer.online.user.prepend: "Здравствуйте, %guest%!<br><br>Вы успешно оформили заявку о бронировании номера в нашем отеле. В ближайшее время, мы свяжемся с Вами для подтверждения заказа и уточнения деталей заезда и размещения."

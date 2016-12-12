@@ -59,7 +59,7 @@
   text-transform: uppercase;
 }
 #online-booking-search .btmactions a.btn-default {
-  background-color: #8a8a8a;
+  background-color: rgba(144, 183, 56, 0.9);
 }
 #online-booking-search .more-link {
   float: left;

@@ -513,4 +513,28 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         $response = $this->deleteEntity($entity->getId(), 'MBHPackageBundle:Order', 'package');
         return $response;
     }
+
+    /**
+     * @Route("/{packageId}/confirm/{id}", name="package_order_confirm", defaults={"confirmed": false})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or is_granted('ROLE_NO_OWN_ONLINE_VIEW') or (is_granted('EDIT', order) and is_granted('ROLE_PACKAGE_VIEW'))")
+     * @ParamConverter("order", options={"mapping": {"id": "id", "confirmed": "confirmed"}})
+     * @ParamConverter("package", options={"id" = "packageId"})
+     * @param Order $order
+     * @param Package $package
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function confirmAction(Order $order, Package $package)
+    {
+        $user = $this->getUser();
+        $order->setConfirmed(true);
+        $this->dm->flush();
+
+        /** SetOwner && ACL */
+        $om = $this->get('mbh.acl_document_owner_maker');
+        $om->assignOwnerToDocument($user, $order);
+        $om->assignOwnerToDocument($user, $package);
+
+        return $this->redirectToRoute('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]);
+    }
 }
