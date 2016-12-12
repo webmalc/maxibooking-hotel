@@ -426,16 +426,7 @@ class Oktogo extends Base
             );
 
         } else {
-            $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            );
+            $payer = null;
         }
         //order
         if (!$order) {
