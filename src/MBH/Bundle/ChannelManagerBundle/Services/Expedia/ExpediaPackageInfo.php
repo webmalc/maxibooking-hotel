@@ -2,18 +2,14 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
 class ExpediaPackageInfo extends AbstractPackageInfo
 {
-    /** @var  ContainerInterface $container */
-    private $container;
-    /** @var  DocumentManager $dm */
-    private $dm;
+
     /** @var ChannelManagerConfigInterface $config */
     private $config;
     /**
@@ -24,18 +20,11 @@ class ExpediaPackageInfo extends AbstractPackageInfo
     private $roomTypes;
     private $tariffs;
     private $payer;
-    private $errorMessage = '';
     private $isCorrupted = false;
     private $isPricesInit = false;
     private $prices = [];
     private $isSmoking = false;
     private $channelManagerId;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-        $this->dm = $container->get('doctrine_mongodb')->getManager();
-    }
 
     /**
      * @param $packageData
@@ -95,13 +84,11 @@ class ExpediaPackageInfo extends AbstractPackageInfo
                     'deletedAt' => null
                 ]
             );
-            $this->errorMessage .= $this->container->get('translator')
-                ->trans('services.expedia.invalid_room_type_id') . "\n";
+            $this->addPackageNote($this->translator->trans('services.expedia.invalid_room_type_id'));
             $this->isCorrupted = true;
         }
         if (!$roomType) {
-            throw new \Exception($this->container->get('translator')
-                ->trans('services.expedia.nor_one_room_type'));
+            throw new \Exception($this->translator->trans('services.expedia.nor_one_room_type'));
         }
 
         return $roomType;
@@ -120,12 +107,12 @@ class ExpediaPackageInfo extends AbstractPackageInfo
                     'deletedAt' => null
                 ]
             );
-            $this->errorMessage .= $this->container->get('translator')->trans('services.expedia.invalid_tariff_id') . "\n";
+            $this->addPackageNote($this->translator->trans('services.expedia.invalid_tariff_id'));
             $this->isCorrupted = true;
 
         }
         if (!isset($tariff)) {
-            throw new \Exception($this->container->get('translator')->trans('services.expedia.nor_one_tariff'));
+            throw new \Exception($this->translator->trans('services.expedia.nor_one_tariff'));
         }
 
         return $tariff;
@@ -171,7 +158,11 @@ class ExpediaPackageInfo extends AbstractPackageInfo
 
     public function getNote()
     {
-        return $this->errorMessage;
+        foreach ($this->packageDataXMLElement->GuestCount->Child as $childNode) {
+            /** @var \SimpleXMLElement $childNode */
+            $this->addPackageNote($childNode->attributes()['age'], $this->translator->trans('package_info.expedia.child_age'));
+        }
+        return $this->note;
     }
 
     public function getIsCorrupted()

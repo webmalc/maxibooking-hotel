@@ -225,19 +225,22 @@ class ExpediaController extends Controller
 
         $text = '<BookingRetrievalRS xmlns="http://www.expediaconnect.com/EQC/BR/2014/01">
     <Bookings>
-        <Booking id="764246044" type="Book" createDateTime="2016-12-09T15:36:00Z" source="Expedia" status="pending">
+        <Booking id="764560252" type="Modify" createDateTime="2016-12-12T08:07:00Z" source="A-Expedia" status="pending"
+                 confirmNumber="2202199119TZ">
             <Hotel id="4112474"/>
             <RoomStay roomTypeID="200797200" ratePlanID="205724966A">
                 <StayDate arrival="2016-12-14" departure="2016-12-16"/>
-                <GuestCount adult="1"/>
+                <GuestCount adult="1" child="1">
+                    <Child age="4"/>
+                </GuestCount>
                 <PerDayRates currency="USD">
                     <PerDayRate stayDate="2016-12-14" baseRate="54.00" promoName="EFR"/>
-                    <PerDayRate stayDate="2016-12-15" baseRate="54.00" promoName="EFR"/>
+                    <PerDayRate stayDate="2016-12-15" baseRate="61.00" promoName="EFR"/>
                 </PerDayRates>
-                <Total amountAfterTaxes="108.00" amountOfTaxes="2004.18" currency="USD"/>
+                <Total amountAfterTaxes="115.00" currency="USD"/>
                 <PaymentCard cardCode="MC" cardNumber="5244687378206915" seriesCode="010" expireDate="0617">
-                    <CardHolder name="michail vladinzev" address="Any street1 Any street2" city="Any city"
-                                stateProv="MA" country="US" postalCode="00000"/>
+                    <CardHolder name="TINKOFF WALLET" address="Any street1 Any street2" city="Any city" stateProv="MA"
+                                country="US" postalCode="00000"/>
                 </PaymentCard>
             </RoomStay>
             <PrimaryGuest>
@@ -245,28 +248,27 @@ class ExpediaController extends Controller
                 <Phone countryCode="7" cityAreaCode="967" number="0447992"/>
                 <Email>faainttt@gmail.com</Email>
             </PrimaryGuest>
-            <SpecialRequest code="4"></SpecialRequest>
-            <SpecialRequest code="5">Hotel Collect Booking Collect Payment From Guest</SpecialRequest>
-            <SpecialRequest code="2.2">Smoking</SpecialRequest>
             <SpecialRequest code="1.25">2 twin beds</SpecialRequest>
-            <SpecialRequest code="3">Multi-room booking. Primary traveler:vladinzev, michail. 1 of 2 rooms.
-            </SpecialRequest>
+            <SpecialRequest code="4">Not on russian,</SpecialRequest>
+            <SpecialRequest code="2.2">Smoking</SpecialRequest>
+            <SpecialRequest code="5">Hotel Collect Booking Collect Payment From Guest</SpecialRequest>
         </Booking>
     </Bookings>
 </BookingRetrievalRS>';
 
         $xml = new \SimpleXMLElement($text);
-//        /** @var ExpediaResponseHandler $responseHandler */
-//        $responseHandler = $this->get('mbh.channelmanager.expedia_response_handler')->setInitData($text, $config);
-//        $orderInfo = $responseHandler->getOrderInfos()[0];
-//        $order = new Order();
-//        dump($orderInfo->getCashDocuments($order));
-//        /** @var ExpediaPackageInfo $packageInfo */
-//        $packageInfo = $orderInfo->getPackagesData()[0];
-//        exit();
-        $start = new \DateTime('midnight');
-        $end = (clone $start)->add(new \DateInterval('P6D'));
-        $expedia = $this->get('mbh.channelmanager.expedia')->pullOrders();
+        /** @var ExpediaResponseHandler $responseHandler */
+        $responseHandler = $this->get('mbh.channelmanager.expedia_response_handler')->setInitData($text, $config);
+        $orderInfo = $responseHandler->getOrderInfos()[0];
+        $order = new Order();
+        dump($orderInfo->getCashDocuments($order));
+        /** @var ExpediaPackageInfo $packageInfo */
+        $packageInfo = $orderInfo->getPackagesData()[0];
+        dump($packageInfo->getNote());
+        exit();
+//        $start = new \DateTime('midnight');
+//        $end = (clone $start)->add(new \DateInterval('P6D'));
+//        $expedia = $this->get('mbh.channelmanager.expedia')->pullOrders();
         return ['result' => 123];
     }
 
