@@ -5,9 +5,9 @@ declare var mbh;
 
 class ChessBoardManager {
 
-    private static PACKAGE_ELEMENT_HEIGHT = 41;
     private static DATE_ELEMENT_WIDTH = 47;
     private static DATE_ELEMENT_HEIGHT = 40;
+    private static PACKAGE_ELEMENT_HEIGHT = 41;
     private static PACKAGE_TO_MIDDAY_OFFSET = 20;
     private static POPOVER_MIN_WIDTH = 250;
 
@@ -41,6 +41,8 @@ class ChessBoardManager {
             }
         });
 
+        $('#package-search-form').find('#s_adults').val(0);
+
         let self = this;
         $('#packageModal, #package-edit-modal').on('hidden.bs.modal', function () {
             self.updateTable();
@@ -55,6 +57,8 @@ class ChessBoardManager {
             var modal = $('#packageModal');
             var packageId = modal.find('input.modalPackageId').val();
             var data = $('#concise_package_update').serialize();
+            let packageData = ChessBoardManager.getPackageData($('#' + packageId));
+            self.dataManager.updateLocalPackageData(packageData);
             self.dataManager.updatePackageRequest(packageId, data);
         };
         let $reportFilter = $('#accommodation-report-filter');
@@ -196,7 +200,7 @@ class ChessBoardManager {
 
     private static getTemplateElement() {
         var templateDiv = document.createElement('div');
-        templateDiv.style = 'z-index: 100; background-color: rgba(79, 230, 106, 0.6); position: absolute;';
+        templateDiv.style = 'z-index: 100; position: absolute;';
         templateDiv.style.height = ChessBoardManager.PACKAGE_ELEMENT_HEIGHT + 'px';
         templateDiv.classList.add('package');
 
@@ -223,6 +227,7 @@ class ChessBoardManager {
         if (!templatePackageElement) {
             templatePackageElement = ChessBoardManager.getTemplateElement();
         }
+
         var packageStartDate = ChessBoardManager.getMomentDate(packageItem.begin.date);
         var packageEndDate = ChessBoardManager.getMomentDate(packageItem.end.date);
 
@@ -236,6 +241,7 @@ class ChessBoardManager {
         description.classList.add('package-description');
         description.innerText = packageItem.payer ? packageItem.payer.substr(0, packageCellCount * 5 - 5) : '';
         packageDiv.appendChild(description);
+        packageDiv.classList.add(packageItem.paidStatus);
 
         return packageDiv;
     }
@@ -261,9 +267,9 @@ class ChessBoardManager {
     private static getNearestTableLineTopOffset(yCoordinate) {
         let topOffset = null;
         var tableLines = [].slice.call(document.getElementsByClassName('roomDates'));
-        tableLines.some(function(line) {
+        tableLines.some(function (line) {
             let lineTopOffset = line.getBoundingClientRect().top;
-            if (yCoordinate > lineTopOffset && yCoordinate < lineTopOffset + ChessBoardManager.DATE_ELEMENT_HEIGHT) {
+            if (yCoordinate >= lineTopOffset && yCoordinate <= (lineTopOffset + ChessBoardManager.DATE_ELEMENT_HEIGHT)) {
                 topOffset = lineTopOffset;
                 return true;
             } else {
@@ -345,7 +351,7 @@ class ChessBoardManager {
             revert: function (is_valid_drop) {
                 if (self.isDraggableRevert(this, is_valid_drop)) {
                     this.css('background-color', this.css('background-color'));
-                    self.updatePackageData();
+                    self.updatePackagesData();
                     return true;
                 } else {
                     ActionManager.callUpdatePackageModal(this);
@@ -378,7 +384,7 @@ class ChessBoardManager {
         var $packageElement = $(packageElement);
         var packageOffset = $packageElement.offset();
 
-        return this.isOnRoomDatesLine(packageOffset)
+        return (this.isOnRoomDatesLine(packageOffset) || this.isOnLeftRoomsLine(packageOffset))
             && !ChessBoardManager.isAbroadTable(packageElement, packageOffset)
             && !this.isPackageOverlapped($packageElement);
     }
@@ -481,10 +487,10 @@ class ChessBoardManager {
 
     public static getPackageData(packageElement) {
         let packageOffset = packageElement.offset();
-        let roomLine = $('.roomDates').filter(function () {
+        let roomLine = $('.roomDates, .leftRoomsLine').filter(function () {
             return $(this).offset().top === packageOffset.top;
         });
-        let roomTypeId = roomLine.parent().get(0).id;
+        let roomTypeId = roomLine.parent().get(0).id || roomLine.get(0).getAttribute('data-roomtypeid');
         let accommodationId = roomLine.children().get(0).id;
         if (accommodationId.substring(0, 16) === 'no_accommodation') {
             accommodationId = '';
@@ -524,7 +530,7 @@ class ChessBoardManager {
     }
 
     public updateTable() {
-        this.updatePackageData();
+        this.updatePackagesData();
         this.updateLeftRoomCounts();
         this.updateNoAccommodationPackageCounts();
     }
@@ -559,12 +565,13 @@ class ChessBoardManager {
         let $popoverElements = $('.no-accommodation-date.achtung');
         $popoverElements.popover();
 
+        //Скрываем открытые popover-ы
         $popoverElements.on('show.bs.popover', function () {
             $('.popover').popover('hide');
         });
 
         $popoverElements.on('shown.bs.popover', function () {
-
+            self.updatePackagesData();
             let roomTypeId = this.parentNode.parentNode.parentNode.parentNode.id;
             let currentDate = moment(this.getAttribute('data-date'), "DD.MM.YYYY");
             let templatePackageElement = ChessBoardManager.getTemplateElement();
@@ -626,13 +633,12 @@ class ChessBoardManager {
                 $popover.popover('hide');
             });
             document.body.onmouseup = function () {
-                document.body.onmouseup = null;
+                $popoverElements.popover();
+                self.hangPopover();
+                // document.body.onmouseup = null;
                 if (!isDragged && relocatablePackage) {
                     if (self.isPackageLocationCorrect(relocatablePackage)) {
                         ActionManager.callUpdatePackageModal($(relocatablePackage));
-                    } else {
-                        //TODO: Удалять или нет? Оставил удаление
-                        self.updatePackageData();
                     }
                 }
                 $popoverElements.popover('hide');
@@ -640,11 +646,10 @@ class ChessBoardManager {
             //Корректируем смещение по ширине
             let currentPopover = $popover.get(0);
             let popoverOffset = currentPopover.offsetWidth - ChessBoardManager.POPOVER_MIN_WIDTH;
-            if  (popoverOffset !== 0) {
+            if (popoverOffset !== 0) {
                 currentPopover.style.left = (parseInt(currentPopover.style.left, 10) - popoverOffset / 2) + 'px';
             }
         });
-
     }
 
     private  updateLeftRoomCounts() {
@@ -662,7 +667,9 @@ class ChessBoardManager {
         return packageData.accommodation.startsWith("no_accommodation") || packageData.accommodation === "";
     }
 
-    private updatePackageData() {
+
+
+    private updatePackagesData() {
         ChessBoardManager.deleteAllPackages();
         this.addPackages();
     }

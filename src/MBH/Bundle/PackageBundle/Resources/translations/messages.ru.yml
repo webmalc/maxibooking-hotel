@@ -400,6 +400,7 @@ modal.chessBoard.delete: Удалить
 modal.chessBoard.edit: Редактировать
 modal.chessBoard.package_info: Информация о брони
 modal.chessBoard.package_source: Источник брони
+modal.chessBoard.package_update_info: Информация об изменении брони
 modal.chessBoard.manager: Менеджер
 modal.chessBoard.booked: Забронировано
 modal.chessBoard.begin: Заезд

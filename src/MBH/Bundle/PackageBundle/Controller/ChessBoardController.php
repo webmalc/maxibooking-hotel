@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\PackageBundle\Form\SearchType;
+use Zend\Json\Json;
 
 /**
  * @Route("/chessboard")
@@ -101,14 +102,18 @@ class ChessBoardController extends BaseController
     {
         $helper = $this->container->get('mbh.helper');
         $oldPackage = clone $package;
+
         $package->setBegin($helper::getDateFromString($request->request->get('begin')));
         $package->setEnd($helper::getDateFromString($request->request->get('end')));
         $package->setRoomType($this->dm->find('MBHHotelBundle:RoomType', $request->request->get('roomType')));
         $package->setAccommodation($this->dm->find('MBHHotelBundle:Room', $request->request->get('room')));
+
         $errors = $this->get('validator')->validate($package);
+
         if (count($errors) === 0) {
             $result = $this->container->get('mbh.order_manager')->updatePackage($oldPackage, $package);
             if ($result instanceof Package) {
+                $this->dm->persist($package);
                 $this->dm->flush();
                 $response = [
                     'success' => true,

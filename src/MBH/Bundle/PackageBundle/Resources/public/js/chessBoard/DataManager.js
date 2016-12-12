@@ -55,10 +55,24 @@ var DataManager = (function () {
         });
     };
     DataManager.prototype.addPackageData = function (packageData) {
-        packageData.begin = { 'date': moment(packageData.begin, "DD.MM.YYYY").toDate() };
-        packageData.end = { 'date': moment(packageData.end, "DD.MM.YYYY").toDate() };
+        packageData.begin.date = DataManager.getPackageDate(packageData.begin);
+        packageData.end.date = DataManager.getPackageDate(packageData.end);
         packageData.payer = '';
         this._packages.push(packageData);
+    };
+    DataManager.getPackageDate = function (packageDataDate) {
+        return moment(packageDataDate, "DD.MM.YYYY").toDate();
+    };
+    DataManager.prototype.updateLocalPackageData = function (packageData) {
+        this._packages.forEach(function (packageDataItem) {
+            if (packageDataItem.id === packageData.id) {
+                packageDataItem.begin.date = DataManager.getPackageDate(packageData.begin);
+                console.log(packageDataItem);
+                packageDataItem.end.date = DataManager.getPackageDate(packageData.end);
+                packageDataItem.accommodation = packageData.accommodation;
+                packageDataItem.roomTypeId = packageData.roomTypeId;
+            }
+        });
     };
     DataManager.prototype.getPackageOptionsRequest = function (searchData, packageData) {
         ActionManager.showLoadingIndicator();

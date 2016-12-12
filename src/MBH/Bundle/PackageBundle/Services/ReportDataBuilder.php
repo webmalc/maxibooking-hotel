@@ -111,6 +111,7 @@ class ReportDataBuilder
                 'end' => $package->getEnd(),
                 'roomTypeId' => $package->getRoomType()->getId(),
                 'accommodation' => $reportTableLineId,
+                'paidStatus' => $package->getPaidStatus()
             ];
         }
 
