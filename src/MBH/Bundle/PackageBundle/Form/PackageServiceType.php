@@ -28,7 +28,7 @@ class PackageServiceType extends AbstractType
         }
         /** @var Package $package */
         $package = $options['package'];
-        $services = $this->container->get('doctrine_mongodb')
+        $services = $options['dm']
             ->getRepository('MBHPriceBundle:Service')->getAvailableServicesForPackage($package);
 
         $builder
@@ -102,6 +102,7 @@ class PackageServiceType extends AbstractType
     {
         $resolver->setDefaults([
             'package' => null,
+            'dm' => null,
             'data_class' => 'MBH\Bundle\PackageBundle\Document\PackageService',
         ]);
     }
