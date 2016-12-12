@@ -6,6 +6,9 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
+use MBH\Bundle\ChannelManagerBundle\Document\TariffOktogo;
+use MBH\Bundle\ChannelManagerBundle\Form\OktogoTariffsType;
+use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -14,8 +17,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\ChannelManagerBundle\Form\OktogoType;
-use MBH\Bundle\ChannelManagerBundle\Form\RoomType;
-use MBH\Bundle\ChannelManagerBundle\Form\TariffType;
+use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
+
 
 /**
  * @Route("/oktogo")
@@ -31,16 +34,15 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
      */
     public function indexAction()
     {
-        $entity = $this->get('mbh.hotel.selector')->getSelected()->getOktogoConfig();
-
+        $config = $this->hotel->getOktogoConfig();
         $form = $this->createForm(
-            new OktogoType(), $entity
+            $this->get('mbh.channelmanager.oktogo_type'), $config
         );
 
         return [
-            'entity' => $entity,
+            'doc' => $config,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($config)
         ];
     }
 
@@ -55,7 +57,6 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
         $entity = $hotel->getOktogoConfig();
-        $new = false;
 
         if (!$entity) {
             $entity = new OktogoConfig();
@@ -64,36 +65,31 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-            new OktogoType(), $entity
+            $this->get('mbh.channelmanager.oktogo_type'), $entity
         );
 
-        $form->submit($request);
-
-        if ($form->isValid()) {
+//        $form->submit($request);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
 
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($entity);
             $dm->flush();
 
-            if ($new) {
-                //$this->get('mbh.channelmanager.oktogo')->roomSync($entity);
-                //$this->get('mbh.channelmanager.oktogo')->tariffSync($entity);
-                //$dm->persist($entity);
-                //$dm->flush();
-            }
+
+            $this->get('mbh.channelmanager.oktogo')->syncServices($entity);
+            $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.oktogoController.settings_saved_success'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.oktogoController.settings_saved_success'));
 
-            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
 
             return $this->redirect($this->generateUrl('oktogo'));
         }
 
         return [
-            'entity' => $entity,
+            'doc' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
@@ -101,130 +97,53 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
 
     /**
      * @Route("/room", name="oktogo_room")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_OKTOGO')")
      * @Template()
      */
-    public function roomAction()
+    public function roomAction(Request $request)
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getOktogoConfig();
+        $config = $this->hotel->getOktogoConfig();
 
-        if (!$entity) {
+        if (!$config) {
             throw $this->createNotFoundException();
         }
 
         $form = $this->createForm(
-            new RoomType(), [], ['entity' => $entity]
+            new RoomsType, $config->getRoomsAsArray(), [
+                'hotel' => $this->hotel,
+                'booking' => $this->get('mbh.channelmanager.oktogo')->pullRooms($config),
+            ]
         );
 
-        return array(
-            'entity' => $entity,
-            'logs' => $this->logs($entity),
-            'form' => $form->createView(),
-        );
-    }
-
-    /**
-     * @Route("/room", name="oktogo_room_save")
-     * @Method("POST")
-     * @Security("is_granted('ROLE_OKTOGO')")
-     * @Template("MBHChannelManagerBundle:Oktogo:room.html.twig")
-     */
-    public function roomSaveAction(Request $request)
-    {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getOktogoConfig();
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(
-            new RoomType(), [], ['entity' => $entity]
-        );
-
-        $form->submit($request);
-
-        if ($form->isValid()) {
-
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-
-            $entity->removeAllRooms();
-
-            foreach ($form->getData() as $roomTypeId => $value) {
-                if ($value === null) {
-                    continue;
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $config->removeAllRooms();
+            foreach ($form->getData() as $id => $roomType) {
+                if ($roomType) {
+                    $configRoom = new Room();
+                    $configRoom->setRoomType($roomType)->setRoomId($id);
+                    $config->addRoom($configRoom);
+                    $this->dm->persist($config);
                 }
-
-                $roomType = $dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
-
-                if (!$roomType) {
-                    continue;
-                }
-                $room = new Room();
-                $room->setRoomType($roomType)->setRoomId($value);
-                $entity->addRoom($room);
             }
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->flush();
+
+            $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.oktogoController.settings_saved_success'))
-            ;
-            if ($request->get('save') !== null) {
+                ->set('success',
+                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
 
-                return $this->redirect($this->generateUrl('oktogo_room'));
-            }
-
-            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
-
-            return $this->redirect($this->generateUrl('oktogo'));
+            return $this->redirect($this->generateUrl('oktogo_room'));
         }
 
         return array(
-            'entity' => $entity,
-            'logs' => $this->logs($entity),
+            'config' => $config,
+            'logs' => $this->logs($config),
             'form' => $form->createView(),
         );
-    }
-
-    /**
-     * @Route("/room/sync", name="oktogo_room_sync")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_OKTOGO')")
-     * @Template()
-     */
-    public function roomSyncAction(Request $request)
-    {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getOktogoConfig();
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $result = $this->get('mbh.channelmanager.oktogo')->roomSync($entity);
-
-        if ($result) {
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.oktogoController.rooms_sync_success'))
-            ;
-
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
-
-            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
-        } else {
-            $request->getSession()->getFlashBag()
-                ->set('danger', $this->get('translator')->trans('controller.oktogoController.sync_error'))
-            ;
-        }
-
-        return $this->redirect($this->generateUrl('oktogo_room'));
     }
 
     /**
@@ -246,8 +165,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
 
         if ($result) {
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.oktogoController.tariffs_sync_success'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.oktogoController.tariffs_sync_success'));
 
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
@@ -257,8 +175,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
         } else {
             $request->getSession()->getFlashBag()
-                ->set('danger', $this->get('translator')->trans('controller.oktogoController.sync_error'))
-            ;
+                ->set('danger', $this->get('translator')->trans('controller.oktogoController.sync_error'));
         }
 
         return $this->redirect($this->generateUrl('oktogo_tariff'));
@@ -266,95 +183,91 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
 
     /**
      * @Route("/tariff", name="oktogo_tariff")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_OKTOGO')")
      * @Template()
      */
-    public function tariffAction()
+    public function tariffAction(Request $request)
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getOktogoConfig();
+        $config = $hotel->getOktogoConfig();
 
-        if (!$entity) {
+        if (!$config) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new TariffType(), [], ['entity' => $entity, 'hideDefault' => false]
-        );
+//          $this->get('mbh.channelmanager.oktogo')->pullTariffs($config);
+//        $this->get('mbh.channelmanager.oktogo')->syncServices($config);
+//        $this->get('mbh.channelmanager.oktogo')->pullOrders();
+//        $this->get('mbh.channelmanager.oktogo')->updateRooms();
+//        $this->get('mbh.channelmanager.oktogo')->updatePrices();
+//        $this->get('mbh.channelmanager.oktogo')->closeForConfig($config);
+//        $this->get('mbh.channelmanager.oktogo')->updateRestrictions();
+//            exit();
+
+        $form = $this->createForm(new OktogoTariffsType(), $config->getTariffsAsArray(), [
+            'hotel' => $this->hotel,
+            'oktogo' => $this->get('mbh.channelmanager.oktogo')->pullTariffs($config),
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $config->removeAllTariffs();
+
+               $data = unserialize($form['data']->getData());
+            $idTariffs = $form->getData();
+                unset($idTariffs['data']);
+            foreach ( $idTariffs as $id => $tariff) {
+                    if ($tariff){
+                        foreach ( $data as $idRoom => $idTariffs){
+                            foreach ($idTariffs as $tariffInfo)
+                            if($tariffInfo['rate_id'] == $id ){
+                                $configTariff = new Tariff();
+                                $configTariff->setTariff($tariff)->setTariffId($tariffInfo['rate_id'])->setRoomType($tariffInfo['rooms']);
+                                $config->addTariff($configTariff);
+                                $this->dm->persist($config);
+
+                            }
+                        }
+                    }
+            }
+
+            $this->dm->flush();
+
+            $this->get('mbh.channelmanager')->updateInBackground();
+
+            $request->getSession()->getFlashBag()
+                ->set('success',
+                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+
+            return $this->redirect($this->generateUrl('oktogo_tariff'));
+        }
 
         return array(
-            'entity' => $entity,
-            'logs' => $this->logs($entity),
+            'config' => $config,
+            'logs' => $this->logs($config),
             'form' => $form->createView(),
         );
     }
 
     /**
-     * @Route("/tariff", name="oktogo_tariff_save")
-     * @Method("POST")
-     * @Security("is_granted('ROLE_OKTOGO')")
-     * @Template("MBHChannelManagerBundle:Oktogo:tariff.html.twig")
+     * Services configuration page
+     * @Route("/service", name="oktogo_service")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_BOOKING')")
+     * @Template()
      */
-    public function tariffSaveAction(Request $request)
+    public function serviceAction()
     {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getOktogoConfig();
+        $config = $this->get('mbh.hotel.selector')->getSelected()->getOktogoConfig();
 
-        if (!$entity) {
+        if (!$config) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new TariffType(), [], ['entity' => $entity, 'hideDefault' => false]
-        );
-
-        $form->submit($request);
-
-        if ($form->isValid()) {
-
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-
-            $entity->removeAllTariffs();
-
-            foreach ($form->getData() as $tariffId => $value) {
-                if ($value === null) {
-                    continue;
-                }
-
-                $tariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
-
-                if (!$tariff) {
-                    continue;
-                }
-
-                $oktogoTariff = new Tariff();
-                $oktogoTariff->setTariff($tariff)->setTariffId($value);
-                $entity->addTariff($oktogoTariff);
-            }
-
-            $dm->persist($entity);
-            $dm->flush();
-
-            $request->getSession()->getFlashBag()
-                ->set('success', 'Настройки успешно сохранены.')
-            ;
-
-            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
-
-            if ($request->get('save') !== null) {
-
-                return $this->redirect($this->generateUrl('oktogo_tariff'));
-            }
-
-            return $this->redirect($this->generateUrl('oktogo'));
-        }
-
-        return array(
-            'entity' => $entity,
-            'logs' => $this->logs($entity),
-            'form' => $form->createView(),
-        );
+        return [
+            'doc' => $config,
+            'logs' => $this->logs($config)
+        ];
     }
 }

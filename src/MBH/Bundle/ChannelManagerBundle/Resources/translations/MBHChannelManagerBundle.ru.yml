@@ -62,6 +62,15 @@ channelManager.vashotel.notification.delete: Удален заказ %order% и�
 channelManager.vashotel.notification.error.subject: Ошибка Vashotel.ru
 channelManager.vashotel.notification.error: Ошибка при обработке заказа Vashotel.ru. Информация: %info%
 
+channelManager.oktogo.notification.subject.new: Новый заказ Oktogo.ru
+channelManager.oktogo.notification.subject.edit: Изменен заказ Oktogo.ru
+channelManager.oktogo.notification.subject.delete: Удален заказ Oktogo.ru
+channelManager.oktogo.notification.new: Новый заказ %order% из Oktogo.ru. Номера броней: %packages%
+channelManager.oktogo.notification.edit: Изменен заказ %order% из Oktogo.ru. Номера броней: %packages%
+channelManager.oktogo.notification.delete: Удален заказ %order% из Oktogo.ru. Номера броней: %packages%
+channelManager.oktogo.notification.error.subject: Ошибка Oktogo.ru
+channelManager.oktogo.notification.error: Ошибка при обработке заказа Oktogo.ru. Информация: %info%
+
 channelManager.booking.notification.bottom: Внимание! Требуется ручная обработка ситуации.
 
 channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы отель, типы номеров, тарифы или услуги

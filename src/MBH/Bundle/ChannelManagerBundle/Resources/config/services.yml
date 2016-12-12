@@ -27,6 +27,10 @@ services:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: [@mbh.currency]
 
+    mbh.channelmanager.oktogo_type:
+      class: MBH\Bundle\ChannelManagerBundle\Form\OktogoType
+      arguments: [@mbh.currency]
+
     mbh.channelmanager.myallocator_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\MyallocatorType
       arguments: [@mbh.channelmanager.myallocator, @mbh.currency]

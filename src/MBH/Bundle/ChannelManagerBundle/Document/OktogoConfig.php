@@ -4,25 +4,28 @@ namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
+use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as MBHValidator;
 
 /**
  * @ODM\Document(collection="OktogoConfig")
  * @Gedmo\Loggable
+ * @MBHValidator\Currency
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class OktogoConfig extends Base implements BaseInterface
+class OktogoConfig extends Base implements BaseInterface, CurrencyConfigInterface
 {
     public function getName()
     {
         return 'oktogo';
     }
-    
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -34,7 +37,7 @@ class OktogoConfig extends Base implements BaseInterface
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -48,6 +51,13 @@ class OktogoConfig extends Base implements BaseInterface
      */
     protected $hotel;
 
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull(message="validator.document.oktogoConfig.no_username_specified")
+     */
+    protected $hotelId;
     /**
      * @var array
      * @ODM\EmbedMany(targetDocument="Room")
@@ -70,33 +80,30 @@ class OktogoConfig extends Base implements BaseInterface
     protected $enabled = false;
 
     /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     * @Assert\NotNull(message="validator.document.oktogoConfig.no_login_specified")
+     * @var array
+     * @ODM\EmbedMany(targetDocument="Service")
      */
-    protected $login;
+    protected $services;
 
     /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
-     * @Assert\NotNull(message="validator.document.oktogoConfig.no_username_specified")
      */
-    protected $username;
+    protected $currency;
 
     /**
-     * @var string
+     * @var float
      * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     * @Assert\NotNull(message="validator.document.oktogoConfig.no_password_specified")
+     * @ODM\Field(type="float")
      */
-    protected $password;
+    protected $currencyDefaultRatio;
 
     public function __construct()
     {
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -120,7 +127,7 @@ class OktogoConfig extends Base implements BaseInterface
     {
         return $this->enabled;
     }
-    
+
     /**
      * Add room
      *
@@ -182,72 +189,6 @@ class OktogoConfig extends Base implements BaseInterface
     }
 
     /**
-     * Set username
-     *
-     * @param string $username
-     * @return self
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-        return $this;
-    }
-
-    /**
-     * Get username
-     *
-     * @return string $username
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * Set login
-     *
-     * @param string $login
-     * @return self
-     */
-    public function setLogin($login)
-    {
-        $this->login = $login;
-        return $this;
-    }
-
-    /**
-     * Get login
-     *
-     * @return string $login
-     */
-    public function getLogin()
-    {
-        return $this->login;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     * @return self
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-        return $this;
-    }
-
-    /**
-     * Get password
-     *
-     * @return string $password
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
      * Set hotel
      *
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
@@ -286,7 +227,7 @@ class OktogoConfig extends Base implements BaseInterface
     {
         $result = [];
 
-        foreach($this->getTariffs() as $tariff) {
+        foreach ($this->getTariffs() as $tariff) {
             $result[$tariff->getTariffId()] = $tariff->getTariff();
         }
 
@@ -300,7 +241,7 @@ class OktogoConfig extends Base implements BaseInterface
     {
         $result = [];
 
-        foreach($this->getRooms() as $room) {
+        foreach ($this->getRooms() as $room) {
             $result[$room->getRoomId()] = $room->getRoomType();
         }
 
@@ -325,6 +266,7 @@ class OktogoConfig extends Base implements BaseInterface
      */
     public function setHotelId($hotelId)
     {
+        $this->hotelId = $hotelId;
         return $this;
     }
 
@@ -335,6 +277,84 @@ class OktogoConfig extends Base implements BaseInterface
      */
     public function getHotelId()
     {
-        return null;
+        return $this->hotelId;
+    }
+
+    /**
+     * @return $this
+     */
+    public function removeAllServices()
+    {
+        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+
+        return $this;
+    }
+
+    /**
+     * Add service
+     *
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\Service $service
+     */
+    public function addService(\MBH\Bundle\ChannelManagerBundle\Document\Service $service)
+    {
+        $this->services[] = $service;
+    }
+
+    /**
+     * Remove service
+     *
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\Service $service
+     */
+    public function removeService(\MBH\Bundle\ChannelManagerBundle\Document\Service $service)
+    {
+        $this->services->removeElement($service);
+    }
+
+    /**
+     * Get services
+     *
+     * @return \Doctrine\Common\Collections\Collection $services
+     */
+    public function getServices()
+    {
+        return $this->services;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     * @return self
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCurrencyDefaultRatio()
+    {
+        return $this->currencyDefaultRatio;
+    }
+
+    /**
+     * @param float $currencyDefaultRatio
+     * @return self
+     */
+    public function setCurrencyDefaultRatio($currencyDefaultRatio)
+    {
+        $this->currencyDefaultRatio = $currencyDefaultRatio;
+
+        return $this;
     }
 }
