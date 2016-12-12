@@ -1,7 +1,6 @@
 <?php
 
-namespace MBH\Bundle\RestaurantBundle\DataFixtures\MongoDB;
-
+namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;

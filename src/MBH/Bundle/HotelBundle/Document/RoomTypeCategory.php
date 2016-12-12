@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\ClientBundle\Document\RoomTypeZip;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -75,6 +76,11 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
      * )
      */
     protected $description;
+    /**
+     * @var RoomTypeZip $roomTypeZip
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\ClientBundle\Document\RoomTypeZip", mappedBy="categories")
+     */
+    protected $roomTypeZip;
 
     /**
      * @var
@@ -256,6 +262,23 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
     public function setDescriptionUrl($descriptionUrl)
     {
         $this->descriptionUrl = $descriptionUrl;
+    }
+
+
+    /**
+     * @return RoomTypeZip
+     */
+    public function getRoomTypeZip()
+    {
+        return $this->roomTypeZip;
+    }
+
+    /**
+     * @param RoomTypeZip $roomTypeZip
+     */
+    public function setRoomTypeZip(RoomTypeZip $roomTypeZip)
+    {
+        $this->roomTypeZip = $roomTypeZip;
     }
 
 }

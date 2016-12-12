@@ -838,4 +838,28 @@ class PackageRepository extends DocumentRepository
         }, iterator_to_array($packages));
 
     }
+
+    /**
+     * @return Package
+     */
+    public function getPackageCategory(\DateTime $begin, \DateTime $end, $categoryRoomType = null,$count = false,$limit = false,  $skip = 0)
+    {
+        $queryBuilder = $this->createQueryBuilder()
+            ->field('begin')->gte($begin)
+            ->sort('createdAt', 'desc')
+            ->skip($skip)
+            ->field('end')->lte($end);
+
+        if ($limit){
+            $queryBuilder->limit(50);
+        }
+        if($count){
+            $queryBuilder->count();
+        }
+        if ($categoryRoomType) {
+            $queryBuilder->field('roomType.id')->in($categoryRoomType);
+        }
+
+        return $queryBuilder->getQuery()->execute();
+    }
 }
