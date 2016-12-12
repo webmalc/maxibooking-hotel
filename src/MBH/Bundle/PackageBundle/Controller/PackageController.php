@@ -22,7 +22,6 @@ use MBH\Bundle\PackageBundle\Form\PackageAccommodationRoomType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use MBH\Bundle\PackageBundle\Services\CsvGenerate;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
-use MBH\Bundle\PackageBundle\Services\OrderManager;
 use MBH\Bundle\PackageBundle\Services\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -805,6 +804,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @param Package $package
      * @param Room $room
      * @return RedirectResponse
+     * @deprecated
      */
     public function accommodationSetAction(Request $request, Package $package, Room $room)
     {
@@ -894,9 +894,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         /** @var RoomRepository $roomRepository */
         $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
-        $groupedRooms = $roomRepository->fetchAccommodationRooms($package->getBegin(), $package->getEnd(),
-            $this->hotel, null, null, $package->getId(), true
-        );
+
+//        $groupedRooms = $roomRepository->fetchAccommodationRooms($package->getBegin(), $package->getEnd(),
+//            $this->hotel, null, null, $package->getId(), true
+//        );
+        $groupedRooms = $roomRepository->fetchAccommodationRoomsForPackage($package, $this->hotel);
+
         $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
 
         $name = $package->getRoomType()->getName();

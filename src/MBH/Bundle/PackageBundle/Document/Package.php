@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use MBH\Bundle\BaseBundle\Document\Base;
@@ -15,17 +14,12 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
-use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
-use MBH\Bundle\PriceBundle\Document\Promotion;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
-use MBH\Bundle\BaseBundle\Annotations as MBH;
-use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -80,6 +74,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
+     * @deprecated
      */
     protected $accommodation;
 
@@ -1537,5 +1532,18 @@ class Package extends Base implements \JsonSerializable
         $this->accommodations->removeElement($accommodation);
 
         return $this;
+    }
+
+    public function getCurrentAccommodationBegin()
+    {
+        $begin = $this->getBegin();
+        if ($this->accommodations->count()) {
+            $begin = max(array_map(function ($acc) {
+                /** @var PackageAccommodation $acc */
+                return $acc->getEnd();
+            }, $this->accommodations->toArray()));
+        }
+
+        return $begin;
     }
 }

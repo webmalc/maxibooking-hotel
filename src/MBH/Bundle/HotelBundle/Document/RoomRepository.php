@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 
 /**
  * Class RoomRepository
@@ -122,7 +123,14 @@ class RoomRepository extends AbstractBaseRepository
         return $groupedRooms;
     }
 
+    public function fetchAccommodationRoomsForPackage(Package $package, Hotel $hotel)
+    {
+        $begin = $package->getCurrentAccommodationBegin();
+        $end = $package->getEnd();
+        $excludePackages = $package->getId();
 
+        return $this->fetchAccommodationRooms($begin, $end, $hotel, null, null, $excludePackages, true);
+    }
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -170,7 +178,8 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         //packages with accommodation
-        $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation($newBegin->modify('+1 day'), $newEnd->modify('-1 day'), $rooms, $excludePackages);
+        $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
+            $newBegin->modify('+1 day'), $newEnd->modify('-1 day'), $rooms, $excludePackages);
         foreach ($packages as $package) {
             $ids[] = $package->getAccommodation()->getId();
         };

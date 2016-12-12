@@ -32,17 +32,13 @@ class PackageRepository extends DocumentRepository
             ->field('virtualRoom')->notEqual(null)
             ->field('deletedAt')->equals(null)
         ;
-        
         if ($roomType) {
             $qb->field('roomType')->references($roomType);
         }
-        
         $packages = $qb->getQuery()->execute();
-        
         if ($group) {
             $result = [];
-            foreach ($packages as $package) {;
-
+            foreach ($packages as $package) {
                 $roomType = $package->getRoomType();
                 $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
 
@@ -50,7 +46,7 @@ class PackageRepository extends DocumentRepository
 
             return $result;
         }
-        
+
         return $packages;
     }
 
