@@ -7,8 +7,10 @@ class ChessBoardManager {
 
     private static PACKAGE_ELEMENT_HEIGHT = 41;
     private static DATE_ELEMENT_WIDTH = 47;
+    private static DATE_ELEMENT_HEIGHT = 40;
     private static PACKAGE_TO_MIDDAY_OFFSET = 20;
-    private static POPOVER_MIN_WIDTH = 350;
+    private static POPOVER_MIN_WIDTH = 250;
+
     public dataManager;
     public actionManager;
 
@@ -256,6 +258,22 @@ class ChessBoardManager {
         return packageElement;
     }
 
+    private static getNearestTableLineTopOffset(yCoordinate) {
+        let topOffset = null;
+        var tableLines = [].slice.call(document.getElementsByClassName('roomDates'));
+        tableLines.some(function(line) {
+            let lineTopOffset = line.getBoundingClientRect().top;
+            if (yCoordinate > lineTopOffset && yCoordinate < lineTopOffset + ChessBoardManager.DATE_ELEMENT_HEIGHT) {
+                topOffset = lineTopOffset;
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        return topOffset;
+    }
+
     private static getPackageLeftOffset(startDate) {
         let tableStartDate = this.getTableStartDate();
         let packageDateOffset = startDate.diff(tableStartDate, 'days') * ChessBoardManager.DATE_ELEMENT_WIDTH;
@@ -321,7 +339,6 @@ class ChessBoardManager {
     }
 
     private addDraggable(jQueryObj) {
-        let elementStartBackground;
         let self = this;
         jQueryObj.draggable({
             containment: '#calendarWrapper',
@@ -336,7 +353,6 @@ class ChessBoardManager {
                 }
             },
             start: function () {
-                elementStartBackground = this.style.backgroundColor;
                 this.style.zIndex = 101;
             },
             scroll: true,
@@ -345,9 +361,9 @@ class ChessBoardManager {
                 //1 - бордер
                 ui.position.top = self.getGriddedHeightValue(ui.position.top);
                 if (!self.isPackageLocationCorrect(this)) {
-                    this.style.backgroundColor = 'rgba(232, 34, 34, 0.6)';
+                    this.classList.add('red-package');
                 } else {
-                    this.style.backgroundColor = elementStartBackground;
+                    this.classList.remove('red-package');
                 }
             },
             stop: function () {
@@ -549,8 +565,6 @@ class ChessBoardManager {
 
         $popoverElements.on('shown.bs.popover', function () {
 
-            let currentPopover = document.getElementById(this.getAttribute('aria-describedby'));
-
             let roomTypeId = this.parentNode.parentNode.parentNode.parentNode.id;
             let currentDate = moment(this.getAttribute('data-date'), "DD.MM.YYYY");
             let templatePackageElement = ChessBoardManager.getTemplateElement();
@@ -584,38 +598,47 @@ class ChessBoardManager {
 
             let $wrapper = $('#calendarWrapper');
             let wrapperOffset = $wrapper.offset();
-            let popoverId = this.getAttribute('aria-describedby');
-            let $popover = $('#' + popoverId);
+            let $popover = $('.popover').last();
             let popoverContent = $popover.find('.popover-content').get(0);
             popoverContent.innerHTML = packageElementsContainer.innerHTML;
+            let isDragged = false;
+            let relocatablePackage = null;
             self.addDraggable($popover.find('.package')).draggable({
                 axis: "y",
                 scroll: false,
                 snap: 'calendarRow',
-                revert: function (isValidDrop) {
-                    if (self.isDraggableRevert(this, isValidDrop)) {
-                        this.css('background-color', this.css('background-color'));
-                        ChessBoardManager.deletePackageElement(this.get(0).id);
-                        return true;
-                    } else {
-                        ActionManager.callUpdatePackageModal(this);
-                        return false;
-                    }
+                start: function () {
+                    this.style.zIndex = 101;
+                    isDragged = true;
                 },
             }).mousedown(function (event) {
+                relocatablePackage = this;
                 $wrapper.append(this);
                 this.style.position = 'absolute';
                 let packageData = self.dataManager.getPackageDataById(this.id);
                 let packageStartDate = ChessBoardManager.getMomentDate(packageData.begin.date);
                 this.style.left = ChessBoardManager.getPackageLeftOffset(packageStartDate) + 'px';
-                this.style.top = event.pageY - wrapperOffset.top - 20 + 'px';
+                this.style.top = ChessBoardManager.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)
+                    + document.body.scrollTop - wrapperOffset.top + 'px';
+                if (!self.isPackageLocationCorrect(relocatablePackage)) {
+                    relocatablePackage.classList.add('red-package');
+                }
                 $popover.popover('hide');
             });
             document.body.onmouseup = function () {
                 document.body.onmouseup = null;
+                if (!isDragged && relocatablePackage) {
+                    if (self.isPackageLocationCorrect(relocatablePackage)) {
+                        ActionManager.callUpdatePackageModal($(relocatablePackage));
+                    } else {
+                        //TODO: Удалять или нет? Оставил удаление
+                        self.updatePackageData();
+                    }
+                }
                 $popoverElements.popover('hide');
             };
-
+            //Корректируем смещение по ширине
+            let currentPopover = $popover.get(0);
             let popoverOffset = currentPopover.offsetWidth - ChessBoardManager.POPOVER_MIN_WIDTH;
             if  (popoverOffset !== 0) {
                 currentPopover.style.left = (parseInt(currentPopover.style.left, 10) - popoverOffset / 2) + 'px';

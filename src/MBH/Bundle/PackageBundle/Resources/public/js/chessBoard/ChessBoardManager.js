@@ -207,6 +207,21 @@ var ChessBoardManager = (function () {
         packageElement.style.top = roomLineOffset.top - wrapperOffset.top + 'px';
         return packageElement;
     };
+    ChessBoardManager.getNearestTableLineTopOffset = function (yCoordinate) {
+        var topOffset = null;
+        var tableLines = [].slice.call(document.getElementsByClassName('roomDates'));
+        tableLines.some(function (line) {
+            var lineTopOffset = line.getBoundingClientRect().top;
+            if (yCoordinate > lineTopOffset && yCoordinate < lineTopOffset + ChessBoardManager.DATE_ELEMENT_HEIGHT) {
+                topOffset = lineTopOffset;
+                return true;
+            }
+            else {
+                return false;
+            }
+        });
+        return topOffset;
+    };
     ChessBoardManager.getPackageLeftOffset = function (startDate) {
         var tableStartDate = this.getTableStartDate();
         var packageDateOffset = startDate.diff(tableStartDate, 'days') * ChessBoardManager.DATE_ELEMENT_WIDTH;
@@ -261,7 +276,6 @@ var ChessBoardManager = (function () {
         return !(isValidDrop && this.isPackageLocationCorrect($packageElement.get(0)));
     };
     ChessBoardManager.prototype.addDraggable = function (jQueryObj) {
-        var elementStartBackground;
         var self = this;
         jQueryObj.draggable({
             containment: '#calendarWrapper',
@@ -277,7 +291,6 @@ var ChessBoardManager = (function () {
                 }
             },
             start: function () {
-                elementStartBackground = this.style.backgroundColor;
                 this.style.zIndex = 101;
             },
             scroll: true,
@@ -286,10 +299,10 @@ var ChessBoardManager = (function () {
                 //1 - бордер
                 ui.position.top = self.getGriddedHeightValue(ui.position.top);
                 if (!self.isPackageLocationCorrect(this)) {
-                    this.style.backgroundColor = 'rgba(232, 34, 34, 0.6)';
+                    this.classList.add('red-package');
                 }
                 else {
-                    this.style.backgroundColor = elementStartBackground;
+                    this.classList.remove('red-package');
                 }
             },
             stop: function () {
@@ -464,7 +477,6 @@ var ChessBoardManager = (function () {
             $('.popover').popover('hide');
         });
         $popoverElements.on('shown.bs.popover', function () {
-            var currentPopover = document.getElementById(this.getAttribute('aria-describedby'));
             var roomTypeId = this.parentNode.parentNode.parentNode.parentNode.id;
             var currentDate = moment(this.getAttribute('data-date'), "DD.MM.YYYY");
             var templatePackageElement = ChessBoardManager.getTemplateElement();
@@ -491,38 +503,48 @@ var ChessBoardManager = (function () {
             });
             var $wrapper = $('#calendarWrapper');
             var wrapperOffset = $wrapper.offset();
-            var popoverId = this.getAttribute('aria-describedby');
-            var $popover = $('#' + popoverId);
+            var $popover = $('.popover').last();
             var popoverContent = $popover.find('.popover-content').get(0);
             popoverContent.innerHTML = packageElementsContainer.innerHTML;
+            var isDragged = false;
+            var relocatablePackage = null;
             self.addDraggable($popover.find('.package')).draggable({
                 axis: "y",
                 scroll: false,
                 snap: 'calendarRow',
-                revert: function (isValidDrop) {
-                    if (self.isDraggableRevert(this, isValidDrop)) {
-                        this.css('background-color', this.css('background-color'));
-                        ChessBoardManager.deletePackageElement(this.get(0).id);
-                        return true;
-                    }
-                    else {
-                        ActionManager.callUpdatePackageModal(this);
-                        return false;
-                    }
+                start: function () {
+                    this.style.zIndex = 101;
+                    isDragged = true;
                 }
             }).mousedown(function (event) {
+                relocatablePackage = this;
                 $wrapper.append(this);
                 this.style.position = 'absolute';
                 var packageData = self.dataManager.getPackageDataById(this.id);
                 var packageStartDate = ChessBoardManager.getMomentDate(packageData.begin.date);
                 this.style.left = ChessBoardManager.getPackageLeftOffset(packageStartDate) + 'px';
-                this.style.top = event.pageY - wrapperOffset.top - 20 + 'px';
+                this.style.top = ChessBoardManager.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)
+                    + document.body.scrollTop - wrapperOffset.top + 'px';
+                if (!self.isPackageLocationCorrect(relocatablePackage)) {
+                    relocatablePackage.classList.add('red-package');
+                }
                 $popover.popover('hide');
             });
             document.body.onmouseup = function () {
                 document.body.onmouseup = null;
+                if (!isDragged && relocatablePackage) {
+                    if (self.isPackageLocationCorrect(relocatablePackage)) {
+                        ActionManager.callUpdatePackageModal($(relocatablePackage));
+                    }
+                    else {
+                        //TODO: Удалять или нет? Оставил удаление
+                        self.updatePackageData();
+                    }
+                }
                 $popoverElements.popover('hide');
             };
+            //Корректируем смещение по ширине
+            var currentPopover = $popover.get(0);
             var popoverOffset = currentPopover.offsetWidth - ChessBoardManager.POPOVER_MIN_WIDTH;
             if (popoverOffset !== 0) {
                 currentPopover.style.left = (parseInt(currentPopover.style.left, 10) - popoverOffset / 2) + 'px';
@@ -554,8 +576,9 @@ var ChessBoardManager = (function () {
     };
     ChessBoardManager.PACKAGE_ELEMENT_HEIGHT = 41;
     ChessBoardManager.DATE_ELEMENT_WIDTH = 47;
+    ChessBoardManager.DATE_ELEMENT_HEIGHT = 40;
     ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET = 20;
-    ChessBoardManager.POPOVER_MIN_WIDTH = 350;
+    ChessBoardManager.POPOVER_MIN_WIDTH = 250;
     return ChessBoardManager;
 }());
 //# sourceMappingURL=ChessBoardManager.js.map
