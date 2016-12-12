@@ -69,19 +69,25 @@ class PackageCsvType extends AbstractType
                 'group' => 'csv.form.group',
             ])
             ->add('countNight', CheckboxType::class, [
-                'label' => 'Кол-во ночей',
+                'label' => 'csv.form.nightAmount',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',
             ])
             ->add('countPersons', CheckboxType::class, [
-                'label' => 'Кол-во человек',
+                'label' => 'csv.form.peopleAmount',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',
             ])
             ->add('price', CheckboxType::class, [
                 'label' => 'csv.form.price',
+                'required' => false,
+                'attr' => array('checked' => 'checked'),
+                'group' => 'csv.form.group',
+            ])
+            ->add('totalPrice', CheckboxType::class, [
+                'label' => 'csv.form.totalPrice',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',
@@ -100,6 +106,12 @@ class PackageCsvType extends AbstractType
             ])
             ->add('createdBy', CheckboxType::class, [
                 'label' => 'csv.form.createdBy',
+                'required' => false,
+                'attr' => array('checked' => 'checked'),
+                'group' => 'csv.form.group',
+            ])
+            ->add('delimetr', CheckboxType::class, [
+                'label' => 'Разделитель дробной части',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',

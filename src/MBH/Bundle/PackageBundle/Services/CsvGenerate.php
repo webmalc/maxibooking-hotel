@@ -36,7 +36,8 @@ class CsvGenerate
         'children' => ['title' => 'csv.type.children', 'method' => 'getChildren'],
         'countNight' => ['title' => 'csv.form.countNight', 'method' => 'getNights'],
         'countPersons' => ['title' => 'csv.form.countPersons', 'method' => 'countPersons'],
-        'price' => ['title' => 'csv.type.price', 'method' => 'getPrice'],
+        'price' => ['title' => 'csv.type.price', 'method' => 'getPackagePrice'],
+        'totalPrice' => ['title' => 'csv.type.totalPrice', 'method' => 'getPrice'],
         'tariff' => ['title' => 'csv.type.tariff', 'method' => 'getTariff'],
         'createdAt' => ['title' => 'csv.type.createdAt', 'method' => 'getCreatedAt'],
         'createdBy' => ['title' => 'csv.type.createdBy', 'method' => 'getCreatedBy'],
@@ -75,6 +76,10 @@ class CsvGenerate
                     if ($method == 'countPersons') {
 
                         $dataCsv[] = $entity->getAdults() + $entity->getChildren();
+
+                    } elseif ($key == 'price' || $key == 'totalPrice' ) {
+
+                        $formData['delimetr'] ? $dataCsv[] = str_replace('.', ',', (string)$entity->$method()) : $dataCsv[] = (string)$entity->$method();
 
                     } else {
 

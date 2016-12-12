@@ -372,7 +372,8 @@ csv.type.tariffAccomodation: Размещение
 csv.type.guests: Плательщик
 csv.type.adults: Взрослых
 csv.type.children: Детей
-csv.type.price: Стоимость
+csv.type.price: Стоимость проживания
+csv.type.totalPrice: Общая стоимость
 csv.type.tariff: Тариф
 csv.type.createdAt: Дата создания
 csv.type.createdBy: Создал
@@ -387,7 +388,10 @@ csv.form.tariffAccomodation: Размещение
 csv.form.guests: Плательщик
 csv.form.adults: Взрослые
 csv.form.children: Дети
-csv.form.price: Стоимость
+csv.form.nightAmount: Кол-во ночей
+csv.form.peopleAmount: Кол-во человек
+csv.form.price: Стоимость проживания
+csv.form.totalPrice: Общая стоимость
 csv.form.tariff: Тариф
 csv.form.createdAt: Дата создания
 csv.form.createdBy: Создал
