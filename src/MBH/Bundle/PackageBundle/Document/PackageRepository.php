@@ -253,36 +253,36 @@ class PackageRepository extends DocumentRepository
         $departure = true
     )
     {
-        $qb = $this->createQueryBuilder();
-        /*$qb->field('accommodation')->exists(true)
-            ->field('accommodation')->notEqual(null);*/
-        $qb->field('accommodations')->exists(true)
-            ->field('accommodations')->notEqual(null);
+        /** Find PackageAccommodations  */
+        $accQb = $this->getDocumentManager()->getRepository('MBHPackageBundle:PackageAccommodation')->createQueryBuilder();
 
+        $accQb
+            ->field('end')->gte($begin)
+            ->field('begin')->lte($end);
 
-        if ($departure) {
-            $qb->addOr($qb->expr()->field('departureTime')->exists(false))
-                ->addOr($qb->expr()->field('departureTime')->equals(null));
-        }
-
-        if ($begin) {
-            $qb->field('end')->gte($begin);
-        }
-        if ($end) {
-            $qb->field('begin')->lte($end);
-        }
-        //????
         if ($rooms) {
             is_array($rooms) ? $rooms : $rooms = [$rooms];
-            $qb->field('accommodation.id')->in($rooms);
+            $accQb->field('accommodation.id')->in($rooms);
         }
+
         if ($excludePackages) {
             is_array($excludePackages) ? $excludePackages : $excludePackages = [$excludePackages];
-            $qb->field('id')->notIn($excludePackages);
+            $accQb->field('package.id')->notIn($excludePackages);
         }
-        $qb->sort('begin', 'asc');
 
-        return $qb->getQuery()->execute();
+        /*$qb = $this->createQueryBuilder();*/
+
+        /*$qb->field('accommodations')->exists(true)
+            ->field('accommodations')->notEqual(null);*/
+
+        // Что дает эта проверка ?
+        /*if ($departure) {
+            $qb->addOr($qb->expr()->field('departureTime')->exists(false))
+                ->addOr($qb->expr()->field('departureTime')->equals(null));
+        }*/
+        //$qb->sort('begin', 'asc');
+
+        return $accQb->getQuery()->execute(); //
     }
 
     /**

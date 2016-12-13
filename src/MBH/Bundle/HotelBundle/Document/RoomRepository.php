@@ -127,6 +127,10 @@ class RoomRepository extends AbstractBaseRepository
     {
         $begin = $package->getCurrentAccommodationBegin();
         $end = $package->getEnd();
+        $interval = $end->diff($begin, true);
+        if (!$interval->format('%d')) {
+            return [];
+        }
         $excludePackages = $package->getId();
 
         return $this->fetchAccommodationRooms($begin, $end, $hotel, null, null, $excludePackages, true);
@@ -178,11 +182,27 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         //packages with accommodation //Как тут быть, когда accomodation выбраны.
-        $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
-            $newBegin->modify('+1 day'), $newEnd->modify('-1 day'), $rooms, $excludePackages);
-        foreach ($packages as $package) {
-            $ids[] = $package->getAccommodation()->getId();
-        };
+//        $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
+//            $newBegin->modify('+1 day'), $newEnd->modify('-1 day'), $rooms, $excludePackages);
+//        foreach ($packages as $package) {
+//            /** @var Package $package */
+//            foreach ($package->getAccommodations() as $accommodation) {
+//                /** @var PackageAccommodation $accommodation */
+//                $ids[] = $accommodation->getAccommodation()->getId();
+//            }
+//
+//        };
+        $pAccommodations = $dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->fetchWithAccommodation(
+                $newBegin->modify('+1 day'),
+                $newEnd->modify('-1 day'),
+                $rooms,
+                $excludePackages);
+        foreach ($pAccommodations as $accommodation) {
+            /** @var PackageAccommodation $accommodation */
+            $ids[] = $accommodation->getAccommodation()->getId();
+        }
 
         // rooms
         $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])

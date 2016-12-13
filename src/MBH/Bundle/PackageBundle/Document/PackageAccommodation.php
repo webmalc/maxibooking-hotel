@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: webmalc
- * Date: 11/15/16
- * Time: 12:14 PM
- */
 
 namespace MBH\Bundle\PackageBundle\Document;
 
@@ -19,6 +13,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
+use MBH\Bundle\PackageBundle\Validator\Constraints as MBHConstraints;
 
 
 /**
@@ -26,8 +21,9 @@ use MBH\Bundle\BaseBundle\Annotations as MBH;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
+ * @MBHConstraints\PackageAccommodations()
  */
-//TODO: Add validator
+
 class PackageAccommodation extends Base implements \JsonSerializable
 {
     use TimestampableDocument;

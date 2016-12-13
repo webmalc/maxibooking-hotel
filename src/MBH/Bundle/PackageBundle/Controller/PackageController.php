@@ -841,7 +841,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @param Request $request
      * @param $id
      * @param Room $room
-     * @return Response
+     * @return array|Response
      */
     public function accommodationNewAction(Request $request, $id, Room $room)
     {

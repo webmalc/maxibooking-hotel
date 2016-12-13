@@ -58,6 +58,12 @@ services:
             tags:
                 - { name: validator.constraint_validator, alias: mbh.package.validator }
 
+    mbh.package.package_accommodation_validator:
+        class: MBH\Bundle\PackageBundle\Validator\Constraints\PackageAccommodationsValidator
+        arguments: ['@doctrine_mongodb.odm.document_manager']
+        tags:
+            - { name: validator.constraint_validator }
+
     mbh.package.form.type.birthplace:
             class: MBH\Bundle\PackageBundle\Form\BirthplaceType
             tags:
