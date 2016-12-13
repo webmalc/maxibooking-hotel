@@ -6,6 +6,23 @@ mbh-memcached:
   image: phpdockerio/memcached:latest
   container_name: mbh-memcached
 
+mbh-rabbitmq:
+  image: rabbitmq:latest
+  container_name: mbh-rabbitmq
+  hostname: "mbh-rabbitmq"
+  environment:
+    RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+    RABBITMQ_DEFAULT_USER: "rabbitmq"
+    RABBITMQ_DEFAULT_PASS: "rabbitmq"
+    RABBITMQ_DEFAULT_VHOST: "/"
+  ports:
+    - "15672:15672"
+    - "5672:5672"
+  labels:
+    NAME: "mbh-rabbitmq"
+  volumes:
+      - "./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins"
+
 mbh-mongo:
   image: mongo:latest
   container_name: mbh-mongo
@@ -24,6 +41,7 @@ mbh-php-fpm:
   links:
     - mbh-memcached
     - mbh-mongo
+    - mbh-rabbitmq
 
 mbh-webserver:
   image: phpdockerio/nginx:latest

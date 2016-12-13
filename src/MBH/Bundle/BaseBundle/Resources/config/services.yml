@@ -168,3 +168,7 @@ services:
     #        - @service_container
     #    tags:
     #       - { name: knp_menu.voter }
+
+    test_class:
+      class:      MBH\Bundle\BaseBundle\Service\RabbitMQ\Test
+      arguments:  ["@logger"]

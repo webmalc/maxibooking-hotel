@@ -50,6 +50,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function indexAction()
     {
+        $msg = array('userid' => 'test message');
+        $this->get('old_sound_rabbit_mq.task_example_producer')->publish(serialize($msg));
+
         $now = new \DateTime('midnight');
         $tomorrow = new \DateTime('midnight +1 day');
         $this->dm->getFilterCollection()->enable('softdeleteable');
