@@ -83,10 +83,11 @@ class ExpediaResponseHandler extends AbstractResponseHandler
             $requestedUrl = $tariffInfo['_links']['self']['href'];
             foreach ($tariffInfo['distributionRules'] as $data) {
                 if ($data['manageable'] == true) {
-                    $roomTypeName = $roomTypes[$this->getRoomTypeIdFromUrlString($requestedUrl)];
+                    $roomTypeId = $this->getRoomTypeIdFromUrlString($requestedUrl);
+                    $roomTypeName = $roomTypes[$roomTypeId];
                     $tariffs[$data['expediaId']] = [
                         'title' => $tariffInfo['name'] . " ( $roomTypeName, {$data['distributionModel']} )" ,
-                        'rooms' => [$roomTypeName],
+                        'rooms' => [$roomTypeId],
                         'readonly' => $tariffInfo['pricingModel'] === self::OCCUPANCY_BASED_PRICING ? false : true
                     ];
                 }
