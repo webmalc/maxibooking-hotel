@@ -45,6 +45,11 @@ services:
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
+    mbh.package.package_accommodations.subscriber:
+                class: MBH\Bundle\PackageBundle\EventListener\PackageAccommodationSubscriber
+                tags:
+                    - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
     mbh.package.subscriber.tourist:
             class: MBH\Bundle\PackageBundle\EventListener\TouristSubscriber
             calls:

@@ -20,6 +20,7 @@ use MBH\Bundle\PackageBundle\Form\PackageCsvType;
 use MBH\Bundle\PackageBundle\Form\PackageMainType;
 use MBH\Bundle\PackageBundle\Form\PackageAccommodationRoomType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
+use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PackageBundle\Services\CsvGenerate;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
 use MBH\Bundle\PackageBundle\Services\PackageCreationException;
@@ -1008,11 +1009,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
-        $this->dm->remove($entity);
-        $this->dm->flush();
+        try {
+            $this->dm->remove($entity);
+            $this->dm->flush();
+            $this->addFlash('success', $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
+        } catch (DeleteException $exception) {
+            $this->addFlash('error', $this->get('translator')->trans($exception->getMessage()));
+        }
 
-        $request->getSession()->getFlashBag()
-            ->set('success', $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
+
+
 
         return $this->redirect($this->generateUrl('package_accommodation', ['id' => $package->getId()]));
     }
