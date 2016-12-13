@@ -45,6 +45,11 @@ services:
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
+    mbh.package.package_accommodations.subscriber:
+                class: MBH\Bundle\PackageBundle\EventListener\PackageAccommodationSubscriber
+                tags:
+                    - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
     mbh.package.subscriber.tourist:
             class: MBH\Bundle\PackageBundle\EventListener\TouristSubscriber
             calls:
@@ -57,6 +62,12 @@ services:
             arguments: ['@service_container']
             tags:
                 - { name: validator.constraint_validator, alias: mbh.package.validator }
+
+    mbh.package.package_accommodation_validator:
+        class: MBH\Bundle\PackageBundle\Validator\Constraints\PackageAccommodationsValidator
+        arguments: ['@doctrine_mongodb.odm.document_manager']
+        tags:
+            - { name: validator.constraint_validator }
 
     mbh.package.form.type.birthplace:
             class: MBH\Bundle\PackageBundle\Form\BirthplaceType
