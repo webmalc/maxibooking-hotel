@@ -64,7 +64,7 @@ class RoomTypeZip extends Base
      * @ODM\Field(type="collection" , name="time")
      * @Assert\NotNull()
      */
-    protected $time;
+    protected $time = [];
 
     /**
      * RoomTypeZip constructor.
@@ -111,7 +111,7 @@ class RoomTypeZip extends Base
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getTime()
     {
@@ -130,7 +130,7 @@ class RoomTypeZip extends Base
     /**
      * @return array
      */
-    public static function getValidateChoice()
+    public static function getValidateChoice():array
     {
         return range(0, 23);
     }
@@ -138,7 +138,7 @@ class RoomTypeZip extends Base
     /**
      * @return array
      */
-    public static function getTimes()
+    public static function getTimes():array
     {
         $hours = range(0, 23);
 
@@ -151,8 +151,9 @@ class RoomTypeZip extends Base
     /**
      * @return array DateTime
      */
-    public function getTimeDataTimeType()
+    public function getTimeDataTimeType():array
     {
+        $dated = [];
         foreach ($this->getTime() as $time) {
             $dated[] = \DateTime::createFromFormat('H:i', $this->getTimes()[$time]);
         }
