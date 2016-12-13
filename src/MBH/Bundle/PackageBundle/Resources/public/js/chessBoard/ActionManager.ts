@@ -24,12 +24,12 @@ class ActionManager {
 
     public static showLoadingIndicator() {
         var $loadingIndicator = $('#loading-indicator');
-        $('#dimmer').toggle();
+        $('#dimmer').show();
         $loadingIndicator.show();
     }
 
     public static hideLoadingIndicator() {
-        $('#dimmer').toggle();
+        $('#dimmer').hide();
         var $loadingIndicator = $('#loading-indicator');
         $loadingIndicator.hide();
     }
@@ -50,13 +50,48 @@ class ActionManager {
         editBody.find('select').select2();
 
         let editModal = $('#package-edit-modal');
-        editModal.find('input.modalPackageId').val(packageData.id);
 
         $('.btn.package-search-book').each(function (index, element) {
             self.modifyBookButton(packageData, element, editModal);
         });
 
+        $('.package-search-table').find('tr').not(':first').not(':first').each(function (index, row) {
+            let $row = $(row);
+            ActionManager.showResultPrices($row);
+            $row.find('.search-tourists-select').change(function () {
+                ActionManager.showResultPrices($row);
+            })
+        });
+
+        editModal.find('input.modalPackageId').val(packageData.id);
+
         editModal.modal('show');
+    }
+
+    private static showResultPrices($row) {
+        let $searchTouristsSelect = $row.find('.search-tourists-select');
+        let $packageSearchBook = $row.find('.package-search-book');
+        let touristVal = $searchTouristsSelect.val(),
+            touristArr = touristVal.split('_');
+
+        let ulPrices = $row.find('ul.package-search-prices');
+        ulPrices.hide();
+        ulPrices.find('li').hide();
+        ulPrices.find('li.' + touristVal + '_price').show();
+        ulPrices.show();
+
+        let isNullAmount = parseInt($("#s_adults").val() || $("#s_children").val());
+
+        if (!isNullAmount) {
+            var oldHref = $packageSearchBook.attr('data-url')
+                    .replace(/&adults=.*?(?=(&|$))/, '')
+                    .replace(/&children=.*?(?=(&|$))/, '')
+                ;
+
+            $packageSearchBook.attr('data-url', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
+        } else {
+            $searchTouristsSelect.attr("disabled", true);
+        }
     }
 
     private modifyBookButton(packageData, element, editModal) {
@@ -67,9 +102,11 @@ class ActionManager {
         if (packageData.accommodation) {
             newPackageCreateUrl += '&accommodation=' + packageData.accommodation;
         }
+        element.setAttribute('data-url', newPackageCreateUrl);
 
         element.onclick = function () {
-            self.dataManager.createPackageRequest(newPackageCreateUrl, packageData);
+            let url = element.getAttribute('data-url');
+            self.dataManager.createPackageRequest(url, packageData);
             editModal.modal('hide');
         };
     }

@@ -51,12 +51,14 @@ var DataManager = (function () {
             success: function (data) {
                 ActionManager.hideLoadingIndicator();
                 var packageId = self.handleResponse(data).packageId;
+                if (packageId) {
+                }
             }
         });
     };
     DataManager.prototype.addPackageData = function (packageData) {
-        packageData.begin.date = DataManager.getPackageDate(packageData.begin);
-        packageData.end.date = DataManager.getPackageDate(packageData.end);
+        packageData.begin = { 'date': DataManager.getPackageDate(packageData.begin) };
+        packageData.end = { 'date': DataManager.getPackageDate(packageData.end) };
         packageData.payer = '';
         this._packages.push(packageData);
     };

@@ -17,11 +17,11 @@ var ActionManager = (function () {
     };
     ActionManager.showLoadingIndicator = function () {
         var $loadingIndicator = $('#loading-indicator');
-        $('#dimmer').toggle();
+        $('#dimmer').show();
         $loadingIndicator.show();
     };
     ActionManager.hideLoadingIndicator = function () {
-        $('#dimmer').toggle();
+        $('#dimmer').hide();
         var $loadingIndicator = $('#loading-indicator');
         $loadingIndicator.hide();
     };
@@ -38,11 +38,38 @@ var ActionManager = (function () {
         editBody.find('thead th').css('text-align', 'center');
         editBody.find('select').select2();
         var editModal = $('#package-edit-modal');
-        editModal.find('input.modalPackageId').val(packageData.id);
         $('.btn.package-search-book').each(function (index, element) {
             self.modifyBookButton(packageData, element, editModal);
         });
+        $('.package-search-table').find('tr').not(':first').not(':first').each(function (index, row) {
+            var $row = $(row);
+            ActionManager.showResultPrices($row);
+            $row.find('.search-tourists-select').change(function () {
+                ActionManager.showResultPrices($row);
+            });
+        });
+        editModal.find('input.modalPackageId').val(packageData.id);
         editModal.modal('show');
+    };
+    ActionManager.showResultPrices = function ($row) {
+        var $searchTouristsSelect = $row.find('.search-tourists-select');
+        var $packageSearchBook = $row.find('.package-search-book');
+        var touristVal = $searchTouristsSelect.val(), touristArr = touristVal.split('_');
+        var ulPrices = $row.find('ul.package-search-prices');
+        ulPrices.hide();
+        ulPrices.find('li').hide();
+        ulPrices.find('li.' + touristVal + '_price').show();
+        ulPrices.show();
+        var isNullAmount = parseInt($("#s_adults").val() || $("#s_children").val());
+        if (!isNullAmount) {
+            var oldHref = $packageSearchBook.attr('data-url')
+                .replace(/&adults=.*?(?=(&|$))/, '')
+                .replace(/&children=.*?(?=(&|$))/, '');
+            $packageSearchBook.attr('data-url', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
+        }
+        else {
+            $searchTouristsSelect.attr("disabled", true);
+        }
     };
     ActionManager.prototype.modifyBookButton = function (packageData, element, editModal) {
         'use strict';
@@ -52,8 +79,10 @@ var ActionManager = (function () {
         if (packageData.accommodation) {
             newPackageCreateUrl += '&accommodation=' + packageData.accommodation;
         }
+        element.setAttribute('data-url', newPackageCreateUrl);
         element.onclick = function () {
-            self.dataManager.createPackageRequest(newPackageCreateUrl, packageData);
+            var url = element.getAttribute('data-url');
+            self.dataManager.createPackageRequest(url, packageData);
             editModal.modal('hide');
         };
     };

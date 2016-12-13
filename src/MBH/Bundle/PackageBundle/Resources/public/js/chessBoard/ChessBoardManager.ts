@@ -10,6 +10,8 @@ class ChessBoardManager {
     private static PACKAGE_ELEMENT_HEIGHT = 41;
     private static PACKAGE_TO_MIDDAY_OFFSET = 20;
     private static POPOVER_MIN_WIDTH = 250;
+    private static LEFT_BAR_WIDTH = 200;
+    private static SCROLL_BAR_WIDTH = 16;
 
     public dataManager;
     public actionManager;
@@ -29,7 +31,11 @@ class ChessBoardManager {
 
     public hangHandlers() {
         let wrapper = $('#calendarWrapper');
+        let self = this;
         let chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
+
+        ChessBoardManager.setContentWidth(chessBoardContentBlock);
+
         let templatePackageElement = ChessBoardManager.getTemplateElement();
         this.addPackages();
         document.body.style.paddingBottom = '0px';
@@ -43,7 +49,7 @@ class ChessBoardManager {
 
         $('#package-search-form').find('#s_adults').val(0);
 
-        let self = this;
+
         $('#packageModal, #package-edit-modal').on('hidden.bs.modal', function () {
             self.updateTable();
         });
@@ -134,8 +140,20 @@ class ChessBoardManager {
         return moment(document.getElementById('accommodation-report-end').value, "DD.MM.YYYY");
     }
 
+    private static setContentWidth(chessBoardContentBlock) {
+        let contentWidth = parseInt($('#months-and-dates').css('width'), 10)
+            + ChessBoardManager.LEFT_BAR_WIDTH + ChessBoardManager.SCROLL_BAR_WIDTH;
+
+        if (parseInt($(chessBoardContentBlock).css('width'), 10) > contentWidth) {
+            chessBoardContentBlock.style.width = contentWidth + 'px';
+        } else {
+            chessBoardContentBlock.style.width = 'auto';
+        }
+    }
+
     private saveNewPackage(packageElement) {
         'use strict';
+        let self = this;
         let packageData = ChessBoardManager.getPackageData($(packageElement));
         let $searchPackageForm = $('#package-search-form');
 
@@ -666,8 +684,6 @@ class ChessBoardManager {
     private static isPackageWithoutAccommodation(packageData) {
         return packageData.accommodation.startsWith("no_accommodation") || packageData.accommodation === "";
     }
-
-
 
     private updatePackagesData() {
         ChessBoardManager.deleteAllPackages();

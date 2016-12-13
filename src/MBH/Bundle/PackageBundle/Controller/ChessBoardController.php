@@ -56,6 +56,8 @@ class ChessBoardController extends BaseController
         ];
     }
 
+
+
     /**
      * @Method({"GET"})
      * @Route("/packages/{id}", name="chessboard_get_package", options={"expose"=true})
@@ -176,12 +178,11 @@ class ChessBoardController extends BaseController
         $beginDate = $helper->getDateFromString($request->get('filter_begin'));
         if (!$beginDate) {
             $beginDate = new \DateTime('00:00');
-            $beginDate->modify('-10 days');
+            $beginDate->modify('-5 days');
         }
         $endDate = $helper->getDateFromString($request->get('filter_end'));
         if (!$endDate || $endDate->diff($beginDate)->format("%a") > 160 || $endDate <= $beginDate) {
-            $endDate = clone $beginDate;
-            $endDate->modify('+20 days');
+            $endDate = (clone $beginDate)->add(new \DateInterval('P20D'));
         }
 
         $roomTypeIds = [];

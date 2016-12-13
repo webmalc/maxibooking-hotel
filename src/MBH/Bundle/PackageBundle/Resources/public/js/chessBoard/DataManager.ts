@@ -71,13 +71,16 @@ class DataManager {
             success: function (data) {
                 ActionManager.hideLoadingIndicator();
                 let packageId = self.handleResponse(data).packageId;
+                if (packageId) {
+                    // self.getPackageDataRequest(packageId);
+                }
             }
         });
     }
 
     private addPackageData(packageData) {
-        packageData.begin.date = DataManager.getPackageDate(packageData.begin);
-        packageData.end.date = DataManager.getPackageDate(packageData.end);
+        packageData.begin = {'date' : DataManager.getPackageDate(packageData.begin) };
+        packageData.end = { 'date'  : DataManager.getPackageDate(packageData.end) };
         packageData.payer = '';
 
         this._packages.push(packageData);

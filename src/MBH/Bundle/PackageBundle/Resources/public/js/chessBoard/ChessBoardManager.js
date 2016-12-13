@@ -13,7 +13,9 @@ var ChessBoardManager = (function () {
     };
     ChessBoardManager.prototype.hangHandlers = function () {
         var wrapper = $('#calendarWrapper');
+        var self = this;
         var chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
+        ChessBoardManager.setContentWidth(chessBoardContentBlock);
         var templatePackageElement = ChessBoardManager.getTemplateElement();
         this.addPackages();
         document.body.style.paddingBottom = '0px';
@@ -25,7 +27,6 @@ var ChessBoardManager = (function () {
             }
         });
         $('#package-search-form').find('#s_adults').val(0);
-        var self = this;
         $('#packageModal, #package-edit-modal').on('hidden.bs.modal', function () {
             self.updateTable();
         });
@@ -105,8 +106,19 @@ var ChessBoardManager = (function () {
     ChessBoardManager.getTableEndDate = function () {
         return moment(document.getElementById('accommodation-report-end').value, "DD.MM.YYYY");
     };
+    ChessBoardManager.setContentWidth = function (chessBoardContentBlock) {
+        var contentWidth = parseInt($('#months-and-dates').css('width'), 10)
+            + ChessBoardManager.LEFT_BAR_WIDTH + ChessBoardManager.SCROLL_BAR_WIDTH;
+        if (parseInt($(chessBoardContentBlock).css('width'), 10) > contentWidth) {
+            chessBoardContentBlock.style.width = contentWidth + 'px';
+        }
+        else {
+            chessBoardContentBlock.style.width = 'auto';
+        }
+    };
     ChessBoardManager.prototype.saveNewPackage = function (packageElement) {
         'use strict';
+        var self = this;
         var packageData = ChessBoardManager.getPackageData($(packageElement));
         var $searchPackageForm = $('#package-search-form');
         $searchPackageForm.find('#s_roomType').val(packageData.roomType);
@@ -583,6 +595,8 @@ var ChessBoardManager = (function () {
     ChessBoardManager.PACKAGE_ELEMENT_HEIGHT = 41;
     ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET = 20;
     ChessBoardManager.POPOVER_MIN_WIDTH = 250;
+    ChessBoardManager.LEFT_BAR_WIDTH = 200;
+    ChessBoardManager.SCROLL_BAR_WIDTH = 16;
     return ChessBoardManager;
 }());
 //# sourceMappingURL=ChessBoardManager.js.map
