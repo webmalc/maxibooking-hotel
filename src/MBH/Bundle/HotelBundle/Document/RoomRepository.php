@@ -125,7 +125,7 @@ class RoomRepository extends AbstractBaseRepository
 
     public function fetchAccommodationRoomsForPackage(Package $package, Hotel $hotel)
     {
-        $begin = $package->getCurrentAccommodationBegin();
+        $begin = $package->getLastEndAccommodation();
         $end = $package->getEnd();
         $interval = $end->diff($begin, true);
         if (!$interval->format('%d')) {
@@ -181,17 +181,6 @@ class RoomRepository extends AbstractBaseRepository
             $hotelRoomTypes[] = $roomType->getId();
         }
 
-        //packages with accommodation //Как тут быть, когда accomodation выбраны.
-//        $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
-//            $newBegin->modify('+1 day'), $newEnd->modify('-1 day'), $rooms, $excludePackages);
-//        foreach ($packages as $package) {
-//            /** @var Package $package */
-//            foreach ($package->getAccommodations() as $accommodation) {
-//                /** @var PackageAccommodation $accommodation */
-//                $ids[] = $accommodation->getAccommodation()->getId();
-//            }
-//
-//        };
         $pAccommodations = $dm
             ->getRepository('MBHPackageBundle:Package')
             ->fetchWithAccommodation(

@@ -27,13 +27,13 @@ class PackageAccommodationsValidator extends ConstraintValidator
         /** @var PackageAccommodation $packageAccommodation */
         $package = $packageAccommodation->getPackage();
 
-        if ($packageAccommodation->getBegin() < $package->getCurrentAccommodationBegin()) {
+        if ($packageAccommodation->getBegin() < $package->getLastEndAccommodation() || $packageAccommodation->getBegin() > $package->getLastEndAccommodation()) {
             $this->context->buildViolation($constraint->wrongStartDateMessage)
                 ->addViolation()
             ;
         }
 
-        if ($packageAccommodation->getEnd() > $package->getEnd()) {
+        if ($packageAccommodation->getEnd() > $package->getEnd() || $packageAccommodation->getEnd() <= $package->getLastEndAccommodation()) {
             $this->context->buildViolation($constraint->wrongEndDateMessage)
                 ->addViolation()
             ;

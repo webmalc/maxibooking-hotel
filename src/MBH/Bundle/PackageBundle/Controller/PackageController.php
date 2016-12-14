@@ -855,7 +855,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $accommodation
             ->setPackage($package)
             ->setRoom($room)
-            ->setBegin($package->getCurrentAccommodationBegin())
+            ->setBegin($package->getLastEndAccommodation())
             ->setEnd($package->getEnd())
         ;
         $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
@@ -1016,9 +1016,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         } catch (DeleteException $exception) {
             $this->addFlash('error', $this->get('translator')->trans($exception->getMessage()));
         }
-
-
-
 
         return $this->redirect($this->generateUrl('package_accommodation', ['id' => $package->getId()]));
     }
