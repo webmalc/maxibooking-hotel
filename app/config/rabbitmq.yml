@@ -14,12 +14,12 @@ old_sound_rabbit_mq:
             heartbeat: 0
             use_socket: false
     producers:
-      task_example:
+      task_room_cache_recalculate:
         connection:       default
-        exchange_options: {name: 'task_example', type: direct}
+        exchange_options: {name: 'task_room_cache_recalculate', type: direct}
     consumers:
-      task_example:
+      task_room_cache_recalculate:
         connection:       default
-        exchange_options: {name: 'task_example', type: direct}
-        queue_options:    {name: 'task_example'}
-        callback:         test_class
+        exchange_options: {name: 'task_room_cache_recalculate', type: direct}
+        queue_options:    {name: 'task_room_cache_recalculate'}
+        callback:         task_room_cache_recalculate
