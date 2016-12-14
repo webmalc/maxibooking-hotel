@@ -37,7 +37,9 @@ mbh-php-fpm:
     - ..:/var/www/mbh
     - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
     - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/cli/conf.d/99-overrides.ini
+    - ./php-fpm/start.sh:/start.sh
     - /tmp/:/tmp/
+    - ./supervisor/:/etc/supervisor/conf.d/
   links:
     - mbh-memcached
     - mbh-mongo
