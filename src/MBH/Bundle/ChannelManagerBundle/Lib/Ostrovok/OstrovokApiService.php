@@ -1,34 +1,37 @@
 <?php
 
-/**
- * Created by Zavalyuk Alexandr (Zalex).
- * email: zalex@zalex.com.ua
- * Date: 13.12.16
- * Time: 18:47
- */
+namespace MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok;
+
 class OstrovokApiService
 {
-    protected $auth_token;
-    protected $private_token;
-    private $apiUrl;
 
-    public function __construct(string $endpoint, string $auth_token, string $private_token)
+    const API_URL = 'http://extrota-sandbox.ostrovok.ru/echannel/api/v0.1/';
+
+    protected $auth_token;
+
+    protected $private_token;
+
+    public function __construct(array $config)
     {
-        $this->apiUrl = $endpoint;
-        $this->auth_token = $auth_token;
-        $this->private_token = $private_token;
+        $this->auth_token = $config['ostrovok']['username'];
+        $this->private_token = $config['ostrovok']['password'];
     }
 
     private function createSignatureString($data)
     {
         $is_list = false;
-        if (is_array($data)) {
+        if (is_array($data) && count($data)) {
+            if ($data[0]??false) {
+                $is_list = true;
+            }
+        }
+        /*if (is_array($data)) {
             if (count($data) > 0) {
                 if (is_int($data[0])) {
                     $is_list = true;
                 }
             }
-        }
+        }*/
 
         if (is_array($data) && !$is_list) {
             ksort($data);
@@ -68,13 +71,14 @@ class OstrovokApiService
     {
         $data["token"] = $this->auth_token;
         $data["sign"] = $this->getSignature($data, $this->private_token);
-        $final_url = $this->apiUrl . $api_method . "?" . http_build_query($data) . "&";
+        $final_url = self::API_URL . $api_method . "?" . http_build_query($data) . "&";
+
         return file_get_contents($final_url);
     }
 
     private function __callPUT($api_method, array $data, array $get_data = array())
     {
-        return $this->makeCall("PUT", $api_method, $data, $get_data)
+        return $this->makeCall("PUT", $api_method, $data, $get_data);
     }
 
     private function __callPOST($api_method, array $data, array $get_data = array())
@@ -89,7 +93,7 @@ class OstrovokApiService
         $get_data["token"] = $this->auth_token;
         $get_data["sign"] = $this->getSignature($signature_data, $this->private_token);
 
-        $final_url = $this->apiUrl . $api_method . "?" . http_build_query($get_data);
+        $final_url = self::API_URL . $api_method . "?" . http_build_query($get_data);
         $curl = curl_init($final_url);
 
         $data_json = json_encode($data);
@@ -104,6 +108,7 @@ class OstrovokApiService
 
         $response = curl_exec($curl);
         curl_close($curl);
+
         return $response;
     }
 
@@ -179,14 +184,3 @@ class OstrovokApiService
         return $this->__callPUT("rate_plans/", $rate_plan_params, $get_data);
     }
 }
-
-
-
-
-$auth_token = '722ac50470d8af33d509c069ccb83443';
-$private_token = 'edfdfba3f6902eb63aa254935e9a8a36';
-
-$api_client = new OstrovokApiService("http://extrota-sandbox.ostrovok.ru/echannel/api/v0.1/", $auth_token, $private_token);
-
-$hotels =  $api_client->getHotels();
-exit;

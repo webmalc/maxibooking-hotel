@@ -55,6 +55,8 @@ class Ostrovok extends Base
      */
     private $params;
 
+    private $apiBrowser;
+
     /**
      * @var string
      */
@@ -65,6 +67,7 @@ class Ostrovok extends Base
         parent::__construct($container);
         $this->params = $container->getParameter('mbh.channelmanager.services')['ostrovok'];
         !self::TEST ?: $this->url = self::TEST_URL;
+        $this->apiBrowser = $container->get('ostrovok_api_service');
     }
 
     /**
@@ -214,10 +217,10 @@ class Ostrovok extends Base
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
-        $response = $this->sendJson(
-            $this->getUrl($config, '/echannel/api/v0.1/room_categories/')
-        );
 
+        $response = $this->apiBrowser->getRoomCategories(['hotel' => $config->getHotelId()]);
+
+        $response = json_decode($response, true);
         $this->checkErrors($response);
 
         $rooms = [];
