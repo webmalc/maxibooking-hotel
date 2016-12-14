@@ -263,7 +263,9 @@ class DefaultController extends BaseController
             }
 
 //            $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-            $this->sendNotifications($order);
+            $arrival = $this->getParameter('mbh.package.arrival.time');
+            $departure = $this->getParameter('mbh.package.departure.time');
+            $this->sendNotifications($order, $arrival, $departure);
 
 //            $payButtonHtml = '';
 //            if ($payment && in_array($payment, self::ALLOWED_ONLINE_PAYMENT) && $clientConfig->getPaymentSystem()) {

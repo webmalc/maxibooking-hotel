@@ -1,6 +1,5 @@
 parameters:
     online_booking:
-#          request_search_url: 'index.php'
           request_search_url: '/mbresults.php'
           payonlineurl: http://azovsky-billing.com/pay/
 
