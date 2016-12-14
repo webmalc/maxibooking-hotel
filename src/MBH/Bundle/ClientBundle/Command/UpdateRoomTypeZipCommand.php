@@ -13,7 +13,7 @@ class UpdateRoomTypeZipCommand extends ContainerAwareCommand
      */
     private $dm;
 
-    const MAX = 60 * 1000;
+    const MAX = 60 * 10;
 
     protected function configure()
     {
