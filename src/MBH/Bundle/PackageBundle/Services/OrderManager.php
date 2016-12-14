@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\UserBundle\Document\User;
@@ -359,14 +360,7 @@ class OrderManager
             ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
             ->setIsForceBooking($results[0]->getForceBooking());
 
-        //accommodation
-        if ($query->accommodations) {
-            $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($data['accommodation']);
-            if (!$room) {
-                throw new PackageCreationException($order, 'Create package error: accommodation not found.');
-            }
-            $package->setAccommodation($room);
-        }
+
 
         //set isCheckIn
         if ($package->getAccommodation() && $package->getBegin() == new \DateTime('midnight')) {
@@ -433,6 +427,20 @@ class OrderManager
         $this->dm->persist($order);
         $this->dm->persist($package);
         $this->dm->flush();
+
+        //accommodation
+        if ($query->accommodations) {
+            $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($data['accommodation']);
+            if (!$room) {
+                throw new PackageCreationException($order, 'Create package error: accommodation not found.');
+            }
+            $packageAccommodation = new PackageAccommodation();
+            $packageAccommodation->setBegin($package->getBegin())->setEnd($package->getEnd())->setAccommodation($room);
+            $packageAccommodation->setPackage($package);
+
+            $this->dm->persist($packageAccommodation);
+            $this->dm->flush();
+        }
 
         //Acl
         if ($user) {
