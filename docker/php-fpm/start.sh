@@ -1,3 +1,3 @@
 #!/bin/sh
-/etc/init.d/supervisor start
+/var/www/mbh/bin/console rabbitmq-supervisor:rebuild
 exec /usr/sbin/php-fpm7.1 -F

@@ -33,3 +33,4 @@ parameters.yml
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
 web/online
+app/supervisor
