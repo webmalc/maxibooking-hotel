@@ -852,11 +852,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
         $accommodation = new PackageAccommodation();
         $accommodation
-            ->setPackage($package)
             ->setRoom($room)
             ->setBegin($package->getLastEndAccommodation())
             ->setEnd($package->getEnd())
         ;
+        $package->addAccommodation($accommodation);
         $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
         $form->handleRequest($request);
 
