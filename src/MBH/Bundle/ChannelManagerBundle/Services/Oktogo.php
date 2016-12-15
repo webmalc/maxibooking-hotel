@@ -149,6 +149,29 @@ class Oktogo extends Base
         return $response == '<ok />' ? true : false;
     }
 
+    public function clearConfig(ChannelManagerConfigInterface $config)
+    {
+        //roomTypes
+        $rooms = $this->pullRooms($config);
+        foreach ($config->getRooms() as $room) {
+            if (!isset($rooms[$room->getRoomId()])) {
+                $config->removeRoom($room);
+            }
+        }
+        //tariffs
+        $rates = $this->pullTariffs($config);
+        foreach ($config->getTariffs() as $tariff) {
+            if (!isset($rates[$tariff->getRoomType()][$tariff->getTariffId()])) {
+                $config->removeTariff($tariff);
+            }
+        }
+
+        $this->dm->persist($config);
+        $this->dm->flush();
+
+        return $config;
+    }
+
     public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
         $result = true;
@@ -169,7 +192,6 @@ class Oktogo extends Base
                 true,
                 $this->roomManager->useCategories
             );
-
 
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
@@ -706,8 +728,6 @@ class Oktogo extends Base
 
                 $result[(int)$attrRoom['id']][(int)$attrRate['id']] = [
                     'title' => (string)$rate['rateplan_name'],
-                    'readonly' => empty((int)$rate['readonly']) ? false : true,
-                    'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
                     'rate_id' => (int)$attrRate['id'],
                     'roomName' => (string)$attrRoom['room_name'],
                     'rooms' => (string)$attrRoom['id'],
@@ -728,10 +748,7 @@ class Oktogo extends Base
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
         foreach ($this->pullTariffs($config) as $key => $tariff) {
-
-            if (!$tariff['readonly'] || !$tariff['is_child_rate']) {
-                $tariffs[$key] = $tariff;
-            }
+            $tariffs[$key] = $tariff;
         }
 
         $request = $this->templating->render(

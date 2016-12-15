@@ -195,15 +195,23 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         if (!$config) {
             throw $this->createNotFoundException();
         }
-
-//          $this->get('mbh.channelmanager.oktogo')->pullTariffs($config);
+//        $rates = $this->get('mbh.channelmanager.oktogo')->pullTariffs($config);
+//        dump($rates);
+//        dump($config->getTariffs());
+//        exit();
+//        $gg = $this->get('mbh.channelmanager.oktogo')->clearConfig($config);
+//
+//        dump($gg);
+//        exit();
 //        $this->get('mbh.channelmanager.oktogo')->syncServices($config);
 //        $this->get('mbh.channelmanager.oktogo')->pullOrders();
 //        $this->get('mbh.channelmanager.oktogo')->updateRooms();
 //        $this->get('mbh.channelmanager.oktogo')->updatePrices();
 //        $this->get('mbh.channelmanager.oktogo')->closeForConfig($config);
 //        $this->get('mbh.channelmanager.oktogo')->updateRestrictions();
-//            exit();
+        $this->get('mbh.channelmanager.oktogo')->pullOrders();
+
+            exit();
 
         $form = $this->createForm(new OktogoTariffsType(), $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
