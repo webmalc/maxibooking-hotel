@@ -62,4 +62,16 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         return $this->fetchQueryBuilder($hotel, $roomTypes)->getQuery()->execute();
     }
 
+    /**
+     * Get last RoomType or null
+     *
+     * @return array|null|object
+     */
+    public function getLastRoomType()
+    {
+        $qb = $this->createQueryBuilder()->sort('createdAt', 'desc')->limit(1)->getQuery()->getSingleResult();
+
+        return $qb ?? null;
+    }
+
 }

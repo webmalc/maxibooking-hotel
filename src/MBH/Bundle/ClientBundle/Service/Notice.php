@@ -19,14 +19,9 @@ class Notice
     protected $dm;
 
     /**
-     * @var \Swift_Mailer
+     * @var Notifier
      */
     protected $notifier;
-
-    /**
-     * @var array
-     */
-    protected  $params;
 
     public function __construct(ManagerRegistry $dm, Notifier $notifier)
     {

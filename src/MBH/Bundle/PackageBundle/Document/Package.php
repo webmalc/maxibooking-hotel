@@ -950,6 +950,7 @@ class Package extends Base implements \JsonSerializable
     public function setIsPercentDiscount($isPercentDiscount)
     {
         $this->isPercentDiscount = $isPercentDiscount;
+        return $this;
     }
 
     /**
@@ -1295,6 +1296,7 @@ class Package extends Base implements \JsonSerializable
     public function setIsCheckOut($isCheckOut)
     {
         $this->isCheckOut = $isCheckOut;
+        return $this;
     }
 
     /**

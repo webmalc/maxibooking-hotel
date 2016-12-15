@@ -74,7 +74,7 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Field(type="int", name="minPerPrepay")
      * @Assert\Range(min=0, max=100)
      */
-    protected $minPerPrepay;
+    protected $minPerPrepay = 0;
 
     /**
      * @var string
@@ -296,6 +296,7 @@ class Tariff extends Base implements ConditionsInterface
     public function setMinPerPrepay(int $minPerPrepay)
     {
         $this->minPerPrepay = $minPerPrepay;
+        return $this;
     }
 
 

@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Command;
 
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\TaskData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\DataFixtures\MongoDB\PackageData;
 use MBH\Bundle\PackageBundle\Document\PollQuestion;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
@@ -116,6 +117,8 @@ class FixturesCommand extends ContainerAwareCommand
             $this->createTariffs($hotel);
         }
 
+        $this->createPackage();
+
         //Cities
         if ($input->getOption('cities')) {
             $this->createCities();
@@ -145,6 +148,8 @@ class FixturesCommand extends ContainerAwareCommand
         $hotel->setFullTitle($this->hotel)->setIsDefault(true);
         $this->dm->persist($hotel);
         $this->dm->flush();
+
+        $this->setReference();
 
         return [$hotel];
     }
@@ -243,6 +248,7 @@ class FixturesCommand extends ContainerAwareCommand
         $tariff->setFullTitle($this->tariff)
             ->setIsDefault(true)
             ->setIsOnline(true)
+            ->setMinPerPrepay(25)
             ->setHotel($hotel);
         $this->dm->persist($tariff);
         $this->dm->flush();
@@ -262,6 +268,13 @@ class FixturesCommand extends ContainerAwareCommand
         return $process->run();
     }
 
+    private function createPackage()
+    {
+        $package = new PackageData();
+        $package->setContainer($this->getContainer());
+        $package->load($this->dm);
+    }
+
     /**
      * @return int
      */
@@ -271,6 +284,8 @@ class FixturesCommand extends ContainerAwareCommand
         $taskData->setContainer($this->getContainer());
         $taskData->load($this->dm);
     }
+
+
 
     private function createPollQuestions()
     {
