@@ -19,7 +19,7 @@ trait PackageTrait
     /**
      * @var Package
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="Package", inversedBy="accommodations", cascade="persist")
+     * @ODM\ReferenceOne(targetDocument="Package", mappedBy="accommodations")
      * @Assert\NotNull()
      */
     protected $package;
