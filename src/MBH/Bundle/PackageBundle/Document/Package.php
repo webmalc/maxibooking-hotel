@@ -1565,6 +1565,7 @@ class Package extends Base implements \JsonSerializable
     public function getAccommodationByDate(\DateTime $dateTime)
     {
         $accommodation = $this->accommodations->filter(function ($accommodation) use ($dateTime) {
+            /** @var PackageAccommodation $accommodation */
             return $accommodation->getBegin() <= $dateTime && $dateTime <= $accommodation->getEnd();
         });
 
