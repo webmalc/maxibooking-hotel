@@ -1,3 +1,4 @@
+<input type="hidden" value="{{ package.id }}" id="package_info_package_id">
 <div class="package-info-block">
     <div class="row">
         <div class="col-md-4">{{ 'modal.chessBoard.package_source'|trans }}</div>
@@ -49,23 +50,42 @@
 <div class="package-info-block">
     <div class="row">
         <div class="col-md-4">{{ 'modal.chessBoard.roomType'|trans }}</div>
-        <div class="col-md-8 ">{{ package.roomType.name}}</div>
+        <div class="col-md-8 ">{{ package.roomType.name }}</div>
     </div>
     <div class="row">
-        <div class="col-md-4">{{ 'modal.chessBoard.room_number'|trans }}</div>
-        <div class="col-md-8 ">{% if package.accommodation %}{{ package.accommodation.name }}{% else %} {{ 'modal.chessBoard.without_accommodation'|trans }}{% endif %}</div>
+        <div class="col-md-4">{{ 'modal.chessBoard.accommodation'|trans }}</div>
+        {% if package.accommodations|length == 0 %}
+            <div class="col-md-8 ">
+                {{ 'modal.chessBoard.without_accommodation'|trans }}
+            </div>
+        {% else %}
+            <div class="col-md-3 text-right">Даты</div>
+            <div class="col-md-5">Номер</div>
+        {% endif %}
     </div>
+    {% if package.accommodations|length > 0 %}
+        {% for accommodation in package.accommodations %}
+            <div class="row">
+                <div class="col-md-offset-5 col-md-3 text-right">
+                    {{ accommodation.begin|mbh_format }} - {{ accommodation.end|mbh_format }}
+                </div>
+                <div class="col-md-4">
+                    {{ accommodation }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
 </div>
 {% if package.services|length > 0 %}
     <div class="package-info-block">
         <div class="row">
             <div class="col-md-4">{{ 'modal.chessBoard.services'|trans }}:</div>
-            <div class="col-md-8 "></div>
+            <div class="col-md-8"></div>
         </div>
         {% for service in package.services %}
             <div class="row">
-                <div class="col-md-4 col-md-offset-5">{{ service.service.name ~ '(' ~ service.amount ~ ')'}}</div>
-                {#TODO: Цену указывать за все услуги или за 1?#}
+                <div class="col-md-4 col-md-offset-5">{{ service.service.name ~ '(' ~ service.amount ~ ')' }}</div>
                 <div class="col-md-3">{{ service.price * service.amount ~ ' ' ~ currency }}</div>
             </div>
         {% endfor %}
@@ -74,11 +94,11 @@
 <div class="package-info-block">
     <div class="row">
         <div class="col-md-4">{{ 'modal.chessBoard.price'|trans }}</div>
-        <div class="col-md-8 ">{{ package.price ~ ' ' ~ currency}}</div>
+        <div class="col-md-8 ">{{ package.price ~ ' ' ~ currency }}</div>
     </div>
     <div class="row">
         <div class="col-md-4">{{ 'modal.chessBoard.serices_price'|trans }}</div>
-        <div class="col-md-8 ">{% if package.servicesPrice %}{{ package.servicesPrice }}{% else %} 0 {% endif %}{{' ' ~ currency }}</div>
+        <div class="col-md-8 ">{% if package.servicesPrice %}{{ package.servicesPrice }}{% else %} 0 {% endif %}{{ ' ' ~ currency }}</div>
     </div>
     <div class="row">
         <div class="col-md-4">{{ 'modal.chessBoard.payed'|trans }}</div>

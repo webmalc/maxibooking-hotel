@@ -4,7 +4,9 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Form\ChessBoardConciseType;
+use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,7 +31,8 @@ class ChessBoardController extends BaseController
         $filterData = $this->getFilterData($request);
 
         $builder = $this->get('mbh.package.report_data_builder')
-            ->init($this->hotel, $filterData['begin'], $filterData['end'], $filterData['roomTypeIds']);
+            ->init($this->hotel, $filterData['begin'], $filterData['end'],
+                $filterData['roomTypeIds'], $filterData['housing']);
 
         $form = $this->createForm(SearchType::class, null, [
             'security' => $this->container->get('mbh.hotel.selector'),
@@ -37,6 +40,16 @@ class ChessBoardController extends BaseController
             'hotel' => $this->hotel,
             'roomManager' => $this->get('mbh.hotel.room_type_manager')
         ]);
+
+        foreach ($builder->getPackagesWithoutAccommodation() as $item) {
+            /** @var Package $item */
+            if ($item->getName() == '38/1') {
+                $gfd = $item->getBegin();
+            }
+        }
+
+        $fdgfdg = 234;
+
 
         return [
             'searchForm' => $form->createView(),
@@ -47,7 +60,8 @@ class ChessBoardController extends BaseController
             'roomTypesData' => $builder->getRoomTypeData(),
             'leftRoomsData' => $builder->getLeftRoomCounts(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
-            'packages' => json_encode($builder->getPackageData()),
+            'packages' => json_encode($builder->getAccommodationIntervals()),
+            'noAccommodationIntervals' => json_encode($builder->getNoAccommodationIntervals()),
             'leftRoomsJsonData' => json_encode($builder->getLeftRoomCounts()),
             'noAccommodationCounts' => json_encode($builder->getDayNoAccommodationPackageCounts()),
             'roomTypes' => $this->hotel->getRoomTypes(),
@@ -57,18 +71,17 @@ class ChessBoardController extends BaseController
     }
 
 
-
     /**
      * @Method({"GET"})
      * @Route("/packages/{id}", name="chessboard_get_package", options={"expose"=true})
-     * @param Package $package
-     * @Template()
+     * @param PackageAccommodation $accommodation
      * @return array
+     * @Template()
      */
-    public function getPackageAction(Package $package)
+    public function getPackageAction(PackageAccommodation $accommodation)
     {
         return [
-            'package' => $package,
+            'package' => $accommodation->getPackage(),
             'currency' => $this->getParameter('locale.currency')
         ];
     }
@@ -76,13 +89,12 @@ class ChessBoardController extends BaseController
     /**
      * @Method({"DELETE"})
      * @Route("/packages/{id}", name="chessboard_remove_package", options={"expose"=true})
-     * @param Package $package
+     * @param PackageAccommodation $accommodation
      * @return JsonResponse
-     * @internal param Request $request
      */
-    public function removePackageAction(Package $package)
+    public function removePackageAction(PackageAccommodation $accommodation)
     {
-        $this->dm->remove($package);
+        $this->dm->remove($accommodation);
         $this->dm->flush();
 
         return new JsonResponse(json_encode(
@@ -97,25 +109,24 @@ class ChessBoardController extends BaseController
      * @Method({"PUT"})
      * @Route("/packages/{id}", name="concise_package_update", options={"expose"=true})
      * @param Request $request
-     * @param Package $package
+     * @param PackageAccommodation $accommodation
      * @return JsonResponse
      */
-    public function updatePackageAction(Request $request, Package $package)
+    public function updatePackageAction(Request $request, PackageAccommodation $accommodation)
     {
         $helper = $this->container->get('mbh.helper');
-        $oldPackage = clone $package;
+        $oldPackage = clone $accommodation;
 
-        $package->setBegin($helper::getDateFromString($request->request->get('begin')));
-        $package->setEnd($helper::getDateFromString($request->request->get('end')));
-        $package->setRoomType($this->dm->find('MBHHotelBundle:RoomType', $request->request->get('roomType')));
-        $package->setAccommodation($this->dm->find('MBHHotelBundle:Room', $request->request->get('room')));
+        $accommodation->setBegin($helper::getDateFromString($request->request->get('begin')));
+        $accommodation->setEnd($helper::getDateFromString($request->request->get('end')));
+        $accommodation->setAccommodation($this->dm->find('MBHHotelBundle:Room', $request->request->get('room')));
 
-        $errors = $this->get('validator')->validate($package);
+        $errors = $this->get('validator')->validate($accommodation);
 
         if (count($errors) === 0) {
-            $result = $this->container->get('mbh.order_manager')->updatePackage($oldPackage, $package);
+            $result = $this->container->get('mbh.order_manager')->updatePackage($oldPackage, $accommodation);
             if ($result instanceof Package) {
-                $this->dm->persist($package);
+                $this->dm->persist($accommodation);
                 $this->dm->flush();
                 $response = [
                     'success' => true,
@@ -163,9 +174,13 @@ class ChessBoardController extends BaseController
     {
         $filterData = $this->getFilterData($request);
         $builder = $this->get('mbh.package.report_data_builder')
-            ->init($this->hotel, $filterData['begin'], $filterData['end'], $filterData['roomTypeIds']);
+            ->init($this->hotel,
+                $filterData['begin'],
+                $filterData['end'],
+                $filterData['roomTypeIds']
+                );
 
-        $data['packages'] = $builder->getPackageData();
+        $data['packages'] = $builder->getAccommodationData();
         $data['leftRoomCounts'] = $builder->getLeftRoomCounts();
         $data['noAccommodationCounts'] = $builder->getDayNoAccommodationPackageCounts();
 

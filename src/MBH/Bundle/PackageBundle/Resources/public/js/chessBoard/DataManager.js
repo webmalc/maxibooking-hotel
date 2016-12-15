@@ -1,11 +1,12 @@
 ///<reference path="ActionManager.ts"/>
 ///<reference path="ChessBoardManager.ts"/>
 var DataManager = (function () {
-    function DataManager(packages, leftRoomsData, noAccommodationCounts, chessBoardManager) {
+    function DataManager(packages, leftRoomsData, noAccommodationCounts, noAccommodationIntervals, chessBoardManager) {
         this._packages = packages;
         this._leftRoomCounts = leftRoomsData;
         this.chessBoardManager = chessBoardManager;
         this.noAccommodationCounts = noAccommodationCounts;
+        this.noAccommodationIntervals = noAccommodationIntervals;
         this.actionManager = new ActionManager(this);
     }
     DataManager.prototype.handleResponse = function (jsonResponse) {
@@ -18,6 +19,10 @@ var DataManager = (function () {
     };
     DataManager.prototype.getPackages = function () {
         return this._packages;
+    };
+    DataManager.prototype.getNoAccommodationIntervals = function () {
+        console.log(this.noAccommodationIntervals);
+        return this.noAccommodationIntervals;
     };
     DataManager.prototype.getLeftRoomCounts = function () {
         return this._leftRoomCounts;
@@ -52,6 +57,7 @@ var DataManager = (function () {
                 ActionManager.hideLoadingIndicator();
                 var packageId = self.handleResponse(data).packageId;
                 if (packageId) {
+                    self.getPackageDataRequest(packageId);
                 }
             }
         });
@@ -69,7 +75,6 @@ var DataManager = (function () {
         this._packages.forEach(function (packageDataItem) {
             if (packageDataItem.id === packageData.id) {
                 packageDataItem.begin.date = DataManager.getPackageDate(packageData.begin);
-                console.log(packageDataItem);
                 packageDataItem.end.date = DataManager.getPackageDate(packageData.end);
                 packageDataItem.accommodation = packageData.accommodation;
                 packageDataItem.roomTypeId = packageData.roomTypeId;
@@ -107,21 +112,21 @@ var DataManager = (function () {
             }
         });
     };
-    DataManager.prototype.getPackageDataRequest = function (packageId) {
+    DataManager.prototype.getPackageDataRequest = function (accommodationId) {
         ActionManager.showLoadingIndicator();
         var self = this;
         $.ajax({
-            url: Routing.generate('chessboard_get_package', { id: packageId }),
+            url: Routing.generate('chessboard_get_package', { id: accommodationId }),
             type: "GET",
             success: function (data) {
                 ActionManager.hideLoadingIndicator();
-                self.actionManager.showPackageInfoModal(packageId, data);
+                self.actionManager.showPackageInfoModal(accommodationId, data);
             },
             dataType: 'html'
         });
     };
-    DataManager.prototype.getPackageDataById = function (packageId) {
-        return this.getPackages().find(function (packageData) {
+    DataManager.prototype.getIntervalById = function (packageId) {
+        return this.getNoAccommodationIntervals().find(function (packageData) {
             return packageData.id === packageId;
         });
     };

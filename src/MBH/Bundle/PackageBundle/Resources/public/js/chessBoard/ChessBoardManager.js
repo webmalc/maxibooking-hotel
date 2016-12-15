@@ -1,7 +1,7 @@
 ///<reference path="DataManager.ts"/>
 var ChessBoardManager = (function () {
-    function ChessBoardManager(packagesData, leftRoomsData, noAccommodationCounts) {
-        this.dataManager = new DataManager(packagesData, leftRoomsData, noAccommodationCounts, this);
+    function ChessBoardManager(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals) {
+        this.dataManager = new DataManager(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals, this);
         this.actionManager = new ActionManager(this.dataManager);
         this.updateNoAccommodationPackageCounts();
     }
@@ -204,7 +204,7 @@ var ChessBoardManager = (function () {
         packageDiv.id = packageItem.id;
         var description = document.createElement('div');
         description.classList.add('package-description');
-        description.innerText = packageItem.payer ? packageItem.payer.substr(0, packageCellCount * 5 - 5) : '';
+        description.innerText = packageItem.name ? packageItem.name.substr(0, packageCellCount * 5 - 5) : '';
         packageDiv.appendChild(description);
         packageDiv.classList.add(packageItem.paidStatus);
         return packageDiv;
@@ -387,7 +387,7 @@ var ChessBoardManager = (function () {
         //1 - бордер
         return Math.floor(height / ChessBoardManager.PACKAGE_ELEMENT_HEIGHT) * ChessBoardManager.PACKAGE_ELEMENT_HEIGHT - 1;
     };
-    ChessBoardManager.prototype.addResizable = function (jQueryObj) {
+    ChessBoardManager.prototype.addResizable = function (jQueryObj, resizableSides) {
         var elementStartBackground;
         var self = this;
         jQueryObj.resizable({
@@ -499,11 +499,10 @@ var ChessBoardManager = (function () {
             var currentDate = moment(this.getAttribute('data-date'), "DD.MM.YYYY");
             var templatePackageElement = ChessBoardManager.getTemplateElement();
             var packageElementsContainer = document.createElement('div');
-            var packagesByCurrentDate = self.dataManager.getPackages().filter(function (packageData) {
-                if (ChessBoardManager.isPackageWithoutAccommodation(packageData)
-                    && packageData.roomTypeId === roomTypeId) {
-                    var packageBeginDate = ChessBoardManager.getMomentDate(packageData.begin.date);
-                    var packageEndDate = ChessBoardManager.getMomentDate(packageData.end.date);
+            var packagesByCurrentDate = self.dataManager.getNoAccommodationIntervals().filter(function (noAccommodationInterval) {
+                if (noAccommodationInterval.roomTypeId === roomTypeId) {
+                    var packageBeginDate = ChessBoardManager.getMomentDate(noAccommodationInterval.begin.date);
+                    var packageEndDate = ChessBoardManager.getMomentDate(noAccommodationInterval.end.date);
                     var beginAndCurrentDiff = currentDate.diff(packageBeginDate, 'days');
                     var endAndCurrentDiff = packageEndDate.diff(currentDate, 'days');
                     return beginAndCurrentDiff >= 0 && endAndCurrentDiff > 0;
@@ -538,7 +537,8 @@ var ChessBoardManager = (function () {
                 relocatablePackage = this;
                 $wrapper.append(this);
                 this.style.position = 'absolute';
-                var packageData = self.dataManager.getPackageDataById(this.id);
+                var packageData = self.dataManager.getIntervalById(this.id);
+                console.log(packageData);
                 var packageStartDate = ChessBoardManager.getMomentDate(packageData.begin.date);
                 this.style.left = ChessBoardManager.getPackageLeftOffset(packageStartDate) + 'px';
                 this.style.top = ChessBoardManager.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)

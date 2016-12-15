@@ -12,12 +12,14 @@ class DataManager {
     private chessBoardManager;
     private actionManager;
     private noAccommodationCounts;
+    private noAccommodationIntervals;
 
-    constructor(packages, leftRoomsData, noAccommodationCounts, chessBoardManager) {
+    constructor(packages, leftRoomsData, noAccommodationCounts, noAccommodationIntervals, chessBoardManager) {
         this._packages = packages;
         this._leftRoomCounts = leftRoomsData;
         this.chessBoardManager = chessBoardManager;
         this.noAccommodationCounts = noAccommodationCounts;
+        this.noAccommodationIntervals = noAccommodationIntervals;
         this.actionManager = new ActionManager(this);
     }
 
@@ -34,6 +36,11 @@ class DataManager {
 
     public getPackages() {
         return this._packages;
+    }
+
+    public getNoAccommodationIntervals() {
+        console.log(this.noAccommodationIntervals);
+        return this.noAccommodationIntervals;
     }
 
     public getLeftRoomCounts() {
@@ -72,17 +79,16 @@ class DataManager {
                 ActionManager.hideLoadingIndicator();
                 let packageId = self.handleResponse(data).packageId;
                 if (packageId) {
-                    // self.getPackageDataRequest(packageId);
+                    self.getPackageDataRequest(packageId);
                 }
             }
         });
     }
 
     private addPackageData(packageData) {
-        packageData.begin = {'date' : DataManager.getPackageDate(packageData.begin) };
+        packageData.begin = { 'date' : DataManager.getPackageDate(packageData.begin) };
         packageData.end = { 'date'  : DataManager.getPackageDate(packageData.end) };
         packageData.payer = '';
-
         this._packages.push(packageData);
     }
 
@@ -95,7 +101,6 @@ class DataManager {
         this._packages.forEach(function (packageDataItem) {
             if (packageDataItem.id === packageData.id) {
                 packageDataItem.begin.date = DataManager.getPackageDate(packageData.begin);
-                console.log(packageDataItem);
                 packageDataItem.end.date = DataManager.getPackageDate(packageData.end);
                 packageDataItem.accommodation = packageData.accommodation;
                 packageDataItem.roomTypeId = packageData.roomTypeId;
@@ -137,22 +142,22 @@ class DataManager {
         });
     }
 
-    public getPackageDataRequest(packageId) {
+    public getPackageDataRequest(accommodationId) {
         ActionManager.showLoadingIndicator();
         let self = this;
         $.ajax({
-            url: Routing.generate('chessboard_get_package', {id: packageId}),
+            url: Routing.generate('chessboard_get_package', {id: accommodationId}),
             type: "GET",
             success: function (data) {
                 ActionManager.hideLoadingIndicator();
-                self.actionManager.showPackageInfoModal(packageId, data);
+                self.actionManager.showPackageInfoModal(accommodationId, data);
             },
             dataType: 'html'
         });
     }
 
-    public getPackageDataById(packageId) {
-        return this.getPackages().find(function(packageData) {
+    public getIntervalById(packageId) {
+        return this.getNoAccommodationIntervals().find(function(packageData) {
             return packageData.id === packageId;
         })
     }

@@ -34,8 +34,8 @@ class ActionManager {
         $loadingIndicator.hide();
     }
 
-    public callPackageInfoModal(packageId) {
-        this.dataManager.getPackageDataRequest(packageId);
+    public callPackageInfoModal(accommodationId) {
+        this.dataManager.getPackageDataRequest(accommodationId);
     }
 
     public handleSearchOptionsModal(packageData, searchData) {
@@ -64,7 +64,6 @@ class ActionManager {
         });
 
         editModal.find('input.modalPackageId').val(packageData.id);
-
         editModal.modal('show');
     }
 
@@ -111,12 +110,16 @@ class ActionManager {
         };
     }
 
-    public showPackageInfoModal(packageId, data) {
+    public showPackageInfoModal(accommodationId, data) {
         let self = this;
+
         var packageInfoModal = $('#package-info-modal');
-        packageInfoModal.find('#package-info-modal-edit').attr('href', Routing.generate('package_edit', {id: packageId}));
+        packageInfoModal.find('#package-info-modal-edit').click(function () {
+            let packageId = document.getElementById('package_info_package_id').value;
+            packageInfoModal.find('#package-info-modal-edit').attr('href', Routing.generate('package_edit', {id: packageId}));
+        });
         packageInfoModal.find('#package-info-modal-delete').click(function () {
-            self.callRemoveConfirmationModal(packageId);
+            self.callRemoveConfirmationModal(accommodationId);
             packageInfoModal.modal('hide');
         });
         packageInfoModal.find('#package-info-modal-body').html(data);

@@ -25,8 +25,8 @@ var ActionManager = (function () {
         var $loadingIndicator = $('#loading-indicator');
         $loadingIndicator.hide();
     };
-    ActionManager.prototype.callPackageInfoModal = function (packageId) {
-        this.dataManager.getPackageDataRequest(packageId);
+    ActionManager.prototype.callPackageInfoModal = function (accommodationId) {
+        this.dataManager.getPackageDataRequest(accommodationId);
     };
     ActionManager.prototype.handleSearchOptionsModal = function (packageData, searchData) {
         var self = this;
@@ -86,12 +86,15 @@ var ActionManager = (function () {
             editModal.modal('hide');
         };
     };
-    ActionManager.prototype.showPackageInfoModal = function (packageId, data) {
+    ActionManager.prototype.showPackageInfoModal = function (accommodationId, data) {
         var self = this;
         var packageInfoModal = $('#package-info-modal');
-        packageInfoModal.find('#package-info-modal-edit').attr('href', Routing.generate('package_edit', { id: packageId }));
+        packageInfoModal.find('#package-info-modal-edit').click(function () {
+            var packageId = document.getElementById('package_info_package_id').value;
+            packageInfoModal.find('#package-info-modal-edit').attr('href', Routing.generate('package_edit', { id: packageId }));
+        });
         packageInfoModal.find('#package-info-modal-delete').click(function () {
-            self.callRemoveConfirmationModal(packageId);
+            self.callRemoveConfirmationModal(accommodationId);
             packageInfoModal.modal('hide');
         });
         packageInfoModal.find('#package-info-modal-body').html(data);

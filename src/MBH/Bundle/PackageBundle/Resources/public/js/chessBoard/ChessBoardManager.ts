@@ -23,8 +23,8 @@ class ChessBoardManager {
         }
     }
 
-    constructor(packagesData, leftRoomsData, noAccommodationCounts) {
-        this.dataManager = new DataManager(packagesData, leftRoomsData, noAccommodationCounts, this);
+    constructor(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals) {
+        this.dataManager = new DataManager(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals, this);
         this.actionManager = new ActionManager(this.dataManager);
         this.updateNoAccommodationPackageCounts();
     }
@@ -257,7 +257,7 @@ class ChessBoardManager {
         packageDiv.id = packageItem.id;
         var description = document.createElement('div');
         description.classList.add('package-description');
-        description.innerText = packageItem.payer ? packageItem.payer.substr(0, packageCellCount * 5 - 5) : '';
+        description.innerText = packageItem.name ? packageItem.name.substr(0, packageCellCount * 5 - 5) : '';
         packageDiv.appendChild(description);
         packageDiv.classList.add(packageItem.paidStatus);
 
@@ -469,7 +469,7 @@ class ChessBoardManager {
         return Math.floor(height / ChessBoardManager.PACKAGE_ELEMENT_HEIGHT) * ChessBoardManager.PACKAGE_ELEMENT_HEIGHT - 1;
     }
 
-    private addResizable(jQueryObj) {
+    private addResizable(jQueryObj, resizableSides) {
         var elementStartBackground;
         let self = this;
         jQueryObj.resizable({
@@ -595,11 +595,10 @@ class ChessBoardManager {
             let templatePackageElement = ChessBoardManager.getTemplateElement();
             let packageElementsContainer = document.createElement('div');
 
-            let packagesByCurrentDate = self.dataManager.getPackages().filter(function (packageData) {
-                if (ChessBoardManager.isPackageWithoutAccommodation(packageData)
-                    && packageData.roomTypeId === roomTypeId) {
-                    let packageBeginDate = ChessBoardManager.getMomentDate(packageData.begin.date);
-                    let packageEndDate = ChessBoardManager.getMomentDate(packageData.end.date);
+            let packagesByCurrentDate = self.dataManager.getNoAccommodationIntervals().filter(function (noAccommodationInterval) {
+                if (noAccommodationInterval.roomTypeId === roomTypeId) {
+                    let packageBeginDate = ChessBoardManager.getMomentDate(noAccommodationInterval.begin.date);
+                    let packageEndDate = ChessBoardManager.getMomentDate(noAccommodationInterval.end.date);
 
                     let beginAndCurrentDiff = currentDate.diff(packageBeginDate, 'days');
                     let endAndCurrentDiff = packageEndDate.diff(currentDate, 'days');
@@ -640,7 +639,8 @@ class ChessBoardManager {
                 relocatablePackage = this;
                 $wrapper.append(this);
                 this.style.position = 'absolute';
-                let packageData = self.dataManager.getPackageDataById(this.id);
+                let packageData = self.dataManager.getIntervalById(this.id);
+                console.log(packageData);
                 let packageStartDate = ChessBoardManager.getMomentDate(packageData.begin.date);
                 this.style.left = ChessBoardManager.getPackageLeftOffset(packageStartDate) + 'px';
                 this.style.top = ChessBoardManager.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)

@@ -26,7 +26,7 @@ form.packageAccommodationType.room_or_bed: Комната/койко-место
 form.packageAccommodationType.room: Комната
 form.packageAccommodationType.choose_placement: Информация о размещении
 form.packageAccommodationType.are_guests_checked_in: Гости заехали?
-form.packageAccommodationType.are_guests_checked_in_help: Заехал ли гости в номер?
+form.packageAccommodationType.are_guests_checked_in_help: Заехали ли гости в номер?
 form.packageAccommodationType.are_guests_checked_out: Гости выехали?
 form.packageAccommodationType.are_guests_checked_out_help: Выехали ли гости из номера?
 form.packageAccommodationType.help: Выехали ли гости из номера?
@@ -412,7 +412,7 @@ modal.chessBoard.no: Нет
 modal.chessBoard.guests: Гости
 modal.chessBoard.not_specified: Не указаны
 modal.chessBoard.roomType: Тип номера
-modal.chessBoard.room_number: Номер
+modal.chessBoard.accommodation: Размещение
 modal.chessBoard.without_accommodation: Без размещения
 modal.chessBoard.services: Услуги
 modal.chessBoard.price: Стоимость

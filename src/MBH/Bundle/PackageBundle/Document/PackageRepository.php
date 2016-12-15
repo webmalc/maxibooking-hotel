@@ -52,12 +52,10 @@ class PackageRepository extends DocumentRepository
 
     /**
      * @param PackageQueryCriteria $criteria
-     * @param int $limit
      * @return Package[]
      */
-    public function findByQueryCriteria(PackageQueryCriteria $criteria, $limit = 50)
+    public function findByQueryCriteria(PackageQueryCriteria $criteria)
     {
-        $criteria->limit = $limit;
         return $this->queryCriteriaToBuilder($criteria)
             ->getQuery()->execute();
     }
@@ -130,17 +128,22 @@ class PackageRepository extends DocumentRepository
             $queryBuilder->field($dateFilterBy)->lte($criteria->end);
         }
 
+        if (count($criteria->getAccommodations()) > 0) {
+            $queryBuilder->field('accommodations.id')->in($criteria->getAccommodations());
+        }
+
+        // without accommodation
+        if ($criteria->isWithoutAccommodation()) {
+            $where = "function() { return !(this.accomodations && this.accomodations.length > 0; })";
+            $queryBuilder->expr()->field('accommodations.0')->where($where);
+        }
+
         // filter
         if (isset($criteria->filter)) {
             //live now
             if ($criteria->filter == 'live_now') {
                 $queryBuilder->field('begin')->lte($now);
                 $queryBuilder->field('end')->gte($now);
-            }
-            // without accommodation
-            if ($criteria->filter == 'without_accommodation') {
-                $queryBuilder->addOr($queryBuilder->expr()->field('accommodation')->exists(false));
-                $queryBuilder->addOr($queryBuilder->expr()->field('accommodation')->equals(null));
             }
 
             // live_between
