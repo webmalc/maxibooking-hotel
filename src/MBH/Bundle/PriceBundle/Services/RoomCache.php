@@ -65,31 +65,6 @@ class RoomCache
     }
 
     /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param array $roomTypes array of ids
-     */
-    public function recalculateByPackagesBackground(\DateTime $begin, \DateTime $end, array $roomTypes)
-    {
-        if ($this->container->get('kernel')->getEnvironment() == 'prod') {
-            $env = '--env=prod ';
-        } else {
-            $env = '';
-        }
-
-        $roomTypes = ' --roomTypes=' . implode(',', $roomTypes);
-        $begin = ' --begin=' . $begin->format('d.m.Y');
-        $end = ' --end=' . $end->format('d.m.Y');
-        $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-
-        $process = new Process(
-            'nohup php ' . $console . 'mbh:cache:recalculate --no-debug ' . $env . $begin . $end . $roomTypes . ' > /dev/null 2>&1 &'
-        );
-
-        $process->run();
-    }
-
-    /**
      * @param \DateTime $begin |null
      * @param \DateTime $end |null
      * @param array $roomTypes array of ids
@@ -241,7 +216,13 @@ class RoomCache
         } else {
             $this->container->get('mbh.mongo')->batchInsert('RoomCache', $roomCaches);
             $this->container->get('mbh.mongo')->update('RoomCache', $updates);
-            $this->recalculateByPackagesBackground($begin, $end, $this->helper->toIds($roomTypes));
+            $this->container->get('old_sound_rabbit_mq.task_room_cache_recalculate_producer')->publish(serialize(
+                [
+                    'begin' => $begin,
+                    'end' => $end,
+                    'roomTypes' => $this->helper->toIds($roomTypes)
+                ]
+            ));
         }
     }
 }

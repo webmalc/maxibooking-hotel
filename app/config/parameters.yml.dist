@@ -11,6 +11,13 @@ parameters:
   mongodb_url: 'mongodb://mbh-mongo:27017/mbh'
   mongodb_database: mbh
 
+  #Rabbitmq
+  rabbitmq_user: 'rabbitmq'
+  rabbitmq_password: 'rabbitmq'
+  rabbitmq_host: 'localhost'
+  rabbitmq_vhost: '/'
+  rabbitmq_port: '5672'
+
   #Security
   secret: mySyperSecretKeyForSymfony
   mbhs_key: mySyperSecretKeyForMBHS
