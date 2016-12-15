@@ -62,6 +62,9 @@ class PackageZip
         $this->helper = $helper;
     }
 
+    /**
+     * @return mixed
+     */
     public function packagesZip()
     {
         $this->logger->alert('---------START---------');
@@ -72,7 +75,7 @@ class PackageZip
         $info['amount'] = 0;
         $info['error'] = 0;
 
-        for ($i = 0; $i <= ceil($this->getMaxAmountPackages($roomTypesByCategories)/$skip); $i++) {
+        for ($i = 0; $i <= ceil($this->getMaxAmountPackages($roomTypesByCategories) / $skip); $i++) {
 
             try {
 
@@ -88,7 +91,7 @@ class PackageZip
                         $beginLog = clone $package->getBegin();
                         $endLog = clone $package->getEnd();
 
-                        $this->LogPackage('BEGIN PACKAGE INFO', $beginLog, $endLog, $package);
+                        $this->logPackage('BEGIN PACKAGE INFO', $beginLog, $endLog, $package);
 
                         $categoryRoomType[] = $package->getRoomType()->getCategory()->getId();
                         $roomTypesByCategory = $this->dm->getRepository('MBHHotelBundle:RoomType')->roomByCategories($roomTypeZipConfig->getHotel(), $categoryRoomType);
@@ -130,7 +133,7 @@ class PackageZip
 
                         $result = $this->orderManager->updatePackage($oldPackage, $newPackage);
 
-                        if ($result instanceof Package && !($package->getRoomType()->getId() == $newPackage->getRoomType()->getId()) ) {
+                        if ($result instanceof Package && !($package->getRoomType()->getId() == $newPackage->getRoomType()->getId())) {
 
                             $info['amount']++;
                             $package->setEnd($endDate)
@@ -142,7 +145,7 @@ class PackageZip
 
                             $beginLog2 = clone $package->getBegin();
                             $endLog2 = clone $package->getEnd();
-                            $this->LogPackage('CHANGED PACKAGE INFO', $beginLog2, $endLog2, $package);
+                            $this->logPackage('CHANGED PACKAGE INFO', $beginLog2, $endLog2, $package);
 
                         }
 
@@ -152,8 +155,8 @@ class PackageZip
                 $this->dm->clear();
 
             } catch (\Exception $e) {
-                $info['error']++ ;
-                $this->LogPackage('ERROR: ' . $e->getMessage(), $package->getBegin(), $package->getEnd(), $package);
+                $info['error']++;
+                $this->logPackage('ERROR: ' . $e->getMessage(), $package->getBegin(), $package->getEnd(), $package);
             }
 
         }
@@ -164,16 +167,26 @@ class PackageZip
         return $info;
     }
 
+    /**
+     * @param $roomTypesByCategories
+     * @return Package
+     */
     protected function getMaxAmountPackages($roomTypesByCategories)
     {
         return $this->dm->getRepository('MBHPackageBundle:Package')->getPackageCategory(
-                new \DateTime(self::BEGIN),
-                new \DateTime(self::END),
-                $roomTypesByCategories ? array_keys($roomTypesByCategories->toArray()) : null,
-                true
+            new \DateTime(self::BEGIN),
+            new \DateTime(self::END),
+            $roomTypesByCategories ? array_keys($roomTypesByCategories->toArray()) : null,
+            true
         );
     }
 
+    /**
+     * @param null $roomTypesByCategories
+     * @param $skip
+     * @param $count
+     * @return Package
+     */
     protected function getPackages($roomTypesByCategories = null, $skip, $count)
     {
 
@@ -191,6 +204,10 @@ class PackageZip
 
     }
 
+    /**
+     * @param $config
+     * @return mixed
+     */
     protected function roomTypeByCategories($config)
     {
 
@@ -198,7 +215,13 @@ class PackageZip
 
     }
 
-    protected function LogPackage($message, $begin, $end, $package)
+    /**
+     * @param $message
+     * @param $begin
+     * @param $end
+     * @param $package
+     */
+    protected function logPackage($message, $begin, $end, $package)
     {
         $this->logger->info($message, [
             'Begin' => $begin->format('d-m-Y'),
