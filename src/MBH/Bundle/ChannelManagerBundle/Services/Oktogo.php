@@ -42,8 +42,6 @@ class Oktogo extends Base
     public $servicesConfig = [
         'parking' => 'Parking space',
         'cot' => 'Babycot',
-        'DoubleBed' => 'DoubleBed',
-        'TwoBeds' => 'TwoBeds',
         'CB' => 'Continental breakfast',
         'BB' => 'Breakfast',
         'BR' => 'Full english breakfast',
@@ -687,7 +685,9 @@ class Oktogo extends Base
             //services
             $mealType = (string)$room->meal;
             if (isset($special['parking']) || isset($special['cot']) || isset($special['bed_type']) || isset($mealType)) {
-                isset($mealType) ? $special->addAttribute('meal', $mealType) : null;
+
+                is_array($special) ? $special[] = $mealType : $special->addAttribute('meal', $mealType);
+
                 foreach ($special as $service => $value) {
                     if (isset($this->servicesConfig[$service]) || isset($this->servicesConfig[(string)$value])) {
                         $packageService = new PackageService();
