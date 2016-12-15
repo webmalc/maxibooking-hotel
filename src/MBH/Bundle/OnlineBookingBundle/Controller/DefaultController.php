@@ -36,6 +36,7 @@ class DefaultController extends BaseController
     public function indexAction(Request $request)
     {
         $step = $request->get('step');
+
         if ($step && $step == 2) {
             return $this->signAction($request);//$this->forward('MBHOnlineBookingBundle:Default:sign');
         }

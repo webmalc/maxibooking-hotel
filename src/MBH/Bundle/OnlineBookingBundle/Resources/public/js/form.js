@@ -1,3 +1,6 @@
+var mytrigger = {
+    recountChildren: ''
+}
 $(function () {
     var restrictions,
         updateRestrictions = function () {
@@ -268,6 +271,8 @@ $(function () {
         drawNights();
     });
 
+
+
     var $children = $("#search_form_children"),
         $ageHolder = $("#search_form_children_age"),
         index;
@@ -329,4 +334,8 @@ $(function () {
         }
         checkShowAgeLabel();
     });
+
+    mytrigger.recountChildren = function () {
+        $children.trigger('change')
+    };
 });

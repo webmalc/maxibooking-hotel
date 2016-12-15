@@ -280,7 +280,6 @@
                 t.notSelected()
             }
         })
-
         this.reBuildHref();
     }
 
@@ -288,10 +287,13 @@
     {
         var href = this.selectedTariffRow.bookingHref;
         if (this.selectedTariffRow.$promotionSelect.val()) {
-            href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val()/*+ $("#search_form").serialize()*/;
+            href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val();
         }
+        var form_href = '&'+ $("form#search-form").serialize();
+        href = href + form_href;
+
         this.$bookingButton.attr('href', href);
-        this.$bookingButtonReservation.attr('href', href);
+        this.$bookingButtonReservation.attr('href', href + '&reservation=true');
     }
 
     var TariffRow = function($row, roomTypeRow) {
@@ -374,10 +376,8 @@
         } else if (!$button_online.hasClass("disabled") && $(row).data("payment_type") !== "hundred") {
             $button_online.addClass("disabled");
         }*/
-        var $button_reservation = $(row).closest("table").siblings(".btmactions").find("a.btn-booking-reservation"),
-            href = $(row).data("url");
-        href = href + '&reservation=true';
-        $button_reservation.attr("href", href )
+
+
         $(row).siblings().removeClass("alerting");
         $(row).addClass("alerting");
 
