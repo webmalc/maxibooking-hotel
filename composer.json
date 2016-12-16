@@ -24,7 +24,7 @@
     "doctrine/mongodb": "*@dev",
     "doctrine/mongodb-odm": "*@dev",
     "doctrine/mongodb-odm-bundle": "*@dev",
-    "gedmo/doctrine-extensions": "dev-master as 2.4.13",
+    "gedmo/doctrine-extensions": "2.*@stable",
     "stof/doctrine-extensions-bundle": "dev-master",
     "friendsofsymfony/user-bundle": "*@dev",
     "friendsofsymfony/jsrouting-bundle": "*@stable",
@@ -45,7 +45,9 @@
     "sonata-project/google-authenticator": "^1.0",
     "google/recaptcha": "^1.1",
     "dinhkhanh/mongodb-acl-bundle": "dev-master",
-    "guzzlehttp/guzzle": "^6.2"
+    "guzzlehttp/guzzle": "^6.2",
+    "php-amqplib/rabbitmq-bundle": "^1.12",
+    "phobetor/rabbitmq-supervisor-bundle": "^1.5"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

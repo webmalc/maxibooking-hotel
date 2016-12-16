@@ -11,14 +11,14 @@
 
 namespace MBH\Bundle\WarehouseBundle\DataFixtures\MongoDB;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\WarehouseBundle\Document\WareCategory;
-use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class WarehouseData implements FixtureInterface, ContainerAwareInterface
+class WarehouseData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
 	private $cats = [
 		'Бытовая химия',
@@ -78,5 +78,10 @@ class WarehouseData implements FixtureInterface, ContainerAwareInterface
 		
 		return false;
 	}
+
+    public function getOrder()
+    {
+        return 9993;
+    }
 	
 }

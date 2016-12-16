@@ -9,11 +9,12 @@
 namespace MBH\Bundle\RestaurantBundle\DataFixtures\MongoDB;
 
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 
-class DishMenuCategoryData implements FixtureInterface
+class DishMenuCategoryData extends AbstractFixture implements OrderedFixtureInterface
 {
 
     public function load(ObjectManager $manager)
@@ -49,6 +50,11 @@ class DishMenuCategoryData implements FixtureInterface
             'Бар',
             'Хлеб'
         ];
+    }
+
+    public function getOrder()
+    {
+        return 9995;
     }
 
 }

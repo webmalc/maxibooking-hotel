@@ -53,7 +53,7 @@ class Mbhs
         $this->config = $container->getParameter('mbh.mbhs');
         $this->request = $container->get('request_stack')->getCurrentRequest();
 
-        if (in_array($this->request->getClientIp(), ['95.85.3.188'])) {
+        if (empty($this->request) || in_array($this->request->getClientIp(), ['95.85.3.188']) || $this->container->get('kernel')->getEnvironment() != 'prod') {
             $this->checkIp = false;
         }
     }

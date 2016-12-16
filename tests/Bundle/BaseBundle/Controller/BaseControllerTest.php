@@ -2,7 +2,7 @@
 
 namespace Tests\Bundle\BaseBundle\Controller;
 
-use MBH\Bundle\BaseBundle\Lib\WebTestCase;
+use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use Symfony\Component\Routing\Route;
 
 class BaseControllerTest extends WebTestCase
@@ -15,11 +15,6 @@ class BaseControllerTest extends WebTestCase
     public static function tearDownAfterClass()
     {
         self::clearDB();
-    }
-
-    public function setUp()
-    {
-
     }
 
     /**

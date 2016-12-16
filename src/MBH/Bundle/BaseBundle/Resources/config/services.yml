@@ -162,9 +162,12 @@ services:
             class: MBH\Bundle\BaseBundle\Service\Cache
             arguments: ['%mbh_cache%', '@doctrine_mongodb', '@validator']
 
-    #mbh.menu.voter.request:
-    #    class: MBH\Bundle\BaseBundle\Menu\RequestContentIdentityVoter
-    #    arguments:
-    #        - @service_container
-    #    tags:
-    #       - { name: knp_menu.voter }
+    mbh.task.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.task.logger_handler']]
+
+    mbh.task.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.task.log", 200]

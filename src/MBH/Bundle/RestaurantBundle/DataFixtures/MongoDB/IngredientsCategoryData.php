@@ -9,11 +9,12 @@
 namespace MBH\Bundle\RestaurantBundle\DataFixtures\MongoDB;
 
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\RestaurantBundle\Document\IngredientCategory;
 
-class IngredientsCategoryData implements FixtureInterface
+class IngredientsCategoryData extends AbstractFixture implements OrderedFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
@@ -46,5 +47,10 @@ class IngredientsCategoryData implements FixtureInterface
             'Фрукты',
             'Напитки',
         ];
+    }
+
+    public function getOrder()
+    {
+        return 9994;
     }
 }
