@@ -19,7 +19,7 @@ trait PackageTrait
     /**
      * @var Package
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="Package", inversedBy="accommodations", cascade="persist")
+     * @ODM\ReferenceOne(targetDocument="Package", mappedBy="accommodations")
      * @Assert\NotNull()
      */
     protected $package;
@@ -27,7 +27,7 @@ trait PackageTrait
     /**
      * @return Package
      */
-    public function getPackage(): Package
+    public function getPackage(): ?Package
     {
         return $this->package;
     }

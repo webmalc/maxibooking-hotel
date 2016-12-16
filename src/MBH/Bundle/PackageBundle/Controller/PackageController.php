@@ -36,6 +36,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Class PackageController
@@ -334,6 +335,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $data['createdBy'] = $this->getUser()->getUsername();
         }
 
+        $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
         $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
 
@@ -863,15 +865,17 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
         $accommodation = new PackageAccommodation();
         $accommodation
-            ->setPackage($package)
             ->setRoom($room)
             ->setBegin($package->getLastEndAccommodation())
             ->setEnd($package->getEnd())
+            ->setPackage($package)
         ;
         $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $package->addAccommodation($accommodation);
             $this->dm->persist($accommodation);
             $this->dm->flush();
 
@@ -1140,6 +1144,19 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ];
         }
         return new JsonResponse(['results' => $data]);
+    }
+
+
+    /**
+     * @return array
+     * @Route("/test")
+     */
+    public function testAction()
+    {
+        $creator = $this->get('mbh.hotel.auto_task_creator');
+        $creator->createDailyTasks();
+        exit;
+        return [];
     }
 
 }

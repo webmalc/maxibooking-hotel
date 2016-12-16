@@ -101,8 +101,8 @@ class PackageSubscriber implements EventSubscriber
                 $notifier->setMessage($message)->notify();
             }
 
-            $this->container->get('mbh.mbhs')
-                ->sendPackageInfo($package, $this->container->get('request_stack')->getCurrentRequest()->getClientIp());
+            $request =  $this->container->get('request_stack')->getCurrentRequest();
+            $this->container->get('mbh.mbhs')->sendPackageInfo($package, $request ? $request->getClientIp() : null);
         }
     }
 

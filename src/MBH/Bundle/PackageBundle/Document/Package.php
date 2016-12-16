@@ -79,7 +79,7 @@ class Package extends Base implements \JsonSerializable
     protected $accommodation;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="PackageAccommodation", mappedBy="package", sort={"end"="ASC"},  cascade={"persist"} )
+     * @ODM\ReferenceMany(targetDocument="PackageAccommodation", inversedBy="package", cascade={"persist"})
      */
     protected $accommodations;
 
@@ -1562,9 +1562,21 @@ class Package extends Base implements \JsonSerializable
         return $this->accommodations->first();
     }
 
+    /** Для совместимости в автозадачах */
+    public function getAccommodationCheckIn()
+    {
+        return $this->getFirstAccommodation();
+    }
+
+    public function getAccommodationCheckOut()
+    {
+        return $this->getLastAccommodation();
+    }
+
     public function getAccommodationByDate(\DateTime $dateTime)
     {
         $accommodation = $this->accommodations->filter(function ($accommodation) use ($dateTime) {
+            /** @var PackageAccommodation $accommodation */
             return $accommodation->getBegin() <= $dateTime && $dateTime <= $accommodation->getEnd();
         });
 

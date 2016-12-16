@@ -17,7 +17,7 @@ use MBH\Bundle\PackageBundle\Validator\Constraints as MBHConstraints;
 
 
 /**
- * @ODM\Document(collection="PackageAccommodation")
+ * @ODM\Document(collection="PackageAccommodation", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageAccommodationRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks

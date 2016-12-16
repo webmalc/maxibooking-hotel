@@ -45,7 +45,9 @@
     "sonata-project/google-authenticator": "^1.0",
     "google/recaptcha": "^1.1",
     "dinhkhanh/mongodb-acl-bundle": "dev-master",
-    "guzzlehttp/guzzle": "^6.2"
+    "guzzlehttp/guzzle": "^6.2",
+    "php-amqplib/rabbitmq-bundle": "^1.12",
+    "phobetor/rabbitmq-supervisor-bundle": "^1.5"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
