@@ -855,12 +855,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->setRoom($room)
             ->setBegin($package->getLastEndAccommodation())
             ->setEnd($package->getEnd())
+            ->setPackage($package)
         ;
-        $package->addAccommodation($accommodation);
         $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $package->addAccommodation($accommodation);
             $this->dm->persist($accommodation);
             $this->dm->flush();
 

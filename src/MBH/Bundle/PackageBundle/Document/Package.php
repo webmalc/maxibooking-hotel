@@ -79,7 +79,7 @@ class Package extends Base implements \JsonSerializable
     protected $accommodation;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="PackageAccommodation", inversedBy="package" )
+     * @ODM\ReferenceMany(targetDocument="PackageAccommodation", inversedBy="package", cascade={"persist"})
      */
     protected $accommodations;
 
