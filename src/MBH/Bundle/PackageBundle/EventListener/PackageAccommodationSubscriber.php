@@ -32,6 +32,10 @@ class PackageAccommodationSubscriber implements EventSubscriber
             if ($accommodations->last() !== $document) {
                 throw new DeleteException('package.accommodation.no_last.delete.error');
             }
+
+            $package->removeAccommodations($document);
+            $class = $dm->getClassMetadata(get_class($package));
+            $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $package);
         }
 
         if (!$filter && $dm->getFilterCollection()->enable('softdeleteable')) {

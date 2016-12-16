@@ -1562,6 +1562,17 @@ class Package extends Base implements \JsonSerializable
         return $this->accommodations->first();
     }
 
+    /** Для совместимости в автозадачах */
+    public function getAccommodationCheckIn()
+    {
+        return $this->getFirstAccommodation();
+    }
+
+    public function getAccommodationCheckOut()
+    {
+        return $this->getLastAccommodation();
+    }
+
     public function getAccommodationByDate(\DateTime $dateTime)
     {
         $accommodation = $this->accommodations->filter(function ($accommodation) use ($dateTime) {

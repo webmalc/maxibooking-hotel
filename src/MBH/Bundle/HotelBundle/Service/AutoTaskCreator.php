@@ -7,12 +7,14 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
 
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -43,8 +45,6 @@ class AutoTaskCreator
     {
         $this->dm->getConnection()->getConfiguration()->setLoggerCallable(null);
 
-        $now = new \DateTime();
-        $midnight = new \DateTime('midnight');
         /** @var DocumentRepository $hotelRepository */
         $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
         /** @var RoomTypeRepository $roomTypeRepository */
@@ -72,8 +72,17 @@ class AutoTaskCreator
             ->field('hotel.id')->in($hotelIDs)
             ->field('taskSettings.daily')->not($queryBuilder->expr()->size(0));
 
+        $now = new \DateTime();
+        $midnight = new \DateTime('midnight');
+
         /** @var RoomType[] $roomTypes */
         $roomTypes = $queryBuilder->getQuery()->execute();
+
+        //Get current Accommodations
+        $packageAccomodationRepository = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation');
+        $packageAccommodations = $packageAccomodationRepository->getAccommodationByDate($now);
+        $helper = $this->container->get('mbh.helper');
+        $pIDs = $helper->toIds($packageAccommodations);
 
         foreach ($roomTypes as $roomType) {
             //$output->writeln("Room Type: " . $roomType->getId() . ' ' . $roomType->getTitle());
@@ -83,7 +92,7 @@ class AutoTaskCreator
             $queryBuilder = $packageRepository->createQueryBuilder()
                 ->field('isCheckIn')->equals(true)
                 ->field('isCheckOut')->equals(false)
-                ->field('accommodation')->exists(true)
+                ->field('accommodations.id')->in($pIDs)
                 ->field('begin')->lte($now)
                 ->field('end')->gte($now)
                 ->field('roomType.id')->equals($roomType->getId())
@@ -105,11 +114,11 @@ class AutoTaskCreator
                                 $task
                                     ->setType($taskType)
                                     ->setUserGroup($taskType->getDefaultUserGroup())
-                                    ->setRoom($package->getAccommodation())
+                                    ->setRoom($package->getAccommodationByDate($now)->getAccommodation())
                                     ->setStatus(Task::STATUS_OPEN)
                                     ->setPriority(Task::PRIORITY_AVERAGE)
                                     ->setDescription(Task::AUTO_CREATE)
-                                    ->setHotel($package->getAccommodation()->getHotel());
+                                    ->setHotel($package->getAccommodationByDate($now)->getAccommodation()->getHotel());
 
                                 if ($this->getCountSameTasks($task) === 0) {
                                     $this->dm->persist($task);
@@ -161,24 +170,28 @@ class AutoTaskCreator
 
     protected function createCheck($check, Package $package)
     {
-        if (!$package->getAccommodation()) {
+
+        $packageAccommodation = call_user_func([$package, 'getAccommodationCheck' . $check]);
+
+        if (!$packageAccommodation && !$packageAccommodation->getAccommodation()) {
             return;
         }
-        $type = $package->getAccommodation()->getRoomType();
-        $settings = $type->getTaskSettings();
+        /** @var RoomType $roomType */
+        $roomType = $packageAccommodation->getAccommodation()->getRoomType();
+        $settings = $roomType->getTaskSettings();
         if (!$settings) {
             return;
         }
 
         /** @var TaskType[] $taskTypes */
         $taskTypes = call_user_func([$settings, 'getCheck' . $check]);
-        foreach ($taskTypes as $type) {
-            if ($type->getDefaultUserGroup()) {
+        foreach ($taskTypes as $roomType) {
+            if ($roomType->getDefaultUserGroup()) {
                 $task = new Task();
                 $task
-                    ->setType($type)
-                    ->setUserGroup($type->getDefaultUserGroup())
-                    ->setRoom($package->getAccommodation())
+                    ->setType($roomType)
+                    ->setUserGroup($roomType->getDefaultUserGroup())
+                    ->setRoom($packageAccommodation->getAccommodation())
                     ->setStatus(Task::STATUS_OPEN)
                     ->setPriority(Task::PRIORITY_AVERAGE)
                     ->setHotel($package->getRoomType()->getHotel());

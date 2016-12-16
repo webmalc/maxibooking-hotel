@@ -306,6 +306,7 @@ class Helper
      * @param $collection
      * @param string $method
      * @return array
+     * TODO: сделать его не статическим? В проекте вызывается то как статический, то как обычный.
      */
     public static function toIds($collection, $method = 'getId')
     {

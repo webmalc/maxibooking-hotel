@@ -336,6 +336,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
+        $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
         $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
 
         return [
@@ -1131,6 +1132,19 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ];
         }
         return new JsonResponse(['results' => $data]);
+    }
+
+
+    /**
+     * @return array
+     * @Route("/test")
+     */
+    public function testAction()
+    {
+        $creator = $this->get('mbh.hotel.auto_task_creator');
+        $creator->createDailyTasks();
+        exit;
+        return [];
     }
 
 }
