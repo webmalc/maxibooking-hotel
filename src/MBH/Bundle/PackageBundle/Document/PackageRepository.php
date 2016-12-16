@@ -163,7 +163,7 @@ class PackageRepository extends DocumentRepository
             $query = trim($criteria->query);
             $tourists = $this->dm->getRepository('MBHPackageBundle:Tourist')
                 ->createQueryBuilder('t')
-                ->field('fullName')->equals(new \MongoRegex('/.*' . $query . '.*/ui'))
+                ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
                 ->getQuery()
                 ->execute();
 
@@ -177,7 +177,7 @@ class PackageRepository extends DocumentRepository
                 $queryBuilder->addOr($queryBuilder->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
+            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')));
         }
 
         //isCheckIn
