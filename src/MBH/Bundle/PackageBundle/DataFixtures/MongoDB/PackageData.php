@@ -4,20 +4,16 @@ namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
- * Class TaskData
-
+ * Class OrderData
  */
-class PackageData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+class OrderData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
@@ -29,41 +25,16 @@ class PackageData extends AbstractFixture implements OrderedFixtureInterface, Co
         $this->persistPackage($manager);
     }
 
-    public function getTariff(ObjectManager $manager, Hotel $hotel)
-    {
-//        $lastTariff = $manager->getRepository('MBHPriceBundle:Tariff')->getLastTariff();
-//var_dump($lastTariff);
-//        if($lastTariff) {
-//            return $lastTariff;
-//        }
-
-        $tariff = new Tariff();
-
-        $tariff->setFullTitle("Основной тариф2")
-            ->setIsDefault(true)
-            ->setIsOnline(true)
-            ->setHotel($hotel)
-        ->setMinPerPrepay(25);
-        $manager->persist($tariff);
-        $manager->flush();
-
-        return $tariff;
-    }
-
     public function persistPackageSource(ObjectManager $manager)
     {
 
-//        $lastPackageSource = $manager->getRepository('MBHPackageBundle:PackageSource')->getLastPackageSource();
-//
-//        if($lastPackageSource) {
-//            return $lastPackageSource;
-//        }
-
         $packageSource = new PackageSource();
-        $packageSource->setFullTitle('ОстровОк');
-        $packageSource->setSystem('true');
-        $packageSource->setCode('OstrovOk');
-        $packageSource->setIsEnabled('true');
+        $packageSource
+            ->setFullTitle('ОстровОк')
+            ->setSystem(true)
+            ->setCode('Ostrovok')
+        ->setIsEnabled(true);
+
 
         $manager->persist($packageSource);
         $manager->flush();
@@ -79,7 +50,8 @@ class PackageData extends AbstractFixture implements OrderedFixtureInterface, Co
             ->setPaid($data['paid'])
             ->setStatus('offline')
             ->setTotalOverwrite($data['price'])
-            ->setSource($this->persistPackageSource($manager));
+            ->setSource($this->persistPackageSource($manager))
+            ->setCreatedAt((new \DateTime())->modify("-{$data['regDayAgo']} day"));
 
         $manager->persist($order);
         $manager->flush();
@@ -87,61 +59,25 @@ class PackageData extends AbstractFixture implements OrderedFixtureInterface, Co
         return $order;
     }
 
-    public function persistHotel(ObjectManager $manager)
-    {
-        //$lastHotel = $manager->getRepository('MBHHotelBundle:Hotel')->getLastHotel();
-var_dump($this->getReference('hotel-one'));
-//        if($lastHotel) {
-//            return $lastHotel;
-//        }
-
-        $hotel = new Hotel();
-        $hotel->setFullTitle('Новый отель');
-
-        $manager->persist($hotel);
-        $manager->flush();
-
-        return $hotel;
-    }
-
-    public function persistRoomType(ObjectManager $manager)
-    {
-        $lastRoomType = $manager->getRepository('MBHHotelBundle:RoomType')->getLastRoomType();
-
-        //var_dump($lastRoomType);
-
-        if($lastRoomType) {
-            return $lastRoomType;
-        }
-
-        $roomType = new RoomType();
-        $roomType
-            ->setFullTitle('Двуместный')
-            ->setColor('008000')
-            ->setPlaces(2)
-            ->setAdditionalPlaces(1);
-
-        $manager->persist($roomType);
-        $manager->flush();
-
-        return $roomType;
-    }
-
     public function getData()
     {
         return [
-            [ 'adults' => '1', 'number' => '1', 'children' => '0', 'price' => '2000.0', 'paid' => '2001'],
-            [ 'adults' => '1', 'number' => '2', 'children' => '0', 'price' => '800.0', 'paid' => '900'],
-            [ 'adults' => '1', 'number' => '3', 'children' => '0', 'price' => '7000.0', 'paid' => '1000'],
-            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '3946.0', 'paid' => '50'],
+            [ 'adults' => '1', 'number' => '1', 'children' => '0', 'price' => '2000.0', 'paid' => '2001', 'regDayAgo' => '1'],
+            [ 'adults' => '1', 'number' => '2', 'children' => '0', 'price' => '800.0', 'paid' => '10', 'regDayAgo' => '10'],
+            [ 'adults' => '1', 'number' => '3', 'children' => '0', 'price' => '7000.0', 'paid' => '1000', 'regDayAgo' => '12'],
+            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '4631.0', 'paid' => '276', 'regDayAgo' => '2'],
+            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '8000.0', 'paid' => '8000', 'regDayAgo' => '5'],
+            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '9364.0', 'paid' => '10', 'regDayAgo' => '118'],
+            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '430.0', 'paid' => '560', 'regDayAgo' => '17'],
+            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '9999.0', 'paid' => '1000', 'regDayAgo' => '15'],
+            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '7000.0', 'paid' => '50', 'regDayAgo' => '0'],
         ];
     }
 
     public function persistPackage(ObjectManager $manager)
     {
-        $hotel = $this->persistHotel($manager);
-        $tariff = $this->getTariff($manager, $hotel);
-        $roomType = $this->persistRoomType($manager);
+        $tariff = $this->getReference('my-tariff');
+        $roomType = $this->getReference('roomtype-double');
         $date = new \DateTime();
 
         foreach ($this->getData() as $data) {
@@ -157,6 +93,7 @@ var_dump($this->getReference('hotel-one'));
                 ->setTariff($tariff)
                 ->setRoomType($roomType)
                 ->setBegin($date)
+                ->setCreatedAt((new \DateTime())->modify("-{$data['regDayAgo']} day"))
                 ->setEnd($date);
 
             $manager->persist($package);
@@ -166,6 +103,6 @@ var_dump($this->getReference('hotel-one'));
 
     public function getOrder()
     {
-        return -9991;
+        return 5;
     }
 }

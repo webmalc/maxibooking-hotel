@@ -156,10 +156,9 @@ class ClientConfig extends Base
     }
 
     /**
-     * @param integer $noticeUnpaid
      * @return ClientConfig
      */
-    public function setNoticeUnpaid($noticeUnpaid)
+    public function setNoticeUnpaid(int $noticeUnpaid)
     {
         $this->noticeUnpaid = $noticeUnpaid;
         return $this;
@@ -201,6 +200,7 @@ class ClientConfig extends Base
     public function setUseRoomTypeCategory($useRoomTypeCategory)
     {
         $this->useRoomTypeCategory = $useRoomTypeCategory;
+        return $this;
     }
 
     /**

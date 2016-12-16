@@ -35,9 +35,12 @@ class TariffData extends AbstractFixture implements OrderedFixtureInterface, Con
             $tariff->setFullTitle('Основной тариф')
                 ->setIsDefault(true)
                 ->setIsOnline(true)
+                ->setMinPerPrepay(25)
                 ->setHotel($hotel);
             $manager->persist($tariff);
             $manager->flush();
+
+            $this->setReference('my-tariff', $tariff);
         }
     }
 

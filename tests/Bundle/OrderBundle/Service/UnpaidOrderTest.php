@@ -1,8 +1,7 @@
 <?php
 
-namespace Tests\Bundle\PackageBundle;
+namespace Tests\Bundle\OrderBundle\Service;
 
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 
 class UnpaidOrderTest extends WebTestCase

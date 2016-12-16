@@ -102,18 +102,6 @@ class TariffRepository extends DocumentRepository
     }
 
     /**
-     * Get last tariff or null
-     *
-     * @return array|null|object
-     */
-    public function getLastTariff()
-    {
-        $qb = $this->createQueryBuilder()->sort('createdAt', 'desc')->limit(1)->getQuery()->getSingleResult();
-
-        return $qb ?? null;
-    }
-
-    /**
      * @param Hotel $hotel
      * @param array $tariffs ids array
      * @param boolean $enabled
