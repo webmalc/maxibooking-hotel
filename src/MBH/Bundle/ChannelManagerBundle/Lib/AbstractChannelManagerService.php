@@ -64,6 +64,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     protected $currency;
 
+    protected $roomManager;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;

@@ -6,6 +6,7 @@ class OstrovokApiService
 {
 
     const API_URL = 'http://extrota-sandbox.ostrovok.ru/echannel/api/v0.1/';
+//    const API_URL = 'https://echannel.ostrovok.ru/echannel/api/v0.1/';
 
     protected $auth_token;
 
@@ -25,13 +26,6 @@ class OstrovokApiService
                 $is_list = true;
             }
         }
-        /*if (is_array($data)) {
-            if (count($data) > 0) {
-                if (is_int($data[0])) {
-                    $is_list = true;
-                }
-            }
-        }*/
 
         if (is_array($data) && !$is_list) {
             ksort($data);
@@ -64,16 +58,24 @@ class OstrovokApiService
     private function getSignature(array $data, $private)
     {
         $data['private'] = $private;
-        return md5($this->createSignatureString($data));
+        $signatureString = $this->createSignatureString($data);
+        return md5($signatureString);
     }
 
-    private function __callGET($api_method, array $data)
+    private function callGet($api_method, array $data)
     {
         $data["token"] = $this->auth_token;
         $data["sign"] = $this->getSignature($data, $this->private_token);
-        $final_url = self::API_URL . $api_method . "?" . http_build_query($data) . "&";
+        $request = self::API_URL . $api_method . "?" . http_build_query($data) . "&";
 
-        return file_get_contents($final_url);
+        //TODO: Переделать на курл нормальный
+        $response = file_get_contents($request);
+        if (!$response) {
+            throw new OstrovokApiServiceException('No returned request in callGet Method '.get_class($this));
+        }
+        $response = json_decode($response, true);
+        $this->checkErrors($response);
+        return $response;
     }
 
     private function __callPUT($api_method, array $data, array $get_data = array())
@@ -106,47 +108,84 @@ class OstrovokApiService
             'Content-Length: ' . strlen($data_json),
         ));
 
-        $response = curl_exec($curl);
+        $response = json_decode(curl_exec($curl), true);
         curl_close($curl);
+        $this->checkErrors($response);
 
         return $response;
     }
 
+    private function checkErrors($response)
+    {
+        if (!empty($response['error'])) {
+            throw new OstrovokApiServiceException(
+                is_array($response['error']) ? http_build_query($response['error']) : $response['error']
+            );
+        };
+    }
+
     public function getHotels(array $data = array())
     {
-        return $this->__callGET("hotels/", $data);
+        return $this->callGet("hotels/", $data);
     }
 
     public function getRoomCategories(array $data = array())
     {
-        return $this->__callGET("room_categories/", $data);
+        $response = $this->callGet("room_categories/", $data);
+
+        return $response['room_categories'];
     }
 
     public function getMealPlans(array $data = array())
     {
-        return $this->__callGET("meal_plans/", $data);
+        return $this->callGet("meal_plans/", $data);
     }
 
     public function getOrders(array $data = array())
     {
-        return $this->__callGET("orders/", $data);
+        return $this->callGet("orders/", $data);
     }
 
     public function getBookings(array $data = array())
     {
-        return $this->__callGET("bookings/", $data);
+        return $this->callGet("bookings/", $data);
     }
 
     public function getRNA($plan_date_start_at, $plan_date_end_at, array $data = array())
     {
         $data["plan_date_start_at"] = $plan_date_start_at;
         $data["plan_date_end_at"] = $plan_date_end_at;
-        return $this->__callGET("rna/", $data);
+        return $this->callGet("rna/", $data);
     }
 
-    public function getRatePlans(array $data = array())
+    public function getOccupancies(array $data = array(), bool $byKey = false)
     {
-        return $this->__callGET("rate_plans/", $data);
+        $result = [];
+        $response = $this->callGet("occupancies/", $data);
+        $data = $response['occupancies'];
+        if ($byKey) {
+            foreach ($data as $occupancy) {
+                $result[$occupancy['id']] = $occupancy;
+            }
+        } else {
+            $result = $data;
+        }
+
+        return $result;
+    }
+
+    public function getRatePlans(array $data = array(), $isShowDeleted = false)
+    {
+        $response = $this->callGet("rate_plans/", $data);
+
+        $rate_plans = [];
+        foreach ($response['rate_plans'] as $rate) {
+            if($rate['status'] === 'X' && !$isShowDeleted) continue;
+            $rate_plans[] = $rate;
+        }
+
+        return $rate_plans;
+
     }
 
     public function updateRNA(array $data = array())
