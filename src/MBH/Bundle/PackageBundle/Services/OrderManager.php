@@ -385,7 +385,7 @@ class OrderManager
             }
             $packageAccommodation = new PackageAccommodation();
             $packageAccommodation->setBegin($package->getBegin())->setEnd($package->getEnd())->setAccommodation($room);
-            $packageAccommodation->setPackage($package);
+            $package->addAccommodation($packageAccommodation);
 
             $this->dm->persist($packageAccommodation);
             $this->dm->flush();
