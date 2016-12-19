@@ -46,8 +46,8 @@ class UnpaidOrderTest extends WebTestCase
     public function testUnpaidOrder()
     {
 
-        $countRecords = 0;
-        $package = $this->dm->getRepository('MBHPackageBundle:Package')->findAll();
+        $countRecords = 0; // Count unpaid order records
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')->findAll(); // All packages
 
         $dateUnpaid = $this->dm->getRepository('MBHClientBundle:ClientConfig')
             ->createQueryBuilder()
@@ -55,7 +55,7 @@ class UnpaidOrderTest extends WebTestCase
             ->getSingleResult()
             ->getNoticeUnpaid(); // Count days unpaid
 
-        $unpaidOrders = $this->notice_service->unpaidOrder();
+        $unpaidOrders = $this->notice_service->unpaidOrder(); // Testing unpaid orders
 
         foreach ($package as $packageItem) {
             $percent = $packageItem->getTariff()->getMinPerPrepay();
@@ -64,17 +64,17 @@ class UnpaidOrderTest extends WebTestCase
             $id = $packageItem->getOrder()->getId();
             $orderCreatedAt = $packageItem->getOrder()->getCreatedAt();
 
-            $deadlineDate = (new \DateTime())->sub(new \DateInterval("P{$dateUnpaid}D"));
+            $deadlineDate = (new \DateTime())->sub(new \DateInterval("P{$dateUnpaid}D")); // The last day of non-payment (DateTime)
 
-            $result = $price * $percent / 100;
+            $result = $price * $percent / 100; // The minimum amount of payment
 
-            if(($paid < $result) && ($orderCreatedAt < $deadlineDate)) {
+            if(($paid <= $result) && ($orderCreatedAt <= $deadlineDate)) {
                 $countRecords++;
                 $this->assertEquals($unpaidOrders[$id]->getPaid(), $paid);
                 $this->assertEquals($unpaidOrders[$id]->getPrice(), $price);
+                $this->assertEquals($unpaidOrders[$id]->getCreatedAt(), $orderCreatedAt);
             }
         }
-
         $this->assertEquals($countRecords, count($unpaidOrders));
     }
 }

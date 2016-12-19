@@ -66,11 +66,11 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface, Cont
             [ 'adults' => '1', 'number' => '2', 'children' => '0', 'price' => '800.0', 'paid' => '10', 'regDayAgo' => '10'],
             [ 'adults' => '1', 'number' => '3', 'children' => '0', 'price' => '7000.0', 'paid' => '1000', 'regDayAgo' => '12'],
             [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '4631.0', 'paid' => '276', 'regDayAgo' => '2'],
-            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '8000.0', 'paid' => '8000', 'regDayAgo' => '5'],
-            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '9364.0', 'paid' => '10', 'regDayAgo' => '118'],
-            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '430.0', 'paid' => '560', 'regDayAgo' => '17'],
-            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '9999.0', 'paid' => '1000', 'regDayAgo' => '15'],
-            [ 'adults' => '1', 'number' => '4', 'children' => '0', 'price' => '7000.0', 'paid' => '50', 'regDayAgo' => '0'],
+            [ 'adults' => '1', 'number' => '5', 'children' => '0', 'price' => '8000.0', 'paid' => '8000', 'regDayAgo' => '5'],
+            [ 'adults' => '1', 'number' => '6', 'children' => '0', 'price' => '9364.0', 'paid' => '10', 'regDayAgo' => '118'],
+            [ 'adults' => '1', 'number' => '7', 'children' => '0', 'price' => '430.0', 'paid' => '560', 'regDayAgo' => '17'],
+            [ 'adults' => '1', 'number' => '8', 'children' => '0', 'price' => '3000.0', 'paid' => '750', 'regDayAgo' => '15'],
+            [ 'adults' => '1', 'number' => '9', 'children' => '0', 'price' => '7000.0', 'paid' => '50', 'regDayAgo' => '0'],
         ];
     }
 
