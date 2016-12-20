@@ -50,6 +50,8 @@ class OstrovokApiService
             return $result;
         } elseif (is_bool($data)) {
             return $data ? "true" : "false";
+        } elseif (is_null($data)) {
+            return 'None';
         }
 
         return (string)$data;

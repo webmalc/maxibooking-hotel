@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -285,6 +286,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $result = [];
 
         foreach ($config->getRooms() as $room) {
+            /** @var Room $room */
             $roomType = $room->getRoomType();
             if (empty($room->getRoomId()) || !$roomType->getIsEnabled() || !empty($roomType->getDeletedAt())) {
                 continue;
