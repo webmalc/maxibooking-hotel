@@ -205,6 +205,7 @@ package.index.selection: 'Подбор'
 package.index.porter_link: 'Отчет портье'
 package.json.reservation_type: Тип брони:
 package.json.edit_record: Редактирование записи
+package.json.edit_record.order: заказа
 package.json.deleted: удалена
 package.json.corrupted: ошибка
 package.json.edit_order: Редактирование заказа
