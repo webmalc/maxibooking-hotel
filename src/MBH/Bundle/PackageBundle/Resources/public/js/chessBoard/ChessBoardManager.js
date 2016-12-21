@@ -28,6 +28,8 @@ var ChessBoardManager = (function () {
         $('#package-search-form').find('#s_adults').val(0);
         $('#packageModal, #package-edit-modal').on('hidden.bs.modal', function () {
             self.updateTable();
+            $('#package-modal-continue-button').hide();
+            $('#packageModalConfirmButton').show();
         });
         $('#entity-delete-confirmation').on('hidden.bs.modal', function () {
             self.updateTable();

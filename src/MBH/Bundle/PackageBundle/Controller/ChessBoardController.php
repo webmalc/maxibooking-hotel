@@ -82,9 +82,6 @@ class ChessBoardController extends BaseController
     public function removePackageAction(Package $package)
     {
         $this->dm->remove($package);
-        foreach ($package->getAccommodations() as $accommodation) {
-            $this->dm->remove($accommodation);
-        }
         $this->dm->flush();
 
         return new JsonResponse(json_encode(
@@ -266,21 +263,23 @@ class ChessBoardController extends BaseController
                         '%roomName%' => $secondAccommodation->getRoom()->getName()
                     ])
                 ];
+                $this->dm->flush();
             } else {
                 if ($firstAccommodation->getEnd()->getTimestamp() != $package->getEnd()->getTimestamp()) {
-                    throw new \Exception($translator->trans('controller.chessboard.accommodation_not_last_remove.error'));
+                    $messages = [$translator->trans('controller.chessboard.accommodation_not_last_remove.error')];
+                    $isSuccess = false;
+                } else {
+                    $messages = [
+                        $translator->trans('controller.chessboard.accommodation_remove.success', [
+                            '%packageId%' => $package->getName(),
+                            '%payerInfo%' => $this->getPayerInfo($package),
+                            '%begin%' => $intermediateDate->format('d.m.Y'),
+                            '%end%' => $package->getEnd()->format('d.m.Y'),
+                        ])
+                    ];
+                    $this->dm->flush();
                 }
-                $messages = [
-                    $translator->trans('controller.chessboard.accommodation_remove.success', [
-                        '%packageId%' => $package->getName(),
-                        '%payerInfo%' => $this->getPayerInfo($package),
-                        '%begin%' => $intermediateDate->format('d.m.Y'),
-                        '%end%' => $package->getEnd()->format('d.m.Y'),
-                    ])
-                ];
             }
-
-            $this->dm->flush();
         } else {
             $isSuccess = false;
             $messages = [$translator->trans('controller.chessboard.accommodation_divide.error')];
