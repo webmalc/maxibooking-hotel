@@ -8,7 +8,7 @@ var ActionManager = (function () {
         var self = this;
         var $deleteConfirmationModal = $('#entity-delete-confirmation');
         $deleteConfirmationModal.find('.modal-title').text('Подтверждение удаления');
-        $deleteConfirmationModal.find('#entity-delete-modal-text').text('Точно удалить эту бронь?');
+        $deleteConfirmationModal.find('#entity-delete-modal-text').text('Вы действительно хотите удалить эту бронь?');
         $deleteConfirmationModal.find('#entity-delete-button').click(function () {
             self.dataManager.deletePackageRequest(packageId);
             $deleteConfirmationModal.modal('hide');
@@ -105,24 +105,89 @@ var ActionManager = (function () {
             ActionManager.showMessage(response.success, message);
         });
     };
-    ActionManager.showMessage = function (isSuccess, message) {
+    ActionManager.showMessage = function (isSuccess, message, messageBlockId) {
+        if (messageBlockId === void 0) { messageBlockId = 'messages'; }
         var messageDiv = document.createElement('div');
         messageDiv.className = 'alert alert-dismissable autohide';
         messageDiv.classList.add(isSuccess ? 'alert-success' : 'alert-danger');
         messageDiv.innerHTML = '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
         messageDiv.innerHTML += message;
-        document.getElementById('messages').appendChild(messageDiv);
+        setTimeout(function () {
+            if (messageDiv.parentElement) {
+                messageDiv.parentElement.removeChild(messageDiv);
+            }
+        }, 10000);
+        document.getElementById(messageBlockId).appendChild(messageDiv);
     };
-    ActionManager.callUpdatePackageModal = function (packageElement) {
-        var packageData = ChessBoardManager.getPackageData(packageElement);
+    ActionManager.callUpdatePackageModal = function (packageElement, intervalData, changedSide, isDivide) {
+        if (changedSide === void 0) { changedSide = null; }
+        if (isDivide === void 0) { isDivide = false; }
+        var $updateForm = $('#concise_package_update');
+        $updateForm.show();
+        var modalAlertDiv = document.getElementById('package-modal-change-alert');
+        modalAlertDiv.innerHTML = '';
+        var newIntervalData = ChessBoardManager.getPackageData(packageElement);
+        if (intervalData && changedSide) {
+            var alertMessage = void 0;
+            if (changedSide == 'right') {
+                var packageEndDate = ChessBoardManager.getMomentDateFromJson(intervalData.packageEnd.date);
+                var newIntervalEndDate = moment(newIntervalData.end, "DD.MM.YYYY");
+                if ((intervalData.position == 'full' && !newIntervalEndDate.isSame(packageEndDate))
+                    || intervalData.position == 'right' && newIntervalEndDate.isAfter(packageEndDate)) {
+                    alertMessage = 'Вы хотите изменить дату выезда брони?';
+                }
+            }
+            else if (changedSide == 'left') {
+                var newIntervalStartDate = moment(newIntervalData.begin, "DD.MM.YYYY");
+                var packageStartDate = ChessBoardManager.getMomentDateFromJson(intervalData.begin.date);
+                if (!newIntervalStartDate.isSame(packageStartDate)) {
+                    alertMessage = 'Вы хотите изменить дату заезда брони?';
+                }
+            }
+            else {
+            }
+            if (alertMessage) {
+                var $continueButton_1 = $('#package-modal-continue-button');
+                $continueButton_1.show();
+                var $modalAlertDiv_1 = $('#package-modal-change-alert');
+                $modalAlertDiv_1.text(alertMessage);
+                $modalAlertDiv_1.show();
+                var $confirmButton_1 = $('#packageModalConfirmButton');
+                $confirmButton_1.hide();
+                $updateForm.hide();
+                $continueButton_1.click(function () {
+                    ActionManager.onContinueButtonClick($modalAlertDiv_1, $confirmButton_1, $continueButton_1, $updateForm);
+                });
+            }
+        }
         var modal = $('#packageModal');
-        modal.find('input.modalPackageId').val(packageData.id);
-        modal.find('#modalCheckinDate').val(packageData.begin);
-        modal.find('#modalCheckoutDate').val(packageData.end);
-        modal.find('#modalRoomTypeName option[value=' + packageData.roomType + ']').prop('selected', true);
-        modal.find("#modalRoomTypeName").change();
-        modal.find('#modalTableLine').val(packageData.accommodation);
+        var packageId = intervalData.packageId ? intervalData.packageId : intervalData.id;
+        var accommodationId = intervalData.packageId ? intervalData.id : '';
+        modal.find('input.isDivide').val(isDivide);
+        modal.find('input.modalPackageId').val(packageId);
+        modal.find('input.modalAccommodationId').val(accommodationId);
+        modal.find('#modal-begin-date').text(newIntervalData.begin);
+        modal.find('#modal-end-date').text(newIntervalData.end);
+        modal.find('#modal-room-id').text(newIntervalData.accommodation);
+        modal.find('#modal-room-name').text(newIntervalData.accommodation ? newIntervalData.accommodation : 'Без размещения');
         modal.modal('show');
+    };
+    ActionManager.getDataFromUpdateModal = function () {
+        var modal = $('#packageModal');
+        return {
+            'packageId': modal.find('input.modalPackageId').val(),
+            'accommodationId': modal.find('input.modalAccommodationId').val(),
+            'begin': modal.find('#modal-begin-date').text(),
+            'end': modal.find('#modal-end-date').text(),
+            'roomId': modal.find('#modal-room-id').text(),
+            'isDivide': modal.find('input.isDivide').val()
+        };
+    };
+    ActionManager.onContinueButtonClick = function ($modalAlertDiv, $confirmButton, $continueButton, $updateForm) {
+        $continueButton.hide();
+        $modalAlertDiv.hide();
+        $confirmButton.show();
+        $updateForm.show();
     };
     ActionManager.hidePackageUpdateModal = function () {
         $('#packageModal').modal('hide');

@@ -39,6 +39,17 @@
   min-width: 200px !important;
   max-height: 200px !important;
 }
+#package-modal-change-alert {
+  font-size: 1.3em;
+}
+#packageModal {
+  .modal-body {
+    .row {
+      padding-bottom: 10px;
+      font-size: 1.3em;
+    }
+  }
+}
 .package.danger, .package {
   background-color: rgba(221, 75, 57, 0.6);
 }
@@ -618,19 +629,9 @@
 
 .modal {
   color: #3d5471;
-  .package-info-block {
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-    div.row {
-      padding: 4px 0;
-      div:first-child {
-        font-weight: bolder;
-      }
-      div:last-child {
-        text-align: right;
-      }
-    }
-
+  padding: 4px 0;
+  td:first-child {
+    font-weight: bolder;
   }
 }
 

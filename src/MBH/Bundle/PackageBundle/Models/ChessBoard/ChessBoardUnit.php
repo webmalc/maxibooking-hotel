@@ -32,7 +32,19 @@ class ChessBoardUnit implements \JsonSerializable
      * @var float
      */
     private $price;
-    private $accommodation;
+    private $accommodationId;
+    /**
+     * @var string
+     * 'left', 'middle', 'right', 'full'
+     */
+    private $accommodationRelativePosition;
+    private $endPackageDate;
+    private $packageId;
+
+    const LEFT_RELATIVE_POSITION = 'left';
+    const RIGHT_RELATIVE_POSITION = 'right';
+    const MIDDLE_RELATIVE_POSITION = 'middle';
+    const FULL_PACKAGE_ACCOMMODATION = 'full';
 
     public function __construct(
         $id,
@@ -42,7 +54,8 @@ class ChessBoardUnit implements \JsonSerializable
         $roomTypeId,
         $paidStatus,
         $price,
-        $accommodation = null
+        $accommodation = null,
+        $position = null
     ) {
         $this->id = $id;
         $this->beginDate = $beginDate;
@@ -52,7 +65,10 @@ class ChessBoardUnit implements \JsonSerializable
         $this->paidStatus = $paidStatus;
         $this->price = $price;
         if ($accommodation) {
-            $this->accommodation = $accommodation;
+            $this->accommodationId = $accommodation;
+        }
+        if ($position) {
+            $this->accommodationRelativePosition = $position;
         }
 
         return $this;
@@ -187,8 +203,17 @@ class ChessBoardUnit implements \JsonSerializable
             'paidStatus' => $this->paidStatus
         ];
 
-        if ($this->accommodation) {
-            $array['accommodation'] = $this->accommodation;
+        if ($this->accommodationId) {
+            $array['accommodation'] = $this->accommodationId;
+        }
+        if ($this->accommodationRelativePosition) {
+            $array['position'] = $this->accommodationRelativePosition;
+        }
+        if ($this->endPackageDate) {
+            $array['packageEnd'] = $this->endPackageDate;
+        }
+        if ($this->packageId) {
+            $array['packageId'] = $this->packageId;
         }
 
         return $array;
@@ -224,19 +249,76 @@ class ChessBoardUnit implements \JsonSerializable
     /**
      * @return mixed
      */
-    public function getTableLineId()
+    public function getAccommodationId()
     {
-        return $this->tableLineId;
+        return $this->accommodationId;
     }
 
     /**
-     * @param mixed $tableLineId
+     * @param $accommodation
      * @return ChessBoardUnit
      */
-    public function setTableLineId($tableLineId)
+    public function setAccommodationId($accommodation)
     {
-        $this->tableLineId = $tableLineId;
+        $this->accommodationId = $accommodation;
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getAccommodationRelativePosition(): string
+    {
+        return $this->accommodationRelativePosition;
+    }
+
+    /**
+     * @param string $accommodationRelativePosition
+     * @return ChessBoardUnit
+     */
+    public function setAccommodationRelativePosition(string $accommodationRelativePosition): ChessBoardUnit
+    {
+        $this->accommodationRelativePosition = $accommodationRelativePosition;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEndPackageDate()
+    {
+        return $this->endPackageDate;
+    }
+
+    /**
+     * @param mixed $endPackageDate
+     * @return ChessBoardUnit
+     */
+    public function setEndPackageDate($endPackageDate)
+    {
+        $this->endPackageDate = $endPackageDate;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPackageId()
+    {
+        return $this->packageId;
+    }
+
+    /**
+     * @param mixed $packageId
+     * @return ChessBoardUnit
+     */
+    public function setPackageId($packageId)
+    {
+        $this->packageId = $packageId;
+        return $this;
+    }
+
+
 }

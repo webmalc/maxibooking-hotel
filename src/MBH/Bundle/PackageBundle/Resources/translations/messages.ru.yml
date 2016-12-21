@@ -400,24 +400,38 @@ modal.chessBoard.delete: Удалить
 modal.chessBoard.edit: Редактировать
 modal.chessBoard.package_info: Информация о брони
 modal.chessBoard.package_source: Источник брони
-modal.chessBoard.package_update_info: Информация об изменении брони
+modal.chessBoard.package_update_info: Информация об изменении размещения
 modal.chessBoard.manager: Менеджер
 modal.chessBoard.booked: Забронировано
-modal.chessBoard.begin: Заезд
-modal.chessBoard.end: Отъезд
 modal.chessBoard.is_check_in: Заехали
 modal.chessBoard.is_check_out: Выехали
 modal.chessBoard.yes: Да
 modal.chessBoard.no: Нет
 modal.chessBoard.guests: Гости
+modal.chessBoard.note: Комментарий
+modal.chessBoard.dates: Даты
+modal.chessBoard.registered: оформлено
 modal.chessBoard.not_specified: Не указаны
 modal.chessBoard.roomType: Тип номера
 modal.chessBoard.accommodation: Размещение
 modal.chessBoard.without_accommodation: Без размещения
 modal.chessBoard.services: Услуги
+modal.chessBoard.tariff: Тариф
 modal.chessBoard.price: Стоимость
 modal.chessBoard.serices_price: Стоимость услуг
 modal.chessBoard.payed: Оплачено
+modal.chessBoard.search_results: Варианты бронирования
+modal.chessBoard.room_name: Комната
+modal.chessBoard.begin: Дата заезда
+modal.chessBoard.end: Дата выезда
 controller.chessboard.package_create.success: Бронь успешно создана
 controller.chessboard.package_update.success: Бронь успешно обновлена
 controller.chessboard.package_remove.success: Бронь успешно удалена
+controller.chessboard.accommodation_update.success: Размещение успешно изменено
+controller.chessboard.accommodation_divide.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет размещена в номере %roomName%'
+controller.chessboard.accommodation_remove.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет без размещения'
+controller.chessboard.accommodation_not_last_remove.error: Невозможно удалить размещение, не являющееся последним в брони
+controller.chessboard.accommodation_divide.error: Дата разделения размещение не может быть меньше начала размещения или больше конца размещения
+controller.chessboard.accommodation_divide.error.empty_date_string: Передана пустая строка даты разделения размещения
+controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: Ошибка! Недопустимо изменение промежуточного размещения
+

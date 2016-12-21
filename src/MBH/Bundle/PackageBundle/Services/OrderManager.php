@@ -77,13 +77,14 @@ class OrderManager
 
         //check accommodation
         $accommodation = $old->getAccommodation();
+        /** @var PackageAccommodation $accommodation */
         if ($accommodation) {
             $rooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
                 $new->getBegin(),
                 $new->getEnd(),
-                $accommodation->getRoomType()->getHotel(),
-                $accommodation->getRoomType()->getId(),
-                $accommodation->getId(),
+                $accommodation->getAccommodation()->getRoomType()->getHotel(),
+                $accommodation->getAccommodation()->getRoomType()->getId(),
+                $accommodation->getAccommodation()->getId(),
                 $new->getId(),
                 false
             );

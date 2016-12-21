@@ -6,14 +6,12 @@ use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Form\ChessBoardConciseType;
-use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\PackageBundle\Form\SearchType;
-use Zend\Json\Json;
 
 /**
  * @Route("/chessboard")
@@ -41,16 +39,6 @@ class ChessBoardController extends BaseController
             'roomManager' => $this->get('mbh.hotel.room_type_manager')
         ]);
 
-        foreach ($builder->getPackagesWithoutAccommodation() as $item) {
-            /** @var Package $item */
-            if ($item->getName() == '38/1') {
-                $gfd = $item->getBegin();
-            }
-        }
-
-        $fdgfdg = 234;
-
-
         return [
             'searchForm' => $form->createView(),
             'beginDate' => $filterData['begin'],
@@ -74,27 +62,29 @@ class ChessBoardController extends BaseController
     /**
      * @Method({"GET"})
      * @Route("/packages/{id}", name="chessboard_get_package", options={"expose"=true})
-     * @param PackageAccommodation $accommodation
+     * @param Package $package
      * @return array
      * @Template()
      */
-    public function getPackageAction(PackageAccommodation $accommodation)
+    public function getPackageAction(Package $package)
     {
         return [
-            'package' => $accommodation->getPackage(),
-            'currency' => $this->getParameter('locale.currency')
+            'package' => $package
         ];
     }
 
     /**
      * @Method({"DELETE"})
      * @Route("/packages/{id}", name="chessboard_remove_package", options={"expose"=true})
-     * @param PackageAccommodation $accommodation
+     * @param Package $package
      * @return JsonResponse
      */
-    public function removePackageAction(PackageAccommodation $accommodation)
+    public function removePackageAction(Package $package)
     {
-        $this->dm->remove($accommodation);
+        $this->dm->remove($package);
+        foreach ($package->getAccommodations() as $accommodation) {
+            $this->dm->remove($accommodation);
+        }
         $this->dm->flush();
 
         return new JsonResponse(json_encode(
@@ -109,49 +99,208 @@ class ChessBoardController extends BaseController
      * @Method({"PUT"})
      * @Route("/packages/{id}", name="concise_package_update", options={"expose"=true})
      * @param Request $request
-     * @param PackageAccommodation $accommodation
+     * @param Package $package
      * @return JsonResponse
+     * @throws \Exception
      */
-    public function updatePackageAction(Request $request, PackageAccommodation $accommodation)
+    public function updatePackageAction(Request $request, Package $package)
     {
         $helper = $this->container->get('mbh.helper');
-        $oldPackage = clone $accommodation;
 
-        $accommodation->setBegin($helper::getDateFromString($request->request->get('begin')));
-        $accommodation->setEnd($helper::getDateFromString($request->request->get('end')));
-        $accommodation->setAccommodation($this->dm->find('MBHHotelBundle:Room', $request->request->get('room')));
+        $updatedBeginDate = $helper::getDateFromString($request->request->get('begin'));
+        $updatedEndDate = $helper::getDateFromString($request->request->get('end'));
+        $accommodationId = $request->request->get('accommodationId');
+        $updatedRoom = $this->dm->find('MBHHotelBundle:Room', $request->request->get('roomId'));
 
-        $errors = $this->get('validator')->validate($accommodation);
+        $isSuccess = true;
+        $messages = [];
 
-        if (count($errors) === 0) {
-            $result = $this->container->get('mbh.order_manager')->updatePackage($oldPackage, $accommodation);
-            if ($result instanceof Package) {
-                $this->dm->persist($accommodation);
-                $this->dm->flush();
-                $response = [
-                    'success' => true,
-                    'messages' => [$this->get('translator')->trans('controller.chessboard.package_update.success')]
-                ];
+        //Если изменяется размещение, а не добавляется новое
+        if ($accommodationId != '') {
+            $accommodation = $this->dm->find('MBHPackageBundle:PackageAccommodation', $accommodationId);
+            //Если удаляется размещение
+            if (!$updatedRoom) {
+                if ($accommodation->getEnd()->getTimestamp() != $package->getEnd()->getTimestamp()) {
+                    $isSuccess = false;
+                    $messages[] = $this->get('translator')
+                        ->trans('controller.chessboard.accommodation_not_last_remove.error');
+                } else {
+                    $this->dm->remove($accommodation);
+                    $this->dm->flush();
+                    $messages[] =  [
+                        $this->get('translator')->trans('controller.chessboard.accommodation_remove.success', [
+                            '%packageId%' => $accommodation->getPackage()->getName(),
+                            '%payerInfo%' => $this->getPayerInfo($package),
+                            '%begin%' => $accommodation->getBegin()->format('d.m.Y'),
+                            '%end%' => $accommodation->getEnd()->format('d.m.Y'),
+                        ])
+                    ];
+                }
             } else {
-                $response = [
-                    'success' => false,
-                    'messages' => [$this->get('translator')->trans($result)]
-                ];
+                $oldPackage = clone $package;
+                $accommodation->setAccommodation($updatedRoom);
+                $isLastAccommodation = $accommodation == $package->getLastAccommodation();
+                $isFirstAccommodation = $accommodation == $package->getFirstAccommodation();
+                $isBeginDateChanged = $updatedBeginDate->format('d.m.Y') != $accommodation->getBegin()->format('d.m.Y');
+                $isEndDateChanged = $updatedEndDate->format('d.m.Y') != $accommodation->getEnd()->format('d.m.Y');
+
+                //Если изменилась дата или конец размещения, но это не первое и не последнее размещение
+                if (($isBeginDateChanged || $isEndDateChanged) && !($isLastAccommodation || $isFirstAccommodation)) {
+                    throw new \Exception($this->get('translator')
+                        ->trans('controller.chessboard.accommodation_update.not_first_or_last_accommodation_change'));
+                }
+
+                $isPackageChanged = false;
+                if ($isBeginDateChanged && $isFirstAccommodation) {
+                    $package->setBegin($updatedBeginDate);
+                    $isPackageChanged = true;
+                }
+
+                if ($isEndDateChanged && $isLastAccommodation
+                    //Если дата окончания размещения больше чем дата выезда брони
+                    && (($updatedEndDate->getTimestamp() > $package->getEnd()->getTimestamp())
+                    //... или дата выезда брони равна дате окончания размещения, то изменяем дату выезда брони
+                    || ($package->getEnd()->getTimestamp() == $accommodation->getEnd()->getTimestamp()))
+                ) {
+                    $package->setEnd($updatedEndDate);
+                    $isPackageChanged = true;
+                }
+
+                if ($isPackageChanged) {
+                    $this->updatePackageWithAccommodation($oldPackage, $package, $accommodation, $updatedBeginDate,
+                        $updatedEndDate, $messages, $isSuccess);
+                } else {
+                    $accommodation->setBegin($updatedBeginDate);
+                    $accommodation->setEnd($updatedEndDate);
+                    $this->dm->flush();
+                    $messages[] = $this->get('translator')->trans('controller.chessboard.accommodation_update.success');
+                }
             }
         } else {
-            $errorMessages = [];
-            foreach ($errors as $error) {
-                $errorMessages[] = $error->getMessage();
-            }
-            $response = [
-                'success' => false,
-                'messages' => $errorMessages
-            ];
+            $accommodation = new PackageAccommodation();
+            $accommodation->setBegin($updatedBeginDate);
+            $accommodation->setEnd($updatedEndDate);
+            $accommodation->setRoom($updatedRoom);
+            $package->addAccommodation($accommodation);
+            $this->dm->flush();
         }
+
+        $response = [
+            'success' => $isSuccess,
+            'messages' => $messages
+        ];
 
         return new JsonResponse(json_encode($response));
     }
 
+    private function updatePackageWithAccommodation(
+        Package $oldPackage,
+        Package $newPackage,
+        PackageAccommodation $accommodation,
+        \DateTime $updatedBeginDate,
+        \DateTime $updatedEndDate,
+        &$messages,
+        &$isSuccess
+    ) {
+        $packageValidateErrors = $this->get('validator')->validate($newPackage);
+        if (count($packageValidateErrors) === 0) {
+            $result = $this->container->get('mbh.order_manager')->updatePackage($newPackage, $oldPackage);
+            if ($result instanceof Package) {
+                $this->dm->persist($newPackage);
+                $this->dm->flush();
+                $accommodation->setBegin($updatedBeginDate);
+                $accommodation->setEnd($updatedEndDate);
+                $this->dm->flush();
+                $messages[] = $this->get('translator')->trans('controller.chessboard.package_update.success');
+            } else {
+                $isSuccess = false;
+                $messages[] = [$this->get('translator')->trans($result)];
+            }
+        } else {
+            $isSuccess = false;
+            foreach ($packageValidateErrors as $error) {
+                $messages[] = $error->getMessage();
+            }
+        }
+    }
+
+    /**
+     * @Route("/accommodation_relocate/{id}", name="relocate_accommodation", options={"expose"=true})
+     * @param Request $request
+     * @param PackageAccommodation $firstAccommodation
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function relocateAccommodation(Request $request, PackageAccommodation $firstAccommodation)
+    {
+        $isSuccess = true;
+        $translator = $this->get('translator');
+        $helper = $this->container->get('mbh.helper');
+        $package = $firstAccommodation->getPackage();
+
+        $intermediateDateString = $request->request->get('begin');
+        $roomId = $request->request->get('roomId');
+        if ($intermediateDateString == '') {
+            throw new \Exception($translator->trans('controller.chessboard.accommodation_divide.error.empty_date_string'));
+        }
+        $intermediateDate = $helper::getDateFromString($intermediateDateString);
+
+        if ($intermediateDate->getTimestamp() < $firstAccommodation->getEnd()->getTimestamp()
+            && $intermediateDate->getTimestamp() > $firstAccommodation->getBegin()->getTimestamp()
+        ) {
+            $firstAccommodation->setEnd($intermediateDate);
+            if ($roomId != '') {
+                $secondAccommodation = clone $firstAccommodation;
+                $secondAccommodation->setBegin($intermediateDate);
+                $secondAccommodation->setEnd($package->getEnd());
+                $room = $this->dm->find('MBHHotelBundle:Room', $roomId);
+                $secondAccommodation->setRoom($room);
+                $package->addAccommodation($secondAccommodation);
+                $this->dm->persist($secondAccommodation);
+                $messages = [
+                    $translator->trans('controller.chessboard.accommodation_divide.success', [
+                        '%packageId%' => $package->getName(),
+                        '%payerInfo%' => $this->getPayerInfo($package),
+                        '%begin%' => $secondAccommodation->getBegin()->format('d.m.Y'),
+                        '%end%' => $secondAccommodation->getEnd()->format('d.m.Y'),
+                        '%roomName%' => $secondAccommodation->getRoom()->getName()
+                    ])
+                ];
+            } else {
+                if ($firstAccommodation->getEnd()->getTimestamp() != $package->getEnd()->getTimestamp()) {
+                    throw new \Exception($translator->trans('controller.chessboard.accommodation_not_last_remove.error'));
+                }
+                $messages = [
+                    $translator->trans('controller.chessboard.accommodation_remove.success', [
+                        '%packageId%' => $package->getName(),
+                        '%payerInfo%' => $this->getPayerInfo($package),
+                        '%begin%' => $intermediateDate->format('d.m.Y'),
+                        '%end%' => $package->getEnd()->format('d.m.Y'),
+                    ])
+                ];
+            }
+
+            $this->dm->flush();
+        } else {
+            $isSuccess = false;
+            $messages = [$translator->trans('controller.chessboard.accommodation_divide.error')];
+        }
+
+        return new JsonResponse(json_encode([
+            'success' => $isSuccess,
+            'messages' => $messages
+        ]));
+    }
+
+    private function getPayerInfo(Package $package)
+    {
+        $payerInfo = '';
+        if ($package->getPayer()) {
+            $payerInfo .= "плательщик \"{$package->getPayer()->getName()}\"";
+        }
+
+        return $payerInfo;
+    }
 
     /**
      * @Method({"GET"})
@@ -178,9 +327,10 @@ class ChessBoardController extends BaseController
                 $filterData['begin'],
                 $filterData['end'],
                 $filterData['roomTypeIds']
-                );
+            );
 
-        $data['packages'] = $builder->getAccommodationData();
+        $data['accommodations'] = $builder->getAccommodationData();
+        $data['noAccommodationIntervals'] = $builder->getNoAccommodationIntervals();
         $data['leftRoomCounts'] = $builder->getLeftRoomCounts();
         $data['noAccommodationCounts'] = $builder->getDayNoAccommodationPackageCounts();
 

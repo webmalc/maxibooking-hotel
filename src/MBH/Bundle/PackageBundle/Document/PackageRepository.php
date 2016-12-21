@@ -134,8 +134,7 @@ class PackageRepository extends DocumentRepository
 
         // without accommodation
         if ($criteria->isWithoutAccommodation()) {
-            $where = "function() { return !(this.accomodations && this.accomodations.length > 0; })";
-            $queryBuilder->expr()->field('accommodations.0')->where($where);
+            $queryBuilder->field('accommodations.0')->exists(false);
         }
 
         // filter

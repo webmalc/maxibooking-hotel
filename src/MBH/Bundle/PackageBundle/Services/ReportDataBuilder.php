@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
-
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -94,7 +93,6 @@ class ReportDataBuilder
         $accommodationData = [];
 
         foreach ($this->getAccommodationIntervals() as $interval) {
-            /** @var ChessBoardUnit $interval */
             $accommodationData[] = $interval->__toArray();
         }
 
@@ -211,6 +209,8 @@ class ReportDataBuilder
         $accommodationIntervals = [];
         foreach ($this->getPackageAccommodations() as $accommodation) {
             /** @var PackageAccommodation $accommodation */
+            $package = $accommodation->getPackage();
+
             $accommodationIntervals[] = (new ChessBoardUnit(
                 $accommodation->getId(),
                 $accommodation->getBegin(),
@@ -219,11 +219,49 @@ class ReportDataBuilder
                 $accommodation->getAccommodation()->getRoomType()->getId(),
                 $accommodation->getPackage()->getPaidStatus(),
                 $accommodation->getPackage()->getPrice(),
-                $accommodation->getAccommodation()->getId()))
+                $accommodation->getAccommodation()->getId(),
+                $this->getAccommodationRelativePosition($accommodation, $package)
+            ))
+                ->setEndPackageDate($package->getEnd())
+                ->setPackageId($package->getId())
             ;
         }
 
         return $accommodationIntervals;
+    }
+
+    /**
+     * Получение относительного положения размещения по отношению к остальным размещениям брони
+     * Размещение может занимать полное время брони, быть первым размещением, последним размещением или промежуточным
+     *
+     * @param PackageAccommodation $accommodation
+     * @param Package $package
+     * @return string
+     */
+    private function getAccommodationRelativePosition(PackageAccommodation $accommodation, Package $package)
+    {
+        $packageBeginString = $package->getBegin()->format('d.m.Y');
+        $lastPackageAccommodationEndString = $package->getLastEndAccommodation()->format('d.m.Y');
+        $accommodationBeginString = $accommodation->getBegin()->format('d.m.Y');
+        $accommodationEndString = $accommodation->getEnd()->format('d.m.Y');
+
+        if ($accommodationBeginString == $packageBeginString
+            && $accommodationEndString == $lastPackageAccommodationEndString
+        ) {
+            return ChessBoardUnit::FULL_PACKAGE_ACCOMMODATION;
+        }
+        if ($accommodationBeginString == $packageBeginString
+            && $accommodationEndString != $lastPackageAccommodationEndString
+        ) {
+            return ChessBoardUnit::LEFT_RELATIVE_POSITION;
+        }
+        if ($accommodationEndString == $lastPackageAccommodationEndString
+            && $accommodationBeginString != $packageBeginString
+        ) {
+            return ChessBoardUnit::RIGHT_RELATIVE_POSITION;
+        }
+
+        return ChessBoardUnit::MIDDLE_RELATIVE_POSITION;
     }
 
     /**
@@ -232,7 +270,8 @@ class ReportDataBuilder
      * @param Package $package
      * @return mixed
      */
-    private function getIntervalName($package) {
+    private function getIntervalName($package)
+    {
         return $package->getPayer() ? $package->getPayer()->getName() : $package->getName();
     }
 
