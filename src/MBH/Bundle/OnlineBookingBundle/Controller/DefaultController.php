@@ -476,7 +476,7 @@ class DefaultController extends BaseController
         ];
 
         $response = new JsonResponse(json_encode($data));
-        $response->headers->set('Access-Control-Allow-Origin', 'http://azovsky.ru');
+        $response->headers->set('Access-Control-Allow-Origin', $this->getParameter('domain_access_control'));
 
         return $response;
     }

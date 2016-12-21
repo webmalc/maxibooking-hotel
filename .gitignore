@@ -1,4 +1,5 @@
 /scripts/upload
+azovsky_remote/
 /scripts/deploy_to_test.sh
 /web/bundles/
 /app/config/parameters.yml
