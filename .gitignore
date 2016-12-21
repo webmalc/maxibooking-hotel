@@ -1,4 +1,5 @@
 /scripts/upload
+/scripts/deploy_to_test.sh
 /web/bundles/
 /app/config/parameters.yml
 /var/bootstrap.php.cache
