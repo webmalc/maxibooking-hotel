@@ -27,6 +27,8 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
 
             $manager->persist($packageSource);
             $manager->flush();
+
+            $this->setReference($Source, $packageSource);
         }
 
     }
@@ -48,6 +50,6 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
 
     public function getOrder()
     {
-        return 9998;
+        return -10;
     }
 }

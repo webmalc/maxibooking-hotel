@@ -2,10 +2,33 @@
 
 namespace Tests\Bundle\OrderBundle\Service;
 
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\ClientBundle\Service\NoticeUnpaid;
+use MBH\Bundle\PackageBundle\Document\Package;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class UnpaidOrderTest extends WebTestCase
 {
+    /**
+     * @var ContainerInterface
+     */
+    public $container;
+
+    /**
+     * @var NoticeUnpaid
+     */
+    public $notice_service;
+
+    /**
+     * @var Package
+     */
+    public $package;
+
+    /**
+     * @var ManagerRegistry
+     */
+    public $dm;
 
     public function setUp()
     {
@@ -13,7 +36,7 @@ class UnpaidOrderTest extends WebTestCase
 
         $this->container = self::$kernel->getContainer();
 
-        $this->notice_service = $this->container->get('mbh.notice');
+        $this->notice_service = $this->container->get('mbh.notice.unpaid');
 
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
 
@@ -32,16 +55,8 @@ class UnpaidOrderTest extends WebTestCase
 
     public static function tearDownAfterClass()
     {
-        //self::clearDB();
+        self::clearDB();
     }
-
-    public $container;
-
-    public $notice_service;
-
-    public $package;
-
-    public $dm;
 
     public function testUnpaidOrder()
     {
@@ -60,15 +75,15 @@ class UnpaidOrderTest extends WebTestCase
         foreach ($package as $packageItem) {
             $percent = $packageItem->getTariff()->getMinPerPrepay();
             $paid = $packageItem->getOrder()->getPaid();
-            $price = $packageItem->getOrder()->getPrice();
+            $price = $packageItem->getPrice();
             $id = $packageItem->getOrder()->getId();
             $orderCreatedAt = $packageItem->getOrder()->getCreatedAt();
 
-            $deadlineDate = (new \DateTime())->sub(new \DateInterval("P{$dateUnpaid}D")); // The last day of non-payment (DateTime)
+            $deadlineDate = (new \DateTime())->modify("-{$dateUnpaid} day"); // The last day of non-payment (DateTime)
 
             $result = $price * $percent / 100; // The minimum amount of payment
 
-            if(($paid <= $result) && ($orderCreatedAt <= $deadlineDate)) {
+            if (($paid <= $result) && ($orderCreatedAt <= $deadlineDate)) {
                 $countRecords++;
                 $this->assertEquals($unpaidOrders[$id]->getPaid(), $paid);
                 $this->assertEquals($unpaidOrders[$id]->getPrice(), $price);
@@ -77,4 +92,6 @@ class UnpaidOrderTest extends WebTestCase
         }
         $this->assertEquals($countRecords, count($unpaidOrders));
     }
+
 }
+?>

@@ -6,7 +6,7 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 
-class Notice
+class NoticeUnpaid
 {
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -44,7 +44,7 @@ class Notice
             ->getNoticeUnpaid();
 
         // Date. Late payments
-        $deadlineDate = $currentDay->sub(new \DateInterval("P{$dateUnpaid}D"));
+        $deadlineDate = $currentDay->modify("-{$dateUnpaid} day");
 
         $unpaidOrders = $this->dm
             ->getRepository('MBHPackageBundle:Order')
@@ -64,7 +64,7 @@ class Notice
 
     /**
      * Send message to email. Notice of unpaid
-     * todo Add to Cron
+     * todo add ro RabbitMQ
      *
      * @return array|bool
      */

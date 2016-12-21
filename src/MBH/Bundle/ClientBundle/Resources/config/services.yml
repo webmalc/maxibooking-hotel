@@ -2,6 +2,6 @@ services:
     mbh.mbhs:
         class: MBH\Bundle\ClientBundle\Service\Mbhs
         arguments: ['@service_container']
-    mbh.notice:
-        class: MBH\Bundle\ClientBundle\Service\Notice
+    mbh.notice.unpaid:
+        class: MBH\Bundle\ClientBundle\Service\NoticeUnpaid
         arguments: ['@doctrine_mongodb', '@mbh.notifier.mailer']
