@@ -62,8 +62,8 @@ class PackageSubscriber implements EventSubscriber
                 $packageService->setDeletedAt(new \DateTime());
                 $dm->persist($packageService);
             }
-            foreach ($entity->getAccommodations() as $accommodation) {
-                $dm->remove($accommodation);
+            while ($lastAccommodation = $entity->getLastAccommodation()) {
+                $dm->remove($lastAccommodation);
             }
             $entity->setServicesPrice(0);
             $dm->persist($entity);
