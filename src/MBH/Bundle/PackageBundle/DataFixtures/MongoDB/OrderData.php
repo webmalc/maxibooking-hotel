@@ -55,7 +55,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface, Cont
 
     public function persistPackage(ObjectManager $manager)
     {
-        $tariff = $this->getReference('my-tariff');
+        $tariff = $this->getReference('main-tariff');
         $roomType = $this->getReference('roomtype-double');
         $date = new \DateTime();
 

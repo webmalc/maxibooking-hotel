@@ -40,7 +40,7 @@ class TariffData extends AbstractFixture implements OrderedFixtureInterface, Con
             $manager->persist($tariff);
             $manager->flush();
 
-            $this->setReference('my-tariff', $tariff);
+            $this->setReference('main-tariff', $tariff);
         }
     }
 
