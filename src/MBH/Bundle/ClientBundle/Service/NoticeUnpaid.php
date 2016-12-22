@@ -68,7 +68,7 @@ class NoticeUnpaid
      *
      * @return array|bool
      */
-    public function sendNotice()
+    public function sendNotice($arrayData)
     {
         $message = $this->notifier->createMessage();
 
