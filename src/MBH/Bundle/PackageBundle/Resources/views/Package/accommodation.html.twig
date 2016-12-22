@@ -75,13 +75,18 @@
                                 <td class="text-center">
                                     {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                                         <div class="pull-right">
-                                            {% if package.accommodations.last == accommodation %}
+                                            <a href="{{ path('package_accommodation_edit', { 'id': accommodation.id }) }}"
+                                               class="btn btn-success btn-xs" title="Редактирование записи"
+                                               data-toggle="tooltip">
+                                                <i class="fa fa-pencil-square-o"></i>
+                                            </a>
+                                        </div>
+                                        <div class="pull-right">
                                             <a href="{{ path('package_accommodation_delete', { 'id': accommodation.id }) }}"
                                                class="btn btn-danger btn-xs delete-link" title="Удаление записи"
                                                data-toggle="tooltip">
                                                 <i class="fa fa-trash-o"></i>
                                             </a>
-                                            {% endif %}
                                         </div>
                                     {% endif %}
                                 </td>

@@ -10,15 +10,10 @@ use Symfony\Component\Validator\Constraint;
  */
 class PackageAccommodations extends Constraint
 {
-    /**
-     * @var
-     */
-    public $wrongStartDateMessage = 'validator.accommodation.wrong.start';
 
-    /**
-     * @var
-     */
-    public $wrongEndDateMessage = 'validator.accommodation.wrong.end';
+    public $wrongStartOrEndMessage = 'validator.accommodation.wrong.start.end';
+
+    public $intersectNeighbour = 'validator.accommodation.intersect.neighbour';
 
     /**
      * @return string
