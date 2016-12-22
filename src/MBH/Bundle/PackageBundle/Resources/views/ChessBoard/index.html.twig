@@ -1,6 +1,6 @@
 {% extends "MBHBaseBundle::page.html.twig" %}
 
-{% set small_title = 'report.accommodation.placement'|trans({}, 'MBHPackageBundle') %}
+{% set small_title = 'report.accommodation.chessBoard'|trans %}
 {% set layout = 'box' %}
 
 {% set headerWidth = 200 %}
@@ -25,7 +25,11 @@
         var noAccommodationIntervals = JSON.parse('{{ noAccommodationIntervals|raw }}');
         var noAccommodationCounts = JSON.parse('{{ noAccommodationCounts|raw }}');
         var roomTypes = [];
+        var rooms = [];
         {% for roomTypeID, roomTypeData in roomTypesData %}
+        {% for roomId, roomData in roomTypeData['rooms'] %}
+        rooms['{{ roomId }}'] = '{{ roomData.name }}';
+        {% endfor %}
         roomTypes['{{ roomTypeID }}'] = '{{ roomTypeData.name }}';
         {% endfor %}
     </script>
@@ -54,19 +58,19 @@
 
         <form method="post" id="accommodation-report-filter" class="form-inline filter-form" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp;
                 <input type="text" name="filter_begin" id="accommodation-report-filter-begin"
                        class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm"
                        data-date-format="dd.mm.yyyy" value="{{ beginDate|date('d.m.Y') }}">
             </div>
             <div class="input hidden">
-                - &nbsp
+                - &nbsp;
                 <input type="text" name="filter_end" id="accommodation-report-filter-end"
                        class="datepicker accommodation-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm"
                        data-date-format="dd.mm.yyyy" value="{{ endDate|date('d.m.Y') }}">
             </div>
             <div class="input">
-                <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp
+                <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp;
                 <select name="filter_roomType[]" multiple data-placeholder="Тип номера"
                         id="accommodation-report-filter-roomType"
                         class="accommodation-report-filter form-control input-sm">
@@ -79,7 +83,7 @@
             </div>
             {% if housings|length %}
                 <div class="input">
-                    <i class="fa fa-home" title='Корпус' data-toggle='tooltip'></i>&nbsp
+                    <i class="fa fa-home" title='Корпус' data-toggle='tooltip'></i>&nbsp;
                     <select name="housing[]" multiple data-placeholder="Корпус" id="accommodation-report-filter-housing"
                             class="accommodation-report-filter form-control input-sm">
                         <option></option>
@@ -93,7 +97,7 @@
 
             {% if floors|length %}
                 <div class="input">
-                    <i class="fa fa-home" title='Этаж' data-toggle='tooltip'></i>&nbsp
+                    <i class="fa fa-home" title='Этаж' data-toggle='tooltip'></i>&nbsp;
                     <select name="floor[]" multiple data-placeholder="Этаж" id="accommodation-report-filter-floor"
                             class="accommodation-report-filter form-control input-sm">
                         <option></option>
@@ -104,6 +108,9 @@
                     </select>
                 </div>
             {% endif %}
+            <div class="input">
+                <button type="button" class="btn btn-primary navbar-btn" id="filter-button">Выбрать</button>
+            </div>
         </form>
 
         <div id="accommodation-chessBoard-content" style="overflow: auto; width: auto" class="">
@@ -298,20 +305,47 @@
                             <div id="concise_package_update">
                                 <table class="table not-auto-datatable table-striped">
                                     <tbody>
-                                        <tr>
-                                            <td>{{ 'modal.chessBoard.room_name' | trans }}</td>
-                                            <td id="modal-room-name">
-                                            </td>
-                                            <td style="display: none;" id="modal-room-id"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>{{ 'modal.chessBoard.begin' | trans }}</td>
-                                            <td id="modal-begin-date"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>{{ 'modal.chessBoard.end' | trans }}</td>
-                                            <td id="modal-end-date"></td>
-                                        </tr>
+                                    <tr style="background-color: #d2d6de;">
+                                        <td>{{ 'modal.chessBoard.package_info'|trans }}</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#</td>
+                                        <td id="modal-package-number"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ 'modal.chessBoard.payer_name'|trans }}</td>
+                                        <td id="modal-package-payer"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ 'modal.chessBoard.package_begin_date'|trans }}</td>
+                                        <td id="modal-package-begin"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ 'modal.chessBoard.package_end_date'|trans }}</td>
+                                        <td id="modal-package-end"></td>
+                                    </tr>
+                                    <tr  style="background-color: #d2d6de;">
+                                        <td>{{ 'modal.chessBoard.accommodation_info'|trans }}</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ 'modal.chessBoard.room_name' | trans }}</td>
+                                        <td id="modal-room-name"></td>
+                                        <td style="display: none;" id="modal-room-id"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ 'modal.chessBoard.room_type_name' | trans }}</td>
+                                        <td id="modal-room-type-name"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ 'modal.chessBoard.begin' | trans }}</td>
+                                        <td id="modal-begin-date"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ 'modal.chessBoard.end' | trans }}</td>
+                                        <td id="modal-end-date"></td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>

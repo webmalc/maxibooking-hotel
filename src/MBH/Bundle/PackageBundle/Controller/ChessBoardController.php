@@ -58,7 +58,6 @@ class ChessBoardController extends BaseController
         ];
     }
 
-
     /**
      * @Method({"GET"})
      * @Route("/packages/{id}", name="chessboard_get_package", options={"expose"=true})
@@ -81,8 +80,13 @@ class ChessBoardController extends BaseController
      */
     public function removePackageAction(Package $package)
     {
-        $this->dm->remove($package);
-        $this->dm->flush();
+        try {
+            $this->dm->remove($package);
+            $this->dm->flush();
+        } catch (\Exception $e) {
+            $message = $this->get('translator')->trans($e->getMessage());
+            $this->logs($message);
+        }
 
         return new JsonResponse(json_encode(
             [
@@ -124,7 +128,7 @@ class ChessBoardController extends BaseController
                 } else {
                     $this->dm->remove($accommodation);
                     $this->dm->flush();
-                    $messages[] =  [
+                    $messages[] = [
                         $this->get('translator')->trans('controller.chessboard.accommodation_remove.success', [
                             '%packageId%' => $accommodation->getPackage()->getName(),
                             '%payerInfo%' => $this->getPayerInfo($package),
@@ -156,8 +160,8 @@ class ChessBoardController extends BaseController
                 if ($isEndDateChanged && $isLastAccommodation
                     //Если дата окончания размещения больше чем дата выезда брони
                     && (($updatedEndDate->getTimestamp() > $package->getEnd()->getTimestamp())
-                    //... или дата выезда брони равна дате окончания размещения, то изменяем дату выезда брони
-                    || ($package->getEnd()->getTimestamp() == $accommodation->getEnd()->getTimestamp()))
+                        //... или дата выезда брони равна дате окончания размещения, то изменяем дату выезда брони
+                        || ($package->getEnd()->getTimestamp() == $accommodation->getEnd()->getTimestamp()))
                 ) {
                     $package->setEnd($updatedEndDate);
                     $isPackageChanged = true;
@@ -234,6 +238,7 @@ class ChessBoardController extends BaseController
         $translator = $this->get('translator');
         $helper = $this->container->get('mbh.helper');
         $package = $firstAccommodation->getPackage();
+        $accommodationEnd = $firstAccommodation->getEnd();
 
         $intermediateDateString = $request->request->get('begin');
         $roomId = $request->request->get('roomId');
@@ -249,7 +254,7 @@ class ChessBoardController extends BaseController
             if ($roomId != '') {
                 $secondAccommodation = clone $firstAccommodation;
                 $secondAccommodation->setBegin($intermediateDate);
-                $secondAccommodation->setEnd($package->getEnd());
+                $secondAccommodation->setEnd($accommodationEnd);
                 $room = $this->dm->find('MBHHotelBundle:Room', $roomId);
                 $secondAccommodation->setRoom($room);
                 $package->addAccommodation($secondAccommodation);
@@ -265,7 +270,7 @@ class ChessBoardController extends BaseController
                 ];
                 $this->dm->flush();
             } else {
-                if ($firstAccommodation->getEnd()->getTimestamp() != $package->getEnd()->getTimestamp()) {
+                if ($accommodationEnd->getTimestamp() != $package->getEnd()->getTimestamp()) {
                     $messages = [$translator->trans('controller.chessboard.accommodation_not_last_remove.error')];
                     $isSuccess = false;
                 } else {

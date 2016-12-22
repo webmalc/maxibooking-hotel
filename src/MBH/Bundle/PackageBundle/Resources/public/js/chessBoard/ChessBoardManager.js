@@ -58,7 +58,7 @@ var ChessBoardManager = (function () {
         var rangePicker = $reportFilter.find('.daterangepicker-input').data('daterangepicker');
         rangePicker.setStartDate(ChessBoardManager.getTableStartDate());
         rangePicker.setEndDate(ChessBoardManager.getTableEndDate());
-        $reportFilter.change(function () {
+        $reportFilter.find('#filter-button').click(function () {
             $reportFilter.submit();
         });
         //Фиксирование верхнего и левого блоков таблицы
@@ -209,7 +209,8 @@ var ChessBoardManager = (function () {
         packageDiv.id = packageItem.id;
         var description = document.createElement('div');
         description.classList.add('package-description');
-        description.innerHTML = packageItem.name ? packageItem.name.substr(0, packageCellCount * 5 - 5) : '';
+        var packageName = packageItem.payer ? packageItem.payer : packageItem.number;
+        description.innerHTML = packageName ? packageName.substr(0, packageCellCount * 5 - 5) : '';
         packageDiv.appendChild(description);
         packageDiv.classList.add(packageItem.paidStatus);
         if (packageEndDate.diff(packageStartDate, 'days') < 2) {
@@ -276,11 +277,18 @@ var ChessBoardManager = (function () {
                 var packageLeftCoordinate_1 = accommodationElement.getBoundingClientRect().left;
                 var line_1 = document.createElement('div');
                 line_1.style = 'position:absolute; border: 2px dashed red; height: 41px; z-index = 250;top: 0';
+                line_1.style.left = ChessBoardManager.DATE_ELEMENT_WIDTH + 'px';
                 accommodationElement.appendChild(line_1);
                 accommodationElement.onmousemove = function (event) {
-                    var offset = event.x - packageLeftCoordinate_1;
+                    var offset = event.clientX - packageLeftCoordinate_1;
                     var griddedOffset = Math.floor(Math.abs(offset + ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET)
                         / ChessBoardManager.DATE_ELEMENT_WIDTH) * ChessBoardManager.DATE_ELEMENT_WIDTH;
+                    if (griddedOffset == 0) {
+                        griddedOffset += ChessBoardManager.DATE_ELEMENT_WIDTH;
+                    }
+                    else if (griddedOffset == accommodationWidth) {
+                        griddedOffset -= ChessBoardManager.DATE_ELEMENT_WIDTH;
+                    }
                     line_1.style.left = griddedOffset + 'px';
                     accommodationElement.onclick = function () {
                         accommodationElement.onmousemove = null;

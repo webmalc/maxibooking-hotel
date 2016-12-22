@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Models\ChessBoard;
 
 
+use MBH\Bundle\PackageBundle\Document\Tourist;
+
 class ChessBoardUnit implements \JsonSerializable
 {
     private $id;
@@ -15,10 +17,13 @@ class ChessBoardUnit implements \JsonSerializable
      */
     private $endDate;
     /**
-     * @var string Текст, который будет указан на блоке в шахматке
+     * @var Tourist
      */
-    private $name;
-
+    private $packagePayer;
+    /**
+     * @var string
+     */
+    private $packageNumber;
     /**
      * @var string
      */
@@ -39,6 +44,8 @@ class ChessBoardUnit implements \JsonSerializable
      */
     private $accommodationRelativePosition;
     private $endPackageDate;
+    private $beginPackageDate;
+
     private $packageId;
 
     const LEFT_RELATIVE_POSITION = 'left';
@@ -48,28 +55,26 @@ class ChessBoardUnit implements \JsonSerializable
 
     public function __construct(
         $id,
-        \DateTime$beginDate,
+        \DateTime $beginDate,
         \DateTime $endDate,
-        $name,
+        $number,
         $roomTypeId,
         $paidStatus,
         $price,
+        $payer = null,
         $accommodation = null,
         $position = null
     ) {
         $this->id = $id;
         $this->beginDate = $beginDate;
         $this->endDate = $endDate;
-        $this->name = $name;
+        $this->packageNumber = $number;
+        $this->packagePayer = $payer;
         $this->roomTypeId = $roomTypeId;
         $this->paidStatus = $paidStatus;
         $this->price = $price;
-        if ($accommodation) {
-            $this->accommodationId = $accommodation;
-        }
-        if ($position) {
-            $this->accommodationRelativePosition = $position;
-        }
+        $this->accommodationId = $accommodation;
+        $this->accommodationRelativePosition = $position;
 
         return $this;
     }
@@ -93,9 +98,9 @@ class ChessBoardUnit implements \JsonSerializable
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPackagePayer(): string
     {
-        return $this->name;
+        return $this->packagePayer;
     }
 
     /**
@@ -145,12 +150,12 @@ class ChessBoardUnit implements \JsonSerializable
     }
 
     /**
-     * @param string $name
+     * @param string $packagePayer
      * @return ChessBoardUnit
      */
-    public function setName(string $name): ChessBoardUnit
+    public function setPackagePayer(string $packagePayer): ChessBoardUnit
     {
-        $this->name = $name;
+        $this->packagePayer = $packagePayer;
         return $this;
     }
 
@@ -195,7 +200,7 @@ class ChessBoardUnit implements \JsonSerializable
     {
         $array = [
             'id' => $this->id,
-            'name' => $this->name,
+            'number' => $this->packageNumber,
             'price' => $this->price,
             'begin' => $this->beginDate,
             'end' => $this->endDate,
@@ -203,11 +208,17 @@ class ChessBoardUnit implements \JsonSerializable
             'paidStatus' => $this->paidStatus
         ];
 
+        if ($this->packagePayer) {
+            $array['payer'] = $this->packagePayer->getName();
+        }
         if ($this->accommodationId) {
             $array['accommodation'] = $this->accommodationId;
         }
         if ($this->accommodationRelativePosition) {
             $array['position'] = $this->accommodationRelativePosition;
+        }
+        if ($this->beginPackageDate) {
+            $array['packageBegin'] = $this->beginPackageDate;
         }
         if ($this->endPackageDate) {
             $array['packageEnd'] = $this->endPackageDate;
@@ -320,5 +331,42 @@ class ChessBoardUnit implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPackageNumber()
+    {
+        return $this->packageNumber;
+    }
+
+    /**
+     * @param mixed $packageNumber
+     * @return ChessBoardUnit
+     */
+    public function setPackageNumber($packageNumber) : ChessBoardUnit
+    {
+        $this->packageNumber = $packageNumber;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBeginPackageDate()
+    {
+        return $this->beginPackageDate;
+    }
+
+    /**
+     * @param mixed $beginPackageDate
+     * @return ChessBoardUnit
+     */
+    public function setBeginPackageDate($beginPackageDate) : ChessBoardUnit
+    {
+        $this->beginPackageDate = $beginPackageDate;
+
+        return $this;
+    }
 
 }

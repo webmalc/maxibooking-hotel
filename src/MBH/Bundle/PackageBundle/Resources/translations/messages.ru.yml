@@ -387,6 +387,7 @@ csv.form.countNight: Кол-во Ночей
 csv.form.countPersons: Кол-во Людей
 
 #chessBoard
+report.accommodation.chessBoard: "шахматка"
 form.chessBoard.begin.label: Заезд
 form.chessBoard.end.label: Отъезд
 form.chessBoard.roomType.label: Тип номера
@@ -408,7 +409,8 @@ modal.chessBoard.is_check_out: Выехали
 modal.chessBoard.yes: Да
 modal.chessBoard.no: Нет
 modal.chessBoard.guests: Гости
-modal.chessBoard.note: Комментарий
+modal.chessBoard.package_note: Комментарий брони
+modal.chessBoard.order_note: Комментарий заказа
 modal.chessBoard.dates: Даты
 modal.chessBoard.registered: оформлено
 modal.chessBoard.not_specified: Не указаны
@@ -421,7 +423,13 @@ modal.chessBoard.price: Стоимость
 modal.chessBoard.serices_price: Стоимость услуг
 modal.chessBoard.payed: Оплачено
 modal.chessBoard.search_results: Варианты бронирования
+modal.chessBoard.package_info: Данные о брони
+modal.chessBoard.accommodation_info: Информация об изменяемом размещении
+modal.chessBoard.payer_name: Плательщик
+modal.chessBoard.package_begin_date: Дата начала брони
+modal.chessBoard.package_end_date: Дата окончания брони
 modal.chessBoard.room_name: Комната
+modal.chessBoard.room_type_name: Тип комнаты
 modal.chessBoard.begin: Дата заезда
 modal.chessBoard.end: Дата выезда
 controller.chessboard.package_create.success: Бронь успешно создана
@@ -435,3 +443,12 @@ controller.chessboard.accommodation_divide.error: Дата разделения 
 controller.chessboard.accommodation_divide.error.empty_date_string: Передана пустая строка даты разделения размещения
 controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: Ошибка! Недопустимо изменение промежуточного размещения
 
+# Chessboard settings
+chessboard.settings: Настройки шахматки
+form.chessboard.package_unpaid.color: Неоплаченная бронь
+form.chessboard.package_unpaid.color.help: Цвет неоплаченной брони
+form.chessboard.package_partly_paid.color: Частично оплаченная бронь
+form.chessboard.package_partly_paid.color.help: Цвет частично оплаченной брони
+form.chessboard.package_paid.color: Оплаченная бронь
+form.chessboard.package_paid.color.help: Цвет оплаченной брони
+form.chessboard.colors: Цвета

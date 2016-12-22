@@ -215,14 +215,16 @@ class ReportDataBuilder
                 $accommodation->getId(),
                 $accommodation->getBegin(),
                 $accommodation->getEnd(),
-                $this->getIntervalName($accommodation->getPackage()),
+                $package->getNumberWithPrefix(),
                 $accommodation->getAccommodation()->getRoomType()->getId(),
-                $accommodation->getPackage()->getPaidStatus(),
-                $accommodation->getPackage()->getPrice(),
+                $package->getPaidStatus(),
+                $package->getPrice(),
+                $package->getPayer(),
                 $accommodation->getAccommodation()->getId(),
                 $this->getAccommodationRelativePosition($accommodation, $package)
             ))
                 ->setEndPackageDate($package->getEnd())
+                ->setBeginPackageDate($package->getBegin())
                 ->setPackageId($package->getId())
             ;
         }

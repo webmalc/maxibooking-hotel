@@ -69,9 +69,9 @@
         <td>{{ 'modal.chessBoard.payed'|trans }}</td>
         <td>{{ package.paid|number_format(2) }}</td>
     </tr>
-    <tr>
+    <tr {% if package.accommodations|length != 0 %}style="background-color: #d2d6de;"{% endif %}>
         <td>{{ 'modal.chessBoard.accommodation'|trans }}</td>
-        <td>{% if package.accommodations|length == 0 %}{{ 'modal.chessBoard.without_accommodation'|trans }}{% else %}{% endif %}</td>
+        <td>{% if package.accommodations|length == 0 %}{{ 'modal.chessBoard.without_accommodation'|trans }}{% endif %}</td>
     </tr>
     {% if package.accommodations|length > 0 %}
         <tr>
@@ -92,8 +92,14 @@
     {% endif %}
     {% if package.note %}
         <tr>
-            <td>{{ 'modal.chessBoard.note' |trans }}</td>
+            <td>{{ 'modal.chessBoard.package_note' |trans }}</td>
             <td>{{ package.note|nl2br }}</td>
+        </tr>
+    {% endif %}
+    {% if package.order.note %}
+        <tr>
+            <td>{{ 'modal.chessBoard.order_note' |trans }}</td>
+            <td>{{ package.order.note|nl2br }}</td>
         </tr>
     {% endif %}
     </tbody>
