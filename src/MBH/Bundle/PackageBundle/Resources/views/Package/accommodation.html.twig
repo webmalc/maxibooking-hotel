@@ -105,7 +105,15 @@
 
         {% if optGroupRooms|length %}
             <div class="box box-default box-solid">
-                <div class="box-header with-border"><h3 class="box-title">Выбор размещения</h3>
+                <div class="box-header with-border"><h3 class="box-title">Выбор размещения на даты &emsp;&emsp;</h3>
+                    <div class="btn-group">
+                        {% for interval in emptyIntervalsAccommodation %}
+                            {% set btnClass = app.request.attributes.get('begin')|date('Y-m-d') == interval.begin|date('Y-m-d') and app.request.attributes.get('end')|date('Y-m-d') == interval.end|date('Y-m-d') ? 'btn-success':'btn-warning' %}
+                        <a href="{{ path('package_accommodation', {'id': package.id, 'begin': interval.begin|date('Y-m-d'), 'end': interval.end|date('Y-m-d') }) }}"
+                           class="btn {{ btnClass }}">{{interval.begin|date('d-m-Y')}}-{{ interval.end|date('d-m-Y')}}
+                        </a>
+                        {% endfor %}
+                    </div>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
                                 id="mbh_bundle_packagebundle_package_accommodation_table"><i class="fa fa-minus"></i>

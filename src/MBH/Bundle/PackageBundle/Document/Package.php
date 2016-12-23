@@ -80,6 +80,7 @@ class Package extends Base implements \JsonSerializable
 
     /**
      * @ODM\ReferenceMany(targetDocument="PackageAccommodation", inversedBy="package", cascade={"persist"})
+     *
      */
     protected $accommodations;
 
@@ -1500,29 +1501,6 @@ class Package extends Base implements \JsonSerializable
 
 
     /**
-     * @return bool
-     */
-    public function isFullAccommodation(): bool
-    {
-        $spacing = false;
-        $accommodationsIterator = $this->accommodations->getIterator();
-        $accommodationsIterator->rewind();
-        $begin = null;
-        while ($accommodationsIterator->current() !== null) {
-            /** @var PackageAccommodation $accommodation */
-            $accommodation = $accommodationsIterator->current();
-            $begin = $accommodation->getBegin();
-            if (isset($end) && $begin != $end ) {
-                $spacing = true;
-            }
-            $end = $accommodation->getEnd();
-            $accommodationsIterator->next();
-        }
-
-        return !$spacing && $this->getBegin() == $this->accommodations->first()->getBegin() &&  $this->getEnd() == $this->accommodations->last()->getEnd();
-    }
-
-    /**
      * @param Collection $accommodations
      * @return Package
      */
@@ -1560,6 +1538,7 @@ class Package extends Base implements \JsonSerializable
 
     /**
      * @return \DateTime
+     * @deprecated
      */
     public function getLastEndAccommodation(): \DateTime
     {

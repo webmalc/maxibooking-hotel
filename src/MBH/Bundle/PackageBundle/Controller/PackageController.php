@@ -21,6 +21,7 @@ use MBH\Bundle\PackageBundle\Form\PackageMainType;
 use MBH\Bundle\PackageBundle\Form\PackageAccommodationRoomType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use MBH\Bundle\PackageBundle\Lib\PackageAccommodationException;
 use MBH\Bundle\PackageBundle\Services\CsvGenerate;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
 use MBH\Bundle\PackageBundle\Services\PackageCreationException;
@@ -883,15 +884,20 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * Accommodation
      *
-     * @Route("/{id}/accommodation", name="package_accommodation")
+     * @Route("/{id}/accommodation/{begin}/{end}", name="package_accommodation", defaults={"begin" = null, "end" = null})
+     * @ParamConverter("begin", options={"format":"Y-m-d"})
+     * @ParamConverter("end", options={"format":"Y-m-d"})
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @Template()
      * @param Request $request
      * @param Package $package
+     * @param \DateTime $begin
+     * @param \DateTime $end
      * @return array
+     * @throws PackageAccommodationException
      */
-    public function accommodationAction(Request $request, Package $package)
+    public function accommodationAction(Request $request, Package $package, \DateTime $begin = null, \DateTime $end = null)
     {
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
@@ -904,11 +910,21 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /** @var RoomRepository $roomRepository */
         $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
 
-//        $groupedRooms = $roomRepository->fetchAccommodationRooms($package->getBegin(), $package->getEnd(),
-//            $this->hotel, null, null, $package->getId(), true
-//        );
-        $groupedRooms = $roomRepository->fetchAccommodationRoomsForPackage($package, $this->hotel);
 
+        $pAccManipulator = $this->get('mbh_bundle_package.services.package_accommodation_manipulator');
+        $accIntervals = $pAccManipulator->getEmptyIntervals($package);
+        if (!$begin && !$end) {
+            $begin = $accIntervals->first()['begin'];
+            $end = $accIntervals->first()['end'];
+
+        } elseif ($begin && $end) {
+            null;
+        } else {
+            throw new PackageAccommodationException('Не может быть передано только одна из дат');
+        }
+
+
+        $groupedRooms = $roomRepository->fetchAccommodationRooms($begin, $end, $this->hotel, null, null, null, true);
         $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
 
         $name = $package->getRoomType()->getName();
@@ -981,6 +997,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $arrivalTime = $this->getParameter('mbh_package_arrival_time');
 
         return [
+            'emptyIntervalsAccommodation' => $pAccManipulator->getEmptyIntervals($package),
             'package' => $package,
             'arrivalTime' => $arrivalTime,
             'earlyCheckInServiceIsEnabled' => $earlyCheckInServiceIsEnabled,
