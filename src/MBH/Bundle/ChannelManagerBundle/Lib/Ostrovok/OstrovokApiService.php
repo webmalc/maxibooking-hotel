@@ -150,7 +150,8 @@ class OstrovokApiService
 
     public function getBookings(array $data = array())
     {
-        return $this->callGet("bookings/", $data);
+        $response = $this->callGet("bookings/", $data);
+        return $response['bookings'];
     }
 
     public function getRNA($plan_date_start_at, $plan_date_end_at, array $data = array())
