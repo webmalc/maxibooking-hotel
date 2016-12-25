@@ -103,7 +103,7 @@
                         <option></option>
                         {% for floor in floors %}
                             <option value="{{ floor }}"
-                                    {% if floor in app.request.get('floor') and floors|length != app.request.get('floor')|length %}selected{% endif %}>{{ floor }}</option>
+                                    {% if floor in app.request.get('floor') %}selected{% endif %}>{{ floor }}</option>
                         {% endfor %}
                     </select>
                 </div>

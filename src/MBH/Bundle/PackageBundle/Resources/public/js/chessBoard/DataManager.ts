@@ -25,7 +25,6 @@ class DataManager {
 
     private handleResponse(jsonResponse) {
         var response = JSON.parse(jsonResponse);
-
         ActionManager.showResultMessages(response);
         this.updatePackagesData();
 
@@ -51,7 +50,6 @@ class DataManager {
     }
 
     public updatePackageRequest(packageId, data) {
-        ActionManager.showLoadingIndicator();
         let self = this;
         $.ajax({
             url: Routing.generate('concise_package_update', {id: packageId}),
@@ -59,7 +57,6 @@ class DataManager {
             type: "PUT",
             success: function (data) {
                 self.handleResponse(data);
-                ActionManager.hideLoadingIndicator();
             },
             dataType: 'json'
         });
@@ -68,14 +65,12 @@ class DataManager {
 
     public relocateAccommodationRequest(accommodationId, newAccommodationData) {
         let self = this;
-        ActionManager.showLoadingIndicator();
         $.ajax({
             url: Routing.generate('relocate_accommodation', {id : accommodationId}),
             data: newAccommodationData,
             type: "PUT",
             success: function (data) {
                 self.handleResponse(data);
-                ActionManager.hideLoadingIndicator();
             },
             dataType: 'json'
         });
@@ -111,28 +106,54 @@ class DataManager {
         return moment(packageDataDate, "DD.MM.YYYY").toDate();
     }
 
-    public updateLocalPackageData(packageData) {
+    public updateLocalPackageData(packageData, isDivide) {
         let self = this;
-        if (!packageData.accommodation) {
-            this._accommodations.forEach(function (packageItem, index, packages) {
-                if (packageItem.id === packageData.id) {
-                    packages.splice(index, 1);
+        ActionManager.hideLoadingIndicator();
+        if (isDivide) {
+            let dividedAccommodation;
+            this._accommodations.some(function (accommodationData) {
+                if (accommodationData.id == packageData.accommodationId) {
+                    dividedAccommodation = accommodationData;
+                    return true;
                 }
+                return false;
             });
-        } else {
-            let isAccommodation = false;
+            let newAccommodationData = $.extend(true, {}, dividedAccommodation);
+            dividedAccommodation.end = { 'date' : DataManager.getPackageDate(packageData.begin) };
+            newAccommodationData.begin = { 'date' : DataManager.getPackageDate(packageData.begin) };
+            newAccommodationData.accommodation = packageData.roomId;
             this._accommodations.forEach(function (packageDataItem) {
                 if (packageDataItem.id === packageData.id) {
-                    isAccommodation = true;
-                    packageDataItem.begin.date = DataManager.getPackageDate(packageData.begin);
-                    packageDataItem.end.date = DataManager.getPackageDate(packageData.end);
-                    packageDataItem.accommodation = packageData.accommodation;
-                    packageDataItem.roomTypeId = packageData.roomTypeId;
+                    packageDataItem = dividedAccommodation;
                 }
             });
-            if (!isAccommodation) {
-                self.addPackageData(packageData);
+            this._accommodations.push(newAccommodationData);
+        } else {
+            if (!packageData.accommodation) {
+                this._accommodations.forEach(function (packageItem, index, packages) {
+                    if (packageItem.id === packageItem.id) {
+                        packages.splice(index, 1);
+                    }
+                });
+            } else {
+                this.updateAccommodationData(packageData)
             }
+        }
+    }
+
+    private updateAccommodationData(packageData) {
+        let isAccommodation = false;
+        this._accommodations.forEach(function (packageDataItem) {
+            if (packageDataItem.id === packageData.id) {
+                isAccommodation = true;
+                packageDataItem.begin.date = DataManager.getPackageDate(packageData.begin);
+                packageDataItem.end.date = DataManager.getPackageDate(packageData.end);
+                packageDataItem.accommodation = packageData.accommodation;
+                packageDataItem.roomTypeId = packageData.roomTypeId;
+            }
+        });
+        if (!isAccommodation) {
+            this.addPackageData(packageData);
         }
     }
 
@@ -154,11 +175,16 @@ class DataManager {
     public deletePackageRequest(packageId) {
         ActionManager.showLoadingIndicator();
         let self = this;
-        this._accommodations.forEach(function (packageItem, index, packages) {
-            if (packageItem.packageId === packageId) {
-                packages.splice(index, 1);
+
+        let index = this._accommodations.length - 1;
+
+        while (index >= 0) {
+            if (this._accommodations[index].packageId === packageId) {
+                this._accommodations.splice(index, 1);
             }
-        });
+
+            index -= 1;
+        }
 
         $.ajax({
             url: Routing.generate('chessboard_remove_package', {id: packageId}),
@@ -197,7 +223,6 @@ class DataManager {
     }
 
     private updatePackagesData() {
-        ActionManager.showLoadingIndicator();
         let self = this;
         var filterData = $('#accommodation-report-filter').serialize();
         $.ajax({

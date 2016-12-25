@@ -15,15 +15,26 @@ var ActionManager = (function () {
         });
         $deleteConfirmationModal.modal('show');
     };
+    ActionManager.prototype.callUnblockModal = function (packageId) {
+        var $unblockModal = $('#entity-delete-confirmation');
+        $unblockModal.find('.modal-title').text('Бронь заблокирована для изменений!');
+        $unblockModal.find('#entity-delete-modal-text').text('Если вы хотите разблокировать эту бронь, перейдите в раздел редактирования брони.');
+        $unblockModal.find('#entity-delete-button').hide();
+        var editButton = $('#package-info-modal-edit').clone();
+        editButton.css('background-color', 'transparent');
+        editButton.css('border', '1px solid #fff');
+        editButton.css('color', '#fff');
+        editButton.attr('href', Routing.generate('package_edit', { id: packageId }));
+        editButton.appendTo($unblockModal.find('.modal-footer'));
+        $unblockModal.modal('show');
+    };
     ActionManager.showLoadingIndicator = function () {
-        var $loadingIndicator = $('#loading-indicator');
         $('#dimmer').show();
-        $loadingIndicator.show();
+        $('#loading-indicator').show();
     };
     ActionManager.hideLoadingIndicator = function () {
         $('#dimmer').hide();
-        var $loadingIndicator = $('#loading-indicator');
-        $loadingIndicator.hide();
+        $('#loading-indicator').hide();
     };
     ActionManager.prototype.callPackageInfoModal = function (accommodationId) {
         this.dataManager.getPackageDataRequest(accommodationId);
@@ -101,8 +112,11 @@ var ActionManager = (function () {
         packageInfoModal.modal('show');
     };
     ActionManager.showResultMessages = function (response) {
-        response.messages.forEach(function (message) {
-            ActionManager.showMessage(response.success, message);
+        response.success.forEach(function (message) {
+            ActionManager.showMessage(true, message);
+        });
+        response.errors.forEach(function (message) {
+            ActionManager.showMessage(false, message);
         });
     };
     ActionManager.showMessage = function (isSuccess, message, messageBlockId) {
@@ -116,7 +130,7 @@ var ActionManager = (function () {
             if (messageDiv.parentElement) {
                 messageDiv.parentElement.removeChild(messageDiv);
             }
-        }, 10000);
+        }, 12000);
         document.getElementById(messageBlockId).appendChild(messageDiv);
     };
     ActionManager.callUpdatePackageModal = function (packageElement, intervalData, changedSide, isDivide) {

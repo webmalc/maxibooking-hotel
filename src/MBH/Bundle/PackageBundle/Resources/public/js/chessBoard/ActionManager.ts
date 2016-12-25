@@ -24,16 +24,28 @@ class ActionManager {
         $deleteConfirmationModal.modal('show');
     }
 
+    public callUnblockModal(packageId) {
+        var $unblockModal = $('#entity-delete-confirmation');
+        $unblockModal.find('.modal-title').text('Бронь заблокирована для изменений!');
+        $unblockModal.find('#entity-delete-modal-text').text('Если вы хотите разблокировать эту бронь, перейдите в раздел редактирования брони.');
+        $unblockModal.find('#entity-delete-button').hide();
+        let editButton = $('#package-info-modal-edit').clone();
+        editButton.css('background-color', 'transparent');
+        editButton.css('border', '1px solid #fff');
+        editButton.css('color', '#fff');
+        editButton.attr('href', Routing.generate('package_edit', {id: packageId}));
+        editButton.appendTo($unblockModal.find('.modal-footer'));
+        $unblockModal.modal('show');
+    }
+
     public static showLoadingIndicator() {
-        var $loadingIndicator = $('#loading-indicator');
         $('#dimmer').show();
-        $loadingIndicator.show();
+        $('#loading-indicator').show();
     }
 
     public static hideLoadingIndicator() {
         $('#dimmer').hide();
-        var $loadingIndicator = $('#loading-indicator');
-        $loadingIndicator.hide();
+        $('#loading-indicator').hide();
     }
 
     public callPackageInfoModal(accommodationId) {
@@ -129,8 +141,11 @@ class ActionManager {
     }
 
     public static showResultMessages(response) {
-        response.messages.forEach(function (message) {
-            ActionManager.showMessage(response.success, message);
+        response.success.forEach(function (message) {
+            ActionManager.showMessage(true, message);
+        });
+        response.errors.forEach(function (message) {
+            ActionManager.showMessage(false, message);
         });
     }
 
@@ -144,7 +159,7 @@ class ActionManager {
             if (messageDiv.parentElement) {
                 messageDiv.parentElement.removeChild(messageDiv);
             }
-        }, 10000);
+        }, 12000);
         document.getElementById(messageBlockId).appendChild(messageDiv);
     }
 

@@ -16,7 +16,7 @@ use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ReportDataBuilder
+class ChessBoardDataBuilder
 {
     /** @var DocumentManager $dm */
     private $dm;
@@ -46,7 +46,6 @@ class ReportDataBuilder
     private $packageAccommodations = [];
 
     /**
-     * ReportDataBuilder constructor.
      * @param DocumentManager $dm
      * @param Helper $helper
      * @param ContainerInterface $container
@@ -66,7 +65,7 @@ class ReportDataBuilder
      * @param array $housingIds
      * @param array $floorIds
      * @param Tariff $tariff
-     * @return ReportDataBuilder
+     * @return ChessBoardDataBuilder
      */
     public function init(
         Hotel $hotel,
@@ -96,7 +95,7 @@ class ReportDataBuilder
             $accommodationData[] = $interval->__toArray();
         }
 
-        return $accommodationData;
+        return $this->getAccommodationIntervals();
     }
 
     public function getNoAccommodationIntervals()
@@ -111,7 +110,12 @@ class ReportDataBuilder
                 $this->getIntervalName($package),
                 $package->getRoomType()->getId(),
                 $package->getPaidStatus(),
-                $package->getPrice()
+                $package->getPrice(),
+                $package->getBegin(),
+                $package->getEnd(),
+                $package->getIsCheckIn(),
+                $package->getIsCheckOut(),
+                $package->getIsLocked()
             );
         }
 
@@ -196,7 +200,12 @@ class ReportDataBuilder
                     $this->getIntervalName($package),
                     $package->getRoomType()->getId(),
                     $package->getPaidStatus(),
-                    $package->getPrice()
+                    $package->getPrice(),
+                    $package->getBegin(),
+                    $package->getEnd(),
+                    $package->getIsCheckIn(),
+                    $package->getIsCheckOut(),
+                    $package->getIsLocked()
                 );
             }
         }
@@ -219,12 +228,15 @@ class ReportDataBuilder
                 $accommodation->getAccommodation()->getRoomType()->getId(),
                 $package->getPaidStatus(),
                 $package->getPrice(),
+                $package->getBegin(),
+                $package->getEnd(),
+                $package->getIsCheckIn(),
+                $package->getIsCheckOut(),
+                $package->getIsLocked(),
                 $package->getPayer(),
                 $accommodation->getAccommodation()->getId(),
                 $this->getAccommodationRelativePosition($accommodation, $package)
             ))
-                ->setEndPackageDate($package->getEnd())
-                ->setBeginPackageDate($package->getBegin())
                 ->setPackageId($package->getId())
             ;
         }

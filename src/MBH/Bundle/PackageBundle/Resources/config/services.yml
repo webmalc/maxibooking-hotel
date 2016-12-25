@@ -115,7 +115,7 @@ services:
                    - [setContainer, ['@service_container']]
 
     mbh.package.report_data_builder:
-        class: MBH\Bundle\PackageBundle\Services\ReportDataBuilder
+        class: MBH\Bundle\PackageBundle\Services\ChessBoardDataBuilder
         arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper', '@service_container']
 
     mbh.package.windows.report.generator:
@@ -129,3 +129,7 @@ services:
     mbh.acl_document_owner_maker:
         class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
         arguments: ['@security.acl.provider', '@doctrine.odm.mongodb.document_manager']
+
+    mbh.chess_board.message_formatter:
+        class: MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter
+        arguments: ['@translator']

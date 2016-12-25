@@ -45,6 +45,9 @@ class ChessBoardUnit implements \JsonSerializable
     private $accommodationRelativePosition;
     private $endPackageDate;
     private $beginPackageDate;
+    private $isCheckIn;
+    private $isCheckOut;
+    private $isLocked;
 
     private $packageId;
 
@@ -61,7 +64,12 @@ class ChessBoardUnit implements \JsonSerializable
         $roomTypeId,
         $paidStatus,
         $price,
-        $payer = null,
+        \DateTime $beginPackageDate,
+        \DateTime $endPackageDate,
+        bool $isCheckIn,
+        bool $isCheckOut,
+        bool $isLocked,
+        Tourist $payer = null,
         $accommodation = null,
         $position = null
     ) {
@@ -72,6 +80,11 @@ class ChessBoardUnit implements \JsonSerializable
         $this->packagePayer = $payer;
         $this->roomTypeId = $roomTypeId;
         $this->paidStatus = $paidStatus;
+        $this->endPackageDate = $endPackageDate;
+        $this->beginPackageDate = $beginPackageDate;
+        $this->isCheckIn = $isCheckIn;
+        $this->isCheckOut = $isCheckOut;
+        $this->isLocked = $isLocked;
         $this->price = $price;
         $this->accommodationId = $accommodation;
         $this->accommodationRelativePosition = $position;
@@ -205,23 +218,22 @@ class ChessBoardUnit implements \JsonSerializable
             'begin' => $this->beginDate,
             'end' => $this->endDate,
             'roomTypeId' => $this->roomTypeId,
-            'paidStatus' => $this->paidStatus
+            'paidStatus' => $this->paidStatus,
+            'packageBegin' => $this->beginPackageDate,
+            'packageEnd' => $this->endPackageDate,
+            'isCheckIn' => $this->isCheckIn,
+            'isCheckOut' => $this->isCheckOut,
+            'isLocked' => $this->isLocked
         ];
 
         if ($this->packagePayer) {
-            $array['payer'] = $this->packagePayer->getName();
+            $array['payer'] = $this->packagePayer->getShortName();
         }
         if ($this->accommodationId) {
             $array['accommodation'] = $this->accommodationId;
         }
         if ($this->accommodationRelativePosition) {
             $array['position'] = $this->accommodationRelativePosition;
-        }
-        if ($this->beginPackageDate) {
-            $array['packageBegin'] = $this->beginPackageDate;
-        }
-        if ($this->endPackageDate) {
-            $array['packageEnd'] = $this->endPackageDate;
         }
         if ($this->packageId) {
             $array['packageId'] = $this->packageId;

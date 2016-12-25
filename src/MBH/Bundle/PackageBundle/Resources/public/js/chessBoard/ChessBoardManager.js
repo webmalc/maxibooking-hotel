@@ -31,8 +31,11 @@ var ChessBoardManager = (function () {
             $('#package-modal-continue-button').hide();
             $('#packageModalConfirmButton').show();
         });
-        $('#entity-delete-confirmation').on('hidden.bs.modal', function () {
+        var $confirmationModal = $('#entity-delete-confirmation');
+        $confirmationModal.on('hidden.bs.modal', function () {
             self.updateTable();
+            $confirmationModal.find('#entity-delete-button').show();
+            $confirmationModal.find('a.btn').remove();
             $('#entity-delete-button').unbind('click');
         });
         document.getElementById('packageModalConfirmButton').onclick = function () {
@@ -41,13 +44,16 @@ var ChessBoardManager = (function () {
             var accommodationId = data.accommodationId;
             var blockId = accommodationId ? accommodationId : packageId;
             var packageData = ChessBoardManager.getPackageData($('#' + blockId));
-            if (data.isDivide == 'true') {
+            var isDivide = data.isDivide == 'true';
+            if (isDivide) {
                 self.dataManager.relocateAccommodationRequest(accommodationId, data);
+                self.dataManager.updateLocalPackageData(data, isDivide);
             }
             else {
                 self.dataManager.updatePackageRequest(packageId, data);
+                self.dataManager.updateLocalPackageData(packageData, isDivide);
             }
-            self.dataManager.updateLocalPackageData(packageData);
+            ActionManager.showLoadingIndicator();
         };
         var $reportFilter = $('#accommodation-report-filter');
         $('.daterangepicker-input').daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
@@ -90,7 +96,7 @@ var ChessBoardManager = (function () {
                 var griddedOffset = self.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
                 var leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
                 var packageWidth = griddedOffset;
-                newPackage.style.backgroundColor = !self.isPackageLocationCorrect(newPackage) ? 'rgba(232, 34, 34, 0.6' : 'rgba(79, 230, 106, 0.6)';
+                newPackage.style.backgroundColor = !self.isPackageLocationCorrect(newPackage) ? 'rgba(232, 34, 34, 0.6)' : 'rgba(79, 230, 106, 0.6)';
                 newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
                 newPackage.style.width = packageWidth + 'px';
             };
@@ -175,7 +181,7 @@ var ChessBoardManager = (function () {
     };
     ChessBoardManager.getTemplateElement = function () {
         var templateDiv = document.createElement('div');
-        templateDiv.style = 'z-index: 100; position: absolute;';
+        templateDiv.style = 'position: absolute;';
         templateDiv.style.height = ChessBoardManager.PACKAGE_ELEMENT_HEIGHT + 'px';
         templateDiv.classList.add('package');
         var removeButton = document.createElement('button');
@@ -208,11 +214,19 @@ var ChessBoardManager = (function () {
         packageDiv.style.width = packageWidth + 'px';
         packageDiv.id = packageItem.id;
         var description = document.createElement('div');
+        var packageName = (packageItem.payer && packageCellCount > 1) ? packageItem.payer : packageItem.number;
+        var descriptionText = packageName ? packageName.substr(0, packageCellCount * 5 - 1) : '';
+        description.innerHTML = descriptionText;
         description.classList.add('package-description');
-        var packageName = packageItem.payer ? packageItem.payer : packageItem.number;
-        description.innerHTML = packageName ? packageName.substr(0, packageCellCount * 5 - 5) : '';
         packageDiv.appendChild(description);
+        description.style.width = Math.floor(descriptionText.length * ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH) + 'px';
         packageDiv.classList.add(packageItem.paidStatus);
+        if (packageItem.isCheckOut) {
+            packageDiv.classList.add('tile-coming-out');
+        }
+        else if (packageItem.isCheckIn) {
+            packageDiv.classList.add('tile-coming');
+        }
         if (packageEndDate.diff(packageStartDate, 'days') < 2) {
             $(packageDiv).find('.divide-package-button').remove();
         }
@@ -226,10 +240,10 @@ var ChessBoardManager = (function () {
     };
     ChessBoardManager.setPackageOffset = function (packageElement, startDate, roomLineElement, wrapper) {
         'use strict';
-        var wrapperOffset = wrapper.offset();
-        var roomLineOffset = roomLineElement.offset();
+        var wrapperTopOffset = parseInt(wrapper.offset().top, 10);
+        var roomLineTopOffset = parseInt(roomLineElement.offset().top, 10);
         packageElement.style.left = ChessBoardManager.getPackageLeftOffset(startDate) + 'px';
-        packageElement.style.top = roomLineOffset.top - wrapperOffset.top + 'px';
+        packageElement.style.top = roomLineTopOffset - wrapperTopOffset + 'px';
         return packageElement;
     };
     ChessBoardManager.getNearestTableLineTopOffset = function (yCoordinate) {
@@ -337,19 +351,28 @@ var ChessBoardManager = (function () {
             $(element).draggable({
                 containment: '#calendarWrapper',
                 start: function () {
+                    if (intervalData.isLocked) {
+                        self.actionManager.callUnblockModal(intervalData.packageId);
+                    }
                     this.style.zIndex = 101;
                 },
                 axis: axisValue,
                 scroll: true,
                 drag: function (event, ui) {
-                    ui.position.left = self.getGriddedWidthValue(ui.position.left + ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET);
-                    //1 - бордер
-                    ui.position.top = self.getGriddedHeightValue(ui.position.top + ChessBoardManager.DATE_ELEMENT_HEIGHT / 2);
-                    if (!self.isPackageLocationCorrect(this)) {
-                        this.classList.add('red-package');
+                    if (intervalData.isLocked) {
+                        ui.position.left = ui.originalPosition.left;
+                        ui.position.top = ui.originalPosition.top;
                     }
                     else {
-                        this.classList.remove('red-package');
+                        ui.position.left = self.getGriddedWidthValue(ui.position.left + ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET);
+                        //1 - бордер
+                        ui.position.top = self.getGriddedHeightValue(ui.position.top + ChessBoardManager.DATE_ELEMENT_HEIGHT / 2);
+                        if (!self.isPackageLocationCorrect(this)) {
+                            this.classList.add('red-package');
+                        }
+                        else {
+                            this.classList.remove('red-package');
+                        }
                     }
                 },
                 stop: function (event, ui) {
@@ -393,7 +416,8 @@ var ChessBoardManager = (function () {
      * @returns {boolean}
      */
     ChessBoardManager.isAbroadTable = function (packageElement, packageOffset) {
-        var lastDateElementLeftOffset = $('.roomDates:eq(0)').children().children().last().offset().left + ChessBoardManager.DATE_ELEMENT_WIDTH;
+        var lastDateElementLeftOffset = parseInt($('.roomDates:eq(0)').children().children().last().offset().left, 10)
+            + ChessBoardManager.DATE_ELEMENT_WIDTH;
         var packageEndLeftOffset = packageOffset.left + parseInt(packageElement.style.width, 10);
         return lastDateElementLeftOffset < packageEndLeftOffset;
     };
@@ -412,7 +436,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.prototype.isPackageOnSpecifiedLine = function (lineClass, packageOffset) {
         var specifiedLine = document.getElementsByClassName(lineClass);
         return Array.prototype.some.call(specifiedLine, function (element) {
-            return packageOffset.top === $(element).offset().top;
+            return ChessBoardManager.saveOffsetCompare(packageOffset.top, $(element).offset().top);
         });
     };
     /**
@@ -470,15 +494,24 @@ var ChessBoardManager = (function () {
                     grid: [ChessBoardManager.DATE_ELEMENT_WIDTH, 1],
                     containment: '.rooms',
                     start: function () {
+                        if (intervalData.isLocked) {
+                            self.actionManager.callUnblockModal(intervalData.packageId);
+                        }
                         elementStartBackground = this.style.backgroundColor;
                         this.style.zIndex = 101;
                     },
-                    resize: function () {
-                        if (self.isPackageOverlapped($(this))) {
-                            this.style.backgroundColor = 'rgba(232, 34, 34, 0.6)';
+                    resize: function (event, ui) {
+                        if (intervalData.isLocked) {
+                            ui.position.left = ui.originalPosition.left;
+                            ui.size.width = ui.originalSize.width;
                         }
                         else {
-                            this.style.backgroundColor = elementStartBackground;
+                            if (self.isPackageOverlapped($(this))) {
+                                this.style.backgroundColor = 'rgba(232, 34, 34, 0.6)';
+                            }
+                            else {
+                                this.style.backgroundColor = elementStartBackground;
+                            }
                         }
                     },
                     stop: function (event, ui) {
@@ -504,7 +537,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.getPackageData = function (packageElement) {
         var packageOffset = packageElement.offset();
         var roomLine = $('.roomDates, .leftRoomsLine').filter(function () {
-            return $(this).offset().top === packageOffset.top;
+            return ChessBoardManager.saveOffsetCompare($(this).offset().top, packageOffset.top);
         });
         var roomTypeId = roomLine.parent().get(0).id || roomLine.get(0).getAttribute('data-roomtypeid');
         var accommodationId = roomLine.children().get(0).id;
@@ -524,6 +557,13 @@ var ChessBoardManager = (function () {
             end: endDate
         };
     };
+    ChessBoardManager.saveOffsetCompare = function (firstOffset, secondOffset) {
+        var firstIntOffset = parseInt(firstOffset, 10);
+        var secondIntOffset = parseInt(secondOffset, 10);
+        return (firstIntOffset === secondIntOffset)
+            || (firstIntOffset === secondIntOffset + 1)
+            || (firstIntOffset === secondIntOffset - 1);
+    };
     ChessBoardManager.getDateStringByLeftOffset = function (dateElements, leftOffset) {
         var dateElement = ChessBoardManager.getDateObjectByLeftOffset(dateElements, leftOffset);
         return ChessBoardManager.getDateObjectByDateElement(dateElement, dateElements).format("DD.MM.YYYY");
@@ -535,7 +575,7 @@ var ChessBoardManager = (function () {
     };
     ChessBoardManager.getDateObjectByLeftOffset = function (dateElements, leftOffset) {
         return dateElements.filter(function () {
-            return $(this).offset().left === leftOffset;
+            return ChessBoardManager.saveOffsetCompare($(this).offset().left, leftOffset);
         });
     };
     ChessBoardManager.prototype.updateTable = function () {
@@ -593,18 +633,20 @@ var ChessBoardManager = (function () {
                 var packageElement = ChessBoardManager.createPackageElement(packageData, templatePackageElement, false);
                 packageElement.style.position = '';
                 packageElement.style.display = 'inline-block';
+                packageElement.style.zIndex = 150;
                 var packageContainer = document.createElement('div');
                 packageContainer.style.margin = '10px 0';
                 packageContainer.appendChild(packageElement);
                 packageElementsContainer.innerHTML += packageContainer.outerHTML;
             });
             var $wrapper = $('#calendarWrapper');
-            var wrapperOffset = $wrapper.offset();
+            var wrapperTopOffset = parseInt($wrapper.offset().top, 10);
             var $popover = $('.popover').last();
             var popoverContent = $popover.find('.popover-content').get(0);
             popoverContent.innerHTML = packageElementsContainer.innerHTML;
             var isDragged = false;
-            var relocatablePackage = null;
+            var relocatablePackage;
+            var relocatablePackageData;
             self.addDraggable($popover.find('.package'), true).draggable({
                 axis: "y",
                 scroll: false,
@@ -617,11 +659,11 @@ var ChessBoardManager = (function () {
                 relocatablePackage = this;
                 $wrapper.append(this);
                 this.style.position = 'absolute';
-                var packageData = self.dataManager.getNoAccommodationIntervalById(this.id);
-                var packageStartDate = ChessBoardManager.getMomentDateFromJson(packageData.begin.date);
+                relocatablePackageData = self.dataManager.getNoAccommodationIntervalById(this.id);
+                var packageStartDate = ChessBoardManager.getMomentDateFromJson(relocatablePackageData.begin.date);
                 this.style.left = ChessBoardManager.getPackageLeftOffset(packageStartDate) + 'px';
                 this.style.top = ChessBoardManager.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)
-                    + document.body.scrollTop - wrapperOffset.top + 'px';
+                    + document.body.scrollTop - wrapperTopOffset + 'px';
                 if (!self.isPackageLocationCorrect(relocatablePackage)) {
                     relocatablePackage.classList.add('red-package');
                 }
@@ -634,7 +676,7 @@ var ChessBoardManager = (function () {
                 // document.body.onmouseup = null;
                 if (!isDragged && relocatablePackage) {
                     if (self.isPackageLocationCorrect(relocatablePackage)) {
-                        ActionManager.callUpdatePackageModal($(relocatablePackage), relocatablePackage);
+                        ActionManager.callUpdatePackageModal($(relocatablePackage), relocatablePackageData);
                     }
                 }
                 $popoverElements.popover('hide');
@@ -671,6 +713,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.DATE_ELEMENT_HEIGHT = 40;
     ChessBoardManager.PACKAGE_ELEMENT_HEIGHT = 41;
     ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET = 20;
+    ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH = 8;
     ChessBoardManager.POPOVER_MIN_WIDTH = 250;
     ChessBoardManager.LEFT_BAR_WIDTH = 200;
     ChessBoardManager.SCROLL_BAR_WIDTH = 16;
