@@ -3,9 +3,14 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiServiceException;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
@@ -254,6 +259,22 @@ class Ostrovok extends Base
         $rna_request_data = [];
         foreach ($this->getConfig() as $config) {
 
+            //First update Tariff restriction
+            $tariffs = $this->getTariffs($config, true);
+            $rooms = $this->getRoomTypes($config);
+            $ratePlans = $this->getRatePlansArray($config->getHotelId());
+            foreach ($tariffs as $ostrovokTariffId => $tariffDoc) {
+                $tariff = $tariffDoc['doc'];
+                $ratePlan = $ratePlans[$ostrovokTariffId];
+//                $mealPlans = $this->apiBrowser->getMealPlans(['hotel' => $config->getHotelId()]);
+                $data = $this->dataGenerator->getRequestDataRatePlan($tariff, $ratePlan, $config);
+                try {
+                    $this->apiBrowser->updateRatePlan($ostrovokTariffId, $config->getHotelId(), $ratePlan['room_category'], $data);
+                } catch (OstrovokApiServiceException $exception) {
+                    $this->log('Не удалось обновить тарифы ' . $exception->getMessage());
+                    $result = false;
+                }
+            }
 
             $configRoomTypes = $this->getRoomTypes($config);
             $configTarrifs = $this->getTariffs($config);
@@ -268,8 +289,8 @@ class Ostrovok extends Base
 
             foreach ($roomTypeRestrictions as $roomId => $tariffRestrictions) {
                 $ostrovokRoomTypeId = $configRoomTypes[$roomId]['syncId'];
-                foreach ($tariffRestrictions as $tarifId => $roomTypeRestrictions) {
-                    $accordingOstrovokTariffId = $this->getAccordingTariff($ostrovokRoomTypeId, $tarifId, $config);
+                foreach ($tariffRestrictions as $ostrovokTariffId => $roomTypeRestrictions) {
+                    $accordingOstrovokTariffId = $this->getAccordingTariff($ostrovokRoomTypeId, $ostrovokTariffId, $config, true);
                     if (!$accordingOstrovokTariffId) continue;
                     foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                         if (in_array($day->format('d.m.Y'), array_keys($roomTypeRestrictions))) {
@@ -287,8 +308,9 @@ class Ostrovok extends Base
                                     (int)$restriction->getMaxStayArrival() ?: null,
                                     (int)$restriction->getMinStay() ?: null,
                                     (int)$restriction->getMaxStay() ?: null,
-                                    (bool)$restriction->getClosedOnArrival() || (bool)$restriction->getClosed(),
-                                    (bool)$restriction->getClosedOnDeparture() || (bool)$restriction->getClosed()
+                                    (bool)$restriction->getClosedOnArrival(),
+                                    (bool)$restriction->getClosedOnDeparture(),
+                                    (bool)$restriction->getClosed()
                                 )
                             );
                         } else {
@@ -342,16 +364,319 @@ class Ostrovok extends Base
      */
     public function pullOrders()
     {
+        $result = true;
+
         /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
-            $orders = $this->apiBrowser->getBookings(['hotel' => $config->getHotelId()]);
-            $this->log('There are ' . count($orders) . ' total ');
+//            $bookings = $this->apiBrowser->getBookings(['hotel' => $config->getHotelId()]);
+            $bookings = $this->getTemporaryReservation();
+            $this->log('There are ' . count($bookings) . ' total ');
             //TODO: Подумать что сделать на случай если нет заказов.
-            if (!$orders) continue;
-            foreach ($orders as $order) {
+            if (!$bookings) continue;
+            foreach ($bookings as $reservation) {
+                $isModified = $reservation['created_at'] !== $reservation['modified_at'];
+                /** @var Order $order */
 
+                if ($isModified) {
+                    if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                        $this->dm->getFilterCollection()->disable('softdeleteable');
+                    }
+                }
+                $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
+                    [
+                        'channelManagerId' => (string)$reservation['uuid'],
+                        'channelManagerType' => 'ostrovok'
+                    ]
+                );
+                if ($isModified) {
+                    if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                        $this->dm->getFilterCollection()->enable('softdeleteable');
+                    }
+                }
+
+                //If new
+                if ((string)$reservation['status'] === 'normal' && !$order) {
+                    $result = $this->createPackage($reservation, $config);
+                    $this->notify($result, 'ostrovok', 'new');
+                }
+
+                //If modified
+                if ((string)$reservation['status'] === 'normal' && $order && $isModified) {
+                    if ($order->getUpdatedAt() < new \DateTime($reservation['modified_at'])) {
+                        $result = $this->createPackage($reservation, $config, $order);
+                        $this->notify($result, 'ostrovok', 'edit');
+                    }
+                }
+                //If Cancelled
+                if ((string)$reservation['status'] === 'cancelled' && $order) {
+                    $order->setChannelManagerStatus('cancelled');
+                    $this->dm->persist($order);
+                    $this->dm->flush();
+                    $this->notify($order, 'ostrovok', 'delete');
+                    $this->dm->remove($order);
+                    $this->dm->flush();
+                    $result = true;
+                }
+
+                if (($reservation['status'] === 'cancelled' || $isModified) && !$order) {
+                    $this->notifyError(
+                        'ostrovok',
+                        '#' . $reservation['uuid'] . ' ' .
+                        $reservation['last_name'] . ' ' . $reservation['first_name']
+                    );
+                }
             }
         }
+
+        return $result;
+
+    }
+
+    private function getTemporaryReservation()
+    {
+        return [
+            [
+                'comment' => 'a',
+                'last_name' => 'Guest1',
+                'adults' => 2,
+                'tids' => NULL,
+                'currency' => 'RUB',
+                'min_stay_through' => NULL,
+                'depart_at' => '2016-12-29',
+                'guests' =>
+                    array(),
+                'rate_plan' => 20168,
+                'is_credit_card_required' => true,
+                'max_stay_arrival' => NULL,
+                'existing_bed' => NULL,
+                'max_stay_through' => NULL,
+                'children' =>
+                    array(),
+                'first_name' => 'Good1',
+                'action_description' => 'created',
+                'uuid' => 'bec86855-86ef-3f9d-ac47-5e0964920f26',
+                'bedding' =>
+                    array(),
+                'payment_is_modifiable' => false,
+                'id' => 842152808,
+                'rate_per_day' =>
+                    array(
+                        0 => 20168,
+                        1 => 20168,
+                        2 => 20168,
+                        3 => 20168,
+                    ),
+                'rate_plan_name' => 'Стандартный тариф',
+                'arrive_at' => '2016-12-27',
+                'cancelled_at' => NULL,
+                'payment_error_reason' => NULL,
+//                'status' => 'cancelled',
+                'status' => 'normal',
+                'child_cot_prices' =>
+                    array(),
+                'is_nightly' => false,
+                'nr_price_per_day' => NULL,
+                'payment_is_cancelable' => false,
+                'order_id' => 'bec86855-86ef-3f9d-ac47-5e0964920f26',
+                'price_per_day' =>
+                    array(
+                        0 => 1500.0,
+                        1 => 1500.0,
+                        2 => 1500.0,
+                        3 => 1500.0,
+                    ),
+                'hotel' => 893004972,
+                'total_amount_before_tax' => 0,
+                'free_nights' => NULL,
+                'payment_error' => false,
+                'min_stay_arrival' => NULL,
+                'before_tax_price_per_day' => NULL,
+                'room_capacity' => 2,
+                'allotment_type_per_day' =>
+                    array(
+                        0 => 'flexible',
+                        1 => 'flexible',
+                        2 => 'flexible',
+                        3 => 'flexible',
+                    ),
+                'advance' => NULL,
+                'offer_capacity' => 2,
+                'total_amount' => 6000.0,
+                'room_category' => 16176,
+                'created_at' => '2016-09-13T07:00:49',
+                'modified_at' => '2016-12-24T07:00:49',
+                'is_pre_pay' => false,
+                'is_multibooking' => false,
+                'extra_bed_prices' =>
+                    array(),
+                'external_id' => NULL,
+            ]
+        ];
+    }
+
+    private function createPackage(array $reservation, ChannelManagerConfigInterface $config, Order $order = null)
+    {
+        $roomTypes = $this->getRoomTypes($config, true);
+        $tariffs = $this->getTariffs($config, true);
+
+        //Tourist
+        $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+            (string)$reservation['last_name'],
+            (string)$reservation['first_name'],
+            null,
+            null,
+            null,
+            null,
+            $reservation['email']??null
+        );
+
+        //Order
+        if (!$order) {
+            $order = new Order();
+            $order->setChannelManagerStatus('new');
+        } else {
+            foreach ($order->getPackages() as $package) {
+                $this->dm->remove($package);
+                $this->dm->flush();
+            }
+            $order->setChannelManagerStatus('modified');
+            $order->setDeletedAt(null);
+        }
+
+        $orderPrice = (float)$reservation['total_amount'];
+
+        $order->setChannelManagerType('ostrovok')
+            ->setChannelManagerId($reservation['uuid'])
+            ->setMainTourist($payer)
+            ->setConfirmed(false)
+            ->setStatus('channel_manager')
+            ->setPrice($orderPrice)
+            ->setOriginalPrice($orderPrice)
+            ->setTotalOverwrite($orderPrice)
+            ->setNote($reservation['comment']);
+
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        //Package
+        $corrupted = false;
+        $errorMessage = '';
+        if (isset($roomTypes[$reservation['room_category']])) {
+            $roomType = $roomTypes[$reservation['room_category']]['doc'];
+        } else {
+            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
+                [
+                    'hotel.id' => $config->getHotel()->getId(),
+                    'isEnabled' => true,
+                    'deletedAt' => null
+                ]
+            );
+            $corrupted = true;
+            $errorMessage = 'ERROR: invalid roomType #' . (string)$reservation['room_category'];
+        }
+
+        $guest = $payer;
+
+        $tariff = $rateId = null;
+        $packagePrices = []; $priceByDate = []; $dayTariffs = []; $total = 0;
+        foreach ($reservation['price_per_day'] as $dayIndex => $price) {
+            $rateId = $reservation['rate_per_day'][$dayIndex];
+            if (isset($tariffs[$rateId])) {
+                $tariff = $tariffs[$rateId]['doc'];
+            }
+            if (!$tariff) {
+                $tariff = $this->createTariff($config, $rateId);
+                $corrupted = true;
+                $errorMessage .= 'ERROR: Not mapped rate <' . $tariff->getName();
+
+                if (!$tariff) {
+                    continue;
+                }
+            }
+
+            $total += (float)$price;
+            $date = (new \DateTime($reservation['arrive_at']))->modify('+ '.$dayIndex.' days');
+            $priceByDate[$date->format('d_m_Y')] = $price;
+            $packagePrices[] = new PackagePrice($date, (float)$price, $tariff);
+            $dayTariffs[] = [
+                'tarifId' => $rateId,
+                'tariff' => $tariff
+            ];
+            $tariff = null;
+        }
+
+        if ($total != $reservation['total_amount']) {
+            $corrupted = true;
+            $errorMessage .= 'ERROR: prices by day not equal total price';
+        }
+
+        if (isset($tariffs[$reservation['rate_plan']])) {
+            $mainTariff = $tariffs[$reservation['rate_plan']]['doc'];
+        } else {
+            $mainTariff = $dayTariffs[0]['tariff'];
+        }
+
+
+        $packageNote = $errorMessage;
+
+        $package = new Package();
+        $package
+            ->setChannelManagerId((string)$reservation['uuid'])
+            ->setChannelManagerType('ostrovok')
+            ->setBegin(new \DateTime($reservation['arrive_at']))
+            ->setEnd(new \DateTime($reservation['depart_at']))
+            ->setRoomType($roomType)
+            ->setTariff($mainTariff)
+            ->setAdults((int)$reservation['adults'])
+            ->setChildren((int)count($reservation['children']))
+            ->setPrices($packagePrices)
+            ->setPrice($reservation['total_amount'])
+            ->setTotalOverwrite((float)$reservation['total_amount'])
+            ->setNote($packageNote)
+            ->setOrder($order)
+            ->setCorrupted($corrupted)
+            ->addTourist($guest);
+
+        //Services
+        $ratePlans = $this->getRatePlansArray($config->getHotelId());
+        $services = $this->getServices($config);
+
+        $order->addPackage($package);
+        $this->dm->persist($package);
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        if (isset($ratePlans[$reservation['rate_plan']])) {
+            $ratePlan = $ratePlans[$reservation['rate_plan']];
+            if ($ratePlan['meal_plan_available']) {
+
+                $isMealPlanIncluded = $ratePlan['meal_plan_included'];
+                $mealPlanCost = $ratePlan['meal_plan_cost'];
+                $mealPlanId = $ratePlan['meal_plan'];
+
+                $service = $services[$mealPlanId]['doc'];
+                $packageService = new PackageService();
+                $packageService->setService($service);
+                if (!$isMealPlanIncluded) {
+                    /** @var \MBH\Bundle\PriceBundle\Document\Service $service */
+                    $packageService
+                        ->setPrice($mealPlanCost)
+                        ->setIsCustomPrice(true);
+                }
+                $packageService->setNights((int)count($reservation['rate_per_day']))
+                    ->setPersons((int)$reservation['adults'] + (int)count($reservation['children']))
+                    ->setAmount(1)
+                    ->setPackage($package)
+                    ->setNote('ostrovok.autoadd.service.notice');
+
+                $package->addService($packageService);
+
+                $this->dm->persist($packageService);
+                $this->dm->flush();
+            }
+        }
+
+        return $order;
 
     }
 
@@ -413,6 +738,7 @@ class Ostrovok extends Base
      */
     public function syncServices(ChannelManagerConfigInterface $config)
     {
+        /** @var OstrovokConfig $config */
         $config->removeAllServices();
         foreach (self::SERVICES as $serviceKey => $serviceName) {
             $serviceDoc = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy(
@@ -453,12 +779,12 @@ class Ostrovok extends Base
         return $result;
     }
 
-    private function getAccordingTariff($ostrovokRoomType, $tariffId, ChannelManagerConfigInterface $config)
+    private function getAccordingTariff($ostrovokRoomType, $tariffId, ChannelManagerConfigInterface $config, $showChildTariff = false)
     {
         $ostrovorTariffs = $this->apiBrowser->getRatePlans(['hotel' => $config->getHotelId()]);
 
-        $roomTypeTariffs = array_filter($ostrovorTariffs, function ($tariff) use ($ostrovokRoomType) {
-            return $tariff['room_category'] == $ostrovokRoomType && !$tariff['parent'];
+        $roomTypeTariffs = array_filter($ostrovorTariffs, function ($tariff) use ($ostrovokRoomType, $showChildTariff) {
+            return $tariff['room_category'] == $ostrovokRoomType && (!$tariff['parent'] || $showChildTariff);
         });
         if (!count($roomTypeTariffs)) {
             return null;

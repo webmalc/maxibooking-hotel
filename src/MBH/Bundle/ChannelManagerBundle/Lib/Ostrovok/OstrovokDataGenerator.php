@@ -8,6 +8,9 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok;
 
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\PriceBundle\Document\Tariff;
+
 
 /**
  * Class OstrovokDataGenerator
@@ -76,10 +79,68 @@ class OstrovokDataGenerator
      * @param bool|null $closeOnDeparture
      * @return array
      */
-    public function getRequestDataRnaRestrictions(int $roomCategory, int $ratePlan, int $hotelId, \DateTime $start, \DateTime $end, int $minStayArrival = null, int $maxStayArrival = null, int $minStayThrough = null, int $maxStayThroug = null, bool $closeOnArrival = false, bool $closeOnDeparture = false)
+    public function getRequestDataRnaRestrictions(int $roomCategory, int $ratePlan, int $hotelId, \DateTime $start, \DateTime $end, int $minStayArrival = null, int $maxStayArrival = null, int $minStayThrough = null, int $maxStayThroug = null, bool $closeOnArrival = false, bool $closeOnDeparture = false, bool $disableFlexible = false)
     {
 
-        return ['rate_plans' => [$this->getRnaRestrictionData( $roomCategory,  $ratePlan,  $hotelId,  $start,  $end,  $minStayArrival,  $maxStayArrival,  $minStayThrough,  $maxStayThroug, $closeOnArrival, $closeOnDeparture)]];
+        return ['rate_plans' => [$this->getRnaRestrictionData($roomCategory, $ratePlan, $hotelId, $start, $end, $minStayArrival, $maxStayArrival, $minStayThrough, $maxStayThroug, $closeOnArrival, $closeOnDeparture, $disableFlexible)]];
+    }
+
+    public function getRequestDataRatePlan(Tariff $tariff, $ratePlan, ChannelManagerConfigInterface $config)
+    {
+        $min_stay = $ratePlan['min_stay_arrival'];
+        $max_stay = $ratePlan['max_stay_arrival'];
+        if ($tariff->getCondition() == 'max_accommodation') {
+            $max_stay = $tariff->getConditionQuantity();
+        } elseif ($tariff->getAdditionalCondition() == 'max_accommodation') {
+            $max_stay = $tariff->getAdditionalConditionQuantity();
+        }
+        if ($tariff->getCondition() == 'min_accommodation') {
+            $min_stay = $tariff->getConditionQuantity();
+        } elseif ($tariff->getAdditionalConditionQuantity() == 'min_accommodation') {
+            $min_stay = $tariff->getAdditionalConditionQuantity();
+        }
+
+        $discount = $ratePlan['discount'];
+        $discountUnit = $ratePlan['discount_unit'];
+        if ($ratePlan['parent']) {
+            $dis = null;
+        }
+
+        return [
+            'advance' => $ratePlan['advance'],
+            'last_minute' => $ratePlan['last_minute'],
+            'free_nights' => $ratePlan['free_nights'],
+            'discount' => $ratePlan['discount'],
+            'discount_unit' => $ratePlan['discount_unit'],
+            'meal_plan' => $ratePlan['meal_plan'],
+            'meal_plan_cost' => $ratePlan['meal_plan_cost'],
+            'meal_plan_available' => $ratePlan['meal_plan_available'],
+            'meal_plan_included' => $ratePlan['meal_plan_included'],
+            'cancellation_available' => $ratePlan['cancellation_available'],
+            'cancellation_lead_time' => $ratePlan['cancellation_lead_time'],
+            'cancellation_penalty_nights' => $ratePlan['cancellation_penalty_nights'],
+            'deposit_available' => $ratePlan['deposit_available'],
+            'deposit_returnable' => $ratePlan['deposit_returnable'],
+            'deposit_rate' => $ratePlan['deposit_rate'],
+            'deposit_unit' => $ratePlan['deposit_unit'],
+            'no_show_rate' => $ratePlan['no_show_rate'],
+            'no_show_unit' => $ratePlan['no_show_unit'],
+            'plan_date_start_at' => $tariff->getBegin()?$tariff->getBegin()->format('Y-m-d'):$ratePlan['plan_date_start_at'],
+            'plan_date_end_at' => $tariff->getEnd()?$tariff->getEnd()->format('Y-m-d'):$ratePlan['plan_date_end_at'],
+            'booking_date_start_at' => $ratePlan['booking_date_start_at'],
+            'booking_date_end_at' => $ratePlan['booking_date_end_at'],
+            'min_stay_arrival' => $min_stay,
+            'max_stay_arrival' => $max_stay,
+            'min_stay_through' => $ratePlan['min_stay_through'],
+            'max_stay_through' => $ratePlan['max_stay_through'],
+            'status' => $ratePlan['status'],
+            'name' => $ratePlan['name'],
+            'description' => $ratePlan['description'],
+            'external_id' => $ratePlan['external_id'],
+            'id' => $ratePlan['id'],
+            'room_category' => $ratePlan['room_category'],
+            'hotel' => $ratePlan['hotel']
+        ];
     }
 
     /**
@@ -120,10 +181,10 @@ class OstrovokDataGenerator
      * @param bool|null $closeOnDeparture
      * @return array
      */
-    private function getRnaRestrictionData(int $roomCategory, int $ratePlan, int $hotelId, \DateTime $start, \DateTime $end, int $minStayArrival = null, int $maxStayArrival = null, int $minStayThrough = null, int $maxStayThroug = null, bool $closeOnArrival = false, bool $closeOnDeparture = false)
+    private function getRnaRestrictionData(int $roomCategory, int $ratePlan, int $hotelId, \DateTime $start, \DateTime $end, int $minStayArrival = null, int $maxStayArrival = null, int $minStayThrough = null, int $maxStayThroug = null, bool $closeOnArrival = false, bool $closeOnDeparture = false, bool $disableFlexible = false)
     {
         return [
-            'disable_flexible' => false,
+            'disable_flexible' => $disableFlexible,
             'last_minute' => null,
             'advance' => null,
             'plan_date_start_at' => $start->format('Y-m-d'),
@@ -160,9 +221,6 @@ class OstrovokDataGenerator
             'format' => 'json'
         ];
     }
-
-
-
 
 
 }

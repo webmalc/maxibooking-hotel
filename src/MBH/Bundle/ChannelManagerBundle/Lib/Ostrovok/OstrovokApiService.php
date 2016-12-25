@@ -2,22 +2,43 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok;
 
+/**
+ * Class OstrovokApiService
+ * @package MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok
+ */
 class OstrovokApiService
 {
 
+    /**
+     *
+     */
     const API_URL = 'http://extrota-sandbox.ostrovok.ru/echannel/api/v0.1/';
 //    const API_URL = 'https://echannel.ostrovok.ru/echannel/api/v0.1/';
 
+    /**
+     * @var
+     */
     protected $auth_token;
 
+    /**
+     * @var
+     */
     protected $private_token;
 
+    /**
+     * OstrovokApiService constructor.
+     * @param array $config
+     */
     public function __construct(array $config)
     {
         $this->auth_token = $config['ostrovok']['username'];
         $this->private_token = $config['ostrovok']['password'];
     }
 
+    /**
+     * @param $data
+     * @return array|string
+     */
     private function createSignatureString($data)
     {
         $is_list = false;
@@ -57,6 +78,11 @@ class OstrovokApiService
         return (string)$data;
     }
 
+    /**
+     * @param array $data
+     * @param $private
+     * @return string
+     */
     private function getSignature(array $data, $private)
     {
         $data['private'] = $private;
@@ -64,13 +90,18 @@ class OstrovokApiService
         return md5($signatureString);
     }
 
+    /**
+     * @param $api_method
+     * @param array $data
+     * @return mixed|string
+     * @throws OstrovokApiServiceException
+     */
     private function callGet($api_method, array $data)
     {
         $data["token"] = $this->auth_token;
         $data["sign"] = $this->getSignature($data, $this->private_token);
         $request = self::API_URL . $api_method . "?" . http_build_query($data) . "&";
 
-        //TODO: Переделать на курл нормальный
         $response = file_get_contents($request);
         if (!$response) {
             throw new OstrovokApiServiceException('No returned request in callGet Method '.get_class($this));
@@ -80,16 +111,35 @@ class OstrovokApiService
         return $response;
     }
 
-    private function __callPUT($api_method, array $data, array $get_data = array())
+    /**
+     * @param $api_method
+     * @param array $data
+     * @param array $get_data
+     * @return mixed
+     */
+    private function callPUT($api_method, array $data, array $get_data = array())
     {
         return $this->makeCall("PUT", $api_method, $data, $get_data);
     }
 
-    private function __callPOST($api_method, array $data, array $get_data = array())
+    /**
+     * @param $api_method
+     * @param array $data
+     * @param array $get_data
+     * @return mixed
+     */
+    private function callPOST($api_method, array $data, array $get_data = array())
     {
         return $this->makeCall("POST", $api_method, $data, $get_data);
     }
 
+    /**
+     * @param string $type
+     * @param string $api_method
+     * @param array $data
+     * @param array $get_data
+     * @return mixed
+     */
     private function makeCall(string $type, string $api_method, array $data, array $get_data = array())
     {
         $signature_data = $data;
@@ -117,6 +167,10 @@ class OstrovokApiService
         return $response;
     }
 
+    /**
+     * @param $response
+     * @throws OstrovokApiServiceException
+     */
     private function checkErrors($response)
     {
         if (!empty($response['error'])) {
@@ -126,11 +180,19 @@ class OstrovokApiService
         };
     }
 
+    /**
+     * @param array $data
+     * @return mixed|string
+     */
     public function getHotels(array $data = array())
     {
         return $this->callGet("hotels/", $data);
     }
 
+    /**
+     * @param array $data
+     * @return mixed
+     */
     public function getRoomCategories(array $data = array())
     {
         $response = $this->callGet("room_categories/", $data);
@@ -138,22 +200,42 @@ class OstrovokApiService
         return $response['room_categories'];
     }
 
+    /**
+     * @param array $data
+     * @return mixed|string
+     */
     public function getMealPlans(array $data = array())
     {
-        return $this->callGet("meal_plans/", $data);
+        $answer = $this->callGet("meal_plans/", $data);
+
+        return $answer['meal_plans'];
     }
 
+    /**
+     * @param array $data
+     * @return mixed|string
+     */
     public function getOrders(array $data = array())
     {
         return $this->callGet("orders/", $data);
     }
 
+    /**
+     * @param array $data
+     * @return mixed
+     */
     public function getBookings(array $data = array())
     {
         $response = $this->callGet("bookings/", $data);
         return $response['bookings'];
     }
 
+    /**
+     * @param $plan_date_start_at
+     * @param $plan_date_end_at
+     * @param array $data
+     * @return mixed|string
+     */
     public function getRNA($plan_date_start_at, $plan_date_end_at, array $data = array())
     {
         $data["plan_date_start_at"] = $plan_date_start_at;
@@ -161,6 +243,11 @@ class OstrovokApiService
         return $this->callGet("rna/", $data);
     }
 
+    /**
+     * @param array $data
+     * @param bool $byKey
+     * @return array
+     */
     public function getOccupancies(array $data = array(), bool $byKey = false)
     {
         $result = [];
@@ -177,6 +264,11 @@ class OstrovokApiService
         return $result;
     }
 
+    /**
+     * @param array $data
+     * @param bool $isShowDeleted
+     * @return array
+     */
     public function getRatePlans(array $data = array(), $isShowDeleted = false)
     {
         $response = $this->callGet("rate_plans/", $data);
@@ -191,16 +283,30 @@ class OstrovokApiService
 
     }
 
+    /**
+     * @param array $data
+     * @return mixed
+     */
     public function updateRNA(array $data = array())
     {
-        return $this->__callPUT("rna/", $data);
+        return $this->callPUT("rna/", $data);
     }
 
+    /**
+     * @param array $data
+     * @return mixed
+     */
     public function createRNA(array $data = array())
     {
-        return $this->__callPOST("rna/", $data);
+        return $this->callPOST("rna/", $data);
     }
 
+    /**
+     * @param null $hotel
+     * @param null $room_category
+     * @param array $rate_plan_params
+     * @return mixed
+     */
     public function createRatePlan($hotel = null, $room_category = null, array $rate_plan_params)
     {
         $get_data = array();
@@ -210,9 +316,16 @@ class OstrovokApiService
         if (!is_null($room_category)) {
             $get_data["room_category"] = $room_category;
         }
-        return $this->__callPOST("rate_plans/", $rate_plan_params, $get_data);
+        return $this->callPOST("rate_plans/", $rate_plan_params, $get_data);
     }
 
+    /**
+     * @param $id
+     * @param null $hotel
+     * @param null $room_category
+     * @param array $rate_plan_params
+     * @return mixed
+     */
     public function updateRatePlan($id, $hotel = null, $room_category = null, array $rate_plan_params = array())
     {
         $get_data = array();
@@ -223,6 +336,6 @@ class OstrovokApiService
         if (!is_null($room_category)) {
             $get_data["room_category"] = $room_category;
         }
-        return $this->__callPUT("rate_plans/", $rate_plan_params, $get_data);
+        return $this->callPUT("rate_plans/", $rate_plan_params, $get_data);
     }
 }
