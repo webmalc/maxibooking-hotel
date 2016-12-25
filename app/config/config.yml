@@ -5,6 +5,7 @@ imports:
     - { resource: mbh.yml }
     - { resource: roles.yml }
     - { resource: mbh_restaurant_ctypes.xml }
+    - { resource: rabbitmq.yml }
 
 framework:
     serializer:

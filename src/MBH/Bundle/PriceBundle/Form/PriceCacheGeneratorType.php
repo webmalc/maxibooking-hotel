@@ -212,7 +212,7 @@ class PriceCacheGeneratorType extends AbstractType
         if ($isIndividualAdditionalPrices) {
             for ($i = 1; $i < $isIndividualAdditionalPrices; $i++) {
                 $builder
-                    ->add('additionalPrice' . $i, 'hidden', [
+                    ->add('additionalPrice' . $i, HiddenType::class, [
                         'required' => false,
                         'attr' => ['class' => 'hidden-price'],
                         'constraints' => [
@@ -220,7 +220,7 @@ class PriceCacheGeneratorType extends AbstractType
                         ],
                     ]);
                 $builder
-                    ->add('additionalPriceFake' . $i, 'text', [
+                    ->add('additionalPriceFake' . $i, TextType::class, [
                         'label' => 'Цена взрослого доп. места #' . ($i + 1),
                         'attr' => [
                             'class' => 'text-price',
@@ -231,7 +231,7 @@ class PriceCacheGeneratorType extends AbstractType
                     ])
                 ;
                 $builder
-                    ->add('additionalChildrenPrice' . $i, 'hidden', [
+                    ->add('additionalChildrenPrice' . $i, HiddenType::class, [
                         'required' => false,
                         'attr' => ['class' => 'hidden-price'],
                         'constraints' => [
@@ -239,7 +239,7 @@ class PriceCacheGeneratorType extends AbstractType
                         ],
                     ]);
                 $builder
-                    ->add('additionalChildrenPriceFake' . $i, 'text', [
+                    ->add('additionalChildrenPriceFake' . $i, TextType::class, [
                         'label' => 'Цена детского доп. места #' . ($i + 1),
                         'attr' => [
                             'class' => 'text-price',
