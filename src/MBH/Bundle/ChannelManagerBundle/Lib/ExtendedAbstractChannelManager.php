@@ -183,16 +183,15 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     /**
      * Close sales on service
      * @param ChannelManagerConfigInterface $config
-     * @return boolean
+     * @return bool
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
         $requestData = $this->requestDataFormatter->formatCloseForConfigData($config);
         $requestInfo = $this->requestFormatter->formatCloseForConfigRequest($requestData);
         $response = $this->sendRequestAndGetResponse($requestInfo);
-        $responseHandler = $this->getResponseHandler($response, $config);
 
-        return $responseHandler->getTariffsData();
+        return $this->checkResponse($response);
     }
 
     /**
@@ -227,14 +226,22 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $request = $this->requestFormatter->formatGetOrdersRequest($requestData);
 
             $response = $this->sendRequestAndGetResponse($request);
-            //TODO: Добвить try catch для Exception и ChannelManagerException
-            $responseHandler = $this->getResponseHandler($response, $config);
-            if (!$this->checkResponse($response)) {
-                $this->log($responseHandler->getErrorMessage());
+            $this->handlePullOrdersResponse($response, $config, $result);
+        }
 
-                return false;
-            }
-            //TODO: Убрать
+        return $result;
+    }
+
+    public function handlePullOrdersResponse($response, $config, &$result)
+    {
+        //TODO: Добвить try catch для Exception и ChannelManagerException
+        $responseHandler = $this->getResponseHandler($response, $config);
+        if (!$this->checkResponse($response)) {
+            $this->log($responseHandler->getErrorMessage());
+
+            $result = false;
+        } else {
+            //TODO: Убрать или нет
             $this->log($response);
             $this->log('Reservations count: ' . $responseHandler->getOrdersCount());
 
@@ -294,8 +301,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 }
             };
         }
-
-        return $result;
     }
 
     public function createOrder(AbstractOrderInfo $orderInfo, Order $order = null) : Order
@@ -333,29 +338,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $this->dm->persist($order);
         $this->dm->flush();
 
-        foreach ($orderInfo->getCashDocuments($order) as $newCashDocument) {
-            /** @var CashDocument $newCashDocument */
-            if (count($order->getCashDocuments()) > 0) {
-                foreach ($order->getCashDocuments() as $cashDocument) {
-                    /** @var CashDocument $cashDocument */
-                    if (!($cashDocument->getTotal() == $newCashDocument->getTotal()
-                        && $cashDocument->getMethod() == $newCashDocument->getMethod()
-                        && $cashDocument->getTouristPayer() == $newCashDocument->getTouristPayer()
-                        && $cashDocument->getOperation() == $newCashDocument->getOperation()
-                    )) {
-                        $this->dm->remove($cashDocument);
-                        $this->dm->persist($newCashDocument);
-                    } else {
-                        $this->dm->persist($newCashDocument);
-                    }
-                }
-
-            } else {
-                $this->dm->persist($newCashDocument);
-            }
-        }
-        $this->dm->flush();
-
+        $this->saveCashDocument($order, $orderInfo);
 
         foreach ($orderInfo->getPackagesData() as $packageInfo) {
             $package = $this->createPackage($packageInfo, $order);
@@ -372,6 +355,43 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $this->dm->flush();
 
         return $order;
+    }
+
+    /**
+     * Сохранение изменений в электронных кассовых документов между хранимыми и полученными с сервиса
+     *
+     * @param Order $order
+     * @param AbstractOrderInfo $orderInfo
+     */
+    private function saveCashDocument(Order $order, AbstractOrderInfo $orderInfo)
+    {
+        //Получаем сохраненные электронные кассовые документы
+        $electronicCashDocuments = [];
+        foreach ($order->getCashDocuments() as $cashDocument) {
+            /** @var CashDocument $cashDocument */
+            if ($cashDocument->getMethod() == 'electronic') {
+                $electronicCashDocuments[] = $cashDocument;
+            }
+        }
+
+        //Удаляем одинаковые электронные кассовые документы из списка сохраненных и полученных с сервиса
+        foreach ($orderInfo->getCashDocuments($order) as $newCashDocument) {
+            /** @var CashDocument $newCashDocument*/
+            foreach ($electronicCashDocuments as $oldCashDocument) {
+                if ($oldCashDocument->getTotal() == $newCashDocument->getTotal()
+                    && $oldCashDocument->getMethod() == $newCashDocument->getMethod()
+                    && $oldCashDocument->getTouristPayer() == $newCashDocument->getTouristPayer()
+                    && $oldCashDocument->getOperation() == $newCashDocument->getOperation()
+                ) {
+                    unset($newCashDocument);
+                    unset($oldCashDocument);
+                }
+            }
+        }
+        //Удаляем сохраненные кассовые документы, которых нет в полученных с сервиса
+        foreach ($electronicCashDocuments as $electronicCashDocument) {
+            $this->dm->remove($electronicCashDocument);
+        }
     }
 
     /**
