@@ -411,7 +411,7 @@ class ChessBoardDataBuilder
             $roomTypes = count($this->roomTypeIds) > 0 ? $this->roomTypeIds : null;
 
             $this->roomsByRoomTypeIds = $this->dm->getRepository('MBHHotelBundle:Room')
-                ->fetch($this->hotel, $roomTypes, $this->housingIds, null, null, null, true);
+                ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null, null, true);
 
             $this->isRoomsByRoomTypeIdsInit = true;
         }

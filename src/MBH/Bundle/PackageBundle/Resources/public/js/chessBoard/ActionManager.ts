@@ -178,7 +178,7 @@ class ActionManager {
                 if (intervalData.position == 'full' || intervalData.position == 'right') {
                     if (newIntervalEndDate.isAfter(packageEndDate)
                         || (intervalEndDate.isSame(packageEndDate) && newIntervalEndDate.isBefore(packageEndDate))) {
-                        alertMessage = 'Вы хотите изменить дату выезда брони?';
+                        alertMessage = 'Вы действительно хотите изменить дату выезда брони?';
                     }
                 } else {
                     //TODO: Текст ошибки
