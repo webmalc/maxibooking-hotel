@@ -139,7 +139,8 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 $roomTypeElement->addAttribute('closed', $roomCache ? "false" : "true");
 
                 $inventoryElement = $roomTypeElement->addChild('Inventory');
-                $inventoryElement->addAttribute('totalInventoryAvailable', $roomCache ? $roomCache->getLeftRooms() : 0);
+                $inventoryElement->addAttribute('totalInventoryAvailable',
+                    $roomCache && $roomCache->getLeftRooms() > 0 ? $roomCache->getLeftRooms() : 0);
                 $xmlElements[] = $xmlRoomTypeData;
             }
         }
