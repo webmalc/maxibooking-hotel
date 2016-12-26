@@ -75,3 +75,13 @@ channelManager.booking.notification.bottom: Внимание! Требуется
 
 channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы отель, типы номеров, тарифы или услуги
 views.channelmanager.actions.sync: Синхронизировать
+
+
+channelManager.ostrovok.notification.subject.new: Новый заказ Ostrovok.ru
+channelManager.ostrovok.notification.subject.edit: Изменен заказ Ostrovok.ru
+channelManager.ostrovok.notification.subject.delete: Удален заказ Ostrovok.ru
+channelManager.ostrovok.notification.new: Новый заказ %order% из Ostrovok.ru. Номера броней: %packages%
+channelManager.ostrovok.notification.edit: Изменен заказ %order% из Ostrovok.ru. Номера броней: %packages%
+channelManager.ostrovok.notification.delete: Удален заказ %order% из Ostrovok.ru. Номера броней: %packages%
+channelManager.ostrovok.notification.error.subject: Ошибка Ostrovok.ru
+channelManager.ostrovok.notification.error: Ошибка при обработке заказа Ostrovok.ru. Информация: %info%

@@ -65,6 +65,7 @@ class OstrovokDataGenerator
         return ['occupancies' => [$this->getRnaOccupanciesData($occupancyId, $roomCategory, $ratePlan, $price, $startDate, $endDate, $hotelId)]];
     }
 
+
     /**
      * @param int $roomCategory
      * @param int $ratePlan
@@ -87,8 +88,9 @@ class OstrovokDataGenerator
 
     public function getRequestDataRatePlan(Tariff $tariff, $ratePlan, ChannelManagerConfigInterface $config)
     {
-        $min_stay = $ratePlan['min_stay_arrival'];
-        $max_stay = $ratePlan['max_stay_arrival'];
+        $min_stay = null;
+        $max_stay = null;
+
         if ($tariff->getCondition() == 'max_accommodation') {
             $max_stay = $tariff->getConditionQuantity();
         } elseif ($tariff->getAdditionalCondition() == 'max_accommodation') {
@@ -100,9 +102,13 @@ class OstrovokDataGenerator
             $min_stay = $tariff->getAdditionalConditionQuantity();
         }
 
-        $discount = $ratePlan['discount'];
-        $discountUnit = $ratePlan['discount_unit'];
-        if ($ratePlan['parent']) {
+
+        //TODO Не смог получить процент скидки из акции в дочернем тарифе.
+        $hasParent = (bool)$ratePlan['parent'];
+
+        if ($hasParent) {
+            $discount = $ratePlan['discount'];
+            $discountUnit = $ratePlan['discount_unit'];
             $dis = null;
         }
 
@@ -125,8 +131,8 @@ class OstrovokDataGenerator
             'deposit_unit' => $ratePlan['deposit_unit'],
             'no_show_rate' => $ratePlan['no_show_rate'],
             'no_show_unit' => $ratePlan['no_show_unit'],
-            'plan_date_start_at' => $tariff->getBegin()?$tariff->getBegin()->format('Y-m-d'):$ratePlan['plan_date_start_at'],
-            'plan_date_end_at' => $tariff->getEnd()?$tariff->getEnd()->format('Y-m-d'):$ratePlan['plan_date_end_at'],
+            'plan_date_start_at' => $tariff->getBegin()?$tariff->getBegin()->format('Y-m-d'):null,
+            'plan_date_end_at' => $tariff->getEnd()?$tariff->getEnd()->format('Y-m-d'):null,
             'booking_date_start_at' => $ratePlan['booking_date_start_at'],
             'booking_date_end_at' => $ratePlan['booking_date_end_at'],
             'min_stay_arrival' => $min_stay,
