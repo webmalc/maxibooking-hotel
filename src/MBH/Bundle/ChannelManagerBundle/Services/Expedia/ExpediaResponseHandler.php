@@ -88,7 +88,9 @@ class ExpediaResponseHandler extends AbstractResponseHandler
                     $tariffs[$data['expediaId']] = [
                         'title' => $tariffInfo['name'] . " ( $roomTypeName, {$data['distributionModel']} )" ,
                         'rooms' => [$roomTypeId],
-                        'readonly' => $tariffInfo['pricingModel'] === self::OCCUPANCY_BASED_PRICING ? false : true
+                        'readonly' => $tariffInfo['pricingModel'] === self::OCCUPANCY_BASED_PRICING ? false : true,
+                        'minLOSDefault' => $tariffInfo['minLOSDefault'],
+                        'maxLOSDefault' => $tariffInfo['maxLOSDefault']
                     ];
                 }
             }

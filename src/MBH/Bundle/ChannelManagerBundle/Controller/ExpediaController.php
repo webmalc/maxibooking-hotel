@@ -256,19 +256,19 @@ class ExpediaController extends Controller
     </Bookings>
 </BookingRetrievalRS>';
 
-        $xml = new \SimpleXMLElement($text);
-        /** @var ExpediaResponseHandler $responseHandler */
-        $responseHandler = $this->get('mbh.channelmanager.expedia_response_handler')->setInitData($text, $config);
-        $orderInfo = $responseHandler->getOrderInfos()[0];
-        $order = new Order();
-        dump($orderInfo->getCashDocuments($order));
-        /** @var ExpediaPackageInfo $packageInfo */
-        $packageInfo = $orderInfo->getPackagesData()[0];
-        dump($packageInfo->getNote());
-        exit();
-//        $start = new \DateTime('midnight');
-//        $end = (clone $start)->add(new \DateInterval('P6D'));
-//        $expedia = $this->get('mbh.channelmanager.expedia')->pullOrders();
+//        $xml = new \SimpleXMLElement($text);
+//        /** @var ExpediaResponseHandler $responseHandler */
+//        $responseHandler = $this->get('mbh.channelmanager.expedia_response_handler')->setInitData($text, $config);
+//        $orderInfo = $responseHandler->getOrderInfos()[0];
+//        $order = new Order();
+//        dump($orderInfo->getCashDocuments($order));
+//        /** @var ExpediaPackageInfo $packageInfo */
+//        $packageInfo = $orderInfo->getPackagesData()[0];
+//        dump($packageInfo->getNote());
+//        exit();
+        $start = new \DateTime('midnight');
+        $end = (clone $start)->add(new \DateInterval('P6D'));
+        $expedia = $this->get('mbh.channelmanager.expedia')->updateRestrictions($start, $end);
         return ['result' => 123];
     }
 

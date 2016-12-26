@@ -116,8 +116,6 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         $cashDocuments = [];
         /** @var \SimpleXMLElement $cardElement */
         $sourceAttributeData = (string)$this->orderDataXMLElement->attributes()['source'];
-        //TODO: Если используется Expedia Collect, то amountAfterTaxes передает net-значение
-        //TODO: ЧТо делать в данном случае? Оставил net
         if (!($sourceAttributeData[0] == 'A')) {
             $cashDocument = new CashDocument();
             $cashDocuments[] = $cashDocument->setIsConfirmed(false)
@@ -131,15 +129,20 @@ class ExpediaOrderInfo extends AbstractOrderInfo
 
             $amountOfTaxes = $this->orderDataXMLElement->xpath('RoomStay/Total/@amountOfTaxes');
             if ($amountOfTaxes) {
-                $cashDocument = new CashDocument();
-                $cashDocuments[] = $cashDocument->setIsConfirmed(false)
+                $feeCashDocument = new CashDocument();
+                $cashDocuments[] = $feeCashDocument->setIsConfirmed(false)
                     ->setIsPaid(false)
                     ->setMethod('electronic')
                     ->setOperation('fee')
                     ->setOrder($order)
-                    //TODO: Нужен ли тут турист-плательщик?
                     ->setTouristPayer($this->getPayer())
                     ->setTotal((float)$amountOfTaxes[0]);
+
+                //Входящий платеж всегда приходит с учетом коммисии(цена номера минус комиссия expedia), соответственно,
+                //...при добавлении кассового документа комиссии, получается что она указывается дважды
+                $inCashDocument = clone $feeCashDocument;
+                $inCashDocument->setOperation('in');
+                $cashDocuments[] = $inCashDocument;
                 $this->orderNote .= $this->translator->trans('order_info.expedia.need_сonfirm_cash_tax_document') . "\n";
             }
         }
@@ -285,8 +288,8 @@ class ExpediaOrderInfo extends AbstractOrderInfo
             $specialRequestString = (string)$specialRequest;
             /**
              * 1.xx : bedding preferences, different codes for beddings
-             * 2.1    Non-smoking
-             * 2.2    Smoking
+             * 2.1 Non-smoking
+             * 2.2 Smoking
              * 3 Multi room booking and Mixed Rate Bookings
              * 4 Free text
              * 5 payment instruction

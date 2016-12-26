@@ -10,6 +10,17 @@ use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Order;
 
+/**
+ * Для реализация данного интерфейса, необходимо также реализовать:
+ * 1) Класс AbstractRequestFormatter, отвечающий за формирование данных о запросах(url, заголовки, передаваемые данные)
+ * 2) Класс AbstractRequestDataFormatter, отвечающий за формирование данных, передаваемых в запросе
+ * 3) Класс AbstractResponseHandler, отвечающий за основную обработку приходящих ответов
+ * 4) Класс AbstractOrderInfo, отвечающий за обработку переданных данных о заказах
+ * 5) Класс AbstractPackageInfo, отвечающий за обработку переданных данных о бронях
+ *
+ * Class ExtendedAbstractChannelManager
+ * @package MBH\Bundle\ChannelManagerBundle\Lib
+ */
 abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerService
 {
     /** @var AbstractRequestFormatter $requestFormatter */

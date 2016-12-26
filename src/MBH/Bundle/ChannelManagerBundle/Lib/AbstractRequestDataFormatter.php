@@ -222,7 +222,7 @@ abstract class AbstractRequestDataFormatter
                     }
 
                     $this->formatRestrictionData($restriction, $roomTypeInfo['doc'], $tariff,
-                        $roomTypeInfo['syncId'], $serviceTariffId, $resultData, $isPriceSet, $day);
+                        $roomTypeInfo['syncId'], $serviceTariffId, $resultData, $isPriceSet, $day, $serviceTariffs);
                 }
             }
         }
@@ -250,13 +250,31 @@ abstract class AbstractRequestDataFormatter
         $serviceTariffId,
         &$resultArray,
         $isPriceSet,
-        \DateTime $day
+        \DateTime $day,
+        $serviceTariffs
     ) {
         //TODO: Стоит ли так делать?
         if ($restriction) {
             $restriction->setClosed($restriction->getClosed() || (!$isPriceSet ? true : false));
         }
         $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId] = $restriction;
+    }
+
+    protected function setLengthRestriction(?Restriction &$restriction, $defaultValue = null)
+    {
+        if ($restriction && $restriction->getMaxStay()) {
+            if (!is_null($defaultValue) && $restriction->getMaxStay() > $defaultValue) {
+                $flashBag = $this->container->get('session')->getFlashBag();
+                $flashBag->clear();
+                $flashBag->add('danger',
+                    $this->container->get('translator')->trans('expedia_request_data_formatter.max_stay.error'));
+                return $defaultValue;
+            } else {
+                return $restriction->getMaxStay();
+            }
+        } else {
+            return $defaultValue;
+        }
     }
 
     /**

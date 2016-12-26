@@ -158,6 +158,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * @param $resultArray
      * @param $isPriceSet
      * @param \DateTime $day
+     * @param $serviceTariffs
      */
     protected function formatRestrictionData(
         $restriction,
@@ -167,14 +168,21 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $serviceTariffId,
         &$resultArray,
         $isPriceSet,
-        \DateTime $day
+        \DateTime $day,
+        $serviceTariffs
     ) {
         $dateDifferenceInYears = date_diff(new \DateTime(), $day);
         //В Expedia невозможно установить данные более чем на 2 года вперед
         if ($dateDifferenceInYears->y < 2) {
             $isClosed = $restriction ? ($restriction->getClosed() || !$isPriceSet) : !$isPriceSet;
-
-            $restrictionData = ['restriction' => $restriction, 'isClosed' => $isClosed ? 'true' : 'false'];
+            $minLOSDefault = $serviceTariffs[$serviceTariffId]['minLOSDefault'];
+            $maxLOSDefault = $serviceTariffs[$serviceTariffId]['maxLOSDefault'];
+            $minLOS = $this->getLengthRestriction($restriction, $minLOSDefault);
+            $maxLOS = $this->getLengthRestriction($restriction, $maxLOSDefault);
+            $restrictionData = [
+                'restriction' => $restriction,
+                'isClosed' => $isClosed ? 'true' : 'false'
+            ];
 
             $resultArray[$serviceRoomTypeId][$day->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING)][$serviceTariffId] = $restrictionData;
         }
@@ -221,17 +229,18 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $isClosedToArrival = $restriction && $restriction->getClosedOnArrival() ? 'true' : 'false';
                     $isClosedToDeparture = $restriction && $restriction->getClosedOnDeparture() ? 'true' : 'false';
                     $minStay = $restriction && $restriction->getMinStay() ? $restriction->getMinStay() : self::EXPEDIA_MIN_STAY;
-                    //TODO: Уточнить какое из ограничений
                     if ($restriction && $restriction->getMaxStay()) {
-                        if ($restriction->getMaxStay() > self::EXPEDIA_MAX_STAY) {
+                        if ($restriction->getMaxStay() > $maxLOSDefault) {
                             $flashBag = $this->container->get('session')->getFlashBag();
                             $flashBag->clear();
                             $flashBag->add('danger',
                                 $this->container->get('translator')->trans('expedia_request_data_formatter.max_stay.error'));
+                            $maxStay = $maxLOSDefault;
+                        } else {
+                            $maxStay = $restriction->getMaxStay();
                         }
-                        $maxStay = $restriction->getMaxStay();
                     } else {
-                        $maxStay = self::EXPEDIA_MAX_STAY;
+                        $maxStay = $maxLOSDefault;
                     }
 
                     $restrictionsElement = $ratePlanElement->addChild('Restrictions');
