@@ -11,6 +11,7 @@ var DataManager = (function () {
     }
     DataManager.prototype.handleResponse = function (jsonResponse) {
         var response = JSON.parse(jsonResponse);
+        console.log(response);
         ActionManager.showResultMessages(response);
         this.updatePackagesData();
         if (response.data) {
@@ -57,7 +58,9 @@ var DataManager = (function () {
     };
     DataManager.prototype.createPackageRequest = function (newPackageCreateUrl, packageData) {
         ActionManager.showLoadingIndicator();
-        this.addPackageData(packageData);
+        if (packageData.accommodation) {
+            this.addPackageData(packageData);
+        }
         var self = this;
         $.ajax({
             url: newPackageCreateUrl,
@@ -128,7 +131,7 @@ var DataManager = (function () {
                 packageDataItem.roomTypeId = packageData.roomTypeId;
             }
         });
-        if (!isAccommodation) {
+        if (!isAccommodation && packageData.accommodation != '') {
             this.addPackageData(packageData);
         }
     };

@@ -562,10 +562,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         if($request->isXmlHttpRequest()) {
             return new JsonResponse(json_encode([
-                'success' => true,
-                'messages' => [
+                'success' => [
                     $this->get('translator')->trans('controller.chessboard.package_create.success')
                 ],
+                'errors' => [],
                 'data' => [
                     'packageId' => $order->getPackages()[0]->getId()
                 ]

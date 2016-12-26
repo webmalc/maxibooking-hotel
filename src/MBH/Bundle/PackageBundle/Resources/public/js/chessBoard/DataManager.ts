@@ -25,6 +25,7 @@ class DataManager {
 
     private handleResponse(jsonResponse) {
         var response = JSON.parse(jsonResponse);
+        console.log(response);
         ActionManager.showResultMessages(response);
         this.updatePackagesData();
 
@@ -79,7 +80,9 @@ class DataManager {
 
     public createPackageRequest(newPackageCreateUrl, packageData) {
         ActionManager.showLoadingIndicator();
-        this.addPackageData(packageData);
+        if (packageData.accommodation) {
+            this.addPackageData(packageData);
+        }
         let self = this;
         $.ajax({
             url: newPackageCreateUrl,
@@ -152,7 +155,7 @@ class DataManager {
                 packageDataItem.roomTypeId = packageData.roomTypeId;
             }
         });
-        if (!isAccommodation) {
+        if (!isAccommodation && packageData.accommodation != '') {
             this.addPackageData(packageData);
         }
     }

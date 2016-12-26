@@ -348,17 +348,16 @@ var ChessBoardManager = (function () {
             if (ChessBoardManager.isAccommodationOnFullPackage(intervalData)) {
                 axisValue = 'x, y';
             }
-            var lastChangedLeftPosition;
-            var lastChangedTopPosition;
             $(element).draggable({
                 containment: '#calendarWrapper',
-                start: function () {
+                start: function (event, ui) {
                     if (intervalData.isLocked) {
                         self.actionManager.callUnblockModal(intervalData.packageId);
                     }
                     this.style.zIndex = 101;
                 },
                 axis: axisValue,
+                grid: [ChessBoardManager.DATE_ELEMENT_WIDTH, 1],
                 scroll: true,
                 drag: function (event, ui) {
                     if (intervalData.isLocked) {
@@ -366,18 +365,15 @@ var ChessBoardManager = (function () {
                         ui.position.top = ui.originalPosition.top;
                     }
                     else {
-                        var griddedLeftPosition = self.getGriddedWidthValue(ui.position.left + ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET);
+                        // let griddedLeftPosition = self.getGriddedWidthValue(ui.position.left + ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET);
                         var griddedTopPosition = self.getGriddedHeightValue(ui.position.top + ChessBoardManager.DATE_ELEMENT_HEIGHT / 2);
-                        ui.position.left = lastChangedLeftPosition = griddedLeftPosition;
-                        ui.position.top = lastChangedTopPosition = griddedTopPosition;
-                        if ((Math.abs(lastChangedLeftPosition - ui.position.left) > ChessBoardManager.DATE_ELEMENT_WIDTH)
-                            || Math.abs(lastChangedTopPosition - ui.position.top) > ChessBoardManager.DATE_ELEMENT_HEIGHT) {
-                            if (!self.isPackageLocationCorrect(this)) {
-                                this.classList.add('red-package');
-                            }
-                            else {
-                                this.classList.remove('red-package');
-                            }
+                        // ui.position.left = griddedLeftPosition;
+                        ui.position.top = griddedTopPosition;
+                        if (!self.isPackageLocationCorrect(this)) {
+                            this.classList.add('red-package');
+                        }
+                        else {
+                            this.classList.remove('red-package');
                         }
                     }
                 },
