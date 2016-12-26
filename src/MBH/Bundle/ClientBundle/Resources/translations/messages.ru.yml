@@ -36,3 +36,8 @@ form.clientPaymentSystemType.successUrlDesc: URl для перенаправле
 form.clientPaymentSystemType.failUrlDesc: URl для перенаправления пользователя после неуспешной оплаты
 form.clientPaymentSystemType.payment_system_group: Платежная система
 form.clientPaymentSystemType.payment_system_group_links: Ссылки
+mailer.notice.unpaid.packages: Неоплаченные брони
+mailer.notice.unpaid.order.list: Список броней с просроченной оплатой
+mailer.notice.unpaid.package.list: Список броней
+mailer.notice.unpaid.need.to.pay: Сумма к оплате
+mailer.notice.unpaid.paid: Оплачено
