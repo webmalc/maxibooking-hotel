@@ -268,7 +268,7 @@ class ExpediaController extends Controller
 //        exit();
         $start = new \DateTime('midnight');
         $end = (clone $start)->add(new \DateInterval('P6D'));
-        $expedia = $this->get('mbh.channelmanager.expedia')->updateRestrictions($start, $end);
+        $expedia = $this->get('mbh.channelmanager.expedia')->updateRooms($start, $end);
         return ['result' => 123];
     }
 

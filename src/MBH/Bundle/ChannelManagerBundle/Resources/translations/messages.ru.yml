@@ -88,7 +88,8 @@ order_info.expedia.add_promotion: 'Доп. услуга'
 order_info.expedia.payment_instructions: 'Тип платежа'
 order_info.expedia.bedding_preferences: 'Пожелание по размещению'
 order_info.expedia.multi_room_booking_info: 'Доп.информация о множественном бронировании'
-expedia_request_data_formatter.max_stay.error: 'В сервисе Expedia.com невозможно установить максимальный срок брони больше 28 дней'
+expedia_request_data_formatter.max_stay.error: 'В сервисе Expedia.com по умолачнию установлен максимальный срок брони %count% дней'
+expedia_request_data_formatter.min_stay.error: 'В сервисе Expedia.com по умолачнию установлен минимальный срок брони %count% дней'
 package_info.expedia.child_age: Возраст ребенка
 
 

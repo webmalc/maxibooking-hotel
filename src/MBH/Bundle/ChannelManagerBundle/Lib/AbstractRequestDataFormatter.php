@@ -260,23 +260,6 @@ abstract class AbstractRequestDataFormatter
         $resultArray[$serviceRoomTypeId][$day->format('Y-m-d')][$serviceTariffId] = $restriction;
     }
 
-    protected function setLengthRestriction(?Restriction &$restriction, $defaultValue = null)
-    {
-        if ($restriction && $restriction->getMaxStay()) {
-            if (!is_null($defaultValue) && $restriction->getMaxStay() > $defaultValue) {
-                $flashBag = $this->container->get('session')->getFlashBag();
-                $flashBag->clear();
-                $flashBag->add('danger',
-                    $this->container->get('translator')->trans('expedia_request_data_formatter.max_stay.error'));
-                return $defaultValue;
-            } else {
-                return $restriction->getMaxStay();
-            }
-        } else {
-            return $defaultValue;
-        }
-    }
-
     /**
      * Возвращает массив данных, отправляемых в запросе обновления количества свободных комнат
      * @param $begin

@@ -177,11 +177,40 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
             $isClosed = $restriction ? ($restriction->getClosed() || !$isPriceSet) : !$isPriceSet;
             $minLOSDefault = $serviceTariffs[$serviceTariffId]['minLOSDefault'];
             $maxLOSDefault = $serviceTariffs[$serviceTariffId]['maxLOSDefault'];
-            $minLOS = $this->getLengthRestriction($restriction, $minLOSDefault);
-            $maxLOS = $this->getLengthRestriction($restriction, $maxLOSDefault);
+
+            if ($restriction && $restriction->getMaxStay()) {
+                if ($restriction->getMaxStay() > $maxLOSDefault) {
+                    $flashBag = $this->container->get('session')->getFlashBag();
+                    $flashBag->clear();
+                    $flashBag->add('danger', $this->container->get('translator')
+                            ->trans('expedia_request_data_formatter.max_stay.error', ['%count%' => $maxLOSDefault]));
+                    $maxStay = $maxLOSDefault;
+                } else {
+                    $maxStay = $restriction->getMaxStay();
+                }
+            } else {
+                $maxStay = $maxLOSDefault;
+            }
+
+            if ($restriction && $restriction->getMinStay()) {
+                if ($restriction->getMinStay() < $minLOSDefault) {
+                    $flashBag = $this->container->get('session')->getFlashBag();
+                    $flashBag->clear();
+                    $flashBag->add('danger', $this->container->get('translator')
+                        ->trans('expedia_request_data_formatter.min_stay.error', ['%count%' => $minLOSDefault]));
+                    $minStay = $maxLOSDefault;
+                } else {
+                    $minStay = $restriction->getMinStay();
+                }
+            } else {
+                $minStay = $maxLOSDefault;
+            }
+
             $restrictionData = [
                 'restriction' => $restriction,
-                'isClosed' => $isClosed ? 'true' : 'false'
+                'isClosed' => $isClosed ? 'true' : 'false',
+                'minLOS' => $minStay,
+                'maxLOS' => $maxStay
             ];
 
             $resultArray[$serviceRoomTypeId][$day->format(self::EXPEDIA_DEFAULT_DATE_FORMAT_STRING)][$serviceTariffId] = $restrictionData;
@@ -228,26 +257,12 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $restriction = $restrictionData['restriction'];
                     $isClosedToArrival = $restriction && $restriction->getClosedOnArrival() ? 'true' : 'false';
                     $isClosedToDeparture = $restriction && $restriction->getClosedOnDeparture() ? 'true' : 'false';
-                    $minStay = $restriction && $restriction->getMinStay() ? $restriction->getMinStay() : self::EXPEDIA_MIN_STAY;
-                    if ($restriction && $restriction->getMaxStay()) {
-                        if ($restriction->getMaxStay() > $maxLOSDefault) {
-                            $flashBag = $this->container->get('session')->getFlashBag();
-                            $flashBag->clear();
-                            $flashBag->add('danger',
-                                $this->container->get('translator')->trans('expedia_request_data_formatter.max_stay.error'));
-                            $maxStay = $maxLOSDefault;
-                        } else {
-                            $maxStay = $restriction->getMaxStay();
-                        }
-                    } else {
-                        $maxStay = $maxLOSDefault;
-                    }
 
                     $restrictionsElement = $ratePlanElement->addChild('Restrictions');
                     $restrictionsElement->addAttribute('closedToArrival', $isClosedToArrival);
                     $restrictionsElement->addAttribute('closedToDeparture', $isClosedToDeparture);
-                    $restrictionsElement->addAttribute('minLOS', $minStay);
-                    $restrictionsElement->addAttribute('maxLOS', $maxStay);
+                    $restrictionsElement->addAttribute('minLOS', $restrictionData['minLOS']);
+                    $restrictionsElement->addAttribute('maxLOS', $restrictionData['maxLOS']);
                 }
                 $xmlElements[] = $xmlRoomTypeData;
             }
