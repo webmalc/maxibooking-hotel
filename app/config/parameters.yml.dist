@@ -14,7 +14,7 @@ parameters:
   #Rabbitmq
   rabbitmq_user: 'rabbitmq'
   rabbitmq_password: 'rabbitmq'
-  rabbitmq_host: 'localhost'
+  rabbitmq_host: 'mbh-rabbitmq'
   rabbitmq_vhost: '/'
   rabbitmq_port: '5672'
 
