@@ -177,8 +177,8 @@ class ActionManager {
         if (intervalData && changedSide) {
             let alertMessage;
             if (changedSide == 'right') {
-                let packageEndDate = ChessBoardManager.getMomentDateFromJson(intervalData.packageEnd.date);
-                let intervalEndDate = ChessBoardManager.getMomentDateFromJson(intervalData.end.date);
+                let packageEndDate = ChessBoardManager.getMomentDate(intervalData.packageEnd);
+                let intervalEndDate = ChessBoardManager.getMomentDate(intervalData.end);
                 let newIntervalEndDate = moment(newIntervalData.end, "DD.MM.YYYY");
                 if (intervalData.position == 'full' || intervalData.position == 'right') {
                     if (newIntervalEndDate.isAfter(packageEndDate)
@@ -191,7 +191,7 @@ class ActionManager {
                 }
             } else if (changedSide == 'left') {
                 let newIntervalStartDate = moment(newIntervalData.begin, "DD.MM.YYYY");
-                let packageStartDate = ChessBoardManager.getMomentDateFromJson(intervalData.begin.date);
+                let packageStartDate = ChessBoardManager.getMomentDate(intervalData.begin);
                 if (intervalData.position == 'left' || intervalData.position == 'full') {
                     if (!newIntervalStartDate.isSame(packageStartDate)) {
                         alertMessage = 'Вы хотите изменить дату заезда брони?';
@@ -227,8 +227,8 @@ class ActionManager {
         modal.find('input.modalAccommodationId').val(accommodationId);
         modal.find('#modal-package-number').text(intervalData.number);
         modal.find('#modal-package-payer').text(payerText);
-        modal.find('#modal-package-begin').text(ChessBoardManager.getMomentDateFromJson(intervalData.packageBegin.date).format("DD.MM.YYYY"));
-        modal.find('#modal-package-end').text(ChessBoardManager.getMomentDateFromJson(intervalData.packageEnd.date).format("DD.MM.YYYY"));
+        modal.find('#modal-package-begin').text(ChessBoardManager.getMomentDate(intervalData.packageBegin).format("DD.MM.YYYY"));
+        modal.find('#modal-package-end').text(ChessBoardManager.getMomentDate(intervalData.packageEnd).format("DD.MM.YYYY"));
         modal.find('#modal-begin-date').text(newIntervalData.begin);
         modal.find('#modal-end-date').text(newIntervalData.end);
         modal.find('#modal-room-id').text(newIntervalData.accommodation);

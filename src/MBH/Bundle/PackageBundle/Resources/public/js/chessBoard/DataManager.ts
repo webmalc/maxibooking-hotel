@@ -108,14 +108,8 @@ class DataManager {
     }
 
     private addPackageData(packageData) {
-        packageData.begin = { 'date' : DataManager.getPackageDate(packageData.begin) };
-        packageData.end = { 'date'  : DataManager.getPackageDate(packageData.end) };
         packageData.payer = '';
         this._accommodations.push(packageData);
-    }
-
-    public static getPackageDate(packageDataDate) {
-        return moment(packageDataDate, "DD.MM.YYYY").toDate();
     }
 
     public updateLocalPackageData(packageData, isDivide) {
@@ -131,8 +125,8 @@ class DataManager {
                 return false;
             });
             let newAccommodationData = $.extend(true, {}, dividedAccommodation);
-            dividedAccommodation.end = { 'date' : DataManager.getPackageDate(packageData.begin) };
-            newAccommodationData.begin = { 'date' : DataManager.getPackageDate(packageData.begin) };
+            dividedAccommodation.end = packageData.begin;
+            newAccommodationData.begin = packageData.begin;
             newAccommodationData.accommodation = packageData.roomId;
             this._accommodations.forEach(function (packageDataItem) {
                 if (packageDataItem.id === packageData.id) {
@@ -153,13 +147,29 @@ class DataManager {
         }
     }
 
+    public getNoAccommodationPackagesByDate(date, roomTypeId) {
+        return this.noAccommodationIntervals.filter(function (noAccommodationInterval) {
+            if (noAccommodationInterval.roomTypeId === roomTypeId) {
+                let packageBeginDate = ChessBoardManager.getMomentDate(noAccommodationInterval.begin);
+                let packageEndDate = ChessBoardManager.getMomentDate(noAccommodationInterval.end);
+
+                let beginAndCurrentDiff = date.diff(packageBeginDate, 'days');
+                let endAndCurrentDiff = packageEndDate.diff(date, 'days');
+
+                return beginAndCurrentDiff >= 0 && endAndCurrentDiff > 0;
+            }
+
+            return false;
+        })
+    }
+
     private updateAccommodationData(packageData) {
         let isAccommodation = false;
         this._accommodations.forEach(function (packageDataItem) {
             if (packageDataItem.id === packageData.id) {
                 isAccommodation = true;
-                packageDataItem.begin.date = DataManager.getPackageDate(packageData.begin);
-                packageDataItem.end.date = DataManager.getPackageDate(packageData.end);
+                packageDataItem.begin = packageData.begin;
+                packageDataItem.end = packageData.end;
                 packageDataItem.accommodation = packageData.accommodation;
                 packageDataItem.roomTypeId = packageData.roomTypeId;
             }

@@ -133,3 +133,8 @@ services:
     mbh.chess_board.message_formatter:
         class: MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter
         arguments: ['@translator']
+
+    mbh.chess_board_unit:
+        class: MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit
+        arguments: ['@security.authorization_checker']
+        shared: false

@@ -85,13 +85,8 @@ var DataManager = (function () {
         });
     };
     DataManager.prototype.addPackageData = function (packageData) {
-        packageData.begin = { 'date': DataManager.getPackageDate(packageData.begin) };
-        packageData.end = { 'date': DataManager.getPackageDate(packageData.end) };
         packageData.payer = '';
         this._accommodations.push(packageData);
-    };
-    DataManager.getPackageDate = function (packageDataDate) {
-        return moment(packageDataDate, "DD.MM.YYYY").toDate();
     };
     DataManager.prototype.updateLocalPackageData = function (packageData, isDivide) {
         var self = this;
@@ -106,8 +101,8 @@ var DataManager = (function () {
                 return false;
             });
             var newAccommodationData = $.extend(true, {}, dividedAccommodation_1);
-            dividedAccommodation_1.end = { 'date': DataManager.getPackageDate(packageData.begin) };
-            newAccommodationData.begin = { 'date': DataManager.getPackageDate(packageData.begin) };
+            dividedAccommodation_1.end = packageData.begin;
+            newAccommodationData.begin = packageData.begin;
             newAccommodationData.accommodation = packageData.roomId;
             this._accommodations.forEach(function (packageDataItem) {
                 if (packageDataItem.id === packageData.id) {
@@ -129,13 +124,25 @@ var DataManager = (function () {
             }
         }
     };
+    DataManager.prototype.getNoAccommodationPackagesByDate = function (date, roomTypeId) {
+        return this.noAccommodationIntervals.filter(function (noAccommodationInterval) {
+            if (noAccommodationInterval.roomTypeId === roomTypeId) {
+                var packageBeginDate = ChessBoardManager.getMomentDate(noAccommodationInterval.begin);
+                var packageEndDate = ChessBoardManager.getMomentDate(noAccommodationInterval.end);
+                var beginAndCurrentDiff = date.diff(packageBeginDate, 'days');
+                var endAndCurrentDiff = packageEndDate.diff(date, 'days');
+                return beginAndCurrentDiff >= 0 && endAndCurrentDiff > 0;
+            }
+            return false;
+        });
+    };
     DataManager.prototype.updateAccommodationData = function (packageData) {
         var isAccommodation = false;
         this._accommodations.forEach(function (packageDataItem) {
             if (packageDataItem.id === packageData.id) {
                 isAccommodation = true;
-                packageDataItem.begin.date = DataManager.getPackageDate(packageData.begin);
-                packageDataItem.end.date = DataManager.getPackageDate(packageData.end);
+                packageDataItem.begin = packageData.begin;
+                packageDataItem.end = packageData.end;
                 packageDataItem.accommodation = packageData.accommodation;
                 packageDataItem.roomTypeId = packageData.roomTypeId;
             }

@@ -2,244 +2,165 @@
 
 namespace MBH\Bundle\PackageBundle\Models\ChessBoard;
 
-
-use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class ChessBoardUnit implements \JsonSerializable
 {
-    private $id;
-    /**
-     * @var \DateTime
-     */
-    private $beginDate;
-    /**
-     * @var \DateTime
-     */
-    private $endDate;
-    /**
-     * @var Tourist
-     */
-    private $packagePayer;
-    /**
-     * @var string
-     */
-    private $packageNumber;
-    /**
-     * @var string
-     */
-    private $roomTypeId;
-
-    /**
-     * @var string
-     */
-    private $paidStatus;
-    /**
-     * @var float
-     */
-    private $price;
-    private $accommodationId;
-    /**
-     * @var string
-     * 'left', 'middle', 'right', 'full'
-     */
-    private $accommodationRelativePosition;
-    private $endPackageDate;
-    private $beginPackageDate;
-    private $isCheckIn;
-    private $isCheckOut;
-    private $isLocked;
-
-    private $packageId;
+    /** @var Package */
+    private $package;
+    /** @var  PackageAccommodation */
+    private $accommodation;
+    /** @var  AuthorizationChecker $rightsChecker */
+    private $rightsChecker;
 
     const LEFT_RELATIVE_POSITION = 'left';
     const RIGHT_RELATIVE_POSITION = 'right';
     const MIDDLE_RELATIVE_POSITION = 'middle';
     const FULL_PACKAGE_ACCOMMODATION = 'full';
 
-    public function __construct(
-        $id,
-        \DateTime $beginDate,
-        \DateTime $endDate,
-        $number,
-        $roomTypeId,
-        $paidStatus,
-        $price,
-        \DateTime $beginPackageDate,
-        \DateTime $endPackageDate,
-        bool $isCheckIn,
-        bool $isCheckOut,
-        bool $isLocked,
-        Tourist $payer = null,
-        $accommodation = null,
-        $position = null
-    ) {
-        $this->id = $id;
-        $this->beginDate = $beginDate;
-        $this->endDate = $endDate;
-        $this->packageNumber = $number;
-        $this->packagePayer = $payer;
-        $this->roomTypeId = $roomTypeId;
-        $this->paidStatus = $paidStatus;
-        $this->endPackageDate = $endPackageDate;
-        $this->beginPackageDate = $beginPackageDate;
-        $this->isCheckIn = $isCheckIn;
-        $this->isCheckOut = $isCheckOut;
-        $this->isLocked = $isLocked;
-        $this->price = $price;
-        $this->accommodationId = $accommodation;
-        $this->accommodationRelativePosition = $position;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getBeginDate(): \DateTime
+    public function __construct(AuthorizationChecker $rightsChecker)
     {
-        return $this->beginDate;
+        $this->rightsChecker = $rightsChecker;
     }
 
     /**
-     * @return \DateTime
-     */
-    public function getEndDate(): \DateTime
-    {
-        return $this->endDate;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPackagePayer(): string
-    {
-        return $this->packagePayer;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRoomTypeId(): string
-    {
-        return $this->roomTypeId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPaidStatus(): string
-    {
-        return $this->paidStatus;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPrice(): float
-    {
-        return $this->price;
-    }
-
-    /**
-     * @param \DateTime $beginDate
+     * @param Package $package
+     * @param PackageAccommodation|null $accommodation
      * @return ChessBoardUnit
      */
-    public function setBeginDate(\DateTime $beginDate): ChessBoardUnit
+    public function setInitData(Package $package, ?PackageAccommodation $accommodation = null)
     {
-        $this->beginDate = $beginDate;
+        $this->package = $package;
+        $this->accommodation = $accommodation;
 
         return $this;
     }
 
-    /**
-     * @param \DateTime $endDate
-     * @return ChessBoardUnit
-     */
-    public function setEndDate(\DateTime $endDate): ChessBoardUnit
-    {
-        $this->endDate = $endDate;
-
-        return $this;
-    }
-
-    /**
-     * @param string $packagePayer
-     * @return ChessBoardUnit
-     */
-    public function setPackagePayer(string $packagePayer): ChessBoardUnit
-    {
-        $this->packagePayer = $packagePayer;
-        return $this;
-    }
-
-    /**
-     * @param string $roomTypeId
-     * @return ChessBoardUnit
-     */
-    public function setRoomTypeId(string $roomTypeId): ChessBoardUnit
-    {
-        $this->roomTypeId = $roomTypeId;
-
-        return $this;
-    }
-
-    /**
-     * @param string $paidStatus
-     * @return ChessBoardUnit
-     */
-    public function setPaidStatus(string $paidStatus): ChessBoardUnit
-    {
-        $this->paidStatus = $paidStatus;
-
-        return $this;
-    }
-
-    /**
-     * @param float $price
-     * @return ChessBoardUnit
-     */
-    public function setPrice(float $price): ChessBoardUnit
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
-
-    /**
-     * @return array
-     */
     public function __toArray(): array
     {
         $array = [
-            'id' => $this->id,
-            'number' => $this->packageNumber,
-            'price' => $this->price,
-            'begin' => $this->beginDate,
-            'end' => $this->endDate,
-            'roomTypeId' => $this->roomTypeId,
-            'paidStatus' => $this->paidStatus,
-            'packageBegin' => $this->beginPackageDate,
-            'packageEnd' => $this->endPackageDate,
-            'isCheckIn' => $this->isCheckIn,
-            'isCheckOut' => $this->isCheckOut,
-            'isLocked' => $this->isLocked
+            'id' => $this->accommodation ? $this->accommodation->getId() : $this->package->getId(),
+            'number' => $this->package->getNumberWithPrefix(),
+            'price' => $this->package->getPrice(),
+            'begin' => $this->getBeginDate()->format('d.m.Y'),
+            'end' => $this->getEndDate()->format('d.m.Y'),
+            'roomTypeId' => $this->getRoomTypeId(),
+            'paidStatus' => $this->package->getPaidStatus(),
+            'packageBegin' => $this->package->getBegin()->format('d.m.Y'),
+            'packageEnd' => $this->package->getEnd()->format('d.m.Y'),
+            'isCheckIn' => $this->package->getIsCheckIn(),
+            'isCheckOut' => $this->package->getIsCheckOut(),
+            'isLocked' => $this->package->getIsLocked(),
+            'viewPackage' => $this->hasViewPackageRights($this->package),
+            'removePackage' => $this->hasRemovePackageRights($this->package),
+            'updatePackage' => $this->hasUpdatePackageRights($this->package)
         ];
 
-        if ($this->packagePayer) {
-            $array['payer'] = $this->packagePayer->getShortName();
+        if ($this->accommodation) {
+            $array['updateAccommodation'] = $this->hasUpdateAccommodationRights($this->accommodation);
         }
-        if ($this->accommodationId) {
-            $array['accommodation'] = $this->accommodationId;
+        if ($this->package->getPayer()) {
+            $array['payer'] = $this->package->getPayer()->getShortName();
         }
-        if ($this->accommodationRelativePosition) {
-            $array['position'] = $this->accommodationRelativePosition;
+        if ($this->accommodation) {
+            $array['accommodation'] = $this->accommodation->getRoom()->getId();
         }
-        if ($this->packageId) {
-            $array['packageId'] = $this->packageId;
+        if ($this->accommodation) {
+            $array['position'] = $this->getAccommodationRelativePosition($this->accommodation, $this->package);
+        }
+        if ($this->accommodation) {
+            $array['packageId'] = $this->package->getId();
         }
 
         return $array;
+    }
+
+    public function getBeginDate()
+    {
+        return $this->accommodation ? $this->accommodation->getBegin() : $this->package->getBegin();
+    }
+
+    public function getEndDate()
+    {
+        if ($this->accommodation) {
+            return $this->accommodation->getEnd();
+        }
+        if ((count($this->package->getAccommodations()) > 0)
+            && $this->package->getLastEndAccommodation()->getTimestamp() < $this->package->getEnd()->getTimestamp()) {
+            return $this->package->getLastEndAccommodation();
+        }
+
+        return $this->package->getEnd();
+    }
+
+    public function getRoomTypeId()
+    {
+        return $this->accommodation ?
+            $this->accommodation->getRoom()->getRoomType()->getId() : $this->package->getRoomType()->getId();
+    }
+
+    /**
+     * Получение относительного положения размещения по отношению к остальным размещениям брони
+     * Размещение может занимать полное время брони, быть первым размещением, последним размещением или промежуточным
+     *
+     * @param PackageAccommodation $accommodation
+     * @param Package $package
+     * @return string
+     */
+    private function getAccommodationRelativePosition(PackageAccommodation $accommodation, Package $package)
+    {
+        $packageBeginString = $package->getBegin()->format('d.m.Y');
+        $lastPackageAccommodationEndString = $package->getLastEndAccommodation()->format('d.m.Y');
+        $accommodationBeginString = $accommodation->getBegin()->format('d.m.Y');
+        $accommodationEndString = $accommodation->getEnd()->format('d.m.Y');
+
+        if ($accommodationBeginString == $packageBeginString
+            && $accommodationEndString == $lastPackageAccommodationEndString
+        ) {
+            return self::FULL_PACKAGE_ACCOMMODATION;
+        }
+        if ($accommodationBeginString == $packageBeginString
+            && $accommodationEndString != $lastPackageAccommodationEndString
+        ) {
+            return self::LEFT_RELATIVE_POSITION;
+        }
+        if ($accommodationEndString == $lastPackageAccommodationEndString
+            && $accommodationBeginString != $packageBeginString
+        ) {
+            return self::RIGHT_RELATIVE_POSITION;
+        }
+
+        return self::MIDDLE_RELATIVE_POSITION;
+    }
+
+    private function hasUpdateAccommodationRights(PackageAccommodation $accommodation)
+    {
+        return ($this->rightsChecker->isGranted('ROLE_PACKAGE_ACCOMMODATION')
+        && ($this->rightsChecker->isGranted('EDIT', $accommodation)
+            || $this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')) ? true : false);
+    }
+
+    private function hasUpdatePackageRights(Package $package)
+    {
+        return ($this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT')
+        && ($this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
+            || $this->rightsChecker->isGranted('EDIT', $package)) ? true : false);
+    }
+
+    private function hasRemovePackageRights(Package $package)
+    {
+        return ($this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE')
+        && ($this->rightsChecker->isGranted('DELETE', $package)
+            || $this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE_ALL')) ? true : false);
+    }
+
+    private function hasViewPackageRights(Package $package)
+    {
+        return ($this->rightsChecker->isGranted('ROLE_PACKAGE_VIEW_ALL')
+        || ($this->rightsChecker->isGranted('VIEW', $package)
+            && $this->rightsChecker->isGranted('ROLE_PACKAGE_VIEW')) ? true : false);
     }
 
     /**
@@ -249,136 +170,4 @@ class ChessBoardUnit implements \JsonSerializable
     {
         return $this->__toArray();
     }
-
-    /**
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param mixed $id
-     * @return ChessBoardUnit
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAccommodationId()
-    {
-        return $this->accommodationId;
-    }
-
-    /**
-     * @param $accommodation
-     * @return ChessBoardUnit
-     */
-    public function setAccommodationId($accommodation)
-    {
-        $this->accommodationId = $accommodation;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAccommodationRelativePosition(): string
-    {
-        return $this->accommodationRelativePosition;
-    }
-
-    /**
-     * @param string $accommodationRelativePosition
-     * @return ChessBoardUnit
-     */
-    public function setAccommodationRelativePosition(string $accommodationRelativePosition): ChessBoardUnit
-    {
-        $this->accommodationRelativePosition = $accommodationRelativePosition;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEndPackageDate()
-    {
-        return $this->endPackageDate;
-    }
-
-    /**
-     * @param mixed $endPackageDate
-     * @return ChessBoardUnit
-     */
-    public function setEndPackageDate($endPackageDate)
-    {
-        $this->endPackageDate = $endPackageDate;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPackageId()
-    {
-        return $this->packageId;
-    }
-
-    /**
-     * @param mixed $packageId
-     * @return ChessBoardUnit
-     */
-    public function setPackageId($packageId)
-    {
-        $this->packageId = $packageId;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPackageNumber()
-    {
-        return $this->packageNumber;
-    }
-
-    /**
-     * @param mixed $packageNumber
-     * @return ChessBoardUnit
-     */
-    public function setPackageNumber($packageNumber) : ChessBoardUnit
-    {
-        $this->packageNumber = $packageNumber;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getBeginPackageDate()
-    {
-        return $this->beginPackageDate;
-    }
-
-    /**
-     * @param mixed $beginPackageDate
-     * @return ChessBoardUnit
-     */
-    public function setBeginPackageDate($beginPackageDate) : ChessBoardUnit
-    {
-        $this->beginPackageDate = $beginPackageDate;
-
-        return $this;
-    }
-
 }

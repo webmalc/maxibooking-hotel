@@ -35,6 +35,8 @@ class ChessBoardDataBuilder
     private $tariff;
     /** @var  array $floorIds */
     private $floorIds;
+    /** @var  ContainerInterface $container */
+    private $container;
     /** @var DataCollectorTranslator $translator */
     private $translator;
     /** @var  AuthorizationChecker $rightsChecker */
@@ -55,6 +57,7 @@ class ChessBoardDataBuilder
     public function __construct(DocumentManager $dm, Helper $helper, $container)
     {
         $this->dm = $dm;
+        $this->container = $container;
         $this->helper = $helper;
         $this->rightsChecker = $container->get('security.authorization_checker');
         $this->translator = $container->get('translator');
@@ -106,20 +109,8 @@ class ChessBoardDataBuilder
         $noAccommodationIntervals = [];
         foreach ($this->getPackagesWithoutAccommodation() as $package) {
             /** @var Package $package */
-            $noAccommodationIntervals[] = new ChessBoardUnit(
-                $package->getId(),
-                $package->getBegin(),
-                $package->getEnd(),
-                $this->getIntervalName($package),
-                $package->getRoomType()->getId(),
-                $package->getPaidStatus(),
-                $package->getPrice(),
-                $package->getBegin(),
-                $package->getEnd(),
-                $package->getIsCheckIn(),
-                $package->getIsCheckOut(),
-                $package->getIsLocked()
-            );
+            $noAccommodationIntervals[] = $this->container
+                ->get('mbh.chess_board_unit')->setInitData($package);
         }
 
         return array_merge($noAccommodationIntervals, $this->getDateIntervalsWithoutAccommodation());
@@ -190,26 +181,12 @@ class ChessBoardDataBuilder
         foreach ($this->getPackageAccommodations() as $accommodation) {
             /** @var PackageAccommodation $accommodation */
             $package = $accommodation->getPackage();
-            /** @var PackageAccommodation $packageLastAccommodation */
-            $accommodations = $package->getAccommodations()->toArray();
-            $packageLastAccommodation = end($accommodations);
-            $packageLastAccommodationDate = $packageLastAccommodation->getEnd();
+            /** @var \DateTime $packageLastAccommodationDate */
+            $packageLastAccommodationDate = $package->getLastAccommodation()->getEnd();
 
             if ($package->getEnd()->format('d.m.Y') != $packageLastAccommodationDate->format('d.m.Y')) {
-                $dateIntervalsWithoutAccommodation[] = new ChessBoardUnit(
-                    $package->getId(),
-                    $packageLastAccommodationDate,
-                    $package->getEnd(),
-                    $this->getIntervalName($package),
-                    $package->getRoomType()->getId(),
-                    $package->getPaidStatus(),
-                    $package->getPrice(),
-                    $package->getBegin(),
-                    $package->getEnd(),
-                    $package->getIsCheckIn(),
-                    $package->getIsCheckOut(),
-                    $package->getIsLocked()
-                );
+                $dateIntervalsWithoutAccommodation[] = $this->container
+                    ->get('mbh.chess_board_unit')->setInitData($package);
             }
         }
 
@@ -222,74 +199,11 @@ class ChessBoardDataBuilder
         foreach ($this->getPackageAccommodations() as $accommodation) {
             /** @var PackageAccommodation $accommodation */
             $package = $accommodation->getPackage();
-
-            $accommodationIntervals[] = (new ChessBoardUnit(
-                $accommodation->getId(),
-                $accommodation->getBegin(),
-                $accommodation->getEnd(),
-                $package->getNumberWithPrefix(),
-                $accommodation->getAccommodation()->getRoomType()->getId(),
-                $package->getPaidStatus(),
-                $package->getPrice(),
-                $package->getBegin(),
-                $package->getEnd(),
-                $package->getIsCheckIn(),
-                $package->getIsCheckOut(),
-                $package->getIsLocked(),
-                $package->getPayer(),
-                $accommodation->getAccommodation()->getId(),
-                $this->getAccommodationRelativePosition($accommodation, $package)
-            ))
-                ->setPackageId($package->getId())
-            ;
+            $accommodationIntervals[] = $this->container
+                ->get('mbh.chess_board_unit')->setInitData($package, $accommodation);
         }
 
         return $accommodationIntervals;
-    }
-
-    /**
-     * Получение относительного положения размещения по отношению к остальным размещениям брони
-     * Размещение может занимать полное время брони, быть первым размещением, последним размещением или промежуточным
-     *
-     * @param PackageAccommodation $accommodation
-     * @param Package $package
-     * @return string
-     */
-    private function getAccommodationRelativePosition(PackageAccommodation $accommodation, Package $package)
-    {
-        $packageBeginString = $package->getBegin()->format('d.m.Y');
-        $lastPackageAccommodationEndString = $package->getLastEndAccommodation()->format('d.m.Y');
-        $accommodationBeginString = $accommodation->getBegin()->format('d.m.Y');
-        $accommodationEndString = $accommodation->getEnd()->format('d.m.Y');
-
-        if ($accommodationBeginString == $packageBeginString
-            && $accommodationEndString == $lastPackageAccommodationEndString
-        ) {
-            return ChessBoardUnit::FULL_PACKAGE_ACCOMMODATION;
-        }
-        if ($accommodationBeginString == $packageBeginString
-            && $accommodationEndString != $lastPackageAccommodationEndString
-        ) {
-            return ChessBoardUnit::LEFT_RELATIVE_POSITION;
-        }
-        if ($accommodationEndString == $lastPackageAccommodationEndString
-            && $accommodationBeginString != $packageBeginString
-        ) {
-            return ChessBoardUnit::RIGHT_RELATIVE_POSITION;
-        }
-
-        return ChessBoardUnit::MIDDLE_RELATIVE_POSITION;
-    }
-
-    /**
-     * Возвращает строку, указываемую на блоках шахматки
-     *
-     * @param Package $package
-     * @return mixed
-     */
-    private function getIntervalName($package)
-    {
-        return $package->getPayer() ? $package->getPayer()->getName() : $package->getName();
     }
 
     private function getPackageAccommodations()
@@ -471,26 +385,5 @@ class ChessBoardDataBuilder
         }
 
         return $this->roomTypes;
-    }
-
-    private function hasUpdateAccommodationRights($accommodation)
-    {
-        return $this->rightsChecker->isGranted('ROLE_PACKAGE_ACCOMMODATION')
-            && ($this->rightsChecker->isGranted('EDIT', $accommodation)
-            || $this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL'));
-    }
-
-    private function hasUpdatePackageRights($package)
-    {
-        return $this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT')
-            && ($this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
-            || $this->rightsChecker->isGranted('EDIT', $package));
-    }
-
-    private function hasRemovePackageRights($package)
-    {
-        return $this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE')
-            && ($this->rightsChecker->isGranted('DELETE', $package)
-            || $this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE_ALL'));
     }
 }
