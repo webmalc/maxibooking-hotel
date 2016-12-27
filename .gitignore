@@ -1,4 +1,6 @@
-/docker_zalex
+docker_zalex/
+azovsky_remote/
+scripts/deploy_to_test.sh
 /scripts/upload
 /web/bundles/
 /app/config/parameters.yml

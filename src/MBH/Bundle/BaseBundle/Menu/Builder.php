@@ -344,8 +344,8 @@ class Builder extends ContainerAware
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('myallocator', ['route' => 'channels', 'label' => 'Дополнительные каналы'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
-            //$menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok'])
-            //  ->setAttributes(['icon' => 'fa fa-cloud-download']);
+            $menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok'])
+              ->setAttributes(['icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
