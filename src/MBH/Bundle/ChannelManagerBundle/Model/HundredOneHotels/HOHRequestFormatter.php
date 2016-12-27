@@ -23,12 +23,13 @@ class HOHRequestFormatter
     /**
      * @param ChannelManagerConfigInterface $config
      * @param string $serviceName
-     * @return $this
+     * @return HOHRequestFormatter
      */
     public function setInitData($config, $serviceName = 'set_calendar')
     {
         $this->serviceName = $serviceName;
         $this->config = $config;
+
         return $this;
     }
 

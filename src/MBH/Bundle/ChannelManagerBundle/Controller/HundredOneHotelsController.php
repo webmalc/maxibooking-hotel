@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
+use MBH\Bundle\ChannelManagerBundle\Form\HundredOneHotelType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
@@ -14,6 +15,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class HundredOneHotelsController
@@ -33,7 +35,7 @@ class HundredOneHotelsController extends Controller
     {
         $config = $this->hotel->getHundredOneHotelsConfig();
 
-        $form = $this->createForm($this->get('mbh.channelmanager.hundred_one_hotels_type'), $config);
+        $form = $this->createForm(HundredOneHotelType::class, $config);
 
         return [
             'form' => $form->createView(),
@@ -60,7 +62,7 @@ class HundredOneHotelsController extends Controller
             $config = new HundredOneHotelsConfig();
             $config->setHotel($this->hotel);
         }
-        $form = $this->createForm($this->get('mbh.channelmanager.hundred_one_hotels_type'), $config);
+        $form = $this->createForm(HundredOneHotelType::class, $config);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -100,7 +102,7 @@ class HundredOneHotelsController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffsType(), $config->getTariffsAsArray(), [
+        $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.hundred_one_hotels')->pullTariffs($config),
         ]);
@@ -151,7 +153,7 @@ class HundredOneHotelsController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomsType(), $config->getRoomsAsArray(), [
+        $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $this->get('mbh.channelmanager.hundred_one_hotels')->pullRooms($config),
         ]);
@@ -182,5 +184,17 @@ class HundredOneHotelsController extends Controller
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
+    }
+
+    /**
+     * @Route("/test")
+     */
+    public function testAction()
+    {
+        $begin = new \DateTime('midnight');
+        $end = (clone $begin)->add(new \DateInterval('P6D'));
+        $config = $this->hotel->getHundredOneHotelsConfig();
+        $this->get('mbh.channelmanager.hundred_one_hotels')->closeForConfig($config);
+        return new Response();
     }
 }

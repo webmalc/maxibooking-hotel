@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danya
- * Date: 13.09.16
- * Time: 17:51
- */
 
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
