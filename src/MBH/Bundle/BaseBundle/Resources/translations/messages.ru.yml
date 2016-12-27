@@ -395,3 +395,15 @@ menu.help.nodepart: Количество невыехавших броней
 save: сохранить
 show: показать
 cancel: отмена
+
+entity.new.title: создание
+
+form.info.group: Основная информация
+form.fullTitle: Название
+form.title: Внутреннее название
+form.description: Описание
+form.title.help: Название для использования внутри MaxiBooking
+form.begin: Начало
+form.end: Конец
+form.group.config: Настройки
+isEnabled: Включена

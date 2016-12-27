@@ -8,7 +8,7 @@
             <meta name="keywords" content="{% block meta_keywords %}{{project_title}}{% endblock %}">
             <meta name="author" content="webmalc">
             <meta name="description" content="{% block meta_description %}{{project_title}}{% endblock %}">
-            <title>{% block title %}{{project_title}}{% if title is defined %}: {{ title }}{% endif %}{% endblock %}</title>
+            <title>{% block title %}{{project_title}}{% if title is defined %}: {{ title|trans }}{% endif %}{% endblock %}</title>
 
             {% block styles %}
 

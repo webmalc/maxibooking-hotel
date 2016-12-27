@@ -3,3 +3,6 @@ validator.toolongname: Слишком длинное имя
 validator.tooshorttitle: Слишком короткое наименование
 validator.toolongtitle: Слишком длинное наименование
 validator.negativeprice: Цена не может быть меньше нуля
+validator.field.short: Слишком короткое
+validator.field.long: Слишком длинное
+validator.hotel.empty: Не выбран отель
