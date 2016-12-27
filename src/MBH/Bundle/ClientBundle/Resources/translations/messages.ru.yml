@@ -38,6 +38,12 @@ form.clientPaymentSystemType.payment_system_group: Платежная систе
 form.clientPaymentSystemType.payment_system_group_links: Ссылки
 mailer.notice.unpaid.packages: Неоплаченные брони
 mailer.notice.unpaid.order.list: Список броней с просроченной оплатой
-mailer.notice.unpaid.package.list: Список броней
+mailer.notice.unpaid.package.list: № Брони
 mailer.notice.unpaid.need.to.pay: Сумма к оплате
 mailer.notice.unpaid.paid: Оплачено
+mailer.notice.unpaid.phone: Телефон
+mailer.notice.unpaid.mobile.phone: Мобильный телефон
+mailer.notice.unpaid.no.data: Нет данных
+mailer.notice.unpaid.package.period: Период брони
+mailer.notice.unpaid.from: С
+mailer.notice.unpaid.on: по
