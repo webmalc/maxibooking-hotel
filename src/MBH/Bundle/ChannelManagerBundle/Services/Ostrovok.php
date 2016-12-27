@@ -81,8 +81,8 @@ class Ostrovok extends Base
         parent::__construct($container);
         $this->params = $container->getParameter('mbh.channelmanager.services')['ostrovok'];
         !self::TEST ?: $this->url = self::TEST_URL;
-        $this->apiBrowser = $container->get('ostrovok_api_service');
-        $this->dataGenerator = $container->get('mbh_bundle_channel_manager.lib_ostrovok.ostrovok_data_generator');
+        $this->apiBrowser = $container->get('mbh.channelmanager.ostrovok.api_service');
+        $this->dataGenerator = $container->get('mbh.channelmanager.ostrovok.data_generator');
         $this->calculation = $container->get('mbh.calculation');
     }
 

@@ -6,6 +6,10 @@ namespace MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok;
  * Class OstrovokApiService
  * @package MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok
  */
+/**
+ * Class OstrovokApiService
+ * @package MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok
+ */
 class OstrovokApiService
 {
 
@@ -13,6 +17,9 @@ class OstrovokApiService
      *
      */
     //const API_URL = 'http://extrota-sandbox.ostrovok.ru/echannel/api/v0.1/';
+    /**
+     *
+     */
     const API_URL = 'https://echannel.ostrovok.ru/echannel/api/v0.1/';
 
     /**

@@ -210,7 +210,7 @@ parameters:
         vashotel:
           title: 'ВашОтель'
           service: 'mbh.channelmanager.vashotel'
-          password: jguuE26t684Fl
+          password: pCoKcmTLmV7cXby5J3N1
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
@@ -233,6 +233,9 @@ parameters:
           service: 'mbh.channelmanager.oktogo'
           api_username: .maxiBooking_api
           api_password: qdcmBz9K
+        hundred_one_hotels:
+          title: '101 Отель'
+          service: 'mbh.channelmanager.hundred_one_hotels'
 
     #параметры логов
     mbh.logs.max: 100
