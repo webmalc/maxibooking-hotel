@@ -12,8 +12,8 @@ class OstrovokApiService
     /**
      *
      */
-    const API_URL = 'http://extrota-sandbox.ostrovok.ru/echannel/api/v0.1/';
-//    const API_URL = 'https://echannel.ostrovok.ru/echannel/api/v0.1/';
+    //const API_URL = 'http://extrota-sandbox.ostrovok.ru/echannel/api/v0.1/';
+    const API_URL = 'https://echannel.ostrovok.ru/echannel/api/v0.1/';
 
     /**
      * @var
@@ -41,14 +41,14 @@ class OstrovokApiService
      */
     private function createSignatureString($data)
     {
-        $is_list = false;
+        $isList = false;
         if (is_array($data) && count($data)) {
             if ($data[0]??false) {
-                $is_list = true;
+                $isList = true;
             }
         }
 
-        if (is_array($data) && !$is_list) {
+        if (is_array($data) && !$isList) {
             ksort($data);
             $tmp = array();
             foreach ($data as $key => $value) {
@@ -59,7 +59,7 @@ class OstrovokApiService
                 $result[] = implode("=", $value);
             }
             return implode(";", $result);
-        } elseif (is_array($data) && $is_list) {
+        } elseif (is_array($data) && $isList) {
             $result = array();
             foreach ($data as $value) {
                 $result[] = $this->createSignatureString($value);
@@ -68,6 +68,7 @@ class OstrovokApiService
             if (count($data) > 1) {
                 $result = ("[" . $result . "]");
             }
+
             return $result;
         } elseif (is_bool($data)) {
             return $data ? "true" : "false";

@@ -396,9 +396,9 @@ class Ostrovok extends Base
 
         /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
+
             $bookings = $this->apiBrowser->getBookings(['hotel' => $config->getHotelId()]);
             $this->log('There are ' . count($bookings) . ' total ');
-            //TODO: Подумать что сделать на случай если нет заказов.
             if (!$bookings) continue;
 
             foreach ($bookings as $reservation) {
@@ -432,6 +432,8 @@ class Ostrovok extends Base
                 if ((string)$reservation['status'] === 'normal' && !$order) {
                     $result = $this->createPackage($reservation, $config);
                     $this->notify($result, 'ostrovok', 'new');
+                    $this->log('Order '.$order->getId(). 'was created.');
+
                 }
 
                 //If modified
@@ -440,6 +442,8 @@ class Ostrovok extends Base
                         $order->setChannelManagerEditDateTime($reservation['modified_at']);
                         $result = $this->createPackage($reservation, $config, $order);
                         $this->notify($result, 'ostrovok', 'edit');
+                        $this->log('Order '.$order->getId(). 'was changed.');
+
                     }
                 }
                 //If Cancelled
@@ -451,6 +455,7 @@ class Ostrovok extends Base
                     $this->notify($order, 'ostrovok', 'delete');
                     $this->dm->remove($order);
                     $this->dm->flush();
+                    $this->log('Order '.$order->getId(). 'was cancelled.');
                     $result = true;
                 }
 
@@ -460,6 +465,7 @@ class Ostrovok extends Base
                         '#' . $reservation['uuid'] . ' ' .
                         $reservation['last_name'] . ' ' . $reservation['first_name']
                     );
+                    $this->log('Error! Бронь существует, но нет в базе. '. $reservation['uuid']);
                 }
             }
         }
