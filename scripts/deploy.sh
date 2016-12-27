@@ -4,7 +4,7 @@ GREEN='\e[0;32m'
 RED='\e[0;31m'
 NC='\e[0m'
 
-NAME='az-test'
+NAME='az'
 IGNORE='ignore_update.txt'
 DB_USER="${1////_}"
 FOLDER='/var/www/'$NAME'/'
