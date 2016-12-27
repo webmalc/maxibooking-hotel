@@ -47,6 +47,7 @@ class FixturesCommand extends ContainerAwareCommand
           'Dinner for Children' => ['name' => 'Детский ужин', 'calcType' => 'per_night', 'enabled' => false],
           'Half board for Children' => ['name' => 'Детский полупансион', 'calcType' => 'per_night', 'enabled' => false],
           'Full board for Children' => ['name' => 'Детский полный пансион', 'calcType' => 'per_night', 'enabled' => false],
+          'All Inclusive' => ['name' => 'Все включено', 'calcType' => 'per_night', 'enabled' => false],
       ],
       'Размещение' => [
           'Extrabed' => ['name' => 'Дополнительная кровать', 'calcType' => 'per_night', 'enabled' => true],
