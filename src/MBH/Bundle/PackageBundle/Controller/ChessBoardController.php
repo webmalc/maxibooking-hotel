@@ -54,7 +54,7 @@ class ChessBoardController extends BaseController
             'leftRoomsData' => $builder->getLeftRoomCounts(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
             'packages' => json_encode($builder->getAccommodationIntervals()),
-            'noAccommodationIntervals' => json_encode($builder->getNoAccommodationIntervals()),
+            'noAccommodationIntervals' => json_encode($builder->getNoAccommodationPackageIntervals()),
             'leftRoomsJsonData' => json_encode($builder->getLeftRoomCounts()),
             'noAccommodationCounts' => json_encode($builder->getDayNoAccommodationPackageCounts()),
             'roomTypes' => $this->hotel->getRoomTypes(),
@@ -67,7 +67,7 @@ class ChessBoardController extends BaseController
      * @Method({"GET"})
      * @Route("/packages/{id}", name="chessboard_get_package", options={"expose"=true})
      * @param Package $package
-     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW') and is_granted('VIEW', package)")
      * @return array
      * @Template()
      */
@@ -87,6 +87,7 @@ class ChessBoardController extends BaseController
      */
     public function removePackageAction(Package $package)
     {
+        $messageFormatter = $this->get('mbh.chess_board.message_formatter');
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
@@ -95,15 +96,12 @@ class ChessBoardController extends BaseController
             $this->dm->flush();
         } catch (\Exception $e) {
             $message = $this->get('translator')->trans($e->getMessage());
+            $messageFormatter->addErrorMessage($e->getMessage());
             $this->logs($message);
         }
+        $messageFormatter->addSuccessfulMessage('controller.chessboard.package_remove.success');
 
-        return new JsonResponse(json_encode(
-            [
-                'success' => true,
-                'messages' => [$this->get('translator')->trans('controller.chessboard.package_remove.success')]
-            ]
-        ));
+        return new JsonResponse(json_encode($messageFormatter->getMessages()));
     }
 
     /**
@@ -240,7 +238,7 @@ class ChessBoardController extends BaseController
                 "'ROLE_PACKAGE_EDIT' in roles and ('ROLE_PACKAGE_EDIT_ALL' in roles or is_granted('EDIT', entity))"
             ));
         } catch (\Throwable $e) {
-            $message = $e->getMessage();
+            $messageFormatter->addErrorMessage($e->getMessage());
         }
 
         $packageValidateErrors = $this->get('validator')->validate($newPackage);
@@ -344,7 +342,7 @@ class ChessBoardController extends BaseController
             );
 
         $data['accommodations'] = $builder->getAccommodationIntervals();
-        $data['noAccommodationIntervals'] = $builder->getNoAccommodationIntervals();
+        $data['noAccommodationIntervals'] = $builder->getNoAccommodationPackageIntervals();
         $data['leftRoomCounts'] = $builder->getLeftRoomCounts();
         $data['noAccommodationCounts'] = $builder->getDayNoAccommodationPackageCounts();
 
@@ -381,5 +379,18 @@ class ChessBoardController extends BaseController
 
         return [];
     }
+
+    private function getUserRights()
+    {
+    }
+
+    private function hasAddAccommodationRights()
+    {
+        //"is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', newPackage) and is_granted('ROLE_PACKAGE_VIEW'))"
+        $rightsChecker = $this->get('security.authorization_checker');
+        return $rightsChecker->isGranted('ROLE_PACKAGE_VIEW')
+            && $rightsChecker->isGranted('VIEW');
+    }
+
 
 }

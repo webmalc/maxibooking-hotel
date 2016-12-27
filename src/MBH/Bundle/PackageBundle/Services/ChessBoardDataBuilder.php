@@ -5,7 +5,6 @@ namespace MBH\Bundle\PackageBundle\Services;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\Housing;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
@@ -15,6 +14,7 @@ use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class ChessBoardDataBuilder
 {
@@ -37,6 +37,8 @@ class ChessBoardDataBuilder
     private $floorIds;
     /** @var DataCollectorTranslator $translator */
     private $translator;
+    /** @var  AuthorizationChecker $rightsChecker */
+    private $rightsChecker;
 
     private $isRoomTypesInit = false;
     private $roomTypes;
@@ -54,6 +56,7 @@ class ChessBoardDataBuilder
     {
         $this->dm = $dm;
         $this->helper = $helper;
+        $this->rightsChecker = $container->get('security.authorization_checker');
         $this->translator = $container->get('translator');
     }
 
@@ -98,7 +101,7 @@ class ChessBoardDataBuilder
         return $this->getAccommodationIntervals();
     }
 
-    public function getNoAccommodationIntervals()
+    public function getNoAccommodationPackageIntervals()
     {
         $noAccommodationIntervals = [];
         foreach ($this->getPackagesWithoutAccommodation() as $package) {
@@ -139,7 +142,7 @@ class ChessBoardDataBuilder
             }
         }
 
-        foreach ($this->getNoAccommodationIntervals() as $interval) {
+        foreach ($this->getNoAccommodationPackageIntervals() as $interval) {
             /** @var ChessBoardUnit $interval */
             $minDate = max($this->beginDate, $interval->getBeginDate());
             $maxDate = min($this->endDate, $interval->getEndDate());
@@ -176,8 +179,8 @@ class ChessBoardDataBuilder
     }
 
     /**
-     * Возвращает данные о периодах без размещения броней, имеющих неполное размещение, то есть имеющих данные о размещении, но
-     * ... дата окончания последнего размещения меньше даты выезда брони
+     * Возвращает данные о периодах без размещения броней, имеющих неполное размещение,
+     * ...то есть имеющих данные о размещении, но дата окончания последнего размещения меньше даты выезда брони
      *
      * @return array
      */
@@ -453,7 +456,6 @@ class ChessBoardDataBuilder
         return $roomsData;
     }
 
-
     /**
      * Ленивая загрузка массива объектов RoomType, используемых в данном запросе
      * @return RoomType[]
@@ -471,5 +473,24 @@ class ChessBoardDataBuilder
         return $this->roomTypes;
     }
 
+    private function hasUpdateAccommodationRights($accommodation)
+    {
+        return $this->rightsChecker->isGranted('ROLE_PACKAGE_ACCOMMODATION')
+            && ($this->rightsChecker->isGranted('EDIT', $accommodation)
+            || $this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL'));
+    }
 
+    private function hasUpdatePackageRights($package)
+    {
+        return $this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT')
+            && ($this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
+            || $this->rightsChecker->isGranted('EDIT', $package));
+    }
+
+    private function hasRemovePackageRights($package)
+    {
+        return $this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE')
+            && ($this->rightsChecker->isGranted('DELETE', $package)
+            || $this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE_ALL'));
+    }
 }

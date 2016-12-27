@@ -259,6 +259,9 @@ var ChessBoardManager = (function () {
                 return false;
             }
         });
+        if (!topOffset) {
+            topOffset = tableLines[1].getBoundingClientRect().top;
+        }
         return topOffset;
     };
     ChessBoardManager.getPackageLeftOffset = function (startDate) {

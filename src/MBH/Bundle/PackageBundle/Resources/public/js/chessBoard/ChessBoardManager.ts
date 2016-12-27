@@ -320,6 +320,9 @@ class ChessBoardManager {
                 return false;
             }
         });
+        if (!topOffset) {
+            topOffset = tableLines[1].getBoundingClientRect().top;
+        }
 
         return topOffset;
     }

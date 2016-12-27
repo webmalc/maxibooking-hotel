@@ -119,6 +119,10 @@ var ActionManager = (function () {
             ActionManager.showMessage(false, message);
         });
     };
+    ActionManager.showHappenedUnWaitedMessage = function () {
+        ActionManager.showMessage(false, 'Произошла непредвиденная ошибка');
+        ActionManager.hideLoadingIndicator();
+    };
     ActionManager.showMessage = function (isSuccess, message, messageBlockId) {
         if (messageBlockId === void 0) { messageBlockId = 'messages'; }
         var messageDiv = document.createElement('div');

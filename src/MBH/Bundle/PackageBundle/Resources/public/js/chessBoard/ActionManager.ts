@@ -149,6 +149,11 @@ class ActionManager {
         });
     }
 
+    public static showHappenedUnWaitedMessage() {
+        ActionManager.showMessage(false, 'Произошла непредвиденная ошибка');
+        ActionManager.hideLoadingIndicator();
+    }
+
     private static showMessage(isSuccess, message, messageBlockId = 'messages') {
         var messageDiv = document.createElement('div');
         messageDiv.className = 'alert alert-dismissable autohide';

@@ -39,6 +39,9 @@ var DataManager = (function () {
             success: function (data) {
                 self.handleResponse(data);
             },
+            error: function () {
+                self.handleError();
+            },
             dataType: 'json'
         });
         ActionManager.hidePackageUpdateModal();
@@ -51,6 +54,9 @@ var DataManager = (function () {
             type: "PUT",
             success: function (data) {
                 self.handleResponse(data);
+            },
+            error: function () {
+                self.handleError();
             },
             dataType: 'json'
         });
@@ -72,6 +78,9 @@ var DataManager = (function () {
                 if (packageId) {
                     self.getPackageDataRequest(packageId);
                 }
+            },
+            error: function () {
+                self.handleError();
             }
         });
     };
@@ -146,6 +155,9 @@ var DataManager = (function () {
                 ActionManager.hideLoadingIndicator();
                 self.actionManager.handleSearchOptionsModal(packageData, data);
             },
+            error: function () {
+                self.handleError();
+            },
             dataType: 'html'
         });
     };
@@ -165,6 +177,9 @@ var DataManager = (function () {
             success: function (data) {
                 ActionManager.hideLoadingIndicator();
                 self.handleResponse(data);
+            },
+            error: function () {
+                self.handleError();
             }
         });
     };
@@ -177,6 +192,9 @@ var DataManager = (function () {
             success: function (data) {
                 ActionManager.hideLoadingIndicator();
                 self.actionManager.showPackageInfoModal(accommodationId, data);
+            },
+            error: function () {
+                self.handleError();
             },
             dataType: 'html'
         });
@@ -202,8 +220,15 @@ var DataManager = (function () {
                 ActionManager.hideLoadingIndicator();
                 self.updateTableData(data);
                 self.chessBoardManager.updateTable();
+            },
+            error: function () {
+                ActionManager.showHappenedUnWaitedMessage();
             }
         });
+    };
+    DataManager.prototype.handleError = function () {
+        ActionManager.showHappenedUnWaitedMessage();
+        this.updatePackagesData();
     };
     DataManager.prototype.updateTableData = function (data) {
         var tableData = JSON.parse(data);
