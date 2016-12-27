@@ -8,7 +8,7 @@
                     {% if tariffId|length>1 %}
                         <update>
                         <date value="{{ date }}"/>
-                        <rate id="{{ tariffId.id_tariff }}" adults="{{ tariffId.persons }}"
+                        <rate id="{{ tariffId.id_tariff }}"
                         price="{{ tariffId.price }}" />
                         </update>
                     {% endif %}
