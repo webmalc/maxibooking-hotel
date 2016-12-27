@@ -45,5 +45,3 @@ mailer.notice.unpaid.phone: Телефон
 mailer.notice.unpaid.mobile.phone: Мобильный телефон
 mailer.notice.unpaid.no.data: Нет данных
 mailer.notice.unpaid.package.period: Период брони
-mailer.notice.unpaid.from: С
-mailer.notice.unpaid.on: по
