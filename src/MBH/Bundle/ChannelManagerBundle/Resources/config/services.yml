@@ -38,10 +38,6 @@ services:
     mbh.channelmanager.hoh_request_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\HOHRequestFormatter
 
-    mbh.channelmanager.hundred_one_hotels_type:
-          class: MBH\Bundle\ChannelManagerBundle\Form\HundredOneHotelType
-          arguments: [@mbh.currency]
-
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: [@mbh.currency]
