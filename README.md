@@ -15,3 +15,4 @@ phpstorm
 * **command**: {{project_dir}}/scripts/docker/console.sh
 * **cli php interpreter**: {{project_dir}}/scripts/docker/php.sh
 * **phpunit**: {{project_dir}}/scripts/docker/phpunit.sh
+* **xdebug**: add directory mappings to server settings
