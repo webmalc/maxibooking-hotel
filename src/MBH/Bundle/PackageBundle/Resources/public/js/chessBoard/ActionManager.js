@@ -119,7 +119,7 @@ var ActionManager = (function () {
             ActionManager.showMessage(false, message);
         });
     };
-    ActionManager.showHappenedUnWaitedMessage = function () {
+    ActionManager.showInternalErrorMessage = function () {
         ActionManager.showMessage(false, 'Произошла непредвиденная ошибка');
         ActionManager.hideLoadingIndicator();
     };
@@ -206,6 +206,12 @@ var ActionManager = (function () {
         modal.find('#modal-room-type-name').text(roomTypes[newIntervalData.roomType]);
         modal.find('#modal-room-name').text(newIntervalData.accommodation ? rooms[newIntervalData.accommodation] : 'Без размещения');
         modal.modal('show');
+    };
+    ActionManager.prototype.isAccommodationOnFullPackage = function (intervalData) {
+        if (intervalData.position == 'left' || intervalData.position == 'full') {
+            if (!newIntervalStartDate.isSame(packageStartDate)) {
+            }
+        }
     };
     ActionManager.getDataFromUpdateModal = function () {
         var modal = $('#packageModal');

@@ -229,12 +229,12 @@ var DataManager = (function () {
                 self.chessBoardManager.updateTable();
             },
             error: function () {
-                ActionManager.showHappenedUnWaitedMessage();
+                ActionManager.showInternalErrorMessage();
             }
         });
     };
     DataManager.prototype.handleError = function () {
-        ActionManager.showHappenedUnWaitedMessage();
+        ActionManager.showInternalErrorMessage();
         this.updatePackagesData();
     };
     DataManager.prototype.updateTableData = function (data) {

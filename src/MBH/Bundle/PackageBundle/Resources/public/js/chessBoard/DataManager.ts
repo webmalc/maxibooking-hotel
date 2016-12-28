@@ -266,13 +266,13 @@ class DataManager {
                 self.chessBoardManager.updateTable();
             },
             error: function () {
-                ActionManager.showHappenedUnWaitedMessage();
+                ActionManager.showInternalErrorMessage();
             }
         });
     }
 
     private handleError() {
-        ActionManager.showHappenedUnWaitedMessage();
+        ActionManager.showInternalErrorMessage();
         this.updatePackagesData();
     }
 

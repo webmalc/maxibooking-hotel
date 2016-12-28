@@ -149,7 +149,7 @@ class ActionManager {
         });
     }
 
-    public static showHappenedUnWaitedMessage() {
+    public static showInternalErrorMessage() {
         ActionManager.showMessage(false, 'Произошла непредвиденная ошибка');
         ActionManager.hideLoadingIndicator();
     }
@@ -235,6 +235,14 @@ class ActionManager {
         modal.find('#modal-room-type-name').text(roomTypes[newIntervalData.roomType]);
         modal.find('#modal-room-name').text(newIntervalData.accommodation ? rooms[newIntervalData.accommodation] : 'Без размещения');
         modal.modal('show');
+    }
+
+    public isAccommodationOnFullPackage(intervalData) {
+        if (intervalData.position == 'left' || intervalData.position == 'full') {
+            if (!newIntervalStartDate.isSame(packageStartDate)) {
+
+            }
+        }
     }
 
     public static getDataFromUpdateModal() {
