@@ -109,6 +109,7 @@ class HundredOneHotels extends Base
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
+        $calc = $this->container->get('mbh.calculation');
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config);
@@ -150,11 +151,11 @@ class HundredOneHotels extends Base
                         }
 
                         if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
-
                             /** @var PriceCache $currentDatePriceCache */
+                            $occupantCount = $serviceTariffs[$serviceTariffId]['occupantCount'];
                             $currentDatePriceCache = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
-                            $currentDatePrice = $currentDatePriceCache->getPrice() ?
-                                $currentDatePriceCache->getPrice() : null;
+                            $priceFinal = $calc->calcPrices($currentDatePriceCache->getRoomType(), $tariff, $day, $day);
+                            $currentDatePrice = $priceFinal[$occupantCount . '_0']['total'];
                         } else {
                             $currentDatePrice = 0;
                         }
@@ -272,6 +273,29 @@ class HundredOneHotels extends Base
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
                                 (int)$maxiBookingRestrictionObject->getMinStay());
+                        } else {
+                            $requestFormatter->addSingleParamCondition($day,
+                                $requestFormatter::CLOSED,
+                                $serviceRoomTypeId,
+                                0);
+
+                            $requestFormatter->addDoubleParamCondition($day,
+                                $requestFormatter::CLOSED_TO_ARRIVAL,
+                                $serviceRoomTypeId,
+                                $serviceTariffId,
+                                0);
+
+                            $requestFormatter->addDoubleParamCondition($day,
+                                $requestFormatter::CLOSED_TO_DEPARTURE,
+                                $serviceRoomTypeId,
+                                $serviceTariffId,
+                                0);
+
+                            $requestFormatter->addDoubleParamCondition($day,
+                                $requestFormatter::MIN_STAY,
+                                $serviceRoomTypeId,
+                                $serviceTariffId,
+                                1);
                         }
                     }
                 }
@@ -557,6 +581,7 @@ class HundredOneHotels extends Base
             foreach ($roomType['placements'] as $placement) {
                 $result[$placement['id']] = [
                     'title' => $placement['name'] . "\n(" . $roomType['name'] . ')',
+                    'occupantCount' => $placement['occupancy'],
                     'rooms' => [$roomType['id']]
                 ];
             }
