@@ -442,6 +442,10 @@ class HundredOneHotels extends Base
             ->setOriginalPrice($orderInfo->getOrderPrice())
             ->setTotalOverwrite($orderInfo->getOrderPrice());
 
+        if ($orderInfo->getUserComment()) {
+            $order->setNote($orderInfo->getUserComment());
+        }
+
         $this->dm->persist($order);
         $this->dm->flush();
 

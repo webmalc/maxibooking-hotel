@@ -38,6 +38,11 @@ class OrderInfo
         return $this->orderData['id'];
     }
 
+    public function getUserComment()
+    {
+        return $this->orderData['description'];
+    }
+
     public function getPayType()
     {
         return $this->orderData['pay_type'];
