@@ -34,6 +34,16 @@ class VashotelType extends AbstractType
                     'help' => 'form.vashotelType.vashotel_ru_settings_hotel_id'
                 ]
             )
+            ->add(
+                'password',
+                TextType::class,
+                [
+                    'label' => 'form.vashotelType.password_label',
+                    'required' => true,
+                    'attr' => ['placeholder' => 'form.vashotelType.password'],
+                    'help' => 'form.vashotelType.password_help'
+                ]
+            )
         ;
     }
 
