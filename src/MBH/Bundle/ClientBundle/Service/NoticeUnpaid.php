@@ -5,8 +5,9 @@ namespace MBH\Bundle\ClientBundle\Service;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Translation\DataCollectorTranslator;
 
 class NoticeUnpaid
 {
@@ -25,16 +26,10 @@ class NoticeUnpaid
      */
     protected $notifier;
 
-    /**
-     * @var DataCollectorTranslator
-     */
-    protected $translator;
-
-    public function __construct(ContainerInterface $container, ManagerRegistry $dm, Notifier $notifier, DataCollectorTranslator $translator)
+    public function __construct(ContainerInterface $container, ManagerRegistry $dm, Notifier $notifier)
     {
         $this->container = $container;
         $this->notifier = $notifier;
-        $this->translator = $translator;
         $this->dm = $dm->getManager();
     }
 
@@ -60,7 +55,9 @@ class NoticeUnpaid
             ->getUnpaidOrders($deadlineDate);
 
         return array_filter($unpaidOrders, function($order) {
+            /** @var Order $order  */
             return array_reduce($order->getPackages()->toArray(), function(&$res, $item) {
+                /** @var Package $item */
                 $price = $item->getPrice();
                 $paid = $item->getPaid();
                 $percentageValue = $item->allowPercentagePrice($price);
@@ -74,17 +71,18 @@ class NoticeUnpaid
     /**
      * Get unpaid order array of next element: (order.paid, order.price, order.id, package.id, tourist.phone, tourist.mobilePhone)
      *
-     * @param $arrayData NoticeUnpaid unpaidOrder
+     * @param NoticeUnpaid $arrayData
      * @return array
      */
     public function getUnpaidOrderArray($arrayData)
     {
-
+        /** @var Package $packages */
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findAll();
         $unpaidOrderArray = [];
 
         foreach ($packages as $package) {
 
+            /** @var Package $package */
             $orderId = $package->getOrder()->getId();
 
             if(isset($arrayData[$orderId])) {
@@ -96,7 +94,6 @@ class NoticeUnpaid
                     'end' => $package->getEnd(),
                     'price' => $arrayData[$orderId]->getPrice ?? $arrayData[$orderId]->getPrice(),
                     'paid' => $arrayData[$orderId]->getPaid(),
-                    'packageCreatedAt' => $package->getCreatedAt(),
                     'phone' => !is_null($package->getPayer()) ? $package->getPayer()->getPhone() : "",
                     'mobilePhone' => !is_null($package->getPayer()) ? !empty($package->getPayer()->getMobilePhone()) : "",
                 ];
@@ -108,7 +105,6 @@ class NoticeUnpaid
 
     /**
      * Send message to email. Notice of unpaid
-     * todo add ro RabbitMQ
      *
      * @return array|bool
      */
