@@ -187,14 +187,10 @@ class HundredOneHotelsController extends Controller
     }
 
     /**
-     * @Route("/test")
+     * @Route('/test')
      */
-    public function testAction()
+    public function test()
     {
-        $begin = new \DateTime('midnight');
-        $end = (clone $begin)->add(new \DateInterval('P6D'));
-        $config = $this->hotel->getHundredOneHotelsConfig();
-        $this->get('mbh.channelmanager.hundred_one_hotels')->updatePrices();
-        return new Response();
+        $this->get('mbh.channelmanager.hundred_one_hotels')->pullOrders();
     }
 }
