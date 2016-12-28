@@ -152,7 +152,7 @@ class HundredOneHotels extends Base
                             $occupantCount = $serviceTariffs[$serviceTariffId]['occupantCount'];
                             $currentDatePriceCache = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
                             $priceFinal = $calc->calcPrices($currentDatePriceCache->getRoomType(), $tariff, $day, $day);
-                            $currentDatePrice = $priceFinal[$occupantCount . '_0']['total'];
+                            $currentDatePrice = isset($priceFinal[$occupantCount . '_0']) ? $priceFinal[$occupantCount . '_0']['total'] : 0;
                         } else {
                             $currentDatePrice = 0;
                         }
@@ -433,7 +433,7 @@ class HundredOneHotels extends Base
             $order->setDeletedAt(null);
         }
 
-        $order->setChannelManagerType(self::CHANNEL_MANAGER_TYPE_DISPLAYED)
+        $order->setChannelManagerType(self::CHANNEL_MANAGER_TYPE)
             ->setChannelManagerId($orderInfo->getBookingId())
             ->setMainTourist($orderInfo->getPayer())
             ->setConfirmed(false)
