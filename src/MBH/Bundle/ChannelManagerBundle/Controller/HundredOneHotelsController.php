@@ -185,12 +185,4 @@ class HundredOneHotelsController extends Controller
             'logs' => $this->logs($config)
         ];
     }
-
-    /**
-     * @Route('/test')
-     */
-    public function test()
-    {
-        $this->get('mbh.channelmanager.hundred_one_hotels')->pullOrders();
-    }
 }
