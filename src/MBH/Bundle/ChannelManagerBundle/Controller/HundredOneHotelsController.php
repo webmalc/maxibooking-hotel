@@ -194,7 +194,7 @@ class HundredOneHotelsController extends Controller
         $begin = new \DateTime('midnight');
         $end = (clone $begin)->add(new \DateInterval('P6D'));
         $config = $this->hotel->getHundredOneHotelsConfig();
-        $this->get('mbh.channelmanager.hundred_one_hotels')->closeForConfig($config);
+        $this->get('mbh.channelmanager.hundred_one_hotels')->updatePrices();
         return new Response();
     }
 }
