@@ -1,6 +1,9 @@
 .datepicker table tr td.day {
   font-weight: bolder!important;
 }
+.datepicker table tr td.disabled {
+  opacity: 0.5;
+}
 select#search_form_hotel,
 select#search_form_roomType {
   -webkit-appearance: none;
@@ -11,13 +14,23 @@ select#search_form_roomType {
 .input-group {
   width: 100%;
 }
-#search_form_begin {
+.time_form {
+  margin-top: 7px;
   background: #f4f4f4 url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%;
   cursor: pointer;
+  font-weight: bolder;
+}
+#search_form_begin {
+  margin-top: 7px;
+  background: #f4f4f4 url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%;
+  cursor: pointer;
+  font-weight: bolder;
 }
 #search_form_end {
+  margin-top: 7px;
   background: #f4f4f4 url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%;
   cursor: pointer;
+  font-weight: bolder;
 }
 #children-icon {
   position: relative;
@@ -93,7 +106,7 @@ select#search_form_roomType {
   margin: 10px 0 10px 16px;
 }
 .newmargin {
-  margin-top: 41px!important;
+  margin-top: 70px!important;
 }
 .formmainpage {
   position: relative !important;
@@ -104,4 +117,7 @@ select#search_form_roomType {
   left: 44%;
   color: #79ee43;
   display: none;
+}
+#rsc {
+  height: 40px;
 }
