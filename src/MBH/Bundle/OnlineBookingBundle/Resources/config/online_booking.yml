@@ -6,6 +6,7 @@ parameters:
     online_reservation_manager_email: "mail@azovsky.ru"
     offera: "https://yadi.sk/i/aSRIUwg0zjWVw"
 
-    domain_access_control: 'http://testaz.maxibooking.ru'
+    domain_access_control_prod: 'http://azovsky.ru'
+    domain_access_control_dev: 'http://localhost:8080'
 
 

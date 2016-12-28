@@ -1,6 +1,6 @@
 var mytrigger = {
     recountChildren: ''
-}
+};
 $(function () {
     var restrictions,
         updateRestrictions = function () {

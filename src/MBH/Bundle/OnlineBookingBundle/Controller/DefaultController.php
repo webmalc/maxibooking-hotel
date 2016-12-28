@@ -475,8 +475,9 @@ class DefaultController extends BaseController
             'minstay' => $minStays
         ];
 
+        $env = $this->get('kernel')->getEnvironment();
         $response = new JsonResponse(json_encode($data));
-        $response->headers->set('Access-Control-Allow-Origin', $this->getParameter('domain_access_control'));
+        $response->headers->set('Access-Control-Allow-Origin', $this->getParameter('domain_access_control_'.$env));
 
         return $response;
     }
