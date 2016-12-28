@@ -50,10 +50,8 @@ class HundredOneHotels extends Base
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
-
             /** @var HOHRequestFormatter $requestFormatter */
-            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config);
-
+            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
             /** @var HundredOneHotelsConfig $config */
             //$roomTypes array[roomTypeId => [roomId('syncId'), roomType('doc')]]
             $roomTypes = $this->getRoomTypes($config, true);
@@ -88,7 +86,7 @@ class HundredOneHotels extends Base
                 continue;
             }
 
-            $request = $requestFormatter->getRequest();
+            $request = $requestFormatter->getRequest($config);
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
             $result = $this->checkResponse($sendResult);
 
@@ -112,12 +110,11 @@ class HundredOneHotels extends Base
         $calc = $this->container->get('mbh.calculation');
         // iterate hotels
         foreach ($this->getConfig() as $config) {
-            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config);
-
             /** @var HundredOneHotelsConfig $config */
             //array [service TariffId][syncId(service TariffId)=> doc(maxi Tariff)]
             $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
+            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
             //$roomTypes array[roomId => [roomId('syncId'), roomType('doc')]]
             $roomTypes = $this->getRoomTypes($config, true);
             //$priceCaches array [roomTypeId][tariffId][date => PriceCache]
@@ -169,7 +166,7 @@ class HundredOneHotels extends Base
                 continue;
             }
 
-            $request = $requestFormatter->getRequest();
+            $request = $requestFormatter->getRequest($config);
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
 
             if ($result) {
@@ -198,7 +195,7 @@ class HundredOneHotels extends Base
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             /** @var HOHRequestFormatter $requestFormatter */
-            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config);
+            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
             /** @var HundredOneHotelsConfig $config */
             $roomTypes = $this->getRoomTypes($config, true);
             $tariffs = $this->getTariffs($config, true);
@@ -305,7 +302,7 @@ class HundredOneHotels extends Base
                 continue;
             }
 
-            $request = $requestFormatter->getRequest();
+            $request = $requestFormatter->getRequest($config);
             $sendResult = $this->send(static::BASE_URL, $request, null, true, true);
 
             if ($result) {
@@ -338,12 +335,11 @@ class HundredOneHotels extends Base
 
         foreach ($this->getConfig() as $config) {
             /** @var HOHRequestFormatter $requestFormatter */
-            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')
-                ->setInitData($config, 'get_bookings');
+            $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
             $startTime = new \DateTime('- 1 day');
             $endTime = new \DateTime();
             $requestFormatter->addDateCondition($startTime, $endTime);
-            $request = $requestFormatter->getRequest();
+            $request = $requestFormatter->getRequest($config, 'get_bookings');
 
             $serviceOrders = $this->send(static::BASE_URL, $request, null, true, true);
             $serviceOrders = json_decode($serviceOrders, true);
@@ -547,9 +543,8 @@ class HundredOneHotels extends Base
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
         /** @var HOHRequestFormatter $requestFormatter */
-        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config,
-            'get_hotel');
-        $request = $requestFormatter->getRequest();
+        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
+        $request = $requestFormatter->getRequest($config, 'get_hotel');
         $jsonResponse = $this->send(static::BASE_URL, $request, null, true);
         $response = json_decode($jsonResponse, true);
 
@@ -569,9 +564,8 @@ class HundredOneHotels extends Base
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
         /** @var HOHRequestFormatter $requestFormatter */
-        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config,
-            'get_hotel');
-        $request = $requestFormatter->getRequest();
+        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
+        $request = $requestFormatter->getRequest($config, 'get_hotel');
 
         $result = [];
         $jsonResponse = $this->send(static::BASE_URL, $request);
@@ -614,9 +608,8 @@ class HundredOneHotels extends Base
     public function sendTestRequestAndGetErrorMessage(HundredOneHotelsConfig $config)
     {
         /** @var HOHRequestFormatter $requestFormatter */
-        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')
-            ->setInitData($config, 'get_hotel');
-        $request = $requestFormatter->getRequest();
+        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
+        $request = $requestFormatter->getRequest($config, 'get_hotel');
         $response = $this->send(self::BASE_URL, $request, null, true);
         $response = json_decode($response, true);
         if ($response['response'] === 1) {
@@ -643,7 +636,7 @@ class HundredOneHotels extends Base
     {
         $config = $this->getConfig()[0];
         /** @var HOHRequestFormatter $requestFormatter */
-        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter')->setInitData($config);
+        $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
         $firstDate = new \DateTime();
         $endDate = new \DateTime('+5 year');
         $roomTypes = $this->getRoomTypes($config);
@@ -655,7 +648,7 @@ class HundredOneHotels extends Base
             $closedData[0]['closed'][$roomType['syncId']] = 1;
         }
         $requestFormatter->setRequestedData($closedData);
-        $request = $requestFormatter->getRequest();
+        $request = $requestFormatter->getRequest($config);
         $sendResult = $this->send(static::BASE_URL, $request, null, true);
         $response = json_decode($sendResult, true);
         $result = false;

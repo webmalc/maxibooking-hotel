@@ -30,10 +30,12 @@ services:
     mbh.channelmanager.hoh_order_info:
         class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\OrderInfo
         arguments: ['@service_container']
+        shared: false
 
     mbh.channelmanager.hoh_package_info:
         class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\PackageInfo
         arguments: ['@service_container']
+        shared: false
 
     mbh.channelmanager.hoh_request_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\HOHRequestFormatter
