@@ -37,3 +37,9 @@ services:
       arguments:  ["@mbh.hotel.selector"]
       tags:
               - { name: form.type }
+
+  mbh.type.special_filter:
+        class:      MBH\Bundle\PriceBundle\Form\SpecialFilterType
+        arguments:  ["@mbh.hotel.selector"]
+        tags:
+                - { name: form.type }

@@ -273,10 +273,13 @@ special.roomTypes: Типы номеров
 special.roomTypes.help:  Доступные типы номеров
 
 special.displayFrom: Показывать с
-special.displayFrom.help: Дата начала показа спецпредложения
+special.displayFrom.help: Дата начала поискового запроса пользователя для показа спецпредложения
 
 special.displayTo: Показывать по
-special.displayTo.help: Дата конца показа спецпредложения
+special.displayTo.help: Дата конца поискового запроса пользователя для показа спецпредложения
 
 special.discount: Скидка
+special.limit: Макс. кол-во
+special.limit.help: Количество предложений доступных для продажи
 special.isPercent: В процентах?
+form.group.discount: Скидка

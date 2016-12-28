@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -16,15 +17,17 @@ use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="Tariffs", repositoryClass="MBH\Bundle\PriceBundle\Document\SpecialRepository")
+ * @ODM\Document(collection="Special", repositoryClass="MBH\Bundle\PriceBundle\Document\SpecialRepository")
  * @Gedmo\Loggable
- * @MBHValidator\Tariff
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="document.already.exists")
  * @ODM\HasLifecycleCallbacks
  */
 class Special extends Base
 {
+    //TODO: validator
+    //TODO: add delete references
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -112,6 +115,26 @@ class Special extends Base
     protected $isPercent = true;
 
     /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int", name="limit")
+     * @Assert\Range(min=1)
+     * @Assert\Type(type="numeric")
+     * @Assert\NotNull()
+     */
+    protected $limit;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int", name="sold")
+     * @Assert\Range(min=0)
+     * @Assert\Type(type="numeric")
+     * @Assert\NotNull()
+     */
+    protected $sold = 0;
+
+    /**
      * @var ArrayCollection
      * @ODM\ReferenceMany(targetDocument="Tariff")
      */
@@ -142,16 +165,6 @@ class Special extends Base
     protected $displayFrom;
 
     /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Field(type="int", name="beginOffset")
-     * @Assert\Type(type="numeric")
-     * @Assert\NotNull()
-     * @Assert\Range(min="0", max="100")
-     */
-    protected $beginOffset = 0;
-
-    /**
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date(name="end")
@@ -168,16 +181,6 @@ class Special extends Base
      * @Assert\NotNull()
      */
     protected $displayTo;
-
-    /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Field(type="int", name="endOffset")
-     * @Assert\Type(type="numeric")
-     * @Assert\NotNull()
-     * @Assert\Range(min="0", max="100")
-     */
-    protected $endOffset = 0;
 
     public function __construct()
     {
@@ -318,45 +321,9 @@ class Special extends Base
     }
 
     /**
-     * @return int
+     * @return Collection
      */
-    public function getBeginOffset(): int
-    {
-        return $this->beginOffset;
-    }
-
-    /**
-     * @param int $beginOffset
-     * @return Special
-     */
-    public function setBeginOffset(int $beginOffset): Special
-    {
-        $this->beginOffset = $beginOffset;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getEndOffset(): int
-    {
-        return $this->endOffset;
-    }
-
-    /**
-     * @param int $endOffset
-     * @return Special
-     */
-    public function setEndOffset(int $endOffset): Special
-    {
-        $this->endOffset = $endOffset;
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getTariffs(): ArrayCollection
+    public function getTariffs(): Collection
     {
         return $this->tariffs;
     }
@@ -382,9 +349,9 @@ class Special extends Base
     }
 
     /**
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getRoomTypes(): ArrayCollection
+    public function getRoomTypes(): Collection
     {
         return $this->roomTypes;
     }
@@ -481,5 +448,39 @@ class Special extends Base
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getLimit(): ?int
+    {
+        return $this->limit;
+    }
 
+    /**
+     * @param int $limit
+     * @return Special
+     */
+    public function setLimit(int $limit): Special
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSold(): int
+    {
+        return $this->sold;
+    }
+
+    /**
+     * @param int $sold
+     * @return Special
+     */
+    public function setSold(int $sold): Special
+    {
+        $this->sold = $sold;
+        return $this;
+    }
 }

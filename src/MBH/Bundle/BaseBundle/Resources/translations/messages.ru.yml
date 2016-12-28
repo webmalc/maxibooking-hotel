@@ -397,6 +397,8 @@ show: показать
 cancel: отмена
 
 entity.new.title: создание
+entity.edit.title: "редактирование &lt;%title%&gt;"
+entity.list.title: "список"
 
 form.info.group: Основная информация
 form.fullTitle: Название
@@ -407,3 +409,5 @@ form.begin: Начало
 form.end: Конец
 form.group.config: Настройки
 isEnabled: Включена
+
+document.saved: Запись успешно сохранена.

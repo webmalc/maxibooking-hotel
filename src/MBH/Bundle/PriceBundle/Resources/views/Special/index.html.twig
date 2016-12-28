@@ -1,74 +1,54 @@
-{% extends 'MBHPriceBundle:Tariff:layout.html.twig' %}
+{% extends 'MBHPriceBundle:Special:layout.html.twig' %}
 
-{% set small_title = "список" %}
+{% set small_title = "entity.list.title" %}
 {% set layout = 'box' %}
 
 {% block content %}
 
-    <table class="tariffs-table table table-striped table-hover table-condensed table-icons table-actions">
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'special-filter-widget'} %}
+        {% block content %}
+            {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'special-filter-form'}}) }}
+            <div class="form-group">
+                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
+                {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
+            </div>
+            <div class="form-group">
+                <label><i class="fa fa-sliders" title="Тариф" data-toggle="tooltip"></i></label>
+                {{ form_widget(form.tariff) }}
+            </div>
+            <div class="form-group">
+                <label><i class="fa fa-bed" title="Тип номера" data-toggle="tooltip"></i></label>
+                {{ form_widget(form.roomType) }}
+            </div>
+            <div class="form-group">
+                <label><i class="fa fa-check" title="Показывать выключенные?" data-toggle="tooltip"></i></label>
+                {{ form_widget(form.isEnabled) }}
+            </div>
+            {{ form_widget(form._token) }}
+            {{ form_end(form, {render_rest: false}) }}
+        {% endblock %}
+    {% endembed %}
+
+
+    <table id="special-table"
+           class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
         <thead>
         <tr>
-            <th class="td-xs"></th>
+            <th class="td-xxs"></th>
             <th>Название</th>
-            <th>База</th>
-            <th class="td-xs text-center">Ребенок</th>
-            <th class="td-xs text-center">Инфант</th>
-            <th class="td-md text-center">Сроки</th>
-            <th class="td-sm text-center">Основной</th>
-            <th class="td-sm text-center">Онлайн</th>
+            <th class="td-md">Даты</th>
+            <th class="td-sm">Скидка</th>
+            <th class="td-sm">Продано</th>
+            <th class="td-sm">Включена</th>
             <th class="td-sm"></th>
         </tr>
         </thead>
         <tbody>
-        {% for entity in entities %}
-            <tr {% if entity.isEnabled is empty %} class="danger"{% endif %}>
-                <td class="text-center table-icon {{ entity.parent ? 'text-primary' }}"><i class="fa fa-sliders"></i></td>
-                <td>
-                    {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'tariff'} %}{% endembed %}
-                </td>
-                <td>
-                    <small>{{ entity.parent }}</small>
-                </td>
-                <td class="text-center">
-                    {{ entity.childAge }}
-                </td>
-                <td class="text-center">
-                    {{ entity.infantAge }}
-                </td>
-                <td class="text-center">
-                    {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}
-                </td>
-                <td class="text-center">
-                    {% if entity.isDefault %}
-                        <span class="label label-success">Да</span>
-                    {% else %}
-                        <span class="label label-default">Нет</span>
-                    {% endif %}
-                </td>
-                <td class="text-center">
-                    {% if entity.isOnline %}
-                        <span class="label label-success">Да</span>
-                    {% else %}
-                        <span class="label label-default">Нет</span>
-                    {% endif %}
-                </td>
-                <td class="table-actions-td text-right">
-                    {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tariff', 'copy': entity.parent is empty } %}
-                        {% block additional_buttons %}
-                            {% if entity.parent is empty and is_granted('ROLE_TARIFF_NEW') %}
-                                <a href='{{ path('tariff_extend', { 'id': entity.id }) }}' class='btn btn-default btn-xs' title='Создать дочерний тариф' data-toggle='tooltip'>
-                                    <i class='fa fa-arrow-circle-right'></i>
-                                </a>
-                            {% endif %}
-                        {% endblock %}
-                    {% endembed %}
-                </td>
-            </tr>
-        {% endfor %}
         </tbody>
     </table>
 
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'tariff_new', 'role': 'TARIFF'} %}
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'special_new', 'role': 'SPECIAL'} %}
 
 {% endblock %} 
 
