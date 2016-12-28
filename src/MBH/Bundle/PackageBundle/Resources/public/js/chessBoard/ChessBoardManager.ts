@@ -540,9 +540,9 @@ class ChessBoardManager {
         return Math.floor(height / ChessBoardManager.PACKAGE_ELEMENT_HEIGHT) * ChessBoardManager.PACKAGE_ELEMENT_HEIGHT - 1;
     }
 
-    private static getResizableHandlesValue(intervalPosition) {
+    private static getResizableHandlesValue(intervalData) {
         let resizableHandlesValue;
-        switch (intervalPosition) {
+        switch (intervalData.position) {
             case 'left':
                 resizableHandlesValue = 'w';
                 break;
@@ -566,8 +566,7 @@ class ChessBoardManager {
 
         jQueryObj.each(function (index, element) {
             let intervalData = self.dataManager.getAccommodationIntervalById(element.id);
-            let intervalPosition = intervalData.position;
-            let resizableHandlesValue = ChessBoardManager.getResizableHandlesValue(intervalPosition);
+            let resizableHandlesValue = ChessBoardManager.getResizableHandlesValue(intervalData);
             if (resizableHandlesValue) {
                 $(element).resizable({
                     aspectRatio: false,

@@ -237,14 +237,6 @@ class ActionManager {
         modal.modal('show');
     }
 
-    public isAccommodationOnFullPackage(intervalData) {
-        if (intervalData.position == 'left' || intervalData.position == 'full') {
-            if (!newIntervalStartDate.isSame(packageStartDate)) {
-
-            }
-        }
-    }
-
     public static getDataFromUpdateModal() {
         var modal = $('#packageModal');
         return {

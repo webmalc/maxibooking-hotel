@@ -460,9 +460,9 @@ var ChessBoardManager = (function () {
         //1 - бордер
         return Math.floor(height / ChessBoardManager.PACKAGE_ELEMENT_HEIGHT) * ChessBoardManager.PACKAGE_ELEMENT_HEIGHT - 1;
     };
-    ChessBoardManager.getResizableHandlesValue = function (intervalPosition) {
+    ChessBoardManager.getResizableHandlesValue = function (intervalData) {
         var resizableHandlesValue;
-        switch (intervalPosition) {
+        switch (intervalData.position) {
             case 'left':
                 resizableHandlesValue = 'w';
                 break;
@@ -483,8 +483,7 @@ var ChessBoardManager = (function () {
         var self = this;
         jQueryObj.each(function (index, element) {
             var intervalData = self.dataManager.getAccommodationIntervalById(element.id);
-            var intervalPosition = intervalData.position;
-            var resizableHandlesValue = ChessBoardManager.getResizableHandlesValue(intervalPosition);
+            var resizableHandlesValue = ChessBoardManager.getResizableHandlesValue(intervalData);
             if (resizableHandlesValue) {
                 $(element).resizable({
                     aspectRatio: false,
