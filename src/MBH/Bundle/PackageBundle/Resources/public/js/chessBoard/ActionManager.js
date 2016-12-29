@@ -15,7 +15,7 @@ var ActionManager = (function () {
         });
         $deleteConfirmationModal.modal('show');
     };
-    ActionManager.prototype.callUnblockModal = function (packageId) {
+    ActionManager.callUnblockModal = function (packageId) {
         var $unblockModal = $('#entity-delete-confirmation');
         $unblockModal.find('.modal-title').text('Бронь заблокирована для изменений!');
         $unblockModal.find('#entity-delete-modal-text').text('Если вы хотите разблокировать эту бронь, перейдите в раздел редактирования брони.');
@@ -97,16 +97,31 @@ var ActionManager = (function () {
             editModal.modal('hide');
         };
     };
-    ActionManager.prototype.showPackageInfoModal = function (accommodationId, data) {
+    ActionManager.prototype.showPackageInfoModal = function (packageId, data) {
         var self = this;
         var packageInfoModal = $('#package-info-modal');
-        packageInfoModal.find('#package-info-modal-edit').click(function () {
-            var packageId = document.getElementById('package_info_package_id').value;
-            packageInfoModal.find('#package-info-modal-edit').attr('href', Routing.generate('package_edit', { id: packageId }));
-        });
-        packageInfoModal.find('#package-info-modal-delete').click(function () {
-            self.callRemoveConfirmationModal(accommodationId);
-            packageInfoModal.modal('hide');
+        var accommodationId = packageInfoModal.find('input.modalAccommodationId').val();
+        var intervalData;
+        if (accommodationId) {
+            intervalData = this.dataManager.getAccommodationIntervalById(accommodationId);
+        }
+        else {
+            intervalData = this.dataManager.getNoAccommodationIntervalById(packageId);
+        }
+        var $deleteButton = packageInfoModal.find('#package-info-modal-delete');
+        if (intervalData.removePackage) {
+            $deleteButton.click(function () {
+                self.callRemoveConfirmationModal(packageId);
+                packageInfoModal.modal('hide');
+            });
+        }
+        else {
+            $deleteButton.hide();
+        }
+        var $editButton = packageInfoModal.find('#package-info-modal-edit');
+        $editButton.click(function () {
+            // let packageId = document.getElementById('package_info_package_id').value;
+            $editButton.attr('href', Routing.generate('package_edit', { id: packageId }));
         });
         packageInfoModal.find('#package-info-modal-body').html(data);
         packageInfoModal.modal('show');
@@ -146,56 +161,78 @@ var ActionManager = (function () {
         modalAlertDiv.innerHTML = '';
         var newIntervalData = ChessBoardManager.getPackageData(packageElement);
         if (intervalData && changedSide) {
-            var alertMessage = void 0;
-            if (changedSide == 'right') {
-                var packageEndDate = ChessBoardManager.getMomentDate(intervalData.packageEnd);
-                var intervalEndDate = ChessBoardManager.getMomentDate(intervalData.end);
-                var newIntervalEndDate = moment(newIntervalData.end, "DD.MM.YYYY");
-                if (intervalData.position == 'full' || intervalData.position == 'right') {
-                    if (newIntervalEndDate.isAfter(packageEndDate)
-                        || (intervalEndDate.isSame(packageEndDate) && newIntervalEndDate.isBefore(packageEndDate))) {
-                        alertMessage = 'Вы действительно хотите изменить дату выезда брони?';
-                    }
-                }
-                else {
-                    //TODO: Текст ошибки
-                    throw new Error('');
-                }
-            }
-            else if (changedSide == 'left') {
-                var newIntervalStartDate = moment(newIntervalData.begin, "DD.MM.YYYY");
-                var packageStartDate = ChessBoardManager.getMomentDate(intervalData.begin);
-                if (intervalData.position == 'left' || intervalData.position == 'full') {
-                    if (!newIntervalStartDate.isSame(packageStartDate)) {
-                        alertMessage = 'Вы хотите изменить дату заезда брони?';
-                    }
-                }
-                else {
-                }
-            }
-            else {
-            }
-            if (alertMessage) {
-                var $continueButton_1 = $('#package-modal-continue-button');
-                $continueButton_1.show();
-                var $modalAlertDiv_1 = $('#package-modal-change-alert');
-                $modalAlertDiv_1.text(alertMessage);
-                $modalAlertDiv_1.show();
-                var $confirmButton_1 = $('#packageModalConfirmButton');
-                $confirmButton_1.hide();
-                $updateForm.hide();
-                $continueButton_1.click(function () {
-                    ActionManager.onContinueButtonClick($modalAlertDiv_1, $confirmButton_1, $continueButton_1, $updateForm);
-                });
+            var alertMessageData = ActionManager.getAlertMessage(changedSide, intervalData, newIntervalData);
+            if (alertMessageData) {
+                ActionManager.showAlertMessage(alertMessageData, $updateForm);
             }
         }
+        ActionManager.showEditedUpdateModal(intervalData, newIntervalData, isDivide);
+    };
+    ActionManager.getAlertMessage = function (changedSide, intervalData, newIntervalData) {
+        if (changedSide == 'right') {
+            var packageEndDate = ChessBoardManager.getMomentDate(intervalData.packageEnd);
+            var intervalEndDate = ChessBoardManager.getMomentDate(intervalData.end);
+            var newIntervalEndDate = ChessBoardManager.getMomentDate(newIntervalData.end);
+            if (intervalData.position == 'full' || intervalData.position == 'right') {
+                if (newIntervalEndDate.isAfter(packageEndDate)
+                    || (intervalEndDate.isSame(packageEndDate) && newIntervalEndDate.isBefore(packageEndDate))) {
+                    if (intervalData.updatePackage) {
+                        return { message: 'Вы действительно хотите изменить дату выезда брони?', resolved: true };
+                    }
+                    else {
+                        return { message: 'Для выполнения данного действия необходимо изменить дату выезда. У Вас недостаточно прав для редактирование брони', resolved: false };
+                    }
+                }
+            }
+        }
+        else if (changedSide == 'left') {
+            var newIntervalStartDate = moment(newIntervalData.begin, "DD.MM.YYYY");
+            var packageStartDate = ChessBoardManager.getMomentDate(intervalData.packageBegin);
+            if ((intervalData.position == 'left' || intervalData.position == 'full')
+                && !newIntervalStartDate.isSame(packageStartDate)) {
+                if (intervalData.updatePackage) {
+                    return { message: 'Вы действительно хотите изменить дату заезда брони?', resolved: true };
+                }
+                else {
+                    return { message: 'Для выполнения данного действия необходимо изменить дату заезда. У Вас недостаточно прав для редактирование брони', resolved: false };
+                }
+            }
+        }
+        else if (changedSide == 'both') {
+            if (!ChessBoardManager.isDatesEqual(newIntervalData.begin, intervalData.packageBegin)
+                && !ChessBoardManager.isDatesEqual(newIntervalData.end, intervalData.packageEnd)) {
+                if (intervalData.updatePackage) {
+                    return { message: 'Вы действительно хотите изменить дату заезда и выезда брони?', resolved: true };
+                }
+                else {
+                    return { message: 'Для выполнения данного действия необходимо изменить даты заезда и выезда. У Вас недостаточно прав для редактирование брони', resolved: false };
+                }
+            }
+        }
+    };
+    ActionManager.showAlertMessage = function (alertMessageData, $updateForm) {
+        var $continueButton = $('#package-modal-continue-button');
+        if (alertMessageData.resolved) {
+            $continueButton.show();
+        }
+        var $modalAlertDiv = $('#package-modal-change-alert');
+        $modalAlertDiv.text(alertMessageData.message);
+        $modalAlertDiv.show();
+        var $confirmButton = $('#packageModalConfirmButton');
+        $confirmButton.hide();
+        $updateForm.hide();
+        $continueButton.click(function () {
+            ActionManager.onContinueButtonClick($modalAlertDiv, $confirmButton, $continueButton, $updateForm);
+        });
+    };
+    ActionManager.showEditedUpdateModal = function (intervalData, newIntervalData, isDivide) {
         var modal = $('#packageModal');
         var packageId = intervalData.packageId ? intervalData.packageId : intervalData.id;
-        var accommodationId = intervalData.packageId ? intervalData.id : '';
+        var intervalId = intervalData.packageId ? intervalData.id : '';
         var payerText = intervalData.payer ? intervalData.payer : 'Не указан';
         modal.find('input.isDivide').val(isDivide);
         modal.find('input.modalPackageId').val(packageId);
-        modal.find('input.modalAccommodationId').val(accommodationId);
+        modal.find('input.modalAccommodationId').val(intervalId);
         modal.find('#modal-package-number').text(intervalData.number);
         modal.find('#modal-package-payer').text(payerText);
         modal.find('#modal-package-begin').text(ChessBoardManager.getMomentDate(intervalData.packageBegin).format("DD.MM.YYYY"));
@@ -205,7 +242,6 @@ var ActionManager = (function () {
         modal.find('#modal-room-id').text(newIntervalData.accommodation);
         modal.find('#modal-room-type-name').text(roomTypes[newIntervalData.roomType]);
         modal.find('#modal-room-name').text(newIntervalData.accommodation ? rooms[newIntervalData.accommodation] : 'Без размещения');
-        modal.modal('show');
     };
     ActionManager.getDataFromUpdateModal = function () {
         var modal = $('#packageModal');

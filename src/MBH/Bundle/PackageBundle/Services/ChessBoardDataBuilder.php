@@ -14,7 +14,6 @@ use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class ChessBoardDataBuilder
 {
@@ -39,8 +38,6 @@ class ChessBoardDataBuilder
     private $container;
     /** @var DataCollectorTranslator $translator */
     private $translator;
-    /** @var  AuthorizationChecker $rightsChecker */
-    private $rightsChecker;
 
     private $isRoomTypesInit = false;
     private $roomTypes;
@@ -59,7 +56,6 @@ class ChessBoardDataBuilder
         $this->dm = $dm;
         $this->container = $container;
         $this->helper = $helper;
-        $this->rightsChecker = $container->get('security.authorization_checker');
         $this->translator = $container->get('translator');
     }
 
@@ -78,8 +74,8 @@ class ChessBoardDataBuilder
         \DateTime $beginDate,
         \DateTime $endDate,
         $roomTypeIds = [],
-        ?array $housingIds = [],
-        ?array $floorIds = [],
+        array $housingIds = [],
+        array $floorIds = [],
         Tariff $tariff = null
     ) {
         $this->hotel = $hotel;

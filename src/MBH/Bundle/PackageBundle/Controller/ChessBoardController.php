@@ -178,7 +178,7 @@ class ChessBoardController extends BaseController
 
         if ($isPackageChanged) {
             $this->updatePackageWithAccommodation($oldPackage, $package, $accommodation, $updatedBeginDate,
-                $updatedEndDate,$messageFormatter);
+                $updatedEndDate, $messageFormatter);
         } else {
             //TODO: Добавить проверку прав для изменения только размещения
             $accommodation->setBegin($updatedBeginDate);
@@ -193,12 +193,15 @@ class ChessBoardController extends BaseController
         \DateTime $updatedEndDate,
         Room $updatedRoom,
         Package $package,
-        ChessBoardMessageFormatter $messageFormatter)
-    {
-        //TODO: Сменить
-        $this->denyAccessUnlessGranted(new Expression(
-            "is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', newPackage) and is_granted('ROLE_PACKAGE_VIEW'))"
-        ));
+        ChessBoardMessageFormatter $messageFormatter
+    ) {
+        $rightsChecker = $this->get('security.authorization_checker');
+        if ($rightsChecker->isGranted('ROLE_PACKAGE_VIEW_ALL')
+        || ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
+            && $rightsChecker->isGranted('VIEW', $package))
+        ) {
+            throw $this->createAccessDeniedException();
+        }
 
         $accommodation = new PackageAccommodation();
         $accommodation->setBegin($updatedBeginDate);
@@ -210,10 +213,11 @@ class ChessBoardController extends BaseController
         $messageFormatter->addSuccessAddAccommodationMessage($accommodation);
     }
 
-    private function removeAccommodation(PackageAccommodation $accommodation,
+    private function removeAccommodation(
+        PackageAccommodation $accommodation,
         Package $package,
-        ChessBoardMessageFormatter $messageFormatter)
-    {
+        ChessBoardMessageFormatter $messageFormatter
+    ) {
         if ($accommodation->getEnd()->getTimestamp() != $package->getEnd()->getTimestamp()) {
             $messageFormatter->addErrorRemoveAccommodationMessage();
         } else {
@@ -231,14 +235,11 @@ class ChessBoardController extends BaseController
         \DateTime $updatedEndDate,
         ChessBoardMessageFormatter $messageFormatter
     ) {
-        try {
-            //is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))
-            $this->denyAccessUnlessGranted(new Expression(
-            //TODO: Добавить acl
-                "'ROLE_PACKAGE_EDIT' in roles and ('ROLE_PACKAGE_EDIT_ALL' in roles or is_granted('EDIT', entity))"
-            ));
-        } catch (\Throwable $e) {
-            $messageFormatter->addErrorMessage($e->getMessage());
+        $rightsChecker = $this->get('security.authorization_checker');
+        if ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT')  && ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
+            || $rightsChecker->isGranted('EDIT', $oldPackage))
+        ) {
+            throw $this->createAccessDeniedException();
         }
 
         $packageValidateErrors = $this->get('validator')->validate($newPackage);
@@ -374,23 +375,9 @@ class ChessBoardController extends BaseController
     private function getDataFromMultipleSelectField($fieldData)
     {
         if (!empty($fieldData) && is_array($fieldData) && $fieldData[0] != '') {
-            return  $fieldData;
+            return $fieldData;
         }
 
         return [];
     }
-
-    private function getUserRights()
-    {
-    }
-
-    private function hasAddAccommodationRights()
-    {
-        //"is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', newPackage) and is_granted('ROLE_PACKAGE_VIEW'))"
-        $rightsChecker = $this->get('security.authorization_checker');
-        return $rightsChecker->isGranted('ROLE_PACKAGE_VIEW')
-            && $rightsChecker->isGranted('VIEW');
-    }
-
-
 }
