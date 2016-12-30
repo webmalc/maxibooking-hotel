@@ -34,21 +34,19 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
     public function indexAction(Request $request)
     {
         $filter = new SpecialFilter();
+        $filter->setHotel($this->hotel);
+
         $form = $this->createForm(SpecialFilterType::class, $filter);
 
         if ($request->isXmlHttpRequest()) {
             $form->submit($request->get('form'));
-            if ($form->isSubmitted() && $form->isValid()) {
+            $entities = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($filter);
 
-                // TODO: filter query
-                $entities = $this->dm->getRepository('MBHPriceBundle:Special')->createQueryBuilder()->getQuery()->execute();
-
-                return $this->render('MBHPriceBundle:Special:list.json.twig', [
-                    'entities' => $entities,
-                    'draw' => $request->get('draw'),
-                    'total' => $entities->count()
-                ]);
-            }
+            return $this->render('MBHPriceBundle:Special:list.json.twig', [
+                'entities' => $entities,
+                'draw' => $request->get('draw'),
+                'total' => $entities->count()
+            ]);
         }
 
         return [

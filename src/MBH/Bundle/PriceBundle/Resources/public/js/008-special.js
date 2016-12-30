@@ -13,6 +13,7 @@ $(document).ready(function () {
         "drawCallback": function() {
             process = false;
             deleteLink();
+            $('.disabled-entry').closest('tr').addClass('danger');
         },
         "ajax": {
             "method": "POST",

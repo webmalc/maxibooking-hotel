@@ -5,13 +5,14 @@
     "data": [
         {% for entity in entities %}
         [
-            "<div class='text-center'><i class='fa fa-star'></i></div>",
+            "<div class='text-center {{ not entity.isEnabled ? 'disabled-entry' }}'><i class='fa fa-star'></i></div>",
             "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'special'} %}{% endembed %}",
             "{{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}",
+            "<small>{{ entity.roomTypes|join(';<br>')|raw }}</small>",
+            "<small>{{ entity.tariffs|join(';<br>')|raw }}</small>",
             "{{ entity.discount|number_format(2) }} {% if not entity.isPercent  %}{{ currency()['text'] }}{% else %}%{% endif %}",
-            "{{ entity.sold }}/{{ entity.limit }}",
-            "{% if not entity.isEnabled %}<span class='label label-danger'>нет</span>{% endif %}",
-            "<div class='btn-list'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'special'} %}{% endembed %}</div>"
+            "<div class='text-center'>{{ entity.sold }}/{{ entity.limit }}</div>",
+            "<div class='btn-list text-right'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'special'} %}{% endembed %}</div>"
         ]{% if loop.index != entities|length %},{% endif %}
         {% endfor %}
     ]

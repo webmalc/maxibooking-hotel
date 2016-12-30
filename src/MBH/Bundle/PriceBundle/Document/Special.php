@@ -14,6 +14,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
+use MBH\Bundle\BaseBundle\Validator\Constraints as MBHAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -22,10 +23,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="document.already.exists")
  * @ODM\HasLifecycleCallbacks
+ * @MBHAssert\Range(firstProperty="begin", secondProperty="end", message="special.dates.error")
+ * @MBHAssert\Range(firstProperty="displayFrom", secondProperty="displayTo", message="special.displayDates.error")
  */
 class Special extends Base
 {
-    //TODO: validator
     //TODO: add delete references
 
     /**
@@ -282,7 +284,7 @@ class Special extends Base
      * @param \DateTime $begin
      * @return self
      */
-    public function setBegin(\DateTime $begin)
+    public function setBegin(\DateTime $begin = null)
     {
         $this->begin = $begin;
         return $this;
@@ -304,7 +306,7 @@ class Special extends Base
      * @param \DateTime $end
      * @return self
      */
-    public function setEnd(\DateTime $end)
+    public function setEnd(\DateTime $end = null)
     {
         $this->end = $end;
         return $this;
@@ -388,7 +390,7 @@ class Special extends Base
      * @param \DateTime $displayFrom
      * @return Special
      */
-    public function setDisplayFrom(\DateTime $displayFrom): Special
+    public function setDisplayFrom(\DateTime $displayFrom = null): Special
     {
         $this->displayFrom = $displayFrom;
         return $this;
@@ -406,7 +408,7 @@ class Special extends Base
      * @param \DateTime $displayTo
      * @return Special
      */
-    public function setDisplayTo(\DateTime $displayTo): Special
+    public function setDisplayTo(\DateTime $displayTo = null): Special
     {
         $this->displayTo = $displayTo;
         return $this;

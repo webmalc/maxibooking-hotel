@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Bundle\TariffBundle\Controller;
+namespace Tests\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\Traits\CrudWebTestCaseTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
@@ -28,8 +28,20 @@ class SpecialControllerTest extends WebTestCase
             ->setEditTitle('Test special edited')
             ->setNewUrl('/price/management/special/new')
             ->setListUrl('/price/management/special/')
-            ->setNewFormValues(['fullTitle' => $this->getNewTitle()])
-            ->setNewFormErrors(['data.fullTitle'])
+            ->setAjaxList()
+            ->setNewFormValues([
+                'fullTitle' => $this->getNewTitle(),
+                'begin' => new \DateTime('midnight + 1 day'),
+                'end' => new \DateTime('midnight + 10 days'),
+                'discount' => 20,
+                'displayFrom' => new \DateTime('midnight -30 days'),
+                'displayTo' => new \DateTime('midnight'),
+                'limit' => 10
+            ])
+            ->setNewFormErrors([
+                'data.begin', 'data.discount', 'data.end', 'data.displayFrom',
+                'data.displayTo', 'data.limit', 'data.fullTitle'
+            ])
             ->setEditFormValues(['fullTitle' => $this->getEditTitle()])
             ->setListItemsCount(0)
         ;

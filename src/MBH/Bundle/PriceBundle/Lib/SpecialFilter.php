@@ -1,6 +1,7 @@
 <?php
 
 namespace MBH\Bundle\PriceBundle\Lib;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
@@ -10,6 +11,11 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
  */
 class SpecialFilter
 {
+    /**
+     * @var Hotel
+     */
+    private $hotel;
+
     /**
      * @var \DateTime
      */
@@ -74,7 +80,7 @@ class SpecialFilter
     /**
      * @return bool
      */
-    public function isIsEnabled(): ?bool
+    public function getIsEnabled(): ?bool
     {
         return $this->isEnabled;
     }
@@ -125,5 +131,21 @@ class SpecialFilter
         return $this;
     }
 
+    /**
+     * @return Hotel
+     */
+    public function getHotel(): Hotel
+    {
+        return $this->hotel;
+    }
 
+    /**
+     * @param Hotel $hotel
+     * @return SpecialFilter
+     */
+    public function setHotel(Hotel $hotel): SpecialFilter
+    {
+        $this->hotel = $hotel;
+        return $this;
+    }
 }

@@ -7,7 +7,7 @@
 
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'special-filter-widget'} %}
         {% block content %}
-            {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'special-filter-form'}}) }}
+            {{ form_start(form, {attr: {class: 'form-inline remember filter-form icon-label-form', id: 'special-filter-form'}}) }}
             <div class="form-group">
                 <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
                 {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
@@ -38,9 +38,10 @@
             <th class="td-xxs"></th>
             <th>Название</th>
             <th class="td-md">Даты</th>
+            <th class="td-md">Тип номера</th>
+            <th class="td-md">Тариф</th>
             <th class="td-sm">Скидка</th>
-            <th class="td-sm">Продано</th>
-            <th class="td-sm">Включена</th>
+            <th class="td-sm text-center">Продано</th>
             <th class="td-sm"></th>
         </tr>
         </thead>
