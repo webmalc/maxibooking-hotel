@@ -1,0 +1,21 @@
+{
+    "draw" : "{{ draw }}",
+    "recordsTotal": "{{ total }}",
+    "recordsFiltered": "{{ total }}",
+    "data": [
+        {% for tariff in tariffs %}
+            {% set package = null %}
+            [
+                "<div class='text-center table-icon {{ tariff.parent ? 'text-primary' }}'><i class='fa fa-sliders'></i></div>",
+                "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': tariff, 'route': 'tariff'} %}{% endembed %}",
+                "<small>{{ tariff.parent }}</small>",
+                "<div class='text-center'>{{ tariff.childAge }}</div>",
+                "<div class='text-center'>{{ tariff.infantAge }}</div>",
+                "<div class='text-center'>{{ tariff.begin|mbh_format }} - {{ tariff.end|mbh_format }}</div>",
+                "<div class='text-center'>{% if tariff.isDefault %}<span class=\"label label-success\">Да</span>{% else %}<span class=\"label label-default\">Нет</span>{% endif %}</div>",
+                "<div class='text-center'>{% if tariff.isOnline %}<span class=\"label label-success\">Да</span>{% else %}<span class=\"label label-default\">Нет</span>{% endif %}</div>",
+                "{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': tariff, 'route': 'tariff', 'copy': tariff.parent is empty } %}{% block additional_buttons %}{% if tariff.parent is empty and is_granted('ROLE_TARIFF_NEW') %}<a href='{{ path('tariff_extend', { 'id': tariff.id }) }}' class='btn btn-default btn-xs' title='Создать дочерний тариф' data-toggle='tooltip'><i class='fa fa-arrow-circle-right'></i></a>{% endif %}{% endblock %}{% endembed %}"
+            ]{% if loop.index != tariffs|length %},{% endif %}
+        {% endfor %}
+    ]
+}

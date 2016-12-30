@@ -4,6 +4,8 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
+use MBH\Bundle\PriceBundle\Document\Criteria\TariffQueryCriteria;
 
 class TariffRepository extends DocumentRepository
 {
@@ -144,5 +146,52 @@ class TariffRepository extends DocumentRepository
     public function fetch(Hotel $hotel = null, $tariffs = null, $enabled = false, $online = false)
     {
         return $this->fetchQueryBuilder($hotel, $tariffs, $enabled, $online)->getQuery()->execute();
+    }
+
+    /**
+     * @param TariffQueryCriteria $criteria
+     * @param int $offset
+     * @param int $limit
+     * @return Tariff[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function findByQueryCriteria(TariffQueryCriteria $criteria, $offset = 0, $limit = 10)
+    {
+        $queryBuilder = $this->queryCriteriaToBuilder($criteria);
+
+        $queryBuilder
+            ->skip($offset)
+            ->limit($limit)
+            ->sort('fullTitle', 'asc')
+        ;
+
+        return $queryBuilder->getQuery()->execute();
+    }
+
+    /**
+     * @param TariffQueryCriteria $criteria
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    private function queryCriteriaToBuilder(TariffQueryCriteria $criteria)
+    {
+        $queryBuilder = $this->createQueryBuilder();
+        $currentDate = new \DateTime('midnight');
+
+        if ($criteria->begin || $criteria->end) {
+            $queryBuilder->field('begin')->lte($criteria->begin);
+            $queryBuilder->field('end')->gte($criteria->end);
+        }
+
+        if (!empty($criteria->begin) && empty($criteria->end)) {
+            $queryBuilder->field('begin')->lte($criteria->begin);
+            $queryBuilder->field('end')->gte($currentDate);
+        }
+
+        if (empty($criteria->begin) && !empty($criteria->end)) {
+            $queryBuilder->field('begin')->lte($currentDate);
+            $queryBuilder->field('end')->gte($criteria->end);
+        }
+
+        return $queryBuilder;
     }
 }

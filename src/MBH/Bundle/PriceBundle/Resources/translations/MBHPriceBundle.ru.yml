@@ -58,9 +58,7 @@ price.views.overview.index.date: 'Даты'
 price.views.overview.index.type: 'Тип номера'
 price.views.overview.index.rate: 'Тариф'
 
-
-
-
+tariff.filter.status: Статус тарифа - (Онлайн/Оффлайн)
 
 
 

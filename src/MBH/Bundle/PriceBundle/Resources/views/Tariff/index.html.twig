@@ -5,7 +5,33 @@
 
 {% block content %}
 
-    <table class="tariffs-table table table-striped table-hover table-condensed table-icons table-actions">
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'tariff-filter-widget'} %}
+        {% block content %}
+            {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'tariff-form'}}) }}
+            <div class="form-group">
+                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
+                {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
+            </div>
+            <div class="form-group">
+                {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
+            </div>
+            <div class="form-group">
+                <div class="input">
+                    <i class="fa fa-check"
+                       title="{{ 'tariff.filter.status'|trans({}, 'MBHPriceBundle') }}" data-toggle="tooltip"
+                    ></i>
+                    &nbsp;
+                    <input type="checkbox" name="isOnline" id="isOnline" value="1">
+                </div>
+                {{ form_widget(form._token) }}
+                {{ form_rest(form.search) }}
+            </div>
+            {{ form_end(form, {render_rest: false}) }}
+        {% endblock %}
+    {% endembed %}
+
+    <table id="tariff-table" class="tariff-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
         <thead>
         <tr>
             <th class="td-xs"></th>
@@ -20,51 +46,6 @@
         </tr>
         </thead>
         <tbody>
-        {% for entity in entities %}
-            <tr {% if entity.isEnabled is empty %} class="danger"{% endif %}>
-                <td class="text-center table-icon {{ entity.parent ? 'text-primary' }}"><i class="fa fa-sliders"></i></td>
-                <td>
-                    {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'tariff'} %}{% endembed %}
-                </td>
-                <td>
-                    <small>{{ entity.parent }}</small>
-                </td>
-                <td class="text-center">
-                    {{ entity.childAge }}
-                </td>
-                <td class="text-center">
-                    {{ entity.infantAge }}
-                </td>
-                <td class="text-center">
-                    {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}
-                </td>
-                <td class="text-center">
-                    {% if entity.isDefault %}
-                        <span class="label label-success">Да</span>
-                    {% else %}
-                        <span class="label label-default">Нет</span>
-                    {% endif %}
-                </td>
-                <td class="text-center">
-                    {% if entity.isOnline %}
-                        <span class="label label-success">Да</span>
-                    {% else %}
-                        <span class="label label-default">Нет</span>
-                    {% endif %}
-                </td>
-                <td class="table-actions-td text-right">
-                    {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tariff', 'copy': entity.parent is empty } %}
-                        {% block additional_buttons %}
-                            {% if entity.parent is empty and is_granted('ROLE_TARIFF_NEW') %}
-                                <a href='{{ path('tariff_extend', { 'id': entity.id }) }}' class='btn btn-default btn-xs' title='Создать дочерний тариф' data-toggle='tooltip'>
-                                    <i class='fa fa-arrow-circle-right'></i>
-                                </a>
-                            {% endif %}
-                        {% endblock %}
-                    {% endembed %}
-                </td>
-            </tr>
-        {% endfor %}
         </tbody>
     </table>
 

@@ -3,20 +3,25 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\PriceBundle\Document\Criteria\TariffQueryCriteria;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffChildOptions;
+use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use MBH\Bundle\PriceBundle\Form\TariffInheritanceType;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
 use MBH\Bundle\PriceBundle\Form\TariffServicesType;
-use MBH\Bundle\PriceBundle\Form\TariffServiceType;
 use MBH\Bundle\PriceBundle\Form\TariffType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * @Route("management/tariff")
@@ -34,6 +39,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      */
     public function indexAction()
     {
+        $form = $this->getTariffFilterForm();
         $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('q')
             ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
             ->sort('fullTitle', 'asc')
@@ -41,7 +47,80 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             ->execute();
 
         return [
-            'entities' => $entities
+            'form' => $form->createView(),
+            //'entities' => $entities
+        ];
+    }
+
+
+    public function getTariffFilterForm()
+    {
+        $form = $this->createFormBuilder(null, [
+            'data_class' => TariffQueryCriteria::class
+        ])
+            ->add('begin', DateType::class, [
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'required' => false
+            ])
+            ->add('end', DateType::class, [
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'required' => false
+            ])
+            ->add('search', TextType::class, [
+                'required' => false
+            ])
+            ->getForm();
+
+        return $form;
+    }
+
+    /**
+     * Lists all entities as json.
+     *
+     * @Route("/json", name="tariff_json", defaults={"_format"="json"}, options={"expose"=true})
+     * @Method("POST")
+     * @Security("is_granted('ROLE_TARIFF_VIEW')")
+     * @Template()
+     */
+    public function jsonAction(Request $request)
+    {
+        $tableParams = ClientDataTableParams::createFromRequest($request);
+        $formData = (array)$request->get('form');
+        $form = $this->getTariffFilterForm();
+        $formData['search'] = $tableParams->getSearch();
+
+        $form->submit($formData);
+        if (!$form->isValid()) {
+            return new JsonResponse(['error' => $form->getErrors()[0]->getMessage()]);
+        }
+
+        /** @var TariffQueryCriteria $criteria */
+        $criteria = $form->getData();
+
+        /** @var TariffRepository $tariffRepository */
+        $tariffRepository = $this->dm->getRepository('MBHPriceBundle:Tariff');
+
+        if($criteria->begin && $criteria->end) {
+            $diff = $criteria->begin->diff($criteria->end);
+            if($diff->y == 1 && $diff->m > 0 || $diff->y > 1) {
+                $begin = clone($criteria->begin);
+                $criteria->end = $begin->modify('+ 1 year');
+            }
+        }
+
+        $tariffs = $tariffRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
+
+        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+        $arrivals = $this->container->getParameter('mbh.package.arrivals');
+
+        return [
+            'tariffs' => iterator_to_array($tariffs),
+            'total' => count($tariffs),
+            'draw' => $request->get('draw'),
+            'vegaDocumentTypes' => $vegaDocumentTypes,
+            'arrivals' => $arrivals,
         ];
     }
 

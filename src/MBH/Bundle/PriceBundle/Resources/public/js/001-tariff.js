@@ -2,6 +2,9 @@
 $(document).ready(function () {
     'use strict';
 
+    // load tariff filter
+    docReadyTariff();
+
     //spinners
     $('.price-spinner').TouchSpin({
         min: 0,
