@@ -30,7 +30,7 @@ class ClientConfig extends Base
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -136,6 +136,12 @@ class ClientConfig extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isInstantSearch = true;
+
+    /**
+     * @var \DateTime
+     * @ODM\Date
+     */
+    protected $beginDate;
 
     /**
      * Set sendSms
@@ -427,5 +433,20 @@ class ClientConfig extends Base
         return $this;
     }
 
-    
+    /**
+     * @return mixed
+     */
+    public function getBeginDate()
+    {
+        return $this->beginDate;
+    }
+
+    /**
+     * @param mixed $beginDate
+     */
+    public function setBeginDate($beginDate)
+    {
+        $this->beginDate = $beginDate;
+    }
+
 }
