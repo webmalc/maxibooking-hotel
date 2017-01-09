@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class ChessBoardDataBuilder
 {
@@ -38,6 +39,8 @@ class ChessBoardDataBuilder
     private $container;
     /** @var DataCollectorTranslator $translator */
     private $translator;
+    /** @var $accommodationManipulator PackageAccommodationManipulator */
+    private $accommodationManipulator;
 
     private $isRoomTypesInit = false;
     private $roomTypes;
@@ -49,14 +52,21 @@ class ChessBoardDataBuilder
     /**
      * @param DocumentManager $dm
      * @param Helper $helper
+     * @param PackageAccommodationManipulator $accommodationManipulator
+     * @param TranslatorInterface $translator
      * @param ContainerInterface $container
      */
-    public function __construct(DocumentManager $dm, Helper $helper, $container)
+    public function __construct(DocumentManager $dm,
+        Helper $helper,
+        PackageAccommodationManipulator $accommodationManipulator,
+        TranslatorInterface $translator,
+        $container)
     {
         $this->dm = $dm;
         $this->container = $container;
         $this->helper = $helper;
-        $this->translator = $container->get('translator');
+        $this->accommodationManipulator = $accommodationManipulator;
+        $this->translator = $translator;
     }
 
     /**
@@ -174,15 +184,17 @@ class ChessBoardDataBuilder
     private function getDateIntervalsWithoutAccommodation()
     {
         $dateIntervalsWithoutAccommodation = [];
-        foreach ($this->getPackageAccommodations() as $accommodation) {
-            /** @var PackageAccommodation $accommodation */
-            $package = $accommodation->getPackage();
-            /** @var \DateTime $packageLastAccommodationDate */
-            $packageLastAccommodationDate = $package->getLastAccommodation()->getEnd();
-
-            if ($package->getEnd()->format('d.m.Y') != $packageLastAccommodationDate->format('d.m.Y')) {
+        $packages = [];
+        foreach ($this->getPackageAccommodations() as $packageAccommodation) {
+            /** @var Package $package */
+            $package = $packageAccommodation->getPackage();
+            $packages[$package->getId()] = $package;
+        }
+        foreach ($packages as $package) {
+            $emptyIntervals = $this->accommodationManipulator->getEmptyIntervals($package);
+            foreach ($emptyIntervals as $emptyInterval) {
                 $dateIntervalsWithoutAccommodation[] = $this->container
-                    ->get('mbh.chess_board_unit')->setInitData($package);
+                    ->get('mbh.chess_board_unit')->setInitData($package, null, $emptyInterval);
             }
         }
 
@@ -211,9 +223,12 @@ class ChessBoardDataBuilder
                 $rooms = array_merge($rooms, $roomsByRoomTypeId);
             }
 
-            $this->packageAccommodations = $this->dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
+            $accommodations = $this->dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
                 $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
             );
+
+            $this->packageAccommodations = $this->accommodationManipulator
+                ->sortAccommodationsByBeginDate($accommodations->toArray());
 
             $this->isPackageAccommodationsInit = true;
         }

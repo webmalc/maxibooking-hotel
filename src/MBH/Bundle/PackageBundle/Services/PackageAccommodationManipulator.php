@@ -74,10 +74,10 @@ class PackageAccommodationManipulator
     public function getEmptyIntervals(Package $package): ArrayCollection
     {
         $intervals = new ArrayCollection();
-        /** @var PersistentCollection $pAccammodations */
-        $pAccammodations = $package->getAccommodations();
+        /** @var PersistentCollection $pAccommodations */
+        $pAccommodations = $package->getAccommodations();
 
-        if (!$pAccammodations->count()) {
+        if (!$pAccommodations->count()) {
             $interval = [
                 'packageAccommodationId' => null,
                 'begin' => $package->getBegin(),
@@ -86,22 +86,44 @@ class PackageAccommodationManipulator
             $intervals->add($interval);
 
         } else {
-
-            $pAccammodationsSorted = $this->sortAccommodationsByBeginDate($pAccammodations);
-            $iterator = $pAccammodationsSorted->getIterator();
-            while ($iterator->current() !== null) {
+            $pAccommodationsSorted = $this->sortAccommodationsByBeginDate($pAccommodations->toArray());
+            /** @var PackageAccommodation $previousAccommodation */
+            $previousAccommodation = null;
+            foreach ($pAccommodationsSorted as $accommodation) {
                 /** @var PackageAccommodation $accommodation */
-                $accommodation = $iterator->current();
-                $begin = $accommodation->getBegin();
-                if (isset($end) && $begin != $end) {
-                    $interval = [
-                        'begin' => $end,
-                        'end' => $begin
-                    ];
-                    $intervals->add($interval);
+                if (!$previousAccommodation) {
+                    if ($package->getBegin()->getTimestamp() != $accommodation->getBegin()->getTimestamp()) {
+                        $intervals->add([
+                            'begin' => $package->getBegin(),
+                            'end' => $accommodation->getBegin()
+                        ]);
+                    }
+                } else {
+                    if ($previousAccommodation->getEnd()->getTimestamp() != $accommodation->getBegin()->getTimestamp()) {
+                        $intervals->add([
+                            'begin' => $previousAccommodation->getEnd(),
+                            'end' => $accommodation->getBegin()
+                        ]);
+                    }
                 }
-                $end = $accommodation->getEnd();
-                $iterator->next();
+                $previousAccommodation = $accommodation;
+            }
+
+            $lastIntervalEnd = $intervals->last() ? $intervals->last()['end'] : null;
+            $lastAccommodationEnd = $pAccommodationsSorted->last()->getEnd();
+            $packageEnd = $package->getEnd();
+
+            if ($lastIntervalEnd) {
+                $lastPeriodEnd = $lastIntervalEnd > $lastAccommodationEnd ? $lastIntervalEnd : $lastAccommodationEnd;
+            } else {
+                $lastPeriodEnd = $lastAccommodationEnd;
+            }
+
+            if ($lastPeriodEnd < $packageEnd) {
+                $intervals->add([
+                    'begin' => $lastPeriodEnd,
+                    'end' => $package->getEnd()
+                ]);
             }
         }
 
@@ -118,20 +140,19 @@ class PackageAccommodationManipulator
     }
 
     /**
-     * @param Collection $packageAccommodations
+     * @param $packageAccommodations
      * @return ArrayCollection
      */
-    private function sortAccommodationsByBeginDate(Collection $packageAccommodations): ArrayCollection
+    public function sortAccommodationsByBeginDate($packageAccommodations)
     {
-        $data = $packageAccommodations->toArray();
-        usort($data, function ($a, $b) {
+        usort($packageAccommodations, function ($a, $b) {
             /** @var PackageAccommodation $a*/
             /** @var PackageAccommodation $b*/
             $c = 'd';
             return ($a->getBegin() < $b->getBegin())? -1 : 1;
         });
 
-        return new ArrayCollection($data);
+        return new ArrayCollection($packageAccommodations);
     }
 
 

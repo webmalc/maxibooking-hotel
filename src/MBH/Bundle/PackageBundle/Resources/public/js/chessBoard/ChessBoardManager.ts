@@ -221,8 +221,10 @@ class ChessBoardManager {
         let packages = document.createElement('div');
         //iterate packages
         this.dataManager.getAccommodations().forEach(function (item) {
-            let packageDiv = ChessBoardManager.createPackageElementWithOffset(templatePackageElement, item, wrapper);
-            packages.appendChild(packageDiv);
+            if (item.accommodation) {
+                let packageDiv = ChessBoardManager.createPackageElementWithOffset(templatePackageElement, item, wrapper);
+                packages.appendChild(packageDiv);
+            }
         });
         wrapper.append(packages);
         this.addListeners(packages.children);
@@ -343,13 +345,16 @@ class ChessBoardManager {
 
         jQueryObj.each(function (index, element) {
             let intervalData = self.dataManager.getAccommodationIntervalById(this.id);
-            $(element).dblclick(function () {
+            let $element = $(element);
+            $element.dblclick(function () {
                 if (intervalData.viewPackage) {
-                    self.actionManager.callPackageInfoModal(intervalData.packageId);
+                    self.dataManager.getPackageDataRequest(intervalData.packageId);
                 }
-            }).find('.remove-package-button').click(function () {
+            });
+            $element.find('.remove-package-button').click(function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
-            }).parent().find('.divide-package-button').click(function () {
+            });
+            $element.find('.divide-package-button').click(function () {
                 if (intervalData.viewPackage) {
                     let accommodationElement = this.parentNode;
                     let accommodationWidth = parseInt(accommodationElement.style.width, 10);
@@ -393,7 +398,7 @@ class ChessBoardManager {
             firstAccommodation.style.width = firstAccommodationWidth + 'px';
 
             let secondAccommodation = packageElement.cloneNode(true);
-            secondAccommodation = this.addDraggable($(secondAccommodation), false, true).draggable({axis: "y"}).get(0);
+            secondAccommodation = this.addDraggable($(secondAccommodation), false, true).get(0);
             secondAccommodation.style.width = packageWidth - firstAccommodationWidth + 'px';
             secondAccommodation.style.left = parseInt(packageElement.style.left, 10) + firstAccommodationWidth + 'px';
 
@@ -416,16 +421,11 @@ class ChessBoardManager {
             } else {
                 intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             }
-            let axisValue;
-            if (intervalData.updateAccommodation) {
-                if (intervalData.position == 'full'
-                    && !(ChessBoardManager.isAccommodationOnFullPackage(intervalData) && !intervalData.updatePackage)) {
-                    axisValue = 'x, y';
-                } else if (intervalData.updateAccommodation) {
-                    axisValue = 'y';
-                }
+            let axisValue = 'y';
+            if (intervalData.updateAccommodation && !isDivide && intervalData.position == 'full'
+                && !(ChessBoardManager.isAccommodationOnFullPackage(intervalData) && !intervalData.updatePackage)) {
+                axisValue = 'x, y';
             }
-
             if (axisValue) {
                 $(element).draggable({
                     containment: '#calendarWrapper',
@@ -464,7 +464,8 @@ class ChessBoardManager {
                             }
                             if (ui.originalPosition.left != ui.position.left
                                 || ui.originalPosition.top != ui.position.top) {
-                                ActionManager.callUpdatePackageModal($(this), intervalData, 'both', isDivide);
+                                let changedSide = axisValue == 'x, y' ? 'both' : null;
+                                ActionManager.callUpdatePackageModal($(this), intervalData, changedSide, isDivide);
                             }
                         }
                     },
@@ -596,7 +597,7 @@ class ChessBoardManager {
                     containment: '.rooms',
                     start: function () {
                         if (intervalData.isLocked) {
-                            self.actionManager.callUnblockModal(intervalData.packageId);
+                            ActionManager.callUnblockModal(intervalData.packageId);
                         }
                         elementStartBackground = this.style.backgroundColor;
                         this.style.zIndex = 101;
@@ -634,8 +635,8 @@ class ChessBoardManager {
         return jQueryObj;
     }
 
-    public static getPackageData(packageElement) {
-        let packageOffset = packageElement.offset();
+    public static getPackageData($packageElement) {
+        let packageOffset = $packageElement.offset();
         let roomLine = $('.roomDates, .leftRoomsLine').filter(function () {
             return ChessBoardManager.saveOffsetCompare($(this).offset().top, packageOffset.top);
         });
@@ -646,17 +647,20 @@ class ChessBoardManager {
         }
         let dateElements = roomLine.children().children();
 
+        let description = $packageElement.find('.package-description').text();
+
         let startDateLeftOffset = packageOffset.left - ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET;
         let startDate = this.getDateStringByLeftOffset(dateElements, startDateLeftOffset);
 
-        let endDateLeftOffset = packageOffset.left + parseInt(packageElement.get(0).style.width, 10) - this.PACKAGE_TO_MIDDAY_OFFSET;
+        let endDateLeftOffset = packageOffset.left + parseInt($packageElement.get(0).style.width, 10) - this.PACKAGE_TO_MIDDAY_OFFSET;
         let endDate = this.getDateStringByLeftOffset(dateElements, endDateLeftOffset);
         return {
-            id: packageElement.get(0).id,
+            id: $packageElement.get(0).id,
             accommodation: accommodationId,
             roomType: roomTypeId,
             begin: startDate,
-            end: endDate
+            end: endDate,
+            payer: description
         };
     }
 
@@ -737,6 +741,8 @@ class ChessBoardManager {
             let wrapperTopOffset = parseInt($wrapper.offset().top, 10);
             let $popover = $('.popover').last();
 
+            let $popoverContent = $popover.find('.popover-content');
+
             packagesByCurrentDate.forEach(function (packageData) {
                 let packageElement = ChessBoardManager.createPackageElement(packageData, templatePackageElement, false);
                 packageElement.style.position = '';
@@ -748,8 +754,15 @@ class ChessBoardManager {
                 packageContainer.appendChild(packageElement);
                 packageElementsContainer.innerHTML += packageContainer.outerHTML;
 
+                $popoverContent.append(packageContainer);
+            });
+
+            $popoverContent.find('.package').each(function (index, element) {
+                let $packageElement = $(element);
+                let packageData = self.dataManager.getNoAccommodationIntervalById(element.id);
+
                 if (packageData.viewPackage) {
-                    self.addDraggable(packageElement, true).draggable({
+                    self.addDraggable($packageElement, true).draggable({
                         scroll: false,
                         snap: 'calendarRow',
                         start: function () {
@@ -773,9 +786,6 @@ class ChessBoardManager {
                 }
             });
 
-            let popoverContent = $popover.find('.popover-content').get(0);
-            popoverContent.innerHTML = packageElementsContainer.innerHTML;
-
             document.body.onmouseup = function () {
                 document.body.onmouseup = null;
                 $popoverElements.popover();
@@ -787,6 +797,7 @@ class ChessBoardManager {
                 }
                 $popoverElements.popover('hide');
             };
+
             //Корректируем смещение по ширине
             let currentPopover = $popover.get(0);
             let popoverOffset = currentPopover.offsetWidth - ChessBoardManager.POPOVER_MIN_WIDTH;

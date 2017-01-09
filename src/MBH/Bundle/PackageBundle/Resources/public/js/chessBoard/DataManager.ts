@@ -25,7 +25,6 @@ class DataManager {
 
     private handleResponse(jsonResponse) {
         var response = JSON.parse(jsonResponse);
-        console.log(response);
         ActionManager.showResultMessages(response);
         this.updatePackagesData();
 
@@ -108,12 +107,10 @@ class DataManager {
     }
 
     private addPackageData(packageData) {
-        packageData.payer = '';
         this._accommodations.push(packageData);
     }
 
     public updateLocalPackageData(packageData, isDivide) {
-        let self = this;
         ActionManager.hideLoadingIndicator();
         if (isDivide) {
             let dividedAccommodation;
@@ -136,8 +133,8 @@ class DataManager {
             this._accommodations.push(newAccommodationData);
         } else {
             if (!packageData.accommodation) {
-                this._accommodations.forEach(function (packageItem, index, packages) {
-                    if (packageItem.id === packageItem.id) {
+                this._accommodations.forEach(function (accommodationData, index, packages) {
+                    if (accommodationData.id === packageData.id) {
                         packages.splice(index, 1);
                     }
                 });
@@ -224,15 +221,15 @@ class DataManager {
         });
     }
 
-    public getPackageDataRequest(accommodationId) {
+    public getPackageDataRequest(packageId) {
         ActionManager.showLoadingIndicator();
         let self = this;
         $.ajax({
-            url: Routing.generate('chessboard_get_package', {id: accommodationId}),
+            url: Routing.generate('chessboard_get_package', {id: packageId}),
             type: "GET",
             success: function (data) {
                 ActionManager.hideLoadingIndicator();
-                self.actionManager.showPackageInfoModal(accommodationId, data);
+                self.actionManager.showPackageInfoModal(packageId, data);
             },
             error: function () {
                 self.handleError();
@@ -245,6 +242,29 @@ class DataManager {
         return this.getNoAccommodationIntervals().find(function(packageData) {
             return packageData.id === id;
         })
+    }
+
+    public getPackageDataById(packageId) {
+        let packageData;
+        this._accommodations.some(function (accommodationData) {
+            if (accommodationData.packageId == packageId) {
+                packageData = accommodationData;
+                return true;
+            }
+            return false;
+        });
+        if (packageData) {
+            return packageData
+        }
+        this.noAccommodationIntervals.some(function (noAccommodationInterval) {
+            if (noAccommodationInterval.id == packageId) {
+                packageData = noAccommodationInterval;
+                return true;
+            }
+            return false;
+        });
+
+        return packageData;
     }
 
     public getAccommodationIntervalById(id) {

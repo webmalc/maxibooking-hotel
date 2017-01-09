@@ -100,14 +100,7 @@ var ActionManager = (function () {
     ActionManager.prototype.showPackageInfoModal = function (packageId, data) {
         var self = this;
         var packageInfoModal = $('#package-info-modal');
-        var accommodationId = packageInfoModal.find('input.modalAccommodationId').val();
-        var intervalData;
-        if (accommodationId) {
-            intervalData = this.dataManager.getAccommodationIntervalById(accommodationId);
-        }
-        else {
-            intervalData = this.dataManager.getNoAccommodationIntervalById(packageId);
-        }
+        var intervalData = this.dataManager.getPackageDataById(packageId);
         var $deleteButton = packageInfoModal.find('#package-info-modal-delete');
         if (intervalData.removePackage) {
             $deleteButton.click(function () {
@@ -242,16 +235,26 @@ var ActionManager = (function () {
         modal.find('#modal-room-id').text(newIntervalData.accommodation);
         modal.find('#modal-room-type-name').text(roomTypes[newIntervalData.roomType]);
         modal.find('#modal-room-name').text(newIntervalData.accommodation ? rooms[newIntervalData.accommodation] : 'Без размещения');
+        modal.modal('show');
     };
     ActionManager.getDataFromUpdateModal = function () {
         var modal = $('#packageModal');
+        var payerText;
+        var payerName = modal.find('#modal-package-payer').text();
+        if (payerName != 'Не указан') {
+            payerText = payerName;
+        }
+        else {
+            payerText = modal.find('#modal-package-payer').text();
+        }
         return {
             'packageId': modal.find('input.modalPackageId').val(),
             'accommodationId': modal.find('input.modalAccommodationId').val(),
             'begin': modal.find('#modal-begin-date').text(),
             'end': modal.find('#modal-end-date').text(),
             'roomId': modal.find('#modal-room-id').text(),
-            'isDivide': modal.find('input.isDivide').val()
+            'isDivide': modal.find('input.isDivide').val(),
+            'payer': payerText
         };
     };
     ActionManager.onContinueButtonClick = function ($modalAlertDiv, $confirmButton, $continueButton, $updateForm) {

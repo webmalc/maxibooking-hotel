@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\PackageBundle\Form\SearchType;
-use Symfony\Component\ExpressionLanguage\Expression;
 
 /**
  * @Route("/chessboard")
@@ -82,7 +81,7 @@ class ChessBoardController extends BaseController
      * @Method({"DELETE"})
      * @Route("/packages/{id}", name="chessboard_remove_package", options={"expose"=true})
      * @param Package $package
-     * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
+     * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', package) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
      * @return JsonResponse
      */
     public function removePackageAction(Package $package)
@@ -127,7 +126,9 @@ class ChessBoardController extends BaseController
             $accommodation = $this->dm->find('MBHPackageBundle:PackageAccommodation', $accommodationId);
             //Если удаляется размещение
             if (!$updatedRoom) {
-                $this->removeAccommodation($accommodation, $package, $messageFormatter);
+                $this->dm->remove($accommodation);
+                $this->dm->flush();
+                $messageFormatter->addSuccessRemoveAccommodationMessage($accommodation);
             } else {
                 $this->updateAccommodation($package, $accommodation, $updatedRoom, $updatedBeginDate,
                     $updatedEndDate, $messageFormatter);
@@ -155,11 +156,11 @@ class ChessBoardController extends BaseController
         $isBeginDateChanged = $updatedBeginDate->format('d.m.Y') != $accommodation->getBegin()->format('d.m.Y');
         $isEndDateChanged = $updatedEndDate->format('d.m.Y') != $accommodation->getEnd()->format('d.m.Y');
 
-        //Если изменилась дата или конец размещения, но это не первое и не последнее размещение
-        if (($isBeginDateChanged && !$isFirstAccommodation) || ($isEndDateChanged && !$isLastAccommodation)) {
-            throw new \Exception($this->get('translator')
-                ->trans('controller.chessboard.accommodation_update.not_first_or_last_accommodation_change'));
-        }
+//        //Если изменилась дата или конец размещения, но это не первое и не последнее размещение
+//        if (($isBeginDateChanged && !$isFirstAccommodation) || ($isEndDateChanged && !$isLastAccommodation)) {
+//            throw new \Exception($this->get('translator')
+//                ->trans('controller.chessboard.accommodation_update.not_first_or_last_accommodation_change'));
+//        }
 
         $isPackageChanged = false;
         if ($isBeginDateChanged && $isFirstAccommodation) {
@@ -196,10 +197,10 @@ class ChessBoardController extends BaseController
         ChessBoardMessageFormatter $messageFormatter
     ) {
         $rightsChecker = $this->get('security.authorization_checker');
-        if ($rightsChecker->isGranted('ROLE_PACKAGE_VIEW_ALL')
+        if (!($rightsChecker->isGranted('ROLE_PACKAGE_VIEW_ALL')
         || ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
             && $rightsChecker->isGranted('VIEW', $package))
-        ) {
+        )) {
             throw $this->createAccessDeniedException();
         }
 
@@ -210,21 +211,7 @@ class ChessBoardController extends BaseController
         $package->addAccommodation($accommodation);
 
         $this->dm->flush();
-        $messageFormatter->addSuccessAddAccommodationMessage($accommodation);
-    }
-
-    private function removeAccommodation(
-        PackageAccommodation $accommodation,
-        Package $package,
-        ChessBoardMessageFormatter $messageFormatter
-    ) {
-        if ($accommodation->getEnd()->getTimestamp() != $package->getEnd()->getTimestamp()) {
-            $messageFormatter->addErrorRemoveAccommodationMessage();
-        } else {
-            $this->dm->remove($accommodation);
-            $this->dm->flush();
-            $messageFormatter->addSuccessRemoveAccommodationMessage($accommodation);
-        }
+        $messageFormatter->addSuccessAddAccommodationMessage($accommodation, $package);
     }
 
     private function updatePackageWithAccommodation(
@@ -236,9 +223,9 @@ class ChessBoardController extends BaseController
         ChessBoardMessageFormatter $messageFormatter
     ) {
         $rightsChecker = $this->get('security.authorization_checker');
-        if ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT')  && ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
+        if (!($rightsChecker->isGranted('ROLE_PACKAGE_EDIT')  && ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
             || $rightsChecker->isGranted('EDIT', $oldPackage))
-        ) {
+        )) {
             throw $this->createAccessDeniedException();
         }
 
@@ -266,7 +253,7 @@ class ChessBoardController extends BaseController
      * @Route("/accommodation_relocate/{id}", name="relocate_accommodation", options={"expose"=true})
      * @param Request $request
      * @param PackageAccommodation $firstAccommodation
-     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
+     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', firstAccommodation) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @return JsonResponse
      * @throws \Exception
      */
@@ -309,7 +296,7 @@ class ChessBoardController extends BaseController
             $messageFormatter->addErrorDivideAccommodationMessage();
         }
 
-        return new JsonResponse($messageFormatter->getMessages());
+        return new JsonResponse(json_encode($messageFormatter->getMessages()));
     }
 
     /**

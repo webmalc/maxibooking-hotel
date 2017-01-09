@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Models\ChessBoard;
 
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use MBH\Bundle\PackageBundle\Services\PackageAccommodationManipulator;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class ChessBoardUnit implements \JsonSerializable
@@ -14,26 +15,32 @@ class ChessBoardUnit implements \JsonSerializable
     private $accommodation;
     /** @var  AuthorizationChecker $rightsChecker */
     private $rightsChecker;
+    /** @var PackageAccommodationManipulator $accommodationManipulator */
+    private $accommodationManipulator;
+    private $emptyIntervalData;
 
     const LEFT_RELATIVE_POSITION = 'left';
     const RIGHT_RELATIVE_POSITION = 'right';
     const MIDDLE_RELATIVE_POSITION = 'middle';
     const FULL_PACKAGE_ACCOMMODATION = 'full';
 
-    public function __construct(AuthorizationChecker $rightsChecker)
+    public function __construct(AuthorizationChecker $rightsChecker, PackageAccommodationManipulator $accommodationManipulator)
     {
         $this->rightsChecker = $rightsChecker;
+        $this->accommodationManipulator = $accommodationManipulator;
     }
 
     /**
      * @param Package $package
      * @param PackageAccommodation|null $accommodation
+     * @param array $emptyIntervalData
      * @return ChessBoardUnit
      */
-    public function setInitData(Package $package, ?PackageAccommodation $accommodation = null)
+    public function setInitData(Package $package, ?PackageAccommodation $accommodation = null, array $emptyIntervalData = [])
     {
         $this->package = $package;
         $this->accommodation = $accommodation;
+        $this->emptyIntervalData = $emptyIntervalData;
 
         return $this;
     }
@@ -73,7 +80,14 @@ class ChessBoardUnit implements \JsonSerializable
 
     public function getBeginDate()
     {
-        return $this->accommodation ? $this->accommodation->getBegin() : $this->package->getBegin();
+        if ($this->accommodation) {
+            return $this->accommodation->getBegin();
+        }
+        if ($this->emptyIntervalData != []) {
+            return $this->emptyIntervalData['begin'];
+        }
+
+        return $this->package->getBegin();
     }
 
     public function getEndDate()
@@ -81,9 +95,8 @@ class ChessBoardUnit implements \JsonSerializable
         if ($this->accommodation) {
             return $this->accommodation->getEnd();
         }
-        if ((count($this->package->getAccommodations()) > 0)
-            && $this->package->getLastEndAccommodation()->getTimestamp() < $this->package->getEnd()->getTimestamp()) {
-            return $this->package->getLastEndAccommodation();
+        if ($this->emptyIntervalData != []) {
+            return $this->emptyIntervalData['end'];
         }
 
         return $this->package->getEnd();
@@ -106,7 +119,9 @@ class ChessBoardUnit implements \JsonSerializable
     private function getAccommodationRelativePosition(PackageAccommodation $accommodation, Package $package)
     {
         $packageBeginString = $package->getBegin()->format('d.m.Y');
-        $lastPackageAccommodationEndString = $package->getLastEndAccommodation()->format('d.m.Y');
+        $sortedPackageAccommodation = $this->accommodationManipulator
+            ->sortAccommodationsByBeginDate($package->getAccommodations()->toArray());
+        $lastPackageAccommodationEndString = $sortedPackageAccommodation->last()->getEnd()->format('d.m.Y');
         $accommodationBeginString = $accommodation->getBegin()->format('d.m.Y');
         $accommodationEndString = $accommodation->getEnd()->format('d.m.Y');
 

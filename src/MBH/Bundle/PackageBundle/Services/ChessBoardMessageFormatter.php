@@ -27,11 +27,6 @@ class ChessBoardMessageFormatter
         $this->errorMessages[] = $this->translator->trans($messageId, $params);
     }
 
-    public function addErrorRemoveAccommodationMessage()
-    {
-        $this->addErrorMessage('controller.chessboard.accommodation_not_last_remove.error');
-    }
-
     public function addSuccessRemoveAccommodationMessage(PackageAccommodation $accommodation)
     {
         /** @var Package $package */
@@ -54,9 +49,11 @@ class ChessBoardMessageFormatter
         $this->addSuccessfulMessage('controller.chessboard.accommodation_update.success');
     }
 
-    public function addSuccessAddAccommodationMessage(PackageAccommodation $newAccommodation)
+    public function addSuccessAddAccommodationMessage(PackageAccommodation $newAccommodation, Package $package = null)
     {
-        $package = $newAccommodation->getPackage();
+        if (!$package) {
+            $package = $newAccommodation->getPackage();
+        }
         $this->addSuccessfulMessage('controller.chessboard.accommodation_divide.success', [
             '%packageId%' => $package->getName(),
             '%payerInfo%' => $this->getPayerInfo($package),

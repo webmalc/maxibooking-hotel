@@ -438,7 +438,6 @@ controller.chessboard.package_remove.success: Бронь успешно удал
 controller.chessboard.accommodation_update.success: Размещение успешно изменено
 controller.chessboard.accommodation_divide.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет размещена в номере %roomName%'
 controller.chessboard.accommodation_remove.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет без размещения'
-controller.chessboard.accommodation_not_last_remove.error: Невозможно удалить размещение, не являющееся последним в брони
 controller.chessboard.accommodation_divide.error: Дата разделения размещение не может быть меньше начала размещения или больше конца размещения
 controller.chessboard.accommodation_divide.error.empty_date_string: Передана пустая строка даты разделения размещения
 controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: Ошибка! Недопустимо изменение промежуточного размещения

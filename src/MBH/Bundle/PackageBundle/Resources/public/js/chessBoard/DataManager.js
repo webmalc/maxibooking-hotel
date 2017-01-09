@@ -11,7 +11,6 @@ var DataManager = (function () {
     }
     DataManager.prototype.handleResponse = function (jsonResponse) {
         var response = JSON.parse(jsonResponse);
-        console.log(response);
         ActionManager.showResultMessages(response);
         this.updatePackagesData();
         if (response.data) {
@@ -85,11 +84,9 @@ var DataManager = (function () {
         });
     };
     DataManager.prototype.addPackageData = function (packageData) {
-        packageData.payer = '';
         this._accommodations.push(packageData);
     };
     DataManager.prototype.updateLocalPackageData = function (packageData, isDivide) {
-        var self = this;
         ActionManager.hideLoadingIndicator();
         if (isDivide) {
             var dividedAccommodation_1;
@@ -113,8 +110,8 @@ var DataManager = (function () {
         }
         else {
             if (!packageData.accommodation) {
-                this._accommodations.forEach(function (packageItem, index, packages) {
-                    if (packageItem.id === packageItem.id) {
+                this._accommodations.forEach(function (accommodationData, index, packages) {
+                    if (accommodationData.id === packageData.id) {
                         packages.splice(index, 1);
                     }
                 });
@@ -190,15 +187,15 @@ var DataManager = (function () {
             }
         });
     };
-    DataManager.prototype.getPackageDataRequest = function (accommodationId) {
+    DataManager.prototype.getPackageDataRequest = function (packageId) {
         ActionManager.showLoadingIndicator();
         var self = this;
         $.ajax({
-            url: Routing.generate('chessboard_get_package', { id: accommodationId }),
+            url: Routing.generate('chessboard_get_package', { id: packageId }),
             type: "GET",
             success: function (data) {
                 ActionManager.hideLoadingIndicator();
-                self.actionManager.showPackageInfoModal(accommodationId, data);
+                self.actionManager.showPackageInfoModal(packageId, data);
             },
             error: function () {
                 self.handleError();
@@ -210,6 +207,27 @@ var DataManager = (function () {
         return this.getNoAccommodationIntervals().find(function (packageData) {
             return packageData.id === id;
         });
+    };
+    DataManager.prototype.getPackageDataById = function (packageId) {
+        var packageData;
+        this._accommodations.some(function (accommodationData) {
+            if (accommodationData.packageId == packageId) {
+                packageData = accommodationData;
+                return true;
+            }
+            return false;
+        });
+        if (packageData) {
+            return packageData;
+        }
+        this.noAccommodationIntervals.some(function (noAccommodationInterval) {
+            if (noAccommodationInterval.id == packageId) {
+                packageData = noAccommodationInterval;
+                return true;
+            }
+            return false;
+        });
+        return packageData;
     };
     DataManager.prototype.getAccommodationIntervalById = function (id) {
         return this.getAccommodations().find(function (accommodationData) {

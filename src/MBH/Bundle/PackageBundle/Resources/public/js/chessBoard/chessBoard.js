@@ -1,7 +1,5 @@
 /*global window, $, services, document, firstTableDate, packages, leftRoomsData, noAccommodationCounts, noAccommodationIntervals*/
-var PACKAGE_ELEMENT_HEIGHT = 41;
 var DATE_ELEMENT_WIDTH = 47;
-var PACKAGE_TO_MIDDAY_OFFSET = 20;
 
 //TODO: Как обрабатывать ошибки ajax?
 //TODO: Мб скрывать боковое меню при переходе на вкладку шахматки?

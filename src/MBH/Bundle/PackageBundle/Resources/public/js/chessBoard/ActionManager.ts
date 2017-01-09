@@ -127,13 +127,7 @@ class ActionManager {
     public showPackageInfoModal(packageId, data) {
         let self = this;
         var packageInfoModal = $('#package-info-modal');
-        let accommodationId = packageInfoModal.find('input.modalAccommodationId').val();
-        let intervalData;
-        if (accommodationId) {
-            intervalData = this.dataManager.getAccommodationIntervalById(accommodationId);
-        } else {
-            intervalData = this.dataManager.getNoAccommodationIntervalById(packageId);
-        }
+        let intervalData = this.dataManager.getPackageDataById(packageId);
         let $deleteButton = packageInfoModal.find('#package-info-modal-delete');
         if (intervalData.removePackage) {
             $deleteButton.click(function () {
@@ -189,7 +183,6 @@ class ActionManager {
         var newIntervalData = ChessBoardManager.getPackageData(packageElement);
         if (intervalData && changedSide) {
             let alertMessageData = ActionManager.getAlertMessage(changedSide, intervalData, newIntervalData);
-
             if (alertMessageData) {
                 ActionManager.showAlertMessage(alertMessageData, $updateForm);
             }
@@ -269,17 +262,27 @@ class ActionManager {
         modal.find('#modal-room-id').text(newIntervalData.accommodation);
         modal.find('#modal-room-type-name').text(roomTypes[newIntervalData.roomType]);
         modal.find('#modal-room-name').text(newIntervalData.accommodation ? rooms[newIntervalData.accommodation] : 'Без размещения');
+        modal.modal('show');
     }
 
     public static getDataFromUpdateModal() {
         var modal = $('#packageModal');
+        let payerText;
+        let payerName = modal.find('#modal-package-payer').text();
+        if (payerName != 'Не указан') {
+            payerText = payerName;
+        } else {
+            payerText = modal.find('#modal-package-payer').text();
+        }
+
         return {
             'packageId': modal.find('input.modalPackageId').val(),
             'accommodationId': modal.find('input.modalAccommodationId').val(),
             'begin': modal.find('#modal-begin-date').text(),
             'end': modal.find('#modal-end-date').text(),
             'roomId': modal.find('#modal-room-id').text(),
-            'isDivide': modal.find('input.isDivide').val()
+            'isDivide': modal.find('input.isDivide').val(),
+            'payer' : payerText
         }
     }
 

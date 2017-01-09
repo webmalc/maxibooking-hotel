@@ -1009,8 +1009,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $arrivalTime = $this->getParameter('mbh_package_arrival_time');
 
         return [
-            'emptyIntervalsAccommodation' => $pAccManipulator->getEmptyIntervals($package),
+            'emptyIntervalsAccommodation' => $accIntervals,
             'package' => $package,
+            'sortedAccommodations' => $pAccManipulator->sortAccommodationsByBeginDate($package->getAccommodations()->toArray()),
             'arrivalTime' => $arrivalTime,
             'earlyCheckInServiceIsEnabled' => $earlyCheckInServiceIsEnabled,
             'lateCheckOutServiceIsEnabled' => $lateCheckOutServiceIsEnabled,
@@ -1019,7 +1020,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'optGroupRooms' => $optGroupRooms,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
-
         ];
     }
 
