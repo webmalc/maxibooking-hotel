@@ -15,6 +15,7 @@ use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -158,6 +159,13 @@ class Package extends Base implements \JsonSerializable
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Promotion")
      */
     protected $promotion;
+
+    /**
+     * @var Special|null
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Special")
+     */
+    protected $special;
 
     /**
      * @var float
@@ -1524,6 +1532,25 @@ class Package extends Base implements \JsonSerializable
     public function setVirtualRoom(Room $virtualRoom = null): self
     {
         $this->virtualRoom = $virtualRoom;
+        return $this;
+    }
+
+    /**
+     * @return Special|null
+     */
+    public function getSpecial(): ?Special
+    {
+        return $this->special;
+    }
+
+    /**
+     * @param Special|null $special
+     * @return Package
+     */
+    public function setSpecial(Special $special = null): self
+    {
+        $this->special = $special;
+
         return $this;
     }
 

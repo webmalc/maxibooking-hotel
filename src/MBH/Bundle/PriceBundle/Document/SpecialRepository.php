@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use  Doctrine\MongoDB\CursorInterface;
 
@@ -11,9 +12,9 @@ class SpecialRepository extends DocumentRepository
 
     /**
      * @param SpecialFilter $filter
-     * @return CursorInterface
+     * @return Builder
      */
-    public function getFiltered(SpecialFilter $filter): CursorInterface
+    public function getFilteredQueryBuilder(SpecialFilter $filter): Builder
     {
         $qb = $this->createQueryBuilder();
 
@@ -44,6 +45,21 @@ class SpecialRepository extends DocumentRepository
                 $qb->expr()->field('roomTypes')->includesReferenceTo($filter->getRoomType())
             ));
         }
+
+        if ($filter->getHotel()) {
+            $qb->field('hotel')->references($filter->getHotel());
+        }
+
+        return $qb;
+    }
+
+    /**
+     * @param SpecialFilter $filter
+     * @return CursorInterface
+     */
+    public function getFiltered(SpecialFilter $filter): CursorInterface
+    {
+        $qb = $this->getFilteredQueryBuilder($filter);
 
         return $qb->getQuery()->execute();
     }

@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -145,6 +146,26 @@ class PackageMainType extends AbstractType
                     'group' => 'Скидка'
                 ]);
         }
+        if($options['special']) {
+            $builder
+                ->add('special', DocumentType::class, [
+                    'group' => 'Спецпредложение',
+                    'label' => 'form.packageMainType.special',
+                    'class' => 'MBH\Bundle\PriceBundle\Document\Special',
+                    'required' => false,
+                    'group' => 'Спецпредложение',
+                    'query_builder' => function (DocumentRepository $dr) use ($package) {
+                        $filter = new SpecialFilter();
+                        $filter->setHotel($package->getHotel())
+                            ->setRoomType($package->getRoomType())
+                            ->setBegin($package->getBegin())
+                            ->setEnd($package->getEnd())
+                            ->setTariff($package->getTariff())
+                        ;
+                        return $dr->getFilteredQueryBuilder($filter);
+                    },
+                ]);
+        }
         $builder
             ->add('numberWithPrefix', TextType::class, [
                 'label' => 'Номер брони',
@@ -173,6 +194,7 @@ class PackageMainType extends AbstractType
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
             'discount' => false,
+            'special' => false,
             'hotel' => null,
             'corrupted' => false,
             'promotion' => false,

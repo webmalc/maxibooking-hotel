@@ -28,8 +28,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Special extends Base
 {
-    //TODO: add delete references
-
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -253,7 +251,7 @@ class Special extends Base
      */
     public function getTitle(): ?string
     {
-        return $this->title;
+        return (string) $this->title;
     }
 
     /**

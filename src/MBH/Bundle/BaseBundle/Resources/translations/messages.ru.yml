@@ -291,6 +291,8 @@ exception.vegaState_relation_delete.message.touristCitizenship: 'Невозмо�
 exception.vegaState_relation_delete.message.touristBirthplace: 'Невозможно удалить данные о стране, так как существуют клиенты, рожденный в ней (%total%).'
 exception.housing_relation_delete.message.room: 'Невозможно удалить корпус, так как существуют комнаты, относящиеся к нему (%total%).'
 exception.ingredient_relation_delete.message.dishIngredient: 'Невозможно удалить ингредиент, так как он используется в блюдах (%total%).'
+exception.special_relation_delete.message.package: 'Невозможно удалить спецпредложение, так как существуют брони, относящиеся к нему (%total%).'
+
 subscriber.cannot_delete_room_in_sale_error: Невозможно удалить комнату, так как она находится в продаже.
 tariff.main: 'основной тариф'
 tariffs: тарифы
