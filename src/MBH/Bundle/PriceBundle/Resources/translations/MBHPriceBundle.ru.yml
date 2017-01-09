@@ -61,6 +61,7 @@ price.views.overview.index.rate: 'Тариф'
 #/ tariff filter
 tariff.filter.status: Статус тарифа
 tariff.filter.state: Состояние
+tariffs.filter.small_title: обзор
 
 #/ tariff-table
 tariff.table.name: Название

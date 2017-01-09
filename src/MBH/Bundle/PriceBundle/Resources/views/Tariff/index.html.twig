@@ -9,14 +9,14 @@
         {% block content %}
             {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'tariff-form'}}) }}
             <div class="form-group">
-                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
-                {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
-                {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
-            </div>
-            <div class="form-group">
-                {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
-            </div>
-            <div class="form-group">
+                <div class="input">
+                    <i class="fa fa-calendar" title='{{ 'tariffs.filter.small_title'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp
+                    <input type="text" id="form_begin" class="datepicker mbh-daterangepicker room-overview-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ form_widget(form.begin) is empty ? 'now'|date('d.m.Y') : form_widget(form.begin) }}">
+                </div>
+                <div class="input hidden">
+                    - &nbsp
+                    <input type="text" id="form_end" class="datepicker mbh-daterangepicker room-overview-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ form_widget(form.end) is empty ? 'now'|date_modify("+45 days")|date('d.m.Y') : form_widget(form.end) }}">
+                </div>
                 <div class="input">
                     <label><i class="fa fa-chevron-down " title='{{ 'tariff.filter.status'|trans({}, 'MBHPriceBundle') }}' data-toggle='tooltip'></i></label>
                     {{ form_widget(form.isOnline) }}
@@ -62,5 +62,4 @@
 
     {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'tariff_new', 'role': 'TARIFF'} %}
 
-{% endblock %} 
-
+{% endblock %}

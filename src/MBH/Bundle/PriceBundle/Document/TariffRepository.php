@@ -175,7 +175,6 @@ class TariffRepository extends DocumentRepository
     private function queryCriteriaToBuilder(TariffQueryCriteria $criteria)
     {
         $queryBuilder = $this->createQueryBuilder();
-        $currentDate = new \DateTime('midnight');
 
         if ($criteria->search) {
             $fullNameRegex = new \MongoRegex('/.*' . $criteria->search . '.*/ui');
@@ -198,16 +197,6 @@ class TariffRepository extends DocumentRepository
 
         if ($criteria->begin || $criteria->end) {
             $queryBuilder->field('begin')->lte($criteria->begin);
-            $queryBuilder->field('end')->gte($criteria->end);
-        }
-
-        if (!empty($criteria->begin) && empty($criteria->end)) {
-            $queryBuilder->field('begin')->lte($criteria->begin);
-            $queryBuilder->field('end')->gte($currentDate);
-        }
-
-        if (empty($criteria->begin) && !empty($criteria->end)) {
-            $queryBuilder->field('begin')->lte($currentDate);
             $queryBuilder->field('end')->gte($criteria->end);
         }
 
