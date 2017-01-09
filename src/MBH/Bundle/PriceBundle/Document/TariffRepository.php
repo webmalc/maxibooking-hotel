@@ -177,6 +177,25 @@ class TariffRepository extends DocumentRepository
         $queryBuilder = $this->createQueryBuilder();
         $currentDate = new \DateTime('midnight');
 
+        if ($criteria->search) {
+            $fullNameRegex = new \MongoRegex('/.*' . $criteria->search . '.*/ui');
+            $queryBuilder->field('fullTitle')->equals($fullNameRegex);
+        }
+
+        if($criteria->isOnline === 1) {
+            $queryBuilder->field('isOnline')->equals(true);
+        } elseif ($criteria->isOnline === 0) {
+            $queryBuilder->field('isOnline')->equals(false);
+        }
+
+        if($criteria->isEnabled === 1) {
+            $queryBuilder->field('isEnabled')->equals(true);
+        } elseif ($criteria->isEnabled === 0) {
+            $queryBuilder->field('isEnabled')->equals(false);
+        } else {
+            $queryBuilder->field('isEnabled')->equals(true);
+        }
+
         if ($criteria->begin || $criteria->end) {
             $queryBuilder->field('begin')->lte($criteria->begin);
             $queryBuilder->field('end')->gte($criteria->end);

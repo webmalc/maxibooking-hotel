@@ -18,11 +18,12 @@
             </div>
             <div class="form-group">
                 <div class="input">
-                    <i class="fa fa-check"
-                       title="{{ 'tariff.filter.status'|trans({}, 'MBHPriceBundle') }}" data-toggle="tooltip"
-                    ></i>
-                    &nbsp;
-                    <input type="checkbox" name="isOnline" id="isOnline" value="1">
+                    <label><i class="fa fa-chevron-down " title='{{ 'tariff.filter.status'|trans({}, 'MBHPriceBundle') }}' data-toggle='tooltip'></i></label>
+                    {{ form_widget(form.isOnline) }}
+                </div>
+                <div class="input">
+                    <label><i class="fa fa-asterisk" title='{{ 'tariff.filter.state'|trans({}, 'MBHPriceBundle') }}' data-toggle='tooltip'></i></label>
+                    {{ form_widget(form.isEnabled) }}
                 </div>
                 {{ form_widget(form._token) }}
                 {{ form_rest(form.search) }}
@@ -35,13 +36,23 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th>Название</th>
-            <th>База</th>
-            <th class="td-xs text-center">Ребенок</th>
-            <th class="td-xs text-center">Инфант</th>
-            <th class="td-md text-center">Сроки</th>
-            <th class="td-sm text-center">Основной</th>
-            <th class="td-sm text-center">Онлайн</th>
+            <th>{{ 'tariff.table.name'|trans({}, 'MBHPriceBundle') }}</th>
+            <th>{{ 'tariff.table.base'|trans({}, 'MBHPriceBundle') }}</th>
+            <th class="td-xs text-center">
+                {{ 'tariff.table.children'|trans({}, 'MBHPriceBundle') }}
+            </th>
+            <th class="td-xs text-center">
+                {{ 'tariff.table.infant'|trans({}, 'MBHPriceBundle') }}
+            </th>
+            <th class="td-md text-center">
+                {{ 'tariff.table.terms'|trans({}, 'MBHPriceBundle') }}
+            </th>
+            <th class="td-sm text-center">
+                {{ 'tariff.table.default'|trans({}, 'MBHPriceBundle') }}
+            </th>
+            <th class="td-sm text-center">
+                {{ 'tariff.table.online'|trans({}, 'MBHPriceBundle') }}
+            </th>
             <th class="td-sm"></th>
         </tr>
         </thead>

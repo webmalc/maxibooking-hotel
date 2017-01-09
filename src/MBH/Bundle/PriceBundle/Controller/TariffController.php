@@ -68,6 +68,20 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
                 'format' => 'dd.MM.yyyy',
                 'required' => false
             ])
+            ->add('isOnline',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+                'required' => false,
+                'choices' => [
+                    TariffQueryCriteria::ON => 'status.on',
+                    TariffQueryCriteria::OFF => 'status.off'
+                ]
+            ])
+            ->add('isEnabled',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+                'required' => false,
+                'choices' => [
+                    TariffQueryCriteria::ON => 'state.on',
+                    TariffQueryCriteria::OFF => 'state.off'
+                ]
+            ])
             ->add('search', TextType::class, [
                 'required' => false
             ])
@@ -101,14 +115,6 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
 
         /** @var TariffRepository $tariffRepository */
         $tariffRepository = $this->dm->getRepository('MBHPriceBundle:Tariff');
-
-        if($criteria->begin && $criteria->end) {
-            $diff = $criteria->begin->diff($criteria->end);
-            if($diff->y == 1 && $diff->m > 0 || $diff->y > 1) {
-                $begin = clone($criteria->begin);
-                $criteria->end = $begin->modify('+ 1 year');
-            }
-        }
 
         $tariffs = $tariffRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
 

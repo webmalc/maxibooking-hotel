@@ -18,9 +18,10 @@ var docReadyTariff = function () {
                 requestData.form = {
                     begin: $tariffForm.find('#form_begin').val(),
                     end: $tariffForm.find('#form_end').val(),
+                    isOnline: $tariffForm.find('#form_isOnline').val(),
+                    isEnabled: $tariffForm.find('#form_isEnabled').val(),
                     _token: $tariffForm.find('#form__token').val()
                 };
-                console.log(requestData);
                 return requestData;
             }
         }
