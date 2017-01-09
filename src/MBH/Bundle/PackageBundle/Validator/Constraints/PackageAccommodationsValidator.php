@@ -12,6 +12,8 @@ class PackageAccommodationsValidator extends ConstraintValidator
 {
     private $dm;
 
+    private $translator;
+
     /**
      * PackageAccommodationValidator constructor.
      * @param $dm
@@ -26,19 +28,43 @@ class PackageAccommodationsValidator extends ConstraintValidator
     {
         /** @var PackageAccommodation $packageAccommodation */
         $package = $packageAccommodation->getPackage();
-
-        if ($packageAccommodation->getBegin() < $package->getLastEndAccommodation() || $packageAccommodation->getBegin() > $package->getLastEndAccommodation()) {
-            $this->context->buildViolation($constraint->wrongStartDateMessage)
+        //Check PackageAccommodation by Package
+        if ($packageAccommodation->getBegin() < $package->getBegin() || $packageAccommodation->getEnd() > $package->getEnd()) {
+            $this->context->buildViolation($constraint->wrongStartOrEndMessage)
                 ->addViolation()
             ;
         }
+        //Check intersect PakageAccommodation by neighbors
+        /** @var PackageAccommodation $packageAccommodation */
+        $accommodations = $package->getAccommodations();
+        foreach ($accommodations as $accommodation) {
+            /** @var PackageAccommodation $accommodation */
+            if ($packageAccommodation->getEnd() > $accommodation->getBegin() && $packageAccommodation->getBegin() < $accommodation->getEnd()) {
+                $this->context->buildViolation($constraint->intersectNeighbour, ['%neighbourId%' => $accommodation->getId()])
+                    ->addViolation()
+                ;
+            }
+        }
 
-        if ($packageAccommodation->getEnd() > $package->getEnd() || $packageAccommodation->getEnd() <= $package->getLastEndAccommodation()) {
-            $this->context->buildViolation($constraint->wrongEndDateMessage)
+        //Check globaly is accommodation intersect
+        $existAccommodations = $this->dm
+            ->getRepository('MBHPackageBundle:PackageAccommodation')
+            ->createQueryBuilder()
+            ->field('accommodation.id')->equals($packageAccommodation->getAccommodation()->getId())
+            ->field('begin')->lt($packageAccommodation->getEnd())
+            ->field('end')->gt($packageAccommodation->getBegin())
+            ->field('id')->notEqual($packageAccommodation->getId())
+            ->getQuery()
+            ->execute();
+        $existAccId = '';
+        if ($existAccommodations->count()) {
+            foreach ($existAccommodations as $existAccommodation) {
+                $existAccId .= ' ' . $existAccommodation->getId();
+            }
+            $this->context->buildViolation($constraint->intersectNeighbour, ['%neighbourId%' => $existAccId])
                 ->addViolation()
             ;
         }
-
     }
 
 }

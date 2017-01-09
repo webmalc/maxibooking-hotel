@@ -1,14 +1,6 @@
-{% if entity.accommodation and entity.fullAccommodation %}
-    {% set class = 'label-success' %}
-{% elseif entity.accommodation %}
-    {% set class = 'label-warning' %}
-{% else %}
-    {% set class = 'label-default' %}
-{% endif %}
-
 {% set accommodation = {
     'val': entity.accommodation ? entity.accommodation : 'нет',
-    'class': class,
+    'class': pAccClass(entity),
     'checkIn': entity.accommodation and entity.isCheckIn and entity.isCheckOut is empty ? ' check-in-label' : '',
     'checkOut': entity.accommodation and entity.isCheckOut ? ' check-out-label' : '',
     'append': 'not.stopped'

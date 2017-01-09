@@ -28,11 +28,6 @@ class PackageAccommodationSubscriber implements EventSubscriber
         $document = $eventArgs->getDocument();
         if ($document instanceof PackageAccommodation) {
             $package = $document->getPackage();
-            $accommodations = $package->getAccommodations();
-            if ($accommodations->last() !== $document) {
-                throw new DeleteException('package.accommodation.no_last.delete.error');
-            }
-
             $package->removeAccommodations($document);
             $class = $dm->getClassMetadata(get_class($package));
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $package);

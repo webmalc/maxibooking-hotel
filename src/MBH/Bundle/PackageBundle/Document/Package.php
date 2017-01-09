@@ -80,6 +80,7 @@ class Package extends Base implements \JsonSerializable
 
     /**
      * @ODM\ReferenceMany(targetDocument="PackageAccommodation", inversedBy="package", cascade={"persist"})
+     *
      */
     protected $accommodations;
 
@@ -1498,10 +1499,6 @@ class Package extends Base implements \JsonSerializable
         return $this->accommodations;
     }
 
-    public function isFullAccommodation(): bool
-    {
-        return $this->accommodations->first()->getBegin() == $this->begin && $this->accommodations->last()->getEnd() == $this->end;
-    }
 
     /**
      * @param Collection $accommodations
@@ -1539,6 +1536,10 @@ class Package extends Base implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return \DateTime
+     * @deprecated
+     */
     public function getLastEndAccommodation(): \DateTime
     {
         $begin = $this->getBegin();
@@ -1552,11 +1553,17 @@ class Package extends Base implements \JsonSerializable
         return $begin;
     }
 
+    /**
+     * @return mixed
+     */
     public function getLastAccommodation()
     {
         return $this->accommodations->last();
     }
 
+    /**
+     * @return mixed
+     */
     public function getFirstAccommodation()
     {
         return $this->accommodations->first();
@@ -1568,11 +1575,18 @@ class Package extends Base implements \JsonSerializable
         return $this->getFirstAccommodation();
     }
 
+    /**
+     * @return mixed
+     */
     public function getAccommodationCheckOut()
     {
         return $this->getLastAccommodation();
     }
 
+    /**
+     * @param \DateTime $dateTime
+     * @return mixed
+     */
     public function getAccommodationByDate(\DateTime $dateTime)
     {
         $accommodation = $this->accommodations->filter(function ($accommodation) use ($dateTime) {

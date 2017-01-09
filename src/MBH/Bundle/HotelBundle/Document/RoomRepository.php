@@ -123,18 +123,18 @@ class RoomRepository extends AbstractBaseRepository
         return $groupedRooms;
     }
 
-    public function fetchAccommodationRoomsForPackage(Package $package, Hotel $hotel)
-    {
-        $begin = $package->getLastEndAccommodation();
-        $end = $package->getEnd();
-        $interval = $end->diff($begin, true);
-        if (!$interval->format('%d')) {
-            return [];
-        }
-        $excludePackages = $package->getId();
-
-        return $this->fetchAccommodationRooms($begin, $end, $hotel, null, null, $excludePackages, true);
-    }
+//    public function fetchAccommodationRoomsForPackage(Package $package, Hotel $hotel)
+//    {
+//        $begin = $package->getLastEndAccommodation();
+//        $end = $package->getEnd();
+//        $interval = $end->diff($begin, true);
+//        if (!$interval->format('%d')) {
+//            return [];
+//        }
+//        $excludePackages = $package->getId();
+//
+//        return $this->fetchAccommodationRooms($begin, $end, $hotel, null, null, $excludePackages, true);
+//    }
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -194,7 +194,7 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         // rooms
-        $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
+        $qb = $this->createQueryBuilder()->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
              ->field('isEnabled')->equals(true)
              ->inToArray('roomType.id', $hotelRoomTypes)
              ->notInNotEmpty('id', $ids)
