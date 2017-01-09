@@ -40,15 +40,9 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     public function indexAction()
     {
         $form = $this->getTariffFilterForm();
-        $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('q')
-            ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
-            ->sort('fullTitle', 'asc')
-            ->getQuery()
-            ->execute();
 
         return [
             'form' => $form->createView(),
-            //'entities' => $entities
         ];
     }
 
