@@ -84,7 +84,6 @@ class PackageAccommodationManipulator
                 'end' => $package->getEnd(),
             ];
             $intervals->add($interval);
-
         } else {
             $pAccommodationsSorted = $this->sortAccommodationsByBeginDate($pAccommodations->toArray());
             /** @var PackageAccommodation $previousAccommodation */
@@ -143,7 +142,7 @@ class PackageAccommodationManipulator
      * @param $packageAccommodations
      * @return ArrayCollection
      */
-    public function sortAccommodationsByBeginDate($packageAccommodations)
+    public function sortAccommodationsByBeginDate($packageAccommodations) : ArrayCollection
     {
         usort($packageAccommodations, function ($a, $b) {
             /** @var PackageAccommodation $a*/

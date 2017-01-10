@@ -71,8 +71,7 @@ class ChessBoardManager {
             let data = ActionManager.getDataFromUpdateModal();
             let packageId = data.packageId;
             let accommodationId = data.accommodationId;
-            let blockId = accommodationId ? accommodationId : packageId;
-            let packageData = ChessBoardManager.getPackageData($('#' + blockId));
+            let packageData = ChessBoardManager.getPackageData($('#' + data.id));
             let isDivide = data.isDivide == 'true';
             if (isDivide) {
                 self.dataManager.relocateAccommodationRequest(accommodationId, data);
@@ -82,8 +81,8 @@ class ChessBoardManager {
                 self.dataManager.updateLocalPackageData(packageData, isDivide);
             }
             ActionManager.showLoadingIndicator();
-
         };
+
         let $reportFilter = $('#accommodation-report-filter');
 
         $('.daterangepicker-input').daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
@@ -258,7 +257,7 @@ class ChessBoardManager {
         packageDiv.style.width = packageWidth + 'px';
         packageDiv.id = packageItem.id;
         let description = document.createElement('div');
-        let packageName = (packageItem.payer && packageCellCount > 1) ? packageItem.payer : packageItem.number;
+        let packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
         let descriptionText = packageName ? packageName.substr(0, packageCellCount * 5 - 1) : '';
         description.innerHTML = descriptionText;
         description.classList.add('package-description');
@@ -774,8 +773,8 @@ class ChessBoardManager {
                         $wrapper.append(this);
                         this.style.position = 'absolute';
                         relocatablePackageData = self.dataManager.getNoAccommodationIntervalById(this.id);
-                        let packageStartDate = ChessBoardManager.getMomentDate(relocatablePackageData.begin);
-                        this.style.left = ChessBoardManager.getPackageLeftOffset(packageStartDate) + 'px';
+                        let intervalStartDate = ChessBoardManager.getMomentDate(relocatablePackageData.begin);
+                        this.style.left = ChessBoardManager.getPackageLeftOffset(intervalStartDate) + 'px';
                         this.style.top = ChessBoardManager.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)
                             + document.body.scrollTop - wrapperTopOffset + 'px';
                         if (!self.isPackageLocationCorrect(relocatablePackage)) {

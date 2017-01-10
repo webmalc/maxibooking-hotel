@@ -48,7 +48,8 @@ class ChessBoardUnit implements \JsonSerializable
     public function __toArray(): array
     {
         $array = [
-            'id' => $this->accommodation ? $this->accommodation->getId() : $this->package->getId(),
+            'id' => $this->accommodation ? $this->accommodation->getId()
+                : $this->package->getId() . $this->getBeginDate()->format('dm'),
             'number' => $this->package->getNumberWithPrefix(),
             'price' => $this->package->getPrice(),
             'begin' => $this->getBeginDate()->format('d.m.Y'),
@@ -62,7 +63,8 @@ class ChessBoardUnit implements \JsonSerializable
             'isLocked' => $this->package->getIsLocked(),
             'viewPackage' => $this->hasViewPackageRights($this->package),
             'removePackage' => $this->hasRemovePackageRights($this->package),
-            'updatePackage' => $this->hasUpdatePackageRights($this->package)
+            'updatePackage' => $this->hasUpdatePackageRights($this->package),
+            'packageId' => $this->package->getId()
         ];
 
         if ($this->package->getPayer()) {
@@ -72,7 +74,6 @@ class ChessBoardUnit implements \JsonSerializable
             $array['updateAccommodation'] = $this->hasUpdateAccommodationRights($this->accommodation);
             $array['accommodation'] = $this->accommodation->getRoom()->getId();
             $array['position'] = $this->getAccommodationRelativePosition($this->accommodation, $this->package);
-            $array['packageId'] = $this->package->getId();
         }
 
         return $array;

@@ -44,8 +44,7 @@ var ChessBoardManager = (function () {
             var data = ActionManager.getDataFromUpdateModal();
             var packageId = data.packageId;
             var accommodationId = data.accommodationId;
-            var blockId = accommodationId ? accommodationId : packageId;
-            var packageData = ChessBoardManager.getPackageData($('#' + blockId));
+            var packageData = ChessBoardManager.getPackageData($('#' + data.id));
             var isDivide = data.isDivide == 'true';
             if (isDivide) {
                 self.dataManager.relocateAccommodationRequest(accommodationId, data);
@@ -206,7 +205,7 @@ var ChessBoardManager = (function () {
         packageDiv.style.width = packageWidth + 'px';
         packageDiv.id = packageItem.id;
         var description = document.createElement('div');
-        var packageName = (packageItem.payer && packageCellCount > 1) ? packageItem.payer : packageItem.number;
+        var packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
         var descriptionText = packageName ? packageName.substr(0, packageCellCount * 5 - 1) : '';
         description.innerHTML = descriptionText;
         description.classList.add('package-description');
@@ -675,8 +674,8 @@ var ChessBoardManager = (function () {
                         $wrapper.append(this);
                         this.style.position = 'absolute';
                         relocatablePackageData = self.dataManager.getNoAccommodationIntervalById(this.id);
-                        var packageStartDate = ChessBoardManager.getMomentDate(relocatablePackageData.begin);
-                        this.style.left = ChessBoardManager.getPackageLeftOffset(packageStartDate) + 'px';
+                        var intervalStartDate = ChessBoardManager.getMomentDate(relocatablePackageData.begin);
+                        this.style.left = ChessBoardManager.getPackageLeftOffset(intervalStartDate) + 'px';
                         this.style.top = ChessBoardManager.getNearestTableLineTopOffset(event.pageY - document.body.scrollTop)
                             + document.body.scrollTop - wrapperTopOffset + 'px';
                         if (!self.isPackageLocationCorrect(relocatablePackage)) {

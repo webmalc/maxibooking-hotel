@@ -151,16 +151,18 @@ class ChessBoardController extends BaseController
         $oldPackage = clone $package;
         $accommodation->setAccommodation($updatedRoom);
 
-        $isLastAccommodation = $accommodation == $package->getLastAccommodation();
-        $isFirstAccommodation = $accommodation == $package->getFirstAccommodation();
+        $sortedAccommodationList = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
+            ->sortAccommodationsByBeginDate($package->getAccommodations()->toArray());
+        $isLastAccommodation = $accommodation == $sortedAccommodationList->last();
+        $isFirstAccommodation = $accommodation == $sortedAccommodationList->first();
         $isBeginDateChanged = $updatedBeginDate->format('d.m.Y') != $accommodation->getBegin()->format('d.m.Y');
         $isEndDateChanged = $updatedEndDate->format('d.m.Y') != $accommodation->getEnd()->format('d.m.Y');
 
-//        //Если изменилась дата или конец размещения, но это не первое и не последнее размещение
-//        if (($isBeginDateChanged && !$isFirstAccommodation) || ($isEndDateChanged && !$isLastAccommodation)) {
-//            throw new \Exception($this->get('translator')
-//                ->trans('controller.chessboard.accommodation_update.not_first_or_last_accommodation_change'));
-//        }
+        //Если изменилась дата или конец размещения, но это не первое и не последнее размещение
+        if (($isBeginDateChanged && !$isFirstAccommodation) || ($isEndDateChanged && !$isLastAccommodation)) {
+            throw new \Exception($this->get('translator')
+                ->trans('controller.chessboard.accommodation_update.not_first_or_last_accommodation_change'));
+        }
 
         $isPackageChanged = false;
         if ($isBeginDateChanged && $isFirstAccommodation) {

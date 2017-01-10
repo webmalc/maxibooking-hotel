@@ -240,7 +240,7 @@ class DataManager {
 
     public getNoAccommodationIntervalById(id) {
         return this.getNoAccommodationIntervals().find(function(packageData) {
-            return packageData.id === id;
+            return packageData.id === id
         })
     }
 

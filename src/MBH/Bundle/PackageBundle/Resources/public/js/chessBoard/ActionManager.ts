@@ -246,22 +246,28 @@ class ActionManager {
     }
 
     private static showEditedUpdateModal(intervalData, newIntervalData, isDivide) {
+        let newPackageBegin = ChessBoardManager.getMomentDate(intervalData.packageBegin).isAfter(ChessBoardManager.getMomentDate(newIntervalData.begin))
+            ? newIntervalData.begin : intervalData.packageBegin;
+        let newPackageEnd = ChessBoardManager.getMomentDate(intervalData.packageEnd).isBefore(ChessBoardManager.getMomentDate(newIntervalData.end))
+            ? newIntervalData.end : intervalData.packageEnd;
         var modal = $('#packageModal');
-        let packageId = intervalData.packageId ? intervalData.packageId : intervalData.id;
-        let intervalId = intervalData.packageId ? intervalData.id : '';
+        let packageId = intervalData.packageId;
+        let intervalId = intervalData.accommodation ? intervalData.id : '';
         let payerText = intervalData.payer ? intervalData.payer : 'Не указан';
+        modal.find('input.modalBlockId').val(intervalData.id);
         modal.find('input.isDivide').val(isDivide);
         modal.find('input.modalPackageId').val(packageId);
         modal.find('input.modalAccommodationId').val(intervalId);
         modal.find('#modal-package-number').text(intervalData.number);
         modal.find('#modal-package-payer').text(payerText);
-        modal.find('#modal-package-begin').text(ChessBoardManager.getMomentDate(intervalData.packageBegin).format("DD.MM.YYYY"));
-        modal.find('#modal-package-end').text(ChessBoardManager.getMomentDate(intervalData.packageEnd).format("DD.MM.YYYY"));
+        modal.find('#modal-package-begin').text(newPackageBegin);
+        modal.find('#modal-package-end').text(newPackageEnd);
         modal.find('#modal-begin-date').text(newIntervalData.begin);
         modal.find('#modal-end-date').text(newIntervalData.end);
         modal.find('#modal-room-id').text(newIntervalData.accommodation);
         modal.find('#modal-room-type-name').text(roomTypes[newIntervalData.roomType]);
-        modal.find('#modal-room-name').text(newIntervalData.accommodation ? rooms[newIntervalData.accommodation] : 'Без размещения');
+        modal.find('#modal-room-name').text(newIntervalData.accommodation
+            ? rooms[newIntervalData.accommodation] : 'Без размещения');
         modal.modal('show');
     }
 
@@ -276,6 +282,7 @@ class ActionManager {
         }
 
         return {
+            'id' : modal.find('input.modalBlockId').val(),
             'packageId': modal.find('input.modalPackageId').val(),
             'accommodationId': modal.find('input.modalAccommodationId').val(),
             'begin': modal.find('#modal-begin-date').text(),
