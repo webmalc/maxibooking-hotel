@@ -112,15 +112,10 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
 
         $tariffs = $tariffRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
 
-        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
-        $arrivals = $this->container->getParameter('mbh.package.arrivals');
-
         return [
             'tariffs' => iterator_to_array($tariffs),
             'total' => count($tariffs),
             'draw' => $request->get('draw'),
-            'vegaDocumentTypes' => $vegaDocumentTypes,
-            'arrivals' => $arrivals,
         ];
     }
 
