@@ -75,7 +75,10 @@ class PackageMainType extends AbstractType
                         'class' => 'MBHHotelBundle:Room',
                         'group' => 'Номер',
                         'query_builder' => function (DocumentRepository $dr) use ($package) {
-                            return $dr->getVirtualRoomsForPackageQB($package);
+                            $qb = $dr->getVirtualRoomsForPackageQB($package);
+                            $qb->field('isEnabled')->equals(true);
+
+                            return $qb;
                         },
                         'required' => false
                     ]);
