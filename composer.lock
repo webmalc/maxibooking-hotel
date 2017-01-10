@@ -2965,33 +2965,32 @@
         },
         {
             "name": "ob/highcharts-bundle",
-            "version": "1.2",
-            "target-dir": "Ob/HighchartsBundle",
+            "version": "1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/marcaube/ObHighchartsBundle.git",
-                "reference": "cce67aa209f2a8b14db520c8e50a15cd5f5c23d0"
+                "reference": "ef6a9aded173127e19d4a098a95573f64e0b3309"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marcaube/ObHighchartsBundle/zipball/cce67aa209f2a8b14db520c8e50a15cd5f5c23d0",
-                "reference": "cce67aa209f2a8b14db520c8e50a15cd5f5c23d0",
+                "url": "https://api.github.com/repos/marcaube/ObHighchartsBundle/zipball/ef6a9aded173127e19d4a098a95573f64e0b3309",
+                "reference": "ef6a9aded173127e19d4a098a95573f64e0b3309",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0",
-                "symfony/symfony": "~2.3",
-                "zendframework/zend-json": "2.3.0"
+                "php": ">=5.3",
+                "symfony/symfony": "~2.3|~3.0",
+                "zendframework/zend-json": "~2.3|~3.0"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2.x-dev"
+                    "dev-master": "1.6.x-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Ob\\HighchartsBundle": ""
+                "psr-4": {
+                    "Ob\\HighchartsBundle\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3016,7 +3015,7 @@
                 "marcaube",
                 "ob"
             ],
-            "time": "2014-08-04 23:56:54"
+            "time": "2016-07-26 23:46:28"
         },
         {
             "name": "ornicar/gravatar-bundle",

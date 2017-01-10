@@ -14,11 +14,14 @@ use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\PaymentType;
+use Ob\HighchartsBundle\Highcharts\Highchart;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 
 /**
@@ -87,16 +90,6 @@ class DefaultController extends BaseController
             $formData = $form->getData();
             if ($formData['roomType']) {
                 $searchQuery->addRoomType($formData['roomType']);
-                /*$roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($formData['roomType']);
-                if($roomType) {
-                    $searchQuery->addRoomType($roomType->getId());
-                }
-                $category = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory')->find($formData['roomType']);
-                if($category) {
-                    foreach($category->getRoomTypes() as $roomType) {
-                        $searchQuery->addRoomType($roomType->getId());
-                    }
-                }*/
             } elseif ($formData['hotel']) {
                 if ($this->get('mbh.hotel.room_type_manager')->useCategories) {
                     foreach ($formData['hotel']->getRoomTypesCategories() as $cat) {
@@ -126,6 +119,8 @@ class DefaultController extends BaseController
                 ->setAdditionalDates()
                 ->setWithTariffs()
                 ->search($searchQuery);
+            ///////TODO: Убирать тут
+//            $searchResults = [];
 
             foreach ($searchResults as $k => $item) {
                 $filterSearchResults = [];
@@ -148,8 +143,39 @@ class DefaultController extends BaseController
 
         return $this->render('MBHOnlineBookingBundle:Default:search.html.twig', [
             'searchResults' => $searchResults,
-            'requestSearchUrl' => $requestSearchUrl
+            'requestSearchUrl' => $requestSearchUrl,
+            'chart' => $this->getChart()
         ]);
+    }
+
+    /**
+     * @param null $data
+     * @return Highchart
+     */
+    private function getChart($data = null)
+    {
+        // Chart
+        $series = array(
+            array("name" => "Типы комнат",
+                "data" => array_map(function($range){return rand(0,3000);}, range(0,30)),
+                "dataLabels" => [
+                    'enabled' => false
+                ]
+
+            )
+        );
+
+        $ob = new Highchart();
+
+        $ob->chart->renderTo('linechart');  // The #id of the div where to render the chart
+        $ob->chart->type('column');
+        $ob->title->text('Динамика цен');
+        $ob->xAxis->title(array('text'  => "Дни месяца"));
+        $ob->xAxis->categories(['Типы комнат']);
+        $ob->yAxis->title(array('text'  => "Цена"));
+        $ob->series($series);
+
+        return $ob;
     }
 
     /**
@@ -268,20 +294,6 @@ class DefaultController extends BaseController
             $departure = $this->getParameter('mbh.package.departure.time');
             $this->sendNotifications($order, $arrival, $departure);
 
-//            $payButtonHtml = '';
-//            if ($payment && in_array($payment, self::ALLOWED_ONLINE_PAYMENT) && $clientConfig->getPaymentSystem()) {
-//                $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
-//                    'data' => array_merge([
-//                        'test' => false,
-//                        'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
-//                            ['%total%' => number_format($cash['total'], 2), '%order_id%' => $order->getId()],
-//                            'MBHOnlineBundle')
-//                    ], $clientConfig->getFormData($order->getCashDocuments()[0],
-//                        $this->container->getParameter('online_form_result_url'),
-//                        $this->generateUrl('online_form_check_order', [], true)))
-//                ]);
-//            }
-//            $text = 'Заказ успешно создан №' . $order->getId();
             //--> Сюда если онлайн.
             return $this->render('MBHOnlineBookingBundle:Default:sign-success.html.twig', [
                 'order' => $order->getId(),
@@ -406,6 +418,9 @@ class DefaultController extends BaseController
         }
     }
 
+    /**
+     * @param $data
+     */
     private function reserveNotification($data)
     {
         $notifier = $this->container->get('mbh.notifier');
@@ -482,4 +497,42 @@ class DefaultController extends BaseController
         return $response;
     }
 
+    /**
+     * @Route(
+     *     "/calculation/{tariffId}/{roomTypeId}/{adults}/{children}/{calcBegin}/{calcEnd}/{packageBegin}/{packageEnd}",
+     *      name="online_booking_calculation"
+     *     )
+     * @ParamConverter("calcBegin", options = {"format":"Y-m-d"})
+     * @ParamConverter("calcEnd", options = {"format":"Y-m-d"})
+     * @ParamConverter("packageBegin", options = {"format":"Y-m-d"})
+     * @ParamConverter("packageEnd", options = {"format":"Y-m-d"})
+     * @ParamConverter("tariff", class="MBHPriceBundle:Tariff", options={"id" = "tariffId"})
+     * @ParamConverter("roomType", class="MBHHotelBundle:RoomType", options={"id" = "roomTypeId"})
+     */
+    public function getCalculate(
+        Tariff $tariff,
+        RoomType $roomType,
+        int $adults,
+        int $children,
+        \DateTime $calcBegin = null,
+        \DateTime $calcEnd = null,
+        \DateTime $packageBegin = null,
+        \DateTime $packageEnd = null
+        )
+    {
+        $calc = $this->get('mbh.calculation');
+        $price = $calc->calcPrices($roomType, $tariff, $calcBegin->modify('midnight'), $calcEnd->modify('midnight'), $adults, $children, null, true, false);
+        return new Response(print_r($price, true));
+    }
+
+    /**
+     * @Route("/test/{begin}", defaults={"begin" = null})
+     * @ParamConverter("begin", options = {"format": "Y-m-d"})
+     *
+     */
+
+    public function testAction(\DateTime $begin = null)
+    {
+        return new Response('holla');
+    }
 }

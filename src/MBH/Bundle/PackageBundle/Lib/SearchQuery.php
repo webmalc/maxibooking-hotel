@@ -6,6 +6,10 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Class SearchQuery
+ * @package MBH\Bundle\PackageBundle\Lib
+ */
 class SearchQuery
 {
     /**
@@ -138,8 +142,14 @@ class SearchQuery
      */
     public $forceBooking = false;
 
+    /**
+     * @var int
+     */
     public $infants = 0;
-    
+
+    /**
+     * @param $id
+     */
     public function addExcludeRoomType($id)
     {
         if (!in_array($id, $this->excludeRoomTypes) && !empty($id)) {
@@ -147,6 +157,9 @@ class SearchQuery
         }
     }
 
+    /**
+     * @param $id
+     */
     public function addAvailableRoomType($id)
     {
         if (!in_array($id, $this->availableRoomTypes) && !empty($id)) {
@@ -171,6 +184,10 @@ class SearchQuery
         return $this;
     }
 
+    /**
+     * @param $id
+     * @return bool
+     */
     public function addRoomType($id)
     {
         if (!empty($this->availableRoomTypes) && !in_array($id, $this->availableRoomTypes)) {

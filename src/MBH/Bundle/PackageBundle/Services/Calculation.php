@@ -125,7 +125,7 @@ class Calculation
      * @param bool $useCategories
      * @return array
      */
-    public function calcPrices(RoomType $roomType, Tariff $tariff, \DateTime $begin, \DateTime $end, $adults = 0, $children = 0, Promotion $promotion = null, $useCategories = false)
+    public function calcPrices(RoomType $roomType, Tariff $tariff, \DateTime $begin, \DateTime $end, $adults = 0, $children = 0, Promotion $promotion = null, $useCategories = false, $useDuration = true)
     {
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
@@ -209,7 +209,7 @@ class Calculation
             }
         }
 
-        if (count($caches) != $duration) {
+        if ($useDuration && (count($caches) != $duration)) {
             return false;
         }
 
