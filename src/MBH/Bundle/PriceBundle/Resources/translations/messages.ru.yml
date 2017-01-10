@@ -283,3 +283,5 @@ special.limit: Макс. кол-во
 special.limit.help: Количество предложений доступных для продажи
 special.isPercent: В процентах?
 form.group.discount: Скидка
+
+special.discount.help: Размер скидки, применяемой к стоимости дня брони

@@ -119,6 +119,7 @@ class OrderManager
             $old->getAdults() == $new->getAdults() &&
             $old->getChildren() == $new->getChildren() &&
             $old->getPromotion() == $new->getPromotion() &&
+            $old->getSpecial() == $new->getSpecial() &&
             $old->getIsForceBooking() == $new->getIsForceBooking()
         ) {
             return $new;
@@ -158,6 +159,7 @@ class OrderManager
         $query->forceRoomTypes = true;
         $query->setPromotion($new->getPromotion() ? $new->getPromotion() : false);
         $query->forceBooking = $new->getIsForceBooking();
+        $query->setSpecial($new->getSpecial());
         $query->memcached = false;
 
         $results = $this->container->get('mbh.package.search')->search($query);

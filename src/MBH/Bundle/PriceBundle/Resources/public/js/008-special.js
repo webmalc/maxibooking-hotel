@@ -2,6 +2,12 @@
 $(document).ready(function () {
     'use strict';
 
+    $('#special-packages-list').readmore({
+        collapsedHeight: 20,
+        lessLink: '<a class="text-right" href="#">скрыть брони</a>',
+        moreLink: '<a class="text-right" href="#">показать брони</a>'
+    });
+
     var specialFilterForm = $('#special-filter-form'),
         specialTable = $('#special-table'),
         process = false;

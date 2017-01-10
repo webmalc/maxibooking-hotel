@@ -72,6 +72,13 @@ class OrderSubscriber implements EventSubscriber
             $dm->persist($entity);
             $dm->flush();
 
+            foreach($entity->getPackages() as $package) {
+                if ($package->getSpecial()) {
+                    $dm = $args->getDocumentManager();
+                    $dm->getRepository('MBHPriceBundle:Special')->recalculate($package->getSpecial(), $package);
+                }
+            }
+
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
         }
 

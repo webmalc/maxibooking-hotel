@@ -135,6 +135,15 @@ class Special extends Base
     protected $sold = 0;
 
     /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int", name="remain")
+     * @Assert\Range(min=0)
+     * @Assert\Type(type="numeric")
+     */
+    protected $remain;
+
+    /**
      * @var ArrayCollection
      * @ODM\ReferenceMany(targetDocument="Tariff")
      */
@@ -181,6 +190,9 @@ class Special extends Base
      * @Assert\NotNull()
      */
     protected $displayTo;
+
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\Package", mappedBy="special") */
+    protected $packages;
 
     public function __construct()
     {
@@ -482,5 +494,52 @@ class Special extends Base
     {
         $this->sold = $sold;
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRemain(): ?int
+    {
+        return $this->remain;
+    }
+
+    /**
+     * @param int $remain
+     * @return Special
+     */
+    public function setRemain(int $remain): Special
+    {
+        $this->remain = $remain;
+        return $this;
+    }
+
+    /**
+     * @ODM\PrePersist
+     */
+    public function prePersist()
+    {
+        $this->calcRemain();
+    }
+
+    /**
+     * @ODM\preUpdate
+     */
+    public function preUpdate()
+    {
+        $this->calcRemain();
+    }
+
+    public function calcRemain(): int
+    {
+        return $this->remain = (int)$this->getLimit() - $this->getSold();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPackages()
+    {
+        return $this->packages;
     }
 }

@@ -381,11 +381,12 @@ class Search implements SearchInterface
                 if (!$promotion) {
                     $promotion = null;
                 }
-                
+
                 //prices
                 $prices = $calc->calcPrices(
                     $roomType, $tariff, $query->begin, $end,
-                    $tourists['adults'], $tourists['children'], $promotion, $this->manager->useCategories
+                    $tourists['adults'], $tourists['children'], $promotion,
+                    $this->manager->useCategories, $query->getSpecial()
                 );
 
                 if (!$prices || (($query->adults + $query->children) != 0 && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {

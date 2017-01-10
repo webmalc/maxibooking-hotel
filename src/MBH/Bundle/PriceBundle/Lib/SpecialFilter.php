@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Lib;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
 /**
@@ -40,6 +41,16 @@ class SpecialFilter
      * @var RoomType
      */
     private $roomType;
+
+    /**
+     * @var int
+     */
+    private $remain = null;
+
+    /**
+     * @var Special
+     */
+    private $excludeSpecial;
 
     /**
      * @return \DateTime
@@ -148,4 +159,42 @@ class SpecialFilter
         $this->hotel = $hotel;
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getRemain(): ?int
+    {
+        return $this->remain;
+    }
+
+    /**
+     * @param int $remain
+     * @return SpecialFilter
+     */
+    public function setRemain(int $remain = null): SpecialFilter
+    {
+        $this->remain = $remain;
+        return $this;
+    }
+
+    /**
+     * @return Special
+     */
+    public function getExcludeSpecial(): ?Special
+    {
+        return $this->excludeSpecial;
+    }
+
+    /**
+     * @param Special $excludeSpecial
+     * @return SpecialFilter
+     */
+    public function setExcludeSpecial(Special $excludeSpecial = null): SpecialFilter
+    {
+        $this->excludeSpecial = $excludeSpecial;
+        return $this;
+    }
+
+
 }

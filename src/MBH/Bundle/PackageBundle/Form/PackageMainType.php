@@ -157,10 +157,9 @@ class PackageMainType extends AbstractType
                     'query_builder' => function (DocumentRepository $dr) use ($package) {
                         $filter = new SpecialFilter();
                         $filter->setHotel($package->getHotel())
-                            ->setRoomType($package->getRoomType())
-                            ->setBegin($package->getBegin())
-                            ->setEnd($package->getEnd())
                             ->setTariff($package->getTariff())
+                            ->setRemain(1)
+                            ->setExcludeSpecial($package->getSpecial())
                         ;
                         return $dr->getFilteredQueryBuilder($filter);
                     },

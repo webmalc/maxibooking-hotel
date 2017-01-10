@@ -77,6 +77,7 @@ class SpecialType extends AbstractType
                 'label' => 'special.discount',
                 'group' => 'form.group.discount',
                 'attr' => ['class' => 'spinner-0'],
+                'help' => 'special.discount.help',
             ])
             ->add('isPercent', CheckboxType::class, [
                 'label' => 'special.isPercent',
