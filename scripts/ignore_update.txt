@@ -1,3 +1,5 @@
+docker/
+docker_zalex/
 deploy/
 scripts/
 *~
