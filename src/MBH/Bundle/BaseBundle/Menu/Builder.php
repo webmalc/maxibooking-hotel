@@ -321,6 +321,9 @@ class Builder implements ContainerAwareInterface
         $menu['configs']->addChild('sources', ['route' => 'package_source', 'label' => 'Источники'])
             ->setAttributes(['icon' => 'fa fa-compass'])
         ;
+        $menu['configs']->addChild('delete_reasons', ['route' => 'package_delete_reasons', 'label' => 'Причины удаления'])
+            ->setAttributes(['icon' => 'fa fa-compass'])
+        ;
         $menu['configs']->addChild('document_templates', ['route' => 'document_templates', 'label' => 'Шаблоны документов'])
             ->setAttributes(['icon' => 'fa fa-file'])
         ;

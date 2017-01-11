@@ -79,11 +79,14 @@ form.packageServiceType.guests_amount: Количество гостей
 form.packageServiceType.amount: Количество
 form.packageServiceType.comment: Комментарий
 form.packageServiceType.time: Время
-form.packageSourceType.name: Назавание
+form.packageSourceType.name: Название
 form.packageSourceType.add_source: Добавить источник
 form.packageSourceType.adds: Реклама
 form.packageSourceType.inner_name: Внутреннее название
 form.packageSourceType.inner_maxibooking_name:  Название для использования внутри MaxiBooking
+form.deleteReasonsType.add_source: Добавить причину удаления
+form.deleteReasonsType.name: Название
+form.deleteReasonsType.adds: Отказ
 form.searchType.all_rooms: Все номера
 form.searchType.room_type: Тип номера
 form.searchType.tariff: Тариф
