@@ -164,6 +164,8 @@ controller.packageController.record_edited_fail_accommodation: 'Ошибка п�
 controller.packageController.relocation_success: 'Создана новая бронь для переселения. Теперь можно выбрать новый номер размещения гостей'
 controller.packageController.relocation_dates_error: 'Ошибка переселения. Некорректная дата переселения'
 controller.packageController.relocation_accommodation_error: 'Ошибка переселения. Нет размещения'
+controller.packageController.accommodation_add.begin_equal_or_later_end_error: 'Ошибка создания размещения. Дата начала размещения равна или больше даты окончания размещения'
+controller.packageController.accommodation_add.passed_only_one_date: 'Не может быть передано только одна из дат'
 
 # TaskType Controller
 controller.taskTypeController.record_created_success: 'Запись успешно создана.'

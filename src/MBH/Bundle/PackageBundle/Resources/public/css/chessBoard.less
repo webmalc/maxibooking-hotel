@@ -30,6 +30,38 @@
 .package {
   z-index: 100;
   border-bottom: 1px solid white;
+  .package-action-buttons {
+    position: absolute;
+    right: 4px;
+    top: -3px;
+  }
+}
+
+.with-left-divider:after, .with-right-divider:before {
+  content: ' ';
+  height: 12px;
+  top: 14px;
+  position: absolute;
+  -webkit-border-radius: 0 7px 7px 0;
+  -moz-border-radius: 0 7px 7px 0;
+  border-radius: 0 7px 7px 0;
+  width: 7px;
+}
+.with-left-divider:after {
+  background-color: white;
+  left: 0;
+}
+.with-right-divider.danger:before {
+  background-color: rgba(221, 75, 57, 0.6);
+}
+.with-right-divider.success:before {
+  background-color: rgba(79, 230, 106, 0.6);
+}
+.with-right-divider.warning:before {
+  background-color: rgba(243, 156, 18, 0.6);
+}
+.with-right-divider:before {
+  right: -7px
 }
 
 .popover.fade {
@@ -57,15 +89,15 @@
   }
 }
 
-.package.danger, .package {
+.danger, .package {
   background-color: rgba(221, 75, 57, 0.6);
 }
 
-.package.success {
+.success {
   background-color: rgba(79, 230, 106, 0.6);
 }
 
-.package.warning {
+.warning {
   background-color: rgba(243, 156, 18, 0.6);
 }
 
@@ -615,28 +647,22 @@
   cursor: e-resize;
 }
 
-.remove-package-button {
-  padding: 0;
+.remove-package-button, .divide-package-button {
+  padding: 0 2px;
   border: none;
   background: none;
-  position: absolute;
-  right: 5px;
-  z-index: 91;
-  top: -3px;
-  color: rgba(177, 0, 0, 0.6);
+  z-index: 110;
 }
 
 .remove-package-button :active, .divide-package-button :active {
   border: 0;
 }
 
+.remove-package-button {
+  color: rgba(177, 0, 0, 0.6);
+}
+
 .divide-package-button {
-  padding: 0;
-  border: none;
-  background: none;
-  position: absolute;
-  right: 17px;
-  top: -3px;
   color: #ddf28a;
 }
 

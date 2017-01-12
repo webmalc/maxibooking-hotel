@@ -112,7 +112,7 @@ class ChessBoardManager {
             dateElements.mousedown(function (event) {
                 let startXPosition = event.pageX;
                 let startLeftScroll = chessBoardContentBlock.scrollLeft;
-                let newPackage = templatePackageElement.cloneNode(false);
+                let newPackage = templatePackageElement.cloneNode(true);
                 let dateJqueryObject = $(this.parentNode);
                 let currentRoomDateElements = dateJqueryObject.parent().children();
                 let startDateNumber = currentRoomDateElements.index(dateJqueryObject);
@@ -217,16 +217,14 @@ class ChessBoardManager {
     public addAccommodationElements() {
         let wrapper = $('#calendarWrapper');
         let templatePackageElement = ChessBoardManager.getTemplateElement();
-        let packages = document.createElement('div');
         //iterate packages
         this.dataManager.getAccommodations().forEach(function (item) {
             if (item.accommodation) {
                 let packageDiv = ChessBoardManager.createPackageElementWithOffset(templatePackageElement, item, wrapper);
-                packages.appendChild(packageDiv);
+                wrapper.append(packageDiv);
             }
         });
-        wrapper.append(packages);
-        this.addListeners(packages.children);
+        this.addListeners('.package');
         $('.roomDates').droppable({
             accept: '.package'
         });
@@ -238,6 +236,10 @@ class ChessBoardManager {
         templateDiv.style = 'position: absolute;';
         templateDiv.style.height = ChessBoardManager.PACKAGE_ELEMENT_HEIGHT + 'px';
         templateDiv.classList.add('package');
+
+        let buttonsDiv = document.createElement('div');
+        buttonsDiv.classList.add('package-action-buttons');
+        templateDiv.appendChild(buttonsDiv);
 
         return templateDiv;
     }
@@ -253,38 +255,45 @@ class ChessBoardManager {
         let packageCellCount = packageEndDate.diff(packageStartDate, 'days');
         let packageWidth = packageCellCount * ChessBoardManager.DATE_ELEMENT_WIDTH;
 
-        let packageDiv = templatePackageElement.cloneNode();
+        let packageDiv = templatePackageElement.cloneNode(true);
         packageDiv.style.width = packageWidth + 'px';
         packageDiv.id = packageItem.id;
         let description = document.createElement('div');
         let packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
         let descriptionText = packageName ? packageName.substr(0, packageCellCount * 5 - 1) : '';
+        packageDiv.setAttribute('data-description', descriptionText);
         description.innerHTML = descriptionText;
         description.classList.add('package-description');
         packageDiv.appendChild(description);
         description.style.width = Math.floor(descriptionText.length * ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH) + 'px';
         packageDiv.classList.add(packageItem.paidStatus);
-
+        if (packageItem.position == 'middle' || packageItem.position == 'left') {
+            packageDiv.classList.add('with-right-divider');
+        }
+        if (packageItem.position == 'middle' || packageItem.position == 'right') {
+            packageDiv.classList.add('with-left-divider');
+        }
         if (packageItem.isCheckOut) {
             packageDiv.classList.add('tile-coming-out');
         } else if (packageItem.isCheckIn) {
             packageDiv.classList.add('tile-coming');
         }
         if (hasButtons) {
-            if (packageItem.removePackage && (packageItem.position == 'full' || packageItem.position == 'right')) {
-                packageDiv.appendChild(this.getTemplateRemoveButton());
-            }
-
             if (packageItem.updateAccommodation && packageEndDate.diff(packageStartDate, 'days') > 1) {
-                packageDiv.appendChild(this.getTemplateDivideButton());
+                $(packageDiv).find('.package-action-buttons').append(this.getTemplateDivideButton());
+            }
+            if (packageItem.removePackage && (packageItem.position == 'full' || packageItem.position == 'right')) {
+                $(packageDiv).find('.package-action-buttons').append(this.getTemplateRemoveButton());
             }
         }
+            let currentPackageCreatedAccommodationCount = $('[data-description="' + descriptionText + '"]').length;
+            packageDiv.style.zIndex = 100 - currentPackageCreatedAccommodationCount;
 
         return packageDiv;
     }
 
     private static createPackageElementWithOffset(templatePackageElement, packageItem, wrapper) {
-        let packageDiv = ChessBoardManager.createPackageElement(packageItem, templatePackageElement);
+        let packageDiv = ChessBoardManager.createPackageElement(packageItem, templatePackageElement, true);
         let packageStartDate = ChessBoardManager.getMomentDate(packageItem.begin);
         let roomDatesListElement = $('#' + packageItem.accommodation);
 
@@ -355,7 +364,11 @@ class ChessBoardManager {
             });
             $element.find('.divide-package-button').click(function () {
                 if (intervalData.viewPackage) {
-                    let accommodationElement = this.parentNode;
+                    let scissorsElement = this.childNodes[0];
+                    scissorsElement.onclick = function () {
+                        self.updatePackagesData();
+                    };
+                    let accommodationElement = this.parentNode.parentNode;
                     let accommodationWidth = parseInt(accommodationElement.style.width, 10);
                     if (accommodationWidth == ChessBoardManager.DATE_ELEMENT_WIDTH * 2) {
                         $('.divide-package-button').tooltip('hide');
@@ -379,7 +392,7 @@ class ChessBoardManager {
                             accommodationElement.onclick = function () {
                                 accommodationElement.onmousemove = null;
                                 accommodationElement.removeChild(line);
-                                self.divide(accommodationElement, griddedOffset);
+                                self.divide(this, griddedOffset);
                             }
                         };
                     }
@@ -389,21 +402,27 @@ class ChessBoardManager {
     }
 
     private divide(packageElement, firstAccommodationWidth) {
-        let packageWidth = parseInt(packageElement.style.width, 10);
-        $(packageElement).find('.divide-package-button, .remove-package-button').remove();
+        if (packageElement.parentNode) {
+            let packageWidth = parseInt(packageElement.style.width, 10);
+            $(packageElement).find('.divide-package-button, .remove-package-button, .ui-resizable-e, .ui-resizable-w').remove();
+            if (firstAccommodationWidth != 0 && firstAccommodationWidth != packageWidth) {
+                let firstAccommodation = packageElement.cloneNode(true);
+                firstAccommodation.style.width = firstAccommodationWidth + 'px';
 
-        if (firstAccommodationWidth != 0 && firstAccommodationWidth != packageWidth) {
-            let firstAccommodation = packageElement.cloneNode(true);
-            firstAccommodation.style.width = firstAccommodationWidth + 'px';
+                let secondAccommodation = packageElement.cloneNode(true);
+                secondAccommodation = this.addDraggable($(secondAccommodation), false, true).get(0);
+                secondAccommodation.style.width = packageWidth - firstAccommodationWidth + 'px';
+                secondAccommodation.style.left = parseInt(packageElement.style.left, 10) + firstAccommodationWidth + 'px';
+                secondAccommodation.style.zIndex = secondAccommodation.style.zIndex - 1;
+                secondAccommodation.classList.add('with-left-divider');
+                firstAccommodation.classList.add('with-right-divider');
 
-            let secondAccommodation = packageElement.cloneNode(true);
-            secondAccommodation = this.addDraggable($(secondAccommodation), false, true).get(0);
-            secondAccommodation.style.width = packageWidth - firstAccommodationWidth + 'px';
-            secondAccommodation.style.left = parseInt(packageElement.style.left, 10) + firstAccommodationWidth + 'px';
-
-            packageElement.parentNode.appendChild(firstAccommodation);
-            packageElement.parentNode.appendChild(secondAccommodation);
-            ChessBoardManager.deletePackageElement(packageElement.id);
+                packageElement.parentNode.appendChild(firstAccommodation);
+                packageElement.parentNode.appendChild(secondAccommodation);
+                ChessBoardManager.deletePackageElement(packageElement.id);
+            }
+        } else {
+            this.updatePackagesData();
         }
     }
 
@@ -420,19 +439,15 @@ class ChessBoardManager {
             } else {
                 intervalData = self.dataManager.getAccommodationIntervalById(element.id);
             }
-            let axisValue = 'y';
-            if (intervalData.updateAccommodation && !isDivide && intervalData.position == 'full'
-                && !(ChessBoardManager.isAccommodationOnFullPackage(intervalData) && !intervalData.updatePackage)) {
-                axisValue = 'x, y';
-            }
-            if (axisValue) {
+
+            let axisValue = ChessBoardManager.getDraggableAxisValue(intervalData, isDivide);
+            if (axisValue != '') {
                 $(element).draggable({
                     containment: '#calendarWrapper',
                     start: function () {
                         if (intervalData.isLocked) {
                             ActionManager.callUnblockModal(intervalData.packageId);
                         }
-                        this.style.zIndex = 101;
                     },
                     axis: axisValue,
                     grid: [ChessBoardManager.DATE_ELEMENT_WIDTH, 1],
@@ -453,7 +468,6 @@ class ChessBoardManager {
                         }
                     },
                     stop: function (event, ui) {
-                        this.style.zIndex = 100;
                         if (self.isDraggableRevert(this)) {
                             self.updatePackagesData();
                         } else {
@@ -462,7 +476,7 @@ class ChessBoardManager {
                                 intervalData = self.dataManager.getNoAccommodationIntervalById(this.id);
                             }
                             if (ui.originalPosition.left != ui.position.left
-                                || ui.originalPosition.top != ui.position.top) {
+                                || ui.originalPosition.top != ui.position.top || noAccommodation) {
                                 let changedSide = axisValue == 'x, y' ? 'both' : null;
                                 ActionManager.callUpdatePackageModal($(this), intervalData, changedSide, isDivide);
                             }
@@ -473,6 +487,18 @@ class ChessBoardManager {
         });
 
         return jQueryObj;
+    }
+
+    private static getDraggableAxisValue(intervalData, isDivide) {
+        if (intervalData.updateAccommodation && !isDivide && intervalData.position == 'full'
+            && !(ChessBoardManager.isAccommodationOnFullPackage(intervalData) && !intervalData.updatePackage)) {
+            return 'x, y';
+        } else if (intervalData.updateAccommodation == true
+                //Если интервал не имеет размещения, но имеет права на создание размещения(просмотр брони)
+            || (intervalData.updateAccommodation == undefined) && intervalData.viewPackage) {
+            return 'y';
+        }
+        return '';
     }
 
     private isPackageLocationCorrect(packageElement) {
@@ -599,7 +625,6 @@ class ChessBoardManager {
                             ActionManager.callUnblockModal(intervalData.packageId);
                         }
                         elementStartBackground = this.style.backgroundColor;
-                        this.style.zIndex = 101;
                     },
                     resize: function (event, ui) {
                         if (intervalData.isLocked) {
@@ -614,7 +639,6 @@ class ChessBoardManager {
                         }
                     },
                     stop: function (event, ui) {
-                        this.style.zIndex = 100;
                         this.style.backgroundColor = elementStartBackground;
                         if (!self.isPackageLocationCorrect(this)) {
                             ui.element.css(ui.originalPosition);
@@ -760,12 +784,11 @@ class ChessBoardManager {
                 let $packageElement = $(element);
                 let packageData = self.dataManager.getNoAccommodationIntervalById(element.id);
 
-                if (packageData.viewPackage) {
+                if (ChessBoardManager.getDraggableAxisValue(packageData, false) != '') {
                     self.addDraggable($packageElement, true).draggable({
                         scroll: false,
                         snap: 'calendarRow',
                         start: function () {
-                            this.style.zIndex = 101;
                             isDragged = true;
                         },
                     }).mousedown(function (event) {

@@ -146,5 +146,5 @@ services:
 
     mbh.chess_board_unit:
         class: MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit
-        arguments: ['@security.authorization_checker', '@mbh_bundle_package.services.package_accommodation_manipulator']
+        arguments: ['@security.authorization_checker']
         shared: false

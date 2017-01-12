@@ -4,7 +4,6 @@ namespace MBH\Bundle\PackageBundle\Models\ChessBoard;
 
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
-use MBH\Bundle\PackageBundle\Services\PackageAccommodationManipulator;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class ChessBoardUnit implements \JsonSerializable
@@ -15,8 +14,6 @@ class ChessBoardUnit implements \JsonSerializable
     private $accommodation;
     /** @var  AuthorizationChecker $rightsChecker */
     private $rightsChecker;
-    /** @var PackageAccommodationManipulator $accommodationManipulator */
-    private $accommodationManipulator;
     private $emptyIntervalData;
 
     const LEFT_RELATIVE_POSITION = 'left';
@@ -24,10 +21,9 @@ class ChessBoardUnit implements \JsonSerializable
     const MIDDLE_RELATIVE_POSITION = 'middle';
     const FULL_PACKAGE_ACCOMMODATION = 'full';
 
-    public function __construct(AuthorizationChecker $rightsChecker, PackageAccommodationManipulator $accommodationManipulator)
+    public function __construct(AuthorizationChecker $rightsChecker)
     {
         $this->rightsChecker = $rightsChecker;
-        $this->accommodationManipulator = $accommodationManipulator;
     }
 
     /**
@@ -120,9 +116,7 @@ class ChessBoardUnit implements \JsonSerializable
     private function getAccommodationRelativePosition(PackageAccommodation $accommodation, Package $package)
     {
         $packageBeginString = $package->getBegin()->format('d.m.Y');
-        $sortedPackageAccommodation = $this->accommodationManipulator
-            ->sortAccommodationsByBeginDate($package->getAccommodations()->toArray());
-        $lastPackageAccommodationEndString = $sortedPackageAccommodation->last()->getEnd()->format('d.m.Y');
+        $lastPackageAccommodationEndString = $package->getLastAccommodation()->getEnd()->format('d.m.Y');
         $accommodationBeginString = $accommodation->getBegin()->format('d.m.Y');
         $accommodationEndString = $accommodation->getEnd()->format('d.m.Y');
 

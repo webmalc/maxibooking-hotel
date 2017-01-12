@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\NoteTrait;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\PackageBundle\Services\PackageAccommodationManipulator;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -1496,9 +1497,21 @@ class Package extends Base implements \JsonSerializable
      */
     public function getAccommodations(): Collection
     {
-        return $this->accommodations;
+        return $this->getSortedAccommodations();
     }
 
+    public function getSortedAccommodations()
+    {
+        $data = $this->accommodations->toArray();
+        usort($data, function ($a, $b) {
+            /** @var PackageAccommodation $a*/
+            /** @var PackageAccommodation $b*/
+            $c = 'd';
+            return ($a->getBegin() < $b->getBegin())? -1 : 1;
+        });
+
+        return new ArrayCollection($data);
+    }
 
     /**
      * @param Collection $accommodations
@@ -1558,7 +1571,7 @@ class Package extends Base implements \JsonSerializable
      */
     public function getLastAccommodation()
     {
-        return $this->accommodations->last();
+        return $this->getAccommodations()->last();
     }
 
     /**
@@ -1566,7 +1579,7 @@ class Package extends Base implements \JsonSerializable
      */
     public function getFirstAccommodation()
     {
-        return $this->accommodations->first();
+        return $this->getAccommodations()->first();
     }
 
     /** Для совместимости в автозадачах */

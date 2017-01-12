@@ -223,12 +223,14 @@ class ChessBoardDataBuilder
                 $rooms = array_merge($rooms, $roomsByRoomTypeId);
             }
 
-            $accommodations = $this->dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
-                $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
-            );
+            if (count($rooms) > 0) {
+                $accommodations = $this->dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
+                    $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
+                );
 
-            $this->packageAccommodations = $this->accommodationManipulator
-                ->sortAccommodationsByBeginDate($accommodations->toArray());
+                $this->packageAccommodations = $this->accommodationManipulator
+                    ->sortAccommodationsByBeginDate($accommodations->toArray());
+            }
 
             $this->isPackageAccommodationsInit = true;
         }

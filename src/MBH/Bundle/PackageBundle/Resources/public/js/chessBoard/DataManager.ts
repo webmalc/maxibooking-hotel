@@ -123,8 +123,20 @@ class DataManager {
             });
             let newAccommodationData = $.extend(true, {}, dividedAccommodation);
             dividedAccommodation.end = packageData.begin;
+
+            if (dividedAccommodation.position == 'right') {
+                dividedAccommodation.position = 'middle';
+            } else if (dividedAccommodation.position == 'full') {
+                newAccommodationData.position = 'right';
+                dividedAccommodation.position = 'left';
+            } else if (dividedAccommodation.position == 'left') {
+                newAccommodationData.position = 'middle';
+            }
+
             newAccommodationData.begin = packageData.begin;
             newAccommodationData.accommodation = packageData.roomId;
+            newAccommodationData.id = 'newAccommodation';
+
             this._accommodations.forEach(function (packageDataItem) {
                 if (packageDataItem.id === packageData.id) {
                     packageDataItem = dividedAccommodation;

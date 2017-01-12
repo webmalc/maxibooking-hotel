@@ -85,10 +85,9 @@ class PackageAccommodationManipulator
             ];
             $intervals->add($interval);
         } else {
-            $pAccommodationsSorted = $this->sortAccommodationsByBeginDate($pAccommodations->toArray());
             /** @var PackageAccommodation $previousAccommodation */
             $previousAccommodation = null;
-            foreach ($pAccommodationsSorted as $accommodation) {
+            foreach ($pAccommodations as $accommodation) {
                 /** @var PackageAccommodation $accommodation */
                 if (!$previousAccommodation) {
                     if ($package->getBegin()->getTimestamp() != $accommodation->getBegin()->getTimestamp()) {
@@ -109,7 +108,7 @@ class PackageAccommodationManipulator
             }
 
             $lastIntervalEnd = $intervals->last() ? $intervals->last()['end'] : null;
-            $lastAccommodationEnd = $pAccommodationsSorted->last()->getEnd();
+            $lastAccommodationEnd = $pAccommodations->last()->getEnd();
             $packageEnd = $package->getEnd();
 
             if ($lastIntervalEnd) {

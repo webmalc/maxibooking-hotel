@@ -922,19 +922,23 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /** @var RoomRepository $roomRepository */
         $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
 
-
         $pAccManipulator = $this->get('mbh_bundle_package.services.package_accommodation_manipulator');
         $accIntervals = $pAccManipulator->getEmptyIntervals($package);
         if (!$begin && !$end) {
-            $begin = $accIntervals->first()['begin'];
-            $end = $accIntervals->first()['end'];
-
-        } elseif ($begin && $end) {
-            null;
-        } else {
-            throw new PackageAccommodationException('Не может быть передано только одна из дат');
+            if ($accIntervals->first()) {
+                $begin = $accIntervals->first()['begin'];
+                $end = $accIntervals->first()['end'];
+            } else {
+                $begin = $package->getBegin();
+                $end = $package->getEnd();
+            }
+        } elseif ((!is_null($begin) && is_null($end)) || (!is_null($end) && is_null($begin))) {
+            throw new PackageAccommodationException($this->get('translator')
+                ->trans('controller.packageController.accommodation_add.passed_only_one_date'));
+        } elseif ($begin->getTimestamp() == $end->getTimestamp() || $begin->getTimestamp() > $end->getTimestamp()) {
+            throw new PackageAccommodationException($this->get('translator')
+                ->trans('controller.packageController.accommodation_add.begin_equal_or_later_end_error'));
         }
-
 
         $groupedRooms = $roomRepository->fetchAccommodationRooms($begin, $end, $this->hotel, null, null, null, true);
         $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
@@ -1011,7 +1015,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         return [
             'emptyIntervalsAccommodation' => $accIntervals,
             'package' => $package,
-            'sortedAccommodations' => $pAccManipulator->sortAccommodationsByBeginDate($package->getAccommodations()->toArray()),
             'arrivalTime' => $arrivalTime,
             'earlyCheckInServiceIsEnabled' => $earlyCheckInServiceIsEnabled,
             'lateCheckOutServiceIsEnabled' => $lateCheckOutServiceIsEnabled,

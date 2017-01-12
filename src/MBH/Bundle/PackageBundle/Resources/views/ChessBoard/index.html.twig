@@ -32,7 +32,7 @@
         {% endfor %}
         roomTypes['{{ roomTypeID }}'] = '{{ roomTypeData.name }}';
         {% endfor %}
-        var canCreatePackage = true;
+        var canCreatePackage = {{ canCreatePackage }};
     </script>
     {% endjavascripts %}
 

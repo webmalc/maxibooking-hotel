@@ -43,6 +43,10 @@ class ChessBoardController extends BaseController
             'roomManager' => $this->get('mbh.hotel.room_type_manager')
         ]);
 
+        $rightsChecker = $this->get('security.authorization_checker');
+        $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW')
+            && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
+
         return [
             'searchForm' => $form->createView(),
             'beginDate' => $filterData['begin'],
@@ -59,6 +63,7 @@ class ChessBoardController extends BaseController
             'roomTypes' => $this->hotel->getRoomTypes(),
             'housings' => $this->hotel->getHousings(),
             'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors(),
+            'canCreatePackage' => $canCreatePackage
         ];
     }
 
@@ -66,7 +71,7 @@ class ChessBoardController extends BaseController
      * @Method({"GET"})
      * @Route("/packages/{id}", name="chessboard_get_package", options={"expose"=true})
      * @param Package $package
-     * @Security("is_granted('ROLE_PACKAGE_VIEW') and is_granted('VIEW', package)")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @return array
      * @Template()
      */
@@ -151,10 +156,8 @@ class ChessBoardController extends BaseController
         $oldPackage = clone $package;
         $accommodation->setAccommodation($updatedRoom);
 
-        $sortedAccommodationList = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
-            ->sortAccommodationsByBeginDate($package->getAccommodations()->toArray());
-        $isLastAccommodation = $accommodation == $sortedAccommodationList->last();
-        $isFirstAccommodation = $accommodation == $sortedAccommodationList->first();
+        $isLastAccommodation = $accommodation == $oldPackage->getLastAccommodation();
+        $isFirstAccommodation = $accommodation == $oldPackage->getFirstAccommodation();
         $isBeginDateChanged = $updatedBeginDate->format('d.m.Y') != $accommodation->getBegin()->format('d.m.Y');
         $isEndDateChanged = $updatedEndDate->format('d.m.Y') != $accommodation->getEnd()->format('d.m.Y');
 

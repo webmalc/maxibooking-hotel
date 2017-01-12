@@ -4,7 +4,7 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class ChessBoardMessageFormatter
 {
@@ -12,7 +12,7 @@ class ChessBoardMessageFormatter
     private $successfulMessages = [];
     private $errorMessages = [];
 
-    public function __construct(DataCollectorTranslator $translator)
+    public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }

@@ -74,10 +74,10 @@ class OrderManager
             return $new;
         }
 
-        $excludedRooms = [];
+        $oldPackageRoomIds = [];
         foreach ($old->getAccommodations() as $accommodation) {
             /** @var PackageAccommodation $accommodation */
-            $excludedRooms[] = $accommodation->getAccommodation()->getId();
+            $oldPackageRoomIds[] = $accommodation->getAccommodation()->getId();
         }
 
         //check accommodation
@@ -89,8 +89,8 @@ class OrderManager
                 $new->getEnd(),
                 $accommodation->getAccommodation()->getRoomType()->getHotel(),
                 $accommodation->getAccommodation()->getRoomType()->getId(),
-                $excludedRooms,
-                $new->getId(),
+                $oldPackageRoomIds,
+                null,
                 false
             );
 

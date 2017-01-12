@@ -99,8 +99,19 @@ var DataManager = (function () {
             });
             var newAccommodationData = $.extend(true, {}, dividedAccommodation_1);
             dividedAccommodation_1.end = packageData.begin;
+            if (dividedAccommodation_1.position == 'right') {
+                dividedAccommodation_1.position = 'middle';
+            }
+            else if (dividedAccommodation_1.position == 'full') {
+                newAccommodationData.position = 'right';
+                dividedAccommodation_1.position = 'left';
+            }
+            else if (dividedAccommodation_1.position == 'left') {
+                newAccommodationData.position = 'middle';
+            }
             newAccommodationData.begin = packageData.begin;
             newAccommodationData.accommodation = packageData.roomId;
+            newAccommodationData.id = 'newAccommodation';
             this._accommodations.forEach(function (packageDataItem) {
                 if (packageDataItem.id === packageData.id) {
                     packageDataItem = dividedAccommodation_1;
