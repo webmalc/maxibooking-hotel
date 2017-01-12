@@ -28,6 +28,16 @@ class SpecialFilter
     private $end;
 
     /**
+     * @var \DateTime
+     */
+    private $displayFrom;
+
+    /**
+     * @var \DateTime
+     */
+    private $displayTo;
+
+    /**
      * @var boolean
      */
     private $isEnabled;
@@ -145,7 +155,7 @@ class SpecialFilter
     /**
      * @return Hotel
      */
-    public function getHotel(): Hotel
+    public function getHotel(): ?Hotel
     {
         return $this->hotel;
     }
@@ -193,6 +203,42 @@ class SpecialFilter
     public function setExcludeSpecial(Special $excludeSpecial = null): SpecialFilter
     {
         $this->excludeSpecial = $excludeSpecial;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDisplayFrom(): ?\DateTime
+    {
+        return $this->displayFrom;
+    }
+
+    /**
+     * @param \DateTime $displayFrom
+     * @return SpecialFilter
+     */
+    public function setDisplayFrom(\DateTime $displayFrom = null): SpecialFilter
+    {
+        $this->displayFrom = $displayFrom;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDisplayTo(): ?\DateTime
+    {
+        return $this->displayTo;
+    }
+
+    /**
+     * @param \DateTime $displayTo
+     * @return SpecialFilter
+     */
+    public function setDisplayTo(\DateTime $displayTo = null): SpecialFilter
+    {
+        $this->displayTo = $displayTo;
         return $this;
     }
 

@@ -8,7 +8,7 @@
         Продано: {{ entity.sold }} из {{ entity.limit }}. Осталось: {{ entity.remain }}
         <div id="special-packages-list">Брони:
             {% for package in entity.packages %}
-                <a href="{{ url('package_edit', {'id': package.id, 'orderId': package.order.id}) }}">
+                <a href="{{ path('package_edit', {'id': package.id, 'orderId': package.order.id}) }}">
                     <small>{{ package }}</small>
                 </a>&nbsp;
             {% endfor %}

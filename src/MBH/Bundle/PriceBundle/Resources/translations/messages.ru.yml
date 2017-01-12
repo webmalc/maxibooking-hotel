@@ -285,3 +285,11 @@ special.isPercent: В процентах?
 form.group.discount: Скидка
 
 special.discount.help: Размер скидки, применяемой к стоимости дня брони
+
+specials.title: Название
+specials.dates: Даты
+specials.roomTypes: Тип номера
+specials.tariff: Тариф
+specials.discount: Скидка
+specials.sold: Продано
+special.apply: Применить

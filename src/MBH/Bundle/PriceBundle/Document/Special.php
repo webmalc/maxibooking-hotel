@@ -138,7 +138,6 @@ class Special extends Base
      * @var int
      * @Gedmo\Versioned
      * @ODM\Field(type="int", name="remain")
-     * @Assert\Range(min=0)
      * @Assert\Type(type="numeric")
      */
     protected $remain;

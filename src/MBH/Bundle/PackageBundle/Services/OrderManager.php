@@ -236,7 +236,7 @@ class OrderManager
                 $this->dm->persist($tourist);
             }
 
-            if (!$this->validator->validate($order)) {
+            if (count($this->validator->validate($order))) {
                 throw new Exception('Create order error: validation errors.');
             }
 
@@ -269,7 +269,7 @@ class OrderManager
                 ->setTouristPayer($order->getMainTourist())
                 ->setTotal(isset($cash['total']) ? (float)$cash['total'] : $order->getPrice());
 
-            if (!$this->validator->validate($order)) {
+            if (count($this->validator->validate($order))) {
                 throw new Exception('Create cash document error: validation errors.');
             }
 
@@ -324,8 +324,10 @@ class OrderManager
         $query->forceRoomTypes = true;
         $query->forceBooking = !empty($data['forceBooking']);
         $query->memcached = false;
-        $query->childrenAges = $data['childrenAges']??null;
-
+        $query->childrenAges = $data['childrenAges'] ?? null;
+        if (!empty($data['special'])) {
+            $query->setSpecial($this->dm->getRepository('MBHPriceBundle:Special')->find($data['special']));
+        }
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -400,7 +402,7 @@ class OrderManager
             }
         }
 
-        if (!$this->validator->validate($package)) {
+        if (count($this->validator->validate($package))) {
             throw new PackageCreationException($order, 'Create package error: validation errors.');
         }
 
@@ -435,6 +437,18 @@ class OrderManager
         $this->dm->persist($order);
         $this->dm->persist($package);
         $this->dm->flush();
+
+        if ($query->getSpecial()) {
+            $package->setSpecial($query->getSpecial());
+
+            if (count($this->validator->validate($package))) {
+                $this->dm->remove($package);
+                $this->dm->flush();
+                throw new PackageCreationException($order, 'Create package error: validation errors.');
+            }
+            $this->dm->persist($package);
+            $this->dm->flush();
+        }
 
         //Acl
         if ($user) {

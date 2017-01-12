@@ -67,8 +67,5 @@ class PackageValidator extends ConstraintValidator
                 $this->context->addViolation($constraint->specialMessage);
             }
         }
-
-        return true;
     }
-
 }

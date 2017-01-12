@@ -43,6 +43,14 @@ class SpecialRepository extends DocumentRepository
             $qb->field('begin')->lte($filter->getEnd());
         }
 
+        if ($filter->getDisplayFrom()) {
+            $qb->field('displayTo')->gte($filter->getDisplayFrom());
+        }
+
+        if ($filter->getDisplayTo()) {
+            $qb->field('displayFrom')->lte($filter->getDisplayTo());
+        }
+
         if ($filter->getTariff()) {
             $qb->addAnd($qb->expr()->addOr(
                 $qb->expr()->field('tariffs')->exists(false),

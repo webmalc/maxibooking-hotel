@@ -520,6 +520,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'children' => $request->get('children'),
             'roomType' => $request->get('roomType'),
             'tariff' => $request->get('tariff'),
+            'special' => $request->get('special'),
             'accommodation' => $request->get('accommodation'),
             'forceBooking' => $request->get('forceBooking'),
             'infants' => $request->get('infants'),

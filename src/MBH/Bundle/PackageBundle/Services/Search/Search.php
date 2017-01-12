@@ -9,6 +9,7 @@ use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -517,6 +518,22 @@ class Search implements SearchInterface
         }
 
         return false;
+    }
+
+    public function searchSpecials(SearchQuery $query)
+    {
+        $filter = new SpecialFilter();
+        $filter->setRemain(1)
+            ->setDisplayFrom($query->begin)
+            ->setDisplayTo($query->end);
+
+        $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($filter);
+
+        if (!$specials->count()) {
+            $query->setSpecial(null);
+        }
+
+        return $specials;
     }
 
     /**
