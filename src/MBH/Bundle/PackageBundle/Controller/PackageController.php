@@ -986,6 +986,20 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     }
 
     /**
+     * Package_delete_modal
+     *
+     * @Route("/package_delete_modal", name="package_delete_modal")
+     * @Template("MBHPackageBundle:Package:modal.html.twig")
+     */
+    public function deleteModalAction(Request $request)
+    {
+        $id = $request->query->get('id');
+        $reasons = $this->dm->getRepository('MBHPackageBundle:DeleteReasons')->getNotDeleted();
+
+        return ['reasons' => $reasons, 'id' =>$id];
+    }
+
+    /**
      * Delete entity.
      *
      * @Route("/{id}/delete", name="package_delete")

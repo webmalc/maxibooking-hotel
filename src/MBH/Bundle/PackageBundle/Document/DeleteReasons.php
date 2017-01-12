@@ -12,7 +12,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="DeleteReasons")
+ * @ODM\Document(collection="DeleteReasons", repositoryClass="MBH\Bundle\PackageBundle\Document\DeleteReasonsRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks

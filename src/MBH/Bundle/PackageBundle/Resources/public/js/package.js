@@ -297,10 +297,25 @@ var docReadyPackages = function () {
         "drawCallback": function (settings, json) {
 
             $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
-            deleteLink();
             $('.deleted-entry').closest('tr').addClass('danger');
             $('.not-confirmed-entry').closest('tr').addClass('info');
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
+
+            $('a.booking-delete-link').on('click', function (e) {
+                e.preventDefault();
+                var path = $(this).data('path');
+                var data = {'id': $(this).data('id')};
+                var answer = package_delete_modal(path, data);
+                answer
+                    .done(function (data) {
+                        $('body').after(data);
+                        $('#myModal').modal('show');
+                    })
+                    .fail(function () {
+                        // todo передать текст error
+                        alert('Ошибка!');
+                    });
+            });
 
             //summary
             $('#package-summary-total').html(settings.json.package_summary_total || '-');
@@ -311,6 +326,13 @@ var docReadyPackages = function () {
         }
     });
 
+    function package_delete_modal(path, data) {
+        return $.ajax({
+            url: path,
+            type: "GET",
+            data: data
+        });
+    }
 
     // package datatable filter
     (function () {
