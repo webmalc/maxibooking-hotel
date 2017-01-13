@@ -210,7 +210,6 @@ parameters:
         vashotel:
           title: 'ВашОтель'
           service: 'mbh.channelmanager.vashotel'
-          password: jguuE26t684Fl
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
