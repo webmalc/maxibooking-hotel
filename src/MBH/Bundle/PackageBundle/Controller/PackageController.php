@@ -9,6 +9,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
+use MBH\Bundle\PackageBundle\Document\DeleteReasons;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -997,6 +998,40 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $reasons = $this->dm->getRepository('MBHPackageBundle:DeleteReasons')->getNotDeleted();
 
         return ['reasons' => $reasons, 'id' =>$id];
+    }
+
+    /**
+     * Delete entity.
+     *
+     * @Route("/{id}/delete_package", name="delete_package", options={"expose"=true})
+     * @Method("GET")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     */
+    public function deletePackageAction(Request $request, Package $entity)
+    {
+        $select_delete_reason = $request->query->get('select_reasons'); // select delete reason id
+        $comment = $request->query->get('comment'); // delete reason comment
+
+        $entity->setDeleteReason($select_delete_reason)->setDeleteComment($comment);
+
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $orderId = $entity->getOrder()->getId();
+        $this->dm->persist($entity);
+        $this->dm->remove($entity);
+        $this->dm->flush($entity);
+
+        $request->getSession()->getFlashBag()
+            ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+
+        if (!empty($request->get('order'))) {
+            return $this->redirect($this->generateUrl('package_order_edit',
+                ['id' => $orderId, 'packageId' => $entity->getId()]));
+        }
+
+        return new Response('success');
     }
 
     /**

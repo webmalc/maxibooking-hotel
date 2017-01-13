@@ -10,9 +10,9 @@
                     <label class="col-sm-2 control-label">Причина</label>
                     <div class="col-sm-10">
                         <p class="form-control-static">
-                            <select class="form-control js-select" style="width: 100%">
+                            <select id="select_reasons" class="form-control js-select" style="width: 100%">
                                 {% for reason in reasons %}
-                                    <option>{{ reason.fullTitle }}</option>
+                                    <option value="{{ reason.id }}">{{ reason.fullTitle }}</option>
                                 {% endfor %}
                             </select>
                         </p>
@@ -21,13 +21,13 @@
                 <div class="form-group">
                     <label for="pass" class="col-sm-2 control-label">Комментарий</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+                        <textarea class="form-control" id="comment-textarea" rows="3"></textarea>
                     </div>
                 </div>
             </form>
             <div class="modal-footer">
-                <button class="btn btn-primary" type="button">Удалить</button>
                 <button class="btn btn-default" type="button" data-dismiss="modal">Закрыть</button>
+                <button class="btn btn-primary btn-delete" type="button">Удалить</button>
             </div>
         </div>
     </div>
@@ -35,22 +35,21 @@
         $(document).ready(function() {
             $(".js-select").select2();
         });
-    </script>
-    <script>
-//        $.ajax({
-//            url: 'file.php',
-//            type: "POST",
-//            data: formData,
-//            async: false,
-//            success: function (msg) {
-//                alert(msg);
-//            },
-//            error: function(msg) {
-//                alert('Ошибка!');
-//            },
-//            cache: false,
-//            contentType: false,
-//            processData: false
-//        });
+
+        $('button.btn-delete').click(function () {
+            var array = {
+                'select_reasons': $('#select_reasons').val(),
+                'comment': $('#comment-textarea').val()
+            };
+
+            $.ajax({
+                url: Routing.generate('delete_package', {'id': $('#package_id').val()}, true),
+                type: "GET",
+                data: array,
+                success: function () {
+                   // location.reload();
+                }
+            });
+        });
     </script>
 </div>

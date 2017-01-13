@@ -26,6 +26,7 @@ validator.document.package.check_out_time_less_zero: Время отъезда �
 validator.document.package.check_out_time_greater_23: Время отъезда не может быть больше 23
 validator.document.package.discount_less_1: Скидка не может быть меньше 1%
 validator.document.package.discount_greater_100: Скидка не может быть больше 100%
+validator.document.package.delete_reason_greater_1000: Комментарий не может содержать более 1000 символов
 validator.document.packageService.no_service_selected: Не выбрана услуга
 validator.document.packageService.no_reservation_selected: Не выбрана бронь
 validator.document.packageService.price_less_zero: Цена не может быть меньше нуля
