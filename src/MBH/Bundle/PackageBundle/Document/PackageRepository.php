@@ -242,7 +242,7 @@ class PackageRepository extends DocumentRepository
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param null $rooms
-     * @param null $excludePackages
+     * @param Package[] $excludePackages
      * @param boolean $departure
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
@@ -251,7 +251,7 @@ class PackageRepository extends DocumentRepository
         \DateTime $begin = null,
         \DateTime $end = null,
         $rooms = null,
-        $excludePackages = null,
+        array $excludePackages = null,
         $departure = true
     )
     {
@@ -268,8 +268,16 @@ class PackageRepository extends DocumentRepository
         }
 
         if ($excludePackages) {
-            is_array($excludePackages) ? $excludePackages : $excludePackages = [$excludePackages];
-            $accQb->field('package.id')->notIn($excludePackages);
+            $excludedAccommodationIds = [];
+            if (!is_array($excludePackages)) {
+                $excludePackages = [$excludePackages];
+            }
+            foreach ($excludePackages as $excludePackage) {
+                foreach ($excludePackage->getAccommodations() as $accommodation) {
+                    $excludedAccommodationIds[] = $accommodation->getId();
+                }
+            }
+            $accQb->field('id')->notIn($excludedAccommodationIds);
         }
 
         /*$qb = $this->createQueryBuilder();*/

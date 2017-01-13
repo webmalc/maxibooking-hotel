@@ -6,6 +6,13 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
+/**
+ * Данные об интервале в шахматке. Может представлять данные об интервале размещения,
+ * ... интервале без размещения частично размещенной брони и неразмещенной брони
+ *
+ * Class ChessBoardUnit
+ * @package MBH\Bundle\PackageBundle\Models\ChessBoard
+ */
 class ChessBoardUnit implements \JsonSerializable
 {
     /** @var Package */
@@ -44,8 +51,7 @@ class ChessBoardUnit implements \JsonSerializable
     public function __toArray(): array
     {
         $array = [
-            'id' => $this->accommodation ? $this->accommodation->getId()
-                : $this->package->getId() . $this->getBeginDate()->format('dm'),
+            'id' => $this->getId(),
             'number' => $this->package->getNumberWithPrefix(),
             'price' => $this->package->getPrice(),
             'begin' => $this->getBeginDate()->format('d.m.Y'),
@@ -73,6 +79,12 @@ class ChessBoardUnit implements \JsonSerializable
         }
 
         return $array;
+    }
+
+    public function getId()
+    {
+        return $this->accommodation ? $this->accommodation->getId()
+            : $this->package->getId() . $this->getBeginDate()->format('dm');
     }
 
     public function getBeginDate()

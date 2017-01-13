@@ -90,7 +90,7 @@ class OrderManager
                 $accommodation->getAccommodation()->getRoomType()->getHotel(),
                 $accommodation->getAccommodation()->getRoomType()->getId(),
                 $oldPackageRoomIds,
-                null,
+                $old,
                 false
             );
 

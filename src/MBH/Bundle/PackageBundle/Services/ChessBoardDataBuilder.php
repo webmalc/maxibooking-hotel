@@ -115,8 +115,9 @@ class ChessBoardDataBuilder
         $noAccommodationIntervals = [];
         foreach ($this->getPackagesWithoutAccommodation() as $package) {
             /** @var Package $package */
-            $noAccommodationIntervals[] = $this->container
+            $intervalData = $this->container
                 ->get('mbh.chess_board_unit')->setInitData($package);
+            $noAccommodationIntervals[$intervalData->getId()] = $intervalData;
         }
 
         return array_merge($noAccommodationIntervals, $this->getDateIntervalsWithoutAccommodation());
@@ -193,8 +194,9 @@ class ChessBoardDataBuilder
         foreach ($packages as $package) {
             $emptyIntervals = $this->accommodationManipulator->getEmptyIntervals($package);
             foreach ($emptyIntervals as $emptyInterval) {
-                $dateIntervalsWithoutAccommodation[] = $this->container
+                $intervalData = $this->container
                     ->get('mbh.chess_board_unit')->setInitData($package, null, $emptyInterval);
+                $dateIntervalsWithoutAccommodation[$intervalData->getId()] = $intervalData;
             }
         }
 
@@ -207,8 +209,9 @@ class ChessBoardDataBuilder
         foreach ($this->getPackageAccommodations() as $accommodation) {
             /** @var PackageAccommodation $accommodation */
             $package = $accommodation->getPackage();
-            $accommodationIntervals[] = $this->container
+            $intervalData = $this->container
                 ->get('mbh.chess_board_unit')->setInitData($package, $accommodation);
+            $accommodationIntervals[$intervalData->getId()] = $intervalData;
         }
 
         return $accommodationIntervals;

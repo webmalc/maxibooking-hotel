@@ -20,15 +20,7 @@ var ActionManager = (function () {
         $unblockModal.find('.modal-title').text('Бронь заблокирована для изменений!');
         $unblockModal.find('#entity-delete-modal-text').text('Если вы хотите разблокировать эту бронь, перейдите в раздел редактирования брони.');
         $unblockModal.find('#entity-delete-button').hide();
-        var editButton = $('#package-info-modal-edit').clone();
-        editButton.css('background-color', 'transparent');
-        editButton.css('border', '1px solid #fff');
-        editButton.css('color', '#fff');
-        editButton.attr('href', Routing.generate('package_edit', { id: packageId }));
-        editButton.click(function () {
-            $unblockModal.modal('hide');
-        });
-        editButton.appendTo($unblockModal.find('.modal-footer'));
+        ActionManager.addEditButton($unblockModal, packageId);
         $unblockModal.modal('show');
     };
     ActionManager.showLoadingIndicator = function () {
@@ -100,27 +92,68 @@ var ActionManager = (function () {
             editModal.modal('hide');
         };
     };
+    ActionManager.callIntervalBeginOutOfRangeModal = function (side) {
+        var $alertModal = $('#entity-delete-confirmation');
+        if (side == 'begin') {
+            //TODO: Поменять текст и унифировать надписи
+            $alertModal.find('.modal-title').text('Дата заезда брони находится за границей заданного периода!');
+            $alertModal.find('#entity-delete-modal-text').text('Если вы хотите изменить эту бронь, измените дату начала просмотра броней.');
+        }
+        else if (side == 'end') {
+            $alertModal.find('.modal-title').text('Дата выезда брони находится за границей заданного периода!');
+            $alertModal.find('#entity-delete-modal-text').text('Если вы хотите изменить эту бронь, измените дату окончания просмотра броней.');
+        }
+        else if (side == 'both') {
+            $alertModal.find('.modal-title').text('Дата выезда и дата заезда брони находятся за границей заданного периода!');
+            $alertModal.find('#entity-delete-modal-text').text('Если вы хотите изменить эту бронь, измените дату начала и дату окончания просмотра броней.');
+        }
+        $alertModal.find('#entity-delete-button').hide();
+        $alertModal.modal('show');
+    };
+    ActionManager.callIntervalToLargeModal = function (packageId) {
+        var $unblockModal = $('#entity-delete-confirmation');
+        $unblockModal.find('.modal-title').text('Бронь не помещается на экран!');
+        $unblockModal.find('#entity-delete-modal-text').text('Если вы хотите изменить эту бронь, воспользуйтесь режимом редактирования брони.');
+        $unblockModal.find('#entity-delete-button').hide();
+        ActionManager.addEditButton($unblockModal, packageId);
+        $unblockModal.modal('show');
+    };
+    ActionManager.addEditButton = function ($modal, packageId) {
+        var editButton = $modal.find('#package-info-modal-edit').eq(0);
+        if (editButton.length == 0) {
+            editButton = $('#package-info-modal-edit').clone();
+            editButton.css('background-color', 'transparent');
+            editButton.css('border', '1px solid #fff');
+            editButton.css('color', '#fff');
+            editButton.click(function () {
+                $modal.modal('hide');
+            });
+            editButton.appendTo($modal.find('.modal-footer'));
+        }
+        editButton.attr('href', Routing.generate('package_edit', { id: packageId }));
+    };
     ActionManager.prototype.showPackageInfoModal = function (packageId, data) {
         var self = this;
         var packageInfoModal = $('#package-info-modal');
         var intervalData = this.dataManager.getPackageDataById(packageId);
-        var $deleteButton = packageInfoModal.find('#package-info-modal-delete');
-        if (intervalData.removePackage) {
-            $deleteButton.click(function () {
-                self.callRemoveConfirmationModal(packageId);
-                packageInfoModal.modal('hide');
+        if (intervalData) {
+            var $deleteButton = packageInfoModal.find('#package-info-modal-delete');
+            if (intervalData.removePackage) {
+                $deleteButton.click(function () {
+                    self.callRemoveConfirmationModal(packageId);
+                    packageInfoModal.modal('hide');
+                });
+            }
+            else {
+                $deleteButton.hide();
+            }
+            var $editButton_1 = packageInfoModal.find('#package-info-modal-edit');
+            $editButton_1.click(function () {
+                $editButton_1.attr('href', Routing.generate('package_edit', { id: packageId }));
             });
+            packageInfoModal.find('#package-info-modal-body').html(data);
+            packageInfoModal.modal('show');
         }
-        else {
-            $deleteButton.hide();
-        }
-        var $editButton = packageInfoModal.find('#package-info-modal-edit');
-        $editButton.click(function () {
-            // let packageId = document.getElementById('package_info_package_id').value;
-            $editButton.attr('href', Routing.generate('package_edit', { id: packageId }));
-        });
-        packageInfoModal.find('#package-info-modal-body').html(data);
-        packageInfoModal.modal('show');
     };
     ActionManager.showResultMessages = function (response) {
         response.success.forEach(function (message) {
@@ -157,52 +190,69 @@ var ActionManager = (function () {
         modalAlertDiv.innerHTML = '';
         var newIntervalData = ChessBoardManager.getPackageData(packageElement);
         if (intervalData && changedSide) {
-            var alertMessageData = ActionManager.getAlertMessage(changedSide, intervalData, newIntervalData);
+            var alertMessageData = ActionManager.getAlertData(changedSide, intervalData, newIntervalData);
             if (alertMessageData) {
                 ActionManager.showAlertMessage(alertMessageData, $updateForm);
             }
         }
-        ActionManager.showEditedUpdateModal(intervalData, newIntervalData, isDivide);
+        ActionManager.showEditedUpdateModal(intervalData, newIntervalData, isDivide, changedSide);
     };
-    ActionManager.getAlertMessage = function (changedSide, intervalData, newIntervalData) {
+    ActionManager.getAlertData = function (changedSide, intervalData, newIntervalData) {
         if (changedSide == 'right') {
-            if (ActionManager.isPackageEndChanged(newIntervalData, intervalData)) {
-                if (intervalData.updatePackage) {
-                    return { message: 'Вы действительно хотите изменить дату выезда брони?', resolved: true };
-                }
-                else {
-                    return {
-                        message: 'Для выполнения данного действия необходимо изменить дату выезда. У Вас недостаточно прав для редактирование брони',
-                        resolved: false
-                    };
-                }
-            }
+            return ActionManager.getAlertMessage(newIntervalData, intervalData);
         }
         else if (changedSide == 'left') {
-            if (ActionManager.isPackageBeginChanged(newIntervalData, intervalData)) {
-                if (intervalData.updatePackage) {
-                    return { message: 'Вы действительно хотите изменить дату заезда брони?', resolved: true };
-                }
-                else {
-                    return {
-                        message: 'Для выполнения данного действия необходимо изменить дату заезда. У Вас недостаточно прав для редактирование брони',
-                        resolved: false
-                    };
-                }
-            }
+            return ActionManager.getAlertMessage(newIntervalData, intervalData);
         }
         else if (changedSide == 'both') {
-            if (!ChessBoardManager.isDatesEqual(newIntervalData.begin, intervalData.packageBegin)
-                && !ChessBoardManager.isDatesEqual(newIntervalData.end, intervalData.packageEnd)) {
-                if (intervalData.updatePackage) {
-                    return { message: 'Вы действительно хотите изменить дату заезда и выезда брони?', resolved: true };
-                }
-                else {
-                    return {
-                        message: 'Для выполнения данного действия необходимо изменить даты заезда и выезда. У Вас недостаточно прав для редактирование брони',
-                        resolved: false
-                    };
-                }
+            return ActionManager.getAlertMessage(newIntervalData, intervalData);
+        }
+    };
+    ActionManager.getAlertMessage = function (newIntervalData, intervalData) {
+        var packageBeginChanged = ActionManager.isPackageBeginChanged(newIntervalData, intervalData);
+        var packageEndChanged = ActionManager.isPackageEndChanged(newIntervalData, intervalData);
+        var packageBeginAndEndChanged = packageBeginChanged && packageEndChanged;
+        var canUpdatePackage = intervalData.updatePackage;
+        if (packageBeginAndEndChanged) {
+            if (canUpdatePackage) {
+                return {
+                    message: 'Вы действительно хотите изменить дату заезда и выезда брони?',
+                    resolved: true
+                };
+            }
+            else {
+                return {
+                    message: 'Для выполнения данного действия необходимо изменить дату заезда или дату выезда. У Вас недостаточно прав для редактирование брони',
+                    resolved: false
+                };
+            }
+        }
+        else if (packageBeginChanged) {
+            if (canUpdatePackage) {
+                return {
+                    message: 'Вы действительно хотите изменить дату заезда брони?',
+                    resolved: true
+                };
+            }
+            else {
+                return {
+                    message: 'Для выполнения данного действия необходимо изменить дату заезда. У Вас недостаточно прав для редактирование брони',
+                    resolved: false
+                };
+            }
+        }
+        else if (packageEndChanged) {
+            if (canUpdatePackage) {
+                return {
+                    message: 'Вы действительно хотите изменить дату выезда брони?',
+                    resolved: true
+                };
+            }
+            else {
+                return {
+                    message: 'Для выполнения данного действия необходимо изменить дату выезда. У Вас недостаточно прав для редактирование брони',
+                    resolved: false
+                };
             }
         }
     };
@@ -235,11 +285,21 @@ var ActionManager = (function () {
             ActionManager.onContinueButtonClick($modalAlertDiv, $confirmButton, $continueButton, $updateForm);
         });
     };
-    ActionManager.showEditedUpdateModal = function (intervalData, newIntervalData, isDivide) {
+    ActionManager.showEditedUpdateModal = function (intervalData, newIntervalData, isDivide, changedSide) {
+        var intervalBegin = newIntervalData.begin;
+        var intervalEnd = newIntervalData.end;
         var newPackageBegin = ActionManager.isPackageBeginChanged(newIntervalData, intervalData)
             ? newIntervalData.begin : intervalData.packageBegin;
         var newPackageEnd = ActionManager.isPackageEndChanged(newIntervalData, intervalData)
             ? newIntervalData.end : intervalData.packageEnd;
+        if (changedSide == 'right') {
+            newPackageBegin = intervalData.begin;
+            intervalBegin = intervalData.begin;
+        }
+        else if (changedSide == 'left') {
+            newPackageEnd = intervalData.end;
+            intervalEnd = intervalData.end;
+        }
         var modal = $('#packageModal');
         var packageId = intervalData.packageId;
         var intervalId = intervalData.accommodation ? intervalData.id : '';
@@ -252,8 +312,8 @@ var ActionManager = (function () {
         modal.find('#modal-package-payer').text(payerText);
         modal.find('#modal-package-begin').text(newPackageBegin);
         modal.find('#modal-package-end').text(newPackageEnd);
-        modal.find('#modal-begin-date').text(newIntervalData.begin);
-        modal.find('#modal-end-date').text(newIntervalData.end);
+        modal.find('#modal-begin-date').text(intervalBegin);
+        modal.find('#modal-end-date').text(intervalEnd);
         modal.find('#modal-room-id').text(newIntervalData.accommodation);
         modal.find('#modal-room-type-name').text(roomTypes[newIntervalData.roomType]);
         modal.find('#modal-room-name').text(newIntervalData.accommodation

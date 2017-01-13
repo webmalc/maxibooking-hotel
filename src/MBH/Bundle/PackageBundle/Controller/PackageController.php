@@ -828,7 +828,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $availableRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
             $package->getBegin(), $package->getEnd(),
-            $this->hotel, null, null, $package->getId(), false
+            $this->hotel, null, null, $package, false
         );
         $flash = $request->getSession()->getFlashBag();
 

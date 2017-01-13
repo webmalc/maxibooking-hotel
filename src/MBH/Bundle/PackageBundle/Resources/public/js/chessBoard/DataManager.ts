@@ -107,20 +107,14 @@ class DataManager {
     }
 
     private addPackageData(packageData) {
-        this._accommodations.push(packageData);
+        this._accommodations[packageData.id] = packageData;
     }
 
     public updateLocalPackageData(packageData, isDivide) {
         ActionManager.hideLoadingIndicator();
         if (isDivide) {
-            let dividedAccommodation;
-            this._accommodations.some(function (accommodationData) {
-                if (accommodationData.id == packageData.accommodationId) {
-                    dividedAccommodation = accommodationData;
-                    return true;
-                }
-                return false;
-            });
+            let dividedAccommodation = this._accommodations[packageData.accommodationId];
+
             let newAccommodationData = $.extend(true, {}, dividedAccommodation);
             dividedAccommodation.end = packageData.begin;
 
@@ -137,19 +131,11 @@ class DataManager {
             newAccommodationData.accommodation = packageData.roomId;
             newAccommodationData.id = 'newAccommodation';
 
-            this._accommodations.forEach(function (packageDataItem) {
-                if (packageDataItem.id === packageData.id) {
-                    packageDataItem = dividedAccommodation;
-                }
-            });
-            this._accommodations.push(newAccommodationData);
+            this._accommodations[packageData.id] = dividedAccommodation;
+            this.addPackageData(newAccommodationData);
         } else {
             if (!packageData.accommodation) {
-                this._accommodations.forEach(function (accommodationData, index, packages) {
-                    if (accommodationData.id === packageData.id) {
-                        packages.splice(index, 1);
-                    }
-                });
+                delete this._accommodations[packageData.id];
             } else {
                 this.updateAccommodationData(packageData)
             }
@@ -157,33 +143,37 @@ class DataManager {
     }
 
     public getNoAccommodationPackagesByDate(date, roomTypeId) {
-        return this.noAccommodationIntervals.filter(function (noAccommodationInterval) {
-            if (noAccommodationInterval.roomTypeId === roomTypeId) {
-                let packageBeginDate = ChessBoardManager.getMomentDate(noAccommodationInterval.begin);
-                let packageEndDate = ChessBoardManager.getMomentDate(noAccommodationInterval.end);
+        let noAccommodationPackages = [];
+        for (let noAccommodationData in this.noAccommodationIntervals) {
+            if (this.noAccommodationIntervals.hasOwnProperty(noAccommodationData)) {
 
-                let beginAndCurrentDiff = date.diff(packageBeginDate, 'days');
-                let endAndCurrentDiff = packageEndDate.diff(date, 'days');
+                let noAccommodationIntervalData = this.noAccommodationIntervals[noAccommodationData];
+                if (noAccommodationIntervalData.roomTypeId === roomTypeId) {
 
-                return beginAndCurrentDiff >= 0 && endAndCurrentDiff > 0;
+                    let packageBeginDate = ChessBoardManager.getMomentDate(noAccommodationIntervalData.begin);
+                    let packageEndDate = ChessBoardManager.getMomentDate(noAccommodationIntervalData.end);
+
+                    let beginAndCurrentDiff = date.diff(packageBeginDate, 'days');
+                    let endAndCurrentDiff = packageEndDate.diff(date, 'days');
+
+                    if (beginAndCurrentDiff >= 0 && endAndCurrentDiff > 0) {
+                        noAccommodationPackages.push(noAccommodationIntervalData);
+                    }
+                }
             }
+        }
 
-            return false;
-        })
+        return noAccommodationPackages;
     }
 
     private updateAccommodationData(packageData) {
         let isAccommodation = false;
-        this._accommodations.forEach(function (packageDataItem) {
-            if (packageDataItem.id === packageData.id) {
-                isAccommodation = true;
-                packageDataItem.begin = packageData.begin;
-                packageDataItem.end = packageData.end;
-                packageDataItem.accommodation = packageData.accommodation;
-                packageDataItem.roomTypeId = packageData.roomTypeId;
-            }
-        });
-        if (!isAccommodation && packageData.accommodation != '') {
+        if (this._accommodations[packageData.id]) {
+            this._accommodations[packageData.id].begin = packageData.begin;
+            this._accommodations[packageData.id].end = packageData.end;
+            this._accommodations[packageData.id].accommodation = packageData.accommodation;
+            this._accommodations[packageData.id].roomTypeId = packageData.roomTypeId;
+        } else if (!isAccommodation && packageData.accommodation != '') {
             this.addPackageData(packageData);
         }
     }
@@ -210,14 +200,11 @@ class DataManager {
         ActionManager.showLoadingIndicator();
         let self = this;
 
-        let index = this._accommodations.length - 1;
-
-        while (index >= 0) {
-            if (this._accommodations[index].packageId === packageId) {
-                this._accommodations.splice(index, 1);
+        for (let accommodationId in this._accommodations) {
+            if (this._accommodations.hasOwnProperty(accommodationId)
+                && this._accommodations[accommodationId].packageId == packageId) {
+                delete this._accommodations[accommodationId];
             }
-
-            index -= 1;
         }
 
         $.ajax({
@@ -251,14 +238,14 @@ class DataManager {
     }
 
     public getNoAccommodationIntervalById(id) {
-        return this.getNoAccommodationIntervals().find(function(packageData) {
-            return packageData.id === id
-        })
+        return this.getNoAccommodationIntervals()[id];
     }
 
     public getPackageDataById(packageId) {
         let packageData;
-        this._accommodations.some(function (accommodationData) {
+        let self = this;
+        Object.getOwnPropertyNames(this._accommodations).some(function (accommodationId) {
+            let accommodationData = self._accommodations[accommodationId];
             if (accommodationData.packageId == packageId) {
                 packageData = accommodationData;
                 return true;
@@ -268,21 +255,12 @@ class DataManager {
         if (packageData) {
             return packageData
         }
-        this.noAccommodationIntervals.some(function (noAccommodationInterval) {
-            if (noAccommodationInterval.id == packageId) {
-                packageData = noAccommodationInterval;
-                return true;
-            }
-            return false;
-        });
 
-        return packageData;
+        return this.noAccommodationIntervals[packageId];
     }
 
     public getAccommodationIntervalById(id) {
-        return this.getAccommodations().find(function (accommodationData) {
-            return accommodationData.id === id;
-        });
+        return this._accommodations[id]
     }
 
     private updatePackagesData() {
