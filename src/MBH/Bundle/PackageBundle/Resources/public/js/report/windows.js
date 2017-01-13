@@ -11,13 +11,13 @@ $(document).ready(function ($) {
                 modal.find('.modal-body').html(mbh.loader.html);
                 modal.modal();
 
-                $.get(Routing.generate('report_windows_package', {'id': $(this).attr('data-id')}), function(html) {
+                $.get(Routing.generate('report_windows_package', {'id': $(this).attr('data-id')}), function (html) {
                     modal.find('.modal-body').html(html);
                     $('#modal-submit').click(function () {
                         var change_form = modal.find('.modal-body > form');
                         if (change_form.length) {
                             change_form.submit();
-                        }   else {
+                        } else {
                             modal.modal('hide');
                         }
                     });
@@ -34,6 +34,32 @@ $(document).ready(function ($) {
                 success: function (response) {
                     table.html(response);
                     processLinks();
+                    $('tr').hover(function () {
+                        $(this).children('td').each(function (index, elem) {
+
+                            var link = $(elem).find('a');
+                            if (link.length) {
+                                var cloneLink = link.clone();
+                            }
+                            if ($(this).attr('data-date') && !($(elem).find('.pos').length)) {
+
+                                $(this).append("<div class='pos'></div>");
+                                $(this).find('.pos').prepend(cloneLink);
+                                link.remove();
+                                if (!($(this).find('.dates').length)) {
+                                    var str = "<div class='dates'><span class='" + $(this).attr('data-class') + "'>" + $(this).attr('data-date') + " </span><div class='text-muted'>" + $(this).attr('data-room') + "</div></div>";
+                                    $(this).find('a').length ? $(this).find('a').append(str) : $(this).find('.pos').append(str);
+                                }
+                            }
+
+                        });
+                    }, function () {
+                        $(this).children('td').each(function () {
+                            var linkOld = $(this).find('a').clone();
+                            $(this).find('.pos').remove();
+                            $(this).append(linkOld);
+                        });
+                    });
                 }
             });
         };
