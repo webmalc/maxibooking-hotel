@@ -14,14 +14,12 @@ use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\PaymentType;
-use Ob\HighchartsBundle\Highcharts\Highchart;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 
 /**
@@ -128,9 +126,12 @@ class DefaultController extends BaseController
                 $results = $item['results'];
                 foreach ($results as $i => $searchResult) {
                     if ($searchResult->getRoomType()->getCategory()) {
-                        $uniqid = $searchResult->getRoomType()->getCategory()->getId() . $searchResult->getTariff()->getId();
-                        $uniqid .= $searchResult->getBegin()->format('dmY') . $searchResult->getEnd()->format('dmY');
-                        if (!array_key_exists($uniqid, $filterSearchResults) || $searchResult->getRoomType()->getTotalPlaces() < $filterSearchResults[$uniqid]->getRoomType()->getTotalPlaces()) {
+                        $uniqid = $searchResult->getRoomType()->getCategory()->getId().$searchResult->getTariff(
+                            )->getId();
+                        $uniqid .= $searchResult->getBegin()->format('dmY').$searchResult->getEnd()->format('dmY');
+                        if (!array_key_exists($uniqid, $filterSearchResults) || $searchResult->getRoomType(
+                            )->getTotalPlaces() < $filterSearchResults[$uniqid]->getRoomType()->getTotalPlaces()
+                        ) {
                             $filterSearchResults[$uniqid] = $searchResult;
                         }
                     }
@@ -141,42 +142,15 @@ class DefaultController extends BaseController
 
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
 
-        return $this->render('MBHOnlineBookingBundle:Default:search.html.twig', [
-            'searchResults' => $searchResults,
-            'requestSearchUrl' => $requestSearchUrl,
-            'chart' => $this->getChart()
-        ]);
-    }
-
-    /**
-     * @param null $data
-     * @return Highchart
-     */
-    private function getChart($data = null)
-    {
-        // Chart
-        $series = array(
-            array("name" => "Типы комнат",
-                "data" => array_map(function($range){return rand(0,3000);}, range(0,30)),
-                "dataLabels" => [
-                    'enabled' => false
-                ]
-
-            )
+        return $this->render(
+            'MBHOnlineBookingBundle:Default:search.html.twig',
+            [
+                'searchResults' => $searchResults,
+                'requestSearchUrl' => $requestSearchUrl,
+            ]
         );
-
-        $ob = new Highchart();
-
-        $ob->chart->renderTo('linechart');  // The #id of the div where to render the chart
-        $ob->chart->type('column');
-        $ob->title->text('Динамика цен');
-        $ob->xAxis->title(array('text'  => "Дни месяца"));
-        $ob->xAxis->categories(['Типы комнат']);
-        $ob->yAxis->title(array('text'  => "Цена"));
-        $ob->series($series);
-
-        return $ob;
     }
+
 
     /**
      * @Route("/success", name="online_booking_success")
@@ -185,7 +159,7 @@ class DefaultController extends BaseController
     public function lastStepAction(Request $request)
     {
         $type = '';
-        $payButtonHtml ='';
+        $payButtonHtml = '';
         $orderId = $request->get('order');
         $cash = $request->get('cash');
         if (!$orderId || !$cash) {
@@ -196,25 +170,37 @@ class DefaultController extends BaseController
             if ($orderId && $cash && $clientConfig->getPaymentSystem()) {
                 $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(['id' => $orderId]);
                 if ($order) {
-                    $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
-                        'data' => array_merge([
-                            'test' => false,
-                            'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
-                                ['%total%' => number_format($cash, 2), '%order_id%' => $order->getId()],
-                                'MBHOnlineBundle')
-                        ], $clientConfig->getFormData($order->getCashDocuments()[0],
-                            $this->container->getParameter('online_form_result_url'),
-                            $this->generateUrl('online_form_check_order', [], true)))
-                    ]);
+                    $payButtonHtml = $this->renderView(
+                        'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig',
+                        [
+                            'data' => array_merge(
+                                [
+                                    'test' => false,
+                                    'buttonText' => $this->get('translator')->trans(
+                                        'views.api.make_payment_for_order_id',
+                                        ['%total%' => number_format($cash, 2), '%order_id%' => $order->getId()],
+                                        'MBHOnlineBundle'
+                                    ),
+                                ],
+                                $clientConfig->getFormData(
+                                    $order->getCashDocuments()[0],
+                                    $this->container->getParameter('online_form_result_url'),
+                                    $this->generateUrl('online_form_check_order', [], true)
+                                )
+                            ),
+                        ]
+                    );
                 }
             }
         }
+
         return [
             'type' => $type,
             'order' => $orderId,
-            'payButtonHtml' => $payButtonHtml
+            'payButtonHtml' => $payButtonHtml,
         ];
     }
+
     /**
      * @Route("/sign", name="online_booking_sign")
      */
@@ -250,8 +236,8 @@ class DefaultController extends BaseController
                     'roomType' => $formData['roomType'],
                     'tariff' => $formData['tariff'],
                     'accommodation' => false,
-                    'isOnline' => true
-                ]
+                    'isOnline' => true,
+                ],
             ];
             $tourist = [
                 'firstName' => $formData['firstName'],
@@ -264,18 +250,19 @@ class DefaultController extends BaseController
                 'packages' => $packages,
                 'tourist' => $tourist,
                 'status' => 'online',
-                'confirmed' => false
+                'confirmed' => false,
             ];
             //--> Если по телефону - сюда
             if ($reservation) {
                 $data['total'] = $formData['total']??0;
                 $this->reserveNotification($data);
+
                 return $this->render('@MBHOnlineBooking/Default/sign-success.html.twig');
             }
             //Price online pay
             $paymentType = PaymentType::PAYMENT_TYPE_LIST[$formData['paymentType']];
             //OnlinePayment  - оплаченая цена (формируется взависимости от выбора. Искать в форме)
-            $onlinePaymentSum = (int)$formData['total']/100*$paymentType['value'];
+            $onlinePaymentSum = (int)$formData['total'] / 100 * $paymentType['value'];
             $cash = ['total' => $onlinePaymentSum];
             $data['onlinePaymentType'] = 'online_full';
 
@@ -284,9 +271,13 @@ class DefaultController extends BaseController
                 $order = $orderManger->createPackages($data, null, null, $cash);
             } catch (Exception $e) {
                 $text = 'Произошла ошибка при бронировании, пожалуйста, позвоните нам.';
-                return $this->render('MBHOnlineBookingBundle:Default:sign-false.html.twig', [
-                    'text' => $text
-                ]);
+
+                return $this->render(
+                    'MBHOnlineBookingBundle:Default:sign-false.html.twig',
+                    [
+                        'text' => $text,
+                    ]
+                );
             }
 
 //            $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
@@ -295,10 +286,13 @@ class DefaultController extends BaseController
             $this->sendNotifications($order, $arrival, $departure);
 
             //--> Сюда если онлайн.
-            return $this->render('MBHOnlineBookingBundle:Default:sign-success.html.twig', [
-                'order' => $order->getId(),
-                'cash' => $cash['total']
-            ]);
+            return $this->render(
+                'MBHOnlineBookingBundle:Default:sign-success.html.twig',
+                [
+                    'order' => $order->getId(),
+                    'cash' => $cash['total'],
+                ]
+            );
         } else {
             $data = $isSubmit ? $form->getData() : $request->get('form');
             $roomTypeID = $data['roomType'];
@@ -329,16 +323,19 @@ class DefaultController extends BaseController
                 $days = $endTime->diff($beginTime)->d;
             }
 
-            return $this->render('MBHOnlineBookingBundle:Default:sign.html.twig', [
-                'requestSearchUrl' => $requestSearchUrl,
-                'form' => $form->createView(),
-                'roomType' => $roomType,
-                'roomTypeCategory' => $roomTypeCategory,
-                'tariff' => $tariff,
-                'data' => $data,
-                'days' => $days,
-                'offera' => $this->getParameter('offera')
-            ]);
+            return $this->render(
+                'MBHOnlineBookingBundle:Default:sign.html.twig',
+                [
+                    'requestSearchUrl' => $requestSearchUrl,
+                    'form' => $form->createView(),
+                    'roomType' => $roomType,
+                    'roomTypeCategory' => $roomTypeCategory,
+                    'tariff' => $tariff,
+                    'data' => $data,
+                    'days' => $days,
+                    'offera' => $this->getParameter('offera'),
+                ]
+            );
         }
     }
 
@@ -358,16 +355,18 @@ class DefaultController extends BaseController
             $message = $notifier::createMessage();
             $hotel = $order->getPackages()[0]->getRoomType()->getHotel();
             $message
-                ->setText($tr->trans('mailer.online.backend.text',['%orderID%', $order->getId()]))
+                ->setText($tr->trans('mailer.online.backend.text', ['%orderID%', $order->getId()]))
                 ->setFrom('online_form')
                 ->setSubject('mailer.online.backend.subject')
                 ->setType('info')
                 ->setCategory('notification')
                 ->setOrder($order)
-                ->setAdditionalData([
-                    'arrivalTime' => $arrival,
-                    'departureTime' => $departure,
-                ])
+                ->setAdditionalData(
+                    [
+                        'arrivalTime' => $arrival,
+                        'departureTime' => $departure,
+                    ]
+                )
                 ->setHotel($hotel)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
@@ -387,11 +386,13 @@ class DefaultController extends BaseController
                     ->setType('info')
                     ->setCategory('notification')
                     ->setOrder($order)
-                    ->setAdditionalData([
-                        'prependText' => 'mailer.online.user.prepend',
-                        'appendText' => 'mailer.online.user.append',
-                        'fromText' => $hotel->getName()
-                    ])
+                    ->setAdditionalData(
+                        [
+                            'prependText' => 'mailer.online.user.prepend',
+                            'appendText' => 'mailer.online.user.append',
+                            'fromText' => $hotel->getName(),
+                        ]
+                    )
                     ->setHotel($hotel)
                     ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                     ->setAutohide(false)
@@ -425,9 +426,13 @@ class DefaultController extends BaseController
     {
         $notifier = $this->container->get('mbh.notifier');
         $message = $notifier::createMessage();
-        $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(['id'=>$data['packages'][0]['roomType']]);
+        $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
+            ['id' => $data['packages'][0]['roomType']]
+        );
         $hotel = $roomType->getHotel();
-        $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['id' => $data['packages'][0]['tariff']]);
+        $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
+            ['id' => $data['packages'][0]['tariff']]
+        );
         $recipient = new OnlineNotifyRecipient();
         $recipient->setEmail($this->container->getParameter('online_reservation_manager_email'));
         $message
@@ -437,16 +442,18 @@ class DefaultController extends BaseController
             ->setFrom('online_form')
             ->setType('info')
             ->setCategory('notification')
-            ->setAdditionalData([
-                'roomType' => $roomType,
-                'tariff' => $tariff,
-                'begin' => $data['packages'][0]['begin'],
-                'end' => $data['packages'][0]['end'],
-                'client' => $data['tourist'],
-                'total' => $data['total'],
-                'package' => $data['packages'][0],
+            ->setAdditionalData(
+                [
+                    'roomType' => $roomType,
+                    'tariff' => $tariff,
+                    'begin' => $data['packages'][0]['begin'],
+                    'end' => $data['packages'][0]['end'],
+                    'client' => $data['tourist'],
+                    'total' => $data['total'],
+                    'package' => $data['packages'][0],
 
-            ])
+                ]
+            )
             ->setHotel($hotel)
             ->setTemplate('MBHOnlineBookingBundle:Mailer:reservation.html.twig')
             ->setAutohide(false)
@@ -461,7 +468,7 @@ class DefaultController extends BaseController
             $notifier = $this->container->get('mbh.notifier.mailer');
             $recipient = new OnlineNotifyRecipient();
             $recipient
-                ->setName($tourist['firstName'] . ' ' . $tourist['lastName'])
+                ->setName($tourist['firstName'].' '.$tourist['lastName'])
                 ->setEmail($tourist['email']);
             $message
                 ->setRecipients([$recipient])
@@ -487,7 +494,7 @@ class DefaultController extends BaseController
         $minStays = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetchMinStay($date);
         $data = [
             'success' => true,
-            'minstay' => $minStays
+            'minstay' => $minStays,
         ];
 
         $env = $this->get('kernel')->getEnvironment();
@@ -499,40 +506,37 @@ class DefaultController extends BaseController
 
     /**
      * @Route(
-     *     "/calculation/{tariffId}/{roomTypeId}/{adults}/{children}/{calcBegin}/{calcEnd}/{packageBegin}/{packageEnd}",
+     *     "/calculation/{tariffId}/{roomTypeId}/{adults}/{children}/{packageBegin}/{packageEnd}",
      *      name="online_booking_calculation"
      *     )
-     * @ParamConverter("calcBegin", options = {"format":"Y-m-d"})
-     * @ParamConverter("calcEnd", options = {"format":"Y-m-d"})
-     * @ParamConverter("packageBegin", options = {"format":"Y-m-d"})
-     * @ParamConverter("packageEnd", options = {"format":"Y-m-d"})
      * @ParamConverter("tariff", class="MBHPriceBundle:Tariff", options={"id" = "tariffId"})
      * @ParamConverter("roomType", class="MBHHotelBundle:RoomType", options={"id" = "roomTypeId"})
+     * @param Request $request
+     * @param Tariff $tariff
+     * @param RoomType $roomType
+     * @param int $adults
+     * @param int $children
+     * @param \DateTime $packageBegin
+     * @param \DateTime $packageEnd
+     * @return JsonResponse
      */
     public function getCalculate(
+        Request $request,
         Tariff $tariff,
         RoomType $roomType,
         int $adults,
         int $children,
-        \DateTime $calcBegin = null,
-        \DateTime $calcEnd = null,
         \DateTime $packageBegin = null,
         \DateTime $packageEnd = null
-        )
-    {
-        $calc = $this->get('mbh.calculation');
-        $price = $calc->calcPrices($roomType, $tariff, $calcBegin->modify('midnight'), $calcEnd->modify('midnight'), $adults, $children, null, true, false);
-        return new Response(print_r($price, true));
+    ) {
+
+        $former = $this->get('mbh.online.chart.data.former');
+        $data = $former->getPriceCalendarData($roomType, $tariff, $adults, $children, $packageBegin, $packageEnd);
+
+        $response = new JsonResponse($data);
+        $response->headers->set('Access-Control-Allow-Origin', 'null');
+
+        return $response;
     }
 
-    /**
-     * @Route("/test/{begin}", defaults={"begin" = null})
-     * @ParamConverter("begin", options = {"format": "Y-m-d"})
-     *
-     */
-
-    public function testAction(\DateTime $begin = null)
-    {
-        return new Response('holla');
-    }
 }

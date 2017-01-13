@@ -15,7 +15,11 @@ services:
             - { name: form.type }
 
     mbh.reservation_form:
-            class: MBH\Bundle\OnlineBookingBundle\Form\ReservationType
-            arguments: ["@service_container"]
-            tags:
-                - { name: form.type }
+        class: MBH\Bundle\OnlineBookingBundle\Form\ReservationType
+        arguments: ["@service_container"]
+        tags:
+            - { name: form.type }
+
+    mbh.online.chart.data.former:
+        class: MBH\Bundle\OnlineBookingBundle\Service\ChartDataFormer
+        arguments: ["@mbh.calculation"]
