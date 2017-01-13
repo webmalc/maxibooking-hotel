@@ -1,0 +1,15 @@
+<request>
+    <username>{{ config.hotelId }} </username>
+    {% for roomId, roomInfo in data %}
+        <room id="{{ roomId }}">
+            {% for date, dateInfo in roomInfo %}
+                <update>
+                    <date value="{{ date }}"/>
+                    {% for dateItem in dateInfo %}
+                            <rate id="{{ dateItem.id_tariff  }}" adults="{{ dateItem.persons  }}"  closed="{{ dateItem.closed  }}" />
+                    {% endfor %}
+                </update>
+            {% endfor %}
+        </room>
+    {% endfor %}
+</request>
