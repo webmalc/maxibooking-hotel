@@ -13,4 +13,9 @@ class DeleteReasonsRepository extends DocumentRepository
    {
        return $this->createQueryBuilder()->field('deletedAt')->equals(null)->getQuery()->execute();
    }
+
+   public function getSelectedReason($deleteReasonId)
+   {
+       return $this->createQueryBuilder()->field('id')->equals($deleteReasonId)->getQuery()->getSingleResult();
+   }
 }

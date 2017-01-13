@@ -1,4 +1,4 @@
- {% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
+{% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ package.numberWithPrefix %}
 {% set layout = 'tabs' %}
@@ -117,9 +117,26 @@
                                 </td>
                             </tr>
                         {% endif %}
-                </div>
 
-                </tbody>
+                        {% if package.deleted %}
+                            <tr>
+                                <td>
+                                    <strong>Причина удаления</strong>
+                                </td>
+                                <td>
+                                    {{ selDeletedReason }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Комментарий</strong>
+                                </td>
+                                <td>
+                                    {{ package.deleteComment }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
                 </table>
             </div>
             <div class="col-md-6">
@@ -178,8 +195,6 @@
                 </table>
             </div>
         </div>
-
-
     </div>
     </div>
 

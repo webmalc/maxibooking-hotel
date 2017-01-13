@@ -393,6 +393,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         return [
             'package' => $package,
+            'selDeletedReason' => $this->dm->getRepository('MBHPackageBundle:DeleteReasons')->getSelectedReason($package->getDeleteReason()) ?? '',
             'status' => $package->getStatus(),
             'form' => $form->createView(),
             'logs' => $this->logs($package),
@@ -1031,7 +1032,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 ['id' => $orderId, 'packageId' => $entity->getId()]));
         }
 
-        return new Response('success');
+        return new JsonResponse($this->generateUrl('package'));
     }
 
     /**

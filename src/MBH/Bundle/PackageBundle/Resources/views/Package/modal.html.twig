@@ -46,7 +46,9 @@
                 url: Routing.generate('delete_package', {'id': $('#package_id').val()}, true),
                 type: "GET",
                 data: array,
-                success: function () {
+                dataType: "json",
+                success: function (urlFromController) {
+                    window.location.href = urlFromController;
                    // location.reload();
                 }
             });
