@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
-use Symfony\Component\Validator\ExecutionContextInterface;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class RoomTypeGenerateRoomsType extends AbstractType
 {
@@ -58,8 +58,8 @@ class RoomTypeGenerateRoomsType extends AbstractType
             'class' => 'MBH\Bundle\HotelBundle\Document\Housing'
         ];
         $hotel = $options['hotel'];
-        if($hotel) {
-            $housingOptions['query_builder'] = function(DocumentRepository $dr) use ($hotel) {
+        if ($hotel) {
+            $housingOptions['query_builder'] = function (DocumentRepository $dr) use ($hotel) {
                 return $dr->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
             };
         }
@@ -88,7 +88,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
         $resolver->setDefaults(
             [
                 'constraints' => [
-                    new Callback(['methods' => [[get_class($this), 'rangeValidation']]])
+                    new Callback(['callback' => [$this, 'rangeValidation'],]),
                 ],
                 'entity' => null,
                 'hotel' => null
