@@ -29,7 +29,7 @@ form.vashotelType.vashotel_ru_settings_key: Ключ, который задае�
 form.vashotelType.hotel_id: ID отеля
 form.vashotelType.password_label: Ваш пароль
 form.vashotelType.password: Введите ваш пароль
-form.vashotelType.password_help: Пароль от сервиса ваш отель
+form.vashotelType.password_help: Пароль от сервиса ВашОтель.RU
 form.vashotelType.vashotel_ru_settings_hotel_id: ID отеля в настройках ВашОтель.RU
 form.vashotelType.breakfast: Завтрак?
 form.vashotelType.r0_or_BB: Какой тип питания использовать RO или BB?
