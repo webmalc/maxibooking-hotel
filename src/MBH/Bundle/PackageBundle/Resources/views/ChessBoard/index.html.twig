@@ -16,8 +16,8 @@
     '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js'
-    'bundles/bazingajstranslation/js/translator.min.js'
     %}
+    <script src="{{ asset('bundles/bazingajstranslation/js/translator.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {# Передаем данные о бронях для обработки на клиенте #}
     <script>
@@ -35,6 +35,7 @@
         {% endfor %}
         var canCreatePackage = {{ canCreatePackage }};
     </script>
+    <script src="{{ url('bazinga_jstranslation_js', {'domain': 'chessboard_front'}) }}"></script>
     {% endjavascripts %}
 
     {% block styles %}

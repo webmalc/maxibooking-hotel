@@ -3,6 +3,7 @@ declare let moment;
 declare let $;
 declare let mbh;
 declare let canCreatePackage;
+declare let Translator;
 
 class ChessBoardManager {
 
@@ -546,9 +547,9 @@ class ChessBoardManager {
 
     private static getDraggableAxisValue(intervalData, isDivide) {
         if (intervalData.updateAccommodation && !isDivide && intervalData.position == 'full'
-            && !(ChessBoardManager.isAccommodationOnFullPackage(intervalData) && !intervalData.updatePackage)) {
+            && ChessBoardManager.isAccommodationOnFullPackage(intervalData) && intervalData.updatePackage) {
             return 'x, y';
-        } else if (intervalData.updateAccommodation == true
+        } else if (intervalData.updateAccommodation
             //Если интервал не имеет размещения, но имеет права на создание размещения(просмотр брони)
             || (intervalData.updateAccommodation == undefined) && intervalData.viewPackage) {
             return 'y';
@@ -910,17 +911,19 @@ class ChessBoardManager {
             return false;
         }
 
-        let intervalOutOfTableSide = ChessBoardManager.getIntervalOutOfTableSide(packageData);
-        if (intervalOutOfTableSide && !isDivide) {
-            ActionManager.callIntervalBeginOutOfRangeModal(intervalOutOfTableSide);
-            event.preventDefault();
-            return false;
-        }
+        if (!isDivide) {
+            let intervalOutOfTableSide = ChessBoardManager.getIntervalOutOfTableSide(packageData);
+            if (intervalOutOfTableSide) {
+                ActionManager.callIntervalBeginOutOfRangeModal(intervalOutOfTableSide);
+                event.preventDefault();
+                return false;
+            }
 
-        if (ChessBoardManager.getIntervalWidth(packageData) > ChessBoardManager.getTableWidth()) {
-            ActionManager.callIntervalToLargeModal(packageData.packageId);
-            event.preventDefault();
-            return false;
+            if (ChessBoardManager.getIntervalWidth(packageData) > ChessBoardManager.getTableWidth()) {
+                ActionManager.callIntervalToLargeModal(packageData.packageId);
+                event.preventDefault();
+                return false;
+            }
         }
 
         return true;
@@ -989,7 +992,7 @@ class ChessBoardManager {
     private static getTemplateRemoveButton() {
         let removeButton = document.createElement('button');
         removeButton.setAttribute('type', 'button');
-        removeButton.setAttribute('title', 'Удалить');
+        removeButton.setAttribute('title', Translator.trans('chessboard_manager.remove_button.popup'));
         removeButton.setAttribute('data-toggle', 'tooltip');
         removeButton.classList.add('remove-package-button');
         removeButton.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
@@ -1000,7 +1003,7 @@ class ChessBoardManager {
     private static getTemplateDivideButton() {
         let divideButton = document.createElement('button');
         divideButton.setAttribute('type', 'button');
-        divideButton.setAttribute('title', 'Переселить');
+        divideButton.setAttribute('title', Translator.trans('chessboard_manager.divide_button.popup'));
         divideButton.setAttribute('data-toggle', 'tooltip');
         divideButton.classList.add('divide-package-button');
         divideButton.innerHTML = '<i class="fa fa-scissors" aria-hidden="true"></i>';

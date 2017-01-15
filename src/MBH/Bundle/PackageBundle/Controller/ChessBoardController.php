@@ -178,7 +178,7 @@ class ChessBoardController extends BaseController
                 //... или дата выезда брони равна дате окончания размещения, то изменяем дату выезда брони
                 || ($package->getEnd()->getTimestamp() == $accommodation->getEnd()->getTimestamp()))
         ) {
-            $package->setEnd($updatedEndDate);
+            $package->setEnd(clone $updatedEndDate);
             $isPackageChanged = true;
         }
 
