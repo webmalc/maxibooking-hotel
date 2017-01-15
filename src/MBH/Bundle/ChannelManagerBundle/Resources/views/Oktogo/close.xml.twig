@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<request>
+    <username>{{ config.hotelId }} </username>
+    {% for roomId, roomInfo in rooms %}
+        <room id="{{ roomId }}">
+                <update>
+                    <date from="{{ 'now'|date('Y-m-d') }}" to="{{ 'now'|date_modify("+5 years")|date('Y-m-d') }}" />
+                        <closed>1</closed>
+                </update>
+        </room>
+    {% endfor %}
+</request>
