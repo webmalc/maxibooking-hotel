@@ -256,7 +256,12 @@ class DataManager {
             return packageData
         }
 
-        return this.noAccommodationIntervals[packageId];
+        for (let noAccommodationIntervalId in this.noAccommodationIntervals) {
+            if (this.noAccommodationIntervals.hasOwnProperty(noAccommodationIntervalId)
+                && noAccommodationIntervalId.startsWith(packageId)) {
+                return this.noAccommodationIntervals[noAccommodationIntervalId];
+            }
+        }
     }
 
     public getAccommodationIntervalById(id) {

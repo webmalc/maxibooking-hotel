@@ -218,7 +218,12 @@ var DataManager = (function () {
         if (packageData) {
             return packageData;
         }
-        return this.noAccommodationIntervals[packageId];
+        for (var noAccommodationIntervalId in this.noAccommodationIntervals) {
+            if (this.noAccommodationIntervals.hasOwnProperty(noAccommodationIntervalId)
+                && noAccommodationIntervalId.startsWith(packageId)) {
+                return this.noAccommodationIntervals[noAccommodationIntervalId];
+            }
+        }
     };
     DataManager.prototype.getAccommodationIntervalById = function (id) {
         return this._accommodations[id];

@@ -1,8 +1,10 @@
 chessboard_manager.remove_button.popup: Удалить
 chessboard_manager.divide_button.popup: Переселить
+chessboard_manager.info_button.popup.title: Информация о брони
+chessboard_manager.edit_button.popup.title: Перейти в окно редактирования
 
 action_manager.modal.remove_confirmation.title: Подтверждение удаления
-action_manager.remove_confirmation.text: Вы действительно хотите удалить эту бронь
+action_manager.modal.remove_confirmation.text: Вы действительно хотите удалить эту бронь
 action_manager.modal.package_blocked.title: Бронь заблокирована для изменений
 action_manager.modal.package_blocked.text: Если вы хотите разблокировать эту бронь, перейдите в раздел редактирования брони
 action_manager.modal.package_begin_date_abroad.title: Дата заезда брони находится за границей заданного периода

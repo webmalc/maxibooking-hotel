@@ -75,6 +75,25 @@
   min-width: 200px !important;
   max-height: 200px !important;
 }
+.popover-package-container {
+  margin: 10px 0;
+  height: 42px;
+  position: relative;
+}
+.popover-info-button, .popover-edit-button {
+  position: absolute;
+  top: 0;
+  width: 47px;
+  margin: 0 5px;
+  font-size: 30px;
+}
+.popover-info-button {
+  border: 0;
+  background-color: white;
+}
+.popover-edit-button {
+  left: 50px;
+}
 
 #package-modal-change-alert {
   font-size: 1.3em;
@@ -675,6 +694,8 @@
 }
 
 .package-description {
+  white-space: nowrap;
+  overflow: hidden;
   background: rgba(0, 0, 0, 0.5);
   color: white;
   -webkit-border-radius: 8px;

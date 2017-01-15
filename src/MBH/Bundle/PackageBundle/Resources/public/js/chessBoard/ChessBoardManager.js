@@ -394,9 +394,12 @@ var ChessBoardManager = (function () {
             if (firstAccommodationWidth != 0 && firstAccommodationWidth != packageWidth) {
                 var firstAccommodation = packageElement.cloneNode(true);
                 firstAccommodation.style.width = firstAccommodationWidth + 'px';
+                firstAccommodation = ChessBoardManager.setDividedElementDescription(firstAccommodation, firstAccommodationWidth);
                 var secondAccommodation = packageElement.cloneNode(true);
                 secondAccommodation = this.addDraggable($(secondAccommodation), false, true).get(0);
-                secondAccommodation.style.width = packageWidth - firstAccommodationWidth + 'px';
+                var secondAccommodationWidth = packageWidth - firstAccommodationWidth;
+                secondAccommodation = ChessBoardManager.setDividedElementDescription(secondAccommodation, secondAccommodationWidth);
+                secondAccommodation.style.width = secondAccommodationWidth + 'px';
                 secondAccommodation.style.left = parseInt(packageElement.style.left, 10) + firstAccommodationWidth + 'px';
                 secondAccommodation.style.zIndex = parseInt(getComputedStyle(packageElement).zIndex, 10) - 1;
                 secondAccommodation.classList.add('with-left-divider');
@@ -409,6 +412,13 @@ var ChessBoardManager = (function () {
         else {
             this.updatePackagesData();
         }
+    };
+    ChessBoardManager.setDividedElementDescription = function (element, elementWidth) {
+        var descriptionElement = element.querySelector('.package-description');
+        var contentWidth = descriptionElement.innerHTML.length * 8 - 3;
+        var descriptionWidth = contentWidth > elementWidth ? elementWidth : contentWidth;
+        descriptionElement.style.width = descriptionWidth + 'px';
+        return element;
     };
     ChessBoardManager.prototype.isDraggableRevert = function (packageElement) {
         return !(this.isPackageLocationCorrect(packageElement));
@@ -738,7 +748,9 @@ var ChessBoardManager = (function () {
                 packageElement.style.display = 'inline-block';
                 packageElement.style.zIndex = 150;
                 var packageContainer = document.createElement('div');
-                packageContainer.style.margin = '10px 0';
+                packageContainer.classList.add('popover-package-container');
+                packageContainer.appendChild(self.getInfoButton(packageData.packageId));
+                packageContainer.appendChild(ChessBoardManager.getEditButton(packageData.packageId));
                 packageContainer.appendChild(packageElement);
                 packageElementsContainer.innerHTML += packageContainer.outerHTML;
                 $popoverContent.append(packageContainer);
@@ -879,6 +891,29 @@ var ChessBoardManager = (function () {
         divideButton.classList.add('divide-package-button');
         divideButton.innerHTML = '<i class="fa fa-scissors" aria-hidden="true"></i>';
         return divideButton;
+    };
+    ChessBoardManager.prototype.getInfoButton = function (packageId) {
+        var infoButton = document.createElement('button');
+        infoButton.setAttribute('title', Translator.trans('chessboard_manager.info_button.popup.title'));
+        infoButton.setAttribute('type', 'button');
+        infoButton.setAttribute('data-toggle', 'tooltip');
+        infoButton.classList.add('popover-info-button');
+        infoButton.innerHTML = '<i class="fa fa-info-circle" aria-hidden="true"></i>';
+        var self = this;
+        infoButton.onclick = function () {
+            self.dataManager.getPackageDataRequest(packageId);
+        };
+        return infoButton;
+    };
+    ChessBoardManager.getEditButton = function (packageId) {
+        var editButton = document.createElement('a');
+        editButton.setAttribute('href', Routing.generate('package_edit', { id: packageId }));
+        editButton.setAttribute('target', '_blank');
+        editButton.setAttribute('title', Translator.trans('chessboard_manager.edit_button.popup.title'));
+        editButton.setAttribute('data-toggle', 'tooltip');
+        editButton.classList.add('popover-edit-button');
+        editButton.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>';
+        return editButton;
     };
     ChessBoardManager.DATE_ELEMENT_WIDTH = 47;
     ChessBoardManager.DATE_ELEMENT_HEIGHT = 40;
