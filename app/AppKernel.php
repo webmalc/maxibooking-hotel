@@ -32,6 +32,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
             new Phobetor\RabbitMqSupervisorBundle\RabbitMqSupervisorBundle(),
+            new Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle(),
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),

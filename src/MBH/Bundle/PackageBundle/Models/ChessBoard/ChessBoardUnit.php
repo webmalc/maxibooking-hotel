@@ -66,7 +66,7 @@ class ChessBoardUnit implements \JsonSerializable
             'viewPackage' => $this->hasViewPackageRights($this->package),
             'removePackage' => $this->hasRemovePackageRights($this->package),
             'updatePackage' => $this->hasUpdatePackageRights($this->package),
-            'packageId' => $this->package->getId()
+            'packageId' => $this->getPackageId()
         ];
 
         if ($this->package->getPayer()) {
@@ -97,6 +97,11 @@ class ChessBoardUnit implements \JsonSerializable
         }
 
         return $this->package->getBegin();
+    }
+
+    public function getPackageId()
+    {
+        return $this->package->getId();
     }
 
     public function getEndDate()

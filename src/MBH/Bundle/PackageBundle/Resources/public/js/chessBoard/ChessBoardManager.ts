@@ -154,11 +154,11 @@ class ChessBoardManager {
         }
     }
 
-    private static getTableStartDate() {
+    public static getTableStartDate() {
         return moment(document.getElementById('accommodation-report-begin').value, "DD.MM.YYYY");
     }
 
-    private static getTableEndDate() {
+    public static getTableEndDate() {
         return moment(document.getElementById('accommodation-report-end').value, "DD.MM.YYYY");
     }
 
@@ -223,18 +223,18 @@ class ChessBoardManager {
         console.time('elements creating');
         let packages = document.createElement('div');
         // for (let i = 0; i < 100; i++) {
-            //iterate packages
-            let accommodationsData = this.dataManager.getAccommodations();
-            for (let accommodationId in accommodationsData) {
-                if (accommodationsData.hasOwnProperty(accommodationId)) {
-                    let accommodationData = accommodationsData[accommodationId];
-                    if (accommodationData.accommodation) {
-                        let packageDiv = this.createPackageElementWithOffset(templatePackageElement,
-                            accommodationData, wrapper, packages.childNodes);
-                        packages.appendChild(packageDiv);
-                    }
+        //iterate packages
+        let accommodationsData = this.dataManager.getAccommodations();
+        for (let accommodationId in accommodationsData) {
+            if (accommodationsData.hasOwnProperty(accommodationId)) {
+                let accommodationData = accommodationsData[accommodationId];
+                if (accommodationData.accommodation) {
+                    let packageDiv = this.createPackageElementWithOffset(templatePackageElement,
+                        accommodationData, wrapper, packages.childNodes);
+                    packages.appendChild(packageDiv);
                 }
             }
+        }
         // }
         wrapper.append(packages);
         console.timeEnd('elements creating');
@@ -265,7 +265,6 @@ class ChessBoardManager {
         let packageStartDate = ChessBoardManager.getMomentDate(packageItem.begin);
         let packageEndDate = ChessBoardManager.getMomentDate(packageItem.end);
 
-
         let packageCellCount = packageEndDate.diff(packageStartDate, 'days');
         let packageWidth = packageCellCount * ChessBoardManager.DATE_ELEMENT_WIDTH;
 
@@ -295,14 +294,17 @@ class ChessBoardManager {
             packageDiv.classList.add('tile-coming');
         }
 
-        if (hasButtons) {
-            if (packageItem.updateAccommodation && packageEndDate.diff(packageStartDate, 'days') > 1) {
+        if (hasButtons && !packageItem.isLocked) {
+            if (packageItem.updateAccommodation
+                && packageEndDate.diff(packageStartDate, 'days') > 1
+                && !this.isAbroadRightTableSide(packageEndDate)) {
                 $(packageDiv).find('.package-action-buttons').append(this.templateDivideButton.cloneNode(true));
             }
             if (packageItem.removePackage && (packageItem.position == 'full' || packageItem.position == 'right')) {
                 $(packageDiv).find('.package-action-buttons').append(this.templateRemoveButton.cloneNode(true));
             }
         }
+
         if (elements.length > 0) {
             let lastElement = elements[elements.length - 1];
             if (lastElement.getAttribute('data-description') == descriptionText) {
@@ -345,9 +347,10 @@ class ChessBoardManager {
         }
 
         if (packageEndDate.isAfter(this.tableEndDate)) {
-            let differenceInDays = packageEndDate.diff(this.tableEndDate);
+            let differenceInDays = packageEndDate.diff(this.tableEndDate, 'days');
+            console.log(differenceInDays);
             element.style.width = parseInt(element.style.width, 10)
-                - (differenceInDays + 1) * ChessBoardManager.DATE_ELEMENT_WIDTH
+                - (differenceInDays - 1) * ChessBoardManager.DATE_ELEMENT_WIDTH
                 - ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET + 'px';
         }
 
@@ -391,9 +394,6 @@ class ChessBoardManager {
         console.time('draggable');
         this.addDraggable(jQueryObj);
         console.timeEnd('draggable');
-        // console.time('resizable');
-        // this.addResizable(jQueryObj);
-        // console.timeEnd('resizable');
         console.time('resizable etc');
         jQueryObj.each(function (index, element) {
             let intervalData = self.dataManager.getAccommodationIntervalById(this.id);
@@ -422,17 +422,33 @@ class ChessBoardManager {
                         let packageLeftCoordinate = accommodationElement.getBoundingClientRect().left;
                         let line = document.createElement('div');
                         line.style = 'position:absolute; border: 2px dashed red; height: 41px; z-index = 250;top: 0';
-                        line.style.left = ChessBoardManager.DATE_ELEMENT_WIDTH + 'px';
+
+                        let isAccommodationAbroadTable = (parseInt(getComputedStyle(accommodationElement).width, 10)
+                            % ChessBoardManager.DATE_ELEMENT_WIDTH) != 0;
+                        let defaultLeftValue = isAccommodationAbroadTable
+                            ? ChessBoardManager.DATE_ELEMENT_WIDTH + ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET
+                            : ChessBoardManager.DATE_ELEMENT_WIDTH;
+                        line.style.left = defaultLeftValue + 'px';
                         accommodationElement.appendChild(line);
+
                         accommodationElement.onmousemove = function (event) {
                             let offset = event.clientX - packageLeftCoordinate;
-                            let griddedOffset = Math.floor(Math.abs(offset + ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET)
-                                    / ChessBoardManager.DATE_ELEMENT_WIDTH) * ChessBoardManager.DATE_ELEMENT_WIDTH;
+                            let griddedOffset;
+                            if (isAccommodationAbroadTable) {
+                                griddedOffset = Math.floor(Math.abs(offset) / ChessBoardManager.DATE_ELEMENT_WIDTH)
+                                    * ChessBoardManager.DATE_ELEMENT_WIDTH
+                                    + ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET;
+                            } else {
+                                griddedOffset = Math.floor(Math.abs(offset + ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET)
+                                        / ChessBoardManager.DATE_ELEMENT_WIDTH) * ChessBoardManager.DATE_ELEMENT_WIDTH;
+                            }
+
                             if (griddedOffset == 0) {
-                                griddedOffset += ChessBoardManager.DATE_ELEMENT_WIDTH;
+                                griddedOffset += defaultLeftValue;
                             } else if (griddedOffset == accommodationWidth) {
                                 griddedOffset -= ChessBoardManager.DATE_ELEMENT_WIDTH;
                             }
+
                             line.style.left = griddedOffset + 'px';
                             accommodationElement.onclick = function () {
                                 accommodationElement.onmousemove = null;
@@ -459,7 +475,7 @@ class ChessBoardManager {
                 secondAccommodation = this.addDraggable($(secondAccommodation), false, true).get(0);
                 secondAccommodation.style.width = packageWidth - firstAccommodationWidth + 'px';
                 secondAccommodation.style.left = parseInt(packageElement.style.left, 10) + firstAccommodationWidth + 'px';
-                secondAccommodation.style.zIndex = ChessBoardManager.ACCOMMODATION_ELEMENT_ZINDEX - 1;
+                secondAccommodation.style.zIndex = parseInt(getComputedStyle(packageElement).zIndex, 10) - 1;
                 secondAccommodation.classList.add('with-left-divider');
                 firstAccommodation.classList.add('with-right-divider');
 
@@ -676,7 +692,7 @@ class ChessBoardManager {
                 aspectRatio: false,
                 handles: resizableHandlesValue,
                 grid: [ChessBoardManager.DATE_ELEMENT_WIDTH, 1],
-                // containment: '.rooms',
+                containment: '.rooms',
                 start: function () {
                     if (intervalData.isLocked) {
                         ActionManager.callUnblockModal(intervalData.packageId);

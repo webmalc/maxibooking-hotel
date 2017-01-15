@@ -86,3 +86,6 @@ mbh_restaurant:
     resource: "@MBHRestaurantBundle/Controller/"
     type:     annotation
     prefix:   /restaurant
+
+_bazinga_jstranslation:
+    resource: "@BazingaJsTranslationBundle/Resources/config/routing/routing.yml"

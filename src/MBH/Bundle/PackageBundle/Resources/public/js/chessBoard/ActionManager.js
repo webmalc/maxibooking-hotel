@@ -214,17 +214,19 @@ var ActionManager = (function () {
         var packageBeginAndEndChanged = packageBeginChanged && packageEndChanged;
         var canUpdatePackage = intervalData.updatePackage;
         if (packageBeginAndEndChanged) {
-            if (canUpdatePackage) {
-                return {
-                    message: 'Вы действительно хотите изменить дату заезда и выезда брони?',
-                    resolved: true
-                };
-            }
-            else {
-                return {
-                    message: 'Для выполнения данного действия необходимо изменить дату заезда или дату выезда. У Вас недостаточно прав для редактирование брони',
-                    resolved: false
-                };
+            if (newIntervalData.accommodation) {
+                if (canUpdatePackage) {
+                    return {
+                        message: 'Вы действительно хотите изменить дату заезда и выезда брони?',
+                        resolved: true
+                    };
+                }
+                else {
+                    return {
+                        message: 'Для выполнения данного действия необходимо изменить дату заезда или дату выезда. У Вас недостаточно прав для редактирование брони',
+                        resolved: false
+                    };
+                }
             }
         }
         else if (packageBeginChanged) {
@@ -258,14 +260,20 @@ var ActionManager = (function () {
     };
     ActionManager.isPackageEndChanged = function (newIntervalData, intervalData) {
         var newIntervalEndDate = ChessBoardManager.getMomentDate(newIntervalData.end);
-        var packageEndDate = ChessBoardManager.getMomentDate(intervalData.packageEnd);
         var intervalEndDate = ChessBoardManager.getMomentDate(intervalData.end);
+        if (intervalEndDate.isAfter(ChessBoardManager.getTableEndDate())) {
+            newIntervalEndDate = ChessBoardManager.getMomentDate(intervalData.end);
+        }
+        var packageEndDate = ChessBoardManager.getMomentDate(intervalData.packageEnd);
         return ((intervalData.position == 'full' || intervalData.position == 'right')
             && newIntervalEndDate.isAfter(packageEndDate)
             || (intervalEndDate.isSame(packageEndDate) && newIntervalEndDate.isBefore(packageEndDate)));
     };
     ActionManager.isPackageBeginChanged = function (newIntervalData, intervalData) {
-        var newIntervalStartDate = moment(newIntervalData.begin, "DD.MM.YYYY");
+        var newIntervalStartDate = ChessBoardManager.getMomentDate(newIntervalData.begin);
+        if (newIntervalStartDate.isBefore(ChessBoardManager.getTableStartDate())) {
+            newIntervalStartDate = ChessBoardManager.getMomentDate(intervalData.begin);
+        }
         var packageStartDate = ChessBoardManager.getMomentDate(intervalData.packageBegin);
         return ((intervalData.position == 'left' || intervalData.position == 'full')
             && !newIntervalStartDate.isSame(packageStartDate));
@@ -288,16 +296,27 @@ var ActionManager = (function () {
     ActionManager.showEditedUpdateModal = function (intervalData, newIntervalData, isDivide, changedSide) {
         var intervalBegin = newIntervalData.begin;
         var intervalEnd = newIntervalData.end;
-        var newPackageBegin = ActionManager.isPackageBeginChanged(newIntervalData, intervalData)
+        var newPackageBegin = ActionManager.isPackageBeginChanged(newIntervalData, intervalData) && !isDivide
             ? newIntervalData.begin : intervalData.packageBegin;
-        var newPackageEnd = ActionManager.isPackageEndChanged(newIntervalData, intervalData)
+        var newPackageEnd = ActionManager.isPackageEndChanged(newIntervalData, intervalData) && !isDivide
             ? newIntervalData.end : intervalData.packageEnd;
-        if (changedSide == 'right') {
-            newPackageBegin = intervalData.begin;
+        if ((changedSide == 'right')
+            && ChessBoardManager.getMomentDate(intervalData.begin).isBefore(ChessBoardManager.getTableStartDate())) {
+            //Если размещение расширяется вправо и левый край брони не помещается в таблицу
             intervalBegin = intervalData.begin;
+            newPackageBegin = intervalData.begin;
         }
-        else if (changedSide == 'left') {
+        else if (changedSide == 'left'
+            && ChessBoardManager.getMomentDate(intervalData.end).isAfter(ChessBoardManager.getTableEndDate())) {
+            //Если размещение расширяется влево и правый край брони не помещается в таблицу
             newPackageEnd = intervalData.end;
+            intervalEnd = intervalData.end;
+        }
+        else if (changedSide == 'both' && !newIntervalData.accommodation) {
+            //Если удаляется единственное размещение брони
+            newPackageBegin = intervalData.begin;
+            newPackageEnd = intervalData.end;
+            intervalBegin = intervalData.begin;
             intervalEnd = intervalData.end;
         }
         var modal = $('#packageModal');

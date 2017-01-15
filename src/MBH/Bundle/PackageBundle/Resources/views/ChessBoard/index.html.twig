@@ -9,14 +9,15 @@
 
 {% block scripts %}
     {{ parent() }}
-
     {% javascripts filter='uglifyjs2'
     '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
     '@MBHBaseBundle/Resources/public/js/app/020-forms.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
-    '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
+    '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js'
+    'bundles/bazingajstranslation/js/translator.min.js'
+    %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {# Передаем данные о бронях для обработки на клиенте #}
     <script>

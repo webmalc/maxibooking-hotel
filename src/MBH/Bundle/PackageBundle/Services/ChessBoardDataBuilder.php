@@ -206,6 +206,7 @@ class ChessBoardDataBuilder
     public function getAccommodationIntervals()
     {
         $accommodationIntervals = [];
+
         foreach ($this->getPackageAccommodations() as $accommodation) {
             /** @var PackageAccommodation $accommodation */
             $package = $accommodation->getPackage();
@@ -213,6 +214,8 @@ class ChessBoardDataBuilder
                 ->get('mbh.chess_board_unit')->setInitData($package, $accommodation);
             $accommodationIntervals[$intervalData->getId()] = $intervalData;
         }
+
+
 
         return $accommodationIntervals;
     }
@@ -230,9 +233,16 @@ class ChessBoardDataBuilder
                 $accommodations = $this->dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
                     $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
                 );
-
+                //сортируем по датам начала размещения
                 $this->packageAccommodations = $this->accommodationManipulator
-                    ->sortAccommodationsByBeginDate($accommodations->toArray());
+                    ->sortAccommodationsByBeginDate($accommodations->toArray())->toArray();
+
+                //сортируем по id брони
+                usort($this->packageAccommodations, function ($a, $b) {
+                    /** @var PackageAccommodation $a*/
+                    /** @var PackageAccommodation $b*/
+                    return strcmp($a->getPackage()->getId(), $b->getPackage()->getId());
+                });
             }
 
             $this->isPackageAccommodationsInit = true;
