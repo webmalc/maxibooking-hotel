@@ -1,169 +1,185 @@
 <link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/search.css', null, true) }}">
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
 
 <div id="online-booking-search">
     <p class="restitle">Курортная сеть "Азовский": варианты размещения в выбранные объекты</p>
-    <div class="infoIncludeN">Что входит в стоимость путевки: <a href="http://azovsky.ru/putevka-v-Crimea/" style="" target="_blank">Азовский</a>, <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a></div>
-{% for result in searchResults %}
-<div class="row oneblock room-type-row">
-    <!--<div class="sale"></div>-->
-    <div class="col-md-4 logo">
-        {% set renderedImage = false %}
-        {% for searchResult in result.results if not renderedImage %}
-            {% if searchResult.roomType.mainImage %}
-                <a class="fancybox" href="{{ asset(searchResult.roomType.mainImage.path, null, true) }}" rel="cat{{ loop.parent.loop.index }}">
-                    <img class="oblimg" src="{{ asset(searchResult.roomType.mainImage.path|imagine_filter('thumb_275x210'), null, true) }}">
-                </a>
-                {% set renderedImage = true %}
-            {% endif %}
-        {% endfor %}
-        {% if not renderedImage %}
-            {#<div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>#}
-            <img src="{{ asset('bundles/mbhonlinebooking/images/no-image.jpg', null, true) }}">
-        {% endif %}
-        <div class="row">
-            {% if result.results|first.roomType.images is not empty %}
-                <div class="col-md-12 miniimages">
-                {% for image in result.results|first.roomType.images %}
-
-                        {% if not image.ismain %}
-                        <a href="{{ asset(image.path, null, true) }}" class="fancybox" rel="cat{{ loop.parent.loop.index }}">
-                            <img src="{{ asset(image.path|imagine_filter('thumb_40x40'), null, true) }}" alt="{{ result.results|first.roomType.name }}">
+    <div class="infoIncludeN">Что входит в стоимость путевки: <a href="http://azovsky.ru/putevka-v-Crimea/" style=""
+                                                                 target="_blank">Азовский</a>, <a
+                href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a></div>
+    {% for result in searchResults %}
+        <div class="row oneblock room-type-row">
+            <!--<div class="sale"></div>-->
+            <div class="col-md-4 logo">
+                {% set renderedImage = false %}
+                {% for searchResult in result.results if not renderedImage %}
+                    {% if searchResult.roomType.mainImage %}
+                        <a class="fancybox" href="{{ asset(searchResult.roomType.mainImage.path, null, true) }}"
+                           rel="cat{{ loop.parent.loop.index }}">
+                            <img class="oblimg"
+                                 src="{{ asset(searchResult.roomType.mainImage.path|imagine_filter('thumb_275x210'), null, true) }}">
                         </a>
-                        {% endif %}
+                        {% set renderedImage = true %}
+                    {% endif %}
                 {% endfor %}
-                </div>
-            {% endif %}
+                {% if not renderedImage %}
+                    {#<div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>#}
+                    <img src="{{ asset('bundles/mbhonlinebooking/images/no-image.jpg', null, true) }}">
+                {% endif %}
+                <div class="row">
+                    {% if result.results|first.roomType.images is not empty %}
+                        <div class="col-md-12 miniimages">
+                            {% for image in result.results|first.roomType.images %}
 
-        </div>
-    </div>
-    <div class="col-md-8 right-info">
-        <div class="row">
-            <div class="col-md-5 col-sm-6 col-xs-12" style="padding:0px;">
-                <div class="title">
-                    {{ result.roomType.hotel.fullTitle }}&nbsp;
-                </div>
-                <div class="hotellogo">
-                    <img src="{{ asset(result.roomType.hotel.logoUrl, null, true ) }}" alt="{{ result.roomType.hotel.name }}">
-                </div>
-                <div class="subtitle infocontainer">
-                    <div class="pull-left">
-                        {#<i class="fa fa-h-square numicon"></i>#}
-                        <div class="pull-right roomcon">
-                            <div class="roomtype">тип номера</div>
-                            <div class="roomname">
-
-                                {% if result.roomType.descriptionurl is defined and result.roomType.descriptionurl is not empty %}
-                                    <a href="{{ result.roomType.descriptionUrl }}" target="_blank">{{ result.roomType.fullTitle }}</a>
-                                    {% else %}
-                                    {{ result.roomType.fullTitle }}
+                                {% if not image.ismain %}
+                                    <a href="{{ asset(image.path, null, true) }}" class="fancybox"
+                                       rel="cat{{ loop.parent.loop.index }}">
+                                        <img src="{{ asset(image.path|imagine_filter('thumb_40x40'), null, true) }}"
+                                             alt="{{ result.results|first.roomType.name }}">
+                                    </a>
                                 {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+            <div class="col-md-8 right-info">
+                <div class="row">
+                    <div class="col-md-5 col-sm-6 col-xs-12" style="padding:0px;">
+                        <div class="title">
+                            {{ result.roomType.hotel.fullTitle }}&nbsp;
+                        </div>
+                        <div class="hotellogo">
+                            <img src="{{ asset(result.roomType.hotel.logoUrl, null, true ) }}"
+                                 alt="{{ result.roomType.hotel.name }}">
+                        </div>
+                        <div class="subtitle infocontainer">
+                            <div class="pull-left">
+                                {#<i class="fa fa-h-square numicon"></i>#}
+                                <div class="pull-right roomcon">
+                                    <div class="roomtype">тип номера</div>
+                                    <div class="roomname">
+
+                                        {% if result.roomType.descriptionurl is defined and result.roomType.descriptionurl is not empty %}
+                                            <a href="{{ result.roomType.descriptionUrl }}"
+                                               target="_blank">{{ result.roomType.fullTitle }}</a>
+                                        {% else %}
+                                            {{ result.roomType.fullTitle }}
+                                        {% endif %}
+
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
 
                     </div>
+                    <div class="col-md-7 col-sm-6 col-xs-12 prices">
+                        <div class="guests pull-left">
+                            <i class="fa fa-users"></i> Гости <br/>
+                            {% if result.results|first.adults is defined %}
+                                <span class="guestslist">{{ result.results|first.adults }}{{ result.results|first.children?'+'~result.results|first.children }}{{ result.results|first.infants?'+'~result.results|first.infants }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% set searchResult = result.results|first %}
+                        <div class=" pull-right">
+                            <div style="text-align: center;">СТОИМОСТЬ</div>
+                            <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}
+                                &nbsp;<i class="fa fa-ruble rublesize"></i></span>
+                            {% if result.results|length > 1 %}&nbsp;
+                                <span class="oldprice">{{ result.results|last.getPrice(result.results|last.adults, result.results|last.children)|number_format(0, thousandSep=' ') }}
+                                    &nbsp;<i class="fa fa-ruble rublesize"></i></span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="descr col-xs-12">
+                            {{ searchResult.roomTypeInterfaceObject.description|raw }}
+                        </div>
+
+                    </div>
                 </div>
 
-            </div>
-            <div class="col-md-7 col-sm-6 col-xs-12 prices">
-                <div class="guests pull-left">
-                <i class="fa fa-users"></i> Гости <br/>
-                {% if result.results|first.adults is defined %}
-                    <span class="guestslist">{{ result.results|first.adults }}{{ result.results|first.children?'+'~result.results|first.children }}{{ result.results|first.infants?'+'~result.results|first.infants }}</span>
-                {% endif %}
-                </div>
+                <table class="table table-hover table-row">
+                    <thead>
+                    <tr>
+                        <th style="width:220px;">
+                            <i class="fa fa-tag"></i>&nbsp;Тариф
+                        </th>
+                        <th>
+                            <i class="fa fa-calendar"></i>&nbsp;Дата
+                        </th>
+                        <th>
+                            <i class="fa fa-clock-o"></i>&nbsp;Ночи
+                        </th>
+                        <th>
+                            <i class="fa fa-ruble"></i>&nbsp;Цена
+                        </th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for searchResult in result.results %}
+                        <tr
+                                class="tariff-row"
+                                data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}&form[infants]={{ searchResult.infants }}&form[paymentType]={{ searchResult.tariff.paymentType }}"
+                                data-payment_type= {{ searchResult.tariff.paymentType }}
+                        >
+                            <td>{{ searchResult.tariff.fullTitle }}
+                                {% if searchResult.tariff.description is not empty %}
+                                    <i class="fa fa-question-circle" data-toggle="tooltip"
+                                       title="{{ searchResult.tariff.description }}"></i>
+                                {% endif %}
+                            </td>
 
-                {% set searchResult = result.results|first %}
-                <div class=" pull-right">
-                    <div style="text-align: center;">СТОИМОСТЬ</div>
-                    <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}&nbsp;<i class="fa fa-ruble rublesize"></i></span>
-                    {% if result.results|length > 1 %}&nbsp;
-                    <span class="oldprice">{{ result.results|last.getPrice(result.results|last.adults, result.results|last.children)|number_format(0, thousandSep=' ') }}&nbsp;<i class="fa fa-ruble rublesize"></i></span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="descr col-xs-12">
-                    {{ searchResult.roomTypeInterfaceObject.description|raw }}
-                </div>
-
-            </div>
-        </div>
-
-        <table class="table table-hover table-row">
-            <thead>
-            <tr>
-                <th style="width:220px;">
-                    <i class="fa fa-tag"></i>&nbsp;Тариф
-                </th>
-                <th>
-                    <i class="fa fa-calendar"></i>&nbsp;Дата
-                </th>
-                <th >
-                    <i class="fa fa-clock-o"></i>&nbsp;Ночи
-                </th>
-                <th>
-                    <i class="fa fa-ruble"></i>&nbsp;Цена
-                </th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for searchResult in result.results %}
-            <tr
-                    class="tariff-row"
-                    data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}&form[infants]={{ searchResult.infants }}&form[paymentType]={{ searchResult.tariff.paymentType }}"
-                    data-payment_type = {{ searchResult.tariff.paymentType }}
-            >
-                <td >{{ searchResult.tariff.fullTitle }}
-                    {% if searchResult.tariff.description is not empty  %}
-                        <i class="fa fa-question-circle" data-toggle="tooltip" title="{{ searchResult.tariff.description }}"></i>
-                    {% endif %}
-                </td>
-
-                <td>
-                    {% if searchResult.begin|date('Y') == 'now'|date('Y') %}
-                        {% set format = 'd MMM' %}
-                    {% else %}
-                        {% set format = 'd MMM y' %}
-                    {% endif %}
-                    <span style="white-space: nowrap;">
+                            <td>
+                                {% if searchResult.begin|date('Y') == 'now'|date('Y') %}
+                                    {% set format = 'd MMM' %}
+                                {% else %}
+                                    {% set format = 'd MMM y' %}
+                                {% endif %}
+                                <span style="white-space: nowrap;">
                     {{ searchResult.begin|localizeddate('medium', 'none', 'ru', null, format) }}
                     </span><br>
-                    {% if searchResult.end|date('Y') == 'now'|date('Y') %}
-                        {% set format = 'd MMM' %}
-                    {% else %}
-                        {% set format = 'd MMM y' %}
-                    {% endif %}
-                    <span style="white-space: nowrap;">
+                                {% if searchResult.end|date('Y') == 'now'|date('Y') %}
+                                    {% set format = 'd MMM' %}
+                                {% else %}
+                                    {% set format = 'd MMM y' %}
+                                {% endif %}
+                                <span style="white-space: nowrap;">
                     {{ searchResult.end|localizeddate('medium', 'none', 'ru', null, format) }}
                     </span>
-                </td>
-                <td class="text-center">
-                    {{ searchResult.nights }}
-                </td>
-                <td nowrap>
-                    {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}
-                </td>
-                <td>
-                    <input type="radio" name="booking-{{ searchResult.roomType.id }}">
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <div class="btmactions">
-            <a href="javascript:void(0)" tabindex="0" class="btn btn-default btn-booking-reservation" title="Отправить заявку" >ОТПРАВИТЬ ЗАЯВКУ</a>
-            <a href="javascript:void(0)" tabindex="0" class="btn btn-warning btn-booking" title="Купить онлайн">КУПИТЬ ОНЛАЙН</a>
+                            </td>
+                            <td class="text-center">
+                                {{ searchResult.nights }}
+                            </td>
+                            <td nowrap>
+                                {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}
+                            </td>
+                            <td>
+                                <input type="radio" name="booking-{{ searchResult.roomType.id }}">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div class="btmactions">
+                    <a href="javascript:void(0)" tabindex="0" class="btn btn-default btn-booking-reservation"
+                       title="Отправить заявку">ОТПРАВИТЬ ЗАЯВКУ</a>
+                    <a href="javascript:void(0)" tabindex="0" class="btn btn-warning btn-booking" title="Купить онлайн">КУПИТЬ
+                        ОНЛАЙН</a>
+                </div>
+            </div>
+
+            <div id="chart{{ loop.index }}" class="col-md-12"></div>
         </div>
-    </div>
 
-
-
-</div>
-{% endfor %}
+    {% endfor %}
     {% if searchResults|length != 0 %}
-    <div class="infoIncludeN">Что входит в стоимость путевки: <a href="http://azovsky.ru/putevka-v-Crimea/" style="" target="_blank">Азовский</a>, <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a></div>
+        <div class="infoIncludeN">Что входит в стоимость путевки: <a href="http://azovsky.ru/putevka-v-Crimea/" style=""
+                                                                     target="_blank">Азовский</a>, <a
+                    href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a></div>
     {% endif %}
 
 </div>
@@ -171,10 +187,11 @@
 {% if searchResults|length == 0 %}
     <div style="background-color: #FFFFFF; padding: 15px">
         <strong><i class="fa fa-exclamation"></i> Варианты не найдены.</strong>
-            <p>Пожалуйста, проверьте даты заезда и выезда.</p>
-            <p>Или свяжитесь с нами: по телефону 8 (800) 775-15-41 (звонок бесплатный по всей России) или написав нам через <a href="/mail-us">форму обратной связи</a>.</p>
-            <p>Мы обязательно Вам поможем!</p>
-            <p>Спасибо, что выбираете Курортную сеть «Азовский»</p>
+        <p>Пожалуйста, проверьте даты заезда и выезда.</p>
+        <p>Или свяжитесь с нами: по телефону 8 (800) 775-15-41 (звонок бесплатный по всей России) или написав нам через
+            <a href="/mail-us">форму обратной связи</a>.</p>
+        <p>Мы обязательно Вам поможем!</p>
+        <p>Спасибо, что выбираете Курортную сеть «Азовский»</p>
         <p><strong>Смотрите также: </strong><a href="http://azovsky.ru/specpredlojenia-dnia/">Спецпредложения</a></p>
     </div>
 {% endif %}
@@ -184,7 +201,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">Внимание!</h4>
             </div>
             <div class="modal-body">
@@ -217,8 +235,94 @@
     });
 </script>
 <script>
+    var mychart, myprices
     //Send notification
+    var chartOptions = {
+        chart: {
+            type: 'column',
+            plotBorderWith: 1,
+            //width: 600
 
+        },
+        title: {
+            text: 'Календарь цен',
+            align: 'center',
+            floating: false
+        },
+        subtitle: {
+            text: 'subtitle',
+            floating: true
+        },
+        xAxis: {
+            gridLineWidth: 0,
+            type: 'category',
+            min: 8,
+            max: 22,
+            labels: {
+                rotation: -75,
+                style: {
+                    fontSize: '10px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        },
+        scrollbar: {
+            enabled: true,
+            liveRedraw: true
+        },
+        yAxis: [{
+            gridLineWidth: 1,
+            title: {
+                text: 'Цена'
+            },
+            labels: {
+                format: '{value:,.0f} р'
+            }
+        }, {
+            title: {
+                text: 'Цена'
+            },
+            opposite: true
+        }],
+        legend: {
+            enabled: false
+        },
+
+        plotOptions: {
+            series: {
+                color: '#6894ee',
+                align: 'right',
+                allowPointSelect: false,
+                cursor: 'pointer',
+                dataLabels: {
+                    format: '{point.y:,.0f} р',
+                    enabled: true,
+                    rotation: -90,
+                    y: 30,
+                    color: '#FFFFFF',
+                    style: {
+                        "fontSize": '10px',
+                        "textShadow": false,
+                        "textWeight": 100,
+                        "stroke-width": "0px"
+                    }
+                }
+            },
+            line: {
+                dataLabels: {
+                    enabled: false
+                }
+            }
+        },
+        tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            style: {
+                color: '#F0F0F0'
+            },
+            headerFormat: '<span style="font-size: 10px; text-align: center;">{point.key}</span><br/>',
+            pointFormat: '<b>{point.y} руб.</b>',
+        }
+    };
     //BuyOnline
     var RoomTypeRow = function ($row) {
         this.$row = $row;
@@ -229,52 +333,46 @@
     };
 
     /*RoomTypeRow.prototype.isSelected = function()
-    {
-        return this.selectedTariffRow;
-    }*/
+     {
+     return this.selectedTariffRow;
+     }*/
 
-    RoomTypeRow.prototype.update = function()
-    {
+    RoomTypeRow.prototype.update = function () {
         this.notAlreadyBooking();
-        this.tariffRows.forEach(function(t) {
+        this.tariffRows.forEach(function (t) {
             t.update();
         })
     }
 
-    RoomTypeRow.prototype.init = function()
-    {
+    RoomTypeRow.prototype.init = function () {
         this.bindEventHandlers();
         this.initTariff();
         this.update();
     }
 
-    RoomTypeRow.prototype.bindEventHandlers = function()
-    {
+    RoomTypeRow.prototype.bindEventHandlers = function () {
 
     }
 
-    RoomTypeRow.prototype.initTariff = function()
-    {
+    RoomTypeRow.prototype.initTariff = function () {
         var that = this;
-        this.$row.find('.tariff-row').each(function() {
+        this.$row.find('.tariff-row').each(function () {
             var tariffRow = new TariffRow($(this), that);
             tariffRow.init();
             that.tariffRows.push(tariffRow);
         })
     }
 
-    RoomTypeRow.prototype.notAlreadyBooking = function()
-    {
+    RoomTypeRow.prototype.notAlreadyBooking = function () {
         /*this.$bookingButton.addClass('disabled').attr('href', '');
-        this.$bookingButtonReservation.addClass('disabled').attr('href', '');*/
+         this.$bookingButtonReservation.addClass('disabled').attr('href', '');*/
         /*this.tariffRows.forEach(function(index, t) {
-            tariffRow.notSelected();
-        })*/
+         tariffRow.notSelected();
+         })*/
     }
 
-    RoomTypeRow.prototype.alreadyBooking = function(tariffRow)
-    {
-        this.tariffRows.forEach(function(t) {
+    RoomTypeRow.prototype.alreadyBooking = function (tariffRow) {
+        this.tariffRows.forEach(function (t) {
             if (t != tariffRow) {
                 t.notSelected()
             }
@@ -282,20 +380,19 @@
         this.reBuildHref();
     }
 
-    RoomTypeRow.prototype.reBuildHref = function()
-    {
+    RoomTypeRow.prototype.reBuildHref = function () {
         var href = this.selectedTariffRow.bookingHref;
         if (this.selectedTariffRow.$promotionSelect.val()) {
             href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val();
         }
-        var form_href = '&'+ $("form#search-form").serialize();
+        var form_href = '&' + $("form#search-form").serialize();
         href = href + form_href;
 
         this.$bookingButton.attr('href', href);
         this.$bookingButtonReservation.attr('href', href + '&reservation=true');
     }
 
-    var TariffRow = function($row, roomTypeRow) {
+    var TariffRow = function ($row, roomTypeRow) {
         this.$row = $row;
         this.$radiobutton = this.$row.find('input[type=radio]');
         this.bookingHref = this.$row.data('url');
@@ -303,61 +400,185 @@
         this.roomTypeRow = roomTypeRow;
     }
 
-    TariffRow.prototype.init = function()
-    {
+    TariffRow.prototype.getChartOptions = function () {
+        return {
+            chart: {
+                type: 'column',
+                plotBorderWith: 1,
+                width: 600
+
+            },
+            title: {
+                text: 'Календарь цен',
+                align: 'center',
+                floating: false
+            },
+            subtitle: {
+                text: 'subtitle',
+                floating: true
+            },
+            xAxis: {
+                gridLineWidth: 0,
+                type: 'category',
+                min: 8,
+                max: 22,
+                labels: {
+                    rotation: -75,
+                    style: {
+                        fontSize: '10px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                }
+            },
+            scrollbar: {
+                enabled: true,
+                liveRedraw: true
+            },
+            yAxis: [{
+                gridLineWidth: 1,
+                title: {
+                    text: 'Цена'
+                },
+                labels: {
+                    format: '{value:,.0f} р'
+                }
+            }, {
+                title: {
+                    text: 'Цена'
+                },
+                opposite: true
+            }],
+            legend: {
+                enabled: false
+            },
+
+            plotOptions: {
+                series: {
+                    color: '#6894ee',
+                    align: 'right',
+                    allowPointSelect: false,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        format: '{point.y:,.0f} р',
+                        enabled: true,
+                        rotation: -90,
+                        y: 30,
+                        color: '#FFFFFF',
+                        style: {
+                            "fontSize": '10px',
+                            "textShadow": false,
+                            "textWeight": 100,
+                            "stroke-width": "0px"
+                        }
+                    }
+                },
+                line: {
+                    dataLabels: {
+                        enabled: false
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                style: {
+                    color: '#F0F0F0'
+                },
+                headerFormat: '<span style="font-size: 10px; text-align: center;">{point.key}</span><br/>',
+                pointFormat: '<b>{point.y} руб.</b>',
+            }
+        };
+    };
+
+    TariffRow.prototype.init = function () {
         this.bindEventHandlers();
     }
 
-    TariffRow.prototype.isSelected = function()
-    {
+    TariffRow.prototype.isSelected = function () {
         return this.$radiobutton.is(':checked');
     }
 
-    TariffRow.prototype.update = function()
-    {
+    TariffRow.prototype.update = function () {
         if (this.isSelected()) {
             this.selected();
         }
     }
 
-    TariffRow.prototype.bindEventHandlers = function()
-    {
+    TariffRow.prototype.bindEventHandlers = function () {
         var that = this;
-        this.$radiobutton.on('ifChanged', function() {
+        this.$radiobutton.on('ifChanged', function () {
             that.selected();
         })
-        this.$promotionSelect.on('change', function() {
+        this.$promotionSelect.on('change', function () {
             that.roomTypeRow.selectedTariffRow = that;
             that.roomTypeRow.reBuildHref();
         })
     }
 
-    TariffRow.prototype.selected = function()
-    {
+    TariffRow.prototype.selected = function () {
         this.roomTypeRow.selectedTariffRow = this;
         //this.$promotionSelect.removeClass('hide');
         this.$radiobutton.iCheck('check');
         this.roomTypeRow.alreadyBooking(this);
     }
 
-    TariffRow.prototype.notSelected = function()
-    {
+    TariffRow.prototype.notSelected = function () {
         this.$promotionSelect.addClass('hide');
         //this.$radiobutton.attr('checked', false);
     }
 
+    TariffRow.prototype.drawChart = function () {
+        var urlDecoded = this.$row.data('url').split('?')[1].split('&'),
+            rawArr = [];
+
+        for (var i = 0; i < urlDecoded.length; i++) {
+            var el = urlDecoded[i].split('=');
+            rawArr[el[0]] = el[1];
+        }
+
+        var url = Routing.generate('online_booking_calculation', {
+                tariffId: rawArr['form[tariff]'],
+                roomTypeId: rawArr['form[roomType]'],
+                adults: rawArr['form[adults]'],
+                children: rawArr['form[children]'],
+                packageBegin: rawArr['form[begin]'],
+                packageEnd: rawArr['form[end]']
+            }, true),
+            chartContainerId = this.$row.closest('div.room-type-row').find("div[id^=chart]").attr('id'),
+            ajaxJson = $.getJSON(url),
+            that = this;
+
+        ajaxJson
+            .done(function (charData) {
+                mydata = charData;
+                var container = $(that).closest('div.room-type-row').find("div[id^=chart]")
+                if (!that.chart) {
+                    that.chart = new Highcharts.Chart(chartContainerId, that.getChartOptions());
+                    mychart = that.chart;
+                }
+                if(!that.chart.series[0]) {
+                    console.log('no series')
+                that.chart.addSeries({data: charData['prices']});
+            } else {
+                    console.log('series');
+                that.chart.series[0].setData(charData['prices'])
+            }
+
+            });
+    };
+
     var $onlineBookingSearch = $('#online-booking-search');
-    $onlineBookingSearch.ready(function() {
+    $onlineBookingSearch.ready(function () {
         $onlineBookingSearch.find('.fancybox').fancybox();
 
         var $roomTypeRows = $onlineBookingSearch.find('.room-type-row');
-        $roomTypeRows.each(function() {
+        $roomTypeRows.each(function () {
             var roomTypeRow = new RoomTypeRow($(this));
             roomTypeRow.init();
-            roomTypeRow.tariffRows.forEach(function(tariffRow) {
-                tariffRow.$row.on('click', function() {
+            roomTypeRow.tariffRows.forEach(function (tariffRow) {
+                tariffRow.$row.on('click', function () {
                     tariffRow.selected();
                     start_bron(this);
+                    tariffRow.drawChart();
                 });
             })
         });
@@ -365,16 +586,16 @@
         isReturned();
     });
 
-    var start_bron = function(row) {
-            /*$button_online = $(row).closest("table").siblings(".btmactions").find("a.btn-booking");
-        if($button_reservation.hasClass("disabled")) {
-            $button_reservation.removeClass("disabled");
-        }
-        if($button_online.hasClass("disabled") && $(row).data("payment_type") === "hundred") {
-            $button_online.removeClass("disabled")
-        } else if (!$button_online.hasClass("disabled") && $(row).data("payment_type") !== "hundred") {
-            $button_online.addClass("disabled");
-        }*/
+    var start_bron = function (row) {
+        /*$button_online = $(row).closest("table").siblings(".btmactions").find("a.btn-booking");
+         if($button_reservation.hasClass("disabled")) {
+         $button_reservation.removeClass("disabled");
+         }
+         if($button_online.hasClass("disabled") && $(row).data("payment_type") === "hundred") {
+         $button_online.removeClass("disabled")
+         } else if (!$button_online.hasClass("disabled") && $(row).data("payment_type") !== "hundred") {
+         $button_online.addClass("disabled");
+         }*/
 
 
         $(row).siblings().removeClass("alerting");
@@ -387,7 +608,7 @@
     });
 
     $(".btmactions a").on('click', function (e) {
-        if($(e.target).attr('href') === 'javascript:void(0)') {
+        if ($(e.target).attr('href') === 'javascript:void(0)') {
             e.preventDefault();
             var $action = $("#action");
             $(this).parent().siblings('table').addClass("alerting-tr");
@@ -399,7 +620,7 @@
 
     var isReturned = function () {
         var $checked = $("input[type=radio]:checked");
-        if($checked.length) {
+        if ($checked.length) {
             $checked.trigger('click');
         }
     };

@@ -40,9 +40,10 @@ class ChartDataFormer
         $data = null;
         $prices = [];
 
-        if ($packageBegin instanceof \DateTime && $packageEnd instanceof \DateTime) {
-            $begin = (clone $packageBegin)->modify('-'.$period.' days');
-            $end = (clone $packageBegin)->modify('+'.$period.' days');
+        if ($packageBegin->modify('midnight') instanceof \DateTime && $packageEnd->modify('midnight') instanceof \DateTime) {
+            $packagePeriod = $packageBegin->diff($packageEnd)->format('%d');
+            $begin = (clone $packageBegin)->modify('-'.($period).' days');
+            $end = (clone $packageBegin)->modify('+'.((int)$period + (int)$packagePeriod ).' days');
             $rawPrices = $this->priceCalculator->calcPrices(
                 $roomType,
                 $tariff,
@@ -73,7 +74,10 @@ class ChartDataFormer
                 $price = null;
                 if (isset($rawPrices[$day->format('d_m_Y')])) {
                     $price = $rawPrices[$day->format('d_m_Y')];
+                } else {
+                    $price = null;
                 }
+
                 $prices[] = [
                     'name' => $fmt->format($day),
                     'y' => $price,
@@ -88,4 +92,5 @@ class ChartDataFormer
 
         return $data;
     }
+
 }

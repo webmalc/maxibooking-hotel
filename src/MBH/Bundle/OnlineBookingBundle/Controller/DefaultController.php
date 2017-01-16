@@ -507,7 +507,8 @@ class DefaultController extends BaseController
     /**
      * @Route(
      *     "/calculation/{tariffId}/{roomTypeId}/{adults}/{children}/{packageBegin}/{packageEnd}",
-     *      name="online_booking_calculation"
+     *      name="online_booking_calculation",
+     *      options={"expose" = true}
      *     )
      * @ParamConverter("tariff", class="MBHPriceBundle:Tariff", options={"id" = "tariffId"})
      * @ParamConverter("roomType", class="MBHHotelBundle:RoomType", options={"id" = "roomTypeId"})
@@ -534,7 +535,7 @@ class DefaultController extends BaseController
         $data = $former->getPriceCalendarData($roomType, $tariff, $adults, $children, $packageBegin, $packageEnd);
 
         $response = new JsonResponse($data);
-        $response->headers->set('Access-Control-Allow-Origin', 'null');
+        $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:8080');
 
         return $response;
     }
