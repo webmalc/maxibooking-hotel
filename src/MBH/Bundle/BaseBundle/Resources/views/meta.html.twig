@@ -61,7 +61,9 @@
                     currency: {
                         icon: "{{ currency().icon }}",
                         text: "{{ currency().text }}"
+
                     },
+                    startDatePick: "{{ client_config().beginDate is empty ? 'midnight'|date('d.m.Y') : client_config().beginDate|date('d.m.Y') }}",
                     UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
                     utils: {}
                 }

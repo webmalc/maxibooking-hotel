@@ -140,6 +140,8 @@ class ClientConfig extends Base
     /**
      * @var \DateTime
      * @ODM\Date
+     * @Gedmo\Versioned
+     * @Assert\Type(type="DateTime")
      */
     protected $beginDate;
 
@@ -436,7 +438,7 @@ class ClientConfig extends Base
     /**
      * @return mixed
      */
-    public function getBeginDate()
+    public function getBeginDate(): ?\DateTime
     {
         return $this->beginDate;
     }
@@ -444,7 +446,7 @@ class ClientConfig extends Base
     /**
      * @param mixed $beginDate
      */
-    public function setBeginDate($beginDate)
+    public function setBeginDate(\DateTime $beginDate)
     {
         $this->beginDate = $beginDate;
     }

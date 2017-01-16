@@ -447,6 +447,12 @@ var docReadyPackages = function () {
     discountInit($('#mbh_bundle_packagebundle_package_main_type_discount'), $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount'))
 }
 
+console.log(mbh);
+$('.datepicker').datepicker()
+    .on('show', function(e) {
+        $(".datepicker").datepicker("setDate", new Date('05.08.2009'));
+    });
+
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
