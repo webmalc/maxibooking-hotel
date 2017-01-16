@@ -272,7 +272,7 @@ $(document).ready(function () {
          });*/
     };
 
-    var isNotNullAmount = function() {
+    var isNotNullAmount = function () {
         return parseInt($("#s_adults").val() || $("#s_children").val());
     };
 
@@ -297,7 +297,8 @@ $(document).ready(function () {
     icon.popover({
         html: true,
         placement: 'top',
-        content: ''
+        content: '',
+        trigger: 'manual'
     });
     var changePopover = function () {
         var num = parseInt(childrenInput.val(), 10),
@@ -309,7 +310,6 @@ $(document).ready(function () {
         } else {
             icon.show();
         }
-
         for (var i = 0; i < num; i++) {
             content += '<input type="number" id="children_age_' + i + '" name="s[children_age][]" class="children_age input-xxs form-control input-sm" min="0" max="18">'
         }
@@ -324,6 +324,25 @@ $(document).ready(function () {
             popoverContent.html(content);
         }
     };
+
+
+    var checkChildrenAge = function () {
+        var elements = icon.next('.popover').children('.popover-content').find('input');
+        var flag = true;
+
+        elements.each(function () {
+            var err = parseInt($(this).val());
+            (!(err >= 0)) ? flag = false : null;
+
+        });
+
+        (childrenInput.val() == 0) ? flag = true : null;
+        return flag;
+    }
+
+    var checkFormChildrenAge = function () {
+        $wrapper.html('<div class="alert alert-danger">Заполните возраст детей</div>');
+    }
 
     var sendForm = function () {
 
@@ -367,22 +386,28 @@ $(document).ready(function () {
 
     childrenInput.bind('keyup mouseup', function () {
         changePopover();
-        $('.children_age').change(sendForm);
+        icon.popover('show');
+        // $('.children_age').change(sendForm);
     });
 
     if (!$('#search-submit-button').length) {
         sendForm();
         $packageSearchForm.find('input, select').not('.daterangepicker-input').on('change switchChange.bootstrapSwitch', sendForm);
         icon.on('shown.bs.popover', function () {
-            $('.children_age').change(sendForm);
+            // $('.children_age').change(
+            //         sendForm()
+            // );
         });
-        icon.on('hidden.bs.popover', function () {
-            sendForm();
-        });
+        // icon.on('hidden.bs.popover', function () {
+        //     sendForm();
+        // });
     }
+
     $packageSearchForm.on('submit', function (e) {
         e.preventDefault();
-        sendForm()
+        
+         (checkChildrenAge())?sendForm():checkFormChildrenAge();
+
     });
 });
 

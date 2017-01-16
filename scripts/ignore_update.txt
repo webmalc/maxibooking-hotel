@@ -1,3 +1,5 @@
+azovsky_remote/
+docker_zalex/
 deploy/
 scripts/
 *~

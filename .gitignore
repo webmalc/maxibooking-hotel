@@ -1,4 +1,6 @@
 /scripts/upload
+azovsky_remote/
+/scripts/deploy_to_test.sh
 /web/bundles/
 /app/config/parameters.yml
 /var/bootstrap.php.cache
@@ -37,3 +39,4 @@ web/online
 !web/assets/vendor/azovsky/
 web/assets/vendor/
 #web/assets
+docker_zalex

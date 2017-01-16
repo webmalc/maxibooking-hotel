@@ -36,6 +36,7 @@ class DefaultController extends BaseController
     public function indexAction(Request $request)
     {
         $step = $request->get('step');
+
         if ($step && $step == 2) {
             return $this->signAction($request);//$this->forward('MBHOnlineBookingBundle:Default:sign');
         }
@@ -263,7 +264,9 @@ class DefaultController extends BaseController
             }
 
 //            $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-            $this->sendNotifications($order);
+            $arrival = $this->getParameter('mbh.package.arrival.time');
+            $departure = $this->getParameter('mbh.package.departure.time');
+            $this->sendNotifications($order, $arrival, $departure);
 
 //            $payButtonHtml = '';
 //            if ($payment && in_array($payment, self::ALLOWED_ONLINE_PAYMENT) && $clientConfig->getPaymentSystem()) {
@@ -472,8 +475,9 @@ class DefaultController extends BaseController
             'minstay' => $minStays
         ];
 
+        $env = $this->get('kernel')->getEnvironment();
         $response = new JsonResponse(json_encode($data));
-        $response->headers->set('Access-Control-Allow-Origin', 'http://azovsky.ru');
+        $response->headers->set('Access-Control-Allow-Origin', $this->getParameter('domain_access_control_'.$env));
 
         return $response;
     }

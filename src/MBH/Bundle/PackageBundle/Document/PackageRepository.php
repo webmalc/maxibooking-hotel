@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\MongoDB\CursorInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -163,7 +164,7 @@ class PackageRepository extends DocumentRepository
             $query = trim($criteria->query);
             $tourists = $this->dm->getRepository('MBHPackageBundle:Tourist')
                 ->createQueryBuilder('t')
-                ->field('fullName')->equals(new \MongoRegex('/.*' . $query . '.*/ui'))
+                ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
                 ->getQuery()
                 ->execute();
 
@@ -177,7 +178,7 @@ class PackageRepository extends DocumentRepository
                 $queryBuilder->addOr($queryBuilder->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
+            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')));
         }
 
         //isCheckIn
@@ -544,8 +545,8 @@ class PackageRepository extends DocumentRepository
         if (isset($data['query']) && !empty($data['query'])) {
             $query = trim($data['query']);
             $tourists = $dm->getRepository('MBHPackageBundle:Tourist')
-                ->createQueryBuilder('t')
-                ->field('fullName')->equals(new \MongoRegex('/.*' . $query . '.*/ui'))
+                ->createQueryBuilder()
+                ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
                 ->getQuery()
                 ->execute();
 
@@ -559,7 +560,15 @@ class PackageRepository extends DocumentRepository
                 $qb->addOr($qb->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
+            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')));
+
+            //Find by order
+            /** @var  DocumentManager $dm */
+            $order = $dm->getRepository('MBHOnlineBundle:Order')->find($query);
+            if ($order) {
+                $qb->addOr($qb->expr()->field('order.id')->equals($order->getId()));
+            }
+
         }
 
         //isCheckIn

@@ -334,6 +334,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
+        //TODO Уточнить должно ли так работать?
         $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
 
         return [
