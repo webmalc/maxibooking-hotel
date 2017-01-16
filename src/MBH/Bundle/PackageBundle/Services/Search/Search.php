@@ -467,14 +467,8 @@ class Search implements SearchInterface
         ;
 
         $minRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->getMinTotal(
-            $begin, $end, $roomType, $tariff
+            $begin, $end, $roomType
         );
-
-        if (!$minRoomCache) {
-            $minRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->getMinTotal(
-                $begin, $end, $roomType
-            );
-        }
 
         $groupedPackages = [];
         foreach ($packages as $package) {
