@@ -393,7 +393,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         return [
             'package' => $package,
-            'selDeletedReason' => $this->dm->getRepository('MBHPackageBundle:DeleteReasons')->getSelectedReason($package->getDeleteReason()) ?? '',
+            'selDeletedReason' => $this->dm->getRepository('MBHPackageBundle:DeleteReasons')
+                    ->getSelectedReason($package->getDeleteReason()) ?? '',
             'status' => $package->getStatus(),
             'form' => $form->createView(),
             'logs' => $this->logs($package),
@@ -990,7 +991,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * Package_delete_modal
      *
-     * @Route("/package_delete_modal", name="package_delete_modal")
+     * @Route("/package_delete_modal", name="package_delete")
+     * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', request) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
      * @Template("MBHPackageBundle:Package:modal.html.twig")
      */
     public function deleteModalAction(Request $request)
@@ -1011,9 +1013,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     public function deletePackageAction(Request $request, Package $entity)
     {
         $select_delete_reason = $request->query->get('select_reasons'); // select delete reason id
-        $comment = $request->query->get('comment'); // delete reason comment
 
-        $entity->setDeleteReason($select_delete_reason)->setDeleteComment($comment);
+        $entity->setDeleteReason($select_delete_reason);
 
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
@@ -1028,39 +1029,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
 
         if (!empty($request->get('order'))) {
-            return $this->redirect($this->generateUrl('package_order_edit',
+            return JsonResponse($this->generateUrl('package_order_edit',
                 ['id' => $orderId, 'packageId' => $entity->getId()]));
         }
 
         return new JsonResponse($this->generateUrl('package'));
-    }
-
-    /**
-     * Delete entity.
-     *
-     * @Route("/{id}/delete", name="package_delete")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     */
-    public function deleteAction(Request $request, Package $entity)
-    {
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-        $orderId = $entity->getOrder()->getId();
-        $this->dm->remove($entity);
-        $this->dm->flush($entity);
-
-        $request->getSession()->getFlashBag()
-            ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
-
-        if (!empty($request->get('order'))) {
-            return $this->redirect($this->generateUrl('package_order_edit',
-                ['id' => $orderId, 'packageId' => $entity->getId()]));
-        }
-
-        return $this->redirectToRoute('package');
     }
 
     /**

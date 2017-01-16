@@ -121,18 +121,10 @@
                         {% if package.deleted %}
                             <tr>
                                 <td>
-                                    <strong>Причина удаления</strong>
+                                    <strong>{{ 'modal.form.delete.reasons.reason'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>
-                                    {{ selDeletedReason }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <strong>Комментарий</strong>
-                                </td>
-                                <td>
-                                    {{ package.deleteComment }}
+                                    {{ selDeletedReason|default('modal.form.delete.reasons.reason_default'|trans({}, 'MBHPackageBundle')) }}
                                 </td>
                             </tr>
                         {% endif %}

@@ -2,56 +2,66 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button>
-                <h4 class="modal-title">Причина улаления</h4>
+                <h4 class="modal-title">{{ 'package.actions.confirmation'|trans({}, 'MBHPackageBundle') }}</h4>
             </div>
-            <form class="form-horizontal col-sm-12">
-                <input id="package_id" value="{{ id }}" type="hidden"/>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Причина</label>
-                    <div class="col-sm-10">
-                        <p class="form-control-static">
-                            <select id="select_reasons" class="form-control js-select" style="width: 100%">
-                                {% for reason in reasons %}
-                                    <option value="{{ reason.id }}">{{ reason.fullTitle }}</option>
-                                {% endfor %}
-                            </select>
-                        </p>
+
+            <div class="modal-body">
+                <form method="post" class="form-horizontal">
+                    <div id="mbh_bundle_packagebundle_package_csv_type">
+                        <h5>{{ 'modal.form.delete.reasons.confirmation'|trans({}, 'MBHPackageBundle') }}</h5>
+                        <input id="package_id" type="hidden" value="{{ id }}">
+                        {% if is_granted('ROLE_PACKAGE_DELETE_REASON') %}
+                        <div class="box box-default box-solid">
+
+                            <div class="box-header with-border">
+                                <h3 class="box-title">{{ 'modal.form.delete.reasons.reason'|trans({}, 'MBHPackageBundle') }}</h3>
+                                <div class="box-tools pull-right">
+                                    <button class="btn btn-box-tool form-group-collapse" data-widget="collapse" id="mbh_bundle_packagebundle_package_csv_type-group-1"><i class="fa fa-minus"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="box-body">
+                                <select id="select_reasons" class="form-control js-select" style="width: 100%">
+                                    {% for reason in reasons %}
+                                        <option value="{{ reason.id }}">{{ reason.fullTitle }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="pass" class="col-sm-2 control-label">Комментарий</label>
-                    <div class="col-sm-10">
-                        <textarea class="form-control" id="comment-textarea" rows="3"></textarea>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-default" type="button" data-dismiss="modal">{{ 'modal.form.delete.reasons.close'|trans({}, 'MBHPackageBundle') }}</button>
+                        <button class="btn btn-primary btn-delete" type="button">{{ 'modal.form.delete.reasons.delete'|trans({}, 'MBHPackageBundle') }}</button>
                     </div>
-                </div>
-            </form>
-            <div class="modal-footer">
-                <button class="btn btn-default" type="button" data-dismiss="modal">Закрыть</button>
-                <button class="btn btn-primary btn-delete" type="button">Удалить</button>
+                </form>
+
             </div>
         </div>
     </div>
+
     <script type="text/javascript">
         $(document).ready(function() {
             $(".js-select").select2();
         });
 
         $('button.btn-delete').click(function () {
+
             var array = {
                 'select_reasons': $('#select_reasons').val(),
-                'comment': $('#comment-textarea').val()
             };
 
             $.ajax({
-                url: Routing.generate('delete_package', {'id': $('#package_id').val()}, true),
+                url: Routing.generate('delete_package', {'id': $('#package_id').val()}),
                 type: "GET",
                 data: array,
                 dataType: "json",
                 success: function (urlFromController) {
                     window.location.href = urlFromController;
-                   // location.reload();
                 }
             });
         });
     </script>
+
 </div>

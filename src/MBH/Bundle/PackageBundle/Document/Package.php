@@ -361,17 +361,6 @@ class Package extends Base implements \JsonSerializable
     protected $deleteReason;
 
     /**
-     * @var string
-     * @ODM\Field(type="string", name="deleteComment")
-     * @Assert\Type(type="string")
-     * Assert\Range(
-     *      max=1000,
-     *      maxMessage= "validator.document.package.delete_reason_greater_1000",
-     * )
-     */
-    protected $deleteComment;
-
-    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
@@ -1566,27 +1555,4 @@ class Package extends Base implements \JsonSerializable
     {
         return $this->deleteReason;
     }
-
-    /**
-     * Set delete comment
-     *
-     * @param string $deleteComment
-     * @return self
-     */
-    public function setDeleteComment($deleteComment)
-    {
-        $this->deleteComment = $deleteComment;
-        return $this;
-    }
-
-    /**
-     * Get delete comment
-     *
-     * @return mixed
-     */
-    public function getDeleteComment()
-    {
-        return $this->deleteComment;
-    }
-
 }
