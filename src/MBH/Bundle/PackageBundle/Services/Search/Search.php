@@ -82,8 +82,6 @@ class Search implements SearchInterface
         $calc = $this->container->get('mbh.calculation');
         if (!empty($query->tariff) && !$query->tariff instanceof Tariff) {
             $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($query->tariff);
-        } else {
-            $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->getIsOnlineTariff();
         }
 
         // dates

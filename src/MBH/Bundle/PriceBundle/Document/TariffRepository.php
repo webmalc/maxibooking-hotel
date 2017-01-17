@@ -146,19 +146,4 @@ class TariffRepository extends DocumentRepository
         return $this->fetchQueryBuilder($hotel, $tariffs, $enabled, $online)->getQuery()->execute();
     }
 
-    /**
-     * Get first is online tariff
-     *
-     * @return array|null|object
-     */
-    public function getIsOnlineTariff()
-    {
-        $result = $this->createQueryBuilder()
-            ->field('isOnline')->equals(true)
-            ->getQuery()
-            ->getSingleResult()
-        ;
-
-        return $result;
-    }
 }
