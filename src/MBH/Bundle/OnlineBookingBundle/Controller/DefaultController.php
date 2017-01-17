@@ -535,7 +535,7 @@ class DefaultController extends BaseController
         $data = $former->getPriceCalendarData($roomType, $tariff, $adults, $children, $packageBegin, $packageEnd);
 
         $response = new JsonResponse($data);
-        $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:8080');
+        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
 
         return $response;
     }

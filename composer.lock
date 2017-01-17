@@ -4,7 +4,6 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "47dd765bff4fd4591e5f1b9e37b2c686",
     "content-hash": "436894f08e98f52188007ef6dba9f20f",
     "packages": [
         {
@@ -1197,7 +1196,7 @@
                 "javascript",
                 "routing"
             ],
-            "time": "2015-01-23 02:44:26"
+            "time": "2015-01-23T02:44:26+00:00"
         },
         {
             "name": "friendsofsymfony/user-bundle",
@@ -1528,7 +1527,7 @@
                 "mongodb",
                 "security"
             ],
-            "time": "2013-12-04 20:50:21"
+            "time": "2013-12-04T20:50:21+00:00"
         },
         {
             "name": "imagine/imagine",
@@ -1585,7 +1584,7 @@
                 "image manipulation",
                 "image processing"
             ],
-            "time": "2014-11-11 11:36:02"
+            "time": "2014-11-11T11:36:02+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -1636,7 +1635,7 @@
             "keywords": [
                 "parameters management"
             ],
-            "time": "2015-06-03 08:27:03"
+            "time": "2015-06-03T08:27:03+00:00"
         },
         {
             "name": "ircmaxell/password-compat",
@@ -1887,7 +1886,7 @@
                 "annotations",
                 "dependency injection"
             ],
-            "time": "2014-11-24 08:56:26"
+            "time": "2014-11-24T08:56:26+00:00"
         },
         {
             "name": "jms/metadata",
@@ -2043,7 +2042,7 @@
                 "secure",
                 "security"
             ],
-            "time": "2013-06-09 10:29:54"
+            "time": "2013-06-09T10:29:54+00:00"
         },
         {
             "name": "jms/translation-bundle",
@@ -2117,7 +2116,7 @@
                 "ui",
                 "webinterface"
             ],
-            "time": "2013-06-08 14:08:19"
+            "time": "2013-06-08T14:08:19+00:00"
         },
         {
             "name": "knplabs/knp-menu",
@@ -2181,7 +2180,7 @@
                 "menu",
                 "tree"
             ],
-            "time": "2014-08-01 09:50:16"
+            "time": "2014-08-01T09:50:16+00:00"
         },
         {
             "name": "knplabs/knp-menu-bundle",
@@ -2235,7 +2234,7 @@
             "keywords": [
                 "menu"
             ],
-            "time": "2014-08-01 09:57:23"
+            "time": "2014-08-01T09:57:23+00:00"
         },
         {
             "name": "knplabs/knp-snappy",
@@ -2345,7 +2344,7 @@
                 "pdf",
                 "snappy"
             ],
-            "time": "2014-01-02 11:20:45"
+            "time": "2014-01-02T11:20:45+00:00"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -2472,7 +2471,7 @@
                 "scss",
                 "stylesheet"
             ],
-            "time": "2016-01-15 02:50:06"
+            "time": "2016-01-15T02:50:06+00:00"
         },
         {
             "name": "leaseweb/memcache-bundle",
@@ -2526,7 +2525,7 @@
                 "memcached",
                 "session"
             ],
-            "time": "2016-06-24 08:37:03"
+            "time": "2016-06-24T08:37:03+00:00"
         },
         {
             "name": "liip/imagine-bundle",
@@ -2601,7 +2600,7 @@
                 "image",
                 "imagine"
             ],
-            "time": "2015-06-04 11:44:07"
+            "time": "2015-06-04T11:44:07+00:00"
         },
         {
             "name": "liuggio/ExcelBundle",
@@ -2738,7 +2737,7 @@
                 "web service"
             ],
             "abandoned": true,
-            "time": "2014-12-01 08:29:51"
+            "time": "2014-12-01T08:29:51+00:00"
         },
         {
             "name": "mongodb/mongodb",
@@ -2961,7 +2960,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2012-04-23 22:52:11"
+            "time": "2012-04-23T22:52:11+00:00"
         },
         {
             "name": "ob/highcharts-bundle",
@@ -3015,7 +3014,7 @@
                 "marcaube",
                 "ob"
             ],
-            "time": "2016-07-26 23:46:28"
+            "time": "2016-07-26T23:46:28+00:00"
         },
         {
             "name": "ornicar/gravatar-bundle",
@@ -3122,7 +3121,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2015-12-10 14:48:13"
+            "time": "2015-12-10T14:48:13+00:00"
         },
         {
             "name": "phpoffice/phpexcel",
@@ -3231,7 +3230,7 @@
                 "php",
                 "type"
             ],
-            "time": "2014-01-09 22:37:17"
+            "time": "2014-01-09T22:37:17+00:00"
         },
         {
             "name": "psr/log",
@@ -3337,7 +3336,7 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2015-06-11 20:55:01"
+            "time": "2015-06-11T20:55:01+00:00"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -3392,7 +3391,7 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2015-06-05 13:59:21"
+            "time": "2015-06-05T13:59:21+00:00"
         },
         {
             "name": "sensiolabs/security-checker",
@@ -3487,7 +3486,7 @@
             "keywords": [
                 "google authenticator"
             ],
-            "time": "2014-03-31 09:18:53"
+            "time": "2014-03-31T09:18:53+00:00"
         },
         {
             "name": "stof/doctrine-extensions-bundle",
@@ -3666,7 +3665,7 @@
                 "compression",
                 "minification"
             ],
-            "time": "2015-01-27 12:45:16"
+            "time": "2015-01-27T12:45:16+00:00"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -3725,7 +3724,7 @@
                 "log",
                 "logging"
             ],
-            "time": "2015-01-04 20:21:17"
+            "time": "2015-01-04T20:21:17+00:00"
         },
         {
             "name": "symfony/polyfill-apcu",
@@ -4288,20 +4287,20 @@
             ],
             "description": "Symfony SwiftmailerBundle",
             "homepage": "http://symfony.com",
-            "time": "2016-01-15 16:41:20"
+            "time": "2016-01-15T16:41:20+00:00"
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.8.15",
+            "version": "v2.8.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "3ec15b9379ebb0758e296d4193926a7b4121a964"
+                "reference": "9fef72a3ab561c4bfa703a70369db028dec387d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/3ec15b9379ebb0758e296d4193926a7b4121a964",
-                "reference": "3ec15b9379ebb0758e296d4193926a7b4121a964",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/9fef72a3ab561c4bfa703a70369db028dec387d2",
+                "reference": "9fef72a3ab561c4bfa703a70369db028dec387d2",
                 "shasum": ""
             },
             "require": {
@@ -4423,7 +4422,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-12-13 12:16:34"
+            "time": "2017-01-12T20:27:46+00:00"
         },
         {
             "name": "twig/extensions",
@@ -4475,7 +4474,7 @@
                 "i18n",
                 "text"
             ],
-            "time": "2014-10-30 14:30:03"
+            "time": "2014-10-30T14:30:03+00:00"
         },
         {
             "name": "twig/twig",
@@ -4576,7 +4575,7 @@
                 }
             ],
             "description": "JSONP callback validator.",
-            "time": "2014-01-20 22:35:06"
+            "time": "2014-01-20T22:35:06+00:00"
         },
         {
             "name": "zendframework/zend-json",
@@ -4630,7 +4629,7 @@
                 "json",
                 "zf2"
             ],
-            "time": "2014-03-12 16:10:15"
+            "time": "2014-03-12T16:10:15+00:00"
         },
         {
             "name": "zendframework/zend-stdlib",
@@ -4685,7 +4684,7 @@
                 "stdlib",
                 "zf2"
             ],
-            "time": "2014-03-12 16:10:15"
+            "time": "2014-03-12T16:10:15+00:00"
         }
     ],
     "packages-dev": [
@@ -4741,7 +4740,7 @@
                 "memcached",
                 "session"
             ],
-            "time": "2016-06-24 08:37:03"
+            "time": "2016-06-24T08:37:03+00:00"
         },
         {
             "name": "sensio/generator-bundle",

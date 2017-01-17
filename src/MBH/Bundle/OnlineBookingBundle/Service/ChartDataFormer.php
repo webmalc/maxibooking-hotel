@@ -36,14 +36,18 @@ class ChartDataFormer
         \DateTime $packageBegin,
         \DateTime $packageEnd,
         int $period = 15
-    ): ?array {
+    ): ?array
+    {
         $data = null;
         $prices = [];
 
-        if ($packageBegin->modify('midnight') instanceof \DateTime && $packageEnd->modify('midnight') instanceof \DateTime) {
-            $packagePeriod = $packageBegin->diff($packageEnd)->format('%d');
+        if ($packageBegin->modify('midnight') instanceof \DateTime && $packageEnd->modify(
+                'midnight'
+            ) instanceof \DateTime
+        ) {
+            $packagePeriod = (int)$packageBegin->diff($packageEnd)->format('%d');
             $begin = (clone $packageBegin)->modify('-'.($period).' days');
-            $end = (clone $packageBegin)->modify('+'.((int)$period + (int)$packagePeriod ).' days');
+            $end = (clone $packageBegin)->modify('+'.($period + $packagePeriod).' days');
             $rawPrices = $this->priceCalculator->calcPrices(
                 $roomType,
                 $tariff,
@@ -51,7 +55,7 @@ class ChartDataFormer
                 $end->modify('midnight'),
                 $adults,
                 $children,
-                null,
+                $tariff->getDefaultPromotion(),
                 true,
                 false
             );
@@ -84,11 +88,19 @@ class ChartDataFormer
                     'color' => ($day >= $packageBegin && $day <= $packageEnd) ? 'green' : null,
                 ];
             }
+
+            $center = ($period + $period + $packagePeriod) / 2;
+            $showBegin = $center - $packagePeriod / 2 - 4;
+            $showEnd = $center + $packagePeriod / 2 + 4;
+            $data['showBegin'] = $showBegin;
+            $data['showEnd'] = $showEnd;
         }
+
 
         $data['prices'] = $prices;
         $data['tariffName'] = $tariff->getName();
         $data['roomTypeName'] = $roomType->getName();
+
 
         return $data;
     }

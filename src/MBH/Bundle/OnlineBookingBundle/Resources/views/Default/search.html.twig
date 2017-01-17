@@ -172,7 +172,7 @@
                 </div>
             </div>
 
-            <div id="chart{{ loop.index }}" class="col-md-12"></div>
+            <div id="chart{{ loop.index }}" class="col-md-12" style="height: 500px;"></div>
         </div>
 
     {% endfor %}
@@ -235,94 +235,8 @@
     });
 </script>
 <script>
-    var mychart, myprices
-    //Send notification
-    var chartOptions = {
-        chart: {
-            type: 'column',
-            plotBorderWith: 1,
-            //width: 600
+    var mychart, myprices;
 
-        },
-        title: {
-            text: 'Календарь цен',
-            align: 'center',
-            floating: false
-        },
-        subtitle: {
-            text: 'subtitle',
-            floating: true
-        },
-        xAxis: {
-            gridLineWidth: 0,
-            type: 'category',
-            min: 8,
-            max: 22,
-            labels: {
-                rotation: -75,
-                style: {
-                    fontSize: '10px',
-                    fontFamily: 'Verdana, sans-serif'
-                }
-            }
-        },
-        scrollbar: {
-            enabled: true,
-            liveRedraw: true
-        },
-        yAxis: [{
-            gridLineWidth: 1,
-            title: {
-                text: 'Цена'
-            },
-            labels: {
-                format: '{value:,.0f} р'
-            }
-        }, {
-            title: {
-                text: 'Цена'
-            },
-            opposite: true
-        }],
-        legend: {
-            enabled: false
-        },
-
-        plotOptions: {
-            series: {
-                color: '#6894ee',
-                align: 'right',
-                allowPointSelect: false,
-                cursor: 'pointer',
-                dataLabels: {
-                    format: '{point.y:,.0f} р',
-                    enabled: true,
-                    rotation: -90,
-                    y: 30,
-                    color: '#FFFFFF',
-                    style: {
-                        "fontSize": '10px',
-                        "textShadow": false,
-                        "textWeight": 100,
-                        "stroke-width": "0px"
-                    }
-                }
-            },
-            line: {
-                dataLabels: {
-                    enabled: false
-                }
-            }
-        },
-        tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.85)',
-            style: {
-                color: '#F0F0F0'
-            },
-            headerFormat: '<span style="font-size: 10px; text-align: center;">{point.key}</span><br/>',
-            pointFormat: '<b>{point.y} руб.</b>',
-        }
-    };
     //BuyOnline
     var RoomTypeRow = function ($row) {
         this.$row = $row;
@@ -356,11 +270,19 @@
 
     RoomTypeRow.prototype.initTariff = function () {
         var that = this;
+
+        var checked = false;
         this.$row.find('.tariff-row').each(function () {
             var tariffRow = new TariffRow($(this), that);
             tariffRow.init();
+            if (tariffRow.isSelected()) {
+                checked = true;
+            }
             that.tariffRows.push(tariffRow);
-        })
+        });
+        if (!checked) {
+            this.tariffRows[0].$radiobutton.iCheck('check');
+        }
     }
 
     RoomTypeRow.prototype.notAlreadyBooking = function () {
@@ -392,21 +314,11 @@
         this.$bookingButtonReservation.attr('href', href + '&reservation=true');
     }
 
-    var TariffRow = function ($row, roomTypeRow) {
-        this.$row = $row;
-        this.$radiobutton = this.$row.find('input[type=radio]');
-        this.bookingHref = this.$row.data('url');
-        this.$promotionSelect = $row.find('select');
-        this.roomTypeRow = roomTypeRow;
-    }
-
-    TariffRow.prototype.getChartOptions = function () {
+    RoomTypeRow.prototype.getChartOptions = function () {
         return {
             chart: {
                 type: 'column',
-                plotBorderWith: 1,
-                width: 600
-
+                plotBorderWith: 1
             },
             title: {
                 text: 'Календарь цен',
@@ -420,8 +332,6 @@
             xAxis: {
                 gridLineWidth: 0,
                 type: 'category',
-                min: 8,
-                max: 22,
                 labels: {
                     rotation: -75,
                     style: {
@@ -439,6 +349,9 @@
                 title: {
                     text: 'Цена'
                 },
+                allowDecimail: false,
+                softMax: 6000,
+                min: 0,
                 labels: {
                     format: '{value:,.0f} р'
                 }
@@ -451,7 +364,6 @@
             legend: {
                 enabled: false
             },
-
             plotOptions: {
                 series: {
                     color: '#6894ee',
@@ -484,10 +396,19 @@
                     color: '#F0F0F0'
                 },
                 headerFormat: '<span style="font-size: 10px; text-align: center;">{point.key}</span><br/>',
-                pointFormat: '<b>{point.y} руб.</b>',
+                pointFormat: '<b>{point.y} руб.</b>'
             }
         };
     };
+
+    var TariffRow = function ($row, roomTypeRow) {
+        this.$row = $row;
+        this.$radiobutton = this.$row.find('input[type=radio]');
+        this.bookingHref = this.$row.data('url');
+        this.$promotionSelect = $row.find('select');
+        this.roomTypeRow = roomTypeRow;
+    }
+
 
     TariffRow.prototype.init = function () {
         this.bindEventHandlers();
@@ -549,19 +470,19 @@
 
         ajaxJson
             .done(function (charData) {
-                mydata = charData;
-                var container = $(that).closest('div.room-type-row').find("div[id^=chart]")
-                if (!that.chart) {
-                    that.chart = new Highcharts.Chart(chartContainerId, that.getChartOptions());
+                if (!that.roomTypeRow.chart) {
+                    var options = that.roomTypeRow.getChartOptions();
+                    options.xAxis.min = charData['showBegin'];
+                    options.xAxis.max = charData['showEnd'];
+                    options.subtitle.text = charData['roomTypeName'];
+                    that.roomTypeRow.chart = new Highcharts.Chart(chartContainerId, options);
                     mychart = that.chart;
                 }
-                if(!that.chart.series[0]) {
-                    console.log('no series')
-                that.chart.addSeries({data: charData['prices']});
-            } else {
-                    console.log('series');
-                that.chart.series[0].setData(charData['prices'])
-            }
+                if (!that.roomTypeRow.chart.series[0]) {
+                    that.roomTypeRow.chart.addSeries({data: charData['prices']});
+                } else {
+                    that.roomTypeRow.chart.series[0].setData(charData['prices'])
+                }
 
             });
     };
