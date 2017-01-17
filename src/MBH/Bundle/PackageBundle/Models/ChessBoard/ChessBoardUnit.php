@@ -39,8 +39,11 @@ class ChessBoardUnit implements \JsonSerializable
      * @param array $emptyIntervalData
      * @return ChessBoardUnit
      */
-    public function setInitData(Package $package, ?PackageAccommodation $accommodation = null, array $emptyIntervalData = [])
-    {
+    public function setInitData(
+        Package $package,
+        ?PackageAccommodation $accommodation = null,
+        array $emptyIntervalData = []
+    ) {
         $this->package = $package;
         $this->accommodation = $accommodation;
         $this->emptyIntervalData = $emptyIntervalData;

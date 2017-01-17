@@ -52,11 +52,19 @@ function setOnClickHandler($selector, isEdit, modal, modalBody) {
                     modalBody.html(mbh.loader.html);
                     $.post(url, formData, function (html) {
                         modalBody.html(html);
+                        modalBody.find('.datepicker').datepicker({
+                            language: "ru",
+                            autoclose: true
+                        });
                     }).fail(function (xhr) {
                         if (xhr.status === 302) {
                             window.location.href = Routing.generate('package_accommodation', {id: packageId});
                         } else {
                             modalBody.html(mbh.error.html);
+                            modalBody.find('.datepicker').datepicker({
+                                language: "ru",
+                                autoclose: true
+                            });
                         }
                     });
                 }

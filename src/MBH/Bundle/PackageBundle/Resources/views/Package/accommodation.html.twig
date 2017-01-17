@@ -40,7 +40,7 @@
                             <th class="td-sm">Этаж</th>
                             <th class="td-sm">Статус</th>
                             <th>Удобства</th>
-                            <th class="td-xs"></th>
+                            <th class="td-sm"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -77,17 +77,17 @@
                                 <td class="text-center">
                                     {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                                         <div class="pull-right">
-                                            <a data-accommodation-id="{{ accommodation.id }}" data-package-id="{{ package.id }}"
-                                               class="btn btn-success btn-xs accommodation-edit-link" title="Редактирование записи"
-                                               data-toggle="tooltip">
-                                                <i class="fa fa-pencil-square-o"></i>
-                                            </a>
-                                        </div>
-                                        <div class="pull-right">
                                             <a href="{{ path('package_accommodation_delete', { 'id': accommodation.id }) }}"
                                                class="btn btn-danger btn-xs delete-link" title="Удаление записи"
                                                data-toggle="tooltip">
                                                 <i class="fa fa-trash-o"></i>
+                                            </a>
+                                        </div>
+                                        <div class="pull-right">
+                                            <a data-accommodation-id="{{ accommodation.id }}" data-package-id="{{ package.id }}"
+                                               class="btn btn-success btn-xs accommodation-edit-link" title="Редактирование записи" style="margin-right: 5px;"
+                                               data-toggle="tooltip">
+                                                <i class="fa fa-pencil-square-o"></i>
                                             </a>
                                         </div>
                                     {% endif %}
