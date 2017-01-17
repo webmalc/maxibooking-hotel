@@ -187,10 +187,13 @@ class ChessBoardController extends BaseController
                 $updatedEndDate, $messageFormatter);
         } else {
             //TODO: Добавить проверку прав для изменения только размещения
-            $accommodation->setBegin($updatedBeginDate);
-            $accommodation->setEnd($updatedEndDate);
-            $this->dm->flush();
-            $messageFormatter->addSuccessUpdateAccommodationMessage();
+            $editResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
+                ->editAccommodation($accommodation, $updatedBeginDate, $updatedEndDate);
+            if ($editResult instanceof PackageAccommodation) {
+                $messageFormatter->addSuccessUpdateAccommodationMessage();
+            } else {
+                $messageFormatter->addErrorMessage($editResult);
+            }
         }
     }
 
@@ -243,10 +246,13 @@ class ChessBoardController extends BaseController
             if ($result instanceof Package) {
                 $this->dm->persist($newPackage);
                 $this->dm->flush();
-                $accommodation->setBegin($updatedBeginDate);
-                $accommodation->setEnd($updatedEndDate);
-                $this->dm->flush();
-                $messageFormatter->addSuccessPackageUpdateMessage();
+                $editResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
+                    ->editAccommodation($accommodation, $updatedBeginDate, $updatedEndDate);
+                if ($editResult instanceof PackageAccommodation) {
+                    $messageFormatter->addSuccessPackageUpdateMessage();
+                } else {
+                    $messageFormatter->addErrorMessage($editResult);
+                }
             } else {
                 $this->dm->persist($oldPackage);
                 $this->dm->flush();

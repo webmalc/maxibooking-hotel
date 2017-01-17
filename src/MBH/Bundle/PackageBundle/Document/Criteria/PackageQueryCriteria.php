@@ -135,8 +135,6 @@ class PackageQueryCriteria extends AbstractQueryCriteria
         } elseif (is_string($accommodation)) {
             $this->accommodations[] = $accommodation;
         }
-        //TODO: Добавить ли выкидывание Exception-а при некорректном значении?
-        //TODO: Как проверить Id?
 
         return $this;
     }

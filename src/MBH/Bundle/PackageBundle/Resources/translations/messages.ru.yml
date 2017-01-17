@@ -454,3 +454,17 @@ controller.chessboard.accommodation_update.not_first_or_last_accommodation_chang
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
 accommodation_manipulator.error.incorrect_acc_to_package_dates: Интервал дат размещения должен находиться между датами заезда и выезда брони
 accommodation_manipulator.error.intersect_with_other_accommodations: Размещение пересекается с другими размещениями брони.
+
+#accommodation.html.twig
+package.accommodation.rooms: Комнаты
+package.accommodation.room_type: Тип номера
+package.accommodation.dates: Даты
+package.accommodation.housing: Корпус
+package.accommodation.floor: Этаж
+package.accommodation.status: Статус
+package.accommodation.amenities: Удобства
+package.accommodation.deleting_record: Удаление записи
+package.accommodation.edit_record: Редактирование записи
+package.accommodation.choose_accommodation_on_dates: Выбор размещения на даты
+package.accommodation.place_in_room: Разместить в этом номере
+package.accommodation.rooms_not_found: Номера для размещения не найдены

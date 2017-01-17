@@ -477,8 +477,7 @@ class PackageRepository extends DocumentRepository
             }
             // without accommodation
             if ($data['filter'] == 'without_accommodation') {
-                $qb->addOr($qb->expr()->field('accommodation')->exists(false));
-                $qb->addOr($qb->expr()->field('accommodation')->equals(null));
+                $qb->field('accommodations.0')->exists(false);
             }
 
             // live_between

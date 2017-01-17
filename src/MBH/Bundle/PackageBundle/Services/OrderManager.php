@@ -136,7 +136,6 @@ class OrderManager
 
             return $new;
         }
-        $dsfsadfdsa = 2234;
 
         return 'controller.packageController.record_edited_fail';
     }

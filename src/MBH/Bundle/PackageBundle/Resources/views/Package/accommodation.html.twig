@@ -20,7 +20,7 @@
     <div class="tab-content">
         {% if package.accommodations|length %}
             <div class="box box-default box-solid">
-                <div class="box-header with-border"><h3 class="box-title">Комнаты</h3>
+                <div class="box-header with-border"><h3 class="box-title">{{ 'package.accommodation.rooms'|trans }}</h3>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
                                 id="mbh_bundle_packagebundle_package_accommodations"><i class="fa fa-minus"></i>
@@ -34,12 +34,12 @@
                         <tr>
                             <th class="td-xs"></th>
                             <th>#</th>
-                            <th>Тип номера</th>
-                            <th class="td-md">Даты</th>
-                            <th class="td-md">Корпус</th>
-                            <th class="td-sm">Этаж</th>
-                            <th class="td-sm">Статус</th>
-                            <th>Удобства</th>
+                            <th>{{ 'package.accommodation.room_type'|trans }}</th>
+                            <th class="td-md">{{ 'package.accommodation.dates'|trans }}</th>
+                            <th class="td-md">{{ 'package.accommodation.housing'|trans }}</th>
+                            <th class="td-sm">{{ 'package.accommodation.floor'|trans }}</th>
+                            <th class="td-sm">{{ 'package.accommodation.status'|trans }}</th>
+                            <th>{{ 'package.accommodation.amenities'|trans }}</th>
                             <th class="td-sm"></th>
                         </tr>
                         </thead>
@@ -78,14 +78,14 @@
                                     {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                                         <div class="pull-right">
                                             <a href="{{ path('package_accommodation_delete', { 'id': accommodation.id }) }}"
-                                               class="btn btn-danger btn-xs delete-link" title="Удаление записи"
+                                               class="btn btn-danger btn-xs delete-link" title="{{ 'package.accommodation.deleting_record' |trans}}"
                                                data-toggle="tooltip">
                                                 <i class="fa fa-trash-o"></i>
                                             </a>
                                         </div>
                                         <div class="pull-right">
                                             <a data-accommodation-id="{{ accommodation.id }}" data-package-id="{{ package.id }}"
-                                               class="btn btn-success btn-xs accommodation-edit-link" title="Редактирование записи" style="margin-right: 5px;"
+                                               class="btn btn-success btn-xs accommodation-edit-link" title="{{ 'package.accommodation.edit_record'|trans }}" style="margin-right: 5px;"
                                                data-toggle="tooltip">
                                                 <i class="fa fa-pencil-square-o"></i>
                                             </a>
@@ -107,7 +107,7 @@
 
         {% if optGroupRooms|length %}
             <div class="box box-default box-solid">
-                <div class="box-header with-border"><h3 class="box-title">Выбор размещения на даты &emsp;&emsp;</h3>
+                <div class="box-header with-border"><h3 class="box-title">{{ 'package.accommodation.choose_accommodation_on_dates'|trans }} &emsp;&emsp;</h3>
                     <div class="btn-group">
                         {% for intervalNumber, interval in emptyIntervalsAccommodation %}
                             {% set btnClass = app.request.attributes.get('begin')|date('Y-m-d') == interval.begin|date('Y-m-d') and app.request.attributes.get('end')|date('Y-m-d') == interval.end|date('Y-m-d') or (not app.request.attributes.get('begin') and intervalNumber == 0 ) ? 'btn-success':'btn-warning' %}
@@ -129,11 +129,11 @@
                         <tr>
                             <th class="td-xs"></th>
                             <th>#</th>
-                            <th>Тип номера</th>
-                            <th class="td-md">Корпус</th>
-                            <th class="td-sm">Этаж</th>
-                            <th class="td-sm">Статус</th>
-                            <th>Удобства</th>
+                            <th>{{ 'package.accommodation.room_type'|trans }}</th>
+                            <th class="td-md">{{ 'package.accommodation.housing'|trans }}</th>
+                            <th class="td-sm">{{ 'package.accommodation.floor'|trans }}</th>
+                            <th class="td-sm">{{ 'package.accommodation.status'|trans }}</th>
+                            <th>{{ 'package.accommodation.amenities'|trans }}</th>
                             <th class="td-xs"></th>
                         </tr>
                         </thead>
@@ -166,7 +166,7 @@
                                     </td>
                                     <td class="text-center">
                                         <a data-package-id="{{ package.id }}" data-room-id="{{ room.id }}"
-                                           class="btn btn-success btn-xs accommodation-new-link" title="Разместить в этом номере"
+                                           class="btn btn-success btn-xs accommodation-new-link" title="{{ 'package.accommodation.place_in_room' |trans}}"
                                            data-toggle="tooltip">
                                             <i class="fa fa-check"></i>
                                         </a>
@@ -180,7 +180,7 @@
             </div>
         {% else %}
             <div class="alert alert-warning">
-                Номера для размещения не найдены.
+                {{ 'package.accommodation.rooms_not_found'|trans }}.
             </div>
         {% endif %}
 

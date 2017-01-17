@@ -310,12 +310,12 @@ var ActionManager = (function () {
             && ChessBoardManager.getMomentDate(intervalData.begin).isBefore(ChessBoardManager.getTableStartDate())) {
             //Если размещение расширяется вправо и левый край брони не помещается в таблицу
             intervalBegin = intervalData.begin;
-            newPackageBegin = intervalData.begin;
+            newPackageBegin = intervalData.packageBegin;
         }
         else if (changedSide == 'left'
             && ChessBoardManager.getMomentDate(intervalData.end).isAfter(ChessBoardManager.getTableEndDate())) {
             //Если размещение расширяется влево и правый край брони не помещается в таблицу
-            newPackageEnd = intervalData.end;
+            newPackageEnd = intervalData.packageEnd;
             intervalEnd = intervalData.end;
         }
         else if (changedSide == 'both' && !newIntervalData.accommodation) {
