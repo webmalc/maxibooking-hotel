@@ -14,6 +14,8 @@
     {% if app.request.isxmlhttprequest is empty %}
         {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 6 , 'entity': package} %}
     {% endif %}
+    <input type="hidden" id="interval-begin-date" value="{{ periodBegin|date('d.m.Y') }}">
+    <input type="hidden" id="interval-end-date" value="{{ periodEnd|date('d.m.Y') }}">
 
     <div class="tab-content">
         {% if package.accommodations|length %}
@@ -75,7 +77,7 @@
                                 <td class="text-center">
                                     {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                                         <div class="pull-right">
-                                            <a data-accommodation-id="{{ accommodation.id }}"
+                                            <a data-accommodation-id="{{ accommodation.id }}" data-package-id="{{ package.id }}"
                                                class="btn btn-success btn-xs accommodation-edit-link" title="Редактирование записи"
                                                data-toggle="tooltip">
                                                 <i class="fa fa-pencil-square-o"></i>

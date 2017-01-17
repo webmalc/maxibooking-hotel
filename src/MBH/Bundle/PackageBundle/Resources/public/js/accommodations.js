@@ -19,13 +19,14 @@ function setOnClickHandler($selector, isEdit, modal, modalBody) {
     $selector.click(function (event) {
         event.preventDefault();
         var url;
+        var packageId = $(this).attr('data-package-id');
         if (isEdit) {
             url = Routing.generate('package_accommodation_edit', {
                 'id' : $(this).attr('data-accommodation-id')
             });
         } else {
             url = Routing.generate('package_accommodation_new', {
-                'id': $(this).attr('data-package-id'),
+                'id': packageId,
                 'room': $(this).attr('data-room-id')
             });
         }
@@ -37,6 +38,13 @@ function setOnClickHandler($selector, isEdit, modal, modalBody) {
                 language: "ru",
                 autoclose: true
             });
+
+            if (!isEdit && document.getElementById('interval-begin-date').value) {
+
+                modalBody.find('#package_accommodation_room_begin').datepicker('update', document.getElementById('interval-begin-date').value);
+                modalBody.find('#package_accommodation_room_end').datepicker('update', document.getElementById('interval-end-date').value);
+            }
+
             $('#modal-submit').click(function () {
                 var change_form = modal.find('.modal-body > form');
                 if (change_form.length) {
@@ -46,7 +54,7 @@ function setOnClickHandler($selector, isEdit, modal, modalBody) {
                         modalBody.html(html);
                     }).fail(function (xhr) {
                         if (xhr.status === 302) {
-                            location.reload();
+                            window.location.href = Routing.generate('package_accommodation', {id: packageId});
                         } else {
                             modalBody.html(mbh.error.html);
                         }

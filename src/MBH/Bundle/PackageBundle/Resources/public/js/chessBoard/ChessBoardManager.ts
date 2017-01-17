@@ -345,7 +345,7 @@ class ChessBoardManager {
             let extraElementWidth = Math.abs(parseInt(element.style.left, 10));
             element.style.width = parseInt(element.style.width, 10) - extraElementWidth + 'px';
             element.style.left = 0;
-            element.classList.remove('with-left-divider');
+            $(element).removeClass('with-left-divider');
         }
 
         if (packageEndDate.isAfter(this.tableEndDate)) {

@@ -79,8 +79,8 @@ class AutoTaskCreator
         $roomTypes = $queryBuilder->getQuery()->execute();
 
         //Get current Accommodations
-        $packageAccomodationRepository = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation');
-        $packageAccommodations = $packageAccomodationRepository->getAccommodationByDate($now);
+        $packageAccommodationRepository = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation');
+        $packageAccommodations = $packageAccommodationRepository->getAccommodationByDate($now);
         $helper = $this->container->get('mbh.helper');
         $pIDs = $helper->toIds($packageAccommodations);
 

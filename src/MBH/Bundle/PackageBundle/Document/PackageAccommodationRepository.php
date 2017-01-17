@@ -43,7 +43,7 @@ class PackageAccommodationRepository extends DocumentRepository
         \DateTime $begin = null,
         \DateTime $end = null,
         $rooms = null,
-        array $excludePackages = null,
+        $excludePackages = null,
         $departure = true
     )
     {

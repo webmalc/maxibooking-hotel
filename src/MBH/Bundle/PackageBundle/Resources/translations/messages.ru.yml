@@ -453,3 +453,4 @@ controller.chessboard.accommodation_update.not_first_or_last_accommodation_chang
 #package accommodation manipulator service
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
 accommodation_manipulator.error.incorrect_acc_to_package_dates: Интервал дат размещения должен находиться между датами заезда и выезда брони
+accommodation_manipulator.error.intersect_with_other_accommodations: Размещение пересекается с другими размещениями брони.

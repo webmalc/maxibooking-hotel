@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -40,19 +41,9 @@ class PackageAccommodationManipulator
 
     public function addAccommodation(PackageAccommodation $accommodation, Package $package)
     {
-        if ($accommodation->getBegin() < $package->getBegin() || $accommodation->getEnd() > $package->getEnd()) {
-            return $this->translator->trans('accommodation_manipulator.error.incorrect_acc_to_package_dates');
-        }
-        if ($accommodation->getBegin() <= $accommodation->getEnd()) {
-            return $this->translator->trans('controller.packageController.accommodation_add.begin_equal_or_later_end_error');
-        }
-        $existedAccommodations = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')
-            ->fetchWithAccommodation($accommodation->getBegin(),
-                $accommodation->getEnd(),
-                $accommodation->getAccommodation()->getId());
-        if (count($existedAccommodations) > 0) {
-            return $this->translator->trans('accommodation_manipulator.error.room_busy',
-                ['%roomName%' => $accommodation->getAccommodation()->getName()]);
+        $errorMessage = $this->checkErrors($accommodation, $package);
+        if ($errorMessage != '') {
+            return $errorMessage;
         }
 
         $package->addAccommodation($accommodation);
@@ -60,6 +51,7 @@ class PackageAccommodationManipulator
 
         return $accommodation;
     }
+
 
     /**
      * @param PackageAccommodation $accommodation
@@ -90,10 +82,27 @@ class PackageAccommodationManipulator
      * @param PackageAccommodation $accommodation
      * @param \DateTime $startDate
      * @param \DateTime $endDate
+     * @param Room $room
+     * @return string
      */
-    public function editAccommodation(PackageAccommodation $accommodation, \DateTime $startDate, \DateTime $endDate)
-    {
+    public function editAccommodation(
+        PackageAccommodation $accommodation,
+        \DateTime $startDate = null,
+        \DateTime $endDate = null,
+        Room $room = null
+    ) {
+        is_null($startDate) ?: $accommodation->setBegin($startDate);
+        is_null($endDate) ?: $accommodation->setEnd($endDate);
+        is_null($room) ?: $accommodation->setAccommodation($room);
 
+        $errorMessage = $this->checkErrors($accommodation, $accommodation->getPackage());
+        if ($errorMessage != '') {
+            return $errorMessage;
+        }
+
+        $this->dm->flush();
+
+        return $accommodation;
     }
 
     /**
@@ -163,7 +172,7 @@ class PackageAccommodationManipulator
      */
     public function isFullAccommodation(Package $package): bool
     {
-        return ! (bool)$this->getEmptyIntervals($package)->count();
+        return !(bool)$this->getEmptyIntervals($package)->count();
     }
 
     /**
@@ -173,15 +182,44 @@ class PackageAccommodationManipulator
     public function sortAccommodationsByBeginDate($packageAccommodations) : ArrayCollection
     {
         usort($packageAccommodations, function ($a, $b) {
-            /** @var PackageAccommodation $a*/
-            /** @var PackageAccommodation $b*/
+            /** @var PackageAccommodation $a */
+            /** @var PackageAccommodation $b */
             $c = 'd';
-            return ($a->getBegin() < $b->getBegin())? -1 : 1;
+            return ($a->getBegin() < $b->getBegin()) ? -1 : 1;
         });
 
         return new ArrayCollection($packageAccommodations);
     }
 
+    private function checkErrors(PackageAccommodation $accommodation, Package $package)
+    {
+        if ($accommodation->getBegin() < $package->getBegin() || $accommodation->getEnd() > $package->getEnd()) {
+            return $this->translator->trans('accommodation_manipulator.error.incorrect_acc_to_package_dates');
+        }
+        if ($accommodation->getBegin() >= $accommodation->getEnd()) {
+            return $this->translator->trans('controller.packageController.accommodation_add.begin_equal_or_later_end_error');
+        }
+        foreach ($package->getAccommodations() as $iteratedAccommodation) {
+            /** @var PackageAccommodation $accommodation */
+            if ($accommodation->getId() != $iteratedAccommodation->getId()) {
+                if ($iteratedAccommodation->getEnd() > $accommodation->getBegin()
+                    && $iteratedAccommodation->getBegin() < $accommodation->getEnd()) {
+                    return $this->translator->trans('accommodation_manipulator.error.intersect_with_other_accommodations');
+                }
+            }
+        }
+        $existedAccommodations = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')
+            ->fetchWithAccommodation(
+                $accommodation->getBegin(),
+                $accommodation->getEnd(),
+                $accommodation->getAccommodation()->getId(),
+                $package);
 
+        if (count($existedAccommodations) > 0) {
+            return $this->translator->trans('accommodation_manipulator.error.room_busy',
+                ['%roomName%' => $accommodation->getAccommodation()->getName()]);
+        }
 
+        return '';
+    }
 }

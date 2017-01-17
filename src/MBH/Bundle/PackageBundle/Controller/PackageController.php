@@ -918,15 +918,20 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $package = $accommodation->getPackage();
-            $this->dm->flush();
+            $editResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
+                ->editAccommodation($accommodation);
 
-            $this->addFlash('success', 'controller.packageController.placement_edited_success');
-            if ($request->isXmlHttpRequest()) {
-                return new Response('', 302);
-            } else {
-                $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);
+            if ($editResult instanceof PackageAccommodation) {
+                $this->addFlash('success', 'controller.packageController.placement_edited_success');
+                if ($request->isXmlHttpRequest()) {
+                    return new Response('', 302);
+                }
+
+                return $this->redirectToRoute('package_accommodation',
+                    ['id' => $accommodation->getPackage()->getId(), 'begin' => null, 'end' => null]);
             }
+
+            $form->addError(new FormError($editResult));
         }
 
         return [
@@ -965,7 +970,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * Accommodation
      *
-     * @Route("/{id}/accommodation/{begin}/{end}", name="package_accommodation", defaults={"begin" = null, "end" = null})
+     * @Route("/{id}/accommodation/{begin}/{end}", name="package_accommodation", defaults={"begin" = null, "end" = null}, options={"expose"=true})
      * @ParamConverter("begin", options={"format":"Y-m-d"})
      * @ParamConverter("end", options={"format":"Y-m-d"})
      * @Method({"GET", "POST"})
@@ -1082,6 +1087,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $arrivalTime = $this->getParameter('mbh_package_arrival_time');
 
         return [
+            'periodBegin' => $begin,
+            'periodEnd' => $end,
             'emptyIntervalsAccommodation' => $accIntervals,
             'package' => $package,
             'arrivalTime' => $arrivalTime,
