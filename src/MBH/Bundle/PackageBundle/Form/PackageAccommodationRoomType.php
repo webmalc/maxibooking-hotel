@@ -18,9 +18,9 @@ class PackageAccommodationRoomType extends AbstractType
     {
         $builder
             ->add('begin', DateType::class, [
-                'label' => 'check_in',
+                'label' => 'form.package_accommodation_type.check_in',
                 'widget' => 'single_text',
-                'help' => 'check_in.help',
+                'help' => 'form.package_accommodation_type.check_in.help',
                 'format' => 'dd.MM.yyyy',
                 'required' => true,
                 'attr' => array(
@@ -29,9 +29,9 @@ class PackageAccommodationRoomType extends AbstractType
                 )
             ])
             ->add('end', DateType::class, [
-                'label' => 'check_out',
+                'label' => 'form.package_accommodation_type.check_out',
                 'widget' => 'single_text',
-                'help' => 'check_out.help',
+                'help' => 'form.package_accommodation_type.check_out.help',
                 'format' => 'dd.MM.yyyy',
                 'required' => true,
                 'attr' => array(
@@ -40,7 +40,7 @@ class PackageAccommodationRoomType extends AbstractType
                 )
             ])
             ->add('note', TextareaType::class, [
-                'label' => 'note',
+                'label' => 'form.package_accommodation_type.note',
                 'required' => false,
             ])
         ;

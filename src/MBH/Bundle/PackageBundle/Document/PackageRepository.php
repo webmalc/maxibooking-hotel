@@ -239,63 +239,6 @@ class PackageRepository extends DocumentRepository
     }
 
     /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param null $rooms
-     * @param Package[] $excludePackages
-     * @param boolean $departure
-     * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    public function fetchWithAccommodation(
-        \DateTime $begin = null,
-        \DateTime $end = null,
-        $rooms = null,
-        array $excludePackages = null,
-        $departure = true
-    )
-    {
-        /** Find PackageAccommodations  */
-        $accQb = $this->getDocumentManager()->getRepository('MBHPackageBundle:PackageAccommodation')->createQueryBuilder();
-
-        $accQb
-            ->field('end')->gte($begin)
-            ->field('begin')->lte($end);
-
-        if ($rooms) {
-            is_array($rooms) ? $rooms : $rooms = [$rooms];
-            $accQb->field('accommodation.id')->in($rooms);
-        }
-
-        if ($excludePackages) {
-            $excludedAccommodationIds = [];
-            if (!is_array($excludePackages)) {
-                $excludePackages = [$excludePackages];
-            }
-            foreach ($excludePackages as $excludePackage) {
-                foreach ($excludePackage->getAccommodations() as $accommodation) {
-                    $excludedAccommodationIds[] = $accommodation->getId();
-                }
-            }
-            $accQb->field('id')->notIn($excludedAccommodationIds);
-        }
-
-        /*$qb = $this->createQueryBuilder();*/
-
-        /*$qb->field('accommodations')->exists(true)
-            ->field('accommodations')->notEqual(null);*/
-
-        // Что дает эта проверка ?
-        /*if ($departure) {
-            $qb->addOr($qb->expr()->field('departureTime')->exists(false))
-                ->addOr($qb->expr()->field('departureTime')->equals(null));
-        }*/
-        //$qb->sort('begin', 'asc');
-
-        return $accQb->getQuery()->execute(); //
-    }
-
-    /**
      * @param Room $room
      * @return Package|null
      */

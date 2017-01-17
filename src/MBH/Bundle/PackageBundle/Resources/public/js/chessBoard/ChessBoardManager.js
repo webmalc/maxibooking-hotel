@@ -278,13 +278,26 @@ var ChessBoardManager = (function () {
             var extraElementWidth = Math.abs(parseInt(element.style.left, 10));
             element.style.width = parseInt(element.style.width, 10) - extraElementWidth + 'px';
             element.style.left = 0;
+            element.classList.remove('with-left-divider');
         }
         if (packageEndDate.isAfter(this.tableEndDate)) {
             var differenceInDays = packageEndDate.diff(this.tableEndDate, 'days');
-            console.log(differenceInDays);
             element.style.width = parseInt(element.style.width, 10)
                 - (differenceInDays - 1) * ChessBoardManager.DATE_ELEMENT_WIDTH
                 - ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET + 'px';
+        }
+        var descriptionElement = element.querySelector('.package-description');
+        var elementWidth = parseInt(element.style.width, 10);
+        var descriptionWidth = parseInt(descriptionElement.style.width, 10);
+        if (descriptionWidth > elementWidth) {
+            descriptionElement.style.width = elementWidth + 'px';
+        }
+        if (elementWidth < ChessBoardManager.DATE_ELEMENT_WIDTH) {
+            var divideButton = element.querySelector('.divide-package-button');
+            if (divideButton) {
+                divideButton.parentNode.removeChild(divideButton);
+            }
+            descriptionElement.parentNode.removeChild(descriptionElement);
         }
         return element;
     };
@@ -724,10 +737,8 @@ var ChessBoardManager = (function () {
         $noAccommodationElements.popover('destroy');
         var $popoverElements = $('.no-accommodation-date.achtung');
         $popoverElements.popover();
-        //Скрываем открытые popover-ы
-        $popoverElements.on('show.bs.popover', function () {
-            $('.popover').popover('hide');
-        });
+        //     $('.popover').popover('hide');
+        // });
         $popoverElements.on('shown.bs.popover', function () {
             self.updatePackagesData();
             var roomTypeId = this.parentNode.parentNode.parentNode.parentNode.id;
@@ -792,7 +803,7 @@ var ChessBoardManager = (function () {
                         ActionManager.callUpdatePackageModal($(relocatablePackage), relocatablePackageData);
                     }
                 }
-                $popoverElements.popover('hide');
+                // $popoverElements.popover('hide');
             };
             //Корректируем смещение по ширине
             var currentPopover = $popover.get(0);
@@ -897,6 +908,7 @@ var ChessBoardManager = (function () {
         infoButton.setAttribute('title', Translator.trans('chessboard_manager.info_button.popup.title'));
         infoButton.setAttribute('type', 'button');
         infoButton.setAttribute('data-toggle', 'tooltip');
+        infoButton.setAttribute('data-placement', "right");
         infoButton.classList.add('popover-info-button');
         infoButton.innerHTML = '<i class="fa fa-info-circle" aria-hidden="true"></i>';
         var self = this;
@@ -911,6 +923,7 @@ var ChessBoardManager = (function () {
         editButton.setAttribute('target', '_blank');
         editButton.setAttribute('title', Translator.trans('chessboard_manager.edit_button.popup.title'));
         editButton.setAttribute('data-toggle', 'tooltip');
+        editButton.setAttribute('data-placement', "right");
         editButton.classList.add('popover-edit-button');
         editButton.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>';
         return editButton;

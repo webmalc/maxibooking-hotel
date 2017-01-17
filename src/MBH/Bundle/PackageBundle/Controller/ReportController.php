@@ -404,7 +404,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         );
 
         //packages
-        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
+        $packages = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')->fetchWithAccommodation(
             $begin, $end, $helper->toIds($rooms), null, false
         );
 

@@ -183,7 +183,7 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         $pAccommodations = $dm
-            ->getRepository('MBHPackageBundle:Package')
+            ->getRepository('MBHPackageBundle:PackageAccommodation')
             ->fetchWithAccommodation(
                 $newBegin->modify('+1 day'),
                 $newEnd->modify('-1 day'),

@@ -128,6 +128,11 @@ form.touristType.placeholder_phone: +7(925)3456512
 form.touristType.email: E-mail
 form.touristType.placeholder_email: mail@exapmple.com
 form.touristType.note: Примечание
+form.package_accommodation_type.check_in: Заезд
+form.package_accommodation_type.check_out: Выезд
+form.package_accommodation_type.check_in.help: Дата начала размещения
+form.package_accommodation_type.check_out.help: Дата окончания размещения
+form.package_accommodation_type.note: Комментарий
 controller.analyticsController.services_amount: 'Количество услуг'
 controller.analyticsController.proceeds: 'Выручка'
 controller.analyticsController.percentage: 'Процент'
@@ -152,6 +157,7 @@ controller.packageController.service_added_success: 'Услуга успешно
 controller.packageController.service_edit_success: 'Услуга успешно отредактирована.'
 controller.packageController.service_deleted_success: 'Услуга успешно удалена.'
 controller.packageController.placement_saved_success: 'Размещение успешно сохранено.'
+controller.packageController.placement_edited_success: 'Размещение успешно изменено.'
 controller.packageController.placement_deleted_success: 'Размещение успешно удалено.'
 controller.packageController.record_deleted_success: 'Запись успешно удалена.'
 controller.sourceController.record_created_success: 'Запись успешно создана.'
@@ -164,7 +170,7 @@ controller.packageController.record_edited_fail_accommodation: 'Ошибка п�
 controller.packageController.relocation_success: 'Создана новая бронь для переселения. Теперь можно выбрать новый номер размещения гостей'
 controller.packageController.relocation_dates_error: 'Ошибка переселения. Некорректная дата переселения'
 controller.packageController.relocation_accommodation_error: 'Ошибка переселения. Нет размещения'
-controller.packageController.accommodation_add.begin_equal_or_later_end_error: 'Ошибка создания размещения. Дата начала размещения равна или больше даты окончания размещения'
+controller.packageController.accommodation_add.begin_equal_or_later_end_error: 'Ошибка создания размещения. Дата начала размещения равна или больше даты окончания размещения.'
 controller.packageController.accommodation_add.passed_only_one_date: 'Не может быть передано только одна из дат'
 
 # TaskType Controller
@@ -444,12 +450,6 @@ controller.chessboard.accommodation_divide.error: Дата разделения 
 controller.chessboard.accommodation_divide.error.empty_date_string: Передана пустая строка даты разделения размещения
 controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: Ошибка! Недопустимо изменение промежуточного размещения
 
-# Chessboard settings
-chessboard.settings: Настройки шахматки
-form.chessboard.package_unpaid.color: Неоплаченная бронь
-form.chessboard.package_unpaid.color.help: Цвет неоплаченной брони
-form.chessboard.package_partly_paid.color: Частично оплаченная бронь
-form.chessboard.package_partly_paid.color.help: Цвет частично оплаченной брони
-form.chessboard.package_paid.color: Оплаченная бронь
-form.chessboard.package_paid.color.help: Цвет оплаченной брони
-form.chessboard.colors: Цвета
+#package accommodation manipulator service
+accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
+accommodation_manipulator.error.incorrect_acc_to_package_dates: Интервал дат размещения должен находиться между датами заезда и выезда брони

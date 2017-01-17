@@ -132,7 +132,7 @@ services:
 
     mbh_bundle_package.services.package_accommodation_manipulator:
         class: MBH\Bundle\PackageBundle\Services\PackageAccommodationManipulator
-        arguments: ['@doctrine_mongodb.odm.document_manager']
+        arguments: ['@doctrine_mongodb.odm.document_manager', '@translator']
 
     mbh_bundle_package.twig.package_extension:
         class: MBH\Bundle\PackageBundle\Twig\PackageExtension

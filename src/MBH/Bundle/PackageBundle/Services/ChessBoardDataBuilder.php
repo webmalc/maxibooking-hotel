@@ -56,12 +56,13 @@ class ChessBoardDataBuilder
      * @param TranslatorInterface $translator
      * @param ContainerInterface $container
      */
-    public function __construct(DocumentManager $dm,
+    public function __construct(
+        DocumentManager $dm,
         Helper $helper,
         PackageAccommodationManipulator $accommodationManipulator,
         TranslatorInterface $translator,
-        $container)
-    {
+        $container
+    ) {
         $this->dm = $dm;
         $this->container = $container;
         $this->helper = $helper;
@@ -216,7 +217,6 @@ class ChessBoardDataBuilder
         }
 
 
-
         return $accommodationIntervals;
     }
 
@@ -230,17 +230,18 @@ class ChessBoardDataBuilder
             }
 
             if (count($rooms) > 0) {
-                $accommodations = $this->dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
-                    $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
-                );
+                $accommodations = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')
+                    ->fetchWithAccommodation(
+                        $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
+                    );
                 //сортируем по датам начала размещения
                 $this->packageAccommodations = $this->accommodationManipulator
                     ->sortAccommodationsByBeginDate($accommodations->toArray())->toArray();
 
                 //сортируем по id брони
                 usort($this->packageAccommodations, function ($a, $b) {
-                    /** @var PackageAccommodation $a*/
-                    /** @var PackageAccommodation $b*/
+                    /** @var PackageAccommodation $a */
+                    /** @var PackageAccommodation $b */
                     return strcmp($a->getPackage()->getId(), $b->getPackage()->getId());
                 });
             }

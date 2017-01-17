@@ -30,6 +30,7 @@
 .package {
   z-index: 100;
   border-bottom: 1px solid white;
+  cursor: pointer;
   .package-action-buttons {
     position: absolute;
     right: 4px;
@@ -47,19 +48,24 @@
   border-radius: 0 7px 7px 0;
   width: 7px;
 }
+
 .with-left-divider:after {
   background-color: white;
   left: 0;
 }
+
 .with-right-divider.danger:before {
   background-color: rgba(221, 75, 57, 0.6);
 }
+
 .with-right-divider.success:before {
   background-color: rgba(79, 230, 106, 0.6);
 }
+
 .with-right-divider.warning:before {
   background-color: rgba(243, 156, 18, 0.6);
 }
+
 .with-right-divider:before {
   right: -7px
 }
@@ -68,31 +74,33 @@
   min-width: 250px;
   padding-right: 10px;
   max-width: 700px !important;
+  z-index: 500;
 }
 
 .popover-content {
   overflow: auto;
   min-width: 200px !important;
+  max-width: 500px !important;
   max-height: 200px !important;
 }
+
 .popover-package-container {
-  margin: 10px 0;
-  height: 42px;
-  position: relative;
-}
-.popover-info-button, .popover-edit-button {
-  position: absolute;
-  top: 0;
-  width: 47px;
-  margin: 0 5px;
-  font-size: 30px;
-}
-.popover-info-button {
-  border: 0;
-  background-color: white;
-}
-.popover-edit-button {
-  left: 50px;
+  //overflow: auto;
+  white-space: nowrap;
+  //max-width: 700px;
+  .popover-info-button, .popover-edit-button {
+    width: 47px;
+    margin: 0 5px;
+    font-size: 40px;
+  }
+  .popover-info-button {
+    border: 0;
+    background-color: white;
+  }
+  .popover-edit-button {
+    left: 50px;
+    cursor: pointer;
+  }
 }
 
 #package-modal-change-alert {
@@ -533,7 +541,6 @@
     line-height: 11px;
     border-radius: 4px;
     z-index: 20;
-    cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
   }

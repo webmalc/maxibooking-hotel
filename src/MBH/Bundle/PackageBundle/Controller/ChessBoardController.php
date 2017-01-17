@@ -199,7 +199,7 @@ class ChessBoardController extends BaseController
         \DateTime $updatedEndDate,
         Room $updatedRoom,
         Package $package,
-        ChessBoardMessageFormatter $messageFormatter
+        ChessBoardMessageFormatter &$messageFormatter
     ) {
         $rightsChecker = $this->get('security.authorization_checker');
         if (!($rightsChecker->isGranted('ROLE_PACKAGE_VIEW_ALL')
@@ -213,10 +213,13 @@ class ChessBoardController extends BaseController
         $accommodation->setBegin($updatedBeginDate);
         $accommodation->setEnd($updatedEndDate);
         $accommodation->setRoom($updatedRoom);
-        $package->addAccommodation($accommodation);
-
-        $this->dm->flush();
-        $messageFormatter->addSuccessAddAccommodationMessage($accommodation, $package);
+        $additionResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
+            ->addAccommodation($accommodation, $package);
+        if ($additionResult instanceof PackageAccommodation) {
+            $messageFormatter->addSuccessAddAccommodationMessage($accommodation, $package);
+        } else {
+            $messageFormatter->addErrorMessage($additionResult);
+        }
     }
 
     private function updatePackageWithAccommodation(
@@ -236,7 +239,7 @@ class ChessBoardController extends BaseController
 
         $packageValidateErrors = $this->get('validator')->validate($newPackage);
         if (count($packageValidateErrors) === 0) {
-            $result = $this->container->get('mbh.order_manager')->updatePackage($newPackage, $oldPackage);
+            $result = $this->container->get('mbh.order_manager')->updatePackage($oldPackage, $newPackage);
             if ($result instanceof Package) {
                 $this->dm->persist($newPackage);
                 $this->dm->flush();
@@ -245,6 +248,8 @@ class ChessBoardController extends BaseController
                 $this->dm->flush();
                 $messageFormatter->addSuccessPackageUpdateMessage();
             } else {
+                $this->dm->persist($oldPackage);
+                $this->dm->flush();
                 $messageFormatter->addErrorMessage($result);
             }
         } else {

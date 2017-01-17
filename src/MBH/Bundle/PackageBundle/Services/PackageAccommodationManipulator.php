@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class PackageAccommodationManipulator
@@ -21,16 +22,44 @@ class PackageAccommodationManipulator
      * @var DocumentManager
      */
     private $dm;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
     /**
      * PackageAccommodationManipulator constructor.
-     * @param $dm
+     * @param DocumentManager $dm
+     * @param TranslatorInterface $translator
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, TranslatorInterface $translator)
     {
         $this->dm = $dm;
+        $this->translator = $translator;
     }
 
+    public function addAccommodation(PackageAccommodation $accommodation, Package $package)
+    {
+        if ($accommodation->getBegin() < $package->getBegin() || $accommodation->getEnd() > $package->getEnd()) {
+            return $this->translator->trans('accommodation_manipulator.error.incorrect_acc_to_package_dates');
+        }
+        if ($accommodation->getBegin() <= $accommodation->getEnd()) {
+            return $this->translator->trans('controller.packageController.accommodation_add.begin_equal_or_later_end_error');
+        }
+        $existedAccommodations = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')
+            ->fetchWithAccommodation($accommodation->getBegin(),
+                $accommodation->getEnd(),
+                $accommodation->getAccommodation()->getId());
+        if (count($existedAccommodations) > 0) {
+            return $this->translator->trans('accommodation_manipulator.error.room_busy',
+                ['%roomName%' => $accommodation->getAccommodation()->getName()]);
+        }
+
+        $package->addAccommodation($accommodation);
+        $this->dm->flush();
+
+        return $accommodation;
+    }
 
     /**
      * @param PackageAccommodation $accommodation
