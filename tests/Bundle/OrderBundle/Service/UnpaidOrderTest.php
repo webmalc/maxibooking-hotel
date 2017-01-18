@@ -56,7 +56,7 @@ class UnpaidOrderTest extends WebTestCase
 
     public static function tearDownAfterClass()
     {
-        //self::clearDB();
+        self::clearDB();
     }
 
     public function getUnpaidOrder()
