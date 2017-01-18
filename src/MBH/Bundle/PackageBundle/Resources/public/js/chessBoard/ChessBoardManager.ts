@@ -221,27 +221,30 @@ class ChessBoardManager {
     public addAccommodationElements() {
         let wrapper = $('#calendarWrapper');
         let templatePackageElement = ChessBoardManager.getTemplateElement();
-        console.time('elements creating');
+        // console.time('elements creating');
         let packages = document.createElement('div');
         // for (let i = 0; i < 100; i++) {
+
         //iterate packages
         let accommodationsData = this.dataManager.getAccommodations();
+        let lastAddedElement = null;
         for (let accommodationId in accommodationsData) {
             if (accommodationsData.hasOwnProperty(accommodationId)) {
                 let accommodationData = accommodationsData[accommodationId];
                 if (accommodationData.accommodation) {
                     let packageDiv = this.createPackageElementWithOffset(templatePackageElement,
-                        accommodationData, wrapper, packages.childNodes);
+                        accommodationData, wrapper, lastAddedElement);
+                    lastAddedElement = packageDiv;
                     packages.appendChild(packageDiv);
                 }
             }
         }
         // }
         wrapper.append(packages);
-        console.timeEnd('elements creating');
-        console.time('handlers');
+        // console.timeEnd('elements creating');
+        // console.time('handlers');
         this.addListeners('.package');
-        console.timeEnd('handlers');
+        // console.timeEnd('handlers');
     }
 
 
@@ -258,7 +261,7 @@ class ChessBoardManager {
         return templateDiv;
     }
 
-    public createPackageElement(packageItem, templatePackageElement = null, hasButtons = true, elements = []) {
+    public createPackageElement(packageItem, templatePackageElement = null, hasButtons = true, lastAddedElement = null) {
         if (!templatePackageElement) {
             templatePackageElement = ChessBoardManager.getTemplateElement();
         }
@@ -276,6 +279,7 @@ class ChessBoardManager {
         let packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
         let descriptionText = packageName ? packageName.substr(0, packageCellCount * 5 - 1) : '';
         packageDiv.setAttribute('data-description', descriptionText);
+        packageDiv.setAttribute('data-package-id', packageItem.packageId);
         description.innerHTML = descriptionText;
         description.classList.add('package-description');
         packageDiv.appendChild(description);
@@ -306,11 +310,10 @@ class ChessBoardManager {
             }
         }
 
-        if (elements.length > 0) {
-            let lastElement = elements[elements.length - 1];
-            if (lastElement.getAttribute('data-description') == descriptionText) {
-                let lastElementIndex = lastElement.style.zIndex != ''
-                    ? lastElement.style.zIndex : ChessBoardManager.ACCOMMODATION_ELEMENT_ZINDEX;
+        if (lastAddedElement) {
+            if (lastAddedElement.getAttribute('data-package-id') == packageItem.packageId) {
+                let lastElementIndex = lastAddedElement.style.zIndex != ''
+                    ? lastAddedElement.style.zIndex : ChessBoardManager.ACCOMMODATION_ELEMENT_ZINDEX;
                 packageDiv.style.zIndex = lastElementIndex - 1;
             }
         }
@@ -318,8 +321,8 @@ class ChessBoardManager {
         return packageDiv;
     }
 
-    private createPackageElementWithOffset(templatePackageElement, packageItem, wrapper, elements) {
-        let packageDiv = this.createPackageElement(packageItem, templatePackageElement, true, elements);
+    private createPackageElementWithOffset(templatePackageElement, packageItem, wrapper, lastAddedElement) {
+        let packageDiv = this.createPackageElement(packageItem, templatePackageElement, true, lastAddedElement);
         let packageStartDate = ChessBoardManager.getMomentDate(packageItem.begin);
         let packageEndDate = ChessBoardManager.getMomentDate(packageItem.end);
         let roomDatesListElement = $('#' + packageItem.accommodation);
@@ -407,10 +410,10 @@ class ChessBoardManager {
         let jQueryObj = $(identifier);
         let self = this;
 
-        console.time('draggable');
+        // console.time('draggable');
         this.addDraggable(jQueryObj);
-        console.timeEnd('draggable');
-        console.time('resizable etc');
+        // console.timeEnd('draggable');
+        // console.time('resizable etc');
         jQueryObj.each(function (index, element) {
             let intervalData = self.dataManager.getAccommodationIntervalById(this.id);
             let $element = $(element);
@@ -476,7 +479,7 @@ class ChessBoardManager {
                 }
             });
         });
-        console.timeEnd('resizable etc');
+        // console.timeEnd('resizable etc');
     }
 
     private divide(packageElement, firstAccommodationWidth) {
@@ -814,6 +817,7 @@ class ChessBoardManager {
 
     private updateNoAccommodationPackageCounts() {
         let self = this;
+
         $('.roomTypeRooms').each(function (index, noAccommodationLine) {
             let roomTypeNoAccommodationCounts = self.dataManager.getNoAccommodationCounts()[noAccommodationLine.id];
             let noAccommodationDayElements = noAccommodationLine.children[0].children[0].children;
@@ -829,24 +833,23 @@ class ChessBoardManager {
                 dayElement.innerHTML = innerText;
             }
         });
-
         this.hangPopover();
     }
 
     private hangPopover() {
         let self = this;
-
-        let $noAccommodationElements = $('.no-accommodation-date');
-        $noAccommodationElements.popover('destroy');
-
+        $('.no-accommodation-date').popover('destroy');
         let $popoverElements = $('.no-accommodation-date.achtung');
+
         $popoverElements.popover();
 
-        //     $('.popover').popover('hide');
-        // });
-
         $popoverElements.on('shown.bs.popover', function () {
-            self.updatePackagesData();
+            let lastPackage = $('.package').last();
+            if (lastPackage.attr('unplaced')) {
+                lastPackage.remove();
+            }
+
+            $('.popover').not(':last').remove();
             let roomTypeId = this.parentNode.parentNode.parentNode.parentNode.id;
             let currentDate = moment(this.getAttribute('data-date'), "DD.MM.YYYY");
             let templatePackageElement = ChessBoardManager.getTemplateElement();
@@ -898,6 +901,7 @@ class ChessBoardManager {
                             relocatablePackage = this;
                             $wrapper.append(this);
                             this.style.position = 'absolute';
+                            this.setAttribute('unplaced', true);
                             relocatablePackageData = self.dataManager.getNoAccommodationIntervalById(this.id);
                             let intervalStartDate = ChessBoardManager.getMomentDate(relocatablePackageData.begin);
                             this.style.left = ChessBoardManager.getPackageLeftOffset(intervalStartDate) + 'px';
@@ -906,23 +910,19 @@ class ChessBoardManager {
                             if (!self.isPackageLocationCorrect(relocatablePackage)) {
                                 relocatablePackage.classList.add('red-package');
                             }
+                            $popover.popover('hide');
                         }
-                        $popover.popover('hide');
+                        document.body.onmouseup = function () {
+                            document.body.onmouseup = null;
+                            if (!isDragged && relocatablePackage) {
+                                if (self.isPackageLocationCorrect(relocatablePackage)) {
+                                    ActionManager.callUpdatePackageModal($(relocatablePackage), relocatablePackageData);
+                                }
+                            }
+                        };
                     });
                 }
             });
-
-            document.body.onmouseup = function () {
-                document.body.onmouseup = null;
-                $popoverElements.popover();
-                self.hangPopover();
-                if (!isDragged && relocatablePackage) {
-                    if (self.isPackageLocationCorrect(relocatablePackage)) {
-                        ActionManager.callUpdatePackageModal($(relocatablePackage), relocatablePackageData);
-                    }
-                }
-                // $popoverElements.popover('hide');
-            };
 
             //Корректируем смещение по ширине
             let currentPopover = $popover.get(0);
