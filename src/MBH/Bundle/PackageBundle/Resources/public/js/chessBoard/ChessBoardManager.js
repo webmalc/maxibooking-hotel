@@ -735,9 +735,7 @@ var ChessBoardManager = (function () {
     };
     ChessBoardManager.prototype.hangPopover = function () {
         var self = this;
-        // $('.no-accommodation-date:not(.achtung)').popover('destroy');
         var $popoverElements = $('.no-accommodation-date.achtung');
-        // $popoverElements.popover();
         $popoverElements.unbind('shown.bs.popover');
         $popoverElements.on('shown.bs.popover', function () {
             var lastPackage = $('.package').last();

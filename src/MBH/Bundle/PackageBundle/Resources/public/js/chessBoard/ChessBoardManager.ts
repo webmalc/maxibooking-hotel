@@ -839,10 +839,8 @@ class ChessBoardManager {
     private hangPopover() {
         let self = this;
 
-        // $('.no-accommodation-date:not(.achtung)').popover('destroy');
         let $popoverElements = $('.no-accommodation-date.achtung');
 
-        // $popoverElements.popover();
         $popoverElements.unbind('shown.bs.popover');
         $popoverElements.on('shown.bs.popover', function () {
             let lastPackage = $('.package').last();
