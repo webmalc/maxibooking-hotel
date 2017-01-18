@@ -838,18 +838,21 @@ class ChessBoardManager {
 
     private hangPopover() {
         let self = this;
-        $('.no-accommodation-date').popover('destroy');
+
+        // $('.no-accommodation-date:not(.achtung)').popover('destroy');
         let $popoverElements = $('.no-accommodation-date.achtung');
 
-        $popoverElements.popover();
-
+        // $popoverElements.popover();
+        $popoverElements.unbind('shown.bs.popover');
         $popoverElements.on('shown.bs.popover', function () {
             let lastPackage = $('.package').last();
             if (lastPackage.attr('unplaced')) {
                 lastPackage.remove();
             }
 
-            $('.popover').not(':last').remove();
+            let openedPopovers = $('.popover');
+            openedPopovers.not(':last').remove();
+
             let roomTypeId = this.parentNode.parentNode.parentNode.parentNode.id;
             let currentDate = moment(this.getAttribute('data-date'), "DD.MM.YYYY");
             let templatePackageElement = ChessBoardManager.getTemplateElement();
@@ -863,7 +866,7 @@ class ChessBoardManager {
 
             let $wrapper = $('#calendarWrapper');
             let wrapperTopOffset = parseInt($wrapper.offset().top, 10);
-            let $popover = $('.popover').last();
+            let $popover = openedPopovers.last();
 
             let $popoverContent = $popover.find('.popover-content');
 

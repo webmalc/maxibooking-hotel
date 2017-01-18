@@ -735,15 +735,17 @@ var ChessBoardManager = (function () {
     };
     ChessBoardManager.prototype.hangPopover = function () {
         var self = this;
-        $('.no-accommodation-date').popover('destroy');
+        // $('.no-accommodation-date:not(.achtung)').popover('destroy');
         var $popoverElements = $('.no-accommodation-date.achtung');
-        $popoverElements.popover();
+        // $popoverElements.popover();
+        $popoverElements.unbind('shown.bs.popover');
         $popoverElements.on('shown.bs.popover', function () {
             var lastPackage = $('.package').last();
             if (lastPackage.attr('unplaced')) {
                 lastPackage.remove();
             }
-            $('.popover').not(':last').remove();
+            var openedPopovers = $('.popover');
+            openedPopovers.not(':last').remove();
             var roomTypeId = this.parentNode.parentNode.parentNode.parentNode.id;
             var currentDate = moment(this.getAttribute('data-date'), "DD.MM.YYYY");
             var templatePackageElement = ChessBoardManager.getTemplateElement();
@@ -754,7 +756,7 @@ var ChessBoardManager = (function () {
             var relocatablePackageData;
             var $wrapper = $('#calendarWrapper');
             var wrapperTopOffset = parseInt($wrapper.offset().top, 10);
-            var $popover = $('.popover').last();
+            var $popover = openedPopovers.last();
             var $popoverContent = $popover.find('.popover-content');
             packagesByCurrentDate.forEach(function (packageData) {
                 var packageElement = self.createPackageElement(packageData, templatePackageElement, false);
