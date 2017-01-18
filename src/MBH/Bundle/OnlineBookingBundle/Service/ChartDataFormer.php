@@ -36,7 +36,7 @@ class ChartDataFormer
         \DateTime $packageBegin,
         \DateTime $packageEnd,
         int $period = 15
-    ): ?array
+    )
     {
         $data = null;
         $prices = [];
