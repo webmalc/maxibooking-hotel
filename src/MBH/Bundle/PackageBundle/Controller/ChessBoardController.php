@@ -292,21 +292,30 @@ class ChessBoardController extends BaseController
         if ($intermediateDate->getTimestamp() < $firstAccommodation->getEnd()->getTimestamp()
             && $intermediateDate->getTimestamp() > $firstAccommodation->getBegin()->getTimestamp()
         ) {
-            $firstAccommodation->setEnd($intermediateDate);
-            $secondAccommodation = clone $firstAccommodation;
-            $secondAccommodation->setBegin($intermediateDate);
-            $secondAccommodation->setEnd($accommodationEnd);
+            $editResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
+                ->editAccommodation($firstAccommodation, null, $intermediateDate);
 
-            if ($roomId != '') {
-                $room = $this->dm->find('MBHHotelBundle:Room', $roomId);
-                $secondAccommodation->setRoom($room);
-                $package->addAccommodation($secondAccommodation);
-                $this->dm->persist($secondAccommodation);
-                $messageFormatter->addSuccessAddAccommodationMessage($secondAccommodation);
-                $this->dm->flush();
+            if (!($editResult instanceof PackageAccommodation)) {
+                $messageFormatter->addErrorMessage($editResult);
             } else {
-                $messageFormatter->addSuccessRemoveAccommodationMessage($secondAccommodation);
-                $this->dm->flush();
+                $secondAccommodation = clone $firstAccommodation;
+                $secondAccommodation->setBegin($intermediateDate);
+                $secondAccommodation->setEnd($accommodationEnd);
+
+                if ($roomId != '') {
+                    $room = $this->dm->find('MBHHotelBundle:Room', $roomId);
+                    $secondAccommodation->setRoom($room);
+                    $additionResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
+                        ->addAccommodation($secondAccommodation, $package);
+                    if ($additionResult instanceof PackageAccommodation) {
+                        $messageFormatter->addSuccessAddAccommodationMessage($secondAccommodation);
+                    } else {
+                        $messageFormatter->addErrorMessage($additionResult);
+                    }
+                } else {
+                    $messageFormatter->addSuccessRemoveAccommodationMessage($secondAccommodation);
+                    $this->dm->flush();
+                }
             }
         } else {
             $messageFormatter->addErrorDivideAccommodationMessage();

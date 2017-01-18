@@ -87,9 +87,9 @@ class PackageAccommodationManipulator
      */
     public function editAccommodation(
         PackageAccommodation $accommodation,
-        \DateTime $startDate = null,
-        \DateTime $endDate = null,
-        Room $room = null
+        ?\DateTime $startDate = null,
+        ?\DateTime $endDate = null,
+        ?Room $room = null
     ) {
         is_null($startDate) ?: $accommodation->setBegin($startDate);
         is_null($endDate) ?: $accommodation->setEnd($endDate);

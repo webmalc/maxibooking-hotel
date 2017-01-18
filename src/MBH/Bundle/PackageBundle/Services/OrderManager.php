@@ -123,7 +123,7 @@ class OrderManager
             $this->container->get('mbh.room.cache')->recalculate(
                 $old->getBegin(), $oldEnd, $old->getRoomType(), $old->getTariff(), false
             );
-            $end = $new->getEnd();
+            $end = clone $new->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
                 $new->getBegin(), $end->modify('-1 day'), $new->getRoomType(), $new->getTariff()
             );
