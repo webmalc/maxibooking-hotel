@@ -235,6 +235,10 @@ $(document).ready(function () {
         searchProcess = false;
         $wrapper.html(data);
 
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
         var $quantitySelect = $wrapper.find('.quantity-select');
         var $searchRoomsSelect = $wrapper.find('.search-room-select');
         var $searchTouristsSelect = $wrapper.find('.search-tourists-select');
