@@ -85,7 +85,7 @@ class NoticeUnpaid
             /** @var Package $package */
             $orderId = $package->getOrder()->getId();
 
-            if(isset($arrayData[$orderId])) {
+            if (isset($arrayData[$orderId])) {
                 $unpaidOrderArray[] = [
                     'orderId' => $arrayData[$orderId]->getId(),
                     'packageId' => $package->getId(),
