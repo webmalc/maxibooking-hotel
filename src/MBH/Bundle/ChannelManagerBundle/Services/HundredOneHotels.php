@@ -488,7 +488,8 @@ class HundredOneHotels extends Base
                     ->setTotal($orderInfo->getOrderPrice());
                 if ($payType == 'cashless') {
                     $cashDoc->setIsPaid(false)->setMethod('cashless');
-                    $order->setNote($this->container->get('translator')->trans('services.hundredOneHotels.cash_document_not_paid'));
+                    $order->setNote($order->getNote() . "\n" .$this->container->get('translator')
+                            ->trans('services.hundredOneHotels.cash_document_not_paid'));
                 }
                 $this->dm->persist($cashDoc);
                 $this->dm->flush();
