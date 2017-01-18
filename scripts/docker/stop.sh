@@ -1,3 +1,3 @@
 #!/bin/bash
-cd ././../../docker_zalex
+cd docker
 docker-compose stop

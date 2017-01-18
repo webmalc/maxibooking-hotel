@@ -3,20 +3,20 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffChildOptions;
 use MBH\Bundle\PriceBundle\Form\TariffInheritanceType;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
 use MBH\Bundle\PriceBundle\Form\TariffServicesType;
 use MBH\Bundle\PriceBundle\Form\TariffServiceType;
+use MBH\Bundle\PriceBundle\Form\TariffType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\PriceBundle\Form\TariffType;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("management/tariff")
@@ -136,7 +136,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     public function newAction()
     {
         $entity = new Tariff();
-        $form = $this->createForm(new TariffType(), $entity);
+        $form = $this->createForm(TariffType::class, $entity);
 
         return [
             'form' => $form->createView(),
@@ -156,8 +156,8 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $entity = new Tariff();
         $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
 
-        $form = $this->createForm(new TariffType(), $entity);
-        $form->submit($request);
+        $form = $this->createForm(TariffType::class, $entity);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -178,7 +178,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      * Edits an existing entity.
      *
      * @Route("/{id}", name="tariff_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_TARIFF_EDIT')")
      * @Template("MBHPriceBundle:Tariff:edit.html.twig")
      * @ParamConverter(class="MBHPriceBundle:Tariff")
@@ -189,8 +189,8 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffType(), $entity);
-        $form->submit($request);
+        $form = $this->createForm(TariffType::class, $entity);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -223,7 +223,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffType(), $entity);
+        $form = $this->createForm(TariffType::class, $entity);
 
         return [
             'entity' => $entity,
@@ -244,7 +244,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffPromotionsType(), $tariff);
+        $form = $this->createForm(TariffPromotionsType::class, $tariff);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -282,7 +282,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
 
 
         $options = $tariff->getChildOptions() ? $tariff->getChildOptions() : new TariffChildOptions() ;
-        $form = $this->createForm(new TariffInheritanceType(), $options, ['parent' => $tariff->getParent()]);
+        $form = $this->createForm(TariffInheritanceType::class, $options, ['parent' => $tariff->getParent()]);
 
         $form->handleRequest($request);
 
@@ -317,7 +317,8 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffServicesType(), $tariff, [
+        $form = $this->createForm(TariffServicesType::class, $tariff, [
+            'services_all' => $this->dm->getRepository('MBHPriceBundle:Service')->getAvailableServicesForTariff($tariff, true),
             'services' => $this->dm->getRepository('MBHPriceBundle:Service')->getAvailableServicesForTariff($tariff)
         ]);
 

@@ -5,11 +5,11 @@ namespace MBH\Bundle\PriceBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Form\PromotionType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -38,15 +38,15 @@ class PromotionController extends BaseController
 
     /**
      * @Route("/new", name="promotion_new")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PROMOTION_NEW')")
      * @Template()
      */
     public function newAction(Request $request)
     {
         $promotion = new Promotion();
-        $form = $this->createForm(new PromotionType(), $promotion, [
-            'method' => Request::METHOD_PUT
+        $form = $this->createForm(PromotionType::class, $promotion, [
+            'method' => Request::METHOD_POST
         ]);
 
         $form->handleRequest($request);
@@ -71,7 +71,7 @@ class PromotionController extends BaseController
      */
     public function editAction(Request $request, Promotion $promotion)
     {
-        $form = $this->createForm(new PromotionType(), $promotion, [
+        $form = $this->createForm(PromotionType::class, $promotion, [
             'method' => Request::METHOD_POST
         ]);
 

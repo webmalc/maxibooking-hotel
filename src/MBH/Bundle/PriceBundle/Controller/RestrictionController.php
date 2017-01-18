@@ -24,7 +24,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
      * @return JsonResponse
      * @Route("/in/out/json", name="restriction_in_out_json", options={"expose"=true}, defaults={"_format": "json"})
      * @Method("GET")
-     * @Security("is_granted('ROLE_RESTRICTION_VIEW')")
+     * @Security("is_granted('ROLE_RESTRICTION_VIEW') or is_granted('ROLE_SEARCH')")
      * @Cache(expires="tomorrow", public=true)
      */
     public function inOutJsonAction()
@@ -237,7 +237,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $form = $this->createForm(
-            new RestrictionGeneratorType(), [], [
+            RestrictionGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -260,12 +260,12 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $form = $this->createForm(
-            new RestrictionGeneratorType(), [], [
+            RestrictionGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $request->getSession()->getFlashBag()

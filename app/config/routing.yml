@@ -9,7 +9,7 @@ mbh_warehouse:
     prefix:   /
 
 JMSTranslationBundle_ui:
-    resource: @JMSTranslationBundle/Controller/
+    resource: "@JMSTranslationBundle/Controller/"
     type:     annotation
     prefix:   /_trans
 
@@ -34,7 +34,7 @@ mbh_cash:
     prefix:   /cash
 
 _welcome:
-    pattern:  /
+    path:  /
     defaults: { _controller: MBHBaseBundle:Welcome:index}
 
 mbh_package:

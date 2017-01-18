@@ -3,15 +3,16 @@
 namespace MBH\Bundle\BaseBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
-use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
-use MBH\Bundle\UserBundle\Document\User;
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Knp\Menu\ItemInterface;
-use JMS\SecurityExtraBundle\Metadata\Driver\AnnotationDriver;
+use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class Builder extends ContainerAware
+class Builder implements ContainerAwareInterface
 {
+
+    use ContainerAwareTrait;
 
     /**
      * @var \MBH\Bundle\ClientBundle\Document\ClientConfig
@@ -344,13 +345,13 @@ class Builder extends ContainerAware
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('myallocator', ['route' => 'channels', 'label' => 'Дополнительные каналы'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
-            //$menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok'])
-            //  ->setAttributes(['icon' => 'fa fa-cloud-download']);
+            $menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok'])
+              ->setAttributes(['icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
-            //$menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru']);
-
+            $menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru'])
+                ->setAttributes(['icon' => 'fa fa-cloud-download']);
         }
 
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма'])

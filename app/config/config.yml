@@ -5,6 +5,7 @@ imports:
     - { resource: mbh.yml }
     - { resource: roles.yml }
     - { resource: mbh_restaurant_ctypes.xml }
+    - { resource: rabbitmq.yml }
 
 framework:
     serializer:
@@ -16,7 +17,8 @@ framework:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: false
     form:            ~
-    csrf_protection: ~
+    csrf_protection:
+      enabled: true
     validation:      { enable_annotations: true }
     templating:
         engines: ['twig']
@@ -67,7 +69,7 @@ twig:
 # Assetic Configuration
 assetic:
     debug:          "%kernel.debug%"
-    use_controller: '%use_assetic_controller%'
+    use_controller: "%use_assetic_controller%"
     filters:
         cssrewrite: ~
         uglifycss:
@@ -79,7 +81,7 @@ assetic:
         less:
             node: /usr/bin/nodejs
             node_paths: [/usr/local/lib/node_modules/]
-            apply_to: "\.less$"
+            apply_to: ".less$"
         scssphp:
             formatter: 'Leafo\ScssPhp\Formatter\Compressed'
 
@@ -96,12 +98,18 @@ swiftmailer:
 doctrine_mongodb:
     connections:
         default:
-            server: %mongodb_url%
+            server: "%mongodb_url%"
             options: {}
-    default_database: %mongodb_database%
+    default_database: "%mongodb_database%"
     document_managers:
         default:
             connection: 'default'
+            metadata_cache_driver:
+              type: memcached
+              class: Doctrine\Common\Cache\MemcachedCache
+              host: localhost
+              port: 11211
+              instance_class: Memcached
             auto_mapping: true
             filters:
                     softdeleteable:
@@ -180,9 +188,9 @@ knp_snappy:
         options:    []
 
 # IamPersistentMongoDBAclBundle Configuration
-iam_persistent_mongo_db_acl:
+dinhkhanh_mongo_db_acl:
     acl_provider:
-        default_database: %mongodb_database%
+        default_database: "%mongodb_database%"
 
 liip_imagine:
     resolvers:
@@ -191,7 +199,7 @@ liip_imagine:
     loaders:
         protected:
             filesystem:
-                data_root: %kernel.root_dir%/../protectedUpload
+                data_root: "%kernel.root_dir%/../protectedUpload"
     filter_sets:
         cache: ~
         thumb_40x40:
@@ -235,9 +243,9 @@ liip_imagine:
 jms_translation:
     configs:
         app:
-            dirs: [%kernel.root_dir%, %kernel.root_dir%/../src]
-            output_dir: %kernel.root_dir%/Resources/translations
-            excluded_dirs: [%kernel.root_dir%/../var/cache, %kernel.root_dir%/../var/logs]
+            dirs: ["%kernel.root_dir%", "%kernel.root_dir%/../src"]
+            output_dir: "%kernel.root_dir%/Resources/translations"
+            excluded_dirs: ["%kernel.root_dir%/../var/cache", "%kernel.root_dir%/../var/logs"]
             excluded_names: ["*TestCase.php", "*Test.php"]
 
 # GravatarBundle

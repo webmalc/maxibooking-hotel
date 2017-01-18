@@ -2,51 +2,53 @@
 
 namespace MBH\Bundle\UserBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Context\ExecutionContext;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserType extends AbstractType
 {
     private $isNew;
     private $roles;
 
-    public function __construct($isNew = true, array $roles = [])
-    {
-        $this->isNew = $isNew;
-        $this->roles = [];
-
-        foreach ($roles as $key => $role) {
-            $this->roles[$key] = $key;
-        }
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->isNew = $options['isNew'];
+        $this->roles = [];
+
+        foreach ($options['roles'] as $key => $role) {
+            $this->roles[$key] = $key;
+        }
+
         $builder
-            ->add('username', 'text', [
+            ->add('username', TextType::class, [
                 'label' => 'form.userType.login',
                 'group' => 'form.userType.authentication_data',
                 'attr' => array('placeholder' => 'ivan'),
             ])
-            ->add('email', 'email', [
+            ->add('email', EmailType::class, [
                 'label' => 'E-mail',
                 'group' => 'form.userType.authentication_data',
                 'attr' => ['placeholder' => 'ivan@example.com']
             ]);
 
         if ($this->isNew) {
-            $builder->add('plainPassword', 'repeated', [
+            $builder->add('plainPassword', RepeatedType::class, [
                 'group' => 'form.userType.authentication_data',
-                'type' => 'password',
+                'type' => PasswordType::class,
                 'first_options' => array(
                     'label' => 'form.password',
                     'attr' => array('autocomplete' => 'off', 'class' => 'password'),
@@ -56,9 +58,9 @@ class UserType extends AbstractType
                 'constraints' => new NotBlank()
             ]);
         } else {
-            $builder->add('newPassword', 'repeated', [
+            $builder->add('newPassword', RepeatedType::class, [
                 'group' => 'form.userType.authentication_data',
-                'type' => 'password',
+                'type' => PasswordType::class,
                 'mapped' => false,
                 'required' => false,
                 'first_options' => array(
@@ -71,7 +73,7 @@ class UserType extends AbstractType
             ]);
         }
         $builder
-            ->add('hotels', 'document', [
+            ->add('hotels', DocumentType::class, [
                 'group' => 'form.userType.settings',
                 'label' => 'form.userType.hotels',
                 'multiple' => true,
@@ -79,16 +81,16 @@ class UserType extends AbstractType
                 'required' => false,
                 'data' => $options['hotels'],
                 'class' => 'MBHHotelBundle:Hotel',
-                'property' => 'name',
+                'choice_label' => 'name',
                 'help' => 'form.userType.hotels_user_has_access_to',
                 'attr' => array('class' => "chzn-select")
             ])
-            ->add('isEnabledWorkShift', 'checkbox', [
+            ->add('isEnabledWorkShift', CheckboxType::class, [
                 'label' => 'form.clientConfigType.is_enabled_work_shift',
                 'group' => 'form.userType.settings',
                 'required' => false,
             ])
-            ->add('defaultNoticeDoc', 'checkbox', [
+            ->add('defaultNoticeDoc', CheckboxType::class, [
                 'label' => 'form.clientConfigType.default_notice_doc',
                 'help' => 'form.clientConfigType.default_notice_doc_desc',
                 'group' => 'form.userType.settings',
@@ -97,49 +99,49 @@ class UserType extends AbstractType
         ;
 
         $builder
-            ->add('notifications', 'checkbox', [
+            ->add('notifications', CheckboxType::class, [
                 'group' => 'form.userType.notifications_fieldset',
                 'label' => 'form.userType.notifications',
                 'value' => true,
                 'required' => false,
             ])
-            ->add('taskNotify', 'checkbox', [
+            ->add('taskNotify', CheckboxType::class, [
                 'group' => 'form.userType.notifications_fieldset',
                 'label' => 'form.userType.taskNotify',
                 'value' => true,
                 'required' => false,
             ])
-            ->add('reports', 'checkbox', [
+            ->add('reports', CheckboxType::class, [
                 'group' => 'form.userType.notifications_fieldset',
                 'label' => 'form.userType.reports',
                 'value' => true,
                 'required' => false,
             ])
-            ->add('errors', 'checkbox', [
+            ->add('errors', CheckboxType::class, [
                 'group' => 'form.userType.notifications_fieldset',
                 'label' => 'form.userType.errors',
                 'value' => true,
                 'required' => false,
             ])
-            ->add('lastName', 'text', [
+            ->add('lastName', TextType::class, [
                 'required' => false,
                 'label' => 'form.userType.surname',
                 'group' => 'form.userType.general_info',
                 'attr' => ['placeholder' => 'form.userType.placeholder_surname']
             ])
-            ->add('firstName', 'text',[
+            ->add('firstName', TextType::class,[
                 'required' => false,
                 'label' => 'form.userType.name',
                 'group' => 'form.userType.general_info',
                 'attr' => ['placeholder' => 'form.userType.placeholder_name']
             ])
-            ->add('patronymic', 'text',[
+            ->add('patronymic', TextType::class,[
                 'required' => false,
                 'label' => 'form.userType.patronymic',
                 'group' => 'form.userType.general_info',
                 'attr' => ['placeholder' => 'form.userType.placeholder_patronymic']
             ])
-            ->add('birthday', 'date', array(
+            ->add('birthday', DateType::class, array(
                 'label' => 'form.userType.birth_date',
                 'group' => 'form.userType.general_info',
                 'widget' => 'single_text',
@@ -170,11 +172,13 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\UserBundle\Document\User',
-            'hotels' => []
+            'hotels' => [],
+            'roles' => [],
+            'isNew' => true
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_userbundle_usertype';
     }

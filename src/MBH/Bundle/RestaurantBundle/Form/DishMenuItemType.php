@@ -165,7 +165,7 @@ class DishMenuItemType extends AbstractType
     }
 
     
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_restaurantbundle_dishmenu_item_type';
     }

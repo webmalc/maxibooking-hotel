@@ -1,6 +1,6 @@
 parameters:
     #currencies
-    mbh.currency.ratio.fix: %currency_ratio_fix%
+    mbh.currency.ratio.fix: "%currency_ratio_fix%"
     mbh.currency.data:
       rub: {text: 'руб.', small: 'коп.', icon: 'fa fa-ruble'}
       eur: {text: '€', small: '¢', icon: 'fa fa-eur'}
@@ -173,13 +173,13 @@ parameters:
     #mailer
     mbh.mailer:
       fromText: 'MaxiBooking'
-      fromMail:  %from_email%
+      fromMail:  "%from_email%"
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 
     #параметры онлайн формы
     mbh.online.form:
-          sites: %online_form_sites%
+          sites: "%online_form_sites%"
           packages_max: 5
           messages: true
           form:
@@ -188,7 +188,7 @@ parameters:
           result:
             width: 'auto'
             height: 'auto'
-            url: %online_form_result_url%
+            url: "%online_form_result_url%"
           payment_types:
             #in_hotel: 'Оплата при заселении'
             in_office: 'Оплата в офисе'
@@ -208,14 +208,13 @@ parameters:
       uniteller: 'Uniteller'
       rbk: 'Rbk'
     mbh.payment_systems.default: uniteller
-    mbh.payment_systems.change: %mbh_payment_systems_change%
+    mbh.payment_systems.change: "%mbh_payment_systems_change%"
 
     #параметры Channel manager
     mbh.channelmanager.services:
         vashotel:
           title: 'ВашОтель'
           service: 'mbh.channelmanager.vashotel'
-          password: jguuE26t684Fl
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
@@ -224,8 +223,8 @@ parameters:
         ostrovok:
           title: 'Ostrovok'
           service: 'mbh.channelmanager.ostrovok'
-          username: 722ac50470d8af33d509c069ccb83443
-          password: edfdfba3f6902eb63aa254935e9a8a36
+          username: 59a0ed03e26016ab59a3fe1cfdeb9479
+          password: 1b9952573d01aef185ca3edc17432aab
         myallocator:
           title: 'MyAllocator'
           service: 'mbh.channelmanager.myallocator'
@@ -233,6 +232,11 @@ parameters:
           api_password: VCuMhanjdxiC
           vendor_password: 0Rp0XJGubJ9rfoUy4niNGcBPErf20VJZ
           url: http://mbhs.maxibooking.ru/client/channelmanager/push/myallocator
+        oktogo:
+          title: 'Oktogo'
+          service: 'mbh.channelmanager.oktogo'
+          api_username: .maxiBooking_api
+          api_password: qdcmBz9K
 
     #параметры логов
     mbh.logs.max: 100
@@ -264,8 +268,8 @@ parameters:
         other: Другая
 
     #Время заезда/выезда по умолчанию
-    mbh.package.arrival.time: %mbh_package_arrival_time%
-    mbh.package.departure.time: %mbh_package_departure_time%
+    mbh.package.arrival.time: "%mbh_package_arrival_time%"
+    mbh.package.departure.time: "%mbh_package_departure_time%"
     
     #Просроченные брони
     mbh.package.notpaid.time: '%mbh_package_notpaid_time%'

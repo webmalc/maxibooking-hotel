@@ -5,15 +5,17 @@ namespace MBH\Bundle\UserBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
+use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
+use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
+use MBH\Bundle\UserBundle\Document\User;
+use MBH\Bundle\UserBundle\Form\UserSecurityType;
+use MBH\Bundle\UserBundle\Form\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\UserBundle\Document\User;
-use MBH\Bundle\UserBundle\Form\UserType;
-use MBH\Bundle\UserBundle\Form\UserSecurityType;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
@@ -37,14 +39,6 @@ class UserController extends Controller
      */
     public function indexAction()
     {
-//        $helper = $this->get('mbh.twofactor.google.helper');
-//
-//        $user = $this->getUser();
-//        $user->setGoogleAuthenticatorCode($helper->generateSecret());
-//        $this->dm->persist($user);
-//        $this->dm->flush();
-//        dump($helper->checkCode($user, '875560'));
-
         $entities = $this->dm->getRepository('MBHUserBundle:User')->createQueryBuilder('q')
             ->sort('username', 'asc')
             ->getQuery()
@@ -68,8 +62,8 @@ class UserController extends Controller
     {
         $entity = new User();
 
-        $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, []
+        $form = $this->createForm(UserType::class,
+            $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles')]
         );
 
         return array(
@@ -88,10 +82,10 @@ class UserController extends Controller
     public function createAction(Request $request)
     {
         $entity = new User(array());
-        $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity
+        $form = $this->createForm(UserType::class,
+            $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles')]
         );
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->dm->persist($entity);
@@ -143,8 +137,8 @@ class UserController extends Controller
 
             }
         }
-        $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['hotels' => $hasHotels]
+        $form = $this->createForm(UserType::class,
+            $entity, ['hotels' => $hasHotels, 'roles' => $this->container->getParameter('security.role_hierarchy.roles'), 'isNew' => false]
         );
 
         return array(
@@ -158,7 +152,7 @@ class UserController extends Controller
 
     /**
      * @Route("/{id}/edit/document", name="user_document_edit")
-     * @Method({"GET","PUT"})
+     * @Method({"GET","POST"})
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
@@ -167,14 +161,14 @@ class UserController extends Controller
     {
         $entity->getDocumentRelation() ?: $entity->setDocumentRelation(new DocumentRelation());
 
-        $form = $this->createForm('mbh_document_relation', $entity, [
+        $form = $this->createForm(DocumentRelationType::class, $entity, [
             'data_class' => 'MBH\Bundle\UserBundle\Document\User',
             'citizenship' => false,
             'birthplace' => false
         ]);
 
-        if($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+        if($request->isMethod(Request::METHOD_POST)) {
+            $form->handleRequest($request);
             if($form->isValid()) {
                 $this->get('fos_user.user_manager')->updateUser($entity);
 
@@ -198,7 +192,7 @@ class UserController extends Controller
      */
     public function editSecurityAction(User $entity, Request $request)
     {
-        $form = $this->createForm(new UserSecurityType(), $entity);
+        $form = $this->createForm(UserSecurityType::class, $entity);
 
         $form->handleRequest($request);
 
@@ -217,7 +211,7 @@ class UserController extends Controller
 
     /**
      * @Route("/{id}/edit/address", name="user_address_edit")
-     * @Method({"GET","PUT"})
+     * @Method({"GET","POST"})
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
@@ -226,10 +220,10 @@ class UserController extends Controller
     {
         $entity->getAddressObjectDecomposed() ?: $entity->setAddressObjectDecomposed(new AddressObjectDecomposed());
 
-        $form = $form = $this->createForm('mbh_address_object_decomposed', $entity->getAddressObjectDecomposed());
+        $form = $form = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
-        if($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+        if($request->isMethod(Request::METHOD_POST)) {
+            $form->handleRequest($request);
             if($form->isValid()) {
                 $this->get('fos_user.user_manager')->updateUser($entity);
 
@@ -248,18 +242,18 @@ class UserController extends Controller
      * Edits an existing entity.
      *
      * @Route("/{id}", name="user_update")
-     * @Method("PUT")
+     * @Method("POST")
      * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template("MBHUserBundle:User:edit.html.twig")
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
      */
     public function updateAction(Request $request, User $entity)
     {
-        $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity
+        $form = $this->createForm(UserType::class,
+            $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles'), 'isNew' => false]
         );
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
 

@@ -4,7 +4,6 @@ parameters:
         vashotel:
           title: 'ВашОтель.RU'
           service: 'mbh.channelmanager.vashotel'
-          password: jguuE26t684Fl
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
@@ -13,8 +12,8 @@ parameters:
         ostrovok:
           title: 'Ostrovok'
           service: 'mbh.channelmanager.ostrovok'
-          username: 722ac50470d8af33d509c069ccb83443
-          password: edfdfba3f6902eb63aa254935e9a8a36
+          username: 59a0ed03e26016ab59a3fe1cfdeb9479
+          password: 1b9952573d01aef185ca3edc17432aab
         myallocator:
           title: 'MyAllocator'
           service: 'mbh.channelmanager.myallocator'
@@ -22,6 +21,12 @@ parameters:
           api_password: VCuMhanjdxiC
           vendor_password: 0Rp0XJGubJ9rfoUy4niNGcBPErf20VJZ
           url: http://mbhs.maxibooking.ru/client/channelmanager/push/myallocator
+        oktogo:
+          title: 'Oktogo'
+          service: 'mbh.channelmanager.oktogo'
+          api_username: .maxiBooking_api
+          api_password: qdcmBz9K
+
     mbh.mbhs:
           mbhs: 'aHR0cDovL21iaHMuaC9hcHBfZGV2LnBocC8=' #http://mbhs.h/app_dev.php/
           key: 2743004999743693560727430049997436935607

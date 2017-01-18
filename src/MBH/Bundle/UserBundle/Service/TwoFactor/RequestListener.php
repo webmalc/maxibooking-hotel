@@ -1,13 +1,13 @@
 <?php
 namespace MBH\Bundle\UserBundle\Service\TwoFactor;
 
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class RequestListener
 {
@@ -17,7 +17,7 @@ class RequestListener
     protected $helper;
 
     /**
-     * @var \Symfony\Component\Security\Core\SecurityContextInterface $securityContext
+     * @var TokenStorage $securityContext
      */
     protected $securityContext;
 
@@ -40,13 +40,13 @@ class RequestListener
     /**
      * Construct the listener
      * @param HelperInterface $helper
-     * @param \Symfony\Component\Security\Core\SecurityContextInterface $securityContext
+     * @param TokenStorage $securityContext
      * @param \Symfony\Bundle\FrameworkBundle\Templating\EngineInterface $templating
      * @param \Symfony\Bundle\FrameworkBundle\Routing\Router $router
      * @param string $type
      */
     public function __construct(
-        HelperInterface $helper, SecurityContextInterface $securityContext,
+        HelperInterface $helper, TokenStorage $securityContext,
         EngineInterface $templating, Router $router, string $type)
     {
         $this->helper = $helper;

@@ -1,5 +1,5 @@
-/*global window, $, document, Routing*/
-/*jslint regexp: true */
+/*global window, $, document, Routing, mbhGridCopy */
+
 $(document).ready(function () {
     'use strict';
     //Show table
@@ -56,6 +56,7 @@ $(document).ready(function () {
                         end.val($('#price-cache-overview-end').val());
                         inputs();
                         pricesProcessing = false;
+                        mbhGridCopy();
                     },
                     dataType: 'html'
                 });

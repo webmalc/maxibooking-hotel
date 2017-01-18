@@ -113,7 +113,7 @@
             {% endif %}
 
             {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                {{ form_start(form, {'action': path('package_order_organization_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'hidden-print form-horizontal'}}) }}
+                {{ form_start(form, {'action': path('package_order_organization_update', {'id': entity.id, 'packageId': package.id}),  'attr': {'class': 'hidden-print form-horizontal'}}) }}
                 {{ form_widget(form) }}
             {% endif %}
                 {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_ORDER_PAYER'} %}

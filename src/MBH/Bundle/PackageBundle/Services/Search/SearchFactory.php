@@ -2,9 +2,9 @@
 
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  *  Search service

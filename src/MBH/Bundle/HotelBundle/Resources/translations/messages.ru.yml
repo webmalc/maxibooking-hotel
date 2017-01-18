@@ -74,7 +74,7 @@ form.roomTypeGenerateRoomsType.field_must_be_number: Поле должно бы�
 form.roomTypeGenerateRoomsType.last_bed_number: Номер последнего койко-места
 form.roomTypeGenerateRoomsType.last_room_number: По
 form.roomTypeGenerateRoomsType.prefix: Префикс
-form.roomTypeGenerateRoomsType.prefix_example: Префикс для названия. Пример: HTL-12
+form.roomTypeGenerateRoomsType.prefix_example: 'Префикс для названия. Пример: HTL-12'
 form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: Некорректный интервал для генерации записей.
 form.roomTypeGenerateRoomsType.too_many_generation_numbers: Слишком большое количество записей для генерации.
 form.roomTypeGenerateRoomsType.housing: Корпус

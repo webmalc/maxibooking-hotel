@@ -38,7 +38,7 @@ class ChairType extends  AbstractType
                 'data_class' => null,
             ]);
     }
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_restaurantbundle_chair_type';
     }

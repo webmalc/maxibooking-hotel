@@ -94,15 +94,9 @@ class Vashotel extends Base
      */
     const PUSH_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:push.xml.twig';
 
-    /**
-     * @var array
-     */
-    private $params;
-
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
-        $this->params = $container->getParameter('mbh.channelmanager.services')['vashotel'];
     }
 
     /**
@@ -128,7 +122,7 @@ class Vashotel extends Base
             $sig = $this->getSignature(
                 $this->templating->render(static::NOTIFICATIONS_TEMPLATE, $data),
                 $script,
-                $this->params['password']
+                $config->getPassword()
             );
             $data['sig'] = md5($sig);
 
@@ -138,7 +132,7 @@ class Vashotel extends Base
             );
             $this->log($response->asXML());
 
-            if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+            if (!$this->checkResponse($response, ['script' => $script, 'key' => $config->getPassword()])) {
                 continue;
             }
 
@@ -737,7 +731,7 @@ class Vashotel extends Base
             $sig = $this->getSignature(
                 $this->templating->render(static::ORDERS_TEMPLATE, $data),
                 $script,
-                $this->params['password']
+                $config->getPassword()
             );
 
             $data['sig'] = md5($sig);
@@ -749,7 +743,7 @@ class Vashotel extends Base
 
             //$this->log($response->asXML());
 
-            if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+            if (!$this->checkResponse($response, ['script' => $script, 'key' =>  $config->getPassword()])) {
                 continue;
             }
 
@@ -791,7 +785,7 @@ class Vashotel extends Base
             $sig = $this->getSignature(
                 $this->templating->render(static::CLOSE_TEMPLATE, $data),
                 $script,
-                $this->params['password']
+                $config->getPassword()
             );
 
             $data['sig'] = md5($sig);
@@ -804,7 +798,7 @@ class Vashotel extends Base
             $this->log($response->asXML());
 
             if ($result) {
-                $result = $this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']]);
+                $result = $this->checkResponse($response, ['script' => $script, 'key' =>  $config->getPassword()]);
             }
         }
 
@@ -823,7 +817,7 @@ class Vashotel extends Base
         $sig = $this->getSignature(
             $this->templating->render(static::GET_TEMPLATE, $data),
             $script,
-            $this->params['password']
+            $config->getPassword()
         );
         $data['sig'] = md5($sig);
 
@@ -831,7 +825,7 @@ class Vashotel extends Base
 
         //$this->log($response->asXML());
 
-        if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+        if (!$this->checkResponse($response, ['script' => $script, 'key' =>  $config->getPassword()])) {
             return [];
         }
         $result = [
@@ -867,7 +861,7 @@ class Vashotel extends Base
         $sig = $this->getSignature(
             $this->templating->render(static::GET_TEMPLATE, $data),
             $script,
-            $this->params['password']
+            $config->getPassword()
         );
         $data['sig'] = md5($sig);
 
@@ -875,7 +869,7 @@ class Vashotel extends Base
 
         //$this->log($response->asXML());
 
-        if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+        if (!$this->checkResponse($response, ['script' => $script, 'key' =>  $config->getPassword()])) {
             return [];
         }
         $result = [];
@@ -951,7 +945,7 @@ class Vashotel extends Base
                 $sig = $this->getSignature(
                     $this->templating->render(static::UPDATE_PRICES_TEMPLATE, $data),
                     $script,
-                    $this->params['password']
+                    $config->getPassword()
                 );
                 $data['sig'] = md5($sig);
 
@@ -965,7 +959,7 @@ class Vashotel extends Base
                 if ($result) {
                     $result = $this->checkResponse(
                         $response,
-                        ['script' => $script, 'key' => $this->params['password']]
+                        ['script' => $script, 'key' =>  $config->getPassword()]
                     );
                 }
             }
@@ -1110,7 +1104,7 @@ class Vashotel extends Base
                 $sig = $this->getSignature(
                     $this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data),
                     $script,
-                    $this->params['password']
+                    $config->getPassword()
                 );
                 $data['sig'] = md5($sig);
 
@@ -1124,7 +1118,7 @@ class Vashotel extends Base
                 if ($result) {
                     $result = $this->checkResponse(
                         $response,
-                        ['script' => $script, 'key' => $this->params['password']]
+                        ['script' => $script, 'key' =>  $config->getPassword()]
                     );
                 }
             }
@@ -1158,7 +1152,7 @@ class Vashotel extends Base
         $sig = $this->getSignature(
             $this->templating->render(static::PUSH_TEMPLATE, $data),
             $script,
-            $this->params['password']
+            $config->getPassword()
         );
         $data['sig'] = md5($sig);
 

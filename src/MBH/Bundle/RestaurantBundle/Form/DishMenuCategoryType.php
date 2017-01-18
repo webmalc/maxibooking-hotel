@@ -41,7 +41,7 @@ class DishMenuCategoryType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_restaurantbundle_dishmenu_category_type';
     }

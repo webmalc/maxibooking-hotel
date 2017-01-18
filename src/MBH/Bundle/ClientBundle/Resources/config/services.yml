@@ -1,7 +1,7 @@
 services:
     mbh.mbhs:
         class: MBH\Bundle\ClientBundle\Service\Mbhs
-        arguments: [@service_container]
+        arguments: ['@service_container']
 
     mbh_package_zip:
           class: MBH\Bundle\ClientBundle\Service\PackageZip
@@ -11,7 +11,7 @@ services:
           class:     Symfony\Bridge\Monolog\Logger
           arguments: [app]
           calls:
-              - [pushHandler, [@mbh.packageZip.logger_handler]]
+              - [pushHandler, ['@mbh.packageZip.logger_handler']]
 
     mbh.packageZip.logger_handler:
           class:     Monolog\Handler\StreamHandler

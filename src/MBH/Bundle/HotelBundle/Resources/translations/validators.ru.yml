@@ -9,8 +9,8 @@ validator.document.hotel.max_name: Слишком длинное имя
 validator.document.hotel.min_prefix: Слишком короткий префикс
 validator.document.hotel.max_prefix: Слишком длинный префикс
 validator.document.hotel.sale_days_amount_less_zero: Количество дней продажи не может быть меньше нуля
-validator.document.hotel.wrong_latitude: Неверный формат координаты широты. Пример: 55.752014
-validator.document.hotel.wrong_longitude: Неверный формат координаты долготы. Пример: 37.617515
+validator.document.hotel.wrong_latitude: 'Неверный формат координаты широты. Пример: 55.752014'
+validator.document.hotel.wrong_longitude: 'Неверный формат координаты долготы. Пример: 37.617515'
 validator.document.hotel.min_stars: Минимальное количество звезд отеля не может быть меньше 1
 validator.document.hotel.max_stars: Максимальое количество звезд отеля не может быть больше 5
 validator.document.region.country_not_selected: Не выбрана страна

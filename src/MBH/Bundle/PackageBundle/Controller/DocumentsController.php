@@ -4,20 +4,20 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Form\OrderDocumentType;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/")
@@ -33,7 +33,7 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
      * @param Package $package
      * @return array|RedirectResponse
      * @Route("/{id}/documents/{packageId}", name="order_documents")
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', entity) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @ParamConverter("order", class="MBHPackageBundle:Order")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
@@ -61,14 +61,14 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
         $groupDocTypes = ['' => $orderDocumentTypes, 'Vega' => $vagaDocumentTypes];
         $scanTypes = $this->container->get('mbh.vega.dictionary_provider')->getScanTypes();
 
-        $form = $this->createForm(new OrderDocumentType(), $orderDocument, [
+        $form = $this->createForm(OrderDocumentType::class, $orderDocument, [
             'documentTypes' => $groupDocTypes,
             'scanTypes' => $scanTypes,
             'touristIds' => $touristIds
         ]);
 
-        if ($request->isMethod("PUT")) {
-            $form->submit($request);
+        if ($request->isMethod("POST")) {
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $orderDocument->upload();
@@ -180,7 +180,7 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
      * @param $name
      * @param Request $request
      * @Route("/document/{id}/edit/{packageId}/{name}", name="order_document_edit", options={"expose"=true}, defaults={"download" = 0})
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ORDER_DOCUMENTS') and (is_granted('EDIT', order) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @ParamConverter("order", class="MBHPackageBundle:Order")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
@@ -203,16 +203,16 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
         }
         $docTypes = $this->container->getParameter('mbh.order.document.types');
 
-        $form = $this->createForm(new OrderDocumentType(), $orderDocument, [
+        $form = $this->createForm(OrderDocumentType::class, $orderDocument, [
             'documentTypes' => $docTypes,
             'touristIds' => $touristIds,
             'scenario' => OrderDocumentType::SCENARIO_EDIT,
             'document' => $orderDocument
         ]);
 
-        if ($request->isMethod("PUT")) {
+        if ($request->isMethod("POST")) {
             $oldOrderDocument = clone($orderDocument);
-            $form->submit($request);
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 if (!$orderDocument->isUploaded()) {

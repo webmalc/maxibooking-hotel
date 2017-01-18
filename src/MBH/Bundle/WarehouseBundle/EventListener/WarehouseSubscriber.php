@@ -4,10 +4,10 @@ namespace MBH\Bundle\WarehouseBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
+use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\WarehouseBundle\Document\WareCategory;
 use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\PackageBundle\Lib\DeleteException;
 
 
 class WarehouseSubscriber implements EventSubscriber

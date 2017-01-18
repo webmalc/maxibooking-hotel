@@ -3,6 +3,7 @@
 namespace MBH\Bundle\OnlineBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,7 +16,7 @@ class SettingsInviteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('include', 'checkbox', []);
+            ->add('include', CheckboxType::class, []);
     }
 
 
@@ -24,7 +25,7 @@ class SettingsInviteType extends AbstractType
 
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_online_bundle_settings_invite';
     }

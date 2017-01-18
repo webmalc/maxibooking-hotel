@@ -3,8 +3,8 @@
 namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\BaseBundle\Service\Cache;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class RoomCacheRepository extends DocumentRepository

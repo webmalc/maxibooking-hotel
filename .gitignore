@@ -1,6 +1,6 @@
-/scripts/upload
 azovsky_remote/
-/scripts/deploy_to_test.sh
+scripts/deploy_to_test.sh
+/scripts/upload
 /web/bundles/
 /app/config/parameters.yml
 /var/bootstrap.php.cache
@@ -31,7 +31,6 @@ nbproject/
 parameters.yml
 /protectedUpload/1C/*
 /protectedUpload/orderDocuments/*
-/protectedUpload/1C/*
 /protectedUpload/vegaDocuments/*
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
@@ -40,3 +39,4 @@ web/online
 web/assets/vendor/
 #web/assets
 docker_zalex
+app/supervisor/

@@ -18,7 +18,7 @@ use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 class CashDocumentRepository extends DocumentRepository
 {
     /**
-     * @param Order $order
+     * @param Order $ordera
      * @return PayerInterface[]
      */
     public function getAvailablePayersByOrder(Order $order)

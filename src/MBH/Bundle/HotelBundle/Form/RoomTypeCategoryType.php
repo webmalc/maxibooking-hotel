@@ -69,7 +69,7 @@ class RoomTypeCategoryType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_hotel_room_type_category';
     }

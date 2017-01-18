@@ -2,20 +2,21 @@
 
 namespace MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber;
 
-use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Country;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Housing;
 use MBH\Bundle\HotelBundle\Document\Region;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomStatus;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskType;
+use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -36,7 +37,6 @@ use MBH\Bundle\RestaurantBundle\Document\IngredientCategory;
 use MBH\Bundle\RestaurantBundle\Document\Table;
 use MBH\Bundle\UserBundle\Document\Group;
 use MBH\Bundle\UserBundle\Document\User;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use MBH\Bundle\VegaBundle\Document\VegaState;
 use MBH\Bundle\WarehouseBundle\Document\Invoice;
