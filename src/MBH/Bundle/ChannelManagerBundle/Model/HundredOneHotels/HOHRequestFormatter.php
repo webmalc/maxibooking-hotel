@@ -6,12 +6,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
 class HOHRequestFormatter
 {
-    private $serviceName;
     private $requestData = [];
-    /**
-     * @var ChannelManagerConfigInterface
-     */
-    private $config;
 
     const QUOTA = 'quota';
     const CLOSED = 'closed';
@@ -19,19 +14,6 @@ class HOHRequestFormatter
     const CLOSED_TO_DEPARTURE = 'closed_to_departure';
     const MIN_STAY = 'min_stay';
     const PRICES = 'prices';
-
-    /**
-     * @param ChannelManagerConfigInterface $config
-     * @param string $serviceName
-     * @return HOHRequestFormatter
-     */
-    public function setInitData($config, $serviceName = 'set_calendar')
-    {
-        $this->serviceName = $serviceName;
-        $this->config = $config;
-
-        return $this;
-    }
 
     public function setRequestedData($data)
     {
@@ -118,14 +100,16 @@ class HOHRequestFormatter
 
     /**
      * format request
+     * @param ChannelManagerConfigInterface $config
+     * @param $serviceName
      * @return array
      */
-    public function getRequest()
+    public function getRequest(ChannelManagerConfigInterface $config, $serviceName = 'set_calendar')
     {
         $template = [
-            'api_key' => $this->config->getApiKey(),
-            'hotel_id' => $this->config->getHotelId(),
-            'service' => $this->serviceName
+            'api_key' => $config->getApiKey(),
+            'hotel_id' => $config->getHotelId(),
+            'service' => $serviceName
         ];
 
         if ($this->requestData) {
