@@ -2,6 +2,12 @@
 
 $(document).ready(function () {
     'use strict';
+    // set user Date (ClientConfig)
+    if($('.daterangepicker-input').prev().is('#restriction-overview-filter-begin')){
+        $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+        $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+    }
+
     //Show table
     var pricesProcessing = false,
         showTable = function () {

@@ -9,7 +9,11 @@ var setSearchDatepickers = function (date) {
 
 $(document).ready(function () {
     'use strict';
-
+    // set user Date (ClientConfig)
+    if($('.daterangepicker-input').prev().is('#s_begin')){
+        $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+        $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+    }
     (function () {
 
         $.ajax(Routing.generate('restriction_in_out_json'), {})

@@ -2,7 +2,11 @@
 /*global window, $, document, Routing */
 $(document).ready(function () {
     'use strict';
-
+    // set user Date (ClientConfig)
+    if($('.daterangepicker-input').prev().is('#windows-report-filter-begin')){
+        $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+        $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+    }
     //table
     var packageData = null,
         choosePackages = function () {

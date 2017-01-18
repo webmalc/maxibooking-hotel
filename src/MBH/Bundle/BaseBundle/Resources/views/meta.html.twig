@@ -55,7 +55,12 @@
         {% block body %}{% endblock %}
 
         {% block scripts %}
+            {#Client config set Date#}
+            {% set dateDatepickers = 'midnight'|date('d.m.Y') %}
 
+            {% if client_config().beginDate is not empty and client_config().beginDate is defined and  date(dateDatepickers) < date(client_config().beginDate)  %}
+                {% set dateDatepickers = client_config().beginDate|date('d.m.Y')  %}
+            {% endif %}
             <script>
                 var mbh = {
                     currency: {
@@ -63,7 +68,7 @@
                         text: "{{ currency().text }}"
 
                     },
-                    startDatePick: "{{ client_config().beginDate is empty ? 'midnight'|date('d.m.Y') : client_config().beginDate|date('d.m.Y') }}",
+                    startDatePick: '{{ dateDatepickers|date('d.m.Y') }}',
                     UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
                     utils: {}
                 }

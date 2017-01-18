@@ -9,11 +9,11 @@
     <form id="windows-report-filter" class="form-inline filter-form remember" role="form">
         <div class="input">
             <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
-            <input type="text" name="begin" id="windows-report-filter-begin" class="datepicker windows-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ client_config().beginDate is empty ? 'now'|date('d.m.Y') : client_config().beginDate|date('d.m.Y') }}">
+            <input type="text" name="begin" id="windows-report-filter-begin" class="datepicker windows-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
         </div>
         <div class="input hidden">
             - &nbsp
-            <input type="text" name="end" id="windows-report-filter-end" class="datepicker windows-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ client_config().beginDate is empty ? 'now'|date_modify("+1 days")|date('d.m.Y') : client_config().beginDate|date_modify("+1 day")|date('d.m.Y') }}">
+            <input type="text" name="end" id="windows-report-filter-end" class="datepicker windows-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
         </div>
 
         <div class="input">

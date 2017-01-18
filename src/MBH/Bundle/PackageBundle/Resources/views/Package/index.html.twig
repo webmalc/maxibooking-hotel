@@ -12,12 +12,12 @@
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input type="text"
                                                                                               id="package-filter-begin"
                                                                                               class="datepicker package-filter begin-datepicker form-control input-sm"
-                                                                                              data-date-format="dd.mm.yyyy" value="{{ client_config().beginDate is empty ? 'now'|date('d.m.Y') : client_config().beginDate|date('d.m.Y') }}">
+                                                                                              data-date-format="dd.mm.yyyy">
             </div>
             <div class="input">
                 — &nbsp <input type="text" id="package-filter-end"
                                class="datepicker package-filter end-datepicker form-control input-sm"
-                               data-date-format="dd.mm.yyyy" value="{{ client_config().beginDate is empty ? 'now'|date_modify("+1 days")|date('d.m.Y') : client_config().beginDate|date_modify("+1 day")|date('d.m.Y') }}">
+                               data-date-format="dd.mm.yyyy">
             </div>
             <div class="input">
                 <select id="package-filter-dates" class="package-filter form-control input-sm">

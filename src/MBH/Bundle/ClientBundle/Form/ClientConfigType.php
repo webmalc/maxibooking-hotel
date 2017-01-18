@@ -49,7 +49,7 @@ class ClientConfigType extends AbstractType
             ])
             ->add('beginDate', DateType::class, [
                 'required' => false,
-                'label' => 'Начальная дата',
+                'label' => 'form.clientConfigType.add_start_date',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'group' => 'form.clientConfigType.main_group',

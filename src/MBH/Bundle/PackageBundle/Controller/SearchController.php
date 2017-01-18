@@ -50,14 +50,12 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $query = new SearchQuery();
         $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $query->range = $clientConfig ? $clientConfig->getSearchDates() : 0;
-        $startDate = $clientConfig->getBeginDate() ? $clientConfig->getBeginDate() : new \DateTime('now');
         $form = $this->createForm(SearchType::class, $query, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
             'hotel' => $this->hotel,
             'orderId' => $request->get('order'),
             'roomManager' => $this->manager,
-            'startDate' =>  $startDate,
         ]);
 
         $tourist = new Tourist();
