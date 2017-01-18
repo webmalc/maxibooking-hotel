@@ -34,18 +34,18 @@
 
         <section class="content-header">
             <h1>
-                {{ title|default(project_title) }}
+                {{ title|default(project_title)|trans }}
                 {% if small_title is defined %}
-                <small>{{ small_title|raw }}</small>
+                <small>{{ small_title|trans|raw }}</small>
                 {% endif %}
             </h1>
             <ol class="breadcrumb" id="main-breadcrumb">
                 <li><a href="{{ path('_welcome') }}"><i class="fa fa-home"></i></a></li>
                 {% if title_url is defined and title_url %}
-                <li><a href="{{ title_url }}">{{ title|default(project_title) }}</a></li>
+                <li><a href="{{ title_url }}">{{ title|default(project_title)|trans }}</a></li>
                 {% endif %}
                 {% if small_title is defined %}
-                <li class="active">{{ small_title|raw }}</li>
+                <li class="active">{{ small_title|trans|raw }}</li>
                 {% endif %}
             </ol>
         </section>

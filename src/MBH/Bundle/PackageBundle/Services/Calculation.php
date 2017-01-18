@@ -11,6 +11,7 @@ use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -122,10 +123,21 @@ class Calculation
      * @param int $adults
      * @param int $children
      * @param Promotion|null $promotion
+     * @param Special|null $special
      * @param bool $useCategories
      * @return array
      */
-    public function calcPrices(RoomType $roomType, Tariff $tariff, \DateTime $begin, \DateTime $end, $adults = 0, $children = 0, Promotion $promotion = null, $useCategories = false)
+    public function calcPrices(
+        RoomType $roomType,
+        Tariff $tariff,
+        \DateTime $begin,
+        \DateTime $end,
+        $adults = 0,
+        $children = 0,
+        Promotion $promotion = null,
+        $useCategories = false,
+        Special $special = null
+    )
     {
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
@@ -338,10 +350,14 @@ class Calculation
                     $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
                 }
 
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $special);
+                $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
-                $packagePrices[] = new PackagePrice(
-                    $cache->getDate(), $dayPrice, $tariff, $promoConditions ? $promotion : null
-                );
+
+                if ($promoConditions) {
+                    $packagePrice->setPromotion($promotion);
+                }
+                $packagePrices[] = $packagePrice;
                 $total += $dayPrice;
             }
 
@@ -363,6 +379,23 @@ class Calculation
         }
 
         return $prices;
+    }
+
+    /**
+     * @param $price
+     * @param \DateTime $date
+     * @param Tariff $tariff
+     * @param Special|null $special
+     * @return PackagePrice
+     */
+    public function getPackagePrice($price, \DateTime $date, Tariff $tariff, Special $special = null): PackagePrice
+    {
+        $packagePrice = new PackagePrice($date, $price > 0 ? $price : 0, $tariff);
+        if ($special && $date >= $special->getBegin() && $date <= $special->getEnd()) {
+            $price = $special->isIsPercent() ? $price - $price * $special->getDiscount() / 100 : $price - $special->getDiscount();
+            $packagePrice->setPrice($price)->setSpecial($special);
+        }
+        return $packagePrice;
     }
 
 }

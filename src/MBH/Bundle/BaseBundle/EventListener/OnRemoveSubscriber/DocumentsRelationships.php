@@ -28,6 +28,7 @@ use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
+use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuItem;
@@ -172,6 +173,9 @@ class DocumentsRelationships
             Housing::class => [
                 new Relationship(Room::class, 'housing', 'exception.housing_relation_delete.message.room')
             ],
+            Special::class => [
+                new Relationship(Package::class, 'special', 'exception.special_relation_delete.message.package')
+            ]
         ];
     }
 }

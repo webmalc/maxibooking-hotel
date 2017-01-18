@@ -6,17 +6,47 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
+use MBH\Bundle\PriceBundle\Document\Special;
 
 /**
  * Class PackageRepository
  */
 class PackageRepository extends DocumentRepository
 {
+    /**
+     * @param Special $special
+     * @param Package $exclude
+     * @return Builder
+     */
+    public function getBuilderBySpecial(Special $special, Package $exclude = null): Builder
+    {
+        $qb = $this->createQueryBuilder()
+            ->field('special')->references($special)
+            ->field('deletedAt')->equals(null);
+
+        if ($exclude) {
+            $qb->field('id')->notEqual($exclude->getId());
+        }
+
+        return $qb;
+    }
+
+    /**
+     * @param Special $special
+     * @param Package $exclude
+     * @return int
+     */
+    public function countBySpecial(Special $special, Package $exclude = null)
+    {
+        return $this->getBuilderBySpecial($special, $exclude)->getQuery()->count();
+    }
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
