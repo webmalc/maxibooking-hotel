@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker exec -i mbh-php-fpm php /var/www/mbh/bin/console "$@"
+docker exec -i mbh-php-fpm2 php /var/www/mbh/bin/console "$@"

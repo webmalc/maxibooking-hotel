@@ -485,7 +485,7 @@ class DefaultController extends BaseController
      * @Route("/minstay/{timestamp}", name="online_booking_min_stay", options={"expose" = true})
      * @Cache(expires="tomorrow", public=true)
      */
-    public function getMinStayAjax($timestamp)
+    public function getMinStayAjax(Request $request, $timestamp)
     {
 
         $date = new \DateTime();
@@ -499,7 +499,7 @@ class DefaultController extends BaseController
 
         $env = $this->get('kernel')->getEnvironment();
         $response = new JsonResponse(json_encode($data));
-        $response->headers->set('Access-Control-Allow-Origin', $this->getParameter('domain_access_control_'.$env));
+        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
 
         return $response;
     }

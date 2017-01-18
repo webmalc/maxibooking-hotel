@@ -57,7 +57,7 @@
 {{ form_end(form, {render_rest: false}) }}
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
-<link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/form.css', null, true) }}">
+<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/form.css', null, true)) }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css">
 <!-- Latest compiled and minified JavaScript -->
@@ -70,10 +70,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.ru.min.js"></script>
 
-<script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>
-<script src="{{ asset('bundles/fosjsrouting/js/router.js', null, true) }}"></script>
+<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/form.js', null, true)) }}"></script>
+<script src="{{ absolute_url(asset('bundles/fosjsrouting/js/router.js', null, true)) }}"></script>
 {#<script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>#}
-<script src="{{ asset('js/fos_js_routes.js', null, true) }}"></script>
+<script src="{{ absolute_url(asset('js/fos_js_routes.js', null, true)) }}"></script>
 {#{{ dump(restrictions) }}#}
 <script>
     var mbh = {
