@@ -4,8 +4,10 @@ namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use GuzzleHttp\Promise\Tests\Thing1;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -28,12 +30,57 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface, Cont
         [ 'adults' => '1', 'number' => '9', 'children' => '0', 'price' => '7000.0', 'paid' => '50', 'regDayAgo' => '0'],
     ];
 
+    const FIRST_NAME = [
+        'Сергей', 'Иван', 'Александр', 'Петр', 'Арсений'
+    ];
+
+    const LAST_NAME = [
+        'Иванов', 'Петров', 'Сидоров', 'Петренко', 'Курицин'
+    ];
+
+    const PATRONYMIC = [
+        'Иванович', 'Сергеевич', 'Евгеньевич', 'Петрович', 'Александрович'
+    ];
+
     /**
      * {@inheritDoc}
      */
     public function load(ObjectManager $manager)
     {
         $this->persistPackage($manager);
+    }
+
+    /**
+     * The name generator by array
+     *
+     * @param $array
+     * @return string
+     */
+    public function generator($array) : string
+    {
+        $random_number = rand(0,count($array)-1);
+
+        return $array[$random_number];
+    }
+
+    public function persistTourist(ObjectManager $manager)
+    {
+        $tourist = new Tourist();
+        $firstName = $this->generator(self::FIRST_NAME);
+        $lastName = $this->generator(self::LAST_NAME);
+        $patronymic = $this->generator(self::PATRONYMIC);
+
+        $tourist
+            ->setFirstName($firstName)
+            ->setLastName($lastName)
+            ->setPatronymic($patronymic)
+            ->setSex('male')
+            ->setCommunicationLanguage('ru');
+
+        $manager->persist($tourist);
+        $manager->flush();
+
+        return $tourist;
     }
 
     public function persistOrder(ObjectManager $manager, $data)
@@ -45,6 +92,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface, Cont
             ->setStatus('offline')
             ->setTotalOverwrite($data['price'])
             ->setSource($this->getReference('Booking.com'))
+            ->setMainTourist($this->persistTourist($manager))
             ->setCreatedAt((new \DateTime())->modify("-{$data['regDayAgo']} day"));
 
         $manager->persist($order);

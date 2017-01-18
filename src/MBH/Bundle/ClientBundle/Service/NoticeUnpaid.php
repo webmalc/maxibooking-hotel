@@ -69,47 +69,17 @@ class NoticeUnpaid
     }
 
     /**
-     * Get unpaid order array of next element: (order.paid, order.price, order.id, package.id, tourist.phone, tourist.mobilePhone)
-     *
-     * @param NoticeUnpaid $arrayData
-     * @return array
-     */
-    public function getUnpaidOrderArray($arrayData)
-    {
-        /** @var Package $packages */
-        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findAll();
-        $unpaidOrderArray = [];
-
-        foreach ($packages as $package) {
-
-            /** @var Package $package */
-            $orderId = $package->getOrder()->getId();
-
-            if (isset($arrayData[$orderId])) {
-                $unpaidOrderArray[] = [
-                    'orderId' => $arrayData[$orderId]->getId(),
-                    'packageId' => $package->getId(),
-                    'numberWithPrefix' => $package->getNumberWithPrefix(),
-                    'begin' => $package->getBegin(),
-                    'end' => $package->getEnd(),
-                    'price' => $arrayData[$orderId]->getPrice ?? $arrayData[$orderId]->getPrice(),
-                    'paid' => $arrayData[$orderId]->getPaid(),
-                    'phone' => !is_null($package->getPayer()) ? $package->getPayer()->getPhone() : "",
-                    'mobilePhone' => !is_null($package->getPayer()) ? !empty($package->getPayer()->getMobilePhone()) : "",
-                ];
-            }
-
-        }
-        return $unpaidOrderArray;
-    }
-
-    /**
      * Send message to email. Notice of unpaid
      *
      * @return array|bool
      */
-    public function sendNotice($arrayData)
+    public function sendNotice($arrayData = null)
     {
+
+        if (!$arrayData) {
+            $arrayData = $this->unpaidOrder();
+        }
+
         $message = $this->notifier->createMessage();
 
         if(!empty($arrayData)) {
@@ -123,7 +93,7 @@ class NoticeUnpaid
                     ->setAutohide(false)
                     ->setTemplate('MBHClientBundle:Mailer:notice.html.twig')
                     ->setAdditionalData([
-                        'orders' => $this->getUnpaidOrderArray($arrayData)
+                        'orders' => $arrayData
                     ])
                     ->setEnd(new \DateTime('+1 minute'));
 

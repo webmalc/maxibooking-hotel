@@ -18,19 +18,13 @@
                     {{ 'mailer.notice.unpaid.package.list'|trans }}
                 </th>
                 <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:19%;">
-                    {{ 'mailer.notice.unpaid.package.period'|trans }}
-                </th>
-                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:19%;">
-                    {{ 'mailer.notice.unpaid.need.to.pay'|trans }}
+                    {{ 'mailer.notice.unpaid.need.price'|trans }}
                 </th>
                 <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:19%;">
                     {{ 'mailer.notice.unpaid.paid'|trans }}
                 </th>
-                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:20%;">
-                    {{ 'mailer.notice.unpaid.phone'|trans }}
-                </th>
-                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:18%;">
-                    {{ 'mailer.notice.unpaid.mobile.phone'|trans }}
+                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:19%;">
+                    {{ 'mailer.notice.unpaid.full_name'|trans }}
                 </th>
             </tr>
             </thead>
@@ -43,12 +37,7 @@
                         {% set count = count + 1 %}
                     </td>
                     <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;">
-                        # <a href="{{ app.request.schemeAndHttpHost }}{{ path('package_order_cash', {id: order.orderId, packageId: order.packageId}) }}">
-                            {{ order.numberWithPrefix }}
-                        </a>
-                    </td>
-                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;">
-                        {{ order.begin|mbh_format }} - {{ order.end|mbh_format }}
+                        {{ order.id }}
                     </td>
                     <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;">
                         {{ order.price|number_format(2) }}
@@ -57,10 +46,7 @@
                         {{ order.paid|number_format(2) }}
                     </td>
                     <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;">
-                        {{ order.phone|default('-') }}
-                    </td>
-                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;">
-                        {{ order.mobilePhone|default('-') }}
+                        {{ order.getMainTourist.getFullName }}
                     </td>
                 </tr>
             {% endfor %}

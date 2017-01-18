@@ -5,6 +5,7 @@ namespace Tests\Bundle\OrderBundle\Service;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\ClientBundle\Service\NoticeUnpaid;
+use MBH\Bundle\OnlineBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -55,42 +56,42 @@ class UnpaidOrderTest extends WebTestCase
 
     public static function tearDownAfterClass()
     {
-        self::clearDB();
+        //self::clearDB();
+    }
+
+    public function getUnpaidOrder()
+    {
+        $currentDay = new \DateTime('midnight'); // Current day
+
+        // Number of days after which a payment is considered overdue
+        $dateUnpaid = $this->dm->getRepository('MBHClientBundle:ClientConfig')
+            ->fetchConfig()
+            ->getNoticeUnpaid();
+
+        // Date. Late payments
+        $deadlineDate = $currentDay->modify("-{$dateUnpaid} day");
+
+        $unpaidOrders = $this->dm
+            ->getRepository('MBHPackageBundle:Order')
+            ->getUnpaidOrders($deadlineDate);
+
+        return array_filter($unpaidOrders, function($order) {
+            /** @var Order $order  */
+            return array_reduce($order->getPackages()->toArray(), function(&$res, $item) {
+                /** @var Package $item */
+                $price = $item->getPrice();
+                $paid = $item->getPaid();
+                $percentageValue = $item->allowPercentagePrice($price);
+
+                return ($paid < $price) && ($percentageValue >= $paid);
+            }, 0);
+        });
     }
 
     public function testUnpaidOrder()
     {
-
-        $countRecords = 0; // Count unpaid order records
-        $package = $this->dm->getRepository('MBHPackageBundle:Package')->findAll(); // All packages
-
-        $dateUnpaid = $this->dm->getRepository('MBHClientBundle:ClientConfig')
-            ->createQueryBuilder()
-            ->getQuery()
-            ->getSingleResult()
-            ->getNoticeUnpaid(); // Count days unpaid
-
-        $unpaidOrders = $this->notice_service->unpaidOrder(); // Testing unpaid orders
-
-        foreach ($package as $packageItem) {
-            $percent = $packageItem->getTariff()->getMinPerPrepay();
-            $paid = $packageItem->getOrder()->getPaid();
-            $price = $packageItem->getPrice();
-            $id = $packageItem->getOrder()->getId();
-            $orderCreatedAt = $packageItem->getOrder()->getCreatedAt();
-
-            $deadlineDate = (new \DateTime())->modify("-{$dateUnpaid} day"); // The last day of non-payment (DateTime)
-
-            $result = $price * $percent / 100; // The minimum amount of payment
-
-            if (($paid <= $result) && ($orderCreatedAt <= $deadlineDate)) {
-                $countRecords++;
-                $this->assertEquals($unpaidOrders[$id]->getPaid(), $paid);
-                $this->assertEquals($unpaidOrders[$id]->getPrice(), $price);
-                $this->assertEquals($unpaidOrders[$id]->getCreatedAt(), $orderCreatedAt);
-            }
-        }
-        $this->assertEquals($countRecords, count($unpaidOrders));
+        $this->assertEquals(count($this->notice_service->unpaidOrder()),
+            count($this->getUnpaidOrder()));
     }
 
 }
