@@ -6,6 +6,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -59,9 +60,9 @@ class SearchFormType extends AbstractType
             ->add('hotel', DocumentType::class, [
                 'label' => 'Пансионат',
                 'required' => false,
-                'empty_value' => 'Все пансионаты',
+                'placeholder' => 'Все пансионаты',
                 'class' => Hotel::class,
-                'property' => 'fullTitle',
+                'choice_label' => 'fullTitle',
                 'query_builder' => function (DocumentRepository $documentRepository) {
                     return $documentRepository->createQueryBuilder()
                         ->field('_id')->in(['56fbd22174eb5383728b4567', '5705190e74eb53461c8b4916'])
@@ -69,10 +70,10 @@ class SearchFormType extends AbstractType
                 }
 
             ])
-            ->add('roomType', ChoiceType::class, [
+            ->add('roomType', InvertChoiceType::class, [
                 'label' => 'Тип номера',
                 'required' => false,
-                'empty_value' => 'Все типы номеров',
+                'placeholder' => 'Все типы номеров',
                 'choices' => $roomTypeList,
                 'choice_attr' => function ($roomType) use ($hotelIds) {
                     return ['data-hotel' => $hotelIds[$roomType]];
@@ -106,13 +107,12 @@ class SearchFormType extends AbstractType
                 'label' => 'Взрослые',
                 'choices' => array_combine(range(1,10),range(1,10)),
                 'data' => 1,
-                'empty_value' => false
+                'placeholder' => false
             ])
             ->add('children', ChoiceType::class, [
                 'label' => 'Дети',
                 'choices' => range(0, 5),
                 'attr' => ['min' => 0, 'max' => 5],
-                'empty_value' => false
 
             ])
             ->add('children_age', CollectionType::class, [
