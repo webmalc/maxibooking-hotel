@@ -151,7 +151,7 @@ class HundredOneHotels extends Base
                             /** @var PriceCache $currentDatePriceCache */
                             $occupantCount = $serviceTariffs[$serviceTariffId]['occupantCount'];
                             $currentDatePriceCache = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
-                            $priceFinal = $calc->calcPrices($currentDatePriceCache->getRoomType(), $tariff, $day, $day);
+                            $priceFinal = $calc->calcPrices($currentDatePriceCache->getRoomType(), $tariff, $day, $day, $occupantCount);
                             $currentDatePrice = isset($priceFinal[$occupantCount . '_0']) ? $priceFinal[$occupantCount . '_0']['total'] : 0;
                         } else {
                             $currentDatePrice = 0;
@@ -336,7 +336,7 @@ class HundredOneHotels extends Base
         foreach ($this->getConfig() as $config) {
             /** @var HOHRequestFormatter $requestFormatter */
             $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
-            $startTime = new \DateTime('- 1 day');
+            $startTime = new \DateTime('- 1 hour');
             $endTime = new \DateTime();
             $requestFormatter->addDateCondition($startTime, $endTime);
             $request = $requestFormatter->getRequest($config, 'get_bookings');
