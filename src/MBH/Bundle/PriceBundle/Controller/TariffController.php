@@ -9,6 +9,7 @@ use MBH\Bundle\PriceBundle\Document\Criteria\TariffQueryCriteria;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffChildOptions;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use MBH\Bundle\PriceBundle\Form\TariffFilterType;
 use MBH\Bundle\PriceBundle\Form\TariffInheritanceType;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
 use MBH\Bundle\PriceBundle\Form\TariffServicesType;
@@ -39,49 +40,11 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      */
     public function indexAction()
     {
-        $form = $this->getTariffFilterForm();
+        $form = $this->createForm(TariffFilterType::class, new TariffQueryCriteria());
 
         return [
             'form' => $form->createView(),
         ];
-    }
-
-
-    public function getTariffFilterForm()
-    {
-        $form = $this->createFormBuilder(null, [
-            'data_class' => TariffQueryCriteria::class
-        ])
-            ->add('begin', DateType::class, [
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'required' => false
-            ])
-            ->add('end', DateType::class, [
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'required' => false
-            ])
-            ->add('isOnline',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'required' => false,
-                'choices' => [
-                    TariffQueryCriteria::ON => 'status.on',
-                    TariffQueryCriteria::OFF => 'status.off'
-                ]
-            ])
-            ->add('isEnabled',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'required' => false,
-                'choices' => [
-                    TariffQueryCriteria::ON => 'state.on',
-                    TariffQueryCriteria::OFF => 'state.off'
-                ]
-            ])
-            ->add('search', TextType::class, [
-                'required' => false
-            ])
-            ->getForm();
-
-        return $form;
     }
 
     /**
@@ -96,7 +59,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     {
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $formData = (array)$request->get('form');
-        $form = $this->getTariffFilterForm();
+        $form = $this->createForm(TariffFilterType::class, new TariffQueryCriteria());
         $formData['search'] = $tableParams->getSearch();
 
         $form->submit($formData);
