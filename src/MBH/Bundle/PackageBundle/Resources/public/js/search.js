@@ -235,6 +235,10 @@ $(document).ready(function () {
         searchProcess = false;
         $wrapper.html(data);
 
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
         var $quantitySelect = $wrapper.find('.quantity-select');
         var $searchRoomsSelect = $wrapper.find('.search-room-select');
         var $searchTouristsSelect = $wrapper.find('.search-tourists-select');
@@ -258,9 +262,21 @@ $(document).ready(function () {
         });
         $wrapper.find('[data-toggle="tooltip"]').tooltip();
 
-        $wrapper.find('tbody tr:not(.mbh-grid-header1)').each(function () {
+        $wrapper.find('.package-search-table tbody tr:not(.mbh-grid-header1)').each(function () {
             var row = new Row($(this));
             row.init();
+        });
+
+        if ($('#s_special').val() && !$('.search-special-apply.cancel').length) {
+            $('#s_special').val('');
+            sendForm();
+        }
+
+        $('.search-special-apply').click(function (e) {
+            e.preventDefault();
+            var special = $(this).hasClass('cancel') ? '' : $(this).attr('data-id');
+            $('#s_special').val(special);
+            sendForm();
         });
 
         /*var $links = $('#package-search-tariffs li a');

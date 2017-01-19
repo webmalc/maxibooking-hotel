@@ -8,7 +8,7 @@
             <meta name="keywords" content="{% block meta_keywords %}{{project_title}}{% endblock %}">
             <meta name="author" content="webmalc">
             <meta name="description" content="{% block meta_description %}{{project_title}}{% endblock %}">
-            <title>{% block title %}{{project_title}}{% if title is defined %}: {{ title }}{% endif %}{% endblock %}</title>
+            <title>{% block title %}{{project_title}}{% if title is defined %}: {{ title|trans }}{% endif %}{% endblock %}</title>
 
             {% block styles %}
 
@@ -46,7 +46,6 @@
 
         <body class="hold-transition {{ loginPage is defined ? 'login-page' : 'skin-blue sidebar-mini fixed' }}">
         <script type="text/javascript">
-
             if (localStorage.getItem('sidebar-collapse') == 'close') {
                 document.getElementsByTagName('body')[0].className+=' sidebar-collapse'
             }
@@ -99,6 +98,7 @@
                 'assets/vendor/moment/moment.js'
                 'assets/vendor/moment/locale/ru.js'
                 'assets/vendor/bootstrap-daterangepicker/daterangepicker.js'
+                'assets/vendor/readmore-js/readmore.min.js'
             %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}

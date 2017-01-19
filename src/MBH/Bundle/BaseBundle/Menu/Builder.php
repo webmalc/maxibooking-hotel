@@ -139,6 +139,8 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-plug']);
         $menu['prices']->addChild('promotions', ['route' => 'promotions', 'label' => 'Акции'])
             ->setAttributes(['icon' => 'fa fa-bookmark']);
+        $menu['prices']->addChild('special', ['route' => 'special', 'label' => 'special.title'])
+            ->setAttributes(['icon' => 'fa fa-star']);
 
         // cash
         $menu->addChild('cash', ['route' => 'cash', 'label' => 'Касса'])

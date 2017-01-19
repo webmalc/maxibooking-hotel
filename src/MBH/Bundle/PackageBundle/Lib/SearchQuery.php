@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Lib;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -112,6 +113,11 @@ class SearchQuery
      * @var Promotion
      */
     protected $promotion;
+
+    /**
+     * @var Special
+     */
+    protected $special;
     
     /**
      * Tariff id
@@ -239,5 +245,21 @@ class SearchQuery
         $this->promotion = $promotion;
     }
 
+    /**
+     * @return Special
+     */
+    public function getSpecial(): ?Special
+    {
+        return $this->special;
+    }
 
+    /**
+     * @param Special $special
+     * @return SearchQuery
+     */
+    public function setSpecial(Special $special = null): SearchQuery
+    {
+        $this->special = $special;
+        return $this;
+    }
 }

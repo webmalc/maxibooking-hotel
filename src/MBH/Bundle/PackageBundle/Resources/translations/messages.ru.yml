@@ -69,6 +69,7 @@ form.packageMainType.check_in_time: Время заезда
 form.packageMainType.check_out_time: Время отъезда
 form.packageMainType.arrival_purpose: Цель приезда
 form.packageMainType.comment: Комментарий
+form.packageMainType.special: Спецпредложение
 form.packageServiceType.service: Услуга
 form.packageServiceType.add_service: 'Добавить услугу'
 form.packageServiceType.edit_service: 'Редактирование услуги'

@@ -259,9 +259,9 @@ $(document).ready(function () {
 
         $('.sidebar-toggle').click(function () {
             if ($('body').hasClass('sidebar-collapse')) {
-                localStorage.setItem('sidebar-collapse', 'open');
-            } else {
                 localStorage.setItem('sidebar-collapse', 'close');
+            } else {
+                localStorage.setItem('sidebar-collapse', 'open');
             }
         });
     }());
