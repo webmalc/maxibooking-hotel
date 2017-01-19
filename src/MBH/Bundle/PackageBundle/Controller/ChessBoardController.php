@@ -186,7 +186,13 @@ class ChessBoardController extends BaseController
             $this->updatePackageWithAccommodation($oldPackage, $package, $accommodation, $updatedBeginDate,
                 $updatedEndDate, $messageFormatter);
         } else {
-            //TODO: Добавить проверку прав для изменения только размещения
+            $rightsChecker = $this->get('security.authorization_checker');
+            if (!($rightsChecker->isGranted('ROLE_PACKAGE_ACCOMMODATION')
+                && ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
+                    || $rightsChecker->isGranted('EDIT', $accommodation))
+            )) {
+                throw $this->createAccessDeniedException();
+            }
             $editResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
                 ->editAccommodation($accommodation, $updatedBeginDate, $updatedEndDate);
             if ($editResult instanceof PackageAccommodation) {

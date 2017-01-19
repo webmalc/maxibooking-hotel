@@ -670,6 +670,11 @@ class ChessBoardManager {
         return intervalMomentEnd.isAfter(this.tableEndDate);
     }
 
+    /**
+     * Получение строки, содержащей первые буквы сторон, в которые можно расширять бронь.(e - east, w - west)
+     * @param intervalData
+     * @returns {string}
+     */
     private getResizableHandlesValue(intervalData) {
         let resizableHandlesValue;
         switch (intervalData.position) {
@@ -713,6 +718,12 @@ class ChessBoardManager {
         return resizableHandlesValue;
     }
 
+    /**
+     *
+     * @param $element
+     * @param intervalData
+     * @returns {any}
+     */
     private addResizable($element, intervalData) {
         let elementStartBackground;
         let self = this;
@@ -761,6 +772,11 @@ class ChessBoardManager {
         return $element;
     }
 
+    /**
+     * Получение данных о брони на основании данных о текущем положении элемента, отображающего бронь.
+     * @param $packageElement
+     * @returns {{id, accommodation: any, roomType: string, begin: string, end: string, payer: any}}
+     */
     public static getPackageData($packageElement) {
         let packageOffset = $packageElement.offset();
         let roomLine = $('.roomDates, .leftRoomsLine').filter(function () {

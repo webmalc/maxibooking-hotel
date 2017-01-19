@@ -575,6 +575,11 @@ var ChessBoardManager = (function () {
     ChessBoardManager.prototype.isAbroadRightTableSide = function (intervalMomentEnd) {
         return intervalMomentEnd.isAfter(this.tableEndDate);
     };
+    /**
+     * Получение строки, содержащей первые буквы сторон, в которые можно расширять бронь.(e - east, w - west)
+     * @param intervalData
+     * @returns {string}
+     */
     ChessBoardManager.prototype.getResizableHandlesValue = function (intervalData) {
         var resizableHandlesValue;
         switch (intervalData.position) {
@@ -619,6 +624,12 @@ var ChessBoardManager = (function () {
         }
         return resizableHandlesValue;
     };
+    /**
+     *
+     * @param $element
+     * @param intervalData
+     * @returns {any}
+     */
     ChessBoardManager.prototype.addResizable = function ($element, intervalData) {
         var elementStartBackground;
         var self = this;
@@ -667,6 +678,11 @@ var ChessBoardManager = (function () {
         }
         return $element;
     };
+    /**
+     * Получение данных о брони на основании данных о текущем положении элемента, отображающего бронь.
+     * @param $packageElement
+     * @returns {{id, accommodation: any, roomType: string, begin: string, end: string, payer: any}}
+     */
     ChessBoardManager.getPackageData = function ($packageElement) {
         var packageOffset = $packageElement.offset();
         var roomLine = $('.roomDates, .leftRoomsLine').filter(function () {
