@@ -18,21 +18,13 @@ class TaskNoticeUnpaidOrder implements ConsumerInterface
      */
     private $noticeUnpaid;
 
-    /**
-     * Array is unpaid orders
-     *
-     * @var NoticeUnpaid
-     */
-    private $unpaidOrder;
-
     public function __construct(NoticeUnpaid $noticeUnpaid)
     {
         $this->noticeUnpaid = $noticeUnpaid;
-        $this->unpaidOrder = $noticeUnpaid->unpaidOrder();
     }
 
     public function execute(AMQPMessage $message)
     {
-        $this->noticeUnpaid->sendNotice($this->unpaidOrder);
+        $this->noticeUnpaid->sendNotice();
     }
 }
