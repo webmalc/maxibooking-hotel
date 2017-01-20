@@ -17,15 +17,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class NoticeStayPlaceXlsType extends AbstractType
 {
-    /**
-     * @var DocumentManager
-     */
     private $dm;
-
-    public function __construct(DocumentManager $dm)
-    {
-        $this->dm = $dm;
-    }
 
     /**
      * {@inheritdoc}
@@ -33,6 +25,7 @@ class NoticeStayPlaceXlsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $tourists = [];
+        $this->dm = $options['dm'];
 
         /** @var Tourist $tourist */
         foreach($options['tourists'] as $tourist) {
@@ -62,7 +55,8 @@ class NoticeStayPlaceXlsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'tourists' => []
+            'tourists' => [],
+            'dm' => null
         ]);
     }
 

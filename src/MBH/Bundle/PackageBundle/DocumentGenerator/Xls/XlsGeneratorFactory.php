@@ -46,7 +46,7 @@ class XlsGeneratorFactory implements GeneratorFactoryInterface
     {
         if ($type == self::TYPE_NOTICE) {
             $dm = $this->container->get('doctrine_mongodb')->getManager();
-            return $this->container->get('form.factory')->create(new NoticeStayPlaceXlsType($dm), null, $options);
+            return $this->container->get('form.factory')->create(NoticeStayPlaceXlsType::class, null, array_merge($options, ['dm' => $dm]));
         }
 
         return null;
