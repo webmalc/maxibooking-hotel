@@ -35,7 +35,7 @@ class RoomTypeZipController extends Controller implements CheckHotelControllerIn
         $entity->setHotel($this->hotel);
         $entity->setClientConfig($this->clientConfig);
 
-        $form = $this->createForm(new RoomTypeZipType(), $entity);
+        $form = $this->createForm(RoomTypeZipType::class, $entity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

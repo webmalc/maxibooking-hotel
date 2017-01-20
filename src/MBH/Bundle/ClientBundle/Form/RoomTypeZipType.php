@@ -3,14 +3,9 @@
 namespace MBH\Bundle\ClientBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
-use Doctrine\Tests\Common\Annotations\Ticket\Doctrine\ORM\Mapping\Entity;
-use MBH\Bundle\BaseBundle\Form\Extension\TimeType;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\RoomTypeZip;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -28,7 +23,7 @@ class RoomTypeZipType extends AbstractType
                 'group' => 'form.RoomTypeZip.group',
                 'help' => 'Выберите категории для обновления'
             ])
-            ->add('time', ChoiceType::class , [
+            ->add('time', InvertChoiceType::class , [
                 'label' => 'Выберите время',
                 'group' => 'form.RoomTypeZip.group',
                 'multiple' => true,
