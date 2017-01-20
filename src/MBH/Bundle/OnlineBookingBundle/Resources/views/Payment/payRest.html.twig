@@ -1,0 +1,9 @@
+{{ form(form, {action:url('payment_check_order')} ) }}
+<div id="sum_container">
+
+</div>
+{#отключить в продакшене#}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+{#/отключить в продакшене#}
+
+<script src="{{ asset('bundles/mbhonlinebooking/js/payrest.js') }}"></script>
