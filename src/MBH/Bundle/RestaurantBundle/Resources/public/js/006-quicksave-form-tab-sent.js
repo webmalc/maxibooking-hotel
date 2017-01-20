@@ -10,7 +10,6 @@ $(document).ready(function (event) {
         $form.on('submit', function (event) {
             var tab = $('ul.nav').find('li.active').find('a').attr('href');
             $("#activetab").val(tab)
-            console.log($("#activetab").val());
         });
     }
 });
