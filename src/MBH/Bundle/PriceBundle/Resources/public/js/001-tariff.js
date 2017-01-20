@@ -1,9 +1,41 @@
 /*global window, $, document, mbh */
+/*global window, $, document, mbh, Routing, deleteLink */
 $(document).ready(function () {
     'use strict';
 
-    // load tariff filter
-    docReadyTariff();
+    var tariffFilterForm = $('#mbh_filter_form'),
+        tariffTable = $('#tariff-table'),
+        process = false;
+
+    tariffTable.dataTable({
+        "processing": true,
+        "serverSide": true,
+        "ordering": false,
+        "drawCallback": function() {
+            process = false;
+            deleteLink();
+            $('.disabled-entry').closest('tr').addClass('danger');
+        },
+        "ajax": {
+            "method": "POST",
+            "url": Routing.generate('tariff'),
+            "data": function (requestData) {
+                process = true;
+                requestData.form = tariffFilterForm.serializeObject();
+                return requestData;
+            }
+        }
+    });
+
+    tariffFilterForm.find('input, select').on('change switchChange.bootstrapSwitch', function () {
+        if (!process) {
+            tariffTable.dataTable().fnDraw();
+        }
+    });
+});
+
+$(document).ready(function () {
+    'use strict';
 
     //spinners
     $('.price-spinner').TouchSpin({

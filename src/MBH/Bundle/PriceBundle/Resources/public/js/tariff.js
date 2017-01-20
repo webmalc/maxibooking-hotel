@@ -33,4 +33,3 @@ var docReadyTariff = function () {
         $tariffTable.dataTable().fnDraw();
     });
 }
-

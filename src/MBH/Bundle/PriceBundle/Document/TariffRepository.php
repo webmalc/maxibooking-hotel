@@ -2,10 +2,13 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
+use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
+use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\PriceBundle\Document\Criteria\TariffQueryCriteria;
+use MBH\Bundle\PriceBundle\Lib\TariffFilter;
 
 class TariffRepository extends DocumentRepository
 {
@@ -18,7 +21,7 @@ class TariffRepository extends DocumentRepository
             ->getQuery()
             ->execute()
         ;
-        
+
         return $result;
     }
 
@@ -149,57 +152,44 @@ class TariffRepository extends DocumentRepository
     }
 
     /**
-     * @param TariffQueryCriteria $criteria
-     * @param int $offset
-     * @param int $limit
-     * @return Tariff[]
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @param Tariff $filter
+     * @return Builder
      */
-    public function findByQueryCriteria(TariffQueryCriteria $criteria, $offset = 0, $limit = 10)
+    public function getFilteredQueryBuilder(TariffFilter $filter): Builder
     {
-        $queryBuilder = $this->queryCriteriaToBuilder($criteria);
+        $qb = $this->createQueryBuilder();
 
-        $queryBuilder
-            ->skip($offset)
-            ->limit($limit)
-            ->sort('fullTitle', 'asc')
-        ;
+        if ($filter->getBegin()) {
+            $qb->field('end')->gte($filter->getBegin());
+        }
 
-        return $queryBuilder->getQuery()->execute();
+        if ($filter->getEnd()) {
+            $qb->field('begin')->lte($filter->getEnd());
+        }
+
+        if (!$filter->getIsEnabled()) {
+            $qb->field('isEnabled')->equals(true);
+        }
+
+        if (!$filter->getIsOnline()) {
+            $qb->field('isOnline')->equals(true);
+        }
+
+        if ($filter->getHotel()) {
+            $qb->field('hotel')->references($filter->getHotel());
+        }
+
+        return $qb;
     }
 
     /**
-     * @param TariffQueryCriteria $criteria
-     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     * @param Tariff $filter
+     * @return CursorInterface
      */
-    private function queryCriteriaToBuilder(TariffQueryCriteria $criteria)
+    public function getFiltered(TariffFilter $filter): CursorInterface
     {
-        $queryBuilder = $this->createQueryBuilder();
+        $qb = $this->getFilteredQueryBuilder($filter);
 
-        if ($criteria->search) {
-            $fullNameRegex = new \MongoRegex('/.*' . $criteria->search . '.*/ui');
-            $queryBuilder->field('fullTitle')->equals($fullNameRegex);
-        }
-
-        if($criteria->isOnline === 1) {
-            $queryBuilder->field('isOnline')->equals(true);
-        } elseif ($criteria->isOnline === 0) {
-            $queryBuilder->field('isOnline')->equals(false);
-        }
-
-        if($criteria->isEnabled === 1) {
-            $queryBuilder->field('isEnabled')->equals(true);
-        } elseif ($criteria->isEnabled === 0) {
-            $queryBuilder->field('isEnabled')->equals(false);
-        } else {
-            $queryBuilder->field('isEnabled')->equals(true);
-        }
-
-        if ($criteria->begin || $criteria->end) {
-            $queryBuilder->field('begin')->lte($criteria->begin);
-            $queryBuilder->field('end')->gte($criteria->end);
-        }
-
-        return $queryBuilder;
+        return $qb->getQuery()->execute();
     }
 }

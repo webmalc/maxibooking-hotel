@@ -14,6 +14,7 @@ use MBH\Bundle\PriceBundle\Form\TariffInheritanceType;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
 use MBH\Bundle\PriceBundle\Form\TariffServicesType;
 use MBH\Bundle\PriceBundle\Form\TariffType;
+use MBH\Bundle\PriceBundle\Lib\TariffFilter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -29,18 +30,35 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
  */
 class TariffController extends Controller implements CheckHotelControllerInterface
 {
-
     /**
-     * Lists all entities.
+     * Show list filter
      *
-     * @Route("/", name="tariff")
-     * @Method("GET")
+     * @Route("/", name="tariff", options={"expose"=true})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TARIFF_VIEW')")
      * @Template()
+     *
+     * @param Request $request
+     * @return array| \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $form = $this->createForm(TariffFilterType::class, new TariffQueryCriteria());
+        $filter = new TariffFilter();
+        $filter->setHotel($this->hotel);
+
+        $form = $this->createForm(TariffFilterType::class, $filter);
+
+        if ($request->isXmlHttpRequest()) {
+            $form->submit($request->get('form'));
+            $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->getFiltered($filter);
+
+
+            return $this->render('MBHPriceBundle:Tariff:index.json.twig', [
+                'entities' => $entities,
+                'draw' => $request->get('draw'),
+                'total' => $entities->count()
+            ]);
+        }
 
         return [
             'form' => $form->createView(),

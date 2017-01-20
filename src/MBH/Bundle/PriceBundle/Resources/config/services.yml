@@ -31,3 +31,9 @@ services:
   task_room_cache_recalculate:
     class:      MBH\Bundle\PriceBundle\Task\RecalculateCache
     arguments:  ["@mbh.room.cache", "@mbh.task.logger"]
+
+  mbh.type.tariff_filter:
+        class:      MBH\Bundle\PriceBundle\Form\TariffFilterType
+        arguments:  ["@mbh.hotel.selector"]
+        tags:
+                - { name: form.type }
