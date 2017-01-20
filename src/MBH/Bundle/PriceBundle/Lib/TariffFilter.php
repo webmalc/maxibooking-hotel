@@ -28,55 +28,14 @@ class TariffFilter
     private $end;
 
     /**
-     * @var \DateTime
-     */
-    private $displayFrom;
-
-    /**
-     * @var \DateTime
-     */
-    private $displayTo;
-
-    /**
      * @var boolean
      */
     private $isEnabled;
 
     /**
-     * @var Tariff
+     * @var boolean
      */
-    private $tariff;
-
-
-    /**
-     * @var int
-     */
-    private $remain = null;
-
-    /**
-     * @var Special
-     */
-    private $excludeSpecial;
-
     private $isOnline;
-
-    /**
-     * @return bool
-     */
-    public function getIsOnline(): ?bool
-    {
-        return $this->isEnabled;
-    }
-
-    /**
-     * @param bool $isEnabled
-     * @return TariffFilter
-     */
-    public function setIsOnline(bool $isEnabled = null): TariffFilter
-    {
-        $this->isEnabled = $isEnabled;
-        return $this;
-    }
 
     /**
      * @return \DateTime
@@ -115,38 +74,38 @@ class TariffFilter
     }
 
     /**
-     * @return bool
+     * @return int|null
      */
-    public function getIsEnabled(): ?bool
+    public function getIsEnabled(): ?int
     {
         return $this->isEnabled;
     }
 
     /**
-     * @param bool $isEnabled
+     * @param int $isEnabled
      * @return TariffFilter
      */
-    public function setIsEnabled(bool $isEnabled = null): TariffFilter
+    public function setIsEnabled($isEnabled = null): TariffFilter
     {
         $this->isEnabled = $isEnabled;
         return $this;
     }
 
     /**
-     * @return Tariff
+     * @return int|null
      */
-    public function getTariff(): ?Tariff
+    public function getIsOnline(): ?int
     {
-        return $this->tariff;
+        return $this->isOnline;
     }
 
     /**
-     * @param Tariff $tariff
+     * @param int $isOnline
      * @return TariffFilter
      */
-    public function setTariff(Tariff $tariff = null): TariffFilter
+    public function setIsOnline($isOnline = null): TariffFilter
     {
-        $this->tariff = $tariff;
+        $this->isOnline = $isOnline;
         return $this;
     }
 
@@ -165,78 +124,6 @@ class TariffFilter
     public function setHotel(Hotel $hotel): TariffFilter
     {
         $this->hotel = $hotel;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getRemain(): ?int
-    {
-        return $this->remain;
-    }
-
-    /**
-     * @param int $remain
-     * @return TariffFilter
-     */
-    public function setRemain(int $remain = null): TariffFilter
-    {
-        $this->remain = $remain;
-        return $this;
-    }
-
-    /**
-     * @return Special
-     */
-    public function getExcludeSpecial(): ?Special
-    {
-        return $this->excludeSpecial;
-    }
-
-    /**
-     * @param Special $excludeSpecial
-     * @return TariffFilter
-     */
-    public function setExcludeSpecial(Special $excludeSpecial = null): TariffFilter
-    {
-        $this->excludeSpecial = $excludeSpecial;
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDisplayFrom(): ?\DateTime
-    {
-        return $this->displayFrom;
-    }
-
-    /**
-     * @param \DateTime $displayFrom
-     * @return TariffFilter
-     */
-    public function setDisplayFrom(\DateTime $displayFrom = null): TariffFilter
-    {
-        $this->displayFrom = $displayFrom;
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDisplayTo(): ?\DateTime
-    {
-        return $this->displayTo;
-    }
-
-    /**
-     * @param \DateTime $displayTo
-     * @return TariffFilter
-     */
-    public function setDisplayTo(\DateTime $displayTo = null): TariffFilter
-    {
-        $this->displayTo = $displayTo;
         return $this;
     }
 

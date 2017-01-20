@@ -51,7 +51,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         if ($request->isXmlHttpRequest()) {
             $form->submit($request->get('form'));
             $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->getFiltered($filter);
-
+            dump($entities);
 
             return $this->render('MBHPriceBundle:Tariff:index.json.twig', [
                 'entities' => $entities,
@@ -62,41 +62,6 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
 
         return [
             'form' => $form->createView(),
-        ];
-    }
-
-    /**
-     * Lists all entities as json.
-     *
-     * @Route("/json", name="tariff_json", defaults={"_format"="json"}, options={"expose"=true})
-     * @Method("POST")
-     * @Security("is_granted('ROLE_TARIFF_VIEW')")
-     * @Template()
-     */
-    public function jsonAction(Request $request)
-    {
-        $tableParams = ClientDataTableParams::createFromRequest($request);
-        $formData = (array)$request->get('mbh_filter_form');
-        $form = $this->createForm(TariffFilterType::class, new TariffQueryCriteria());
-        $formData['search'] = $tableParams->getSearch();
-
-        $form->submit($formData);
-        if (!$form->isValid()) {
-            return new JsonResponse(['error' => $form->getErrors()[0]->getMessage()]);
-        }
-
-        /** @var TariffQueryCriteria $criteria */
-        $criteria = $form->getData();
-
-        /** @var TariffRepository $tariffRepository */
-        $tariffRepository = $this->dm->getRepository('MBHPriceBundle:Tariff');
-
-        $tariffs = $tariffRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
-
-        return [
-            'tariffs' => iterator_to_array($tariffs),
-            'total' => count($tariffs),
-            'draw' => $request->get('draw'),
         ];
     }
 

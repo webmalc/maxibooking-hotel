@@ -8,9 +8,9 @@ $(document).ready(function () {
         process = false;
 
     tariffTable.dataTable({
-        "processing": true,
-        "serverSide": true,
-        "ordering": false,
+        serverSide: true,
+        processing: true,
+        ordering: false,
         "drawCallback": function() {
             process = false;
             deleteLink();

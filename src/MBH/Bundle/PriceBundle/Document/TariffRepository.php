@@ -152,7 +152,7 @@ class TariffRepository extends DocumentRepository
     }
 
     /**
-     * @param Tariff $filter
+     * @param TariffFilter $filter
      * @return Builder
      */
     public function getFilteredQueryBuilder(TariffFilter $filter): Builder
@@ -160,19 +160,23 @@ class TariffRepository extends DocumentRepository
         $qb = $this->createQueryBuilder();
 
         if ($filter->getBegin()) {
-            $qb->field('end')->gte($filter->getBegin());
+            $qb->field('end')->exists(true)->gte($filter->getBegin());
         }
 
         if ($filter->getEnd()) {
-            $qb->field('begin')->lte($filter->getEnd());
+            $qb->field('begin')->exists(true)->lte($filter->getEnd());
         }
 
-        if (!$filter->getIsEnabled()) {
+        if ($filter->getIsEnabled() === null || $filter->getIsEnabled() === 1) {
             $qb->field('isEnabled')->equals(true);
+        } else {
+            $qb->field('isEnabled')->equals(false);
         }
 
-        if (!$filter->getIsOnline()) {
+        if ($filter->getIsOnline() === 1) {
             $qb->field('isOnline')->equals(true);
+        } elseif ($filter->getIsOnline() === 0) {
+            $qb->field('isOnline')->equals(false);
         }
 
         if ($filter->getHotel()) {
@@ -183,7 +187,7 @@ class TariffRepository extends DocumentRepository
     }
 
     /**
-     * @param Tariff $filter
+     * @param TariffFilter $filter
      * @return CursorInterface
      */
     public function getFiltered(TariffFilter $filter): CursorInterface
