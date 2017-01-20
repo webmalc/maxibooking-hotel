@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Form;
 
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use MBH\Bundle\PriceBundle\Document\Criteria\TariffQueryCriteria;
 use Symfony\Component\Form\AbstractType;
@@ -42,13 +43,16 @@ class TariffFilterType extends AbstractType
                     TariffQueryCriteria::OFF => 'status.off'
                 ]
             ])
-            ->add('isEnabled',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('isEnabled', CheckboxType::class, [
+                'label' => 'isEnabled',
+                'group' => 'form.group.config',
+                'value' => true,
                 'required' => false,
-                'choices' => [
-                    TariffQueryCriteria::ON => 'state.on',
-                    TariffQueryCriteria::OFF => 'state.off'
-                ]
+            ])
+            ->add('search', TextType::class, [
+                'required' => false
             ]);
+
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -159,6 +159,11 @@ class TariffRepository extends DocumentRepository
     {
         $qb = $this->createQueryBuilder();
 
+        if ($filter->getSearch()) {
+            $fullNameRegex = new \MongoRegex('/.*' . $filter->getSearch() . '.*/ui');
+            $qb->field('fullTitle')->equals($fullNameRegex);
+        }
+
         if ($filter->getBegin()) {
             $qb->field('end')->exists(true)->gte($filter->getBegin());
         }
@@ -167,10 +172,8 @@ class TariffRepository extends DocumentRepository
             $qb->field('begin')->exists(true)->lte($filter->getEnd());
         }
 
-        if ($filter->getIsEnabled() === null || $filter->getIsEnabled() === 1) {
+        if (!$filter->getIsEnabled()) {
             $qb->field('isEnabled')->equals(true);
-        } else {
-            $qb->field('isEnabled')->equals(false);
         }
 
         if ($filter->getIsOnline() === 1) {

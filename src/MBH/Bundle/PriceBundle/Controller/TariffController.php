@@ -51,7 +51,6 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         if ($request->isXmlHttpRequest()) {
             $form->submit($request->get('form'));
             $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->getFiltered($filter);
-            dump($entities);
 
             return $this->render('MBHPriceBundle:Tariff:index.json.twig', [
                 'entities' => $entities,

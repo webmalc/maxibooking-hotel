@@ -38,6 +38,11 @@ class TariffFilter
     private $isOnline;
 
     /**
+     * @var string
+     */
+    private $search;
+
+    /**
      * @return \DateTime
      */
     public function getBegin(): ?\DateTime
@@ -125,6 +130,24 @@ class TariffFilter
     {
         $this->hotel = $hotel;
         return $this;
+    }
+
+    /**
+     * @param $search
+     * @return TariffFilter
+     */
+    public function setSearch($search = ''): TariffFilter
+    {
+        $this->search = $search;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSearch(): ?string
+    {
+        return $this->search;
     }
 
 

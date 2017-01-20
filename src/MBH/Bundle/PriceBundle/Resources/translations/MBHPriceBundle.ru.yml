@@ -60,7 +60,7 @@ price.views.overview.index.rate: 'Тариф'
 
 #/ tariff filter
 tariff.filter.status: Статус тарифа
-tariff.filter.state: Состояние
+tariff.filter.state: Показывать выключенные?
 tariffs.filter.small_title: обзор
 
 #/ tariff-table
