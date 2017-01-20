@@ -24,7 +24,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
 {
     /**
      *
-     * @Route("/{category}", name="tasktype", defaults={"category"=null}, requirements={
+     * @Route("/info/{category}", name="tasktype", defaults={"category"=null}, requirements={
      *    "category": "\w*"
      * })
      * @Method({"GET", "POST"})
