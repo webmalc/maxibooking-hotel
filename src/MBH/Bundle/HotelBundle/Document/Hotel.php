@@ -196,6 +196,9 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\TableType", mappedBy="hotel") */
     protected $TableTypes;
 
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\ClientBundle\Document\RoomTypeZip", mappedBy="hotel") */
+    protected $roomTypeZip;
+
 
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\DishMenuCategory", mappedBy="hotel") */
     protected $dishMenuCategories;

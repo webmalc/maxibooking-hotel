@@ -144,7 +144,6 @@ class SearchType extends AbstractType
             'startDate' => new \DateTime(),
             'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery',
             'method' => 'GET'
-
         ]);
     }
 

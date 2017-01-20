@@ -24,6 +24,12 @@ class Tariff
      */
     protected $tariff;
 
+    /**
+     * @var string $roomType
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     */
+    protected $roomType;
 
     /**
      * Set tariff
@@ -68,4 +74,23 @@ class Tariff
     {
         return $this->tariffId;
     }
+
+    /**
+     * @return string
+     */
+    public function getRoomType()
+    {
+        return $this->roomType;
+    }
+
+    /**
+     * @param string $roomType
+     * @return Tariff
+     */
+    public function setRoomType(string $roomType)
+    {
+        $this->roomType = $roomType;
+        return $this;
+    }
+
 }
