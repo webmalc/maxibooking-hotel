@@ -142,7 +142,7 @@ class SearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'csrf_protection' => false,
+            'csrf_protection' => true,
             'allow_extra_fields' => true,
             'dm' => null,
             'security' => null,
