@@ -58,7 +58,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     public function jsonAction(Request $request)
     {
         $tableParams = ClientDataTableParams::createFromRequest($request);
-        $formData = (array)$request->get('form');
+        $formData = (array)$request->get('mbh_filter_form');
         $form = $this->createForm(TariffFilterType::class, new TariffQueryCriteria());
         $formData['search'] = $tableParams->getSearch();
 

@@ -3,7 +3,7 @@
 var docReadyTariff = function () {
     'use strict';
 
-    var $tariffForm = $('#tariff-form');
+    var $tariffForm = $('#mbh_filter_form');
 
     var $tariffTable = $('#tariff-table');
 
@@ -18,9 +18,9 @@ var docReadyTariff = function () {
                 requestData.form = {
                     begin: $tariffForm.find('#form_begin').val(),
                     end: $tariffForm.find('#form_end').val(),
-                    isOnline: $tariffForm.find('#form_isOnline').val(),
-                    isEnabled: $tariffForm.find('#form_isEnabled').val(),
-                    _token: $tariffForm.find('#form__token').val()
+                    isOnline: $tariffForm.find('#mbh_filter_form_isOnline').val(),
+                    isEnabled: $tariffForm.find('#mbh_filter_form_isEnabled').val(),
+                    _token: $tariffForm.find('#mbh_filter_form__token').val()
                 };
                 return requestData;
             }

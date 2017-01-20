@@ -7,7 +7,7 @@
 
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'tariff-filter-widget'} %}
         {% block content %}
-            {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'tariff-form'}}) }}
+            {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'mbh_filter_form'}}) }}
             <div class="form-group">
                 <div class="input">
                     <i class="fa fa-calendar" title='{{ 'tariffs.filter.small_title'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp

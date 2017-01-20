@@ -3,7 +3,7 @@ $(document).ready(function () {
     'use strict';
 
     // load tariff filter
-    //docReadyTariff();
+    docReadyTariff();
 
     //spinners
     $('.price-spinner').TouchSpin({
