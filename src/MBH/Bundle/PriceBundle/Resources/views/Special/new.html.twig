@@ -1,0 +1,13 @@
+{% extends 'MBHPriceBundle:Special:layout.html.twig' %}
+
+{% set small_title = "entity.new.title" %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('special_new'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+    
+{% endblock %}

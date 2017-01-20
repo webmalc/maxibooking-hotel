@@ -6,18 +6,47 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
+use MBH\Bundle\PriceBundle\Document\Special;
 
 /**
  * Class PackageRepository
  */
 class PackageRepository extends DocumentRepository
 {
+    /**
+     * @param Special $special
+     * @param Package $exclude
+     * @return Builder
+     */
+    public function getBuilderBySpecial(Special $special, Package $exclude = null): Builder
+    {
+        $qb = $this->createQueryBuilder()
+            ->field('special')->references($special)
+            ->field('deletedAt')->equals(null);
+
+        if ($exclude) {
+            $qb->field('id')->notEqual($exclude->getId());
+        }
+
+        return $qb;
+    }
+
+    /**
+     * @param Special $special
+     * @param Package $exclude
+     * @return int
+     */
+    public function countBySpecial(Special $special, Package $exclude = null)
+    {
+        return $this->getBuilderBySpecial($special, $exclude)->getQuery()->count();
+    }
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -31,17 +60,19 @@ class PackageRepository extends DocumentRepository
             ->field('begin')->lte($end)
             ->field('end')->gte($begin)
             ->field('virtualRoom')->notEqual(null)
-            ->field('deletedAt')->equals(null);
-
+            ->field('deletedAt')->equals(null)
+        ;
+        
         if ($roomType) {
             $qb->field('roomType')->references($roomType);
         }
-
+        
         $packages = $qb->getQuery()->execute();
-
+        
         if ($group) {
             $result = [];
-            foreach ($packages as $package) {
+            foreach ($packages as $package) {;
+
                 $roomType = $package->getRoomType();
                 $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
 
@@ -49,7 +80,7 @@ class PackageRepository extends DocumentRepository
 
             return $result;
         }
-
+        
         return $packages;
     }
 
@@ -161,8 +192,8 @@ class PackageRepository extends DocumentRepository
         if (isset($criteria->query)) {
             $query = trim($criteria->query);
             $tourists = $this->dm->getRepository('MBHPackageBundle:Tourist')
-                ->createQueryBuilder()
-                ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+                ->createQueryBuilder('t')
+                ->field('fullName')->equals(new \MongoRegex('/.*' . $query . '.*/ui'))
                 ->getQuery()
                 ->execute();
 
@@ -176,7 +207,7 @@ class PackageRepository extends DocumentRepository
                 $queryBuilder->addOr($queryBuilder->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')));
+            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
         }
 
         //isCheckIn
@@ -548,8 +579,8 @@ class PackageRepository extends DocumentRepository
         if (isset($data['query']) && !empty($data['query'])) {
             $query = trim($data['query']);
             $tourists = $dm->getRepository('MBHPackageBundle:Tourist')
-                ->createQueryBuilder()
-                ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+                ->createQueryBuilder('t')
+                ->field('fullName')->equals(new \MongoRegex('/.*' . $query . '.*/ui'))
                 ->getQuery()
                 ->execute();
 
@@ -563,15 +594,7 @@ class PackageRepository extends DocumentRepository
                 $qb->addOr($qb->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')));
-
-            //Find by order
-            /** @var  DocumentManager $dm */
-            $order = $dm->getRepository('MBHOnlineBundle:Order')->find($query);
-            if ($order) {
-                $qb->addOr($qb->expr()->field('order.id')->equals($order->getId()));
-            }
-
+            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
         }
 
         //isCheckIn
@@ -836,47 +859,5 @@ class PackageRepository extends DocumentRepository
             ->field('end')->gte(new \DateTime('midnight'));
 
         return $queryPackage->getQuery()->execute();
-    }
-
-    public function getNumbers(\DateTime $day, RoomType $roomType):array
-    {
-        $packages = $this->createQueryBuilder()
-            ->select('numberWithPrefix')
-            ->field('begin')->lte($day)
-            ->field('end')->gte($day)
-            ->field('roomType')->references($roomType)
-            ->field('deletedAt')->equals(null)
-            ->hydrate(false)
-            ->getQuery()
-            ->execute();
-
-        return array_map(function ($package) {
-            return $package['numberWithPrefix'];
-        }, iterator_to_array($packages));
-
-    }
-
-    /**
-     * @return Package
-     */
-    public function getPackageCategory(\DateTime $begin, \DateTime $end, $categoryRoomType = null,$count = false,$limit = false,  $skip = 0)
-    {
-        $queryBuilder = $this->createQueryBuilder()
-            ->field('begin')->gte($begin)
-            ->sort('createdAt', 'desc')
-            ->skip($skip)
-            ->field('end')->lte($end);
-
-        if ($limit){
-            $queryBuilder->limit(50);
-        }
-        if($count){
-            $queryBuilder->count();
-        }
-        if ($categoryRoomType) {
-            $queryBuilder->field('roomType.id')->in($categoryRoomType);
-        }
-
-        return $queryBuilder->getQuery()->execute();
     }
 }

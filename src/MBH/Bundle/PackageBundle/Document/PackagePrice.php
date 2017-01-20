@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -43,6 +44,12 @@ class PackagePrice
     protected $promotion;
 
     /**
+     * @var Special
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Special")
+     */
+    protected $special;
+
+    /**
      * @return \DateTime
      */
     public function getDate()
@@ -50,12 +57,13 @@ class PackagePrice
         return $this->date;
     }
 
-    public function __construct(\DateTime $date, $price, Tariff $tariff, Promotion $promotion = null)
+    public function __construct(\DateTime $date, $price, Tariff $tariff, Promotion $promotion = null, Special $special = null)
     {
         $this->setDate($date)
             ->setPrice($price)
             ->setTariff($tariff)
             ->setPromotion($promotion)
+            ->setSpecial($special)
         ;
     }
 
@@ -122,6 +130,27 @@ class PackagePrice
     public function setPromotion($promotion)
     {
         $this->promotion = $promotion;
+
         return $this;
     }
+
+    /**
+     * @return Special
+     */
+    public function getSpecial(): ?Special
+    {
+        return $this->special;
+    }
+
+    /**
+     * @param Special $special
+     * @return PackagePrice
+     */
+    public function setSpecial(Special $special = null): PackagePrice
+    {
+        $this->special = $special;
+        return $this;
+    }
+
+
 }

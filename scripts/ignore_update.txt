@@ -1,4 +1,3 @@
-azovsky_remote/
 docker/
 docker_zalex/
 deploy/

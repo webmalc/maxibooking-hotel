@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Bundle\TariffBundle\Controller;
+namespace Tests\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\Traits\CrudWebTestCaseTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
