@@ -30,7 +30,8 @@ class RoomsType extends AbstractType
                 },
                 'placeholder' => '',
                 'required' => false,
-                'attr' => ['placeholder' => 'roomtype.placeholder']
+                'attr' => ['placeholder' => 'roomtype.placeholder'],
+                'group' => isset($options['groupName']) ? $options['groupName'] : ''
             ]);
         }
     }
@@ -39,7 +40,7 @@ class RoomsType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'constraints' => [new Callback(['methods' => [[$this,'check']]])],
+//                'constraints' => [new Callback(['methods' => [[$this,'check']]])],
                 'booking' => [],
                 'hotel' => null,
             ]
