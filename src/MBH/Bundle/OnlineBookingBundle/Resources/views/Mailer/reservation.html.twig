@@ -1,0 +1,79 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+{% block text %}
+
+    <p style="{{ pStyles }}">{% block title %}Поступила заявка с вашего сайта.</p>{% endblock %}<br>
+
+    <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+        <thead>
+        <tr>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:30%;">
+                Даты
+            </th>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
+                Номер
+            </th>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
+                Гости
+            </th>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:18%;">
+                Стоимость
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ begin|mbh_format }}
+                    - {{ end|mbh_format }}<br>
+                </td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                    {{ roomType.name }}
+
+                    <br>
+                    <small style="color:#888;">
+                        {{ tariff.name }}
+                    </small>
+                </td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                    {{ package.adults }}{{ package.children?' + '~package.children }}
+                </td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">{{ total|number_format(2) }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #dddddd;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
+        Сведения о клиенте
+    </div>
+
+    <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+        <tbody>
+        <tr>
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">Имя:</td>
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
+                {{ client.firstName }} {{ client.lastName }}
+            </td>
+        </tr>
+
+        {% if client.phone %}
+            <tr>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:42%;">
+                    Телефон:
+                </td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:58%;">
+                    {{ client.phone }}
+                </td>
+            </tr>
+        {% endif %}
+        {% if client.email %}
+            <tr>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">E-mail:
+                </td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
+                    {{client.email }}
+                </td>
+            </tr>
+        {% endif %}
+
+        </tbody>
+    </table>
+{% endblock text %}

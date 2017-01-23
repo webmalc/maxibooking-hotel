@@ -1,0 +1,25 @@
+services:
+#    mbh_online_booking.example:
+#        class: MBH\Bundle\OnlineBookingBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
+    mbh.online.search_form:
+        class: MBH\Bundle\OnlineBookingBundle\Form\SearchFormType
+        arguments: ["@service_container"]
+        tags:
+            - { name: form.type }
+
+    mbh.sign_form:
+        class: MBH\Bundle\OnlineBookingBundle\Form\SignType
+        arguments: ["@service_container"]
+        tags:
+            - { name: form.type }
+
+    mbh.reservation_form:
+        class: MBH\Bundle\OnlineBookingBundle\Form\ReservationType
+        arguments: ["@service_container"]
+        tags:
+            - { name: form.type }
+
+    mbh.online.chart.data.former:
+        class: MBH\Bundle\OnlineBookingBundle\Service\ChartDataFormer
+        arguments: ["@mbh.calculation"]

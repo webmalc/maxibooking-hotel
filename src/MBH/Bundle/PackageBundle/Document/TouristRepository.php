@@ -110,7 +110,7 @@ class TouristRepository extends DocumentRepository
         $queryBuilder
             ->skip($offset)
             ->limit($limit)
-            ->sort('fullName', 'asc')
+            //->sort('fullName', 'asc')
         ;
         $tourists = $queryBuilder->getQuery()->execute();
 

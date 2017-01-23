@@ -91,7 +91,7 @@ class MailerCommand extends ContainerAwareCommand
         }
 
         //begin tomorrow users
-        if (count($packages)) {
+        /*if (count($packages)) {
             foreach ($packages as $package) {
                 $payer = $package->getOrder()->getPayer();
                 if (!$payer || !$payer->getEmail()) {
@@ -126,7 +126,7 @@ class MailerCommand extends ContainerAwareCommand
                 ;
 
             }
-        }
+        }*/
 
         //user polls
         $packages = $repo->createQueryBuilder('p')

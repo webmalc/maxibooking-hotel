@@ -4,7 +4,7 @@ namespace MBH\Bundle\BaseBundle\Form;
 
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\ChoiceList\ArrayChoiceList;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -17,7 +17,7 @@ class LanguageType extends AbstractType
 
     public function getParent()
     {
-        return  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class;
+        return  ChoiceType::class;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -27,11 +27,7 @@ class LanguageType extends AbstractType
             'choice_label' => function($label) {
                 return 'languages.'.$label;
             },
-            //'choices_as_values' => true,
-            'choice_list' => new ArrayChoiceList(
-                $this->container->getParameter('mbh.languages'),
-                function($value) {return $value;}
-            )
+            'choices' => $this->container->getParameter('mbh.languages')
         ]);
     }
 
