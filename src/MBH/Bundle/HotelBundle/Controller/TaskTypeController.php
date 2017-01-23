@@ -62,6 +62,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
 
             if($form->isValid()) {
                 $this->dm->persist($entity);
+                $entity->setHotel($this->hotel);
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()
