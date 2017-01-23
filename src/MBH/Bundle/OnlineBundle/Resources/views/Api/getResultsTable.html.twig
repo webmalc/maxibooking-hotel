@@ -99,7 +99,7 @@
                             {% if result.roomType.description is not empty %}
                                 <tr class="mbh-left mbh-results-roomType-description-tr">
                                     <td class="mbh-left mbh-results-roomType-description" colspan="5">
-                                        {{ result.roomType.description|nl2br }}
+                                        {{ result.roomType.description|raw }}
                                     </td>
                                 </tr>
                             {% endif %}
