@@ -60,5 +60,7 @@ parameters:
     is_enabled: true
     prefix: mbh
 
+  wkhtmltopdf_path: '/usr/local/bin/wkhtmltopdf'
+
   mbh_modules:
     tasks: true

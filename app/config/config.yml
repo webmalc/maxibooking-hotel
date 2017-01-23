@@ -180,7 +180,7 @@ knp_menu:
 knp_snappy:
     pdf:
         enabled:    true
-        binary:     /usr/local/bin/wkhtmltopdf
+        binary:     "%wkhtmltopdf_path%"
         options:    []
     image:
         enabled:    true

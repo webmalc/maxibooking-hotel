@@ -1,7 +1,6 @@
 /*global window, $, services, document, datepicker, deleteLink, Routing, mbh */
 $(document).ready(function () {
     'use strict';
-
     var $dishOrderForm = $('#dishorder-form'),
         $dishOrderTable = $('#dishorder-table');
 
