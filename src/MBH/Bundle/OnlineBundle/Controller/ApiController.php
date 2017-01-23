@@ -344,6 +344,7 @@ class ApiController extends Controller
         }
 
         return [
+            'domainName' => $this->getParameter('router.request_context.host'),
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
             'hotels' => $hotels,
