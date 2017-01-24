@@ -477,36 +477,45 @@ class Search implements SearchInterface
 
         $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
             ->fetchQuery(null, [$result->getRoomType()->getId()], null, null, null, $minRoomCache, true)
-            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'desc']);
+            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'desc'])->getQuery()->execute();
 
-        foreach ($rooms->getQuery()->execute() as $room) {
+
+        $min = 0;
+        $preferredRooms = new \SplObjectStorage();
+        $emptyRooms =  new \SplObjectStorage();
+
+        foreach ($rooms as $room) {
             if (isset($groupedPackages[$room->getId()])) {
                 foreach ($groupedPackages[$room->getId()] as $package) {
 
                     if ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
-                        $preferredRoom = $room;
+                        $min += 1;
+                        $preferredRooms->attach($room);
                     } elseif ($package->getBegin() == $end || $package->getEnd() == $begin) {
-                        $preferredRoom = $room;
+                        $min += 1;
+                        $preferredRooms->attach($room);
                     } else {
-                        $preferredRoom = null;
+                        $preferredRooms->detach($room);
                         break;
                     }
                 }
 
-                if ($preferredRoom) {
-                    $result->setVirtualRoom($preferredRoom);
-
-                    return $result;
-                }
-
             } else {
-                $emptyRoom = $room;
+                $emptyRooms->attach($room);
+                $min += 1;
             }
-
         }
+        $result->setRoomsCount($emptyRooms->count() + $preferredRooms->count());
 
-        if ($emptyRoom) {
-            $result->setVirtualRoom($emptyRoom);
+        if ($preferredRooms->count()) {
+            $preferredRooms->rewind();
+            $result->setVirtualRoom($preferredRooms->current());
+
+            return $result;
+        }
+        elseif ($emptyRooms->count()) {
+            $emptyRooms->rewind();
+            $result->setVirtualRoom($emptyRooms->current());
 
             return $result;
         }
