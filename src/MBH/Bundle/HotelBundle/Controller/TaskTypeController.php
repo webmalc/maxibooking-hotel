@@ -24,7 +24,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
 {
     /**
      *
-     * @Route("/{category}", name="tasktype", defaults={"category"=null}, requirements={
+     * @Route("/info/{category}", name="tasktype", defaults={"category"=null}, requirements={
      *    "category": "\w*"
      * })
      * @Method({"GET", "POST"})
@@ -50,7 +50,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
 
         $entity = new TaskType();
 
-        $roles =array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+        $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
         $roles = array_combine($roles, $roles);
         $form = $this->createForm(TaskTypeType::class, $entity, [
             'roles' => $roles,
@@ -62,6 +62,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
 
             if($form->isValid()) {
                 $this->dm->persist($entity);
+                $entity->setHotel($this->hotel);
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()

@@ -1,0 +1,33 @@
+{% extends 'bootstrap_3_layout.html.twig' %}
+
+{#{% block _search_form_children_age_entry_widget %}#}
+    {#{{ form(form) }}#}
+{#{% endblock %}#}
+
+{#{%- block collection_widget -%}#}
+    {#{% if prototype is defined %}#}
+        {#{{ dump(prototype) }}#}
+        {#{%- set attr = attr|merge({'data-prototype': form_row(prototype) }) -%}#}
+    {#{% endif %}#}
+    {#{{- block('form_widget') -}}#}
+{#{%- endblock collection_widget -%}#}
+
+{#{% block form_row %}sfsdf#}
+    {#{% spaceless %}#}
+        {#<div class="form-group {% if errors|length > 0 %} has-error{% endif %}">#}
+            {#{{ form_label(form) }}#}
+
+            {#<div class="col-sm-6">#}
+                {#{{ form_widget(form) }}#}
+                {#{% if help is not null %}#}
+                    {#<span class="help-block"><small>{{ help|trans|raw }}</small></span>#}
+                {#{% endif %}#}
+            {#</div>#}
+            {#<div class="col-sm-4">#}
+                {#{% if errors|length > 0 %}#}
+                    {#<span class="text-danger text-left input-errors">{{ form_errors(form) }}</span>#}
+                {#{% endif %}#}
+            {#</div>#}
+        {#</div>#}
+    {#{% endspaceless %}#}
+{#{% endblock form_row %}#}

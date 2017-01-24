@@ -172,6 +172,11 @@ class User extends BaseUser implements RecipientInterface
     protected $twoFactorCode;
 
     /**
+     * @ODM\Field(type="boolean")
+     */
+    protected $locked;
+
+    /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
      */
@@ -192,6 +197,22 @@ class User extends BaseUser implements RecipientInterface
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function isLocked()
+    {
+        return $this->locked;
+    }
+
+    /**
+     * @param mixed $locked
+     */
+    public function setLocked($locked)
+    {
+        $this->locked = $locked;
     }
 
     /**

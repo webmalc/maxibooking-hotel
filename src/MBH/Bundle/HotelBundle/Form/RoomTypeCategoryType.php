@@ -2,16 +2,12 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Class RoomTypeCategoryType
@@ -37,6 +33,12 @@ class RoomTypeCategoryType extends AbstractType
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
                 'attr' => ['class' => 'big roomTypeTypeEditor tinymce']
+            ])
+            ->add('descriptionUrl', TextType::class, [
+                'label' => 'form.roomTypeCategory.descUrl',
+                'help' => 'form.roomTypeCategory.descUrl_help',
+                'required' => false,
+                'group' => 'form.roomTypeType.general_info',
             ])
             ->add('isChildPrices', CheckboxType::class, [
                 'label' => 'form.roomTypeType.isChildPrices',

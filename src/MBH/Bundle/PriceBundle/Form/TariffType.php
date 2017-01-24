@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use MBH\Bundle\PriceBundle\Lib\PaymentType;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -9,11 +10,13 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TariffType extends AbstractType
 {
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
@@ -151,6 +154,16 @@ class TariffType extends AbstractType
                 'help' =>
                     'Использовать для комбинирования тарифов в переходных периодах?<br>
                      По-молчанию спец. тарифы комбинируются с основным тарифом'
+            ])
+            ->add('paymentType', ChoiceType::class, [
+                'label' => 'Процент для первой оплаты',
+                'group' => 'Настройки',
+                'required' => false,
+                'help' => 'Поле для выбора и формирования первой оплаты в онлайне при оплате брони по частям',
+                'choices' => array_combine(array_keys(PaymentType::getPercentChoices()), array_keys(PaymentType::getPercentChoices())),
+                'choice_label' => function ($value) {
+                    return PaymentType::PAYMENT_TYPE_LIST[$value]['description'];
+                }
             ])
             ->add('isEnabled', CheckboxType::class, [
                 'label' => 'Включен?',

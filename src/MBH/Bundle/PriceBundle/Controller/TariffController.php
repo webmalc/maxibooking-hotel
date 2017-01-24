@@ -34,7 +34,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      */
     public function indexAction()
     {
-        $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('q')
+        $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder()
             ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()
@@ -51,11 +51,10 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      * @Route("/{id}/inherit", name="tariff_extend")
      * @Method("GET")
      * @Security("is_granted('ROLE_TARIFF_EDIT')")
-     * @Template()
      * @ParamConverter(class="MBHPriceBundle:Tariff")
      * @param Request $request
      * @param Tariff $parent
-     * @return array
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function extendAction(Request $request, Tariff $parent)
     {

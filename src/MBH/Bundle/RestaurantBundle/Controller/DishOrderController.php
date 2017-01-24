@@ -30,7 +30,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /** @Route("dishorder") */
-
 class DishOrderController extends BaseController implements CheckHotelControllerInterface
 {
     /**
@@ -43,9 +42,16 @@ class DishOrderController extends BaseController implements CheckHotelController
 
         /** @var Form $form */
         $form = $this->createForm(DIshOrderFilterType::class);
-        
+
+        $isDishes = (bool)$this->dm
+            ->getRepository('MBHRestaurantBundle:DishMenuItem')
+            ->createQueryBuilder()
+            ->getQuery()
+            ->count();
+
         return [
-           'form' => $form->createView()
+            'form' => $form->createView(),
+            'isDishes' => $isDishes
         ];
     }
 
@@ -61,7 +67,10 @@ class DishOrderController extends BaseController implements CheckHotelController
         $order = new DishOrderItem();
         $order->setHotel($this->hotel);
 
-        $dishes = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem')->findByHotelByCategoryId($this->helper, $order->getHotel());
+        $dishes = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem')->findByHotelByCategoryId(
+            $this->helper,
+            $order->getHotel()
+        );
 
         $form = $this->createForm(DishOrderItemType::class, $order);
         $form->handleRequest($request);
@@ -77,10 +86,10 @@ class DishOrderController extends BaseController implements CheckHotelController
 
             return $this->afterSaveRedirect('restaurant_dishorder', $order->getId());
         }
-        
+
         return [
             'form' => $form->createView(),
-            'dishes' => $dishes
+            'dishes' => $dishes,
         ];
     }
 
@@ -107,7 +116,10 @@ class DishOrderController extends BaseController implements CheckHotelController
         $form = $this->createForm(DishOrderItemType::class, $order);
         $form->handleRequest($request);
 
-        $dishes = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem')->findByHotelByCategoryId($this->helper, $order->getHotel());
+        $dishes = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem')->findByHotelByCategoryId(
+            $this->helper,
+            $order->getHotel()
+        );
 
         if ($form->isValid() && $form->isSubmitted()) {
             $this->dm->persist($order);
@@ -122,10 +134,10 @@ class DishOrderController extends BaseController implements CheckHotelController
         }
 
         return [
-            'order' =>  $order,
+            'order' => $order,
             'form' => $form->createView(),
             'logs' => $this->logs($order),
-            'dishes' => $dishes
+            'dishes' => $dishes,
         ];
     }
 
@@ -142,7 +154,12 @@ class DishOrderController extends BaseController implements CheckHotelController
         if ($dishOrderItem->isIsFreezed() && !$this->isGranted('ROLE_RESTAURANT_DISHORDER_FREEZED_DELETE')) {
             return $this->redirectToRoute('restaurant_dishorder');
         }
-        return $this->deleteEntity($dishOrderItem->getId(), 'MBHRestaurantBundle:DishOrderItem', 'restaurant_dishorder');
+
+        return $this->deleteEntity(
+            $dishOrderItem->getId(),
+            'MBHRestaurantBundle:DishOrderItem',
+            'restaurant_dishorder'
+        );
     }
 
 
@@ -156,7 +173,7 @@ class DishOrderController extends BaseController implements CheckHotelController
     public function showFreezedOrderAction(DishOrderItem $order)
     {
         return [
-            'order' => $order
+            'order' => $order,
         ];
     }
 
@@ -192,7 +209,7 @@ class DishOrderController extends BaseController implements CheckHotelController
 
         $tableParams = ClientDataTableParams::createFromRequest($request);
 
-        $formRequestSubmit = (array) $request->request->get('form');
+        $formRequestSubmit = (array)$request->request->get('form');
         $formRequestSubmit['search'] = $tableParams->getSearch();
         /** @var Form $form */
         $form = $this->createForm(DIshOrderFilterType::class, new DishOrderCriteria());
@@ -206,16 +223,22 @@ class DishOrderController extends BaseController implements CheckHotelController
         /** @var DishOrderCriteria $criteria */
         $criteria = $form->getData();
 
-        /** @var  DishOrderItemRepository $dishOrderRepository  */
+        /** @var  DishOrderItemRepository $dishOrderRepository */
         $dishOrderRepository = $this->dm->getRepository('MBHRestaurantBundle:DishOrderItem');
-        /* @var Cursor $dishorders*/
-        $dishorders = $dishOrderRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength(), $tableParams->getFirstSort(), $this->hotel);
+        /* @var Cursor $dishorders */
+        $dishorders = $dishOrderRepository->findByQueryCriteria(
+            $criteria,
+            $tableParams->getStart(),
+            $tableParams->getLength(),
+            $tableParams->getFirstSort(),
+            $this->hotel
+        );
 
         return [
             'dishorders' => $dishorders,
             'draw' => $request->get('draw'),
             'total' => count($dishorders->toArray()),
-            'recordsFiltered' => count($dishorders)
+            'recordsFiltered' => count($dishorders),
         ];
     }
 

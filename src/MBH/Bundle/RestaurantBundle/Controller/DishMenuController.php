@@ -26,7 +26,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
     /**
      * List all  category
      *
-     * @Route("/", name="restaurant_dishmenu_category")
+     * @Route("/", name="restaurant_dishmenu_category", options={"expose"=true})
      * @Route("/", name="restaurant_dishmenu_item")
      * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_VIEW')")
      * @Template()

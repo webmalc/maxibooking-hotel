@@ -123,8 +123,9 @@ class Calculation
      * @param int $adults
      * @param int $children
      * @param Promotion|null $promotion
-     * @param Special|null $special
      * @param bool $useCategories
+     * @param bool $useDuration
+     * @param Special|null $special
      * @return array
      */
     public function calcPrices(
@@ -136,6 +137,7 @@ class Calculation
         $children = 0,
         Promotion $promotion = null,
         $useCategories = false,
+        $useDuration = true,
         Special $special = null
     )
     {
@@ -221,7 +223,7 @@ class Calculation
             }
         }
 
-        if (count($caches) != $duration) {
+        if ($useDuration && (count($caches) != $duration)) {
             return false;
         }
 
@@ -313,11 +315,11 @@ class Calculation
 
                 if ($isIndividualAdditionalPrices and ($addsChildren + $addsAdults) > 1) {
                     $addsPrice = 0;
-                    $additionalCalc = function ($num, $prices, $price, $start = 0) {
+                    $additionalCalc = function ($num, $prices, $price, $offset = 0) {
                         $result = 0;
-                        for ($i = $start; $i < $num; $i++) {
-                            if (isset($prices[$i]) && $prices[$i] !== null) {
-                                $result += $prices[$i];
+                        for ($i = 0; $i < $num; $i++) {
+                            if (isset($prices[$i + $offset]) && $prices[$i + $offset] !== null) {
+                                $result += $prices[$i + $offset];
                             } else {
                                 $result += $price;
                             }
@@ -327,7 +329,7 @@ class Calculation
                     };
 
                     $addsPrice += $additionalCalc($addsAdults, $cache->getAdditionalPrices(), $cache->getAdditionalPrice());
-                    $addsChildrenPrice = $additionalCalc($addsChildren, $cache->getAdditionalChildrenPrices(), $cache->getAdditionalChildrenPrice());
+                    $addsChildrenPrice = $additionalCalc($addsChildren, $cache->getAdditionalChildrenPrices(), $cache->getAdditionalChildrenPrice(), $addsAdults);
 
                     if ($promoConditions && $childrenDiscount) {
                         $addsChildrenPrice = $addsChildrenPrice * (100 - $childrenDiscount) / 100;

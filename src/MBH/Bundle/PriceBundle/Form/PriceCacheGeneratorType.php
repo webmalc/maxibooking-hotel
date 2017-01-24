@@ -78,7 +78,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Настройки',
                 'multiple' => true,
                 'choices' => $options['weekdays'],
-                'help' => 'Дни недели для готорых будет произведена генерация наличия мест',
+                'help' => 'Дни недели для которых будет произведена генерация наличия мест',
                 'attr' => array('placeholder' => 'все дни недели'),
             ])
             ->add('roomTypes', DocumentType::class, [
@@ -90,7 +90,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->fetchQueryBuilder($options['hotel']);
                 },
-                'help' => 'Типы номеров для готорых будет произведена генерация цен',
+                'help' => 'Типы номеров для которых будет произведена генерация цен',
                 'attr' => array('placeholder' => $options['hotel'] . ': все типы номеров', 'class' => 'select-all'),
             ])
             ->add('tariffs', DocumentType::class, [
@@ -102,7 +102,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->fetchChildTariffsQuery($options['hotel'], 'prices');
                 },
-                'help' => 'Тарифы для готорых будет произведена генерация цен',
+                'help' => 'Тарифы для которых будет произведена генерация цен',
                 'attr' => array('placeholder' => $options['hotel'] . ': все тарифы', 'class' => 'select-all'),
             ])
             ->add('price', TextType::class, [
