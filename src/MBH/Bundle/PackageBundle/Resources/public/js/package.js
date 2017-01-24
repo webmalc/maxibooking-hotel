@@ -452,34 +452,14 @@ $(document).ready(function () {
     'use strict';
     docReadyPackages();
     // set user Date (ClientConfig)
-    var flagDatePickerOne = true,
-        flagDatePickerTwo = true;
     //get Phoenix sessionStorage data
     var str = 'phoenixStorage.' + location.host + location.pathname + '.INPUT.package-filter-begin.',
         strTwo = 'phoenixStorage.' + location.hostname + location.pathname + '.INPUT.package-filter-begin.';
 
     if (!sessionStorage.getItem(str) && !sessionStorage.getItem(strTwo)) {
-        $('.datepicker').val();
-        console.log('clear');
-    } else {
-        console.log('non-clear');
-        flagDatePickerOne = false;
-        flagDatePickerTwo = false;
+        $('.begin-datepicker').datepicker("setDate", moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+        $('.end-datepicker').datepicker("setDate", moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
     }
-
-    $('.datepicker').datepicker()
-        .on('show', function () {
-            if (flagDatePickerOne && $(this).is('#package-filter-begin')) {
-                $(this).datepicker("setDate", moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-                flagDatePickerOne = false;
-                console.log('yes');
-            }
-            if (flagDatePickerTwo && $(this).is('#package-filter-end')) {
-                $(this).datepicker("setDate", moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-                flagDatePickerTwo = false;
-            }
-        });
-
 
     //package ajax tabs
     (function () {
