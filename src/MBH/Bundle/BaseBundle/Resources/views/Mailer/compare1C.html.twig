@@ -24,7 +24,7 @@
                         MB
                     </th>
                     <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left; width: 10%;">
-                         1С
+                        1С
                     </th>
                     <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left; width: 10%;">
                         MB
@@ -33,7 +33,10 @@
                         1С
                     </th>
                     <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left; width: 10%;">
-                        Разница
+                        MB (нет в 1с)
+                    </th>
+                    <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left; width: 10%;">
+                        1C (нет в MB)
                     </th>
 
                 </tr>
@@ -60,13 +63,16 @@
                             {{ entry.remain }}/{{ entry.total }}
                         </td>
                         <td style="vertical-align: top; white-space: nowrap; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
-                            <small>{{ entry.numbersMB|join('<br>')|raw }}</small>
+                            <small>{{ entry.numbersMB|sort|join('<br>')|raw }}</small>
                         </td>
                         <td style="vertical-align: top; white-space: nowrap; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
-                            <small>{{ entry.numbers|join('<br>')|raw }}</small>
+                            <small>{{ entry.numbers|sort|join('<br>')|raw }}</small>
                         </td>
                         <td style="vertical-align: top; white-space: nowrap; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
-                            <small>{{ entry.numbersDiff|join('<br>')|raw }}</small>
+                            <small>{{ entry.non_oneC|join('<br>')|raw }}</small>
+                        </td>
+                        <td style="vertical-align: top; white-space: nowrap; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                            <small>{{ entry.non_mb|join('<br>')|raw }}</small>
                         </td>
                     </tr>
                 {% endfor %}

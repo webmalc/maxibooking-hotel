@@ -133,7 +133,14 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                             $this->result[] = $entry;
                             $entry->numbersMB = $dm->getRepository('MBHPackageBundle:Package')
                                 ->getNumbers($entry->date, $entry->roomType);
-                            $entry->numbersDiff = array_merge(array_diff($entry->numbersMB, $entry->numbers), array_diff($entry->numbers, $entry->numbersMB));
+                            $entry->mb = array_diff($entry->numbersMB, $entry->numbers);
+                            $entry->oneC = array_diff($entry->numbers, $entry->numbersMB);
+                            $entry->common = array_merge($entry->mb, $entry->oneC);
+                            asort($entry->common);
+                            $entry->res = array_unique($entry->common);
+                            $entry->non_oneC = $this ->sortOneC($entry->res,$entry->mb);
+                            $entry->non_mb = $this ->sortOneC($entry->res,$entry->oneC);
+
                         }
                     }
                 }
@@ -142,6 +149,17 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
         $this->sendMessage(['result' => $this->result]);
 
         return true;
+    }
+
+    private function sortOneC($array,$array2){
+        foreach ($array as $item => $itemValue) {
+            foreach ($array2 as $arr => $arrValue) {
+                if ($itemValue == $arrValue) {
+                    $array[$item] = '-';
+                }
+            }
+        }
+        return $array;
     }
 
     private function sendMessage(array $data)
