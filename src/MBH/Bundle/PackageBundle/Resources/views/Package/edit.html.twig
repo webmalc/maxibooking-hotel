@@ -31,7 +31,7 @@
                     <table class="table not-auto-datatable table-striped">
                         <tbody>
                         <tr>
-                            <td>
+                            <td class="col-md-3">
                                 <strong>{{ 'package.edit.tariff'|trans({}, 'MBHPackageBundle') }}</strong>
                             </td>
                             <td>
@@ -39,7 +39,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>
+                            <td class="col-md-3">
                                 <strong>{{ 'package.edit.price'|trans({}, 'MBHPackageBundle') }}</strong>
                             </td>
                             <td>
@@ -59,7 +59,7 @@
 
                         {% if package.prices is not empty %}
                             <tr>
-                                <td>
+                                <td class="col-md-3">
                                     <strong>{{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>
@@ -96,7 +96,7 @@
 
                         {% if package.pricesByDate is not empty and package.prices is empty %}
                             <tr>
-                                <td>
+                                <td class="col-md-3">
                                     <strong>{{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>
@@ -120,7 +120,7 @@
 
                         {% if package.deleted %}
                             <tr>
-                                <td>
+                                <td class="col-md-3">
                                     <strong>{{ 'modal.form.delete.reasons.reason'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>

@@ -310,10 +310,6 @@ var docReadyPackages = function () {
                     .done(function (data) {
                         $('body').after(data);
                         $('#myModal').modal('show');
-                    })
-                    .fail(function () {
-                        // todo передать текст error
-                        alert('Ошибка!');
                     });
             });
 
