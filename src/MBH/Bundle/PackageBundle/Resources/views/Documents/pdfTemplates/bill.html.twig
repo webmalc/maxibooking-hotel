@@ -43,7 +43,7 @@
         </div>
         {% if hotel and hotel.logoUrl %}
             <div class="logo">
-                <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
+                <img src="{{ absolute_url(asset(hotel.logoUrl)) }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>

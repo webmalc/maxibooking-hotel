@@ -174,7 +174,8 @@ class CashController extends Controller
 
         $queryCriteria->filterByRange = empty($request->get('filter')) ? 'paidDate' : $request->get('filter');
 
-        $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
+        // TODO: Add acl
+        //$queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
 
         $queryCriteria->deleted = $request->get('deleted');
 

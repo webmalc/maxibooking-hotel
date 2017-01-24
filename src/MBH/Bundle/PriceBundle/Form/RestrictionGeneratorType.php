@@ -59,7 +59,7 @@ class RestrictionGeneratorType extends AbstractType
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->fetchQueryBuilder($options['hotel']);
                 },
-                'help' => 'Типы номеров для готорых будет произведена генерация цен',
+                'help' => 'Типы номеров для которых будет произведена генерация цен',
                 'attr' => array('placeholder' => $options['hotel'].': все типы номеров', 'class' => 'select-all'),
             ])
             ->add('tariffs', DocumentType::class, [
@@ -71,7 +71,7 @@ class RestrictionGeneratorType extends AbstractType
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->fetchChildTariffsQuery($options['hotel'], 'restrictions');
                 },
-                'help' => 'Тарифы для готорых будет произведена генерация цен',
+                'help' => 'Тарифы для которых будет произведена генерация цен',
                 'attr' => array('placeholder' => $options['hotel'].': все тарифы', 'class' => 'select-all'),
             ])
             ->add('minStayArrival', TextType::class, [

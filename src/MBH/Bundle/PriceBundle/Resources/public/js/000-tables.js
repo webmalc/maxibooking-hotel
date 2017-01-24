@@ -47,7 +47,6 @@ var mbhGridCopy = function () {
             } else {
                 $('.header-action-generator').addClass('hidden');
                 fromTd.addClass('copy-from');
-                console.log();
             }
         });
 

@@ -35,6 +35,7 @@ class TaskTypeCategoryController extends Controller
 
         if($form->handleRequest($request)->isValid()){
             $entity->setIsSystem(false);
+            $entity->setHotel($this->hotel);
             $this->dm->persist($entity);
             $this->dm->flush();
 
