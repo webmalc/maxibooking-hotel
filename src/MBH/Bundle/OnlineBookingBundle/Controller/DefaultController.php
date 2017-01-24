@@ -532,9 +532,77 @@ class DefaultController extends BaseController
     ) {
 
         $former = $this->get('mbh.online.chart.data.former');
-        $data = $former->getPriceCalendarData($roomType, $tariff, $adults, $children, $packageBegin, $packageEnd);
+        $result = $former->getPriceCalendarData($roomType, $tariff, $adults, $children, $packageBegin, $packageEnd);
 
-        $response = new JsonResponse($data);
+        $response = new JsonResponse($result);
+        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+
+        return $response;
+    }
+
+    /**
+     * @Route(
+     *     "/calculationRoom",
+     *      name="online_booking_calculationRoom",
+     *      options={"expose" = true}
+     *     )
+     **/
+    public function getMultiCalculate(Request $request)
+    {
+        $json = $request->query->get('data');
+        $data = json_decode($json, true);
+
+
+        $former = $this->get('mbh.online.chart.data.former');
+        $results = [];
+        foreach ($data as $rowData) {
+            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($rowData['roomType']);
+            $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($rowData['tariff']);
+            $adults = $rowData['adults'];
+            $children = $rowData['children'];
+            $packageBegin = (new \DateTime($rowData['begin']))->modify('midnight');
+            $packageEnd = (new \DateTime($rowData['end']))->modify('midnight');
+            $results[] = $former->getPriceCalendarData(
+                $roomType,
+                $tariff,
+                $adults,
+                $children,
+                $packageBegin,
+                $packageEnd->modify("-1 day")
+            );
+        }
+
+        //Search For Max value
+
+        $maxY = null;
+        $minY = null;
+        /*        foreach ($results as $result) {
+                    $maxY = max($maxY, max(array_column($result['prices'], 'y')));
+
+                }*/
+        foreach ($results as $result) {
+            $maxY = max(
+                $maxY,
+                array_reduce( $result['prices'],
+                    function ($max, $detail) {
+                        return max($max, $detail['y']);
+                    }
+                )
+
+            );
+
+
+
+        }
+
+        foreach ($results as &$result) {
+            $result['yMax'] = $maxY;
+            $result['yMin'] = $maxY/2;
+        }
+
+
+
+        $response = new JsonResponse($results);
         $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
 
         return $response;

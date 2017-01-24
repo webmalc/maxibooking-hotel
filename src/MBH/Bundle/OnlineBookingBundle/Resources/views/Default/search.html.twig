@@ -123,8 +123,16 @@
                     {% for searchResult in result.results %}
                         <tr
                                 class="tariff-row"
+                                data-tariff="{{ searchResult.tariff.id }}"
+                                data-roomtype="{{ searchResult.roomType.id }}"
+                                data-adults="{{ searchResult.adults }}"
+                                data-children="{{ searchResult.children }}"
+                                data-begin="{{ searchResult.begin|date('d.m.Y') }}"
+                                data-end="{{ searchResult.end|date('d.m.Y') }}"
                                 data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}&form[infants]={{ searchResult.infants }}&form[paymentType]={{ searchResult.tariff.paymentType }}"
-                                data-payment_type= {{ searchResult.tariff.paymentType }}
+                                data-payment_type="{{ searchResult.tariff.paymentType }}"
+
+
                         >
                             <td>{{ searchResult.tariff.fullTitle }}
                                 {% if searchResult.tariff.description is not empty %}
@@ -172,7 +180,7 @@
                 </div>
             </div>
 
-            <div id="chart{{ loop.index }}" class="col-md-12" style="height: 500px;"></div>
+            <div id="chart{{ loop.index }}" class="col-md-12"></div>
         </div>
 
     {% endfor %}
@@ -235,7 +243,7 @@
     });
 </script>
 <script>
-    var mychart, myprices;
+    var mychart, myprices, myrows = [];
 
     //BuyOnline
     var RoomTypeRow = function ($row) {
@@ -244,6 +252,7 @@
         this.$bookingButtonReservation = $row.find('.btn-booking-reservation');
         this.tariffRows = [];
         this.selectedTariffRow = null;
+        this.chartContainer = this.$row.find("div[id^=chart]").attr('id');
     };
 
     /*RoomTypeRow.prototype.isSelected = function()
@@ -283,6 +292,7 @@
         if (!checked) {
             this.tariffRows[0].$radiobutton.iCheck('check');
         }
+
     }
 
     RoomTypeRow.prototype.notAlreadyBooking = function () {
@@ -314,92 +324,14 @@
         this.$bookingButtonReservation.attr('href', href + '&reservation=true');
     }
 
-    RoomTypeRow.prototype.getChartOptions = function () {
-        return {
-            chart: {
-                type: 'column',
-                plotBorderWith: 1
-            },
-            title: {
-                text: 'Календарь цен',
-                align: 'center',
-                floating: false
-            },
-            subtitle: {
-                text: 'subtitle',
-                floating: true
-            },
-            xAxis: {
-                gridLineWidth: 0,
-                type: 'category',
-                labels: {
-                    rotation: -75,
-                    style: {
-                        fontSize: '10px',
-                        fontFamily: 'Verdana, sans-serif'
-                    }
-                }
-            },
-            scrollbar: {
-                enabled: true,
-                liveRedraw: true
-            },
-            yAxis: [{
-                gridLineWidth: 1,
-                title: {
-                    text: 'Цена'
-                },
-                allowDecimail: false,
-                softMax: 6000,
-                min: 0,
-                labels: {
-                    format: '{value:,.0f} р'
-                }
-            }, {
-                title: {
-                    text: 'Цена'
-                },
-                opposite: true
-            }],
-            legend: {
-                enabled: false
-            },
-            plotOptions: {
-                series: {
-                    color: '#6894ee',
-                    align: 'right',
-                    allowPointSelect: false,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        format: '{point.y:,.0f} р',
-                        enabled: true,
-                        rotation: -90,
-                        y: 30,
-                        color: '#FFFFFF',
-                        style: {
-                            "fontSize": '10px',
-                            "textShadow": false,
-                            "textWeight": 100,
-                            "stroke-width": "0px"
-                        }
-                    }
-                },
-                line: {
-                    dataLabels: {
-                        enabled: false
-                    }
-                }
-            },
-            tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                style: {
-                    color: '#F0F0F0'
-                },
-                headerFormat: '<span style="font-size: 10px; text-align: center;">{point.key}</span><br/>',
-                pointFormat: '<b>{point.y} руб.</b>'
-            }
-        };
+    RoomTypeRow.prototype.handleChartData = function(data) {
+        var chartData = data;
+        $.each(this.tariffRows, function (index) {
+            this.chartData = chartData[index];
+        });
+
     };
+
 
     var TariffRow = function ($row, roomTypeRow) {
         this.$row = $row;
@@ -407,6 +339,7 @@
         this.bookingHref = this.$row.data('url');
         this.$promotionSelect = $row.find('select');
         this.roomTypeRow = roomTypeRow;
+        this.chartData = {};
     }
 
 
@@ -447,8 +380,136 @@
         //this.$radiobutton.attr('checked', false);
     }
 
+    RoomTypeRow.prototype.getChartOptions = function () {
+        return {
+            chart: {
+                type: 'column',
+                plotBorderWith: 1,
+                height: 250,
+                zoomType : false
+            },
+            title: {
+                text: 'Календарь цен',
+                align: 'center',
+                floating: false
+            },
+            subtitle: {
+                text: 'subtitle',
+                floating: true
+            },
+            xAxis: {
+                gridLineWidth: 0,
+                type: 'category',
+                labels: {
+                    rotation: -75,
+                    style: {
+                        fontSize: '10px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                }
+            },
+            yAxis: {
+                gridLineWidth: 1,
+                title: {
+                    enabled: false,
+                    text: 'Цена'
+                },
+                allowDecimail: false,
+                labels: {
+                    enabled: false,
+                    format: '{value:,.0f} р'
+                },
+                tickInterval: 2000
+            },
+            scrollbar: {
+                enabled: true,
+                liveRedraw: true
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    color: '#6894ee',
+                    align: 'right',
+                    allowPointSelect: false,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        format: '{point.y:,.0f} р',
+                        enabled: true,
+                        rotation: -90,
+                        y: 30,
+                        color: '#FFFFFF',
+                        style: {
+                            "fontSize": '10px',
+                            "textShadow": false,
+                            "textWeight": 100,
+                            "stroke-width": "0px"
+                        }
+                    }
+                },
+                line: {
+                    dataLabels: {
+                        enabled: false
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                style: {
+                    color: '#F0F0F0'
+                },
+                headerFormat: '<span style="font-size: 10px; text-align: center;">{point.key}</span><br/>',
+                pointFormat: '<b>{point.y} руб.</b>'
+            }
+        };
+    };
+
+    TariffRow.prototype.showChart = function () {
+        if (!this.roomTypeRow.chart) {
+            var options = this.roomTypeRow.getChartOptions();
+            options.xAxis.min = this.chartData['showBegin'];
+            options.xAxis.max = this.chartData['showEnd'];
+            options.subtitle.text = this.chartData['roomTypeName'];
+            options.yAxis.max = this.chartData['yMax'];
+            options.yAxis.min = this.chartData['yMin'];
+
+            this.roomTypeRow.chart = new Highcharts.Chart(this.roomTypeRow.chartContainer, options);
+        }
+
+        //Алярма!, массив с данными передается по ссылке по-умолчанию по сему
+        //тут копия, которую и передаем. -3чч
+        var prices = JSON.parse(JSON.stringify(this.chartData['prices']));
+
+        if ('undefined' == typeof (this.roomTypeRow.chart.series[0])) {
+            this.roomTypeRow.chart.addSeries({data: prices});
+        } else {
+            this.roomTypeRow.chart.series[0].setData(prices);
+        }
+    };
+
     TariffRow.prototype.drawChart = function () {
-        var urlDecoded = this.$row.data('url').split('?')[1].split('&'),
+        var data = this.chartData,
+            that = this;
+        if ($.isEmptyObject(data)) {
+            //Для одного тарифа
+            //data = $.getJSON(getChartUrl(this))
+            //Для всех тарифов
+            data = $.getJSON(getChartRoomUrl(this));
+
+            $.when(data).then(function (data) {
+                //Закидываем данные в каждый tariffRow через roomType
+                that.roomTypeRow.handleChartData(data);
+                that.showChart();
+            });
+        } else {
+            this.showChart();
+        }
+
+    };
+
+    var getChartUrl = function (tariffRow) {
+        var urlDecoded = tariffRow.$row.data('url').split('?')[1].split('&'),
             rawArr = [];
 
         for (var i = 0; i < urlDecoded.length; i++) {
@@ -457,34 +518,38 @@
         }
 
         var url = Routing.generate('online_booking_calculation', {
-                tariffId: rawArr['form[tariff]'],
-                roomTypeId: rawArr['form[roomType]'],
-                adults: rawArr['form[adults]'],
-                children: rawArr['form[children]'],
-                packageBegin: rawArr['form[begin]'],
-                packageEnd: rawArr['form[end]']
-            }, true),
-            chartContainerId = this.$row.closest('div.room-type-row').find("div[id^=chart]").attr('id'),
-            ajaxJson = $.getJSON(url),
-            that = this;
+            tariffId: rawArr['form[tariff]'],
+            roomTypeId: rawArr['form[roomType]'],
+            adults: rawArr['form[adults]'],
+            children: rawArr['form[children]'],
+            packageBegin: rawArr['form[begin]'],
+            packageEnd: rawArr['form[end]']
+        }, true);
 
-        ajaxJson
-            .done(function (charData) {
-                if (!that.roomTypeRow.chart) {
-                    var options = that.roomTypeRow.getChartOptions();
-                    options.xAxis.min = charData['showBegin'];
-                    options.xAxis.max = charData['showEnd'];
-                    options.subtitle.text = charData['roomTypeName'];
-                    that.roomTypeRow.chart = new Highcharts.Chart(chartContainerId, options);
-                    mychart = that.chart;
-                }
-                if (!that.roomTypeRow.chart.series[0]) {
-                    that.roomTypeRow.chart.addSeries({data: charData['prices']});
-                } else {
-                    that.roomTypeRow.chart.series[0].setData(charData['prices'])
-                }
+        return url;
+    };
 
+    var getChartRoomUrl = function(tariffRow) {
+        var data = [];
+        var RoomTypeRow = tariffRow.roomTypeRow;
+        RoomTypeRow.tariffRows.forEach(function (tariffRow) {
+            var $row = tariffRow.$row;
+            data.push({
+                roomType: $row.data('roomtype'),
+                tariff: $row.data('tariff'),
+                adults: $row.data('adults'),
+                children: $row.data('children'),
+                begin: $row.data('begin'),
+                end: $row.data('end')
             });
+        });
+
+        return Routing.generate('online_booking_calculationRoom',
+            {
+                data: JSON.stringify(data)
+
+            }
+            , true);
     };
 
     var $onlineBookingSearch = $('#online-booking-search');
@@ -496,10 +561,11 @@
             var roomTypeRow = new RoomTypeRow($(this));
             roomTypeRow.init();
             roomTypeRow.tariffRows.forEach(function (tariffRow) {
+                myrows.push(tariffRow);
                 tariffRow.$row.on('click', function () {
+                    tariffRow.drawChart();
                     tariffRow.selected();
                     start_bron(this);
-                    tariffRow.drawChart();
                 });
             })
         });
@@ -508,17 +574,6 @@
     });
 
     var start_bron = function (row) {
-        /*$button_online = $(row).closest("table").siblings(".btmactions").find("a.btn-booking");
-         if($button_reservation.hasClass("disabled")) {
-         $button_reservation.removeClass("disabled");
-         }
-         if($button_online.hasClass("disabled") && $(row).data("payment_type") === "hundred") {
-         $button_online.removeClass("disabled")
-         } else if (!$button_online.hasClass("disabled") && $(row).data("payment_type") !== "hundred") {
-         $button_online.addClass("disabled");
-         }*/
-
-
         $(row).siblings().removeClass("alerting");
         $(row).addClass("alerting");
 

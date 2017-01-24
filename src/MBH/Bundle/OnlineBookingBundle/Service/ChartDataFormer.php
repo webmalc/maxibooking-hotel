@@ -94,6 +94,7 @@ class ChartDataFormer
             $showEnd = $center + $packagePeriod / 2 + 4;
             $data['showBegin'] = $showBegin;
             $data['showEnd'] = $showEnd;
+
         }
 
 
@@ -104,5 +105,7 @@ class ChartDataFormer
 
         return $data;
     }
+
+
 
 }
