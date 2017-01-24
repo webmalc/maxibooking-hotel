@@ -1,38 +1,5 @@
 /*global window, $, document, mbh */
 /*global window, $, document, mbh, Routing, deleteLink */
-$(document).ready(function () {
-    'use strict';
-
-    var tariffFilterForm = $('#mbh_filter_form'),
-        tariffTable = $('#tariff-table'),
-        process = false;
-
-    tariffTable.dataTable({
-        serverSide: true,
-        processing: true,
-        ordering: false,
-        "drawCallback": function() {
-            process = false;
-            deleteLink();
-            $('.disabled-entry').closest('tr').addClass('danger');
-        },
-        "ajax": {
-            "method": "POST",
-            "url": Routing.generate('tariff'),
-            "data": function (requestData) {
-                process = true;
-                requestData.form = tariffFilterForm.serializeObject();
-                return requestData;
-            }
-        }
-    });
-
-    tariffFilterForm.find('input, select').on('change switchChange.bootstrapSwitch', function () {
-        if (!process) {
-            tariffTable.dataTable().fnDraw();
-        }
-    });
-});
 
 $(document).ready(function () {
     'use strict';
@@ -199,5 +166,35 @@ $(document).ready(function () {
         var viewService = new ViewService($prototype, serviceIndex);
         viewService.init();
         ++serviceIndex;
+    });
+
+    var tariffFilterForm = $('#mbh_filter_form'),
+        tariffTable = $('#tariff-table'),
+        process = false;
+
+    tariffTable.dataTable({
+        serverSide: true,
+        processing: true,
+        ordering: false,
+        "drawCallback": function() {
+            process = false;
+            deleteLink();
+            $('.disabled-entry').closest('tr').addClass('danger');
+        },
+        "ajax": {
+            "method": "POST",
+            "url": Routing.generate('tariff'),
+            "data": function (requestData) {
+                process = true;
+                requestData.form = tariffFilterForm.serializeObject();
+                return requestData;
+            }
+        }
+    });
+
+    tariffFilterForm.find('input, select').on('change switchChange.bootstrapSwitch', function () {
+        if (!process) {
+            tariffTable.dataTable().fnDraw();
+        }
     });
 });

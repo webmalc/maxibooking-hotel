@@ -2,9 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Lib;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Special;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 
 /**
  * Class TariffFilter
@@ -12,6 +10,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
  */
 class TariffFilter
 {
+
     /**
      * @var Hotel
      */
@@ -136,7 +135,7 @@ class TariffFilter
      * @param $search
      * @return TariffFilter
      */
-    public function setSearch($search = ''): TariffFilter
+    public function setSearch($search): TariffFilter
     {
         $this->search = $search;
         return $this;

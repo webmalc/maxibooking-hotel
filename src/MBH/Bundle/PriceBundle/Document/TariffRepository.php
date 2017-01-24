@@ -5,9 +5,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use Doctrine\ODM\MongoDB\Query\Builder;
-use MBH\Bundle\PriceBundle\Document\Criteria\TariffQueryCriteria;
 use MBH\Bundle\PriceBundle\Lib\TariffFilter;
 
 class TariffRepository extends DocumentRepository

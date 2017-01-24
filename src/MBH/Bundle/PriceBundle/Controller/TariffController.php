@@ -5,10 +5,8 @@ namespace MBH\Bundle\PriceBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\PriceBundle\Document\Criteria\TariffQueryCriteria;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffChildOptions;
-use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use MBH\Bundle\PriceBundle\Form\TariffFilterType;
 use MBH\Bundle\PriceBundle\Form\TariffInheritanceType;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
@@ -20,10 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * @Route("management/tariff")
@@ -43,13 +38,19 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      */
     public function indexAction(Request $request)
     {
+        $tableParams = ClientDataTableParams::createFromRequest($request);
+
         $filter = new TariffFilter();
+        $filter->setSearch($tableParams->getSearch());
         $filter->setHotel($this->hotel);
 
         $form = $this->createForm(TariffFilterType::class, $filter);
 
+        $formData = (array)$request->get('form');
+        $formData['search'] = $tableParams->getSearch();
+
         if ($request->isXmlHttpRequest()) {
-            $form->submit($request->get('form'));
+            $form->submit($formData);
             $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->getFiltered($filter);
 
             return $this->render('MBHPriceBundle:Tariff:index.json.twig', [
