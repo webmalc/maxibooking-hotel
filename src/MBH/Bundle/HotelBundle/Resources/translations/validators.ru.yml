@@ -13,6 +13,9 @@ validator.document.hotel.wrong_latitude: 'Неверный формат коор
 validator.document.hotel.wrong_longitude: 'Неверный формат координаты долготы. Пример: 37.617515'
 validator.document.hotel.min_stars: Минимальное количество звезд отеля не может быть меньше 1
 validator.document.hotel.max_stars: Максимальое количество звезд отеля не может быть больше 5
+validator.document.hotel.min_phone: Слишком короткий номер телефона
+validator.document.hotel.max_phone: Слишком длинный номер телефона
+
 validator.document.region.country_not_selected: Не выбрана страна
 validator.document.region.min_name: Слишком короткое имя
 validator.document.region.max_name: Слишком длинное имя

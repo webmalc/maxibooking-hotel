@@ -90,3 +90,11 @@ services:
 
     mbh_bundle_channel_manager.lib_ostrovok.ostrovok_data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator
+
+    mbh.channel_manager.trip_advisor_response_formatter:
+      class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter
+      arguments: ['@mbh.channel_manager.trip_advisor_response_data_formatter']
+
+    mbh.channel_manager.trip_advisor_response_data_formatter:
+      class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorDataFormatter
+      arguments: ['@mbh.package.search', '@doctrine.odm.mongodb.document_manager']
