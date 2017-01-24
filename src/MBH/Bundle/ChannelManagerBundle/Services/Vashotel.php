@@ -839,6 +839,10 @@ class Vashotel extends Base
         }
 
         foreach ($response->xpath('rate') as $rate) {
+            if (!(int)$rate->id) {
+                continue;
+            }
+
             $result[(int)$rate->id] = [
                 'title' => (string)$rate->name,
                 'changePrice' => !!(int)$rate->changePrice,
