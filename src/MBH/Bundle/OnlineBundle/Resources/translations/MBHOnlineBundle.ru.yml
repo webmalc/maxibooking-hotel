@@ -40,6 +40,8 @@ views.api.getResultsTable.day: день
 views.api.getResultsTable.rooms: "Номера:"
 views.api.getResultsTable.services: "Услуги:"
 views.api.getResultsTable.result: "Итого:"
+views.api.getResultsTable.facilities: Удобства
+views.api.getResultsTable.descriptions_room: Описание номера
 views.api.getResultsTable.continue: Продолжить
 views.api.getResultsTable.nothing_found_for_your_query: По вашему запросу ничего не найдено.
 views.api.getUserForm.enter_data_to_continue: Заполните данные для продолжения

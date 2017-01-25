@@ -343,8 +343,16 @@ class ApiController extends Controller
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
+        $facilityArray = array();
+
+        foreach ($this->getParameter('mbh.hotel')['facilities'] as $facilityVal) {
+            foreach ($facilityVal as $key => $val) {
+                $facilityArray[$key] = $val;
+            }
+        }
+
         return [
-            'domainName' => $this->getParameter('router.request_context.host'),
+            'facilityArray' => $facilityArray,
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
             'hotels' => $hotels,
