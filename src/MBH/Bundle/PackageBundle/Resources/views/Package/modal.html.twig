@@ -23,6 +23,7 @@
                             <div class="box-body">
                                 <select id="select_reasons" class="form-control js-select" style="width: 100%">
                                     {% for reason in reasons %}
+                                        <option></option>
                                         <option value="{{ reason.id }}">{{ reason.fullTitle }}</option>
                                     {% endfor %}
                                 </select>
