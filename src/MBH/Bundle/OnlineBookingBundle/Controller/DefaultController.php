@@ -113,12 +113,16 @@ class DefaultController extends BaseController
                 $searchQuery->setChildrenAges($formData['children_age']);
             };
 
-            $searchResults = $this->get('mbh.package.search')
+            $searchService = $this->get('mbh.package.search');
+            $searchResults = $searchService
                 ->setAdditionalDates()
                 ->setWithTariffs()
                 ->search($searchQuery);
             ///////TODO: Убирать тут
 //            $searchResults = [];
+
+            $specials = $searchService->searchSpecials($searchQuery);
+
 
             foreach ($searchResults as $k => $item) {
                 $filterSearchResults = [];

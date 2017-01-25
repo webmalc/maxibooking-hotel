@@ -137,10 +137,11 @@ class Calculation
         $children = 0,
         Promotion $promotion = null,
         $useCategories = false,
-        $useDuration = true,
-        Special $special = null
+        Special $special = null,
+        $useDuration = true
     )
     {
+//        dump($special);exit;
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
         $places = $roomType->getPlaces();
