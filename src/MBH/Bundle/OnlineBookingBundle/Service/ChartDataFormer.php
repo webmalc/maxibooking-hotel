@@ -57,6 +57,7 @@ class ChartDataFormer
                 $children,
                 $tariff->getDefaultPromotion(),
                 true,
+                null,
                 false
             );
 
