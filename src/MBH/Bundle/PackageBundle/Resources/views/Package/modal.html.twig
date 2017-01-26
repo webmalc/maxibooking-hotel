@@ -22,8 +22,8 @@
 
                             <div class="box-body">
                                 <select id="select_reasons" class="form-control js-select" style="width: 100%">
+                                    <option></option>
                                     {% for reason in reasons %}
-                                        <option></option>
                                         <option value="{{ reason.id }}">{{ reason.fullTitle }}</option>
                                     {% endfor %}
                                 </select>
@@ -41,28 +41,4 @@
             </div>
         </div>
     </div>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $(".js-select").select2();
-        });
-
-        $('button.btn-delete').click(function () {
-
-            var array = {
-                'select_reasons': $('#select_reasons').val(),
-            };
-
-            $.ajax({
-                url: Routing.generate('delete_package', {'id': $('#package_id').val()}),
-                type: "GET",
-                data: array,
-                dataType: "json",
-                success: function (urlFromController) {
-                    window.location.href = urlFromController;
-                }
-            });
-        });
-    </script>
-
 </div>

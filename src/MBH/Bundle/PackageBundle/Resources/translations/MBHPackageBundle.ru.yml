@@ -203,6 +203,7 @@ package.index.created: Создана
 package.index.isUpdated: Обновлён
 package.index.selection: 'Подбор'
 package.index.porter_link: 'Отчет портье'
+package.index.deleted: Удаленные?
 package.json.reservation_type: 'Тип брони:'
 package.json.edit_record: Редактирование записи
 package.json.deleted: удалена

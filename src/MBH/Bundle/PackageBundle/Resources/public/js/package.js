@@ -309,6 +309,26 @@ var docReadyPackages = function () {
                 answer
                     .done(function (data) {
                         $('body').after(data);
+
+                        $(".js-select").select2();
+
+                        $('button.btn-delete').click(function () {
+
+                            var array = {
+                                'select_reasons': $('#select_reasons').val(),
+                            };
+
+                            $.ajax({
+                                url: Routing.generate('delete_package', {'id': $('#package_id').val()}),
+                                type: "GET",
+                                data: array,
+                                dataType: "json",
+                                success: function (urlFromController) {
+                                    window.location.href = urlFromController;
+                                }
+                            });
+                        });
+
                         $('#myModal').modal('show');
                     });
             });
