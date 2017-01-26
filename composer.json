@@ -47,7 +47,8 @@
     "dinhkhanh/mongodb-acl-bundle": "dev-master",
     "guzzlehttp/guzzle": "^6.2",
     "php-amqplib/rabbitmq-bundle": "^1.12",
-    "phobetor/rabbitmq-supervisor-bundle": "^1.5"
+    "phobetor/rabbitmq-supervisor-bundle": "^1.5",
+    "twig/twig": "1.30.0"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

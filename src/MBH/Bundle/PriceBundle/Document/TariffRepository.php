@@ -145,4 +145,32 @@ class TariffRepository extends DocumentRepository
     {
         return $this->fetchQueryBuilder($hotel, $tariffs, $enabled, $online)->getQuery()->execute();
     }
+
+    /**
+     *
+     * @param Hotel|null $hotel
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     * @return mixed
+     */
+    public function getTariffsByDates(?Hotel $hotel = null, ?\DateTime $begin = null, ?\DateTime $end = null)
+    {
+        $qb = $this->createQueryBuilder();
+
+        if ($hotel) {
+            $qb->field('hotel.id')->equals($hotel->getId());
+        }
+
+        if ($begin) {
+            $qb->field('begin')->lte($begin);
+        }
+
+        if ($end) {
+            $qb->field('end')->gte($end);
+        }
+
+        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');;
+
+        return $qb->getQuery()->execute();
+    }
 }

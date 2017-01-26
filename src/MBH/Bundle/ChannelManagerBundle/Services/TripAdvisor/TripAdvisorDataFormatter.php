@@ -4,9 +4,11 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class TripAdvisorDataFormatter
 {
@@ -15,13 +17,18 @@ class TripAdvisorDataFormatter
     /** @var  DocumentManager $dm */
     private $dm;
 
+    private $isAvailableRoomTypesInit = false;
+    private $availableRoomTypes;
+    private $isAvailableTariffsInit = false;
+    private $availableTariffs;
+
     public function __construct(SearchFactory $search, DocumentManager $dm)
     {
         $this->search = $search;
         $this->dm = $dm;
     }
 
-    public function getAvailabilityData($startDate, $endDate, $adultsAndChildrenData, $hotelsSyncData)
+    public function getAvailabilityData($startDate, $endDate, $hotelsSyncData, Tariff $tariff = null)
     {
         $query = new SearchQuery();
 
@@ -29,6 +36,9 @@ class TripAdvisorDataFormatter
         $query->begin = \DateTime::createFromFormat('Y-m-d' . ' H:i:s', $startDate . ' 00:00:00');
         $query->end = \DateTime::createFromFormat('Y-m-d' . ' H:i:s', $endDate . ' 00:00:00');
 //        $query->tariff = $config->getTariff();
+//        if ($tariff) {
+//            $query->tariff = $tariff->getId();
+//        }
         $query->tariff = "5864fc912f77d901104b5794";
 
         $availabilityData = [];
@@ -54,6 +64,35 @@ class TripAdvisorDataFormatter
         }
 
         return $availabilityData;
+    }
+
+    public function getHotelById($hotelId)
+    {
+        return $this->dm->find('MBHHotelBundle:Hotel', $hotelId);
+    }
+
+    public function getAvailableRoomTypes(Hotel $requestedHotel)
+    {
+        if (!$this->isAvailableRoomTypesInit) {
+
+            $this->availableRoomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($requestedHotel);
+            $this->isAvailableRoomTypesInit = true;
+        }
+
+        return $this->availableRoomTypes;
+    }
+
+
+    public function getAvailableTariffs(Hotel $requestedHotel, \DateTime $begin, \DateTime $end)
+    {
+        if (!$this->isAvailableTariffsInit) {
+
+            $this->availableTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                ->getTariffsByDates($requestedHotel, $begin, $end);
+            $this->isAvailableTariffsInit = true;
+        }
+
+        return $this->availableTariffs;
     }
 
     private function getTripAdvisorHotelId($mbhHotelId, $hotelIdsSyncData) {

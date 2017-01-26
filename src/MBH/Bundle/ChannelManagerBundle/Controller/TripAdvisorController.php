@@ -68,6 +68,28 @@ class TripAdvisorController extends BaseController
         return new Response();
     }
 
+    /**
+     * @Route("/booking_availability")
+     * @param Request $request
+     */
+    public function getBookingAvailabilityAction(Request $request)
+    {
+        $apiVersion = $request->get('api_version');
+        $requestedHotels = $request->get('hotels');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        $requestedAdultsChildrenCombination = $request->get('party');
+        $language = $request->get('lang');
+        $queryKey = $request->get('query_key');
+        $currency = $request->get('currency');
+        $userCountry = $request->get('user_country');
+        $deviceType = $request->get('device_type');
+        $bookingSessionId = $request->get('booking_session_id');
+        $bookingRequestId = $request->get('booking_request_id');
+
+
+    }
+
     public function testAction()
     {
 //        $this->get('mbh.channel_manager.trip_advisor_response_formatter')->formatHotelAvailability(7, [])

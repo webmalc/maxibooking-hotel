@@ -114,7 +114,7 @@ parameters:
         # Мебель
         furniture:
           bed: 'Односпальная кровать'
-          double-bed: 'Двуспальная кровать'
+          d2ouble-bed: 'Двуспальная кровать'
           sofa: 'Диван-кровать'
           armchair: 'Кресло'
           table: 'Стол'

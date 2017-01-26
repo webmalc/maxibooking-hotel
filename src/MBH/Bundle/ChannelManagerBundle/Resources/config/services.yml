@@ -93,7 +93,7 @@ services:
 
     mbh.channel_manager.trip_advisor_response_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter
-      arguments: ['@mbh.channel_manager.trip_advisor_response_data_formatter']
+      arguments: ['@mbh.channel_manager.trip_advisor_response_data_formatter', '%router.request_context.host%']
 
     mbh.channel_manager.trip_advisor_response_data_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorDataFormatter
