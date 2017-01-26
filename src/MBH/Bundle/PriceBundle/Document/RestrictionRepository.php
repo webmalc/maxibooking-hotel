@@ -14,7 +14,7 @@ class RestrictionRepository extends DocumentRepository
     {
         $date->modify('midnight');
         $tariffsIds = $hotelIds = $roomTypeIds = [];
-        foreach ($this->dm->getRepository('MBHPriceBundle:Tariff')->findBy(['deletedAt' => null]) as $tariff) {
+        foreach ($this->dm->getRepository('MBHPriceBundle:Tariff')->findBy(['deletedAt' => null, 'isOnline' => true]) as $tariff) {
             $tariffsIds[] = $tariff->getId();
         }
 
@@ -39,18 +39,16 @@ class RestrictionRepository extends DocumentRepository
 
         // roomTypes
         /** @var Restriction $restriction */
-        $dateStr = $date->format('d.m.Y');
-        foreach ($qb->getQuery()->execute() as $restriction) {
-            if ($restriction->getTariff()->getIsDefault()) {
-                $minStay = $restriction->getMinStay();
-                $hotel = $restriction->getRoomType()->getHotel();
-                $data['hotel_' . $hotel->getId()]['category_' . $restriction->getRoomType()->getCategory()->getId()] = $minStay;
-//                $data[$restriction->getRoomType()->getId()][$dateStr] = $minStay;
-
-            }
-        };
-
-
+        $restrictions = $qb->getQuery()->execute();
+        if (count($restrictions)) {
+            foreach ($restrictions as $restriction) {
+                if ($restriction->getTariff()->getIsDefault()) {
+                    $minStay = $restriction->getMinStayArrival();
+                    $hotel = $restriction->getRoomType()->getHotel();
+                    $data['hotel_' . $hotel->getId()]['category_' . $restriction->getRoomType()->getCategory()->getId()] = $minStay;
+                }
+            };
+        }
 
         return $data;
     }

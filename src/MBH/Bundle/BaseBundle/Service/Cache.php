@@ -24,7 +24,7 @@ class Cache
     private $isEnabled;
 
     /**
-     * @var \ApcuAdapter
+     * @var ApcuAdapter
      */
     private $cache;
 

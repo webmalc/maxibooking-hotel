@@ -21,7 +21,7 @@ $(function () {
             } else {
                 if (!$.isEmptyObject(currentHotel)) {
                     $.each(minstay['hotel_' + currentHotel], function (id, val) {
-                        if(!result) result = val;
+                        if (!result) result = val;
                         result = Math.min(result, val);
                     });
                 } else {
@@ -59,7 +59,9 @@ $(function () {
                     $.each(allHotels, function (key, id) {
                         var dates = mbh.restrictions[prefix + id];
                         if (dates) {
-                            dates  = $.map(dates, function (val) { return val; });
+                            dates = $.map(dates, function (val) {
+                                return val;
+                            });
                             result = result === false ? dates : result;
                             result = $.map(dates, function (val) {
                                 return $.inArray(val, result) < 0 ? null : val;
@@ -103,10 +105,10 @@ $(function () {
         updateRoomListView = function (roomTypes) {
             /* Убрал disabled из за заполнения формы скриптом в mbresults.php */
             /*if (!roomTypes.length) {
-                $roomTypeSelect.prop("disabled", true);
-            } else {
-                $roomTypeSelect.prop("disabled", false);
-            }*/
+             $roomTypeSelect.prop("disabled", true);
+             } else {
+             $roomTypeSelect.prop("disabled", false);
+             }*/
             var html = '<option value="">Все типы номеров</option>';
             roomTypes.forEach(function (roomType) {
                 html += '<option value="' + roomType.id + '">' + roomType.title + '</option>';
@@ -137,7 +139,7 @@ $(function () {
         $roomTypeSelect.val($roomTypeSelect.data('value'));
     }
 
-    $hotelSelect.on("change", function() {
+    $hotelSelect.on("change", function () {
         updateSelectView();
         updateRestrictions();
         $search_form_begin.datepicker("update");
@@ -240,23 +242,25 @@ $(function () {
 
     //init datepicker
     //Учитываем если дата уже выбрана
+
     updateRestrictions();
     $search_form_begin.datepicker(dateBeginDefaults());
-    if(!$search_form_begin.val().length) {
+
+    if (!$search_form_begin.val().length) {
         $search_form_begin.datepicker("update", $search_form_begin.datepicker("getStartDate"));
-        // $search_form_begin.datepicker("setDate", $search_form_begin.datepicker("getStartDate"));
     } else {
         var currentStartDate = moment($search_form_begin.val(), "DD.MM.YYYY", true),
             setDate = moment(Math.max(currentStartDate, $search_form_begin.datepicker("getStartDate")));
         $search_form_begin.datepicker("update", setDate.toDate());
-        // $search_form_begin.datepicker("setDate", setDate.toDate());
     }
 
     var date_end_defaults = dateEndDefaults();
     $search_form_end.datepicker(date_end_defaults);
-    if(!$search_form_end.val().length) {
+
+    if (!$search_form_end.val().length) {
         $search_form_end.datepicker("update", $search_form_end.datepicker("getStartDate"));
-        // $search_form_end.datepicker("setDate", $search_form_end.datepicker("getStartDate"));
+        //First update endPicker
+        updateEndPicker(moment($search_form_begin.datepicker('getDate')).unix());
     } else {
         var currentEndDate = moment($search_form_end.val(), "DD.MM.YYYY", true),
             setEndDate = moment(Math.max(currentEndDate, $search_form_end.datepicker("getStartDate")));
@@ -265,15 +269,16 @@ $(function () {
 
     $search_form_begin.datepicker().on("changeDate", function (e) {
         updateEndPicker(moment(e.date).unix());
-        // setTimeout(drawNights(), 300);
 
     });
+
+
     $search_form_end.datepicker().on("changeDate", function (e) {
         drawNights();
     });
 
 
-
+    // Block Children
     var $children = $("#search_form_children"),
         $ageHolder = $("#search_form_children_age"),
         index;
