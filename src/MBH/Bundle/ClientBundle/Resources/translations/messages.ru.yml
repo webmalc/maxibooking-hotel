@@ -34,4 +34,3 @@ form.clientPaymentSystemType.successUrlDesc: URl для перенаправле
 form.clientPaymentSystemType.failUrlDesc: URl для перенаправления пользователя после неуспешной оплаты
 form.clientPaymentSystemType.payment_system_group: Платежная система
 form.clientPaymentSystemType.payment_system_group_links: Ссылки
-form.RoomTypeZip.group: Параметры автообновления
