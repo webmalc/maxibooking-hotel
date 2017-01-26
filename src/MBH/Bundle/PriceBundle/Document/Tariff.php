@@ -146,6 +146,14 @@ class Tariff extends Base implements ConditionsInterface
     protected $infantAge = 2;
 
     /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\Type(type="numeric")
+     */
+    private $position = 0;
+
+    /**
      * @var Promotion[]|ArrayCollection
      * @ODM\ReferenceMany(targetDocument="Promotion")
      */
@@ -698,6 +706,22 @@ class Tariff extends Base implements ConditionsInterface
         $this->paymentType = $paymentType;
     }
 
-    
-    
+    /**
+     * @return int
+     */
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param int $position
+     * @return Tariff
+     */
+    public function setPosition(int $position): Tariff
+    {
+        $this->position = $position;
+
+        return $this;
+    }
 }

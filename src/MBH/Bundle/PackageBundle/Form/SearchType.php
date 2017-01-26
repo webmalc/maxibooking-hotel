@@ -136,6 +136,9 @@ class SearchType extends AbstractType
             ->add('room', HiddenType::class, [
                 'required' => false
             ])
+            ->add('limit', HiddenType::class, [
+                'required' => false
+            ])
         ;
     }
 

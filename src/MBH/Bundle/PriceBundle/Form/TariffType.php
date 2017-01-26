@@ -117,7 +117,7 @@ class TariffType extends AbstractType
         $builder
             ->add('isOnline', CheckboxType::class, [
                 'label' => 'Онлайн?',
-                'group' => 'Настройки',
+                'group' => 'configuration',
                 'value' => true,
                 'required' => false,
                 'help' => 'Использовать ли тариф в онлайн бронировании?'
@@ -126,7 +126,7 @@ class TariffType extends AbstractType
                 'childAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
                     'label' => 'Ребенок до',
-                    'group' => 'Настройки',
+                    'group' => 'configuration',
                     'required' => false,
                     'multiple' => false,
                     'choices' => range(0, 18),
@@ -138,7 +138,7 @@ class TariffType extends AbstractType
                 'infantAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
                     'label' => 'Инфант до',
-                    'group' => 'Настройки',
+                    'group' => 'configuration',
                     'required' => false,
                     'multiple' => false,
                     'choices' => range(0, 18),
@@ -148,7 +148,7 @@ class TariffType extends AbstractType
             )
             ->add('defaultForMerging', CheckboxType::class, [
                 'label' => 'Использовать для комбинирования?',
-                'group' => 'Настройки',
+                'group' => 'configuration',
                 'value' => true,
                 'required' => false,
                 'help' =>
@@ -157,7 +157,7 @@ class TariffType extends AbstractType
             ])
             ->add('paymentType', ChoiceType::class, [
                 'label' => 'Процент для первой оплаты',
-                'group' => 'Настройки',
+                'group' => 'configuration',
                 'required' => false,
                 'help' => 'Поле для выбора и формирования первой оплаты в онлайне при оплате брони по частям',
                 'choices' => array_combine(array_keys(PaymentType::getPercentChoices()), array_keys(PaymentType::getPercentChoices())),
@@ -165,9 +165,18 @@ class TariffType extends AbstractType
                     return PaymentType::PAYMENT_TYPE_LIST[$value]['description'];
                 }
             ])
+            ->add('position', NumberType::class, [
+                'label' => 'position',
+                'help' => 'position.help',
+                'group' => 'configuration',
+                'required' => true,
+                'attr' => [
+                    'class' => 'spinner-0',
+                ],
+            ])
             ->add('isEnabled', CheckboxType::class, [
                 'label' => 'Включен?',
-                'group' => 'Настройки',
+                'group' => 'configuration',
                 'value' => true,
                 'required' => false,
                 'help' => 'Используется ли тариф в поиске?'

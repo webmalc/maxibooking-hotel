@@ -279,6 +279,12 @@ $(document).ready(function () {
             sendForm();
         });
 
+        $('.search-all-tariffs-link').click(function (e) {
+            e.preventDefault();
+            $('#s_roomType').select2("val", $(this).attr('data-roomType'));
+            sendForm();
+        });
+
         /*var $links = $('#package-search-tariffs li a');
          $links.on('click', function (e) {
          e.preventDefault();

@@ -35,3 +35,5 @@ form.clientPaymentSystemType.failUrlDesc: URl для перенаправлен�
 form.clientPaymentSystemType.payment_system_group: Платежная система
 form.clientPaymentSystemType.payment_system_group_links: Ссылки
 form.RoomTypeZip.group: Параметры автообновления
+form.clientConfigType.search_tariffs: Количество тарифов
+form.clientConfigType.search_tariffs_desc: Количество тарифов выводимое по умолчанию при подборе

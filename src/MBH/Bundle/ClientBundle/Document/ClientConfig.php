@@ -56,7 +56,7 @@ class ClientConfig extends Base
     protected $useRoomTypeCategory = false;
 
     /**
-     * @var boolean
+     * @var int
      * @Gedmo\Versioned
      * @ODM\Integer()
      * @Assert\NotNull()
@@ -64,6 +64,16 @@ class ClientConfig extends Base
      * @Assert\Range(min=0, max=10)
      */
     protected $searchDates = 0;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0, max=999)
+     */
+    protected $searchTariffs = 2;
 
     /**
      * @var boolean
@@ -450,5 +460,23 @@ class ClientConfig extends Base
         $this->roomTypeZip = $roomTypeZip;
         return $this;
     }
-    
+
+    /**
+     * @return int
+     */
+    public function getSearchTariffs(): ?int
+    {
+        return $this->searchTariffs;
+    }
+
+    /**
+     * @param int $searchTariffs
+     * @return ClientConfig
+     */
+    public function setSearchTariffs(int $searchTariffs): ClientConfig
+    {
+        $this->searchTariffs = $searchTariffs;
+
+        return $this;
+    }
 }

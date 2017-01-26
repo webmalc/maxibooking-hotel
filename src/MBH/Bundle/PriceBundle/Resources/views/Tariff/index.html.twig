@@ -9,6 +9,9 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
+            <th class="td-xs text-center">
+                <i class="fa fa-sort-numeric-desc" data-toggle="tooltip" data-placement="top" title="{{ 'position'|trans }}"></i>
+            </th>
             <th>Название</th>
             <th>База</th>
             <th class="td-xs text-center">Ребенок</th>
@@ -23,6 +26,9 @@
         {% for entity in entities %}
             <tr {% if entity.isEnabled is empty %} class="danger"{% endif %}>
                 <td class="text-center table-icon {{ entity.parent ? 'text-primary' }}"><i class="fa fa-sliders"></i></td>
+                <td class="text-center">
+                    <small>{{ entity.position }}</small>
+                </td>
                 <td>
                     {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'tariff'} %}{% endembed %}
                 </td>
