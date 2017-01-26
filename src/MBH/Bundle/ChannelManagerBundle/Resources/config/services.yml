@@ -55,6 +55,10 @@ services:
         arguments: ['@service_container']
         shared: false
 
+    mbh.channel_manager.order_creator:
+        class: MBH\Bundle\ChannelManagerBundle\Services\OrderCreator
+        arguments: ['@doctrine.odm.mongodb.document_manager']
+
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: ['@mbh.currency']
@@ -93,8 +97,18 @@ services:
 
     mbh.channel_manager.trip_advisor_response_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter
-      arguments: ['@mbh.channel_manager.trip_advisor_response_data_formatter', '%router.request_context.host%']
+      arguments: ['@mbh.channel_manager.trip_advisor_response_data_formatter', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%']
 
     mbh.channel_manager.trip_advisor_response_data_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorDataFormatter
       arguments: ['@mbh.package.search', '@doctrine.odm.mongodb.document_manager']
+
+    mbh.channel_manager.trip_advisor_order_info:
+      class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo
+      arguments: ['@service_container']
+      shared: false
+
+    mbh.channel_manager.trip_advisor_package_info:
+      class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorPackageInfo
+      arguments: ['@service_container']
+      shared: false

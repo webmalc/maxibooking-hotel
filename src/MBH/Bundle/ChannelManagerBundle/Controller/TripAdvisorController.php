@@ -25,11 +25,17 @@ class TripAdvisorController extends BaseController
     /**
      * @Route("/hotel_inventory")
      * @param Request $request
+     * @return array
      */
     public function getHotelInventoryDataAction(Request $request)
     {
+        $apiVersion = $request->get('api_version');
+        $language = $request->get('lang');
+        $inventoryType = $request->get('inventory_type');
+
         //TODO: Уточнить нужно ли реализовывать
-        return $this->get('mbh.channel_manager.trip_advisor_response_formatter')->formatHotelInventoryData();
+        return $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+            ->formatHotelInventoryData($apiVersion, $language, $inventoryType);
     }
 
     /**
@@ -71,6 +77,7 @@ class TripAdvisorController extends BaseController
     /**
      * @Route("/booking_availability")
      * @param Request $request
+     * @return string
      */
     public function getBookingAvailabilityAction(Request $request)
     {
@@ -87,7 +94,39 @@ class TripAdvisorController extends BaseController
         $bookingSessionId = $request->get('booking_session_id');
         $bookingRequestId = $request->get('booking_request_id');
 
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+            ->formatBookingAvailability($apiVersion, $requestedHotels, $startDate, $endDate,
+                $requestedAdultsChildrenCombination, $language, $queryKey, $userCountry, $deviceType, $currency);
 
+        return json_encode($response);
+    }
+
+    public function bookingSubmitAction(Request $request)
+    {
+        $checkInDate = $request->get('checkin_date');
+        $checkOutDate = $request->get('checkout_date');
+        $hotelId = $request->get('partner_hotel_code');
+        $bookingSession = $request->get('reference_id');
+        $ipAddress = $request->get('ip_address');
+        $customerData = $request->get('customer');
+        $roomsData = $request->get('rooms');
+        $specialRequests = $request->get('special_requests');
+        $paymentData = $request->get('payment_method');
+        $finalPriceAtBooking = $request->get('final_price_at_booking');
+        $finalPriceAtCheckout = $request->get('final_price_at_checkout');
+        $bookingMainData = $request->get('partner_data');
+
+
+        $orderInfo = $this->get('mbh.channel_manager.trip_advisor_order_info')
+            ->setInitData($checkInDate, $checkOutDate, $hotelId, $customerData, $roomsData, $specialRequests,
+                $paymentData, $finalPriceAtBooking, $finalPriceAtCheckout, $bookingMainData, $bookingSession);
+
+        $bookingCreationResult = $this->get('mbh.channel_manager.trip_advisor_booking_handler')
+            ->createBooking($checkInDate, $checkOutDate, $hotelId, $bookingSession, $ipAddress, $customerData,
+                $roomsData, $specialRequests, $paymentData, $finalPriceAtBooking, $finalPriceAtCheckout,
+                $bookingMainData);
+
+//        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
     }
 
     public function testAction()

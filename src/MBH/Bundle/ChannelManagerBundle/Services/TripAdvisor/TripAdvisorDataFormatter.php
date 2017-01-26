@@ -33,8 +33,8 @@ class TripAdvisorDataFormatter
         $query = new SearchQuery();
 
         $query->accommodations = true;
-        $query->begin = \DateTime::createFromFormat('Y-m-d' . ' H:i:s', $startDate . ' 00:00:00');
-        $query->end = \DateTime::createFromFormat('Y-m-d' . ' H:i:s', $endDate . ' 00:00:00');
+        $query->begin = \DateTime::createFromFormat('Y-m-d', $startDate);
+        $query->end = \DateTime::createFromFormat('Y-m-d', $endDate);
 //        $query->tariff = $config->getTariff();
 //        if ($tariff) {
 //            $query->tariff = $tariff->getId();
@@ -45,7 +45,7 @@ class TripAdvisorDataFormatter
 
         foreach ($hotelsSyncData as $hotelSyncData) {
             $mbhHotelId = $hotelSyncData['partner_id'];
-            $requestedHotel = $this->dm->find('MBHHotelBundle:Hotel', $mbhHotelId);
+            $requestedHotel = $this->getHotelById($mbhHotelId);
             if (is_null($requestedHotel)) {
                 //TODO: Что делать с исключением?
                 throw new \Exception();
@@ -64,6 +64,20 @@ class TripAdvisorDataFormatter
         }
 
         return $availabilityData;
+    }
+
+    public function getSearchResults($startDate, $endDate, Hotel $hotel)
+    {
+        $query = new SearchQuery();
+
+        $query->accommodations = true;
+        $query->begin = \DateTime::createFromFormat('Y-m-d', $startDate);
+        $query->end = \DateTime::createFromFormat('Y-m-d', $endDate);
+        $query->addHotel($hotel);
+
+        $searchResult = $this->search->setWithTariffs()->search($query);
+
+        return $searchResult;
     }
 
     public function getHotelById($hotelId)
