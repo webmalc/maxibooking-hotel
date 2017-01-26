@@ -218,6 +218,7 @@ class TripAdvisorResponseFormatter
             //TODO: Что с ошибкой?
             throw new \Exception();
         }
+
         $hotelRoomRates = [
             'hotel_room_type_code' => $result->getRoomType()->getId(),
             'hotel_rate_plan_code' => $result->getTariff()->getId(),
@@ -229,9 +230,23 @@ class TripAdvisorResponseFormatter
             'final_price_at_checkout' => [
                 'amount' => 0,
                 'currency' => $currency
-            ]
+            ],
             //TODO: Мб потребуется параметр
             //partner_data
+            'line_items' => [
+                "price" => [
+                    "amount" => $price,
+                    "currency" => $currency
+                ],
+                'type' => 'rate',
+                'paid_at_checkout' => true,
+                'description' => 'Base rate'
+            ],
+            //TODO: Других сборов у нас пока нигде не учитывается
+            //TODO: Для чего у нас используются данные кредитной карты?
+            'payment_policy',
+            'rooms_remaining' => $result->getRoomsCount(),
+
         ];
 
         return $hotelRoomRates;
