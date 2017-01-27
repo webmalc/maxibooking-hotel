@@ -4,10 +4,12 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 
 class TripAdvisorPackageInfo extends AbstractPackageInfo
 {
+    private $isCorrupted;
     private $roomData;
     private $checkInDate;
     private $checkOutDate;
@@ -15,6 +17,9 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
     private $bookingSessionId;
     /** @var Helper $helper */
     private $helper;
+
+    private $isPricesInit = false;
+    private $prices;
 
     public function __construct($container)
     {
@@ -43,13 +48,12 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     public function getRoomType()
     {
-        $roomTypeId = $this->getPackageCommonData('roomTypeID');
-        if (isset($this->roomTypes[$roomTypeId])) {
-            $roomType = $this->roomTypes[$roomTypeId]['doc'];
-        } else {
+        $roomTypeId = $this->bookingMainData['roomTypeId'];
+        $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
+        if (!$roomType) {
             $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
                 [
-                    'hotel.id' => $this->config->getHotelId(),
+                    'hotel.id' => $this->bookingMainData['hotelId'],
                     'isEnabled' => true,
                     'deletedAt' => null
                 ]
@@ -57,6 +61,7 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
             $this->addPackageNote($this->translator->trans('services.expedia.invalid_room_type_id'));
             $this->isCorrupted = true;
         }
+
         if (!$roomType) {
             throw new \Exception($this->translator->trans('services.expedia.nor_one_room_type'));
         }
@@ -66,7 +71,7 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     public function getTariff()
     {
-        // TODO: Implement getTariff() method.
+        return $this->dm->find('MBHPriceBundle:Tariff', $this->bookingMainData['tariffId']);
     }
 
     public function getAdultsCount()
@@ -81,21 +86,27 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     public function getPrices()
     {
-        $query = new SearchQuery();
+        if (!$this->isPricesInit) {
+            $this->prices = [];
+            foreach ($this->bookingMainData['pricesByDate'] as $dateString => $priceByDate) {
+                $currentDate = \DateTime::createFromFormat('d_m_Y', $dateString);
+                $this->prices = new PackagePrice($currentDate, $priceByDate, $this->getTariff());
+            }
+            $this->isPricesInit = true;
+        }
 
-        $query->accommodations = true;
-        $query->begin = $this->getBeginDate();
-        $query->end = $this->getEndDate();
-        $query->adults = $this->getAdultsCount();
-        $query->setChildrenAges($this->getChildrenData());
-        $query->addHotel($hotel);
-
-        $searchResult = $this->container->get('mbh.package.search')->setWithTariffs()->search($query);
+        return $this->prices;
     }
 
     public function getPrice()
     {
-        // TODO: Implement getPrice() method.
+        $price = 0;
+        foreach ($this->getPrices() as $priceDocument) {
+            /** @var PackagePrice $priceDocument */
+            $price += $priceDocument->getPrice();
+        }
+
+        return $price;
     }
 
     public function getNote()
@@ -115,7 +126,7 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     public function getIsCorrupted()
     {
-        // TODO: Implement getIsCorrupted() method.
+        return $this->isCorrupted;
     }
 
     public function getTourists()

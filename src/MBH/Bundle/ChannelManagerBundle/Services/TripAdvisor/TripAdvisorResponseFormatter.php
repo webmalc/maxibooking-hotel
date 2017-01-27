@@ -344,16 +344,17 @@ class TripAdvisorResponseFormatter
 
     private function getHotelRoomRates(SearchResult $result, $adultChildrenCombinations, $currency)
     {
-        $price = $this->getResultPriceByAdultsChildrenCombinations($result, $adultChildrenCombinations);
-        if (!$price) {
+        $priceData = $this->getPriceDataByAdultsChildrenCombinations($result, $adultChildrenCombinations);
+        if (!$priceData) {
             return false;
         }
+        $resultPrice = $priceData['price'];
 
         $hotelRoomRates = [
             'hotel_room_type_code' => $result->getRoomType()->getId(),
             'hotel_rate_plan_code' => $result->getTariff()->getId(),
             'final_price_at_booking' => [
-                'amount' => $price,
+                'amount' => $resultPrice,
                 'currency' => $currency
             ],
             //TODO: Пока что 0, может быть впоследствии другим значением
@@ -365,7 +366,7 @@ class TripAdvisorResponseFormatter
             //partner_data
             'line_items' => [
                 "price" => [
-                    "amount" => $price,
+                    "amount" => $resultPrice,
                     "currency" => $currency
                 ],
                 'type' => 'rate',
@@ -376,36 +377,46 @@ class TripAdvisorResponseFormatter
             //TODO: Для чего у нас используются данные кредитной карты?
             'payment_policy',
             'rooms_remaining' => $result->getRoomsCount(),
+            'partnerData' => [
+                'pricesByDate' => $priceData['pricesByDate'],
+                'roomTypeId' => $result->getRoomType()->getId(),
+                'tariffId' => $result->getTariff()->getId(),
+                'hotelId' => $result->getRoomType()->getHotel()->getId()
+            ],
         ];
+
 
         return $hotelRoomRates;
     }
 
-    private function getResultPriceByAdultsChildrenCombinations($adultsChildrenCombinations, SearchResult $result)
+    private function getPriceDataByAdultsChildrenCombinations($adultsChildrenCombinations, SearchResult $result)
     {
         $roomType = $result->getRoomType();
         $tariff = $result->getTariff();
         $adultsChildrenCounts = $this->getAdultsChildrenCount($adultsChildrenCombinations, $tariff);
         //Все ли кобминации количеств детей и взрослых имеют цену,
         $isAllHavenPrice = true;
-        $resultPrice = 0;
+        $resultPriceData = [];
         foreach ($adultsChildrenCounts as $estimatedAdultsChildrenCount) {
             $adultsChildrenCounts = $roomType->getAdultsChildrenCombination(
                 $estimatedAdultsChildrenCount['childrenCount'], $estimatedAdultsChildrenCount['adultsCount']);
-            $price = $result->getPrice($adultsChildrenCounts['adults'], $adultsChildrenCounts['children']);
+            $adultsCount = $adultsChildrenCounts['adults'];
+            $childrenCount = $adultsChildrenCounts['children'];
+            $price = $result->getPrice($adultsCount, $childrenCount);
             if ($price) {
-                $resultPrice += $price;
+                $resultPriceData['price'] += $price;
+                $resultPriceData['pricesByDate'] = $result->getPricesByDate($adultsCount, $childrenCount);
             } else {
                 $isAllHavenPrice = false;
                 break;
             }
         }
 
-        if ($isAllHavenPrice && $result->getRoomsCount() == count($adultsChildrenCounts)) {
-            return $resultPrice;
+        if ($isAllHavenPrice && $result->getRoomsCount() != count($adultsChildrenCounts)) {
+            return false;
         }
 
-        return false;
+        return $resultPriceData;
     }
 
     private function getAdultsChildrenCount($adultsChildrenCombinations, Tariff $tariff)

@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
-
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
@@ -113,7 +112,8 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
         $packagesData = [];
         foreach ($this->roomsData as $roomData) {
             $packagesData[] = $this->container->get('mbh.channel_manager.trip_advisor_package_info')
-                ->setInitData($roomData, $this->checkInDate, $this->checkOutDate, $this->bookingMainData);
+                ->setInitData($roomData, $this->checkInDate, $this->checkOutDate, $this->bookingMainData,
+                    $this->bookingSession);
         }
 
         return $packagesData;
