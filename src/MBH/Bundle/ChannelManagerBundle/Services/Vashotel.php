@@ -825,9 +825,6 @@ class Vashotel extends Base
 
         //$this->log($response->asXML());
 
-        if (!$this->checkResponse($response, ['script' => $script, 'key' =>  $config->getPassword()])) {
-            return [];
-        }
         $result = [
             0 => [
                 "title" => 'Standard rate',
@@ -837,7 +834,15 @@ class Vashotel extends Base
             ]
         ];
 
+        if (!$this->checkResponse($response, ['script' => $script, 'key' =>  $config->getPassword()])) {
+            return $result;
+        }
+
         foreach ($response->xpath('rate') as $rate) {
+            if (!(int)$rate->id) {
+                continue;
+            }
+
             $result[(int)$rate->id] = [
                 'title' => (string)$rate->name,
                 'changePrice' => !!(int)$rate->changePrice,

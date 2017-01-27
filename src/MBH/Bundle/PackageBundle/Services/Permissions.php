@@ -48,6 +48,7 @@ class Permissions
 
     /**
      * @return Package[]
+     * @deprecated
      */
     public function getAvailablePackages()
     {
@@ -78,6 +79,7 @@ class Permissions
 
     /**
      * @return array
+     * @deprecated
      */
     public function getAvailableOrders()
     {
