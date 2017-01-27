@@ -18,7 +18,7 @@ class OrderCreator
         $this->dm = $dm;
     }
 
-    public function createOrder(AbstractOrderInfo $orderInfo, ?Order $order) : Order
+    public function createOrder(AbstractOrderInfo $orderInfo, ?Order $order = null) : Order
     {
         if (!$order) {
             $order = new Order();

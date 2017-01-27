@@ -13,6 +13,7 @@ abstract class AbstractPackageInfo
     protected $dm;
     protected $note = '';
     protected $translator;
+    protected $noteMessages = [];
 
     public function __construct(ContainerInterface $container)
     {
@@ -38,6 +39,31 @@ abstract class AbstractPackageInfo
     public function getOriginalPrice()
     {
         return $this->getPrice();
+    }
+
+    protected function addProblemMessage($transIdentifier, $params = [])
+    {
+        return $this->addMessage('problems', $transIdentifier, $params);
+    }
+
+    protected function addNotifyMessage($transIdentifier, $params = [])
+    {
+        return $this->addMessage('notifications', $transIdentifier, $params);
+    }
+
+    private function addMessage($status, $transIdentifier, $params)
+    {
+        $this->noteMessages[$status] = [
+            'identifier' => $transIdentifier,
+            'params' => $params
+        ];
+
+        return $this;
+    }
+
+    public function getMessages() : array
+    {
+        return $this->noteMessages;
     }
 
     protected function addPackageNote($note, $preface = null) : string

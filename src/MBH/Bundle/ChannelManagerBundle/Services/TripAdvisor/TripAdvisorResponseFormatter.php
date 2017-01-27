@@ -3,9 +3,13 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
@@ -264,9 +268,40 @@ class TripAdvisorResponseFormatter
         return $response;
     }
 
-    public function formatSubmitBookingResponse()
-    {
+    public function formatSubmitBookingResponse(
+        $bookingSession,
+        $bookingCreationResult,
+        $messages,
+        $countryCode,
+        $roomStayData,
+        $currency
+    ) {
+        if ($bookingCreationResult instanceof Order) {
+            $creationResultStatus = 'Success';
+        } else {
+            $creationResultStatus = 'Failure';
+        }
 
+        $response = [
+            'reference_id' => $bookingSession,
+            'status' => $creationResultStatus,
+            //TODO: Информация о поддержке клиента
+            'customer_support' => [
+
+            ]
+        ];
+
+        if ($creationResultStatus == 'Success') {
+            $response['reservation'] = $this->getReservationData($bookingCreationResult, $countryCode, $roomStayData,
+                $currency);
+        }
+
+        //TODO: Переделать, должен быть объект
+        if (count($messages['problems']) > 0) {
+            $response['problems'] = $messages['problems'];
+        }
+
+        return $response;
     }
 
     private function getTariffData(Tariff $tariff)
@@ -287,6 +322,83 @@ class TripAdvisorResponseFormatter
         ];
 
         return $tariffData;
+    }
+
+    public function getReservationData(Order $order, $countryCode, $roomStayData, $currency)
+    {
+        /** @var Package $orderFirstPackage */
+        $orderFirstPackage = $order->getPackages()[0];
+        /** @var Tourist $payer */
+        $payer = $order->getPayer();
+//        $roomStayData = [];
+//        foreach ($order->getPackages() as $package) {
+//            /** @var Tourist $mainTraveller */
+//            $mainTraveller = $package->getTourists()[0];
+//            $roomStayData[] = [
+//                'party' => [
+//                    'adults' => $package->getAdults(),
+//                    //TODO: Неоткуда получить данные. Хорошо бы добавить поле данных возрастов киндеров
+//                    'children'
+//                ],
+//                'traveler_first_name' => $mainTraveller->getFirstName(),
+//                'traveler_last_name' => $mainTraveller->getLastName()
+//            ];
+//        }
+        $cashDocumentsData = [];
+        foreach ($order->getCashDocuments() as $cashDocument) {
+            /** @var CashDocument $cashDocument */
+            if ($cashDocument->getOperation() == 'in') {
+                $cashDocType = 'rate';
+            } else {
+                $cashDocType = 'fee';
+            }
+            $cashDocumentsData[] = [
+                'price' => [
+                    'amount' => $cashDocument->getTotal(),
+                    'currency' => $currency
+                ],
+                //TODO: Мб потом появятся еще данные о налогах
+                'type' => $cashDocType
+            ];
+        }
+
+        $reservationData = [
+            'reservation_id' => $order->getId(),
+            //TODO: Возможно потом появится больше статусов
+            'status' => 'Booked',
+            //TODO: Сделать URL для подтверждения брони
+            'confirmation_url',
+            'checkin_date' => $orderFirstPackage->getBegin(),
+            'checkout_date' => $orderFirstPackage->getEnd(),
+            'partner_hotel_code' => $orderFirstPackage->getHotel()->getId(),
+            'hotel' => $this->getHotelDetails($orderFirstPackage->getHotel()),
+            'customer' => [
+                'first_name' => $payer->getFirstName(),
+                'last_name' => $payer->getLastName(),
+                'phone_number' => $payer->getPhone(),
+                'email' => $payer->getEmail(),
+                'country' => $countryCode
+            ],
+            'rooms' => $roomStayData,
+            'receipt' => [
+                'line_items' => $cashDocumentsData,
+                'final_price_at_booking' => $this->getPriceObject($order->getPrice(), $currency),
+                //TODO: Пока что вроде как только при бронировании берется, но мб потом добавим
+                'final_price_at_checkout' => $this->getPriceObject(0, $currency)
+            ]
+            //TODO: Можно добавить доп. данные
+//            'legal_text' 'comments'
+        ];
+
+        return $reservationData;
+    }
+
+    private function getPriceObject($priceValue, $currency)
+    {
+        return [
+            'amount' => $priceValue,
+            'currency' => $currency
+        ];
     }
 
     private function getHotelDetails(Hotel $hotel)

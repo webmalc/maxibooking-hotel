@@ -5,7 +5,6 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 
 class TripAdvisorPackageInfo extends AbstractPackageInfo
 {
@@ -58,12 +57,12 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
                     'deletedAt' => null
                 ]
             );
-            $this->addPackageNote($this->translator->trans('services.expedia.invalid_room_type_id'));
+            $this->addProblemMessage('services.expedia.invalid_room_type_id');
             $this->isCorrupted = true;
         }
 
         if (!$roomType) {
-            throw new \Exception($this->translator->trans('services.expedia.nor_one_room_type'));
+            throw new \ChannelManagerException($this->translator->trans('services.expedia.nor_one_room_type'));
         }
 
         return $roomType;
@@ -109,18 +108,20 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
         return $price;
     }
 
+    //TODO: Убрать
     public function getNote()
     {
-        $childrenData = $this->getChildrenData();
-        if (count($childrenData) > 0) {
-            $childrenAgesString = join(', ', $childrenData);
-            $this->addPackageNote($childrenAgesString, 'package_info.tripadvisor.children_age');
-        }
         return $this->note;
     }
 
     private function getChildrenData()
     {
+        $childrenData = $this->getChildrenData();
+        if (count($childrenData) > 0) {
+            $childrenAgesString = join(', ', $childrenData);
+            $this->addNotifyMessage( 'package_info.tripadvisor.children_age', $childrenAgesString);
+        }
+
         return $this->roomData['party']['children'];
     }
 

@@ -3,6 +3,9 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo;
+use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorPackageInfo;
+use MBH\Bundle\PackageBundle\Document\Order;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -117,20 +120,17 @@ class TripAdvisorController extends BaseController
         $bookingMainData = $request->get('partner_data');
 
 
+        /** @var TripAdvisorOrderInfo $orderInfo */
         $orderInfo = $this->get('mbh.channel_manager.trip_advisor_order_info')
             ->setInitData($checkInDate, $checkOutDate, $hotelId, $customerData, $roomsData, $specialRequests,
                 $paymentData, $finalPriceAtBooking, $finalPriceAtCheckout, $bookingMainData, $bookingSession);
 
-        $bookingCreationResult = $this->get('mbh.channel_manager.trip_advisor_booking_handler')
-            ->createBooking($checkInDate, $checkOutDate, $hotelId, $bookingSession, $ipAddress, $customerData,
-                $roomsData, $specialRequests, $paymentData, $finalPriceAtBooking, $finalPriceAtCheckout,
-                $bookingMainData);
+        $bookingCreationResult = $this->get('mbh.channel_manager.order_creator')->createOrder($orderInfo);
+        //TODO: Получит валюту
+        $currency = '';
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+            ->formatSubmitBookingResponse($bookingSession, $bookingCreationResult,
+                $orderInfo->getPackageAndOrderMessages(), $customerData['country'], $roomsData, $currency);
 
-//        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-    }
-
-    public function testAction()
-    {
-//        $this->get('mbh.channel_manager.trip_advisor_response_formatter')->formatHotelAvailability(7, [])
     }
 }

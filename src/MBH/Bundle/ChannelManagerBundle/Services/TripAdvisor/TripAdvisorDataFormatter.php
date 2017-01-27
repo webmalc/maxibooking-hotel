@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
-
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -28,7 +27,7 @@ class TripAdvisorDataFormatter
         $this->dm = $dm;
     }
 
-    public function getAvailabilityData($startDate, $endDate, $hotelsSyncData, Tariff $tariff = null)
+    public function getAvailabilityData($startDate, $endDate, $hotelsSyncData)
     {
         $query = new SearchQuery();
 
@@ -39,6 +38,7 @@ class TripAdvisorDataFormatter
 //        if ($tariff) {
 //            $query->tariff = $tariff->getId();
 //        }
+        //TODO: Уточнить насчет тарифа
         $query->tariff = "5864fc912f77d901104b5794";
 
         $availabilityData = [];

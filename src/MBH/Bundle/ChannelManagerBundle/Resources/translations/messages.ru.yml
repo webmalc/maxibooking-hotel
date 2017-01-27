@@ -100,5 +100,5 @@ form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkOut: При выезде
 form.roomTypeTasks.daily: Каждые n дней проживания
 
-#expedia
-package_info.tripadvisor.children_age: Возраст детей
+#tripadvisor
+package_info.tripadvisor.children_age: 'Возраст детей: %ages%'
