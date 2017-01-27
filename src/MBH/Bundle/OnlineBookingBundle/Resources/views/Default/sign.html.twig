@@ -8,7 +8,8 @@
     <h3>Персональная информация</h3>
     {{ form_start(form, {attr: {id: 'sign-form', method: 'get' }, action: requestSearchUrl}) }}
     {% if form.offerta is defined %}
-    <div class="error_pay" style="display:block;">Внимание! Оплачивая туристические услуги, Вы соглашаетесь с условиями публичного <a href="{{ offera }}" target="_blank">договора-оферты.</a></div>
+        <div class="error_pay" style="display:block;">Внимание! Оплачивая туристические услуги, Вы соглашаетесь с
+            условиями публичного <a href="{{ offera }}" target="_blank">договора-оферты.</a></div>
     {% endif %}
     {{ form_widget(form, {attr: {class: 'ss'}}) }}
 
@@ -21,7 +22,7 @@
 
     <div><p class="reqinfo">* - поля обязательные к заполнению</p></div>
     <div class="submit">
-        <button type="submit" name="submit" value="1" class="bkbutton" >
+        <button type="submit" name="submit" value="1" class="bkbutton">
             {% if form.reservation is defined %}
                 Отправить заявку
             {% else %}
@@ -44,12 +45,12 @@
         <div class="item row">
             <div class="col-xs-4">
                 {% if roomType.mainImage %}
-                    <a  class="fancybox" href="{{ asset(roomType.mainImage.path, null, true) }}">
+                    <a class="fancybox" href="{{ absolute_url(asset(roomType.mainImage.path)) }}">
                         <img src="{{ roomType.mainImage.path|imagine_filter('thumb_100x100') }}" width="70px"
                              height="70px">
                     </a>
                 {% else %}
-                    <img src="{{ asset('bundles/mbhonlinebooking/images/no-image.jpg', null, true) }}" width="70px"
+                    <img src="{{ absolute_url(asset('bundles/mbhonlinebooking/images/no-image.jpg')) }}" width="70px"
                          height="70px">
                 {% endif %}
             </div>
@@ -115,7 +116,7 @@
         <div class="row" style="margin-top: 15px">
             <div class="title" style="display: inline-block;">Стоимость</div>
             <div class="pull-right"
-                 style="color: #41bc19; display: inline-block; font-weight: bold; font-size: 18px">{{ data.total|number_format(0, thousandSep=' ')  }}
+                 style="color: #41bc19; display: inline-block; font-weight: bold; font-size: 18px">{{ data.total|number_format(0, thousandSep=' ') }}
                 <i class="fa fa-ruble"></i></div>
         </div>
     </div>
@@ -138,7 +139,7 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/sign.css', null, true) }}">
+<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/sign.css')) }}">
 <script>
     $(function () {
         $('#info').find('.fancybox').fancybox();
@@ -150,9 +151,26 @@
         $radio.get(0).innerHTML += ' - ' + {{ data.total / 2 }} +' <i class="fa fa-ruble"></i>';
     }
 </script>
-<script src='https://www.google.com/recaptcha/api.js'></script>
+{#<script src='https://www.google.com/recaptcha/api.js'></script>#}
 {#<script>#}
     {#var reCaptchaCallBack = function(data) {#}
         {#$button = $("button.bkbutton").prop('disabled', false).removeClass('disabled');#}
     {#};#}
 {#</script>#}
+
+{% if form.reservation is defined %}
+    {% set gaGoal, yaGoal = 'Отправка заявки', 'mb_bron_orde' %}
+{% else %}
+    {% set gaGoal, yaGoal = 'Купить Онлайн МБ', 'mb_bron_payment_online' %}
+{% endif %}
+<script>
+    $("form#sign-form").on('submit', function (e) {
+        if ('undefined' !== typeof yaCounter10885255) {
+            yaCounter10885255.reachGoal({{ 'yaGoal' }});
+        }
+        if ('undefined' !== typeof ga) {
+            ga('send', 'event', 'Бронирование МБ', '{{ gaGoal }}', parseInt($(e.target).find("input#form_total").val()));
+        }
+    });
+
+</script>

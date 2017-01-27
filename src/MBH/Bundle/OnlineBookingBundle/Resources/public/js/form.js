@@ -152,7 +152,14 @@ $(function () {
 
     $("form#search-form").on('submit', function (e) {
         $(".spinn").css('display', 'block');
+        if('undefined' !== typeof yaCounter10885255) {
+            yaCounter10885255.reachGoal('mb_bron_price');
+        }
+        if('undefined' !== typeof ga) {
+            ga('send', 'event', 'Бронирование МБ', 'Узнать цены МБ', $(e.target).find("#search_form_hotel option:selected"));
+        }
     });
+
     var $search_form_begin = $("#search_form_begin"),
         $search_form_end = $("#search_form_end");
     $search_form_begin.mask('99.99.9999');
