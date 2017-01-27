@@ -66,6 +66,16 @@ class ClientConfig extends Base
     protected $searchDates = 0;
 
     /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0, max=999)
+     */
+    protected $searchTariffs = 2;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()

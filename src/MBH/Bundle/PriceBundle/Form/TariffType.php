@@ -154,16 +154,6 @@ class TariffType extends AbstractType
                     'Использовать для комбинирования тарифов в переходных периодах?<br>
                      По-молчанию спец. тарифы комбинируются с основным тарифом'
             ])
-            ->add('paymentType', ChoiceType::class, [
-                'label' => 'Процент для первой оплаты',
-                'group' => 'configuration',
-                'required' => false,
-                'help' => 'Поле для выбора и формирования первой оплаты в онлайне при оплате брони по частям',
-                'choices' => array_combine(array_keys(PaymentType::getPercentChoices()), array_keys(PaymentType::getPercentChoices())),
-                'choice_label' => function ($value) {
-                    return PaymentType::PAYMENT_TYPE_LIST[$value]['description'];
-                }
-            ])
             ->add('position', NumberType::class, [
                 'label' => 'position',
                 'help' => 'position.help',

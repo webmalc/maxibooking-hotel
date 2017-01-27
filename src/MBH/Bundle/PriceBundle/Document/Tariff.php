@@ -683,25 +683,6 @@ class Tariff extends Base implements ConditionsInterface
     }
 
     /**
-     * @return mixed
-     */
-    public function getPaymentType()
-    {
-        if (!$this->paymentType) {
-            return 'hundred';
-        }
-        return $this->paymentType;
-    }
-
-    /**
-     * @param mixed $paymentType
-     */
-    public function setPaymentType($paymentType)
-    {
-        $this->paymentType = $paymentType;
-    }
-
-    /**
      * @return int
      */
     public function getPosition(): ?int
