@@ -86,6 +86,11 @@
                         {% endfor %}
                     </small>
                 {% endif %}
+                {% if query.limit %}
+                    <a data-roomType="{{ clientConfig and clientConfig.useRoomTypeCategory() and row.roomType.category ? row.roomType.category.id : row.roomType.id }}" href="#" class="btn btn-xs btn-default search-all-tariffs-link margin-left-sm">
+                        все тарифы
+                    </a>
+                {% endif %}
                 </div>
             </td>
         </tr>

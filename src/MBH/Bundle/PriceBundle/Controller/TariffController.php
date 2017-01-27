@@ -36,7 +36,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     {
         $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder()
             ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
-            ->sort('fullTitle', 'asc')
+            ->sort(['position' => 'desc', 'fullTitle' => 'asc'])
             ->getQuery()
             ->execute();
 

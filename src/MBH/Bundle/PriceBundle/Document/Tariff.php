@@ -82,7 +82,6 @@ class Tariff extends Base implements ConditionsInterface
     protected $title;
     
     /**
-     * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="description")
      * @Assert\Length(
@@ -145,6 +144,14 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\Range(min=0, max=18)
      */
     protected $infantAge = 2;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\Type(type="numeric")
+     */
+    private $position = 0;
 
     /**
      * @var Promotion[]|ArrayCollection
@@ -214,6 +221,10 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\Type(type="boolean")
      */
     protected $defaultForMerging = false;
+
+    /**
+     * Tariff constructor.
+     */
 
     public function __construct()
     {
@@ -670,6 +681,42 @@ class Tariff extends Base implements ConditionsInterface
         $this->roomCaches = $roomCaches;
         return $this;
     }
-    
-    
+
+    /**
+     * @return mixed
+     */
+    public function getPaymentType()
+    {
+        if (!$this->paymentType) {
+            return 'hundred';
+        }
+        return $this->paymentType;
+    }
+
+    /**
+     * @param mixed $paymentType
+     */
+    public function setPaymentType($paymentType)
+    {
+        $this->paymentType = $paymentType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param int $position
+     * @return Tariff
+     */
+    public function setPosition(int $position): Tariff
+    {
+        $this->position = $position;
+
+        return $this;
+    }
 }

@@ -136,7 +136,7 @@ class ClientConfig extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isInstantSearch = true;
-
+    
     /**
      * Set sendSms
      *
@@ -427,5 +427,23 @@ class ClientConfig extends Base
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getSearchTariffs(): ?int
+    {
+        return $this->searchTariffs;
+    }
+
+    /**
+     * @param int $searchTariffs
+     * @return ClientConfig
+     */
+    public function setSearchTariffs(int $searchTariffs): ClientConfig
+    {
+        $this->searchTariffs = $searchTariffs;
+
+        return $this;
+    }
     
 }
