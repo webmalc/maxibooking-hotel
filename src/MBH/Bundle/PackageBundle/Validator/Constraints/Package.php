@@ -15,6 +15,8 @@ class Package extends Constraint
     public $checkInOutMessage = 'validator.package.check_in_out_message';
 
     public $checkOutMessage = 'validator.package.check_out_message';
+
+    public $specialMessage = 'validator.package.special_message';
     
     /**
      * {@inheritDoc}

@@ -45,3 +45,5 @@ mailer.notice.unpaid.phone: Телефон
 mailer.notice.unpaid.mobile.phone: Мобильный телефон
 mailer.notice.unpaid.no.data: Нет данных
 mailer.notice.unpaid.full_name: ФИО
+form.clientConfigType.search_tariffs: Количество тарифов
+form.clientConfigType.search_tariffs_desc: Количество тарифов выводимое по умолчанию при подборе

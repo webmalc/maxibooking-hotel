@@ -69,14 +69,6 @@ class Tariff extends Base implements ConditionsInterface
     protected $fullTitle;
 
     /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Field(type="int", name="minPerPrepay")
-     * @Assert\Range(min=0, max=100)
-     */
-    protected $minPerPrepay = 0;
-
-    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="title")
@@ -90,7 +82,6 @@ class Tariff extends Base implements ConditionsInterface
     protected $title;
 
     /**
-     * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="description")
      * @Assert\Length(
@@ -153,6 +144,14 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\Range(min=0, max=18)
      */
     protected $infantAge = 2;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\Type(type="numeric")
+     */
+    private $position = 0;
 
     /**
      * @var Promotion[]|ArrayCollection
@@ -223,6 +222,10 @@ class Tariff extends Base implements ConditionsInterface
      */
     protected $defaultForMerging = false;
 
+    /**
+     * Tariff constructor.
+     */
+
     public function __construct()
     {
         $this->promotions = new ArrayCollection();
@@ -281,24 +284,6 @@ class Tariff extends Base implements ConditionsInterface
     {
         return $this->fullTitle;
     }
-
-    /**
-     * @return int
-     */
-    public function getMinPerPrepay(): int
-    {
-        return $this->minPerPrepay ?? 0;
-    }
-
-    /**
-     * @param int $minPerPrepay
-     */
-    public function setMinPerPrepay(int $minPerPrepay)
-    {
-        $this->minPerPrepay = $minPerPrepay;
-        return $this;
-    }
-
 
     /**
      * Set title
@@ -697,4 +682,22 @@ class Tariff extends Base implements ConditionsInterface
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param int $position
+     * @return Tariff
+     */
+    public function setPosition(int $position): Tariff
+    {
+        $this->position = $position;
+
+        return $this;
+    }
 }

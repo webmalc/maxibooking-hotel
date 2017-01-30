@@ -66,6 +66,16 @@ class ClientConfig extends Base
     protected $searchDates = 0;
 
     /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0, max=999)
+     */
+    protected $searchTariffs = 2;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -136,7 +146,7 @@ class ClientConfig extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isInstantSearch = true;
-
+    
     /**
      * @var integer
      * @Gedmo\Versioned
@@ -455,5 +465,23 @@ class ClientConfig extends Base
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getSearchTariffs(): ?int
+    {
+        return $this->searchTariffs;
+    }
+
+    /**
+     * @param int $searchTariffs
+     * @return ClientConfig
+     */
+    public function setSearchTariffs(int $searchTariffs): ClientConfig
+    {
+        $this->searchTariffs = $searchTariffs;
+
+        return $this;
+    }
     
 }

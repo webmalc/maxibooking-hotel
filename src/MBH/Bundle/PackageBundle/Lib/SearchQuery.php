@@ -4,8 +4,13 @@ namespace MBH\Bundle\PackageBundle\Lib;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Class SearchQuery
+ * @package MBH\Bundle\PackageBundle\Lib
+ */
 class SearchQuery
 {
     /**
@@ -108,6 +113,11 @@ class SearchQuery
      * @var Promotion
      */
     protected $promotion;
+
+    /**
+     * @var Special
+     */
+    protected $special;
     
     /**
      * Tariff id
@@ -129,7 +139,7 @@ class SearchQuery
     public $range = 0;
 
     /**
-     * @var RoomTypes ids
+     * @var RoomTypes|array ids
      */
     public $availableRoomTypes = [];
 
@@ -138,8 +148,20 @@ class SearchQuery
      */
     public $forceBooking = false;
 
+    /**
+     * @var int
+     */
     public $infants = 0;
-    
+
+    /**
+     * @var int
+     * @Assert\Range(min = 0)
+     */
+    public $limit;
+
+    /**
+     * @param $id
+     */
     public function addExcludeRoomType($id)
     {
         if (!in_array($id, $this->excludeRoomTypes) && !empty($id)) {
@@ -147,6 +169,9 @@ class SearchQuery
         }
     }
 
+    /**
+     * @param $id
+     */
     public function addAvailableRoomType($id)
     {
         if (!in_array($id, $this->availableRoomTypes) && !empty($id)) {
@@ -164,17 +189,17 @@ class SearchQuery
             return $this;
         }
         $roomTypes = $hotel->getRoomTypes();
-
-        if(count($roomTypes)) {
-            foreach ($hotel->getRoomTypes() as $roomType) {
-                $this->addRoomType($roomType->getId());
-            }
-        } else {
-            $this->addRoomType($hotel->getId() . ': empty roomTypes');
+        foreach ($roomTypes as $roomType) {
+            $this->addRoomType($roomType->getId());
         }
+
         return $this;
     }
 
+    /**
+     * @param $id
+     * @return bool
+     */
     public function addRoomType($id)
     {
         if (!empty($this->availableRoomTypes) && !in_array($id, $this->availableRoomTypes)) {
@@ -226,5 +251,21 @@ class SearchQuery
         $this->promotion = $promotion;
     }
 
+    /**
+     * @return Special
+     */
+    public function getSpecial(): ?Special
+    {
+        return $this->special;
+    }
 
+    /**
+     * @param Special $special
+     * @return SearchQuery
+     */
+    public function setSpecial(Special $special = null): SearchQuery
+    {
+        $this->special = $special;
+        return $this;
+    }
 }

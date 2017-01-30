@@ -1,4 +1,5 @@
-docker_zalex/
+azovsky_remote/
+scripts/deploy_to_test.sh
 /scripts/upload
 /web/bundles/
 /app/config/parameters.yml
@@ -34,4 +35,8 @@ parameters.yml
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
 web/online
-app/supervisor
+!web/assets/vendor/azovsky/
+web/assets/vendor/
+#web/assets
+docker_zalex
+app/supervisor/

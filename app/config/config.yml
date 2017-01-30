@@ -180,7 +180,7 @@ knp_menu:
 knp_snappy:
     pdf:
         enabled:    true
-        binary:     /usr/local/bin/wkhtmltopdf
+        binary:     "%wkhtmltopdf_path%"
         options:    []
     image:
         enabled:    true
@@ -202,6 +202,10 @@ liip_imagine:
                 data_root: "%kernel.root_dir%/../protectedUpload"
     filter_sets:
         cache: ~
+        thumb_40x40:
+            quality: 100
+            filters:
+              thumbnail: { size: [40, 40], mode: outbound, allow_upscale: true }
         thumb_100x100:
             quality: 100
             filters:
@@ -214,6 +218,14 @@ liip_imagine:
             quality: 100
             filters:
               thumbnail: { size: [95, 80], mode: outbound, allow_upscale: true }
+        thumb_275x210:
+            quality: 100
+            filters:
+              thumbnail: { size: [275, 210], mode: outbound, allow_upscale: true }
+        thumb_275x270:
+            quality: 100
+            filters:
+              thumbnail: { size: [275, 270], mode: outbound, allow_upscale: true }
 
         stamp:
             data_loader: protected

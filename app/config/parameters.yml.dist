@@ -38,6 +38,7 @@ parameters:
   mbh_package_arrival_time: 12
   mbh_package_departure_time: 14
   mbh_package_notpaid_time: '-5 days'
+  mbh_online_form_max_packages: 5
 
   #Mailer
   mailer_user_arrival_links:
@@ -59,6 +60,8 @@ parameters:
   mbh_cache:
     is_enabled: true
     prefix: mbh
+
+  wkhtmltopdf_path: '/usr/local/bin/wkhtmltopdf'
 
   mbh_modules:
     tasks: true

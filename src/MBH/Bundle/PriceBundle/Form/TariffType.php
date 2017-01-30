@@ -9,11 +9,13 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TariffType extends AbstractType
 {
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
@@ -121,7 +123,7 @@ class TariffType extends AbstractType
         $builder
             ->add('isOnline', CheckboxType::class, [
                 'label' => 'Онлайн?',
-                'group' => 'Настройки',
+                'group' => 'configuration',
                 'value' => true,
                 'required' => false,
                 'help' => 'Использовать ли тариф в онлайн бронировании?'
@@ -130,7 +132,7 @@ class TariffType extends AbstractType
                 'childAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
                     'label' => 'Ребенок до',
-                    'group' => 'Настройки',
+                    'group' => 'configuration',
                     'required' => false,
                     'multiple' => false,
                     'choices' => range(0, 18),
@@ -142,7 +144,7 @@ class TariffType extends AbstractType
                 'infantAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
                     'label' => 'Инфант до',
-                    'group' => 'Настройки',
+                    'group' => 'configuration',
                     'required' => false,
                     'multiple' => false,
                     'choices' => range(0, 18),
@@ -152,16 +154,25 @@ class TariffType extends AbstractType
             )
             ->add('defaultForMerging', CheckboxType::class, [
                 'label' => 'Использовать для комбинирования?',
-                'group' => 'Настройки',
+                'group' => 'configuration',
                 'value' => true,
                 'required' => false,
                 'help' =>
                     'Использовать для комбинирования тарифов в переходных периодах?<br>
                      По-молчанию спец. тарифы комбинируются с основным тарифом'
             ])
+            ->add('position', NumberType::class, [
+                'label' => 'position',
+                'help' => 'position.help',
+                'group' => 'configuration',
+                'required' => true,
+                'attr' => [
+                    'class' => 'spinner-0',
+                ],
+            ])
             ->add('isEnabled', CheckboxType::class, [
                 'label' => 'Включен?',
-                'group' => 'Настройки',
+                'group' => 'configuration',
                 'value' => true,
                 'required' => false,
                 'help' => 'Используется ли тариф в поиске?'

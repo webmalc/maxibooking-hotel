@@ -360,6 +360,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
+//        $order = $package->getOrder();
+//        $package->setDeletedAt(null);
+//        $order->setDeletedAt(null);
+//        $this->dm->persist($package);
+//        $this->dm->persist($order);
+//        $this->dm->flush();
 
         /** @var AuthorizationChecker $authorizationChecker */
         $authorizationChecker = $this->get('security.authorization_checker');
@@ -383,6 +389,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'discount' => $authorizationChecker->isGranted('ROLE_DISCOUNT_ADD'),
             'promotion' => $authorizationChecker->isGranted('ROLE_PROMOTION_ADD'),
             'price' => $authorizationChecker->isGranted('ROLE_PACKAGE_PRICE_EDIT'),
+            'special' => $authorizationChecker->isGranted('ROLE_SPECIAL_ADD'),
             'promotions' => $promotions,
             'package' => $package,
             'hotel' => $package->getRoomType()->getHotel(),
@@ -452,6 +459,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'discount' => $authorizationChecker->isGranted('ROLE_DISCOUNT_ADD'),
             'promotion' => $authorizationChecker->isGranted('ROLE_PROMOTION_ADD'),
             'price' => $authorizationChecker->isGranted('ROLE_PACKAGE_PRICE_EDIT'),
+            'special' => $authorizationChecker->isGranted('ROLE_SPECIAL_ADD'),
             'promotions' => $promotions,
             'package' => $package,
             'hotel' => $package->getRoomType()->getHotel(),
@@ -512,6 +520,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'children' => $request->get('children'),
             'roomType' => $request->get('roomType'),
             'tariff' => $request->get('tariff'),
+            'special' => $request->get('special'),
             'accommodation' => $request->get('accommodation'),
             'forceBooking' => $request->get('forceBooking'),
             'infants' => $request->get('infants'),

@@ -145,6 +145,7 @@ restaurant:
           label:            Показать
           help:             Показывать ли блюдо в списке формирования заказа
   dishorder:
+    nodish:               Добавьте блюдо чтобы можно было добавить заказ
     status:
       payed:            Оплачен
     payer:
@@ -268,3 +269,5 @@ restaurant:
       dishmenuitem:
       ingredientcategory: Невозможно удалить категорию, т.к. она не пуста!
 
+restaurant.dishorder.noingredients: Нет ингредиентов для составления блюд.
+restaurant.dishmenu.item.action.new.action.new: Добавить новые ингрeдиенты

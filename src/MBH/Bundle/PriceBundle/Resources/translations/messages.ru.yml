@@ -50,12 +50,12 @@ mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi?: Доступна 
 mbhpricebundle.form.restrictiongeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.restrictiongeneratortype.konetsperioda: Конец периода
 mbhpricebundle.form.restrictiongeneratortype.dninedeli: Дни недели
-mbhpricebundle.form.restrictiongeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для готорых будет произведена генерация наличия мест
+mbhpricebundle.form.restrictiongeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для которых будет произведена генерация наличия мест
 mbhpricebundle.form.restrictiongeneratortype.vsedninedeli: все дни недели
 mbhpricebundle.form.restrictiongeneratortype.tipynomerov: Типы номеров
-mbhpricebundle.form.restrictiongeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: Типы номеров для готорых будет произведена генерация цен
+mbhpricebundle.form.restrictiongeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: Типы номеров для которых будет произведена генерация цен
 mbhpricebundle.form.restrictiongeneratortype.tarify: Тарифы
-mbhpricebundle.form.restrictiongeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen: Тарифы для готорых будет произведена генерация цен
+mbhpricebundle.form.restrictiongeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen: Тарифы для которых будет произведена генерация цен
 mbhpricebundle.form.restrictiongeneratortype.min.dlina: Мин. длина
 mbhpricebundle.form.restrictiongeneratortype.dannyyebudutudaleny: данные будут удалены
 mbhpricebundle.form.restrictiongeneratortype.maks.dlina: Макс. длина
@@ -70,12 +70,12 @@ mbhpricebundle.form.tariffservicestype.uslugipoumolchaniyu: Услуги по у
 mbhpricebundle.form.pricecachegeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.pricecachegeneratortype.konetsperioda: Конец периода
 mbhpricebundle.form.pricecachegeneratortype.dninedeli: Дни недели
-mbhpricebundle.form.pricecachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для готорых будет произведена генерация наличия мест
+mbhpricebundle.form.pricecachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для которых будет произведена генерация наличия мест
 mbhpricebundle.form.pricecachegeneratortype.vsedninedeli: все дни недели
 mbhpricebundle.form.pricecachegeneratortype.tipynomerov: Типы номеров
-mbhpricebundle.form.pricecachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: Типы номеров для готорых будет произведена генерация цен
+mbhpricebundle.form.pricecachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: Типы номеров для которых будет произведена генерация цен
 mbhpricebundle.form.pricecachegeneratortype.tarify: Тарифы
-mbhpricebundle.form.pricecachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen: Тарифы для готорых будет произведена генерация цен
+mbhpricebundle.form.pricecachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen: Тарифы для которых будет произведена генерация цен
 mbhpricebundle.form.pricecachegeneratortype.tsena: Цена
 mbhpricebundle.form.pricecachegeneratortype.tsenazacheloveka?: Цена за человека?
 mbhpricebundle.form.pricecachegeneratortype.tsenazachelovekailizanomer?: Цена за человека или за номер?
@@ -87,14 +87,14 @@ mbhpricebundle.form.pricecachegeneratortype.zapomnitʹ?: Запомнить?
 mbhpricebundle.form.roomcachegeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.roomcachegeneratortype.konetsperioda: Конец периода
 mbhpricebundle.form.roomcachegeneratortype.dninedeli: Дни недели
-mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для готорых будет произведена генерация наличия мест
+mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для которых будет произведена генерация наличия мест
 mbhpricebundle.form.roomcachegeneratortype.vsedninedeli: Все дни недели
 mbhpricebundle.form.roomcachegeneratortype.tipynomerov: Типы номеров
-mbhpricebundle.form.roomcachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Типы номеров для готорых будет произведена генерация наличия мест
+mbhpricebundle.form.roomcachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Типы номеров для которых будет произведена генерация наличия мест
 mbhpricebundle.form.roomcachegeneratortype.ustanovitʹkvoty?: Установить квоты?
 mbhpricebundle.form.roomcachegeneratortype.ustanovitʹkvotynomerovpotarifam?: Установить квоты номеров по тарифам?
 mbhpricebundle.form.roomcachegeneratortype.tarify: Тарифы
-mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot: Тарифы для готорых будет произведена генерация квот
+mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot: Тарифы для которых будет произведена генерация квот
 mbhpricebundle.form.roomcachegeneratortype.kvotynebudutsgenerirovany: Квоты не будут сгенерированы
 mbhpricebundle.form.roomcachegeneratortype.kolichestvomest: Количество мест, доступных в выбранные сроки. Минус один (-1) для удаления дней'
 mbhpricebundle.form.roomcachegeneratortype.zakryto?: Закрыто?
@@ -247,3 +247,9 @@ form.promotionType.choice_label.condition.max_children: Максимальное
 form.promotionType.choice_label.condition.min_children: Минимальное количество детей
 roomCacheSubscriber.delete_exception_message.can_not_delete_room: 'Невозможно удалить «Номер в продаже» с забронированными номерами.'
 tariffSubscriber.delete_exception_message.can_not_delete_main_tariff: 'Невозможно удалить основной тариф.'
+mbh.grid.copy: Скопировать в соседние колонки
+mbh.grid.generator: Скопировать в генератор
+state.on: Включен
+state.off: Выключен
+status.on: Онлайн
+status.off: Оффлайн
