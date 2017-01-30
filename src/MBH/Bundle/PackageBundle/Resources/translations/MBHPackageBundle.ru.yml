@@ -228,6 +228,14 @@ package.listTabs.clients: Клиенты
 package.new.reservation_error: "ошибка бронирования"
 package.new.reservation_error_try_again: При бронировании произошла ошибка. Попробуйте еще раз.
 package.pdf.executor: 'Исполнитель:'
+package.pdf.address: Адрес
+package.pdf.short_city_extend: г
+package.pdf.short_home_extend: д
+package.pdf.short_housing_extend: кор
+package.pdf.short_apartment_extend: кв
+package.pdf.short_street_extend: ул
+package.pdf.inn: ИНН
+package.pdf.count_paid_total: Всего оплачено услуг на сумму
 package.pdf.customer: 'Заказчик:'
 package.pdf.not_specified: 'Не указан'
 package.pdf.services_name: Наименование работ, услуг
