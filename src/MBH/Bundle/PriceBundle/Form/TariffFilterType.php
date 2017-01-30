@@ -38,7 +38,8 @@ class TariffFilterType extends AbstractType
             ->add('begin', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'required' => false
+                'required' => false,
+                'data' => new \DateTime('midnight')
             ])
             ->add('end', DateType::class, [
                 'widget' => 'single_text',

@@ -163,11 +163,17 @@ class TariffRepository extends DocumentRepository
         }
 
         if ($filter->getBegin()) {
-            $qb->field('end')->exists(true)->gte($filter->getBegin());
+            $qb->addAnd($qb->expr()->addOr(
+                $qb->expr()->field('end')->exists(true)->gte($filter->getBegin()),
+                $qb->expr()->field('end')->equals(null)
+            ));
         }
 
         if ($filter->getEnd()) {
-            $qb->field('begin')->exists(true)->lte($filter->getEnd());
+            $qb->addAnd($qb->expr()->addOr(
+                $qb->expr()->field('begin')->exists(true)->lte($filter->getEnd()),
+                $qb->expr()->field('begin')->equals(null)
+            ));
         }
 
         if (!$filter->getIsEnabled()) {
@@ -183,6 +189,8 @@ class TariffRepository extends DocumentRepository
         if ($filter->getHotel()) {
             $qb->field('hotel')->references($filter->getHotel());
         }
+
+        $qb->sort(['position' => 'desc', 'fullTitle' => 'asc']);
 
         return $qb;
     }
