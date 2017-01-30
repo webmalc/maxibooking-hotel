@@ -6,7 +6,6 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
-use MBH\Bundle\ChannelManagerBundle\Document\TariffOktogo;
 use MBH\Bundle\ChannelManagerBundle\Form\OktogoTariffsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -35,9 +34,8 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
     public function indexAction()
     {
         $config = $this->hotel->getOktogoConfig();
-        $form = $this->createForm(
-            $this->get('mbh.channelmanager.oktogo_type'), $config
-        );
+
+        $form = $this->createForm(OktogoType::class, $config);
 
         return [
             'doc' => $config,
@@ -64,11 +62,8 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             $new = true;
         }
 
-        $form = $this->createForm(
-            $this->get('mbh.channelmanager.oktogo_type'), $entity
-        );
+        $form = $this->createForm(OktogoType::class, $entity);
 
-//        $form->submit($request);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
@@ -111,7 +106,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-            new RoomsType, $config->getRoomsAsArray(), [
+            RoomsType::class, $config->getRoomsAsArray(), [
                 'hotel' => $this->hotel,
                 'booking' => $this->get('mbh.channelmanager.oktogo')->pullRooms($config),
             ]
@@ -196,16 +191,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-//          $this->get('mbh.channelmanager.oktogo')->pullTariffs($config);
-//        $this->get('mbh.channelmanager.oktogo')->syncServices($config);
-//        $this->get('mbh.channelmanager.oktogo')->pullOrders();
-//        $this->get('mbh.channelmanager.oktogo')->updateRooms();
-//        $this->get('mbh.channelmanager.oktogo')->updatePrices();
-//        $this->get('mbh.channelmanager.oktogo')->closeForConfig($config);
-//        $this->get('mbh.channelmanager.oktogo')->updateRestrictions();
-//            exit();
-
-        $form = $this->createForm(new OktogoTariffsType(), $config->getTariffsAsArray(), [
+        $form = $this->createForm(OktogoTariffsType::class, $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
             'oktogo' => $this->get('mbh.channelmanager.oktogo')->pullTariffs($config),
         ]);
@@ -214,22 +200,24 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         if ($form->isSubmitted() && $form->isValid()) {
             $config->removeAllTariffs();
 
-               $data = unserialize($form['data']->getData());
+            $data = unserialize($form['data']->getData());
             $idTariffs = $form->getData();
-                unset($idTariffs['data']);
-            foreach ( $idTariffs as $id => $tariff) {
-                    if ($tariff){
-                        foreach ( $data as $idRoom => $idTariffs){
-                            foreach ($idTariffs as $tariffInfo)
-                            if($tariffInfo['rate_id'] == $id ){
+            unset($idTariffs['data']);
+            foreach ($idTariffs as $id => $tariff) {
+                if ($tariff) {
+                    foreach ($data as $idRoom => $idTariffs) {
+                        foreach ($idTariffs as $tariffInfo)
+                            if ($tariffInfo['rate_id'] == $id) {
                                 $configTariff = new Tariff();
-                                $configTariff->setTariff($tariff)->setTariffId($tariffInfo['rate_id'])->setRoomType($tariffInfo['rooms']);
+                                $configTariff->setTariff($tariff)
+                                    ->setTariffId($tariffInfo['rate_id'])
+                                    ->setRoomType($tariffInfo['rooms']);
                                 $config->addTariff($configTariff);
                                 $this->dm->persist($config);
 
                             }
-                        }
                     }
+                }
             }
 
             $this->dm->flush();
