@@ -43,3 +43,9 @@ services:
         arguments:  ["@mbh.hotel.selector"]
         tags:
                 - { name: form.type }
+
+  mbh.type.tariff_filter:
+        class:      MBH\Bundle\PriceBundle\Form\TariffFilterType
+        arguments:  ["@mbh.hotel.selector"]
+        tags:
+                - { name: form.type }

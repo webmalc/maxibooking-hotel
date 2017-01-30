@@ -58,11 +58,16 @@ price.views.overview.index.date: 'Даты'
 price.views.overview.index.type: 'Тип номера'
 price.views.overview.index.rate: 'Тариф'
 
+#/ tariff filter
+tariff.filter.status: Статус тарифа
+tariff.filter.state: Показывать выключенные?
+tariffs.filter.small_title: обзор
 
-
-
-
-
-
-
-
+#/ tariff-table
+tariff.table.name: Название
+tariff.table.base: База
+tariff.table.children: Ребенок
+tariff.table.infant: Инфант
+tariff.table.terms: Сроки
+tariff.table.default: Основной
+tariff.table.online: Онлайн
