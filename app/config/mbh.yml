@@ -180,7 +180,7 @@ parameters:
     #параметры онлайн формы
     mbh.online.form:
           sites: "%online_form_sites%"
-          packages_max: 5
+          packages_max: "%mbh_online_form_max_packages%"
           messages: true
           form:
             width: '300px'
