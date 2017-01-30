@@ -28,6 +28,7 @@ class TariffControllerTest extends WebTestCase
             ->setEditTitle('Test tariff edited')
             ->setNewUrl('/price/management/tariff/new')
             ->setListUrl('/price/management/tariff/')
+            ->setAjaxList()
             ->setNewFormValues(['fullTitle' => $this->getNewTitle()])
             ->setNewFormErrors(['data.fullTitle'])
             ->setEditFormValues(['fullTitle' => $this->getEditTitle()])
