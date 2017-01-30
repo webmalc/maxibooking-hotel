@@ -35,7 +35,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
     {
         $config = $this->hotel->getOktogoConfig();
 
-        $form = $this->createForm(OktogoType::class , $config);
+        $form = $this->createForm(OktogoType::class, $config);
 
         return [
             'doc' => $config,
