@@ -34,6 +34,11 @@ $(document).ready(function ($) {
                 success: function (response) {
                     table.html(response);
                     processLinks();
+                    $('.descr').readmore({
+                        moreLink: '<div class="more-link"><a href="#">'+$('#expand-window').text() +' <i class="fa fa-caret-right"></i></a></div>',
+                        lessLink: '<div class="less-link"><a href="#">'+$('#turn-window').text() +' <i class="fa fa-caret-up"></i></a></div>',
+                        collapsedHeight: 35
+                    });
                 }
             });
         };

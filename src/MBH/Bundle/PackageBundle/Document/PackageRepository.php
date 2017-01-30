@@ -887,6 +887,21 @@ class PackageRepository extends DocumentRepository
     }
 
     /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return mixed
+     */
+    public function getNotVirtualRoom(\DateTime $begin, \DateTime $end){
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
+            ->addOr($queryBuilder->expr()->field('virtualRoom')->exists(false)->equals(null))
+            ->field('begin')->gte($begin)
+            ->field('end')->lte($end);
+
+        return $queryBuilder->getQuery()->execute();
+    }
+
+    /**
      * @return Package
      */
     public function getPackageCategory(\DateTime $begin, \DateTime $end, $categoryRoomType = null,$count = false,$limit = false,  $skip = 0)

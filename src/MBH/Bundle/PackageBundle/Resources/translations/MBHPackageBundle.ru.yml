@@ -109,6 +109,10 @@ package.actions.bill: Счёт
 package.actions.act: Акт
 package.actions.xls_notice: Уведомление о прибытии ИГ
 
+package.window.not.virtual.room: Брони без номера
+package.window.not.virtual.room.expand: Развернуть
+package.window.not.virtual.room.turn: Свернуть
+
 package.actions.find_similar:  Найти похожую
 package.actions.cancel: Отмена
 package.actions.save: 'Сохранить'
