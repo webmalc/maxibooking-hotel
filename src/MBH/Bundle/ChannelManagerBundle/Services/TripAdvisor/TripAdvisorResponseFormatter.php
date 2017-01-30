@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
@@ -22,6 +23,7 @@ class TripAdvisorResponseFormatter
     private $domainName;
     private $arrivalTime;
     private $departureTime;
+    private $onlineFormUrl;
 
     private $mealTypeComparison = [
         'Breakfast' => 'Breakfast',
@@ -35,16 +37,33 @@ class TripAdvisorResponseFormatter
         'Full board' => 'Full board',
     ];
 
+    private $hotelAmenities = [
+        'bath' => 'BATHROOMS',
+        'apartments' => 'APARTMENTS',
+        'beach' => 'BEACH',
+//        'BED_AND_BREAKFAST'
+        'credit-card' => 'CREDIT_CARDS_ACCEPTED',
+        'fitness' => 'FITNESS_CENTER',
+        'breakfast' => 'FREE_BREAKFAST',
+        'parking' => 'PARKING_AVAILABLE',
+        'free-wifi' => 'FREE_WIFI',
+        'luxury_holidays' => 'LUXURY',
+        'swimming' => 'SWIMMING_POOL',
+    ];
+
+    //TODO: Убрать response data formatter и передавать сюда готовые данные
     public function __construct(
         TripAdvisorDataFormatter $responseDataFormatter,
         $domainName,
         $arrivalTime,
-        $departureTime
+        $departureTime,
+        $onlineFormUrl
     ) {
         $this->responseDataFormatter = $responseDataFormatter;
         $this->domainName = $domainName;
         $this->arrivalTime = $arrivalTime;
         $this->departureTime = $departureTime;
+        $this->onlineFormUrl = $onlineFormUrl;
     }
 
     public function formatConfigResponse()
@@ -64,8 +83,8 @@ class TripAdvisorResponseFormatter
         //TODO: Получить данные
         $infoContacts = [];
         foreach ($infoContacts as $infoContact) {
-            $configurationData['info_contacts'][] = $this->getContactInfo($infoContact['name'],
-                $infoContact['email'], $infoContact['phone']);
+            $configurationData['info_contacts'][] =
+                $this->getContactInfo($infoContact['name'], $infoContact['email'], $infoContact['phone']);
         }
 
         //TODO: Какой и откуда брать язык
@@ -78,35 +97,38 @@ class TripAdvisorResponseFormatter
         return json_encode($response);
     }
 
-    public function formatHotelInventoryData($apiVersion, $language, $inventoryType)
+    public function formatHotelInventoryData($apiVersion, $language, $inventoryType, $configs)
     {
-        $response = [
-            'api_version' => $apiVersion,
-            'lang' => $language,
-        ];
-
         $hotelsData = [];
-        //TODO: Сделать получение необходимых отелей
-        $hotels = [];
-        foreach ($hotels as $hotel) {
+        foreach ($configs as $config) {
+            /** @var TripAdvisorConfig $config */
+            $hotel = $config->getHotel();
+            $hotelAmenities = [];
+            foreach ($hotel->getFacilities() as $facility) {
+                if (isset($this->hotelAmenities[$facility]) && !in_array($facility, $hotelAmenities)) {
+                    $hotelAmenities[] = $this->hotelAmenities[$facility];
+                }
+            }
+
             /** @var Hotel $hotel */
             $hotelData = [
+                'ta_id' => $config->getHotelId(),
                 'partner_id' => $hotel->getId(),
                 'name' => $hotel->getInternationalTitle(),
                 //TODO: Улица, город должны быть на английском
                 'street' => $hotel->getStreet(),
                 'city' => $hotel->getCity(),
+                //TODO: Можно добавить область на английском
+//                'state',
                 //TODO: Имя тоже на английском
                 'country' => $hotel->getRegion()->getCountry(),
 //                'postal_code' => $hotel->get
-                //TODO: Заполнить
-                'amenities' => [
-
-                ],
+                'amenities' => $hotelAmenities,
                 //TODO: Добавить откуда-то
                 'url' => '',
                 //TODO: Добавить опционально email, phone, fax,
             ];
+
             if ($hotel->getLatitude()) {
                 $hotelData['latitude'] = $hotel->getLatitude();
             }
@@ -116,21 +138,34 @@ class TripAdvisorResponseFormatter
             if ($hotel->getDescription()) {
                 $hotelData['desc'] = $hotel->getDescription();
             }
-            //TODO: Если будем добавлять, то можно добавить
-//            foreach ($hotel->getRoomTypes() as $roomType) {
-//                $hotelData['room_types'][$roomType->getName()] = [
-//                    //TODO: Ссылка на страницу
-//                    'url' => '',
-//                    //TODO: Если есть
-//                    'desc' => $roomType->getDescription()
-//                ]
-//            }
+
+            foreach ($hotel->getRoomTypes() as $roomType) {
+                if ($roomType->getDescription()) {
+                    $roomTypeData = [];
+                    if ($roomType->getDescription()) {
+                        $roomTypeData['desc'] = $roomType->getDescription();
+                    }
+                    //TODO: Если будет URL
+//                    if ($roomType->getUrl()) {
+//                        $hotelData['url'] = $roomType->getUrl();
+//                    }
+                    $hotelData['room_types'][] = $roomTypeData;
+                }
+            }
+            $hotelsData[] = $hotelData;
         }
+
+        $response = [
+            'api_version' => $apiVersion,
+            'lang' => $language,
+            'hotels' => $hotelsData
+        ];
 
         return $response;
     }
 
     public function formatHotelAvailability(
+        $availabilityData,
         $apiVersion,
         $requestedHotels,
         $startDate,
@@ -146,19 +181,16 @@ class TripAdvisorResponseFormatter
         $response['api_version'] = $apiVersion;
 
         foreach ($requestedHotels as $requestedHotelData) {
-            $response['hotel_ids'] = $requestedHotelData['ta_id'];
+            $response['hotel_ids'][] = $requestedHotelData['ta_id'];
         }
         $response['start_date'] = $startDate;
         $response['end_date'] = $endDate;
         $response['party'] = $adultsChildrenCombination;
-        $response['lang'] = $language;
-        $response['query_key'] = $queryKey;
         $response['currency'] = $currency;
         $response['user_country'] = $userCountry;
         $response['device_type'] = $deviceType;
-
-        $availabilityData = $this->responseDataFormatter
-            ->getAvailabilityData($startDate, $endDate, $requestedHotels);
+        $response['query_key'] = $queryKey;
+        $response['lang'] = $language;
 
         $hotelsAvailabilityData = [];
         foreach ($availabilityData as $ta_id => $hotelAvailabilityData) {
@@ -183,11 +215,15 @@ class TripAdvisorResponseFormatter
                 if ($roomTypeAvailabilityData->getRoomsCount() >= count($adultsChildrenCombination)
                     && $isAllCombinationExists
                 ) {
-
                     $roomTypeResponseData = [];
 
-                    //TODO: Получить URL страницы сайта
-                    $roomTypeResponseData['url'] = '';
+                    $begin = \DateTime::createFromFormat('Y-m-d', $startDate);
+                    $end = \DateTime::createFromFormat('Y-m-d', $endDate);
+                    $adultsChildrenCombination = current($adultsChildrenCombination);
+                    $locale = substr($language, 0, 2);
+                    $roomTypeResponseData['url'] = $this->getSearchUrl($roomTypeAvailabilityData->getRoomType()->getId(),
+                        $begin, $end, $adultsChildrenCombination['adults'], $adultsChildrenCombination['children'],
+                        $locale);
 
                     $roomTypeResponseData['price'] = $resultPrice;
                     $roomTypeResponseData['num_rooms'] = 1;
@@ -286,9 +322,7 @@ class TripAdvisorResponseFormatter
             'reference_id' => $bookingSession,
             'status' => $creationResultStatus,
             //TODO: Информация о поддержке клиента
-            'customer_support' => [
-
-            ]
+            'customer_support' => $this->getCustomerSupportData()
         ];
 
         if ($creationResultStatus == 'Success') {
@@ -302,6 +336,193 @@ class TripAdvisorResponseFormatter
         }
 
         return $response;
+    }
+
+    public function formatBookingVerificationResponse($orderId, $channelManagerOrderId)
+    {
+        $order = $this->responseDataFormatter->getOrderById($orderId);
+        $isCreated = is_array($order) ? false : true;
+        $response = [
+            //TODO: Не знаю где хранить подобные данные
+            'problems' => [
+
+            ],
+            'reference_id' => $channelManagerOrderId,
+            'status' => $isCreated ? 'Success' : 'Failure',
+            'customer_support' => $this->getCustomerSupportData()
+        ];
+
+        if ($isCreated) {
+            //TODO: Не могу закончить, так как нигде не хранятся данные о коде страны, детях и валюте, в которой будут платить
+            $response['reservation'] = $this->getReservationData($order);
+        }
+
+        return $response;
+    }
+
+    public function formatBookingCancelResponse($removalStatus, $hotelId, $orderId)
+    {
+        return [
+            'partner_hotel_code' => $hotelId,
+            'reservation_id' => $orderId,
+            "status" => $removalStatus,
+            'cancellation_number' => $orderId,
+            'customer_support' => $this->getCustomerSupportData()
+        ];
+    }
+
+    public function formatBookingSyncResponse($syncOrderData)
+    {
+        //TODO: Получить currency
+        $currency = '';
+        $bookingSyncResponse = [];
+        foreach ($syncOrderData as $orderData) {
+            /** @var Order $order */
+            $order = $orderData['order'];
+            $packages = $orderData['packages'];
+            $status = $this->getSyncOrderData($order, $packages);
+
+            $totalFee = 0;
+            foreach ($order->getFee() as $feeCashDocument) {
+                /** @var CashDocument $feeCashDocument */
+                $totalFee += $feeCashDocument->getTotal();
+            }
+
+            $orderResponseData = [
+                'reservation_id' => $orderData['orderId'],
+                'partner_hotel_code' => $orderData['hotelId'],
+                'status' => $status,
+                'total_rate' => $this->getPriceObject($order->getPrice(), $currency),
+                //TODO: У нас пока нет никаких данных о налогах
+                'total_taxes' => $this->getPriceObject(0, $currency),
+                'total_fees' => $this->getPriceObject($totalFee, $currency)
+            ];
+
+            if ($status != 'Cancelled') {
+                $orderResponseData['checkin_date'] = $this->getOrderCheckedIn($packages);
+                $orderResponseData['checkout_date'] = $this->getOrderCheckedOut($packages);
+            } else {
+                $orderResponseData['cancelled_date'] = $order->getDeletedAt()->format('Y-m-d');
+                $orderResponseData['cancellation_number'] = $order->getChannelManagerId();
+            }
+
+            $bookingSyncResponse[] = $orderResponseData;
+        }
+
+        return $bookingSyncResponse;
+    }
+
+    public function formatRoomInformationResponse($apiVersion, $hotelData, $language, $queryKey, Hotel $hotel)
+    {
+        $hotelRoomTypes = [];
+        foreach ($hotel->getRoomTypes() as $roomType) {
+            $hotelRoomTypes[] = $this->getRoomTypeData($roomType);
+        }
+
+        $tariffsData = [];
+        foreach ($hotel->getTariffs() as $tariff) {
+            $tariffsData[] = $this->getTariffData($tariff);
+        }
+
+        $response = [
+            'api_version' => $apiVersion,
+            'hotel_id' => $hotelData['ta_id'],
+            'language_response' => [
+                'code_str' => $language,
+                'error_log' => ''
+            ],
+            'unique_query_key' => $queryKey,
+            'hotel_room_types' => $hotelRoomTypes,
+            'hotel_rate_plans' => $tariffsData
+        ];
+
+        return $response;
+    }
+
+    private function getSearchUrl($roomTypeId, \DateTime $begin, \DateTime $end, $adultsCount, $childrenCount, $locale)
+    {
+        $params = [
+            'begin' => $begin->format('d.m.Y'),
+            'end' => $end->format('d.m.Y'),
+            'roomType' => $roomTypeId,
+            'adults' => $adultsCount,
+            'children' => $childrenCount,
+            'locale' => $locale
+        ];
+
+        return $this->onlineFormUrl . '?' . http_build_query($params);
+    }
+
+    private function getOrderCheckedIn($packages)
+    {
+        $firstBeginDate = null;
+        foreach ($packages as $package) {
+            /** @var Package $package */
+            if (is_null($firstBeginDate) || $firstBeginDate > $package->getBegin()) {
+                $firstBeginDate = $package->getBegin();
+            }
+        }
+
+        return $firstBeginDate;
+    }
+
+    //TODO: Реализовать
+    private function getOrderCheckedOut($packages)
+    {
+        return new \DateTime();
+    }
+
+    private function getSyncOrderData(?Order $order, $packages)
+    {
+        if (is_null($order)) {
+            return 'UnknownReference';
+        }
+
+        if ($order->isDeleted()) {
+            return 'Cancelled';
+        }
+        if ($this->isAllPackagesCheckedOut($packages)) {
+            return 'CheckedOut';
+        }
+        if ($this->isAnyPackageCheckedIn($packages)) {
+            return 'CheckedIn';
+        }
+
+        //TODO: Есть еще "NoShow", не знаю что это.
+        return 'Booked';
+    }
+
+    private function isAllPackagesCheckedOut($packages)
+    {
+        $isAllPackagesCheckedOut = true;
+        foreach ($packages as $package) {
+            /** @var Package $package */
+            if (!$package->getIsCheckOut()) {
+                $isAllPackagesCheckedOut = false;
+            }
+        }
+
+        return $isAllPackagesCheckedOut;
+    }
+
+    private function isAnyPackageCheckedIn($packages)
+    {
+        foreach ($packages as $package) {
+            /** @var Package $package */
+            if ($package->getIsCheckIn()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    //TODO: Реализовать
+    private function getCustomerSupportData()
+    {
+        return [
+
+        ];
     }
 
     private function getTariffData(Tariff $tariff)
@@ -324,7 +545,7 @@ class TripAdvisorResponseFormatter
         return $tariffData;
     }
 
-    public function getReservationData(Order $order, $countryCode, $roomStayData, $currency)
+    private function getReservationData(Order $order, $countryCode, $roomStayData, $currency)
     {
         /** @var Package $orderFirstPackage */
         $orderFirstPackage = $order->getPackages()[0];
@@ -496,7 +717,6 @@ class TripAdvisorResponseFormatter
                 'hotelId' => $result->getRoomType()->getHotel()->getId()
             ],
         ];
-
 
         return $hotelRoomRates;
     }

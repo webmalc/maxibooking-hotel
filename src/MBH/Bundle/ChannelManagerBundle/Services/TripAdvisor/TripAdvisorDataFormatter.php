@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -30,10 +31,10 @@ class TripAdvisorDataFormatter
     public function getAvailabilityData($startDate, $endDate, $hotelsSyncData)
     {
         $query = new SearchQuery();
-
         $query->accommodations = true;
         $query->begin = \DateTime::createFromFormat('Y-m-d', $startDate);
         $query->end = \DateTime::createFromFormat('Y-m-d', $endDate);
+
 //        $query->tariff = $config->getTariff();
 //        if ($tariff) {
 //            $query->tariff = $tariff->getId();
@@ -66,6 +67,18 @@ class TripAdvisorDataFormatter
         return $availabilityData;
     }
 
+
+    public function getTripAdvisorConfigs($tripAdvisorHotelIds = null)
+    {
+        $tripAdvisorConfigRepository = $this->dm->getRepository('MBHChannelManagerBundle:TripAdvisorConfig');
+        if ($tripAdvisorHotelIds) {
+            return $tripAdvisorConfigRepository->findAll();
+        }
+
+        return $tripAdvisorConfigRepository->createQueryBuilder()
+            ->field('hotelId')->in($tripAdvisorHotelIds);
+    }
+
     public function getSearchResults($startDate, $endDate, Hotel $hotel)
     {
         $query = new SearchQuery();
@@ -85,6 +98,25 @@ class TripAdvisorDataFormatter
         return $this->dm->find('MBHHotelBundle:Hotel', $hotelId);
     }
 
+    public function getOrderById($orderId, $isWithDeleted = false)
+    {
+        if ($isWithDeleted) {
+            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+            }
+        }
+
+        $order = $this->dm->find('MBHPackageBundle:Order', $orderId);
+
+        if ($isWithDeleted) {
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+        }
+
+        return $order;
+    }
+
     public function getAvailableRoomTypes(Hotel $requestedHotel)
     {
         if (!$this->isAvailableRoomTypesInit) {
@@ -95,6 +127,7 @@ class TripAdvisorDataFormatter
 
         return $this->availableRoomTypes;
     }
+
 
 
     public function getAvailableTariffs(Hotel $requestedHotel, \DateTime $begin, \DateTime $end)
@@ -109,7 +142,37 @@ class TripAdvisorDataFormatter
         return $this->availableTariffs;
     }
 
-    private function getTripAdvisorHotelId($mbhHotelId, $hotelIdsSyncData) {
+    public function getBookingSyncData($syncOrderData)
+    {
+        $syncOrders = [];
+        foreach ($syncOrderData as $orderData) {
+            $orderId = $orderData['reservation_id'];
+            $hotelId = $orderData['partner_hotel_code'];
+            $order = $this->getOrderById($orderId, true);
+
+            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+            }
+
+            $packages = $order->getPackages();
+
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+
+            $syncOrders[] = [
+                'orderId' => $orderId,
+                'hotelId' => $hotelId,
+                'order' => $order,
+                'packages' => $packages
+            ];
+        }
+
+        return $syncOrders;
+    }
+
+    private function getTripAdvisorHotelId($mbhHotelId, $hotelIdsSyncData)
+    {
         foreach ($hotelIdsSyncData as $syncData) {
             if ($syncData['partner_id'] == $mbhHotelId) {
                 return $syncData['ta_id'];

@@ -9,7 +9,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 
-class OrderCreator
+class OrderHandler
 {
     private $dm;
 
@@ -69,6 +69,13 @@ class OrderCreator
         $this->dm->flush();
 
         return $order;
+    }
+
+    public function deleteOrder(Order $order)
+    {
+        //TODO: Проверить нужно ли что еще делать
+        $this->dm->remove($order);
+        $this->dm->flush();
     }
 
     /**

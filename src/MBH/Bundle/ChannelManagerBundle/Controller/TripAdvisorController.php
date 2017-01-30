@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorPackageInfo;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,9 +37,12 @@ class TripAdvisorController extends BaseController
         $language = $request->get('lang');
         $inventoryType = $request->get('inventory_type');
 
+        $responseDataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
+        $configuredHotels = $responseDataFormatter->getTripAdvisorConfigs();
+
         //TODO: Уточнить нужно ли реализовывать
         return $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatHotelInventoryData($apiVersion, $language, $inventoryType);
+            ->formatHotelInventoryData($apiVersion, $language, $inventoryType, $configuredHotels);
     }
 
     /**
@@ -59,11 +63,16 @@ class TripAdvisorController extends BaseController
         $userCountry = $request->get('user_country');
         $deviceType = $request->get('device_type');
 
+        $availabilityData = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
+            ->getAvailabilityData($startDate, $endDate, $requestedHotels);
+
 //        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
 //            ->formatHotelAvailability($apiVersion, $requestedHotels, $startDate, $endDate,
 //                $requestedAdultsChildrenCombination, $language, $queryKey, $currency, $userCountry, $deviceType);
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatHotelAvailability(7,
+            ->formatHotelAvailability(
+                $availabilityData,
+                7,
                 [["ta_id" => 97497, "partner_id" => "5864e3da2f77d9004b580232"]],
                 '2017-01-12',
                 '2017-01-18',
@@ -97,6 +106,10 @@ class TripAdvisorController extends BaseController
         $bookingSessionId = $request->get('booking_session_id');
         $bookingRequestId = $request->get('booking_request_id');
 
+        $responseDataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
+//        $hotel = $responseDataFormatter->getHotelById([$hotelData['partner_hotel_code']]);
+//        $availabilityDataArray = $responseDataFormatter->getSearchResults($startDate, $endDate, $hotel);
+
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatBookingAvailability($apiVersion, $requestedHotels, $startDate, $endDate,
                 $requestedAdultsChildrenCombination, $language, $queryKey, $userCountry, $deviceType, $currency);
@@ -126,11 +139,107 @@ class TripAdvisorController extends BaseController
                 $paymentData, $finalPriceAtBooking, $finalPriceAtCheckout, $bookingMainData, $bookingSession);
 
         $bookingCreationResult = $this->get('mbh.channel_manager.order_creator')->createOrder($orderInfo);
-        //TODO: Получит валюту
-        $currency = '';
+
+        $currency = $finalPriceAtCheckout['currency'];
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatSubmitBookingResponse($bookingSession, $bookingCreationResult,
                 $orderInfo->getPackageAndOrderMessages(), $customerData['country'], $roomsData, $currency);
 
+        return json_encode($response);
+    }
+
+    /**
+     * @Route("/booking_verify")
+     * @param Request $request
+     * @return string
+     */
+    public function bookingVerifyAction(Request $request)
+    {
+        $hotelId = $request->get('partner_hotel_code');
+        $orderId = $request->get('reservation_id');
+        $channelManagerOrderId = $request->get('reference_id');
+
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+            ->formatBookingVerificationResponse($orderId, $channelManagerOrderId);
+
+        return json_encode($response);
+    }
+
+    /**
+     * @Route("/booking_cancel")
+     * @param Request $request
+     * @return string
+     */
+    public function bookingCancelAction(Request $request)
+    {
+        $hotelId = $request->get('partner_hotel_code');
+        $orderId = $request->get('reservation_id');
+
+        $order = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
+            ->getOrderById($orderId, true);
+        if (is_null($order)) {
+            $removalStatus = 'UnknownReference';
+        } elseif ($order->isDeleted()) {
+            $removalStatus = 'AlreadyCancelled';
+        } else {
+            try {
+                $this->get('mbh.channel_manager.order_handler')->deleteOrder($order);
+                $removalStatus = 'Success';
+            } catch (DeleteException $e) {
+                $removalStatus = 'CannotBeCancelled';
+            } catch (\Exception $e) {
+                $removalStatus = 'Error';
+            }
+        }
+
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+            ->formatBookingCancelResponse($removalStatus, $hotelId, $orderId);
+
+        return json_encode($response);
+    }
+
+    /**
+     * @Route("/booking_sync")
+     * @param Request $request
+     * @return string
+     */
+    public function bookingSyncAction(Request $request)
+    {
+        //TODO: Сменить имя, неизвестно какое
+        $syncOrderData = $request->get('array');
+
+        $syncOrders = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
+            ->getBookingSyncData($syncOrderData);
+
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+            ->formatBookingSyncResponse($syncOrders);
+
+        return json_encode($response);
+    }
+
+    /**
+     * @Route("/room_information")
+     * @param Request $request
+     * @return string
+     * @throws \Exception
+     */
+    public function roomInformationAction(Request $request)
+    {
+        $apiVersion = $request->get('api_version');
+        $hotelData = $request->get('hotel');
+        $language = $request->get('language_request');
+        $queryKey = $request->get('unique_query_key');
+
+        $dataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
+        $hotel = $dataFormatter->getHotelById($hotelData['partner_hotel_code']);
+        //TODO: Что с этой ситуацией?
+        if (is_null($hotel)) {
+            throw new \Exception();
+        }
+
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+            ->formatRoomInformationResponse($apiVersion, $hotelData, $language, $queryKey);
+
+        return json_encode($response);
     }
 }
