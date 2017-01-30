@@ -1,7 +1,17 @@
 {% if error is defined and error is not empty %}
     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
 {% else %}
-
+    {% if notVirtualRooms is not empty and notVirtualRooms is defined %}
+        <div class="text-left margin-bottom descr">
+            <small>{{ 'package.window.not.virtual.room'|trans({}, "MBHPackageBundle")  }}:
+                {% for notVirtualRoom in notVirtualRooms %}
+                    <a href="{{ path('package_edit',{'id': notVirtualRoom.id }) }}">{{ notVirtualRoom.numberWithPrefix }}</a> &nbsp;
+                {% endfor %}
+            </small>
+            <div id="expand-window" class="hidden">{{ 'package.window.not.virtual.room.expand'|trans({}, "MBHPackageBundle") }}</div>
+            <div id="turn-window" class="hidden">{{ 'package.window.not.virtual.room.turn'|trans({}, "MBHPackageBundle")  }}</div>
+        </div>
+    {% endif %}
     {% for roomType in data.roomTypes %}
         <div class="bg-gray color-palette mbh-graph-header">
             <i class="fa fa-bed" style="color:{{ roomType.color }};"></i>

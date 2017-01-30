@@ -62,10 +62,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     public function windowsTableAction(Request $request)
     {
         $generator = $this->get('mbh.package.windows.report.generator');
+        $notVirtualRooms = $this->dm->getRepository('MBHPackageBundle:Package')->getNotVirtualRoom(new \DateTime($request->get('begin')),new \DateTime($request->get('end')));
 
         return [
             'data' => $generator->generate($request, $this->hotel),
-            'error' => $generator->getError()
+            'error' => $generator->getError(),
+            'notVirtualRooms' => $notVirtualRooms
         ];
     }
 

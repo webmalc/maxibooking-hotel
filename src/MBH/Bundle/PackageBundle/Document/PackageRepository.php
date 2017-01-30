@@ -896,7 +896,21 @@ class PackageRepository extends DocumentRepository
         $queryBuilder
             ->addOr($queryBuilder->expr()->field('virtualRoom')->exists(false)->equals(null))
             ->field('begin')->gte($begin)
-            ->field('end')->lte($end)
+            ->field('end')->lte($end);
+
+        return $queryBuilder->getQuery()->execute();
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return mixed
+     */
+    public function getVirtualRoomNotRoom(\DateTime $begin, \DateTime $end, $rooms){
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
+            ->field('virtualRoom.id')->in($rooms)
+            ->field('begin')->gte($begin)
             ->field('end')->lte($end);
 
         return $queryBuilder->getQuery()->execute();

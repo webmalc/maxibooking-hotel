@@ -70,6 +70,8 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
         $begin = $helper->getDateFromString((string)$xml->BEGIN);
         $end = $helper->getDateFromString((string)$xml->END);
         $notVirtualRooms = $dm->getRepository('MBHPackageBundle:Package')->getNotVirtualRoom($begin,$end);
+        $roomsDisabled = $dm->getRepository('MBHHotelBundle:Room')->fetch(null,null,null,null,null,null,null,false);
+        $packagesDisabledVirtualRoom = $dm->getRepository('MBHPackageBundle:Package')->getVirtualRoomNotRoom($begin,$end,array_keys($roomsDisabled->toArray()));
 
         foreach ($xml->HOTEL as $hotelXml) {
             if (empty(self::HOTELS[(int)$hotelXml->ID])) {
@@ -147,7 +149,7 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                 }
             }
         }
-        $this->sendMessage(['result' => $this->result, 'notVirtualRooms' => $notVirtualRooms]);
+        $this->sendMessage(['result' => $this->result, 'notVirtualRooms' => $notVirtualRooms,'disabledRooms'=>$packagesDisabledVirtualRoom]);
 
         return true;
     }
