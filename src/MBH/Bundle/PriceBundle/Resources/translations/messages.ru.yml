@@ -253,3 +253,48 @@ state.on: Включен
 state.off: Выключен
 status.on: Онлайн
 status.off: Оффлайн
+
+special.title: Спецпредложения
+
+special.group.conditions: Условия
+special.group.dates: Даты
+
+special.title.placeholder: Скидка 1-10 янв. 20%
+special.fullTitle.placeholder: Скидка 20% на Новогодние праздники
+special.description.help: Описание спецпредложения для онлайн бронирования
+special.end.help: Дата начала применения скидки
+special.begin.help: Дата конца применения скидки
+
+special.beginOffset: Разброс начала
+special.beginOffset.help: На сколько дней бронь может быть меньше даты начала?
+
+special.endOffset: Разброс конца
+special.endOffset.help: На сколько дней бронь может быть больше даты конца?
+
+special.tariffs: Тарифы
+special.tariffs.help: Доступные тарифы
+
+special.roomTypes: Типы номеров
+special.roomTypes.help:  Доступные типы номеров
+
+special.displayFrom: Показывать с
+special.displayFrom.help: Дата начала поискового запроса пользователя для показа спецпредложения
+
+special.displayTo: Показывать по
+special.displayTo.help: Дата конца поискового запроса пользователя для показа спецпредложения
+
+special.discount: Скидка
+special.limit: Макс. кол-во
+special.limit.help: Количество предложений доступных для продажи
+special.isPercent: В процентах?
+form.group.discount: Скидка
+
+special.discount.help: Размер скидки, применяемой к стоимости дня брони
+
+specials.title: Название
+specials.dates: Даты
+specials.roomTypes: Тип номера
+specials.tariff: Тариф
+specials.discount: Скидка
+specials.sold: Продано
+special.apply: Применить
