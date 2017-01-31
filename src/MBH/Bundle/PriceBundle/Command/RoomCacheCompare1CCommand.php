@@ -69,6 +69,9 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
 
         $begin = $helper->getDateFromString((string)$xml->BEGIN);
         $end = $helper->getDateFromString((string)$xml->END);
+        $notVirtualRooms = $dm->getRepository('MBHPackageBundle:Package')->getNotVirtualRoom($begin,$end);
+        $roomsDisabled = $dm->getRepository('MBHHotelBundle:Room')->fetch(null,null,null,null,null,null,null,false);
+        $packagesDisabledVirtualRoom = $dm->getRepository('MBHPackageBundle:Package')->getVirtualRoomNotRoom($begin,$end,array_keys($roomsDisabled->toArray()));
 
         foreach ($xml->HOTEL as $hotelXml) {
             if (empty(self::HOTELS[(int)$hotelXml->ID])) {
@@ -133,15 +136,33 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                             $this->result[] = $entry;
                             $entry->numbersMB = $dm->getRepository('MBHPackageBundle:Package')
                                 ->getNumbers($entry->date, $entry->roomType);
-                            $entry->numbersDiff = array_merge(array_diff($entry->numbersMB, $entry->numbers), array_diff($entry->numbers, $entry->numbersMB));
+                            $entry->mb = array_diff($entry->numbersMB, $entry->numbers);
+                            $entry->oneC = array_diff($entry->numbers, $entry->numbersMB);
+                            $entry->common = array_merge($entry->mb, $entry->oneC);
+                            asort($entry->common);
+                            $entry->res = array_unique($entry->common);
+                            $entry->non_oneC = $this ->sortOneC($entry->res,$entry->mb);
+                            $entry->non_mb = $this ->sortOneC($entry->res,$entry->oneC);
+
                         }
                     }
                 }
             }
         }
-        $this->sendMessage(['result' => $this->result]);
+        $this->sendMessage(['result' => $this->result, 'notVirtualRooms' => $notVirtualRooms,'disabledRooms'=>$packagesDisabledVirtualRoom]);
 
         return true;
+    }
+
+    private function sortOneC($array,$array2){
+        foreach ($array as $item => $itemValue) {
+            foreach ($array2 as $arr => $arrValue) {
+                if ($itemValue == $arrValue) {
+                    $array[$item] = '-';
+                }
+            }
+        }
+        return $array;
     }
 
     private function sendMessage(array $data)
