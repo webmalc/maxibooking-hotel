@@ -1,7 +1,7 @@
 {% if error is defined and error is not empty %}
     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
 {% else %}
-    {% if notVirtualRooms is not empty and notVirtualRooms is defined %}
+    {% if notVirtualRooms is defined and notVirtualRooms is not empty %}
         <div class="text-left margin-bottom descr">
             <small>{{ 'package.window.not.virtual.room'|trans({}, "MBHPackageBundle")  }}:
                 {% for notVirtualRoom in notVirtualRooms %}
