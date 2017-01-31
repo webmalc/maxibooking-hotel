@@ -300,37 +300,20 @@ var docReadyPackages = function () {
             $('.deleted-entry').closest('tr').addClass('danger');
             $('.not-confirmed-entry').closest('tr').addClass('info');
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
+            $('.booking-delete-link').attr('data-toggle', 'modal');
 
             $('a.booking-delete-link').on('click', function (e) {
                 e.preventDefault();
                 var path = $(this).data('path');
                 var data = {'id': $(this).data('id')};
-                var answer = package_delete_modal(path, data);
-                answer
-                    .done(function (data) {
-                        $('body').after(data);
-
-                        $(".js-select").select2();
-
-                        $('button.btn-delete').click(function () {
-
-                            var array = {
-                                'select_reasons': $('#select_reasons').val(),
-                            };
-
-                            $.ajax({
-                                url: Routing.generate('delete_package', {'id': $('#package_id').val()}),
-                                type: "GET",
-                                data: array,
-                                dataType: "json",
-                                success: function (urlFromController) {
-                                    window.location.href = urlFromController;
-                                }
-                            });
-                        });
-
-                        $('#myModal').modal('show');
-                    });
+                return $.ajax({
+                    url: Routing.generate('package_delete', {'id': $('.booking-delete-link').data('id')}),
+                    type: "GET",
+                    data: data,
+                    success: function (urlFromController) {
+                        $('#modal_delete_package').html(urlFromController);
+                    }
+                });
             });
 
             //summary
@@ -346,7 +329,11 @@ var docReadyPackages = function () {
         return $.ajax({
             url: path,
             type: "GET",
-            data: data
+            data: data,
+            success: function (urlFromController) {
+                console.log(urlFromController);
+                $('.modal-body').html(urlFromController);
+            }
         });
     }
 

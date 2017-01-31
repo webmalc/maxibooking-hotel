@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Form\DeleteReasonType;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\PackageAccommodationType;
 use MBH\Bundle\PackageBundle\Form\PackageCsvType;
@@ -988,19 +989,38 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         return $this->redirect($this->generateUrl('package_accommodation', ['id' => $entity->getId()]));
     }
 
+
     /**
      * Package_delete_modal
      *
-     * @Route("/package_delete_modal", name="package_delete")
-     * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', request) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
-     * @Template("MBHPackageBundle:Package:modal.html.twig")
+     * @Route("/modal/package_delete_modal", name="package_delete", options={"expose"=true})
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_PACKAGE_DELETE')")
+     * @Template()
      */
-    public function deleteModalAction(Request $request)
+    public function deleteModalAction(Request $request, $id = null)
     {
-        $id = $request->query->get('id');
-        $reasons = $this->dm->getRepository('MBHPackageBundle:DeleteReasons')->getNotDeleted();
+        $package = new Package();
+        $form = $this->createForm(DeleteReasonType::class, $id);
+        $form->handleRequest($request);
 
-        return ['reasons' => $reasons, 'id' =>$id];
+        if($request->isMethod('post')) {
+            if ($form->isValid()) {
+                dump($request->request->all());
+                exit();
+                $package->setDeleteReason($request->request->get('deleteReason'));
+                $package->setNote($request->request->get('note'));
+                $this->dm->persist($package);
+                $this->dm->flush($package);
+
+                return $this->redirect($this->generateUrl('package'));
+
+            }
+        }
+
+        return [
+            'form' => $form->createView(),
+        ];
     }
 
     /**

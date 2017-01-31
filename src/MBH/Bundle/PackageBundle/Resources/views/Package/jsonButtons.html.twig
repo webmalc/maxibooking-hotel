@@ -20,7 +20,7 @@
         {% endif %}
 
         {% if is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL')) and not entity.deletedAt%}
-            <a href='#' class='btn btn-danger btn-xs booking-delete-link' data-id='{{ entity.id }}' data-path='{{ path('package_delete') }}'>
+            <a href='#modal_delete_package' class='btn btn-danger btn-xs booking-delete-link' data-id='{{ entity.id }}'>
                 <i class='fa fa-trash-o'></i>
             </a>
         {% endif %}
