@@ -166,5 +166,16 @@
             </ul>
         </div>
     </div>
-    <div id="modal_delete_package" class="modal fade"></div>
+
+    <div id="modal_delete_package" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">{{ 'modal.form.delete.reasons.confirmation'|trans({}, 'MBHPackageBundle') }}</h4>
+                </div>
+                <div class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
 {% endblock content %}

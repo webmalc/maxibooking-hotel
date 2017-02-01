@@ -124,13 +124,13 @@ class DeleteReasonsController extends Controller implements CheckHotelController
     }
 
     /**
-     * Delete reason
-     *
      * @Route("/{id}/delete", name="delete_reasons_delete")
      * @Method("GET")
-     * @ParamConverter(class="MBHPackageBundle:DeleteReasons")
+     * @ParamConverter(class="MBHPackageBundle:DeleteReason")
      * @param DeleteReason $reasons
      * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteReasonAction(DeleteReason $reasons)
     {

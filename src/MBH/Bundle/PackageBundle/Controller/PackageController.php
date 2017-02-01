@@ -1007,7 +1007,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid()) {
             $this->dm->persist($id);
             $this->dm->remove($id);
-            $this->dm->flush($id);
+            $this->dm->flush();
 
             return $this->redirectToRoute('package');
         }

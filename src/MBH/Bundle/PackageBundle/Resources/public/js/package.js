@@ -302,11 +302,9 @@ var docReadyPackages = function () {
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
             $('.booking-delete-link').attr('data-toggle', 'modal');
 
-            $('select').select2();
-
             $('a.booking-delete-link').on('click', function (e) {
                 e.preventDefault();
-                $('.box-header .with-border').html(mbh.loader.html);
+                $('.modal-body').html(mbh.loader.html);
 
                 return $.ajax({
                     url: Routing.generate('package_delete', {'id': $(this).data('id')}),
@@ -314,6 +312,7 @@ var docReadyPackages = function () {
                     data: {},
                     success: function (urlFromController) {
                         $('#modal_delete_package').html(urlFromController);
+                        $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
                     }
                 });
             });
