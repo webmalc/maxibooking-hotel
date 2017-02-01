@@ -311,14 +311,6 @@ var docReadyPackages = function () {
         }
     });
 
-    $('.dataTables_filter input')
-        .unbind('keypress keyup input')
-        .on('keypress keyup input', function(e){
-            var value = $(this).val();
-            if ($(this).val().length < 4 && e.keyCode != 13) return;
-            pTable.fnFilter($(this).val());
-        });
-
 
     // package datatable filter
     (function () {

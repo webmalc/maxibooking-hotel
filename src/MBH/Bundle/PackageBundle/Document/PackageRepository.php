@@ -598,15 +598,7 @@ class PackageRepository extends DocumentRepository
                 $qb->addOr($qb->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')));
-
-            //Find by order
-            /** @var  DocumentManager $dm */
-            $order = $dm->getRepository('MBHOnlineBundle:Order')->find($query);
-            if ($order) {
-                $qb->addOr($qb->expr()->field('order.id')->equals($order->getId()));
-            }
-
+            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
         }
 
         //isCheckIn
@@ -873,24 +865,6 @@ class PackageRepository extends DocumentRepository
         return $queryPackage->getQuery()->execute();
     }
 
-    public function getNumbers(\DateTime $day, RoomType $roomType):array
-    {
-        $packages = $this->createQueryBuilder()
-            ->select('numberWithPrefix')
-            ->field('begin')->lte($day)
-            ->field('end')->gte($day)
-            ->field('roomType')->references($roomType)
-            ->field('deletedAt')->equals(null)
-            ->hydrate(false)
-            ->getQuery()
-            ->execute();
-
-        return array_map(function ($package) {
-            return $package['numberWithPrefix'];
-        }, iterator_to_array($packages));
-
-    }
-
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -906,27 +880,4 @@ class PackageRepository extends DocumentRepository
         return $queryBuilder->getQuery()->execute();
     }
 
-    /**
-     * @return Package
-     */
-    public function getPackageCategory(\DateTime $begin, \DateTime $end, $categoryRoomType = null,$count = false,$limit = false,  $skip = 0)
-    {
-        $queryBuilder = $this->createQueryBuilder()
-            ->field('begin')->gte($begin)
-            ->sort('createdAt', 'desc')
-            ->skip($skip)
-            ->field('end')->lte($end);
-
-        if ($limit){
-            $queryBuilder->limit(50);
-        }
-        if($count){
-            $queryBuilder->count();
-        }
-        if ($categoryRoomType) {
-            $queryBuilder->field('roomType.id')->in($categoryRoomType);
-        }
-
-        return $queryBuilder->getQuery()->execute();
-    }
 }

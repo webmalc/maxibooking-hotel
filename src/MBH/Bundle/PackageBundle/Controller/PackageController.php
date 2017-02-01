@@ -1075,6 +1075,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'text' => $package->getTitle(true,true)
             ];
         }
+
         return new JsonResponse($result);
     }
 
@@ -1103,6 +1104,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'text' => $item->getTitle(true,true)
             ];
         }
+
         return new JsonResponse(['results' => $data]);
     }
 

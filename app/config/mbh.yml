@@ -190,15 +190,10 @@ parameters:
             height: 'auto'
             url: "%online_form_result_url%"
           payment_types:
-            #in_hotel: 'Оплата при заселении'
-            in_office: 'Оплата в офисе'
-            by_receipt: 'Оплата по квитанции'
-            online_full: 'Онлайн оплата 100%'
-            online_100: 'Онлайн оплата 100%'
+            in_hotel: 'Оплата при заселении'
+            online_full: 'Онлайн оплата (100%)'
             online_first_day: 'Онлайн оплата (одни сутки)'
-            online_half: 'Онлайн оплата 50%'
-            online_40: 'Онлайн оплата 40%'
-            online_30: 'Онлайн оплата 30%'
+            online_half: 'Онлайн оплата (50%)'
 
     #платежные системы
     mbh.payment_systems:
@@ -215,6 +210,7 @@ parameters:
         vashotel:
           title: 'ВашОтель'
           service: 'mbh.channelmanager.vashotel'
+          password: jguuE26t684Fl
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
@@ -232,11 +228,6 @@ parameters:
           api_password: VCuMhanjdxiC
           vendor_password: 0Rp0XJGubJ9rfoUy4niNGcBPErf20VJZ
           url: http://mbhs.maxibooking.ru/client/channelmanager/push/myallocator
-        oktogo:
-          title: 'Oktogo'
-          service: 'mbh.channelmanager.oktogo'
-          api_username: .maxiBooking_api
-          api_password: qdcmBz9K
 
     #параметры логов
     mbh.logs.max: 100
