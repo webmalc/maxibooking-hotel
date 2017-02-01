@@ -161,6 +161,7 @@ class OrderManager
         $query->forceBooking = $new->getIsForceBooking();
         $query->setSpecial($new->getSpecial());
         $query->memcached = false;
+        $query->setExcludePackage($new);
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -176,7 +177,9 @@ class OrderManager
 
             $new->setPrice($results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren()))
                 ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
-                ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()));
+                ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
+                ->setVirtualRoom($results[0]->getVirtualRoom())
+            ;
 
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 

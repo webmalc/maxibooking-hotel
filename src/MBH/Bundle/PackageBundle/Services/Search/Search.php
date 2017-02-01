@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -404,9 +405,10 @@ class Search implements SearchInterface
                 }
 
                 //check windows
-
                 $virtualResult = $this->setVirtualRoom(
-                    $result, $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($result->getRoomType()->getHotel())
+                    $result,
+                    $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($result->getRoomType()->getHotel()),
+                    $query->getExcludePackage()
                 );
 
                 if (!$virtualResult) {
@@ -437,20 +439,20 @@ class Search implements SearchInterface
      * Sets virtual room to search result
      * @param SearchResult $result
      * @param Tariff $tariff
+     * @param Package $package
      * @return bool|SearchResult
      */
-    public function setVirtualRoom($result, Tariff $tariff)
+    public function setVirtualRoom($result, Tariff $tariff, Package $package = null)
     {
 
         if ($result->getBegin() <= new \DateTime('midnight')) {
             return true;
         }
 
-        return true;
-
         if (!$this->config || !$this->config->getSearchWindows() || $result->getForceBooking()) {
             return true;
         }
+
         $roomType = $result->getRoomType();
         $begin = clone $result->getBegin();
         $end = clone $result->getEnd();
@@ -465,7 +467,7 @@ class Search implements SearchInterface
         }
 
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')
-            ->fetchWithVirtualRooms($begin, $end, $roomType)
+            ->fetchWithVirtualRooms($begin, $end, $roomType, false, $package)
         ;
 
         $minRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->getMinTotal(

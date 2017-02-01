@@ -51,11 +51,12 @@ class PackageRepository extends DocumentRepository
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
-     * @param boolean $group
-     * @return mixed
+     * @param RoomType|null $roomType
+     * @param bool $group
+     * @param Package|null $exclude
+     * @return array|mixed
      */
-    public function fetchWithVirtualRooms(\DateTime $begin, \DateTime $end, RoomType $roomType = null, bool $group = false)
+    public function fetchWithVirtualRooms(\DateTime $begin, \DateTime $end, RoomType $roomType = null, bool $group = false, Package $exclude = null)
     {
         $qb = $this->createQueryBuilder()
             ->field('begin')->lte($end)
@@ -65,6 +66,10 @@ class PackageRepository extends DocumentRepository
 
         if ($roomType) {
             $qb->field('roomType')->references($roomType);
+        }
+
+        if ($exclude) {
+            $qb->field('id')->notEqual($exclude->getId());
         }
 
         $packages = $qb->getQuery()->execute();

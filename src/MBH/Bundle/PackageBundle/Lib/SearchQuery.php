@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Lib;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -125,6 +126,11 @@ class SearchQuery
      * @var mixed
      */
     public $tariff;
+
+    /**
+     * @var Package
+     */
+    protected $excludePackage;
 
     /**
      * Additional days for search
@@ -268,4 +274,25 @@ class SearchQuery
         $this->special = $special;
         return $this;
     }
+
+    /**
+     * @return Package
+     */
+    public function getExcludePackage(): ?Package
+    {
+        return $this->excludePackage;
+    }
+
+    /**
+     * @param Package $excludePackage
+     * @return SearchQuery
+     */
+    public function setExcludePackage(Package $excludePackage = null): SearchQuery
+    {
+        $this->excludePackage = $excludePackage;
+
+        return $this;
+    }
+
+
 }
