@@ -30,43 +30,25 @@ class TripAdvisorDataFormatter
 
     public function getAvailabilityData($startDate, $endDate, $hotelsSyncData)
     {
-        $query = new SearchQuery();
-        $query->accommodations = true;
-        $query->begin = \DateTime::createFromFormat('Y-m-d', $startDate);
-        $query->end = \DateTime::createFromFormat('Y-m-d', $endDate);
-
-//        $query->tariff = $config->getTariff();
-//        if ($tariff) {
-//            $query->tariff = $tariff->getId();
-//        }
-        //TODO: Уточнить насчет тарифа
-        $query->tariff = "5864fc912f77d901104b5794";
+        $requestedHotelIds = [];
+        foreach ($hotelsSyncData as $syncData) {
+            $requestedHotelIds[] = $syncData['partner_id'];
+        }
+        $tripAdvisorConfigs = $this->getTripAdvisorConfigs($requestedHotelIds);
 
         $availabilityData = [];
-
-        foreach ($hotelsSyncData as $hotelSyncData) {
-            $mbhHotelId = $hotelSyncData['partner_id'];
-            $requestedHotel = $this->getHotelById($mbhHotelId);
-            if (is_null($requestedHotel)) {
-                //TODO: Что делать с исключением?
-                throw new \Exception();
+        /** @var TripAdvisorConfig $tripAdvisorConfig */
+        foreach ($tripAdvisorConfigs as $tripAdvisorConfig) {
+            $searchResult = $this->search($startDate, $endDate, $tripAdvisorConfig->getHotel(),
+                $tripAdvisorConfig->getMainTariff());
+            foreach ($searchResult as $result) {
+                /** @var RoomType $roomType */
+                $availabilityData[$tripAdvisorConfig->getHotelId()][] = $result;
             }
-            $query->addHotel($requestedHotel);
-        }
-
-        $searchResult = $this->search->setWithTariffs()->search($query);
-
-        foreach ($searchResult as $result) {
-            /** @var RoomType $roomType */
-            $roomType = $result['roomType'];
-            $mbhHotelId = $roomType->getHotel()->getId();
-            $tripAdvisorHotelId = $this->getTripAdvisorHotelId($mbhHotelId, $hotelsSyncData);
-            $availabilityData[$tripAdvisorHotelId][] = $result;
         }
 
         return $availabilityData;
     }
-
 
     public function getTripAdvisorConfigs($tripAdvisorHotelIds = null)
     {
@@ -79,18 +61,9 @@ class TripAdvisorDataFormatter
             ->field('hotelId')->in($tripAdvisorHotelIds);
     }
 
-    public function getSearchResults($startDate, $endDate, Hotel $hotel)
+    public function getBookingOptionsByHotel($startDate, $endDate, Hotel $hotel)
     {
-        $query = new SearchQuery();
-
-        $query->accommodations = true;
-        $query->begin = \DateTime::createFromFormat('Y-m-d', $startDate);
-        $query->end = \DateTime::createFromFormat('Y-m-d', $endDate);
-        $query->addHotel($hotel);
-
-        $searchResult = $this->search->setWithTariffs()->search($query);
-
-        return $searchResult;
+        return $this->search($startDate, $endDate, $hotel);
     }
 
     public function getHotelById($hotelId)
@@ -127,7 +100,6 @@ class TripAdvisorDataFormatter
 
         return $this->availableRoomTypes;
     }
-
 
 
     public function getAvailableTariffs(Hotel $requestedHotel, \DateTime $begin, \DateTime $end)
@@ -171,14 +143,20 @@ class TripAdvisorDataFormatter
         return $syncOrders;
     }
 
-    private function getTripAdvisorHotelId($mbhHotelId, $hotelIdsSyncData)
+    private function search($startDate, $endDate, Hotel $hotel, Tariff $tariff = null)
     {
-        foreach ($hotelIdsSyncData as $syncData) {
-            if ($syncData['partner_id'] == $mbhHotelId) {
-                return $syncData['ta_id'];
-            }
+        $query = new SearchQuery();
+
+        $query->accommodations = true;
+        $query->begin = \DateTime::createFromFormat('Y-m-d' . ' H:i:s', $startDate . ' 00:00:00');
+        $query->end = \DateTime::createFromFormat('Y-m-d' . ' H:i:s', $endDate . ' 00:00:00');
+        $query->addHotel($hotel);
+        $query->adults = 0;
+        $query->children = 0;
+        if ($tariff) {
+            $query->tariff = $tariff;
         }
-        //TODO: Какую ошибку?
-        throw new \Exception();
+
+        return $this->search->setWithTariffs()->search($query);
     }
 }

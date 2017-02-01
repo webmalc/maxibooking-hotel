@@ -52,7 +52,6 @@ form.ostrovokType.hotel_id: ID отеля
 form.ostrovokType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
 form.ostrovokType.ostrovok_ru_settings_hotel_id:  ID отеля в настройках Ostrovok.ru
 
-
 #myAllocator
 form.myallocatorType.username: Логин
 form.myallocatorType.username_desc: Логин для доступа в личный кабинет. Не будет сохранен.
@@ -95,10 +94,16 @@ expedia_request_data_formatter.max_stay.error: 'В сервисе Expedia.com п
 expedia_request_data_formatter.min_stay.error: 'В сервисе Expedia.com по умолачнию установлен минимальный срок брони %count% дней'
 package_info.expedia.child_age: Возраст ребенка
 
-
 form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkOut: При выезде
 form.roomTypeTasks.daily: Каждые n дней проживания
 
 #tripadvisor
 package_info.tripadvisor.children_age: 'Возраст детей: %ages%'
+form.trip_advisor_type.hotel_id: ID отеля
+form.trip_advisor_type.is_included: Включен?
+form.trip_advisor_type.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.trip_advisor_type.hotel_id_in_trip_advisor: ID отеля в настройках TripAdvisor
+form.trip_advisor_type.main_tariff.label: Тариф
+form.trip_advisor_type.main_tariff.help: Основной тариф
+controller.tripadvisor_controller.settings_saved_success: 'Настройки успешно сохранены.'

@@ -9,7 +9,13 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @ODM\Document(collection="TripAdvisorConfig")
+ * @Gedmo\Loggable
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ */
 class TripAdvisorConfig extends Base
 {
 
@@ -82,7 +88,7 @@ class TripAdvisorConfig extends Base
     /**
      * @return string
      */
-    public function getHotelId(): string
+    public function getHotelId()
     {
         return $this->hotelId;
     }

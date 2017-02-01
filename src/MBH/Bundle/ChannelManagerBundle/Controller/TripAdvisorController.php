@@ -2,12 +2,18 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
+use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisorType;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorPackageInfo;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,17 +25,58 @@ use Symfony\Component\HttpFoundation\Response;
 class TripAdvisorController extends BaseController
 {
     /**
+     * Main configuration page
+     * @Route("/", name="tripadvisor")
+     * @Security("is_granted('ROLE_TRIPADVISOR')")
+     * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function indexAction(Request $request)
+    {
+        $config = $this->hotel->getTripAdvisorConfig();
+
+        if (!$config) {
+            $config = new TripAdvisorConfig();
+            $config->setHotel($this->hotel);
+        }
+
+        $form = $this->createForm(
+            TripAdvisorType::class, $config, [
+            'hotel' => $this->hotel
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $this->dm->persist($config);
+            $this->dm->flush();
+
+            $this->addFlash('success',
+                    $this->get('translator')->trans('controller.tripadvisor_controller.settings_saved_success'));
+        }
+
+        return [
+            'doc' => $config,
+            'form' => $form->createView(),
+            'logs' => $this->logs($config)
+        ];
+    }
+
+    /**
      * @Route("/config")
      */
     public function getConfigDataAction()
     {
-        return $this->get('mbh.channel_manager.trip_advisor_response_formatter')->formatConfigResponse();
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')->formatConfigResponse();
+
+        return new JsonResponse($response);
     }
 
     /**
      * @Route("/hotel_inventory")
      * @param Request $request
-     * @return array
+     * @return JsonResponse
      */
     public function getHotelInventoryDataAction(Request $request)
     {
@@ -41,8 +88,10 @@ class TripAdvisorController extends BaseController
         $configuredHotels = $responseDataFormatter->getTripAdvisorConfigs();
 
         //TODO: Уточнить нужно ли реализовывать
-        return $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatHotelInventoryData($apiVersion, $language, $inventoryType, $configuredHotels);
+
+        return new JsonResponse($response);
     }
 
     /**
@@ -52,38 +101,35 @@ class TripAdvisorController extends BaseController
      */
     public function getHotelAvailabilityAction(Request $request)
     {
-        $apiVersion = $request->get('api_version');
-        $requestedHotels = $request->get('hotels');
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
-        $requestedAdultsChildrenCombination = $request->get('party');
-        $language = $request->get('lang');
-        $queryKey = $request->get('query_key');
-        $currency = $request->get('currency');
-        $userCountry = $request->get('user_country');
-        $deviceType = $request->get('device_type');
+//        $apiVersion = $request->get('api_version');
+//        $requestedHotels = $request->get('hotels');
+//        $startDate = $request->get('start_date');
+//        $endDate = $request->get('end_date');
+//        $requestedAdultsChildrenCombination = $request->get('party');
+//        $language = $request->get('lang');
+//        $queryKey = $request->get('query_key');
+//        $currency = $request->get('currency');
+//        $userCountry = $request->get('user_country');
+//        $deviceType = $request->get('device_type');
+
+        $apiVersion = 7;
+        $requestedHotels = [["ta_id" => 123, "partner_id" => "5864e3da2f77d9004b580232"]];
+        $startDate = '2017-01-12';
+        $endDate = '2017-01-18';
+        $requestedAdultsChildrenCombination = [["adults" => 2]];
+        $language = 'en_US';
+        $queryKey = 'sadfafasdf';
+        $currency = 'USD';
+        $userCountry = 'US';
+        $deviceType = 'd';
 
         $availabilityData = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
             ->getAvailabilityData($startDate, $endDate, $requestedHotels);
+       $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+            ->formatHotelAvailability($availabilityData, $apiVersion, $requestedHotels, $startDate, $endDate,
+                $requestedAdultsChildrenCombination, $language, $queryKey, $currency, $userCountry, $deviceType);
 
-//        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-//            ->formatHotelAvailability($apiVersion, $requestedHotels, $startDate, $endDate,
-//                $requestedAdultsChildrenCombination, $language, $queryKey, $currency, $userCountry, $deviceType);
-        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatHotelAvailability(
-                $availabilityData,
-                7,
-                [["ta_id" => 97497, "partner_id" => "5864e3da2f77d9004b580232"]],
-                '2017-01-12',
-                '2017-01-18',
-                [["adults" => 1]],
-                'en_US',
-                'sadfafasdf',
-                'USD',
-                'US',
-                'd');
-
-        return new Response();
+        return new JsonResponse($response);
     }
 
     /**
@@ -93,28 +139,39 @@ class TripAdvisorController extends BaseController
      */
     public function getBookingAvailabilityAction(Request $request)
     {
-        $apiVersion = $request->get('api_version');
-        $requestedHotels = $request->get('hotels');
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
-        $requestedAdultsChildrenCombination = $request->get('party');
-        $language = $request->get('lang');
-        $queryKey = $request->get('query_key');
-        $currency = $request->get('currency');
-        $userCountry = $request->get('user_country');
-        $deviceType = $request->get('device_type');
-        $bookingSessionId = $request->get('booking_session_id');
-        $bookingRequestId = $request->get('booking_request_id');
+//        $apiVersion = $request->get('api_version');
+//        $requestedHotel = $request->get('hotel');
+//        $startDate = $request->get('start_date');
+//        $endDate = $request->get('end_date');
+//        $requestedAdultsChildrenCombination = $request->get('party');
+//        $language = $request->get('lang');
+//        $queryKey = $request->get('query_key');
+//        $currency = $request->get('currency');
+//        $userCountry = $request->get('user_country');
+//        $deviceType = $request->get('device_type');
+//        $bookingSessionId = $request->get('booking_session_id');
+//        $bookingRequestId = $request->get('booking_request_id');
+
+        $apiVersion = 7;
+        $requestedHotel = ["ta_id" => 123, "partner_hotel_code" => "5864e3da2f77d9004b580232"];
+        $startDate = '2017-01-12';
+        $endDate = '2017-01-18';
+        $requestedAdultsChildrenCombination = [["adults" => 2], ["adults" => 1]];
+        $language = 'en_US';
+        $queryKey = 'sadfafasdf';
+        $currency = 'USD';
+        $userCountry = 'US';
+        $deviceType = 'd';
 
         $responseDataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
-//        $hotel = $responseDataFormatter->getHotelById([$hotelData['partner_hotel_code']]);
-//        $availabilityDataArray = $responseDataFormatter->getSearchResults($startDate, $endDate, $hotel);
+        $hotel = $responseDataFormatter->getHotelById($requestedHotel['partner_hotel_code']);
+        $availabilityData = $responseDataFormatter->getBookingOptionsByHotel($startDate, $endDate, $hotel);
 
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatBookingAvailability($apiVersion, $requestedHotels, $startDate, $endDate,
+            ->formatBookingAvailability($availabilityData, $hotel, $apiVersion, $requestedHotel, $startDate, $endDate,
                 $requestedAdultsChildrenCombination, $language, $queryKey, $userCountry, $deviceType, $currency);
 
-        return json_encode($response);
+        return new JsonResponse($response);
     }
 
     public function bookingSubmitAction(Request $request)
@@ -138,14 +195,14 @@ class TripAdvisorController extends BaseController
             ->setInitData($checkInDate, $checkOutDate, $hotelId, $customerData, $roomsData, $specialRequests,
                 $paymentData, $finalPriceAtBooking, $finalPriceAtCheckout, $bookingMainData, $bookingSession);
 
-        $bookingCreationResult = $this->get('mbh.channel_manager.order_creator')->createOrder($orderInfo);
+        $bookingCreationResult = $this->get('mbh.channel_manager.order_handler')->createOrder($orderInfo);
 
         $currency = $finalPriceAtCheckout['currency'];
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatSubmitBookingResponse($bookingSession, $bookingCreationResult,
                 $orderInfo->getPackageAndOrderMessages(), $customerData['country'], $roomsData, $currency);
 
-        return json_encode($response);
+        return new JsonResponse($response);
     }
 
     /**
@@ -155,14 +212,17 @@ class TripAdvisorController extends BaseController
      */
     public function bookingVerifyAction(Request $request)
     {
-        $hotelId = $request->get('partner_hotel_code');
+//        $hotelId = $request->get('partner_hotel_code');
         $orderId = $request->get('reservation_id');
         $channelManagerOrderId = $request->get('reference_id');
 
-        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatBookingVerificationResponse($orderId, $channelManagerOrderId);
+        $order = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
+            ->getOrderById($orderId);
 
-        return json_encode($response);
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+            ->formatBookingVerificationResponse($order, $channelManagerOrderId);
+
+        return new JsonResponse($response);
     }
 
     /**
@@ -195,7 +255,7 @@ class TripAdvisorController extends BaseController
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatBookingCancelResponse($removalStatus, $hotelId, $orderId);
 
-        return json_encode($response);
+        return new JsonResponse($response);
     }
 
     /**
@@ -214,7 +274,7 @@ class TripAdvisorController extends BaseController
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatBookingSyncResponse($syncOrders);
 
-        return json_encode($response);
+        return new JsonResponse($response);
     }
 
     /**
@@ -240,6 +300,6 @@ class TripAdvisorController extends BaseController
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatRoomInformationResponse($apiVersion, $hotelData, $language, $queryKey);
 
-        return json_encode($response);
+        return new JsonResponse($response);
     }
 }
