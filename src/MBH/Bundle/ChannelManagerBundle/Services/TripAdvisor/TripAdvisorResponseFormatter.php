@@ -12,7 +12,6 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
-use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffService;
 
@@ -20,14 +19,11 @@ class TripAdvisorResponseFormatter
 {
     const API_VERSION = 7;
 
+    private $confirmationPage;
     private $domainName;
     private $arrivalTime;
     private $departureTime;
     private $onlineFormUrl;
-
-    private $rateAmenities = [
-
-    ];
 
     private $rateMealTypes = [
         'All Inclusive' => 1,
@@ -56,13 +52,14 @@ class TripAdvisorResponseFormatter
         'swimming' => 'SWIMMING_POOL',
     ];
 
-    //TODO: Убрать response data formatter и передавать сюда готовые данные
     public function __construct(
+        $confirmationPageUrl,
         $domainName,
         $arrivalTime,
         $departureTime,
         $onlineFormUrl
     ) {
+        $this->confirmationPage = $confirmationPageUrl;
         $this->domainName = $domainName;
         $this->arrivalTime = $arrivalTime;
         $this->departureTime = $departureTime;
@@ -615,8 +612,9 @@ class TripAdvisorResponseFormatter
         $reservationData = [
             'reservation_id' => $order->getId(),
             'status' => 'Booked',
-            //TODO: Сделать URL для подтверждения брони
-            'confirmation_url',
+            //TODO: Правильно ли?
+            'confirmation_url' => $this->confirmationPage . $order->getId()
+                . http_build_query(['sessionId' => $order->getChannelManagerId()]),
             'checkin_date' => $orderFirstPackage->getBegin(),
             'checkout_date' => $orderFirstPackage->getEnd(),
             'partner_hotel_code' => $orderFirstPackage->getHotel()->getId(),
@@ -737,7 +735,8 @@ class TripAdvisorResponseFormatter
             $price = $result->getPrice($adultsCount, $childrenCount);
             if ($price) {
                 $resultPriceData['price'] += $price;
-                $resultPriceData['pricesByDate'][] = $result->getPricesByDate($adultsCount, $childrenCount);
+                $resultPriceData['pricesByDate'][$adultsCount . '_' . $childrenCount] =
+                    $result->getPricesByDate($adultsCount, $childrenCount);
             } else {
                 $isAllHavenPrice = false;
                 break;

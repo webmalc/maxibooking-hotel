@@ -88,10 +88,12 @@ class OrderHandler
     {
         //Получаем сохраненные электронные кассовые документы
         $electronicCashDocuments = [];
-        foreach ($order->getCashDocuments() as $cashDocument) {
-            /** @var CashDocument $cashDocument */
-            if ($cashDocument->getMethod() == 'electronic') {
-                $electronicCashDocuments[] = $cashDocument;
+        if (is_array($order->getCashDocuments())) {
+            foreach ($order->getCashDocuments() as $cashDocument) {
+                /** @var CashDocument $cashDocument */
+                if ($cashDocument->getMethod() == 'electronic') {
+                    $electronicCashDocuments[] = $cashDocument;
+                }
             }
         }
 
@@ -125,7 +127,7 @@ class OrderHandler
         $package = new Package();
         $package
             ->setChannelManagerId($packageInfo->getChannelManagerId())
-            ->setChannelManagerType($order->getChannelManagerType())
+            ->setChannelManagerType($packageInfo->getChannelManagerType())
             ->setBegin($packageInfo->getBeginDate())
             ->setEnd($packageInfo->getEndDate())
             ->setRoomType($packageInfo->getRoomType())

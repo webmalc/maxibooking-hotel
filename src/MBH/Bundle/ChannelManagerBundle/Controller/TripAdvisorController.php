@@ -2,14 +2,12 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisorType;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo;
-use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorPackageInfo;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -25,10 +23,10 @@ use Symfony\Component\HttpFoundation\Response;
 class TripAdvisorController extends BaseController
 {
     /**
-     * Main configuration page
      * @Route("/", name="tripadvisor")
      * @Security("is_granted('ROLE_TRIPADVISOR')")
      * @Template()
+     * @Method({"GET", "POST"})
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
@@ -53,7 +51,7 @@ class TripAdvisorController extends BaseController
             $this->dm->flush();
 
             $this->addFlash('success',
-                    $this->get('translator')->trans('controller.tripadvisor_controller.settings_saved_success'));
+                $this->get('translator')->trans('controller.tripadvisor_controller.settings_saved_success'));
         }
 
         return [
@@ -65,6 +63,8 @@ class TripAdvisorController extends BaseController
 
     /**
      * @Route("/config")
+     * @Method("GET")
+     * @return JsonResponse
      */
     public function getConfigDataAction()
     {
@@ -74,6 +74,7 @@ class TripAdvisorController extends BaseController
     }
 
     /**
+     * @Method("GET")
      * @Route("/hotel_inventory")
      * @param Request $request
      * @return JsonResponse
@@ -95,6 +96,7 @@ class TripAdvisorController extends BaseController
     }
 
     /**
+     * @Method("POST")
      * @Route("/hotel_availability")
      * @param Request $request
      * @return Response
@@ -125,7 +127,7 @@ class TripAdvisorController extends BaseController
 
         $availabilityData = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
             ->getAvailabilityData($startDate, $endDate, $requestedHotels);
-       $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatHotelAvailability($availabilityData, $apiVersion, $requestedHotels, $startDate, $endDate,
                 $requestedAdultsChildrenCombination, $language, $queryKey, $currency, $userCountry, $deviceType);
 
@@ -133,6 +135,7 @@ class TripAdvisorController extends BaseController
     }
 
     /**
+     * @Method("POST")
      * @Route("/booking_availability")
      * @param Request $request
      * @return string
@@ -174,21 +177,91 @@ class TripAdvisorController extends BaseController
         return new JsonResponse($response);
     }
 
+    /**
+     * //TODO: Вернуть GET
+     * @Method("GET")
+     * @Route("/booking_submit")
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function bookingSubmitAction(Request $request)
     {
-        $checkInDate = $request->get('checkin_date');
-        $checkOutDate = $request->get('checkout_date');
-        $hotelId = $request->get('partner_hotel_code');
-        $bookingSession = $request->get('reference_id');
-        $ipAddress = $request->get('ip_address');
-        $customerData = $request->get('customer');
-        $roomsData = $request->get('rooms');
-        $specialRequests = $request->get('special_requests');
-        $paymentData = $request->get('payment_method');
-        $finalPriceAtBooking = $request->get('final_price_at_booking');
-        $finalPriceAtCheckout = $request->get('final_price_at_checkout');
-        $bookingMainData = $request->get('partner_data');
+//        $checkInDate = $request->get('checkin_date');
+//        $checkOutDate = $request->get('checkout_date');
+//        $hotelId = $request->get('partner_hotel_code');
+//        $bookingSession = $request->get('reference_id');
+//        $ipAddress = $request->get('ip_address');
+//        $customerData = $request->get('customer');
+//        $roomsData = $request->get('rooms');
+//        $specialRequests = $request->get('special_requests');
+//        $paymentData = $request->get('payment_method');
+//        $finalPriceAtBooking = $request->get('final_price_at_booking');
+//        $finalPriceAtCheckout = $request->get('final_price_at_checkout');
+//        $bookingMainData = $request->get('partner_data');
 
+        $checkInDate = '2017-01-12';
+        $checkOutDate = '2017-01-18';
+        $hotelId = '5864e3da2f77d9004b580232';
+        $bookingSession = '12345';
+        $customerData = [
+            "first_name" => "Paul",
+            "last_name" => "Revere",
+            "phone_number" => "5555555555",
+            "email" => "paul.revere@tripadvisor.com",
+            "country" => "US"
+        ];
+        $roomsData = [
+            "party" => ["adults" => 1, "children" => []],
+            "traveler_first_name" => "Paul",
+            "traveler_last_name" => "Revere"
+        ];
+        $specialRequests = 'A pre-made pillow fort and Vanilla coke on arrival please.';
+        $paymentData = [
+            "card_type" => "Visa",
+            "card_number" => "5454545454545454",
+            "cardholder_name" => "Paul Revere",
+            "expiration_month" => "01",
+            "expiration_year" => "2015",
+            "cvv" => "999",
+            "billing_address" => [
+                "address1" => "141 Needham Street",
+                "city" => "newton",
+                "state" => "MA",
+                "postal_code" => "77777",
+                "country" => "US"
+            ]
+        ];
+        $finalPriceAtBooking = [
+            "amount" => 100,
+            "currency" => "USD"
+        ];
+        $finalPriceAtCheckout = [
+            "amount" => 100,
+            "currency" => "USD"
+        ];
+        $bookingMainData = [
+            "pricesByDate"=> [
+            [
+                "12_01_2017"=> 555,
+                "13_01_2017"=> 555,
+                "14_01_2017"=> 555,
+                "15_01_2017"=> 555,
+                "16_01_2017"=> 555,
+                "17_01_2017"=> 555
+            ],
+            [
+                "12_01_2017"=> 555,
+                "13_01_2017"=> 555,
+                "14_01_2017"=> 555,
+                "15_01_2017"=> 555,
+                "16_01_2017"=> 555,
+                "17_01_2017"=> 555
+            ]
+        ],
+        "roomTypeId"=> "5864fc922f77d901104b57ac",
+        "tariffId"=> "5864fc912f77d901104b5794",
+        "hotelId"=> "5864e3da2f77d9004b580232"
+        ];
 
         /** @var TripAdvisorOrderInfo $orderInfo */
         $orderInfo = $this->get('mbh.channel_manager.trip_advisor_order_info')
@@ -206,6 +279,7 @@ class TripAdvisorController extends BaseController
     }
 
     /**
+     * @Method("GET")
      * @Route("/booking_verify")
      * @param Request $request
      * @return string
@@ -226,6 +300,7 @@ class TripAdvisorController extends BaseController
     }
 
     /**
+     * @Method("POST")
      * @Route("/booking_cancel")
      * @param Request $request
      * @return string
@@ -259,6 +334,7 @@ class TripAdvisorController extends BaseController
     }
 
     /**
+     * @Method("POST")
      * @Route("/booking_sync")
      * @param Request $request
      * @return string
@@ -278,6 +354,7 @@ class TripAdvisorController extends BaseController
     }
 
     /**
+     * @Method("POST")
      * @Route("/room_information")
      * @param Request $request
      * @return string
@@ -298,7 +375,7 @@ class TripAdvisorController extends BaseController
         }
 
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatRoomInformationResponse($apiVersion, $hotelData, $language, $queryKey);
+            ->formatRoomInformationResponse($apiVersion, $hotelData, $language, $queryKey, $hotel);
 
         return new JsonResponse($response);
     }

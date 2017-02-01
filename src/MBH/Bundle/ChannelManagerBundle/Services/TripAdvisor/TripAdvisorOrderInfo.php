@@ -49,6 +49,8 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
         $this->finalPriceAtCheckout = $finalPriceAtCheckout;
         $this->bookingMainData = $bookingMainData;
         $this->bookingSession = $bookingSession;
+
+        return $this;
     }
 
     public function getPayer() : Tourist

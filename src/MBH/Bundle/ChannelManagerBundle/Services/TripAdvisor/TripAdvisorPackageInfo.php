@@ -18,7 +18,7 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
     private $helper;
 
     private $isPricesInit = false;
-    private $prices;
+    private $prices = [];
 
     public function __construct($container)
     {
@@ -33,6 +33,8 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
         $this->checkInDate = $checkInDate;
         $this->bookingMainData = $bookingMainData;
         $this->bookingSessionId = $bookingSessionId;
+
+        return $this;
     }
 
     public function getBeginDate()
@@ -75,7 +77,7 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     public function getAdultsCount()
     {
-        return $this->roomData['party']['adults'];
+        return $this->roomData['adults'];
     }
 
     public function getChildrenCount()
@@ -86,10 +88,11 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
     public function getPrices()
     {
         if (!$this->isPricesInit) {
-            $this->prices = [];
-            foreach ($this->bookingMainData['pricesByDate'] as $dateString => $priceByDate) {
+            $childrenAdultsString = $this->getAdultsCount() . '_' . $this->getChildrenCount();
+            $pricesByDate = $this->bookingMainData['pricesByDate'][$childrenAdultsString];
+            foreach ($pricesByDate as $dateString => $priceByDate) {
                 $currentDate = \DateTime::createFromFormat('d_m_Y', $dateString);
-                $this->prices = new PackagePrice($currentDate, $priceByDate, $this->getTariff());
+                $this->prices[] = new PackagePrice($currentDate, $priceByDate, $this->getTariff());
             }
             $this->isPricesInit = true;
         }
