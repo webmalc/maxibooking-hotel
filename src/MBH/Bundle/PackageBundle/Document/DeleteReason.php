@@ -12,13 +12,13 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="DeleteReasons", repositoryClass="MBH\Bundle\PackageBundle\Document\DeleteReasonsRepository")
+ * @ODM\Document(collection="DeleteReason", repositoryClass="MBH\Bundle\PackageBundle\Document\DeleteReasonRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  * @MongoDBUnique(fields={"fullTitle"}, message="validator.document.package.delete_reasons.source_exist")
  */
-class DeleteReasons extends Base
+class DeleteReason extends Base
 {
     /**
      * Hook timestampable behavior

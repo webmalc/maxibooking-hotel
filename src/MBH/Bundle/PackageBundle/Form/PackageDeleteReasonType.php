@@ -23,7 +23,7 @@ class PackageDeleteReasonType extends AbstractType
             ])
             ->add('deleteReason', DocumentType::class, [
                 'label' => 'modal.form.delete.reasons.reason',
-                'class' => 'MBH\Bundle\PackageBundle\Document\DeleteReasons',
+                'class' => 'MBH\Bundle\PackageBundle\Document\DeleteReason',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->createQueryBuilder()
                         ->sort(['fullTitle' => 'asc', 'title' => 'asc']);

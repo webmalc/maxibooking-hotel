@@ -356,7 +356,7 @@ class Package extends Base implements \JsonSerializable
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\DeleteReasons")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\DeleteReason")
      */
     protected $deleteReason;
 
@@ -1537,10 +1537,10 @@ class Package extends Base implements \JsonSerializable
     /**
      * Set delete reason id
      *
-     * @param DeleteReasons $deleteReason
+     * @param DeleteReason $deleteReason
      * @return self
      */
-    public function setDeleteReason(DeleteReasons $deleteReason)
+    public function setDeleteReason(DeleteReason $deleteReason)
     {
         $this->deleteReason = $deleteReason;
         return $this;

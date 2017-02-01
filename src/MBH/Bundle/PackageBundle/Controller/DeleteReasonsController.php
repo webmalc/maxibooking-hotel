@@ -2,7 +2,7 @@
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\PackageBundle\Document\DeleteReasons;
+use MBH\Bundle\PackageBundle\Document\DeleteReason;
 use MBH\Bundle\PackageBundle\Form\DeleteReasonsType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -26,13 +26,13 @@ class DeleteReasonsController extends Controller implements CheckHotelController
      */
     public function indexAction(Request $request)
     {
-        $reason = new DeleteReasons();
+        $reason = new DeleteReason();
         $form = $this->createForm(DeleteReasonsType::class, $reason, []);
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $deleteReasons = $dm->getRepository('MBHPackageBundle:DeleteReasons')->findAll();
+        $deleteReasons = $dm->getRepository('MBHPackageBundle:DeleteReason')->findAll();
 
         if($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -64,7 +64,7 @@ class DeleteReasonsController extends Controller implements CheckHotelController
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $reason = $dm->getRepository('MBHPackageBundle:DeleteReasons')->find($id);
+        $reason = $dm->getRepository('MBHPackageBundle:DeleteReason')->find($id);
 
         if (!$reason) {
             throw $this->createNotFoundException();
@@ -93,7 +93,7 @@ class DeleteReasonsController extends Controller implements CheckHotelController
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $reason = $dm->getRepository('MBHPackageBundle:DeleteReasons')->find($id);
+        $reason = $dm->getRepository('MBHPackageBundle:DeleteReason')->find($id);
 
         if (!$reason) {
             throw $this->createNotFoundException();
@@ -129,13 +129,13 @@ class DeleteReasonsController extends Controller implements CheckHotelController
      * @Route("/{id}/delete", name="delete_reasons_delete")
      * @Method("GET")
      * @ParamConverter(class="MBHPackageBundle:DeleteReasons")
-     * @param DeleteReasons $reasons
+     * @param DeleteReason $reasons
      * @Security("is_granted('ROLE_ADMIN')")
      */
-    public function deleteReasonAction(DeleteReasons $reasons)
+    public function deleteReasonAction(DeleteReason $reasons)
     {
         if (!$reasons->getSystem()) {
-            return $this->deleteEntity($reasons->getId(), 'MBHPackageBundle:DeleteReasons', 'package_delete_reasons');
+            return $this->deleteEntity($reasons->getId(), 'MBHPackageBundle:DeleteReason', 'package_delete_reasons');
         }
 
     }

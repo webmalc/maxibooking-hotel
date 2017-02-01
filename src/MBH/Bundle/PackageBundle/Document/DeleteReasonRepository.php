@@ -5,9 +5,9 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
- * Class DeleteReasonsRepository
+ * Class DeleteReasonRepository
  */
-class DeleteReasonsRepository extends DocumentRepository
+class DeleteReasonRepository extends DocumentRepository
 {
     /**
      * Get not deleted delete reasons

@@ -306,7 +306,8 @@ var docReadyPackages = function () {
 
             $('a.booking-delete-link').on('click', function (e) {
                 e.preventDefault();
-                console.log($(this).data('id'));
+                $('.box-header .with-border').html(mbh.loader.html);
+
                 return $.ajax({
                     url: Routing.generate('package_delete', {'id': $(this).data('id')}),
                     type: "GET",
@@ -325,18 +326,6 @@ var docReadyPackages = function () {
             $('#package-summary-guests').html(settings.json.package_summary_guests || '-');
         }
     });
-
-    function package_delete_modal(path, data) {
-        return $.ajax({
-            url: path,
-            type: "GET",
-            data: data,
-            success: function (urlFromController) {
-                console.log(urlFromController);
-                $('.modal-body').html(urlFromController);
-            }
-        });
-    }
 
     // package datatable filter
     (function () {

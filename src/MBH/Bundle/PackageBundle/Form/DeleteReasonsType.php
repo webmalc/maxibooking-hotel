@@ -24,7 +24,7 @@ class DeleteReasonsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'MBH\Bundle\PackageBundle\Document\DeleteReasons',
+            'data_class' => 'MBH\Bundle\PackageBundle\Document\DeleteReason',
         ));
     }
 
