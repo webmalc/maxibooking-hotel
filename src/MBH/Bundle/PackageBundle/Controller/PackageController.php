@@ -1009,6 +1009,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $this->dm->remove($id);
             $this->dm->flush();
 
+            $request->getSession()->getFlashBag()
+                ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+
             return $this->redirectToRoute('package');
         }
 
