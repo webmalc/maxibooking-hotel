@@ -425,7 +425,7 @@ report.porter.note: Комментарий
 report.work_shift.small_title: 'Рабочие смены'
 
 modal.form.delete.reasons.confirmation: Точно удалить эту запись?
-modal.form.delete.reasons.reason: Причина удаления:
+modal.form.delete.reasons.reason: Причина удаления
 modal.form.delete.reasons.reason_default: Не указана
 modal.form.delete.reasons.close: Закрыть
 modal.form.delete.reasons.delete: Удалить

@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -12,16 +13,16 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
-class DeleteReasonType extends AbstractType
+class PackageDeleteReasonType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('Note', TextType::class, [
-                'label' => 'Комментарий',
+            ->add('note', TextType::class, [
+                'label' => 'report.porter.note',
             ])
             ->add('deleteReason', DocumentType::class, [
-                'label' => 'Причина удаления',
+                'label' => 'modal.form.delete.reasons.reason',
                 'class' => 'MBH\Bundle\PackageBundle\Document\DeleteReasons',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->createQueryBuilder()
@@ -31,6 +32,11 @@ class DeleteReasonType extends AbstractType
             ]);
         ;
 
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefault('data_class', Package::class);
     }
 
     public function getBlockPrefix()

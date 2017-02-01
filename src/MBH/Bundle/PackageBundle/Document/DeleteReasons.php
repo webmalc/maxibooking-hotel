@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
- * @MongoDBUnique(fields={"fullTitle"}, message="Такой источник уже существует")
+ * @MongoDBUnique(fields={"fullTitle"}, message="validator.document.package.delete_reasons.source_exist")
  */
 class DeleteReasons extends Base
 {
@@ -79,6 +79,7 @@ class DeleteReasons extends Base
     public function setSystem($system)
     {
         $this->system = $system;
+
         return $this;
     }
 

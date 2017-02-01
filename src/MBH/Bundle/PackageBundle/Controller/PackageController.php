@@ -14,7 +14,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
-use MBH\Bundle\PackageBundle\Form\DeleteReasonType;
+use MBH\Bundle\PackageBundle\Form\PackageDeleteReasonType;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\PackageAccommodationType;
 use MBH\Bundle\PackageBundle\Form\PackageCsvType;
@@ -394,8 +394,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         return [
             'package' => $package,
-            'selDeletedReason' => $this->dm->getRepository('MBHPackageBundle:DeleteReasons')
-                    ->getSelectedReason($package->getDeleteReason()) ?? '',
             'status' => $package->getStatus(),
             'form' => $form->createView(),
             'logs' => $this->logs($package),
@@ -989,71 +987,35 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         return $this->redirect($this->generateUrl('package_accommodation', ['id' => $entity->getId()]));
     }
 
-
     /**
      * Package_delete_modal
      *
-     * @Route("/modal/package_delete_modal", name="package_delete", options={"expose"=true})
+     * @param Request $request
+     * @param Package $id
+     *
+     * @Route("/{id}/modal/package_delete_modal", name="package_delete", options={"expose"=true})
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PACKAGE_DELETE')")
      * @Template()
+     * @return array|RedirectResponse
      */
-    public function deleteModalAction(Request $request, $id = null)
+    public function deleteModalAction(Request $request, Package $id)
     {
-        $package = new Package();
-        $form = $this->createForm(DeleteReasonType::class, $id);
+        $form = $this->createForm(PackageDeleteReasonType::class, $id);
         $form->handleRequest($request);
 
-        if($request->isMethod('post')) {
-            if ($form->isValid()) {
-                dump($request->request->all());
-                exit();
-                $package->setDeleteReason($request->request->get('deleteReason'));
-                $package->setNote($request->request->get('note'));
-                $this->dm->persist($package);
-                $this->dm->flush($package);
+        if ($form->isValid()) {
+            $this->dm->persist($id);
+            $this->dm->remove($id);
+            $this->dm->flush($id);
 
-                return $this->redirect($this->generateUrl('package'));
-
-            }
+            return $this->redirectToRoute('package');
         }
 
         return [
+            'package' => $id,
             'form' => $form->createView(),
         ];
-    }
-
-    /**
-     * Delete entity.
-     *
-     * @Route("/{id}/delete_package", name="delete_package", options={"expose"=true})
-     * @Method("GET")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     */
-    public function deletePackageAction(Request $request, Package $entity)
-    {
-        $select_delete_reason = $request->query->get('select_reasons'); // select delete reason id
-
-        $entity->setDeleteReason($select_delete_reason);
-
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $orderId = $entity->getOrder()->getId();
-        $this->dm->persist($entity);
-        $this->dm->remove($entity);
-        $this->dm->flush($entity);
-
-        $request->getSession()->getFlashBag()
-            ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
-
-        if (!empty($request->get('order'))) {
-            return JsonResponse($this->generateUrl('package_order_edit',
-                ['id' => $orderId, 'packageId' => $entity->getId()]));
-        }
-
-        return new JsonResponse($this->generateUrl('package'));
     }
 
     /**

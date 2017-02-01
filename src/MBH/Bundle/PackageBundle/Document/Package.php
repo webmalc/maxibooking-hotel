@@ -353,10 +353,10 @@ class Package extends Base implements \JsonSerializable
      */
     protected $isForceBooking = false;
 
+
     /**
-     * @var string
-     * @ODM\Field(type="string", name="deleteReason")
-     * @Assert\Type(type="string")
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\DeleteReasons")
      */
     protected $deleteReason;
 

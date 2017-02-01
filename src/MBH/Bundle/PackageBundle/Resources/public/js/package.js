@@ -302,14 +302,15 @@ var docReadyPackages = function () {
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
             $('.booking-delete-link').attr('data-toggle', 'modal');
 
+            $('select').select2();
+
             $('a.booking-delete-link').on('click', function (e) {
                 e.preventDefault();
-                var path = $(this).data('path');
-                var data = {'id': $(this).data('id')};
+                console.log($(this).data('id'));
                 return $.ajax({
-                    url: Routing.generate('package_delete', {'id': $('.booking-delete-link').data('id')}),
+                    url: Routing.generate('package_delete', {'id': $(this).data('id')}),
                     type: "GET",
-                    data: data,
+                    data: {},
                     success: function (urlFromController) {
                         $('#modal_delete_package').html(urlFromController);
                     }

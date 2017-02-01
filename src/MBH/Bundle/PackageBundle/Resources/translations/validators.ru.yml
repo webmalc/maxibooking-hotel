@@ -10,6 +10,7 @@ validator.document.order.wrong_status: Неверный статус.
 validator.document.package.order_not_selected: Не выбран заказ
 validator.document.package.order_not_selected: Не выбран заказ
 validator.document.package.tariff_not_selected: Не выбран тариф
+validator.document.package.delete_reasons.source_exist: Такой источник уже существует
 validator.document.package.room_type_not_selected: Не выбран тип номера
 validator.document.package.adults_amount_less_zero: Количество взрослых не может быть меньше нуля
 validator.document.package.children_amount_less_zero: Количество детей не может быть меньше нуля

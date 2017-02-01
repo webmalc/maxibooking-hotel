@@ -124,7 +124,7 @@
                                     <strong>{{ 'modal.form.delete.reasons.reason'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>
-                                    {{ selDeletedReason|default('modal.form.delete.reasons.reason_default'|trans({}, 'MBHPackageBundle')) }}
+                                    {{ package.deleteReason|default('modal.form.delete.reasons.reason_default'|trans({}, 'MBHPackageBundle')) }}
                                 </td>
                             </tr>
                         {% endif %}

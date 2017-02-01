@@ -5,12 +5,12 @@
         </div>
         <div class="modal-body">
             {% form_theme form 'MBHPackageBundle:Documents:modalFormFields.html.twig' %}
-            {{ form_start(form, {'action': path('package_delete'), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_start(form, {'action': path('package_delete', { 'id': package.id }), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'csv.form.modal_close'|trans }}</button>
-                <button type="button" class="btn btn-primary reason_delete_package">Отправить</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'modal.form.delete.reasons.close'|trans({}, 'MBHPackageBundle') }}</button>
+                <button type="submit" class="btn btn-primary">{{ 'modal.form.delete.reasons.delete'|trans({}, 'MBHPackageBundle') }}</button>
             </div>
             {{ form_end(form) }}
 
