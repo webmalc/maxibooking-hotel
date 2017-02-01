@@ -52,7 +52,7 @@ class OrderHandler
         $this->dm->persist($order);
         $this->dm->flush();
 
-        $this->saveCashDocument($order, $orderInfo);
+        $order = $this->saveCashDocument($order, $orderInfo);
 
         foreach ($orderInfo->getPackagesData() as $packageInfo) {
             $package = $this->createPackage($packageInfo, $order);
@@ -83,6 +83,7 @@ class OrderHandler
      *
      * @param Order $order
      * @param AbstractOrderInfo $orderInfo
+     * @return Order
      */
     private function saveCashDocument(Order $order, AbstractOrderInfo $orderInfo)
     {
@@ -111,10 +112,17 @@ class OrderHandler
                 }
             }
         }
+
         //Удаляем сохраненные кассовые документы, которых нет в полученных с сервиса
         foreach ($electronicCashDocuments as $electronicCashDocument) {
             $this->dm->remove($electronicCashDocument);
         }
+        foreach ($orderInfo->getCashDocuments($order) as $cashDocument) {
+            /** @var CashDocument $cashDocument */
+            $this->dm->persist($cashDocument);
+        }
+
+        return $order;
     }
 
     /**
@@ -127,7 +135,7 @@ class OrderHandler
         $package = new Package();
         $package
             ->setChannelManagerId($packageInfo->getChannelManagerId())
-            ->setChannelManagerType($packageInfo->getChannelManagerType())
+            ->setChannelManagerType($order->getChannelManagerType())
             ->setBegin($packageInfo->getBeginDate())
             ->setEnd($packageInfo->getEndDate())
             ->setRoomType($packageInfo->getRoomType())

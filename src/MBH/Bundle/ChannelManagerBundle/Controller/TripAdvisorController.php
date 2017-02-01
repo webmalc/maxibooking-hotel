@@ -211,9 +211,16 @@ class TripAdvisorController extends BaseController
             "country" => "US"
         ];
         $roomsData = [
-            "party" => ["adults" => 1, "children" => []],
-            "traveler_first_name" => "Paul",
-            "traveler_last_name" => "Revere"
+            [
+                "party" => ["adults" => 1, "children" => []],
+                "traveler_first_name" => "Paul",
+                "traveler_last_name" => "Revere"
+            ],
+            [
+                "party" => ["adults" => 1, "children" => []],
+                "traveler_first_name" => "Valera",
+                "traveler_last_name" => "Dualist"
+            ]
         ];
         $specialRequests = 'A pre-made pillow fort and Vanilla coke on arrival please.';
         $paymentData = [
@@ -240,27 +247,19 @@ class TripAdvisorController extends BaseController
             "currency" => "USD"
         ];
         $bookingMainData = [
-            "pricesByDate"=> [
-            [
-                "12_01_2017"=> 555,
-                "13_01_2017"=> 555,
-                "14_01_2017"=> 555,
-                "15_01_2017"=> 555,
-                "16_01_2017"=> 555,
-                "17_01_2017"=> 555
+            "pricesByDate" => [
+                '1_0' => [
+                    "12_01_2017" => 555,
+                    "13_01_2017" => 555,
+                    "14_01_2017" => 555,
+                    "15_01_2017" => 555,
+                    "16_01_2017" => 555,
+                    "17_01_2017" => 555
+                ]
             ],
-            [
-                "12_01_2017"=> 555,
-                "13_01_2017"=> 555,
-                "14_01_2017"=> 555,
-                "15_01_2017"=> 555,
-                "16_01_2017"=> 555,
-                "17_01_2017"=> 555
-            ]
-        ],
-        "roomTypeId"=> "5864fc922f77d901104b57ac",
-        "tariffId"=> "5864fc912f77d901104b5794",
-        "hotelId"=> "5864e3da2f77d9004b580232"
+            "roomTypeId" => "5864fc922f77d901104b57ac",
+            "tariffId" => "5864fc912f77d901104b5794",
+            "hotelId" => "5864e3da2f77d9004b580232"
         ];
 
         /** @var TripAdvisorOrderInfo $orderInfo */

@@ -335,7 +335,7 @@ class TripAdvisorResponseFormatter
         }
 
         //TODO: Переделать, должен быть объект
-        if (count($messages['problems']) > 0) {
+        if (isset($messages['problems']) && count($messages['problems']) > 0) {
             $response['problems'] = $messages['problems'];
         }
 
@@ -592,28 +592,30 @@ class TripAdvisorResponseFormatter
 //            ];
 //        }
         $cashDocumentsData = [];
-        foreach ($order->getCashDocuments() as $cashDocument) {
-            /** @var CashDocument $cashDocument */
-            if ($cashDocument->getOperation() == 'in') {
-                $cashDocType = 'rate';
-            } else {
-                $cashDocType = 'fee';
+        if (is_array($order->getCashDocuments())) {
+            foreach ($order->getCashDocuments() as $cashDocument) {
+                /** @var CashDocument $cashDocument */
+                if ($cashDocument->getOperation() == 'in') {
+                    $cashDocType = 'rate';
+                } else {
+                    $cashDocType = 'fee';
+                }
+                $cashDocumentsData[] = [
+                    'price' => [
+                        'amount' => $cashDocument->getTotal(),
+                        'currency' => $currency
+                    ],
+                    //TODO: Мб потом появятся еще данные о налогах
+                    'type' => $cashDocType
+                ];
             }
-            $cashDocumentsData[] = [
-                'price' => [
-                    'amount' => $cashDocument->getTotal(),
-                    'currency' => $currency
-                ],
-                //TODO: Мб потом появятся еще данные о налогах
-                'type' => $cashDocType
-            ];
         }
 
         $reservationData = [
             'reservation_id' => $order->getId(),
             'status' => 'Booked',
             //TODO: Правильно ли?
-            'confirmation_url' => $this->confirmationPage . $order->getId()
+            'confirmation_url' => $this->confirmationPage. '?' . $order->getId()
                 . http_build_query(['sessionId' => $order->getChannelManagerId()]),
             'checkin_date' => $orderFirstPackage->getBegin(),
             'checkout_date' => $orderFirstPackage->getEnd(),

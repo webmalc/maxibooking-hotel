@@ -77,7 +77,7 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     public function getAdultsCount()
     {
-        return $this->roomData['adults'];
+        return $this->roomData['party']['adults'];
     }
 
     public function getChildrenCount()
@@ -119,7 +119,7 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     private function getChildrenData()
     {
-        $childrenData = $this->getChildrenData();
+        $childrenData = $this->roomData['party']['children'];
         if (count($childrenData) > 0) {
             $childrenAgesString = join(', ', $childrenData);
             $this->addNotifyMessage( 'package_info.tripadvisor.children_age', $childrenAgesString);

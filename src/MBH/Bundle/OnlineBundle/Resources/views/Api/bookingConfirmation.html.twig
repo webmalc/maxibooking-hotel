@@ -1,0 +1,48 @@
+{% stylesheets filter='cssrewrite, uglifycss'
+    'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
+    '@MBHOnlineBundle/Resources/public/css/bookingConfirmation.css'
+%}
+<link rel="stylesheet" href="{{ asset_url }}"/>
+{% endstylesheets %}
+
+<div id="confirmation-window">
+    <div class="result-box">
+        {% if isOrderExists %}
+            {{ 'booking_confirmation.order_successfull_created'|trans }}
+        {% else %}
+            {{ 'booking_confirmation.order_not_exists'|trans }}
+        {% endif %}
+    </div>
+    {% if isOrderExists %}
+    <div class="details">
+        <table class="table not-auto-datatable table-striped">
+            <tbody>
+                <tr>
+                    <td>#</td>
+                    <td>{{ order.name }}</td>
+                </tr>
+                <tr>
+                    <td>{{ 'booking_confirmation.dates'|trans }}</td>
+                    <td>{{ (firstPackage.begin|mbh_format ~ ' - ' ~ firstPackage.end|mbh_format)|raw }}</td>
+                </tr>
+                <tr>
+                    <td>{{ 'booking_confirmation.room_type_name'|trans }}</td>
+                    <td>{{ firstPackage.roomType.name }}</td>
+                </tr>
+                <tr>
+                    <td>{{ 'booking_confirmation.tariff'|trans }}</td>
+                    <td>{{ firstPackage.tariff.name }}</td>
+                </tr>
+                <tr>
+                    <td>{{ 'booking_confirmation.payer'|trans }}</td>
+                    <td>{{ order.payer.name }}</td>
+                </tr>
+                <tr>
+                    <td>{{ 'booking_confirmation.order_price'|trans }}</td>
+                    <td>{{ order.price }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>

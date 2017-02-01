@@ -116,8 +116,14 @@ abstract class AbstractOrderInfo
         $messages = array_slice($this->noteMessages, 0);
         foreach ($this->getPackagesData() as $packageInfo) {
             $packageMessages = $packageInfo->getMessages();
-            $messages['problems'][] = $packageMessages['problems'];
-            $messages['notifications'][] = $packageMessages['notifications'];
+            if (count($packageMessages) > 0) {
+                if (count($packageMessages['problems']) > 0) {
+                    $messages['problems'][] = $packageMessages['problems'];
+                }
+                if (count($packageMessages['notifications'])) {
+                    $messages['notifications'][] = $packageMessages['notifications'];
+                }
+            }
         }
 
         return $messages;
