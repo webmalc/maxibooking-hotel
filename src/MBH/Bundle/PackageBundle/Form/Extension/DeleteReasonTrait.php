@@ -12,6 +12,7 @@ trait DeleteReasonTrait
         $builder
             ->add('note', TextareaType::class, [
                 'label' => 'report.porter.note',
+                'required' => false
             ])
             ->add('deleteReason', DocumentType::class, [
                 'label' => 'modal.form.delete.reasons.reason',
