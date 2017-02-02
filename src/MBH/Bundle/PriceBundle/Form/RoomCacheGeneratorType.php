@@ -44,7 +44,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'required' => false,
                     'multiple' => true,
                     'choices' => $options['weekdays'],
-                    'help' => 'Дни недели для готорых будет произведена генерация наличия мест',
+                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
                     'attr' => array('placeholder' => 'Все дни недели'),
                 ])
                 ->add('roomTypes', DocumentType::class, [

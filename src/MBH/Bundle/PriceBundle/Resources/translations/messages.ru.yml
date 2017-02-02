@@ -50,7 +50,7 @@ mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi?: Доступна 
 mbhpricebundle.form.restrictiongeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.restrictiongeneratortype.konetsperioda: Конец периода
 mbhpricebundle.form.restrictiongeneratortype.dninedeli: Дни недели
-mbhpricebundle.form.restrictiongeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для готорых будет произведена генерация наличия мест
+mbhpricebundle.form.restrictiongeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для которых будет произведена генерация наличия мест
 mbhpricebundle.form.restrictiongeneratortype.vsedninedeli: все дни недели
 mbhpricebundle.form.restrictiongeneratortype.tipynomerov: Типы номеров
 mbhpricebundle.form.restrictiongeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: Типы номеров для готорых будет произведена генерация цен
@@ -70,7 +70,7 @@ mbhpricebundle.form.tariffservicestype.uslugipoumolchaniyu: Услуги по у
 mbhpricebundle.form.pricecachegeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.pricecachegeneratortype.konetsperioda: Конец периода
 mbhpricebundle.form.pricecachegeneratortype.dninedeli: Дни недели
-mbhpricebundle.form.pricecachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для готорых будет произведена генерация наличия мест
+mbhpricebundle.form.pricecachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для которых будет произведена генерация наличия мест
 mbhpricebundle.form.pricecachegeneratortype.vsedninedeli: все дни недели
 mbhpricebundle.form.pricecachegeneratortype.tipynomerov: Типы номеров
 mbhpricebundle.form.pricecachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: Типы номеров для готорых будет произведена генерация цен
@@ -87,7 +87,7 @@ mbhpricebundle.form.pricecachegeneratortype.zapomnitʹ?: Запомнить?
 mbhpricebundle.form.roomcachegeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.roomcachegeneratortype.konetsperioda: Конец периода
 mbhpricebundle.form.roomcachegeneratortype.dninedeli: Дни недели
-mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для готорых будет произведена генерация наличия мест
+mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Дни недели для которых будет произведена генерация наличия мест
 mbhpricebundle.form.roomcachegeneratortype.vsedninedeli: Все дни недели
 mbhpricebundle.form.roomcachegeneratortype.tipynomerov: Типы номеров
 mbhpricebundle.form.roomcachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Типы номеров для готорых будет произведена генерация наличия мест

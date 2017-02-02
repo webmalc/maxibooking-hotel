@@ -30,3 +30,6 @@ parameters:
     mbh.mbhs:
           mbhs: 'aHR0cDovL21iaHMuaC9hcHBfZGV2LnBocC8=' #http://mbhs.h/app_dev.php/
           key: 2743004999743693560727430049997436935607
+        expedia:
+          title: 'Expedia'
+          service: 'mbh.channelmanager.expedia'

@@ -225,8 +225,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             ->setIsDefault(false)
             ->setIsOnline(false)
             ->setHotel($config->getHotel())
-            ->setDescription('Automatically generated rate.')
-        ;
+            ->setDescription('Automatically generated rate.');
         $this->dm->persist($tariff);
         $this->dm->flush();
 
@@ -257,7 +256,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     {
         if (!$end || $end < new \DateTime('midnight')) {
             $end = clone $begin;
-            $end->modify('+' . static::DEFAULT_PERIOD .' days');
+            $end->modify('+' . static::DEFAULT_PERIOD . ' days');
         }
 
         return $end;
@@ -391,31 +390,47 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * @param array $data
      * @param array $headers
      * @param bool $error
-     * @param $post $error
+     * @param string $method
      * @return mixed
      */
-    public function send($url, $data = [], $headers = null, $error = false, $post = true)
+    public function send($url, $data = [], $headers = null, $error = false, $method = 'POST')
     {
-        $ch = curl_init($url);
+        $ch = curl_init();
 
-        if ($post) {
+        if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
         }
+        if ($method == 'PUT') {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        }
+        if (static::TEST) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
+
+        //TODO: ИСПРАВИТЬ ДЛЯ ПРОДА!!!
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         if ($headers) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
-        if ($post && !empty($data)) {
-            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+        if (!empty($data)) {
+            if ($method == 'POST' || $method == 'PUT') {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            } elseif ($method == 'GET') {
+                $url = $url . '?' . http_build_query($data);
+            }
+        }
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        if (($method == 'POST' || $method == 'PUT') && !empty($data)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
         curl_setopt($ch, CURLOPT_VERBOSE, 1);
 
-        if (static::TEST) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        }
         $output = curl_exec($ch);
 
         if (!$output && $error) {
@@ -489,8 +504,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             $tr = $this->container->get('translator');
             $message = $notifier::createMessage();
 
-            $text = 'channelManager.'.$service.'.notification.'.$type;
-            $subject = 'channelManager.'.$service.'.notification.subject.' . $type;
+            $text = 'channelManager.' . $service . '.notification.' . $type;
+            $subject = 'channelManager.' . $service . '.notification.subject.' . $type;
 
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -510,7 +525,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             }
 
             $message
-                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ',  $packages)], 'MBHChannelManagerBundle'))
+                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ', $packages)],
+                    'MBHChannelManagerBundle'))
                 ->setFrom('channelmanager')
                 ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
                 ->setType($type == 'delete' ? 'danger' : 'info')
@@ -519,8 +535,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setHotel($hotel)
                 ->setOrder($order)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
-                ->setEnd(new \DateTime('+10 minute'))
-            ;
+                ->setEnd(new \DateTime('+10 minute'));
 
             $notifier->setMessage($message)->notify();
 

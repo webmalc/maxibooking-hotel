@@ -78,7 +78,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Настройки',
                 'multiple' => true,
                 'choices' => $options['weekdays'],
-                'help' => 'Дни недели для готорых будет произведена генерация наличия мест',
+                'help' => 'mbhpricebundle.form.pricecachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
                 'attr' => array('placeholder' => 'все дни недели'),
             ])
             ->add('roomTypes', DocumentType::class, [
