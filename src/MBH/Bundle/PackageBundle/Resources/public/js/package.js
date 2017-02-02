@@ -171,7 +171,7 @@ var deleteUndaid = function () {
             success: function (urlFromController) {
                 $('#modal_delete_package').html(urlFromController);
                 $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
-                $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+                $('select#mbh_bundle_packagebundle_order_delete_reason_type_deleteReason').select2();
             }
         });
     });

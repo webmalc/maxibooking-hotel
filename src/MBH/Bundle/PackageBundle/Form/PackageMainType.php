@@ -156,7 +156,20 @@ class PackageMainType extends AbstractType
                 'group' => 'Информация',
                 'required' => false,
             ]);
-
+        if ($package->isDeleted()) {
+            $builder
+                ->add('deleteReason', DocumentType::class, [
+                    'label' => 'modal.form.delete.reasons.reason',
+                    'group' => 'modal.form.delete.delete_reason_package',
+                    'class' => 'MBH\Bundle\PackageBundle\Document\DeleteReason',
+                    'query_builder' => function (DocumentRepository $dr) use ($options) {
+                        return $dr->createQueryBuilder()
+                            ->field('deletedAt')->exists(false)
+                            ->sort(['fullTitle' => 'asc', 'title' => 'asc']);
+                    },
+                    'required' => true
+                ]);
+        }
         if ($options['corrupted']) {
             $builder
                 ->add('corrupted', CheckboxType::class, [

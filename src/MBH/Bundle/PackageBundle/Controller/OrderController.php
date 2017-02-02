@@ -527,7 +527,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      * @Route("/{id}/modal/order_delete_modal", name="order_delete", options={"expose"=true})
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
-     * @Template("@MBHPackage/Order/deleteOrderModal.twig")
+     * @Template("@MBHPackage/Package/deleteModal.html.twig")
      *
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
@@ -549,7 +549,8 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         }
 
         return [
-            'order' => $entity,
+            'entity' => $entity,
+            'controllerName' => 'order_delete',
             'form' => $form->createView(),
         ];
     }

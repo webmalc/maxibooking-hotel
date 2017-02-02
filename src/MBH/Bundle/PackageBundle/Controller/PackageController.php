@@ -991,7 +991,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * Package_delete_modal
      *
      * @param Request $request
-     * @param Package $id
+     * @param Package $entity
      *
      * @Route("/{id}/modal/package_delete_modal", name="package_delete", options={"expose"=true})
      * @Method({"GET", "POST"})
@@ -999,34 +999,35 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Template()
      * @return array|RedirectResponse
      */
-    public function deleteModalAction(Request $request, Package $id)
+    public function deleteModalAction(Request $request, Package $entity)
     {
-        $form = $this->createForm(PackageDeleteReasonType::class, $id);
+        $form = $this->createForm(PackageDeleteReasonType::class, $entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            if (!$this->container->get('mbh.package.permissions')->checkHotel($id)) {
+            if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
                 throw $this->createNotFoundException();
             }
 
-            $orderId = $id->getOrder()->getId();
-            $this->dm->persist($id);
-            $this->dm->remove($id);
-            $this->dm->flush($id);
+            $orderId = $entity->getOrder()->getId();
+            $this->dm->persist($entity);
+            $this->dm->remove($entity);
+            $this->dm->flush($entity);
 
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
 
             if (!empty($form->get('order')->getData())) {
                 return $this->redirect($this->generateUrl('package_order_edit',
-                    ['id' => $orderId, 'packageId' => $id->getId()]));
+                    ['id' => $orderId, 'packageId' => $entity->getId()]));
             }
 
             return $this->redirectToRoute('package');
         }
 
         return [
-            'package' => $id,
+            'entity' => $entity,
+            'controllerName' => 'package_delete',
             'form' => $form->createView(),
         ];
     }

@@ -391,3 +391,4 @@ csv.form.countPersons: Кол-во Людей
 
 report.porter.note: Комментарий
 modal.form.delete.reasons.reason: Причина удаления
+modal.form.delete.delete_reason_package: Причина удаления брони

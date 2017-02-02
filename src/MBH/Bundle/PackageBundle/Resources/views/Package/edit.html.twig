@@ -117,17 +117,6 @@
                                 </td>
                             </tr>
                         {% endif %}
-
-                        {% if package.deleted %}
-                            <tr>
-                                <td class="col-md-3">
-                                    <strong>{{ 'modal.form.delete.reasons.reason'|trans({}, 'MBHPackageBundle') }}</strong>
-                                </td>
-                                <td>
-                                    {{ package.deleteReason|default('modal.form.delete.reasons.reason_default'|trans({}, 'MBHPackageBundle')) }}
-                                </td>
-                            </tr>
-                        {% endif %}
                     </tbody>
                 </table>
             </div>
