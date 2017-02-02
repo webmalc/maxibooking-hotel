@@ -17,8 +17,7 @@ class OrderType extends AbstractType
     {
         /** @var Package $package */
         $order = $options['data'];
-        $f = $order->isDeleted();
-$a = 0;
+
         $builder
                 ->add('source', DocumentType::class, [
                     'label' => 'form.orderType.source',
