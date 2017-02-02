@@ -1,8 +1,3 @@
-mbh_online_booking:
-    resource: "@MBHOnlineBookingBundle/Controller/"
-    type:     annotation
-    prefix:   /online_booking
-
 mbh_warehouse:
     resource: "@MBHWarehouseBundle/Controller/"
     type:     annotation

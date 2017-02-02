@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -118,7 +119,7 @@ class Search implements SearchInterface
         //roomCache with tariffs
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null,
-            $query->roomTypes, false, false/*, $this->memcached*/
+            $query->roomTypes, false, false /*, $this->memcached*/
         );
 
         //group caches
@@ -404,9 +405,10 @@ class Search implements SearchInterface
                 }
 
                 //check windows
-
                 $virtualResult = $this->setVirtualRoom(
-                    $result, $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($result->getRoomType()->getHotel())
+                    $result,
+                    $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($result->getRoomType()->getHotel()),
+                    $query->getExcludePackage()
                 );
 
                 if (!$virtualResult) {
@@ -437,9 +439,10 @@ class Search implements SearchInterface
      * Sets virtual room to search result
      * @param SearchResult $result
      * @param Tariff $tariff
+     * @param Package $package
      * @return bool|SearchResult
      */
-    public function setVirtualRoom($result, Tariff $tariff)
+    public function setVirtualRoom($result, Tariff $tariff, Package $package = null)
     {
 
         if ($result->getBegin() <= new \DateTime('midnight')) {
@@ -449,6 +452,7 @@ class Search implements SearchInterface
         if (!$this->config || !$this->config->getSearchWindows() || $result->getForceBooking()) {
             return true;
         }
+
         $roomType = $result->getRoomType();
         $begin = clone $result->getBegin();
         $end = clone $result->getEnd();
@@ -463,7 +467,7 @@ class Search implements SearchInterface
         }
 
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')
-            ->fetchWithVirtualRooms($begin, $end, $roomType)
+            ->fetchWithVirtualRooms($begin, $end, $roomType, false, $package)
         ;
 
         $minRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->getMinTotal(
@@ -477,36 +481,45 @@ class Search implements SearchInterface
 
         $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
             ->fetchQuery(null, [$result->getRoomType()->getId()], null, null, null, $minRoomCache, true)
-            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'desc']);
+            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'desc'])->getQuery()->execute();
 
-        foreach ($rooms->getQuery()->execute() as $room) {
+
+        $min = 0;
+        $preferredRooms = new \SplObjectStorage();
+        $emptyRooms =  new \SplObjectStorage();
+
+        foreach ($rooms as $room) {
             if (isset($groupedPackages[$room->getId()])) {
                 foreach ($groupedPackages[$room->getId()] as $package) {
 
                     if ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
-                        $preferredRoom = $room;
+                        $min += 1;
+                        $preferredRooms->attach($room);
                     } elseif ($package->getBegin() == $end || $package->getEnd() == $begin) {
-                        $preferredRoom = $room;
+                        $min += 1;
+                        $preferredRooms->attach($room);
                     } else {
-                        $preferredRoom = null;
+                        $preferredRooms->detach($room);
                         break;
                     }
                 }
 
-                if ($preferredRoom) {
-                    $result->setVirtualRoom($preferredRoom);
-
-                    return $result;
-                }
-
             } else {
-                $emptyRoom = $room;
+                $emptyRooms->attach($room);
+                $min += 1;
             }
-
         }
+        $result->setRoomsCount($emptyRooms->count() + $preferredRooms->count());
 
-        if ($emptyRoom) {
-            $result->setVirtualRoom($emptyRoom);
+        if ($preferredRooms->count()) {
+            $preferredRooms->rewind();
+            $result->setVirtualRoom($preferredRooms->current());
+
+            return $result;
+        }
+        elseif ($emptyRooms->count()) {
+            $emptyRooms->rewind();
+            $result->setVirtualRoom($emptyRooms->current());
 
             return $result;
         }
@@ -536,48 +549,71 @@ class Search implements SearchInterface
      */
     public function searchTariffs(SearchQuery $query)
     {
-        $tariffs = $results = [];
-        if (!empty($query->roomTypes)) {
-            $roomTypes = $this->manager->getRooms(null, $query->roomTypes);
-            foreach ($roomTypes as $roomType) {
-                $tariffs = array_merge($tariffs, $this->dm->getRepository('MBHPriceBundle:Tariff')->fetch($roomType->getHotel())->toArray());
-            }
-        } else {
-            $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetch(null, null, true);
+        if ($query->limit === null && !count($query->roomTypes)) {
+            $query->limit = $this->config->getSearchTariffs();
         }
 
-        foreach ($tariffs as $tariff) {
+        $results = $tariffs = [];
+        if (!empty($query->roomTypes)) {
+            $hotels = [];
+            $roomTypes = $this->manager->getRooms(null, $query->roomTypes);
+            foreach ($roomTypes as $roomType) {
+                $hotels[$roomType->getHotel()->getId()] = $roomType->getHotel();
+            }
+        } else {
+            $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        }
 
-            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-                $this->dm->getFilterCollection()->disable('softdeleteable');
-            }
-            if ($tariff->getHotel()->getDeletedAt()) {
-                continue;
-            }
-            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-                $this->dm->getFilterCollection()->enable('softdeleteable');
-            }
+        foreach ($hotels as $hotel) {
+            foreach ($this->dm->getRepository('MBHPriceBundle:Tariff')->fetch($hotel) as $tariff) {
+                if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
+                    continue;
+                }
 
-            if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
-                continue;
+                if ($tariff->getBegin() && $tariff->getBegin() > $this->now) {
+                    continue;
+                }
+                if ($tariff->getEnd() && $tariff->getEnd() < $this->now) {
+                    continue;
+                }
+                if ($query->isOnline && !$tariff->getIsOnline()) {
+                    continue;
+                }
+                if (!$tariff->getIsEnabled()) {
+                    continue;
+                }
+                if ($tariff->getDeletedAt() ) {
+                    continue;
+                }
+                $tariffs[$tariff->getHotel()->getId()][] = $tariff;
             }
+        }
 
-            if ($tariff->getBegin() && $tariff->getBegin() > $this->now) {
-                continue;
-            }
-            if ($tariff->getEnd() && $tariff->getEnd() < $this->now) {
-                continue;
-            }
-            if ($query->isOnline && !$tariff->getIsOnline()) {
-                continue;
-            }
-            if ($tariff->getDeletedAt()) {
-                continue;
+        foreach ($tariffs as $key => $tariffsCollection) {
+            usort ($tariffsCollection, function ($a, $b) {
+                if ($a->getPosition() == $b->getPosition()) {
+                    if ($a->getIsDefault() && $b->getIsDefault()) {
+                        return 0;
+                    }
+                    if (!$a->getIsDefault() && !$b->getIsDefault()) {
+                        return 0;
+                    }
+                    if ($a->getIsDefault() && !$b->getIsDefault()) {
+                        return -1;
+                    }
+                    if (!$a->getIsDefault() && $b->getIsDefault()) {
+                        return 1;
+                    }
+                }
+                return ($a->getPosition() > $b->getPosition()) ? -1 : 1;
+            });
+            if ($query->limit) {
+                $tariffsCollection = array_slice($tariffsCollection, 0, $query->limit);
             }
             if ($query->grouped) {
-                $results[$tariff->getHotel()->getId()][] = $tariff;
+                $results[$key] = $tariffsCollection;
             } else {
-                $results[] = $tariff;
+                $results = array_merge($results, $tariffsCollection);
             }
         }
 

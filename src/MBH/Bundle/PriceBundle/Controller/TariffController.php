@@ -3,14 +3,16 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffChildOptions;
+use MBH\Bundle\PriceBundle\Form\TariffFilterType;
 use MBH\Bundle\PriceBundle\Form\TariffInheritanceType;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
 use MBH\Bundle\PriceBundle\Form\TariffServicesType;
-use MBH\Bundle\PriceBundle\Form\TariffServiceType;
 use MBH\Bundle\PriceBundle\Form\TariffType;
+use MBH\Bundle\PriceBundle\Lib\TariffFilter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -25,23 +27,42 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
 {
 
     /**
-     * Lists all entities.
+     * Show list filter
      *
-     * @Route("/", name="tariff")
-     * @Method("GET")
+     * @Route("/", name="tariff", options={"expose"=true})
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_TARIFF_VIEW')")
      * @Template()
+     *
+     * @param Request $request
+     * @return array| \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder()
-            ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
-            ->sort('fullTitle', 'asc')
-            ->getQuery()
-            ->execute();
+        $tableParams = ClientDataTableParams::createFromRequest($request);
+
+        $filter = new TariffFilter();
+        $filter->setSearch($tableParams->getSearch());
+        $filter->setHotel($this->hotel);
+
+        $form = $this->createForm(TariffFilterType::class, $filter);
+
+        $formData = (array)$request->get('form');
+        $formData['search'] = $tableParams->getSearch();
+
+        if ($request->isXmlHttpRequest()) {
+            $form->submit($formData);
+            $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->getFiltered($filter);
+
+            return $this->render('MBHPriceBundle:Tariff:index.json.twig', [
+                'entities' => $entities,
+                'draw' => $request->get('draw'),
+                'total' => $entities->count()
+            ]);
+        }
 
         return [
-            'entities' => $entities
+            'form' => $form->createView(),
         ];
     }
 

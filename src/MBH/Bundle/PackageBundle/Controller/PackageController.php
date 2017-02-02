@@ -333,7 +333,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
-        //TODO Уточнить должно ли так работать?
         $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
 
         return [
@@ -1076,6 +1075,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'text' => $package->getTitle(true,true)
             ];
         }
+
         return new JsonResponse($result);
     }
 
@@ -1104,6 +1104,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'text' => $item->getTitle(true,true)
             ];
         }
+
         return new JsonResponse(['results' => $data]);
     }
 

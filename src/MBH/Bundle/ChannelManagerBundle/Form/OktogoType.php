@@ -4,27 +4,19 @@ namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use MBH\Bundle\BaseBundle\Service\Currency;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class OktogoType extends AbstractType
 {
-    /**
-     * @var Currency
-     */
-    protected $currency;
-
-    public function __construct(Currency $currency)
-    {
-        $this->currency = $currency;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add(
                 'enabled',
-                'checkbox',
+                CheckboxType::class,
                 [
                     'label' => 'form.oktogoType.is_included',
                     'value' => true,
@@ -32,18 +24,16 @@ class OktogoType extends AbstractType
                     'help' => 'form.oktogoType.should_we_use_in_channel_manager'
                 ]
             )
-
             ->add(
                 'hotelId',
-                'text',
+                TextType::class,
                 [
                     'label' => 'form.oktogoType.username',
                     'required' => true,
                     'attr' => ['placeholder' => 'username'],
                     'help' => 'form.oktogoType.oktogo_ru_username'
                 ]
-            )
-        ;
+            );
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

@@ -66,6 +66,16 @@ class ClientConfig extends Base
     protected $searchDates = 0;
 
     /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0, max=999)
+     */
+    protected $searchTariffs = 2;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -136,13 +146,7 @@ class ClientConfig extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isInstantSearch = true;
-
-    /**
-     * @var RoomTypeZip $roomTypeZip
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\ClientBundle\Document\RoomTypeZip", mappedBy="clientConfig")
-     */
-    protected $roomTypeZip;
-
+    
     /**
      * Set sendSms
      *
@@ -434,20 +438,21 @@ class ClientConfig extends Base
     }
 
     /**
-     * @return RoomTypeZip
+     * @return int
      */
-    public function getRoomTypeZip()
+    public function getSearchTariffs(): ?int
     {
-        return $this->roomTypeZip;
+        return $this->searchTariffs;
     }
 
     /**
-     * @param RoomTypeZip $roomTypeZip
+     * @param int $searchTariffs
      * @return ClientConfig
      */
-    public function setRoomTypeZip(RoomTypeZip $roomTypeZip)
+    public function setSearchTariffs(int $searchTariffs): ClientConfig
     {
-        $this->roomTypeZip = $roomTypeZip;
+        $this->searchTariffs = $searchTariffs;
+
         return $this;
     }
     

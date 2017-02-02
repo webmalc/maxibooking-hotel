@@ -4,7 +4,6 @@ namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -16,10 +15,9 @@ use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as MBHValidator;
 /**
  * @ODM\Document(collection="OktogoConfig")
  * @Gedmo\Loggable
- * @MBHValidator\Currency
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class OktogoConfig extends Base implements BaseInterface, CurrencyConfigInterface
+class OktogoConfig extends Base implements BaseInterface
 {
     public function getName()
     {
@@ -84,20 +82,6 @@ class OktogoConfig extends Base implements BaseInterface, CurrencyConfigInterfac
      * @ODM\EmbedMany(targetDocument="Service")
      */
     protected $services;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     */
-    protected $currency;
-
-    /**
-     * @var float
-     * @Gedmo\Versioned
-     * @ODM\Field(type="float")
-     */
-    protected $currencyDefaultRatio;
 
     public function __construct()
     {
@@ -318,43 +302,5 @@ class OktogoConfig extends Base implements BaseInterface, CurrencyConfigInterfac
     public function getServices()
     {
         return $this->services;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrency()
-    {
-        return $this->currency;
-    }
-
-    /**
-     * @param string $currency
-     * @return self
-     */
-    public function setCurrency($currency)
-    {
-        $this->currency = $currency;
-
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getCurrencyDefaultRatio()
-    {
-        return $this->currencyDefaultRatio;
-    }
-
-    /**
-     * @param float $currencyDefaultRatio
-     * @return self
-     */
-    public function setCurrencyDefaultRatio($currencyDefaultRatio)
-    {
-        $this->currencyDefaultRatio = $currencyDefaultRatio;
-
-        return $this;
     }
 }

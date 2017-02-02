@@ -3,10 +3,8 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PriceBundle\Command\RoomCacheCompare1CCommand;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
-use MBH\Bundle\PriceBundle\Form\RoomCacheCompare1CType;
 use MBH\Bundle\PriceBundle\Form\RoomCacheGeneratorType;
 use MBH\Bundle\PriceBundle\Lib\RoomCacheGraphGenerator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -14,57 +12,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Process\Process;
 
 /**
  * @Route("room_cache")
  */
 class RoomCacheController extends Controller implements CheckHotelControllerInterface
 {
-
-    /**
-     * @param Request $request
-     * @return array
-     * @Route("/compare/1c", name="room_cache_compare_1c")
-     * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ROOM_CACHE_VIEW')")
-     * @Template()
-     */
-    public function compare1CAction(Request $request)
-    {
-        $form = $this->createForm(new RoomCacheCompare1CType(), []);
-
-        $form->handleRequest($request);
-
-        if ($form->isValid()) {
-            $root_dir = $this->container->getParameter('kernel.root_dir');
-            $file = $form['file']->getData();
-            $file->move($root_dir . RoomCacheCompare1CCommand::FILE_PATH, '1c_compare.xml');
-
-            if ($this->container->get('kernel')->getEnvironment() == 'prod') {
-                $env = '--env=prod ';
-            } else {
-                $env = '';
-            }
-            $console = $root_dir . '/../bin/console ';
-
-            $process = new Process(
-                'nohup php ' . $console . 'azovsky:cache:compare --no-debug ' . $env  . ' > /dev/null 2>&1 &'
-            );
-
-            $process->run();
-
-            $request->getSession()->getFlashBag()->set(
-                'success', 'Сверка успешно запущена. Результаты сверки будут отправлены на почту.'
-            );
-            $this->redirectToRoute('room_cache_compare_1c');
-        }
-
-        return [
-            'form' => $form->createView()
-        ];
-    }
-
     /**
      * @Route("/", name="room_cache_overview")
      * @Method("GET")

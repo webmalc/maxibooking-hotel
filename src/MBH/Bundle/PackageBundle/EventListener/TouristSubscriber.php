@@ -30,7 +30,7 @@ class TouristSubscriber implements EventSubscriber
     {
         $document = $args->getDocument();
         if($document instanceof Tourist) {
-            //$this->checkUpdateIsUnwelcome($document);
+            $this->checkUpdateIsUnwelcome($document);
             if(!$document->getCommunicationLanguage()) {
                 $document->setCommunicationLanguage($this->container->getParameter('locale'));
             }

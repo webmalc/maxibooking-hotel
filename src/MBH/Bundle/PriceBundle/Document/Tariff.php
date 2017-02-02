@@ -146,6 +146,14 @@ class Tariff extends Base implements ConditionsInterface
     protected $infantAge = 2;
 
     /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\Type(type="numeric")
+     */
+    private $position = 0;
+
+    /**
      * @var Promotion[]|ArrayCollection
      * @ODM\ReferenceMany(targetDocument="Promotion")
      */
@@ -213,12 +221,7 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\Type(type="boolean")
      */
     protected $defaultForMerging = false;
-    /**
-     *@Gedmo\Versioned
-     *@ODM\Field(type="string", name="paymentType")
-     *@Assert\Choice(callback={"\MBH\Bundle\PriceBundle\Lib\PaymentType", "getPaymentPercentValues"})
-     */
-    protected $paymentType;
+
     /**
      * Tariff constructor.
      */
@@ -680,24 +683,21 @@ class Tariff extends Base implements ConditionsInterface
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getPaymentType()
+    public function getPosition(): ?int
     {
-        if (!$this->paymentType) {
-            return 'hundred';
-        }
-        return $this->paymentType;
+        return $this->position;
     }
 
     /**
-     * @param mixed $paymentType
+     * @param int $position
+     * @return Tariff
      */
-    public function setPaymentType($paymentType)
+    public function setPosition(int $position): Tariff
     {
-        $this->paymentType = $paymentType;
-    }
+        $this->position = $position;
 
-    
-    
+        return $this;
+    }
 }
