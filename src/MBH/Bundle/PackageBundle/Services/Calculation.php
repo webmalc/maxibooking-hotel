@@ -126,7 +126,7 @@ class Calculation
      * @param bool $useCategories
      * @param bool $useDuration
      * @param Special|null $special
-     * @return array
+     * @return array|bool
      */
     public function calcPrices(
         RoomType $roomType,
@@ -137,8 +137,8 @@ class Calculation
         $children = 0,
         Promotion $promotion = null,
         $useCategories = false,
-        $useDuration = true,
-        Special $special = null
+        Special $special = null,
+        $useDuration = true
     )
     {
         $prices = [];
