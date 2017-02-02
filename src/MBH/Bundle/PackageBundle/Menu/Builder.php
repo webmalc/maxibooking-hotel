@@ -126,13 +126,18 @@ class Builder implements ContainerAwareInterface
             if ($checker->isGranted('ROLE_PACKAGE_DELETE') && ($checker->isGranted('DELETE', $package) || $checker->isGranted('ROLE_PACKAGE_DELETE_ALL'))) {
                 $rootItem
                     ->addChild('Delete', [
-                        'route' => 'package_delete',
-                        'routeParameters' => ['id' => $package->getId()],
+                        'uri' => '#modal_delete_package',
                         'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle'),
                     ])
-                    ->setLinkAttribute('class', 'delete-link')
+                    ->setLinkAttributes([
+                        'class' => 'booking-delete-link',
+                        'data-id' => $package->getId(),
+                        'data-toggle' => 'modal'
+                    ])
                     ->setAttributes([
                         'icon' => 'fa fa-trash-o',
+                        'class' => 'booking-delete-link',
+                        'data-id' => $package->getId()
                     ]);
             }
 
