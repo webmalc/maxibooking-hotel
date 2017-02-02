@@ -38,14 +38,47 @@ class SearchCacheCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param \DateTime $from
-     * @param \DateTime $to
-     * @param OutputInterface $output
+     * @param \DateTime $begin
+     * @param \DateTime $end
      */
-    private function cacheCreate(\DateTime $from, \DateTime $to, OutputInterface $output)
+    private function cacheCreate(\DateTime $begin, \DateTime $end)
     {
         $search = $this->container->get('mbh.package.search')
             ->setWithTariffs();
+
+        $query = new SearchQuery();
+        $query->begin = $begin;
+        $query->end = $end;
+        $query->adults = 0;
+        $query->children = 0;
+        $query->memcached = true;
+        $query->isOnline = true;
+
+        $search->search($query);
+    }
+
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return void
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): void
+    {
+        $start = new \DateTime();
+        $this->container = $this->getContainer();
+        $helper = $this->container->get('mbh.helper');
+        $this->params = $this->container->getParameter('mbh_cache')['search'];
+        
+        $from = $helper->getDateFromString($input->getOption('begin')) ?? new \DateTime('midnight');
+        $to = $helper->getDateFromString($input->getOption('end')) ?? new \DateTime('midnight +' . $this->params['months'] . ' months');
+
+        if ($input->getOption('force')) {
+            $this->cacheCreate($from, $to);
+            return;
+        }
+
+
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $restrictions = $dates = $caches = [];
 
@@ -129,62 +162,15 @@ class SearchCacheCommand extends ContainerAwareCommand
         $output->writeln('Dates count: ' . count($dates));
         $num = 0;
 
+        $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
+
         foreach ($dates as $key => $pair) {
             $num++;
-
             $output->writeln(sprintf('Start search #%d-%d [%s - %s]', $num, count($dates), $pair[0]->format('d.m.Y'), $pair[1]->format('d.m.Y')));
-            $query = new SearchQuery();
-            $query->begin = $pair[0];
-            $query->end = $pair[1];
-            $query->adults = 0;
-            $query->children = 0;
-            $query->memcached = true;
-            $query->isOnline = true;
-
-            $search->search($query);
-            $dm->clear();
-        }
-    }
-
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return void
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): void
-    {
-        $start = new \DateTime();
-        $this->container = $this->getContainer();
-        $helper = $this->container->get('mbh.helper');
-        $this->params = $this->container->getParameter('mbh_cache')['search'];
-        
-        $from = $helper->getDateFromString($input->getOption('begin')) ?? new \DateTime('midnight');
-        $to = $helper->getDateFromString($input->getOption('end')) ?? new \DateTime('midnight +' . $this->params['months'] . ' months');
-
-        if ($input->getOption('force')) {
-            $this->cacheCreate($from, $to, $output);
-        } else {
-            $interval  = \DateInterval::createFromDateString(self::CHUNK_MAX_DAYS . ' days');
-            $to->modify('+ ' . self::CHUNK_MAX_DAYS . ' days');
-            $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-            $prev = null;
-            $period = iterator_to_array(new \DatePeriod($from,  $interval, $to));
-
-            foreach ($period as $num => $date) {
-                if (!$prev) {
-                    $prev = clone $date;
-                }
-                if ($prev != $date) {
-                    $output->writeln(sprintf('Start search chunk #%d-%d [%s - %s]', $num, count($period), $prev->format('d.m.Y'), $date->format('d.m.Y')));
-                    $command = 'nohup php ' . $console . 'mbh:search:cache --begin='. $prev->format('d.m.Y') .' --end='. $date->format('d.m.Y') .' --force --env=prod';
-                    $process = new Process($command);
-                    $process->setTimeout(null)->setIdleTimeout(null)->run();
-                    $process;
-
-                }
-                $prev = $date;
-            }
+            //run command
+            $command = 'nohup php ' . $console . 'mbh:search:cache --begin='. $pair[0]->format('d.m.Y') .' --end='. $pair[1]->format('d.m.Y') .' --force --env=prod';
+            $process = new Process($command);
+            $process->setTimeout(null)->setIdleTimeout(null)->run();
         }
 
         $time = $start->diff(new \DateTime());
