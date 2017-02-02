@@ -1005,12 +1005,22 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            if (!$this->container->get('mbh.package.permissions')->checkHotel($id)) {
+                throw $this->createNotFoundException();
+            }
+
+            $orderId = $id->getOrder()->getId();
             $this->dm->persist($id);
             $this->dm->remove($id);
-            $this->dm->flush();
+            $this->dm->flush($id);
 
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+
+            if (!empty($form->get('order')->getData())) {
+                return $this->redirect($this->generateUrl('package_order_edit',
+                    ['id' => $orderId, 'packageId' => $id->getId()]));
+            }
 
             return $this->redirectToRoute('package');
         }
