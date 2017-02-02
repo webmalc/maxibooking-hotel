@@ -63,6 +63,7 @@
                                 {% if not package.deletedAt %}
                                     <a href='#modal_delete_package' data-id='{{ package.id }}' data-order="true" class='btn btn-danger btn-xs booking-delete-link' title='{{ 'order.packages.delete_reservation'|trans({}, 'MBHPackageBundle') }}' data-toggle='modal'>
                                         <i class='fa fa-trash-o'></i>
+                                    </a>
                                 {% endif %}
                             </div>
                         </td>
@@ -72,15 +73,6 @@
             </table>
         </div>
     </div>
-    <div id="modal_delete_package" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">{{ 'modal.form.delete.reasons.confirmation'|trans({}, 'MBHPackageBundle') }}</h4>
-                </div>
-                <div class="modal-body"></div>
-            </div>
-        </div>
-    </div>
 {% endif %}
 {% endif %}
+{{ include('@MBHPackage/Package/modal.html.twig') }}

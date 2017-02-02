@@ -237,6 +237,12 @@ class Order extends Base
      */
     protected $documents = [];
 
+    /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\DeleteReason")
+     */
+    protected $deleteReason;
+
     public function __construct()
     {
         $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
@@ -976,5 +982,27 @@ class Order extends Base
     {
         $this->onlinePaymentType = $onlinePaymentType;
         return $this;
+    }
+
+    /**
+     * Set delete reason id
+     *
+     * @param DeleteReason $deleteReason
+     * @return self
+     */
+    public function setDeleteReason(DeleteReason $deleteReason)
+    {
+        $this->deleteReason = $deleteReason;
+        return $this;
+    }
+
+    /**
+     * Get delete reason
+     *
+     * @return mixed
+     */
+    public function getDeleteReason()
+    {
+        return $this->deleteReason;
     }
 }

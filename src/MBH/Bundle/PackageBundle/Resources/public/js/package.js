@@ -160,10 +160,26 @@ var deleteUndaid = function () {
             }
         });
     });
+    $('.order-booking-delete-link').on('click', function (e) {
+        e.preventDefault();
+        $('.modal-body').html(mbh.loader.html);
+
+        return $.ajax({
+            url: Routing.generate('order_delete', {'id': $(this).data('id')}),
+            type: "GET",
+            data: {},
+            success: function (urlFromController) {
+                $('#modal_delete_package').html(urlFromController);
+                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
+                $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+            }
+        });
+    });
 }
 
 var docReadyPackages = function () {
     'use strict';
+    deleteUndaid();
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
@@ -469,7 +485,6 @@ var docReadyPackages = function () {
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
-    deleteUndaid();
 
     //package ajax tabs
     (function () {

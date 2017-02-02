@@ -1,44 +1,10 @@
-<div id="myModal" class="modal fade">
+<div id="modal_delete_package" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button>
-                <h4 class="modal-title">{{ 'package.actions.confirmation'|trans({}, 'MBHPackageBundle') }}</h4>
+            <div class="modal-header">
+                <h4 class="modal-title">{{ 'modal.form.delete.reasons.confirmation'|trans({}, 'MBHPackageBundle') }}</h4>
             </div>
-
-            <div class="modal-body">
-                <form method="post" class="form-horizontal">
-                    <div id="mbh_bundle_packagebundle_package_csv_type">
-                        <h5>{{ 'modal.form.delete.reasons.confirmation'|trans({}, 'MBHPackageBundle') }}</h5>
-                        <input id="package_id" type="hidden" value="{{ id }}">
-                        {% if is_granted('ROLE_PACKAGE_DELETE_REASON') %}
-                        <div class="box box-default box-solid">
-
-                            <div class="box-header with-border">
-                                <h3 class="box-title">{{ 'modal.form.delete.reasons.reason'|trans({}, 'MBHPackageBundle') }}</h3>
-                                <div class="box-tools pull-right">
-                                    <button class="btn btn-box-tool form-group-collapse" data-widget="collapse" id="mbh_bundle_packagebundle_package_csv_type-group-1"><i class="fa fa-minus"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="box-body">
-                                <select id="select_reasons" class="form-control js-select" style="width: 100%">
-                                    <option></option>
-                                    {% for reason in reasons %}
-                                        <option value="{{ reason.id }}">{{ reason.fullTitle }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-default" type="button" data-dismiss="modal">{{ 'modal.form.delete.reasons.close'|trans({}, 'MBHPackageBundle') }}</button>
-                        <button class="btn btn-primary btn-delete" type="button">{{ 'modal.form.delete.reasons.delete'|trans({}, 'MBHPackageBundle') }}</button>
-                    </div>
-                </form>
-
-            </div>
+            <div class="modal-body"></div>
         </div>
     </div>
 </div>

@@ -2,14 +2,14 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Form\Extension\DeleteReasonTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
-class PackageDeleteReasonType extends AbstractType
+class OrderDeleteReasonType extends AbstractType
 {
     use DeleteReasonTrait {
         buildForm as bf;
@@ -21,12 +21,12 @@ class PackageDeleteReasonType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefault('data_class', Package::class);
+        $resolver->setDefault('data_class', Order::class);
     }
 
     public function getBlockPrefix()
     {
-        return 'mbh_bundle_packagebundle_delete_reason_type';
+        return 'mbh_bundle_packagebundle_order_delete_reason_type';
     }
 
 }
