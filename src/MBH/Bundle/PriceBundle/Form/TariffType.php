@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use MBH\Bundle\PriceBundle\Lib\PaymentType;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;

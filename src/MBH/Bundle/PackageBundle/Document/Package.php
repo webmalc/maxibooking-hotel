@@ -105,7 +105,7 @@ class Package extends Base implements \JsonSerializable
      */
     protected $externalNumber;
 
-    
+
 
     /**
      * @var int
@@ -270,7 +270,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "ostrovok"},
+     *      choices = {"vashotel", "booking", "ostrovok", "oktogo", "myallocator" },
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      */
