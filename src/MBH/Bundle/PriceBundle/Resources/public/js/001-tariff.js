@@ -1,4 +1,3 @@
-/*global window, $, document, mbh */
 /*global window, $, document, mbh, Routing, deleteLink */
 
 $(document).ready(function () {

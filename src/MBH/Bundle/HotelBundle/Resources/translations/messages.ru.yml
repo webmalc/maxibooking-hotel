@@ -63,6 +63,10 @@ form:
         is_enabled: Включен?
         desc: Описание
         desc_help: Описание группы номеров для онлайн бронирования
+        descUrl: URL ссылка
+        descUrl_help: URL ссылка на описание категории номеров в онлайн форме
+
+
 
 form.roomTypeGenerateRoomsType.first_bed_number: Номер первого койко-места
 form.roomTypeGenerateRoomsType.first_room_number: С
@@ -75,6 +79,7 @@ form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: Неко
 form.roomTypeGenerateRoomsType.too_many_generation_numbers: Слишком большое количество записей для генерации.
 form.roomTypeGenerateRoomsType.housing: Корпус
 form.roomTypeGenerateRoomsType.floor: Этаж
+form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: 'Номер первой комнаты меньше номера последней'
 
 # RoomTypeType
 form.roomTypeType.name: Название

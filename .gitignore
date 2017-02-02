@@ -35,5 +35,5 @@ parameters.yml
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
 web/online
-app/supervisor
 docker_zalex
+app/supervisor/

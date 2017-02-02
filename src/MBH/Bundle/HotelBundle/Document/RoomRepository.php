@@ -49,6 +49,8 @@ class RoomRepository extends AbstractBaseRepository
 
             $qb->field('roomType')->references($package->getRoomType())
                 ->field('id')->notIn($rooms)
+                //TODO Is this change need also for master?
+                ->field('isEnabled')->equals(true)
                 ->sort(['fullTitle', 'title'])
             ;
         }

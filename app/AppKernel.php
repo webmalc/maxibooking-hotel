@@ -45,6 +45,7 @@ class AppKernel extends Kernel
             new MBH\Bundle\DemoBundle\MBHDemoBundle(),
             new MBH\Bundle\ClientBundle\MBHClientBundle(),
             new MBH\Bundle\VegaBundle\MBHVegaBundle(),
+            new MBH\Bundle\OnlineBookingBundle\MBHOnlineBookingBundle(),
             new MBH\Bundle\WarehouseBundle\MBHWarehouseBundle(),
             new MBH\Bundle\RestaurantBundle\MBHRestaurantBundle(),
         );

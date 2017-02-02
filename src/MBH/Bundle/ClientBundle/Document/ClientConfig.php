@@ -146,7 +146,13 @@ class ClientConfig extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isInstantSearch = true;
-    
+
+    /**
+     * @var RoomTypeZip $roomTypeZip
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\ClientBundle\Document\RoomTypeZip", mappedBy="clientConfig")
+     */
+    protected $roomTypeZip;
+
     /**
      * Set sendSms
      *
@@ -438,6 +444,24 @@ class ClientConfig extends Base
     }
 
     /**
+     * @return RoomTypeZip
+     */
+    public function getRoomTypeZip()
+    {
+        return $this->roomTypeZip;
+    }
+
+    /**
+     * @param RoomTypeZip $roomTypeZip
+     * @return ClientConfig
+     */
+    public function setRoomTypeZip(RoomTypeZip $roomTypeZip)
+    {
+        $this->roomTypeZip = $roomTypeZip;
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getSearchTariffs(): ?int
@@ -455,5 +479,5 @@ class ClientConfig extends Base
 
         return $this;
     }
-    
+
 }

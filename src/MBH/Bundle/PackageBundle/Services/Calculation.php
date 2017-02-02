@@ -141,7 +141,6 @@ class Calculation
         $useDuration = true
     )
     {
-//        dump($special);exit;
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
         $places = $roomType->getPlaces();

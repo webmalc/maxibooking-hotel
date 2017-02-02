@@ -2,6 +2,8 @@ views.clientConfig.index.editing: "редактирование"
 views.clientConfig.layout.parameters: "Параметры"
 client.tabs.params: 'Параметры'
 client.tabs.payment_system: 'Платежная система'
+client.tabs.auto_update: 'Автообновление'
+views.roomTypeZip.layout.parameters: 'Автообновление'
 
 # Document Template Controller
 views.documentTempalte.index: "Шаблоны документов"

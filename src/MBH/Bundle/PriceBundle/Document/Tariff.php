@@ -221,7 +221,12 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\Type(type="boolean")
      */
     protected $defaultForMerging = false;
-
+    /**
+     *@Gedmo\Versioned
+     *@ODM\Field(type="string", name="paymentType")
+     *@Assert\Choice(callback={"\MBH\Bundle\PriceBundle\Lib\PaymentType", "getPaymentPercentValues"})
+     */
+    protected $paymentType;
     /**
      * Tariff constructor.
      */
@@ -683,6 +688,25 @@ class Tariff extends Base implements ConditionsInterface
     }
 
     /**
+     * @return mixed
+     */
+    public function getPaymentType()
+    {
+        if (!$this->paymentType) {
+            return 'hundred';
+        }
+        return $this->paymentType;
+    }
+
+    /**
+     * @param mixed $paymentType
+     */
+    public function setPaymentType($paymentType)
+    {
+        $this->paymentType = $paymentType;
+    }
+
+    /**
      * @return int
      */
     public function getPosition(): ?int
@@ -700,4 +724,5 @@ class Tariff extends Base implements ConditionsInterface
 
         return $this;
     }
+
 }
