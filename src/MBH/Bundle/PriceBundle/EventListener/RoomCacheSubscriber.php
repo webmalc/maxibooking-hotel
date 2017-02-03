@@ -41,9 +41,13 @@ class RoomCacheSubscriber implements EventSubscriber
             return;
         }
 
-        $this->container->get('mbh.room.cache')->recalculateByPackagesBackground(
-            $doc->getDate(), $doc->getDate(), [$doc->getRoomType()->getId()]
-        );
+        $this->container->get('old_sound_rabbit_mq.task_room_cache_recalculate_producer')->publish(serialize(
+            [
+                'begin' => $doc->getDate(),
+                'end' => $doc->getDate(),
+                'roomTypes' => [$doc->getRoomType()->getId()]
+            ]
+        ));
     }
 
     public function preUpdate(LifecycleEventArgs $args)
@@ -54,9 +58,13 @@ class RoomCacheSubscriber implements EventSubscriber
             return;
         }
 
-        $this->container->get('mbh.room.cache')->recalculateByPackagesBackground(
-            $doc->getDate(), $doc->getDate(), [$doc->getRoomType()->getId()]
-        );
+        $this->container->get('old_sound_rabbit_mq.task_room_cache_recalculate_producer')->publish(serialize(
+            [
+                'begin' => $doc->getDate(),
+                'end' => $doc->getDate(),
+                'roomTypes' => [$doc->getRoomType()->getId()]
+            ]
+        ));
     }
 
     /**

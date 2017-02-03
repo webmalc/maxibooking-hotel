@@ -2,12 +2,12 @@
 namespace MBH\Bundle\RestaurantBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\RestaurantBundle\Document\Chair;
 use MBH\Bundle\RestaurantBundle\Document\Table;
-use MBH\Bundle\BaseBundle\Lib\Exception;
-use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 
 class TableManager
 {

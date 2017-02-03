@@ -5,10 +5,10 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\CashBundle\Document\CashDocument;
 
 class OrderSubscriber implements EventSubscriber
 {
@@ -71,6 +71,13 @@ class OrderSubscriber implements EventSubscriber
             $entity->setPrice(0);
             $dm->persist($entity);
             $dm->flush();
+
+            foreach($entity->getPackages() as $package) {
+                if ($package->getSpecial()) {
+                    $dm = $args->getDocumentManager();
+                    $dm->getRepository('MBHPriceBundle:Special')->recalculate($package->getSpecial(), $package);
+                }
+            }
 
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
         }

@@ -8,8 +8,15 @@ parameters:
   from_email: robot@example.com
 
   #MongoBD
-  mongodb_url: 'mongodb://mbh:password@localhost:27017/mbh'
+  mongodb_url: 'mongodb://mbh-mongo:27017/mbh'
   mongodb_database: mbh
+
+  #Rabbitmq
+  rabbitmq_user: 'rabbitmq'
+  rabbitmq_password: 'rabbitmq'
+  rabbitmq_host: 'mbh-rabbitmq'
+  rabbitmq_vhost: '/'
+  rabbitmq_port: '5672'
 
   #Security
   secret: mySyperSecretKeyForSymfony
@@ -21,7 +28,7 @@ parameters:
   locale.currency: rub
   debug_toolbar: true
   debug_redirects: false
-  use_assetic_controller: true
+  use_assetic_controller: false
   router.request_context.host: 'example.com'
   router.request_context.scheme: http
   router.request_context.base_url: null
@@ -31,6 +38,7 @@ parameters:
   mbh_package_arrival_time: 12
   mbh_package_departure_time: 14
   mbh_package_notpaid_time: '-5 days'
+  mbh_online_form_max_packages: 5
 
   #Mailer
   mailer_user_arrival_links:
@@ -52,6 +60,8 @@ parameters:
   mbh_cache:
     is_enabled: true
     prefix: mbh
+
+  wkhtmltopdf_path: '/usr/local/bin/wkhtmltopdf'
 
   mbh_modules:
     tasks: true

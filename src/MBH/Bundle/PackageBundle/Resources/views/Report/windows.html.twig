@@ -24,9 +24,40 @@
                 {% endfor %}
             </select>
         </div>
+
+        <div class="input">
+            <button class="btn btn-primary" id="report-submit-button">
+                <i class="fa fa-filter"></i> {{ 'show'|trans()|capitalize  }}
+            </button>
+        </div>
     </form>
     </div></div>
 
     <div id="windows-report-content" class="scrolling"></div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="package-info-modal" tabindex="-1" role="dialog" aria-labelledby="package-info-modal-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        {{ 'report.windows.modal.title'|trans() }}
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <i class="fa fa-spinner fa-spin"></i> {{ 'loading'|trans() }}...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa fa-ban"></i> {{ 'cancel'|trans()|capitalize }}
+                    </button>
+                    <button type="submit" id="modal-submit" class="btn btn-primary">
+                        <i class="fa fa-check"></i> {{ 'save'|trans()|capitalize }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

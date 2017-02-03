@@ -3,20 +3,22 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Tourist;
-use MBH\Bundle\PackageBundle\Form\TouristType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
+use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\SearchType;
+use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/search")
@@ -48,12 +50,13 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $query = new SearchQuery();
         $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $query->range = $clientConfig ? $clientConfig->getSearchDates() : 0;
-        $form = $this->createForm(new SearchType(), $query, [
+        $form = $this->createForm(SearchType::class, $query, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
             'hotel' => $this->hotel,
             'orderId' => $request->get('order'),
-            'roomManager' => $this->manager
+            'roomManager' => $this->manager,
+            'startDate' => new \DateTime()
         ]);
 
         $tourist = new Tourist();
@@ -62,14 +65,15 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $tourist->getDocumentRelation()->setType('vega_russian_passport');
 
+
         return [
             'form' => $form->createView(),
-            'touristForm' => $this->createForm(new TouristType(), null,
+            'touristForm' => $this->createForm(TouristType::class, null,
                 ['genders' => $this->container->getParameter('mbh.gender.types')])
                 ->createView(),
-            'documentForm' => $this->createForm('mbh_document_relation', $tourist)
+            'documentForm' => $this->createForm(DocumentRelationType::class, $tourist)
                 ->createView(),
-            'addressForm' => $this->createForm('mbh_address_object_decomposed', $tourist->getAddressObjectDecomposed())
+            'addressForm' => $this->createForm(AddressObjectDecomposedType::class, $tourist->getAddressObjectDecomposed())
                 ->createView()
         ];
     }
@@ -86,16 +90,18 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
     {
         $query = new SearchQuery();
         $query->accommodations = true;
-        $form = $this->createForm(new SearchType(), $query, [
+        $specials = null;
+        $form = $this->createForm(SearchType::class, $query, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
             'hotel' => $this->hotel,
             'roomManager' => $this->manager
         ]);
+        $groupedResult = [];
 
         // Validate form
         if ($request->get('s')) {
-            $form->submit($request);
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $query->setChildrenAges(
@@ -119,18 +125,20 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                     }
                 }
 
-                $groupedResult = $this->get('mbh.package.search')
+                $search = $this->get('mbh.package.search')
                     ->setAdditionalDates($query->range)
-                    ->setWithTariffs()
-                    ->search($query);
+                    ->setWithTariffs();
+                $specials = $search->searchSpecials($query)->toArray();
+                $groupedResult = $search->search($query);
+
             } else {
                 $errors = $form->getErrors();
-                $groupedResult = [];
             }
         }
 
         return [
             'results' => $groupedResult,
+            'specials' => $specials,
             'query' => $query,
             'errors' => isset($errors) ? $errors : null,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),

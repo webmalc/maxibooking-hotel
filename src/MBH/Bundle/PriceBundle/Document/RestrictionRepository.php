@@ -125,7 +125,7 @@ class RestrictionRepository extends DocumentRepository
                 return $cache;
             }
         }
-        
+
         $qb = $this->createQueryBuilder('q');
         $qb
             ->field('date')->equals($date)
@@ -133,11 +133,11 @@ class RestrictionRepository extends DocumentRepository
             ->field('roomType.id')->equals($roomType->getId());;
 
         $result = $qb->getQuery()->getSingleResult();
-        
+
         if ($memcached) {
             $memcached->set($result, 'price_caches_fetch', func_get_args());
         }
-        
+
         return $result;
     }
 

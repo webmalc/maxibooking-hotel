@@ -25,7 +25,11 @@
                 <tr class="header">
                     <td class="first-th"></td>
                     {% for date in period %}
-                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+                        <td class="header-td {% if date|date('N') >= 6 %} text-danger{% endif %}">
+                            <span class="header-info">{{ date|mbh_format }}</span>
+                            <a data-toggle="tooltip" data-placement="top" title="{{ 'mbh.grid.generator'|trans }}" href="#" class="header-action header-action-generator"><i class="fa fa fa-magic"></i></a>
+                            <a data-toggle="tooltip" data-placement="top" title="{{ 'mbh.grid.copy'|trans }}" href="#" class="header-action header-action-copy"><i class="fa fa-copy"></i></a>
+                        </td>
                     {% endfor %}
                 </tr>
 
@@ -36,6 +40,8 @@
                     'maxStay': 'price.views.restriction.table.maxStay'|trans({},'MBHPriceBundle'),
                     'minBeforeArrival': 'price.views.restriction.table.minBeforeArrival'|trans({},'MBHPriceBundle'),
                     'maxBeforeArrival': 'price.views.restriction.table.maxBeforeArrival'|trans({},'MBHPriceBundle'),
+                    'maxGuest': 'price.views.restriction.table.maxGuest'|trans({},'MBHPriceBundle'),
+                    'minGuest': 'price.views.restriction.table.minGuest'|trans({},'MBHPriceBundle'),
                     'closedOnArrival': 'price.views.restriction.table.closedOnArrival'|trans({},'MBHPriceBundle'),
                     'closedOnDeparture': 'price.views.restriction.table.closedOnDeparture'|trans({},'MBHPriceBundle'),
                     'closed': 'price.views.restriction.table.closed'|trans({},'MBHPriceBundle'),

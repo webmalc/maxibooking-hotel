@@ -88,7 +88,6 @@ $(document).ready(function () {
 
     Row.prototype.init = function () {
         var that = this;
-
         this.showResultPrices();
         this.$searchTouristsSelect.on('change', function () {
             that.showResultPrices();
@@ -134,12 +133,18 @@ $(document).ready(function () {
         ulPrices.find('li').hide();
         ulPrices.find('li.' + touristVal + '_price').show();
         ulPrices.show();
-        var oldHref = this.$packageSearchBook.prop('href')
-                .replace(/&adults=.*?(?=(&|$))/, '')
-                .replace(/&children=.*?(?=(&|$))/, '')
-            ;
 
-        this.$packageSearchBook.prop('href', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
+        if (!isNotNullAmount()) {
+            var oldHref = this.$packageSearchBook.prop('href')
+                    .replace(/&adults=.*?(?=(&|$))/, '')
+                    .replace(/&children=.*?(?=(&|$))/, '')
+                ;
+
+            this.$packageSearchBook.prop('href', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
+        } else {
+            this.$searchTouristsSelect.attr("disabled", true);
+        }
+
     };
 
     Row.prototype.showQuality = function () {
@@ -230,6 +235,10 @@ $(document).ready(function () {
         searchProcess = false;
         $wrapper.html(data);
 
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
         var $quantitySelect = $wrapper.find('.quantity-select');
         var $searchRoomsSelect = $wrapper.find('.search-room-select');
         var $searchTouristsSelect = $wrapper.find('.search-tourists-select');
@@ -247,17 +256,34 @@ $(document).ready(function () {
             placeholder: '',
             allowClear: false,
             width: 'element',
-            minimumResultsForSearch: -1,
+            minimumResultsForSearch: -1
             //templateResult: format,
             //templateSelection: format
         });
         $wrapper.find('[data-toggle="tooltip"]').tooltip();
 
-
-        $wrapper.find('tbody tr:not(.mbh-grid-header1)').each(function () {
+        $wrapper.find('.package-search-table tbody tr:not(.mbh-grid-header1)').each(function () {
             var row = new Row($(this));
             row.init();
-        })
+        });
+
+        if ($('#s_special').val() && !$('.search-special-apply.cancel').length) {
+            $('#s_special').val('');
+            sendForm();
+        }
+
+        $('.search-special-apply').click(function (e) {
+            e.preventDefault();
+            var special = $(this).hasClass('cancel') ? '' : $(this).attr('data-id');
+            $('#s_special').val(special);
+            sendForm();
+        });
+
+        $('.search-all-tariffs-link').click(function (e) {
+            e.preventDefault();
+            $('#s_roomType').select2("val", $(this).attr('data-roomType'));
+            sendForm();
+        });
 
         /*var $links = $('#package-search-tariffs li a');
          $links.on('click', function (e) {
@@ -266,7 +292,11 @@ $(document).ready(function () {
          window.location.hash = $packageSearchForm.serialize();
          $packageSearchForm.submit();
          });*/
-    }
+    };
+
+    var isNotNullAmount = function() {
+        return parseInt($("#s_adults").val() || $("#s_children").val());
+    };
 
     var send = function (query) {
         if (searchProcess) {
@@ -329,7 +359,7 @@ $(document).ready(function () {
                 $wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
                 send($packageSearchForm.serialize());
             }, 500);
-    }
+    };
 
     if (window.location.hash) {
         var hashes = getHashVars();
@@ -358,7 +388,6 @@ $(document).ready(function () {
     }
 
     childrenInput.bind('keyup mouseup', function () {
-        console.log(Date.now());
         changePopover();
         $('.children_age').change(sendForm);
     });

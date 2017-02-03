@@ -7,14 +7,17 @@ use Knp\Menu\MenuItem;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class Builder
 
  */
-class Builder extends ContainerAware
+class Builder implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function templateDocuments(FactoryInterface $factory, array $options)
     {
         $package = $options['package'];
@@ -53,7 +56,7 @@ class Builder extends ContainerAware
         if ($checker->isGranted('ROLE_SEARCH')) {
             $rootItem
                 ->addChild('Search Header', [
-                    'label' => $translator->trans('package.actions.search', [], 'MBHPackageBundle')
+                    'label' => $translator->trans('package.action.action_header', [], 'MBHPackageBundle')
                 ])
                 ->setAttributes([
                     'divider_prepend' => true,
@@ -80,8 +83,37 @@ class Builder extends ContainerAware
                         'level' => 2,
                     ]);
             }
-        }
 
+            $dateDifference = date_diff(new \DateTime(), $package->getBegin());
+            if ($dateDifference->d > 0 || $dateDifference->m > 0 || $dateDifference->y > 0) {
+                $linkClass = 'delete-link';
+            } else {
+                $linkClass = '';
+            }
+
+            if ($checker->isGranted('ROLE_ORDER_EDIT')
+                && $checker->isGranted('ROLE_PACKAGE_NEW')
+                && ($checker->isGranted('EDIT', $package->getOrder())
+                    || $checker->isGranted('ROLE_PACKAGE_EDIT_ALL'))) {
+                $rootItem
+                    ->addChild('Reset totalOverwrite value', [
+                        'route' => 'reset_total_overwrite_value',
+                        'routeParameters' => ['id' => $package->getId()],
+                        'label' => $translator->trans('package.action.resetTotalOverwrite', [], 'MBHPackageBundle'),
+                    ])
+                    ->setLinkAttributes([
+                        'class' => $linkClass,
+                        'data-text' => $translator->trans('package.action.resetTotalOverwrite.modal_window_text', [], 'MBHPackageBundle'),
+                        'data-button' => $translator->trans('package.action.resetTotalOverwrite.modal_window_delete_button_text', [], 'MBHPackageBundle'),
+                        'data-button-icon' => 'fa fa-chain-broken'
+                    ])
+                    ->setAttributes([
+                        'icon' => 'fa fa-chain-broken',
+                        'divider_append' => true,
+                        'level' => 2,
+                    ]);
+            }
+        }
 
 
         if(!$package->getIsLocked()) {

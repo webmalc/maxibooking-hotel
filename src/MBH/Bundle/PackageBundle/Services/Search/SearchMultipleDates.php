@@ -2,10 +2,10 @@
 
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  *  Search with tariffs service
@@ -165,5 +165,14 @@ class SearchMultipleDates implements SearchInterface
     public function searchTariffs(SearchQuery $query)
     {
         return $this->search->searchTariffs($query);
+    }
+
+    /**
+     * @param SearchQuery $query
+     * @return array
+     */
+    public function searchSpecials(SearchQuery $query)
+    {
+        return $this->search->searchSpecials($query);
     }
 }

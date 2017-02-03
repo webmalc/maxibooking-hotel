@@ -13,6 +13,7 @@ validator.document.vashotelConfig.no_hotel_id_specified: Не указан Id о
 validator.document.hundredOneHotelsConfig.no_hotel_selected: Не выбран отель
 validator.document.hundredOneHotelsConfig.no_hotel_id_specified: Не указан Id отеля
 validator.document.hundredOneHotelsConfig.no_api_key_specified: Не указан ключ API отеля
+validator.document.vashotelConfig.no_password: Не заполнен пароль
 roomtype.validation: 'Выбрано более одного типа номера'
 tarifftype.validation: 'Выбрано более одного типа тарифа'
 validator.default_currency: Курс по умолчанию обязателен к заполнению

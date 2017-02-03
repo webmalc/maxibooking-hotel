@@ -1,6 +1,6 @@
 parameters:
     #currencies
-    mbh.currency.ratio.fix: %currency_ratio_fix%
+    mbh.currency.ratio.fix: "%currency_ratio_fix%"
     mbh.currency.data:
       rub: {text: 'руб.', small: 'коп.', icon: 'fa fa-ruble'}
       eur: {text: '€', small: '¢', icon: 'fa fa-eur'}
@@ -173,14 +173,14 @@ parameters:
     #mailer
     mbh.mailer:
       fromText: 'MaxiBooking'
-      fromMail:  %from_email%
+      fromMail:  "%from_email%"
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 
     #параметры онлайн формы
     mbh.online.form:
-          sites: %online_form_sites%
-          packages_max: 5
+          sites: "%online_form_sites%"
+          packages_max: "%mbh_online_form_max_packages%"
           messages: true
           form:
             width: '300px'
@@ -188,7 +188,7 @@ parameters:
           result:
             width: 'auto'
             height: 'auto'
-            url: %online_form_result_url%
+            url: "%online_form_result_url%"
           payment_types:
             in_hotel: 'Оплата при заселении'
             online_full: 'Онлайн оплата (100%)'
@@ -203,7 +203,7 @@ parameters:
       uniteller: 'Uniteller'
       rbk: 'Rbk'
     mbh.payment_systems.default: uniteller
-    mbh.payment_systems.change: %mbh_payment_systems_change%
+    mbh.payment_systems.change: "%mbh_payment_systems_change%"
 
     #параметры Channel manager
     mbh.channelmanager.services:
@@ -219,8 +219,8 @@ parameters:
         ostrovok:
           title: 'Ostrovok'
           service: 'mbh.channelmanager.ostrovok'
-          username: 722ac50470d8af33d509c069ccb83443
-          password: edfdfba3f6902eb63aa254935e9a8a36
+          username: 59a0ed03e26016ab59a3fe1cfdeb9479
+          password: 1b9952573d01aef185ca3edc17432aab
         myallocator:
           title: 'MyAllocator'
           service: 'mbh.channelmanager.myallocator'
@@ -262,8 +262,8 @@ parameters:
         other: Другая
 
     #Время заезда/выезда по умолчанию
-    mbh.package.arrival.time: %mbh_package_arrival_time%
-    mbh.package.departure.time: %mbh_package_departure_time%
+    mbh.package.arrival.time: "%mbh_package_arrival_time%"
+    mbh.package.departure.time: "%mbh_package_departure_time%"
     
     #Просроченные брони
     mbh.package.notpaid.time: '%mbh_package_notpaid_time%'

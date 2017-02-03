@@ -2,9 +2,9 @@
 
 namespace MBH\Bundle\BaseBundle\DataTransformer;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
-use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Class EntityToIdTransformer

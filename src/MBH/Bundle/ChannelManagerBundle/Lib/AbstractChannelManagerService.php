@@ -3,11 +3,12 @@
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
@@ -64,12 +65,14 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     protected $currency;
 
+    protected $roomManager;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->templating = $this->container->get('templating');
-        $this->request = $container->get('request');
+        $this->request = $container->get('request_stack')->getCurrentRequest();
         $this->helper = $container->get('mbh.helper');
         $this->logger = $container->get('mbh.channelmanager.logger');
         $this->currency = $container->get('mbh.currency');
@@ -200,22 +203,25 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     public function createTariff(ChannelManagerConfigInterface $config, $id)
     {
         $tariffsInfo = $this->pullTariffs($config);
+        $info = null;
 
-        if (!isset($tariffsInfo[$id])) {
+        if (isset($tariffsInfo[$id])) {
+            $info = $tariffsInfo[$id];
+
+            $oldTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy([
+                'title' => $info['title']
+            ]);
+            if ($oldTariff) {
+                return $oldTariff;
+            }
+
             return null;
         }
-        $info = $tariffsInfo[$id];
 
-        $oldTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy([
-            'title' => $info['title']
-        ]);
-        if ($oldTariff) {
-            return $oldTariff;
-        }
 
         $tariff = new Tariff();
-        $tariff->setTitle($info['title'])
-            ->setFullTitle($info['title'])
+        $tariff->setTitle($info ? $info['title'] : 'Automatically generated rate: undefined')
+            ->setFullTitle($info ? $info['title'] : 'Automatically generated rate: undefined')
             ->setIsDefault(false)
             ->setIsOnline(false)
             ->setHotel($config->getHotel())
@@ -280,6 +286,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $result = [];
 
         foreach ($config->getRooms() as $room) {
+            /** @var Room $room */
             $roomType = $room->getRoomType();
             if (empty($room->getRoomId()) || !$roomType->getIsEnabled() || !empty($roomType->getDeletedAt())) {
                 continue;
@@ -399,7 +406,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
         if ($post && !empty($data)) {
-            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

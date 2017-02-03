@@ -46,7 +46,7 @@ class IngredientCategoryType extends AbstractType
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_restaurantbundle_ingredient_category_type';
     }

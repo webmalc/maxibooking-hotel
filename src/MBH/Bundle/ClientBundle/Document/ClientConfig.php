@@ -2,15 +2,15 @@
 
 namespace MBH\Bundle\ClientBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\Document(collection="ClientConfig", repositoryClass="MBH\Bundle\ClientBundle\Document\ClientConfigRepository")
@@ -64,6 +64,16 @@ class ClientConfig extends Base
      * @Assert\Range(min=0, max=10)
      */
     protected $searchDates = 0;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0, max=999)
+     */
+    protected $searchTariffs = 2;
 
     /**
      * @var boolean
@@ -136,7 +146,7 @@ class ClientConfig extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isInstantSearch = true;
-
+    
     /**
      * Set sendSms
      *
@@ -427,5 +437,23 @@ class ClientConfig extends Base
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getSearchTariffs(): ?int
+    {
+        return $this->searchTariffs;
+    }
+
+    /**
+     * @param int $searchTariffs
+     * @return ClientConfig
+     */
+    public function setSearchTariffs(int $searchTariffs): ClientConfig
+    {
+        $this->searchTariffs = $searchTariffs;
+
+        return $this;
+    }
     
 }

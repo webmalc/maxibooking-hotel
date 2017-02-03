@@ -40,6 +40,12 @@ class ClientConfigType extends AbstractType
                 'group' => 'form.clientConfigType.search_group',
                 'required' => true,
             ])
+            ->add('searchTariffs', TextType::class, [
+                'label' => 'form.clientConfigType.search_tariffs',
+                'help' => 'form.clientConfigType.search_tariffs_desc',
+                'group' => 'form.clientConfigType.search_group',
+                'required' => true,
+            ])
             ->add('searchWindows', CheckboxType::class, [
                 'label' => 'form.clientConfigType.search_windows',
                 'help' => 'form.clientConfigType.search_windows_desc',
@@ -56,7 +62,7 @@ class ClientConfigType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_clientbundle_client_config_type';
     }

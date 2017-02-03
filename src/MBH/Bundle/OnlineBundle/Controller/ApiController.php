@@ -7,18 +7,18 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\Translator;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 /**
  * @Route("/api")
@@ -33,7 +33,7 @@ class ApiController extends Controller
      * @ParamConverter("begin", options={"format": "Y-m-d"})
      * @ParamConverter("end", options={"format": "Y-m-d"})
      * @ParamConverter("hotel", class="MBH\Bundle\HotelBundle\Document\Hotel")
-     * @Template("")
+     * @Template()
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param Hotel $hotel
@@ -83,7 +83,7 @@ class ApiController extends Controller
      * @Route("/form/{id}", name="online_form_get", defaults={"_format"="js", "id"=null})
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
-     * @Template("")
+     * @Template()
      */
     public function getFormAction($id = null)
     {
@@ -140,7 +140,7 @@ class ApiController extends Controller
         $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         if (!$config || !$config->getSuccessUrl()) {
-            return $this->createNotFoundException();
+            throw $this->createNotFoundException();
         }
 
         return $this->redirect($config->getSuccessUrl());
@@ -156,7 +156,7 @@ class ApiController extends Controller
         $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         if (!$config || !$config->getFailUrl()) {
-            return $this->createNotFoundException();
+            throw $this->createNotFoundException();
         }
         return $this->redirect($config->getFailUrl());
     }
@@ -165,7 +165,7 @@ class ApiController extends Controller
      * Results js
      * @Route("/order/check", name="online_form_check_order")
      * @Method({"POST", "GET"})
-     * @Template("")
+     * @Template()
      */
     public function checkOrderAction(Request $request)
     {
@@ -264,7 +264,7 @@ class ApiController extends Controller
      * Results table
      * @Route("/results/table/{id}", name="online_form_results_table", options={"expose"=true}, defaults={"id"=null})
      * @Method("GET")
-     * @Template("")
+     * @Template()
      */
     public function getResultsTableAction(Request $request, $id = null)
     {
@@ -355,7 +355,7 @@ class ApiController extends Controller
      * User form
      * @Route("/results/user/form", name="online_form_user_form", options={"expose"=true}, defaults={"id"=null})
      * @Method("POST")
-     * @Template("")
+     * @Template()
      */
     public function getUserFormAction(Request $request)
     {
@@ -377,7 +377,7 @@ class ApiController extends Controller
      * Payment type form
      * @Route("/results/payment/type/{id}", name="online_form_payment_type", options={"expose"=true})
      * @Method("POST")
-     * @Template("")
+     * @Template()
      */
     public function getPaymentTypeAction(Request $request, $id = null)
     {
@@ -451,6 +451,7 @@ class ApiController extends Controller
         if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
         } else {
+
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
                     'data' => array_merge(['test' => false,
@@ -469,8 +470,8 @@ class ApiController extends Controller
 
     /**
      * @param Order $order
-     * @param null $arrival
-     * @param null $departure
+     * @param string $arrival
+     * @param string $departure
      * @return bool
      */
     private function sendNotifications(Order $order, $arrival = null, $departure = null)
@@ -603,7 +604,7 @@ class ApiController extends Controller
      * Results js
      * @Route("/results/{id}", name="online_form_results", defaults={"_format"="js"})
      * @Method("GET")
-     * @Template("")
+     * @Template()
      */
     public function getResultsAction($id = null)
     {

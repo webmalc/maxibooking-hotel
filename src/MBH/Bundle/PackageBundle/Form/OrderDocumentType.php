@@ -2,11 +2,14 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 
 /**
@@ -29,25 +32,23 @@ class OrderDocumentType extends AbstractType
         $groupTitle = $mainGroupTitles[$options['scenario']];
 
         $builder->add(
-            'type',
-            'choice',
+            'type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
             [
                 'group' => $groupTitle,
                 'label' => 'Тип',
                 'required' => true,
-                'empty_value' => '',
+                'placeholder' => '',
                 'choices' => $options['documentTypes']
             ]
         );
 
         $builder->add(
-            'scanType',
-            'choice',
+            'scanType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
             [
                 'group' => $groupTitle,
                 'label' => 'Тип скана',
                 'required' => false,
-                'empty_value' => '',
+                'placeholder' => '',
                 'choices' => $options['scanTypes']
             ]
         );
@@ -56,13 +57,13 @@ class OrderDocumentType extends AbstractType
 
         $builder->add(
             'tourist',
-            'document',
+            DocumentType::class,
             [
                 'group' => $groupTitle,
                 'label' => 'Клиент',
                 'class' => 'MBHPackageBundle:Tourist',
                 'required' => false,
-                'property' => 'generateFullNameWithAge',
+                'choice_label' => 'generateFullNameWithAge',
                 'query_builder' => function(DocumentRepository $er) use($touristIds) {
                     return $er->createQueryBuilder()->field('_id')->in($touristIds);
                 },
@@ -83,7 +84,7 @@ class OrderDocumentType extends AbstractType
 
         $builder->add(
             'file',
-            'file',
+            FileType::class,
             [
                 'group' => $groupTitle,
                 'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'Заменить файл' : 'Файл',
@@ -93,7 +94,7 @@ class OrderDocumentType extends AbstractType
 
         $builder->add(
             'comment',
-            'textarea',
+            TextareaType::class,
             [
                 'group' => $groupTitle,
                 'label' => 'Комментарий',
@@ -110,12 +111,12 @@ class OrderDocumentType extends AbstractType
      *
      * @return string The name of this type
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_package_bundle_order_document_type';
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'documentTypes' => [],

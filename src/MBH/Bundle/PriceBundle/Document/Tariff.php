@@ -2,19 +2,19 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\Common\Collections\ArrayCollection;
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Traits\ConditionsTrait;
+use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  * @ODM\Document(collection="Tariffs", repositoryClass="MBH\Bundle\PriceBundle\Document\TariffRepository")
@@ -82,7 +82,6 @@ class Tariff extends Base implements ConditionsInterface
     protected $title;
     
     /**
-     * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="description")
      * @Assert\Length(
@@ -145,6 +144,14 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\Range(min=0, max=18)
      */
     protected $infantAge = 2;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\Type(type="numeric")
+     */
+    private $position = 0;
 
     /**
      * @var Promotion[]|ArrayCollection
@@ -214,6 +221,10 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\Type(type="boolean")
      */
     protected $defaultForMerging = false;
+
+    /**
+     * Tariff constructor.
+     */
 
     public function __construct()
     {
@@ -670,6 +681,23 @@ class Tariff extends Base implements ConditionsInterface
         $this->roomCaches = $roomCaches;
         return $this;
     }
-    
-    
+
+    /**
+     * @return int
+     */
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param int $position
+     * @return Tariff
+     */
+    public function setPosition(int $position): Tariff
+    {
+        $this->position = $position;
+
+        return $this;
+    }
 }

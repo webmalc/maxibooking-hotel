@@ -24,7 +24,7 @@ class UpdateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $start = new \DateTime();
-        
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $roomType = $begin = $end = null;

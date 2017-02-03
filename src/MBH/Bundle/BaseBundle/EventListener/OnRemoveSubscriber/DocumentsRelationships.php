@@ -2,20 +2,21 @@
 
 namespace MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber;
 
-use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Country;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Housing;
 use MBH\Bundle\HotelBundle\Document\Region;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomStatus;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskType;
+use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -27,6 +28,7 @@ use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
+use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuItem;
@@ -36,7 +38,6 @@ use MBH\Bundle\RestaurantBundle\Document\IngredientCategory;
 use MBH\Bundle\RestaurantBundle\Document\Table;
 use MBH\Bundle\UserBundle\Document\Group;
 use MBH\Bundle\UserBundle\Document\User;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use MBH\Bundle\VegaBundle\Document\VegaState;
 use MBH\Bundle\WarehouseBundle\Document\Invoice;
@@ -112,8 +113,8 @@ class DocumentsRelationships
                 new Relationship(User::class, 'groups', 'exception.group_relation_delete.message.user', true)
             ],
             Order::class => [
-                new Relationship(Package::class, 'order', 'exception.order_relation_delete.message.package'),
-                new Relationship(CashDocument::class, 'order', 'exception.order_relation_delete.message.cashDocument')
+                //new Relationship(Package::class, 'order', 'exception.order_relation_delete.message.package'),
+                //new Relationship(CashDocument::class, 'order', 'exception.order_relation_delete.message.cashDocument')
             ],
             Tariff::class => [
                 //new Relationship(PriceCache::class, 'tariff', 'exception.tariff_relation_delete.message.priceCache'),
@@ -172,6 +173,9 @@ class DocumentsRelationships
             Housing::class => [
                 new Relationship(Room::class, 'housing', 'exception.housing_relation_delete.message.room')
             ],
+            Special::class => [
+                new Relationship(Package::class, 'special', 'exception.special_relation_delete.message.package')
+            ]
         ];
     }
 }

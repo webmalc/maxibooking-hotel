@@ -1,5 +1,11 @@
+azovsky_remote/
+docker_zalex/
 deploy/
-scripts/
+scripts/docker/
+scripts/deploy.sh
+scripts/permissions.sh
+scripts/start.sh
+scripts/to_mbhs_server_deploy.sh
 *~
 node_modules/
 .git

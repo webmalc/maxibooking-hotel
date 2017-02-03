@@ -69,6 +69,7 @@ form.packageMainType.check_in_time: Время заезда
 form.packageMainType.check_out_time: Время отъезда
 form.packageMainType.arrival_purpose: Цель приезда
 form.packageMainType.comment: Комментарий
+form.packageMainType.special: Спецпредложение
 form.packageServiceType.service: Услуга
 form.packageServiceType.add_service: 'Добавить услугу'
 form.packageServiceType.edit_service: 'Редактирование услуги'
@@ -119,7 +120,7 @@ form.touristType.address: Адрес
 form.touristType.contact_info: Контактная информация
 form.touristType.placeholder_address: г. Москва, пр-кт Мира, д.6
 form.touristType.document: Документ
-form.touristType.placeholder_document: Паспорт: 4545№345678, выдан 28 сентября 2002 г. 2 отделением милиции Г. Москвы
+form.touristType.placeholder_document: 'Паспорт: 4545№345678, выдан 28 сентября 2002 г. 2 отделением милиции Г. Москвы'
 form.touristType.phone: Телефон
 form.touristType.mobile_phone: Моб. телефон
 form.touristType.placeholder_messenger: Skype или WhatsApp
@@ -347,3 +348,41 @@ package.tourist_in_unwelcome: Гость находится в черном сп
 package.payer_in_unwelcome: Плательщик находится в черном списке
 
 report.windows.title: 'окна'
+report.windows.modal.title: 'Информация'
+
+manager.offline: Оффлайн
+manager.online: Онлайн
+manager.channel_manager: Channel manager
+
+csv.type.package: Тип брони
+csv.type.begin: С
+csv.type.end: По
+csv.type.tariffType: Тип номера
+csv.type.tariffAccomodation: Размещение
+csv.type.guests: Плательщик
+csv.type.adults: Взрослых
+csv.type.children: Детей
+csv.type.price: Стоимость
+csv.type.tariff: Тариф
+csv.type.createdAt: Дата создания
+csv.type.createdBy: Создал
+
+csv.form.group: Параметры генерации CSV файла
+csv.form.type: Тип брони
+csv.form.numberWithPrefix: Название брони
+csv.form.dateBegin: С
+csv.form.dateEnd: По
+csv.form.tariffType: Тип номера
+csv.form.tariffAccomodation: Размещение
+csv.form.guests: Плательщик
+csv.form.adults: Взрослые
+csv.form.children: Дети
+csv.form.price: Стоимость
+csv.form.tariff: Тариф
+csv.form.createdAt: Дата создания
+csv.form.createdBy: Создал
+csv.form.modal_title: Генерация документа
+csv.form.modal_close: Закрыть
+csv.form.modal_generate: Сгенерировать
+csv.form.countNight: Кол-во Ночей
+csv.form.countPersons: Кол-во Людей

@@ -2,11 +2,11 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use MBH\Bundle\BaseBundle\Document\Base;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="Restriction", repositoryClass="MBH\Bundle\PriceBundle\Document\RestrictionRepository")
@@ -92,6 +92,22 @@ class Restriction extends Base
      * @Assert\Range(min=1)
      */
     protected $maxBeforeArrival = null;
+
+    /**
+     * @var int
+     * @ODM\Integer()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=1)
+     */
+    protected $maxGuest;
+
+    /**
+     * @var int
+     * @ODM\Integer()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=1)
+     */
+    protected $minGuest;
 
     /**
      * @var boolean
@@ -333,7 +349,38 @@ class Restriction extends Base
     {
         return $this->maxBeforeArrival;
     }
-
+    /**
+     * @return int
+     */
+    public function getMaxGuest()
+    {
+        return $this->maxGuest;
+    }
+    /**
+     * @param int $maxGuest
+     * @return Restriction
+     */
+    public function setMaxGuest($maxGuest)
+    {
+        $this->maxGuest = $maxGuest;
+        return $this;
+    }
+    /**
+     * @return int
+     */
+    public function getMinGuest()
+    {
+        return $this->minGuest;
+    }
+    /**
+     * @param int $minGuest
+     * @return Restriction
+     */
+    public function setMinGuest($minGuest)
+    {
+        $this->minGuest = $minGuest;
+        return $this;
+    }
     /**
      * Set closedOnArrival
      *

@@ -3,8 +3,10 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -17,33 +19,33 @@ class BirthplaceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('country', 'document', [
+            ->add('country', DocumentType::class, [
                 'label' => 'form.BirthplaceType.country',
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
                 'query_builder' => function(DocumentRepository $repository){
                     return $repository->createQueryBuilder()->sort(['name' => 1]);
                 },
-                'empty_value' => '',
+                'placeholder' => '',
                 'required' => false,
             ])
-            ->add('city', 'text', [//'mbh_city'
+            ->add('city', TextType::class, [//'mbh_city'
                 'label' => 'form.BirthplaceType.city',
                 'required' => false,
             ])
-            ->add('main_region', 'text', [
+            ->add('main_region', TextType::class, [
                 'label' => 'form.BirthplaceType.main_region',
                 'required' => false,
             ])
-            ->add('district', 'document', [
+            ->add('district', DocumentType::class, [
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
                 'label' => 'form.BirthplaceType.district',
                 'query_builder' => function(DocumentRepository $repository){
                     return $repository->createQueryBuilder()->sort(['name' => 1]);
                 },
-                'empty_value' => '',
+                'placeholder' => '',
                 'required' => false,
             ])
-            ->add('settlement', 'text', [
+            ->add('settlement', TextType::class, [
                 'label' => 'form.BirthplaceType.settlement',
                 'required' => false,
             ]);
@@ -67,7 +69,7 @@ class BirthplaceType extends AbstractType
      *
      * @return string The name of this type
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_birthplace';
     }

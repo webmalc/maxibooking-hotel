@@ -3,8 +3,8 @@
 namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template\Extended;
 
 
-use MBH\Bundle\PackageBundle\DocumentGenerator\Template\DefaultTemplateGenerator;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Template\DefaultTemplateGenerator;
 
 /**
  * Class RegistrationCardTemplateGenerator

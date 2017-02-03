@@ -20,6 +20,8 @@ services:
                     arguments: ['@service_container']
 
     mbh.channelmanager.ostrovok:
+                class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
+                arguments: ['@service_container']
         class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
         arguments: ['@service_container']
 
@@ -43,14 +45,14 @@ services:
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: ['@mbh.currency']
-
-    mbh.channelmanager.oktogo_type:
-      class: MBH\Bundle\ChannelManagerBundle\Form\OktogoType
-      arguments: ['@mbh.currency']
+      tags:
+              - { name: form.type }
 
     mbh.channelmanager.myallocator_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\MyallocatorType
       arguments: ['@mbh.channelmanager.myallocator', '@mbh.currency']
+      tags:
+              - { name: form.type }
 
     mbh.channelmanager.logger:
         class:     Symfony\Bridge\Monolog\Logger
@@ -60,7 +62,7 @@ services:
 
     mbh.channelmanager.logger_handler:
         class:     Monolog\Handler\StreamHandler
-        arguments: ['%kernel.logs_dir%/%kernel.environment%.channelmanager.log', 200]
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.channelmanager.log", 200]
 
     mbh.channelmanager.configs.subscriber:
             class: MBH\Bundle\ChannelManagerBundle\EventListener\ConfigsSubscriber
@@ -68,9 +70,9 @@ services:
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
-    mbh.channelmanager.ostrovok.api_service:
+    ostrovok_api_service:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiService
         arguments: ['%mbh.channelmanager.services%']
 
-    mbh.channelmanager.ostrovok.data_generator:
+    mbh_bundle_channel_manager.lib_ostrovok.ostrovok_data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator

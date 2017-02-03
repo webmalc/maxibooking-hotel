@@ -28,7 +28,7 @@
                 официального подтверждения в виде акта, протокола, видеофиксации событий или ином виде, составленных в надлежащей форме и/или компетентными органами.
             </div>
 
-            {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}),  'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             {% if unwelcome.isMy %}
                 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">

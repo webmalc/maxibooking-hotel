@@ -78,7 +78,7 @@ class DishMenuIngredientEmbeddedType extends AbstractType
             ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_restaurantbundle_dishmenu_ingredientembedded_type';
     }

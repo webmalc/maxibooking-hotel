@@ -2,9 +2,16 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -41,7 +48,7 @@ class SearchType extends AbstractType
         }
 
         $builder
-            ->add('tourist', 'text', [
+            ->add('tourist', TextType::class, [
                 'label' => 'form.searchType.fio',
                 'required' => false,
                 'mapped' => false,
@@ -51,7 +58,7 @@ class SearchType extends AbstractType
                     'class' => 'findGuest'
                 ]
             ])
-            ->add('order', 'integer', [
+            ->add('order', IntegerType::class, [
                 'label' => 'form.searchType.order',
                 'required' => false,
                 'mapped' => false,
@@ -59,7 +66,7 @@ class SearchType extends AbstractType
                 'data' => $options['orderId'],
                 'attr' => ['class' => 'input-xs only-int'],
             ])
-            ->add('roomType', 'choice', [
+            ->add('roomType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.searchType.room_type',
                 'required' => false,
                 'mapped' => false,
@@ -67,7 +74,7 @@ class SearchType extends AbstractType
                 'error_bubbling' => true,
                 'choices' => $roomTypes,
             ])
-            ->add('tariff', 'document', [
+            ->add('tariff', DocumentType::class, [
                 'label' => 'form.searchType.tariff',
                 'required' => false,
                 'multiple' => false,
@@ -75,50 +82,61 @@ class SearchType extends AbstractType
                 'class' => 'MBHPriceBundle:Tariff',
                 'attr' => ['class' => 'plain-html']
             ])
-            ->add('begin', 'date', array(
+            ->add('begin', DateType::class, array(
                 'label' => 'form.searchType.check_in',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'data' => new \DateTime(),
+                'data' => $options['startDate'],
                 'required' => true,
                 'error_bubbling' => true,
                 'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
             ))
-            ->add('end', 'date', array(
+            ->add('end', DateType::class, array(
                 'label' => 'Отъезд',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'data' => new \DateTime('+ 1 day'),
+                'data' => (clone $options['startDate'])->modify("+1 day"),
                 'required' => true,
                 'error_bubbling' => true,
                 'attr' => array('class' => 'datepicker end-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
             ))
-            ->add('range', 'integer', array(
+            ->add('range', IntegerType::class, array(
                 'label' => 'form.searchType.range',
                 'required' => false,
                 'mapped' => true,
                 'error_bubbling' => true,
                 'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 10],
             ))
-            ->add('adults', 'integer', [
+            ->add('adults', IntegerType::class, [
                 'label' => 'form.searchType.adults',
                 'required' => true,
                 'error_bubbling' => true,
                 'data' => 1,
                 'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 10],
             ])
-            ->add('children', 'integer', [
+            ->add('children', IntegerType::class, [
                 'label' => 'form.searchType.children',
                 'required' => true,
                 'error_bubbling' => true,
                 'data' => 0,
                 'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 6],
             ])
-            ->add('forceBooking', 'checkbox', [
+            ->add('special', DocumentType::class, [
+                'label' => 'form.searchType.special',
+                'required' => false,
+                'multiple' => false,
+                'error_bubbling' => true,
+                'class' => 'MBHPriceBundle:Special',
+                'attr' => ['class' => 'plain-html']
+            ])
+            ->add('forceBooking', CheckboxType::class, [
                 'label' => 'form.searchType.forceBooking',
                 'required' => false,
             ])
-            ->add('room', 'hidden', [
+            ->add('room', HiddenType::class, [
+                'required' => false
+            ])
+            ->add('limit', HiddenType::class, [
                 'required' => false
             ])
         ;
@@ -127,18 +145,20 @@ class SearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'csrf_protection' => false,
+            'csrf_protection' => true,
             'allow_extra_fields' => true,
             'dm' => null,
             'security' => null,
             'hotel' => null,
             'orderId' => null,
             'roomManager' => null,
-            'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery'
+            'startDate' => new \DateTime(),
+            'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery',
+            'method' => 'GET'
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 's';
     }

@@ -3,10 +3,10 @@
 namespace MBH\Bundle\HotelBundle\EventListener;
 
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 class CheckHotelListener
 {

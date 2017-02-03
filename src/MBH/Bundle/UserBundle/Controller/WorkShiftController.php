@@ -7,8 +7,8 @@ use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -92,7 +92,7 @@ class WorkShiftController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $this->get('mbh.user.work_shift_manager')->lock($workShift);
+        //$this->get('mbh.user.work_shift_manager')->lock($workShift);
         //return new \Symfony\Component\HttpFoundation\Response('<body></body>');
 
         return $this->redirectToRoute('work_shift_wait');

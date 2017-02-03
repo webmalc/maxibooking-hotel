@@ -10,6 +10,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PackageSubscriber implements EventSubscriber
@@ -75,8 +76,19 @@ class PackageSubscriber implements EventSubscriber
     public function postPersist(LifecycleEventArgs $args)
     {
         $package = $args->getDocument();
+        $dm = $args->getDocumentManager();
 
         if ($package instanceof Package) {
+
+            $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($package);
+            if (isset($changeSet['special'])) {
+                foreach ($changeSet['special'] as $special) {
+                    if ($special instanceof Special) {
+                        $dm->getRepository('MBHPriceBundle:Special')->recalculate($special);
+                    }
+                }
+            }
+
             $end = clone $package->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
                 $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff()
@@ -101,8 +113,8 @@ class PackageSubscriber implements EventSubscriber
                 $notifier->setMessage($message)->notify();
             }
 
-            $this->container->get('mbh.mbhs')
-                ->sendPackageInfo($package, $this->container->get('request')->getClientIp());
+            $request =  $this->container->get('request_stack')->getCurrentRequest();
+            $this->container->get('mbh.mbhs')->sendPackageInfo($package, $request ? $request->getClientIp() : null);
         }
     }
 
@@ -146,6 +158,12 @@ class PackageSubscriber implements EventSubscriber
         $doc = $args->getEntity();
 
         if ($doc instanceof Package) {
+
+            if ($doc->getSpecial()) {
+                $dm = $args->getDocumentManager();
+                $dm->getRepository('MBHPriceBundle:Special')->recalculate($doc->getSpecial(), $doc);
+            }
+
             $end = clone $doc->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff(), false
@@ -223,8 +241,17 @@ class PackageSubscriber implements EventSubscriber
     {
         $document = $args->getDocument();
         $dm = $args->getDocumentManager();
-        if($document instanceof Package) {
+        if ($document instanceof Package) {
+
             $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($document);
+            if (isset($changeSet['special'])) {
+                foreach ($changeSet['special'] as $special) {
+                    if ($special instanceof Special) {
+                        $dm->getRepository('MBHPriceBundle:Special')->recalculate($special);
+                    }
+                }
+            }
+
             $creator = $this->container->get('mbh.hotel.console_auto_task_creator');
             if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
                 $creator->createCheckOutTasks($document);

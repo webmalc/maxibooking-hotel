@@ -1,4 +1,4 @@
-{% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
+ {% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ package.numberWithPrefix %}
 {% set layout = 'tabs' %}
@@ -84,6 +84,12 @@
                                                     - <a data-toggle="tooltip" title="Акция"
                                                          href="{{ path('promotion_edit', {id: price.promotion.id}) }}">
                                                     <i class="fa fa-bookmark"></i> {{ price.promotion }}
+                                                </a>
+                                                {% endif %}
+                                                {% if price.special %}
+                                                    - <a data-toggle="tooltip" title="Акция"
+                                                         href="{{ path('special_edit', {id: price.special.id}) }}">
+                                                    <i class="fa fa-star"></i> {{ price.special }}
                                                 </a>
                                                 {% endif %}
                                             </small>
@@ -183,7 +189,7 @@
     </div>
     </div>
 
-    {{ form_start(form, {'action': path('package_update', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('package_update', {'id': package.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_EDIT'} %}
     {{ form_end(form) }}

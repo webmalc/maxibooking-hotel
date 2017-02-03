@@ -11,8 +11,8 @@ use MBH\Bundle\RestaurantBundle\Form\DishMenuCategoryType as DishMenuCategoryFor
 use MBH\Bundle\RestaurantBundle\Form\DishMenuItemType as DishMenuItemForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -26,7 +26,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
     /**
      * List all  category
      *
-     * @Route("/", name="restaurant_dishmenu_category")
+     * @Route("/", name="restaurant_dishmenu_category", options={"expose"=true})
      * @Route("/", name="restaurant_dishmenu_item")
      * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_VIEW')")
      * @Template()
@@ -57,7 +57,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         $entity = new DishMenuCategory();
         $entity->setHotel($this->hotel);
         
-        $form = $this->createForm(new DishMenuCategoryForm(), $entity);
+        $form = $this->createForm(DishMenuCategoryForm::class, $entity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -89,7 +89,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new DishMenuCategoryForm(), $category);
+        $form = $this->createForm(DishMenuCategoryForm::class, $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -141,7 +141,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         $item = new DishMenuItem();
         $item->setCategory($category);
 
-        $form = $this->createForm(new DishMenuItemForm(), $item);
+        $form = $this->createForm(DishMenuItemForm::class, $item);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -181,7 +181,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
 
         $ingredients = $this->dm->getRepository('MBHRestaurantBundle:Ingredient')->findByHotelByCategoryId($this->helper, $this->hotel);
 
-        $form = $this->createForm(new DishMenuItemForm(), $item);
+        $form = $this->createForm(DishMenuItemForm::class, $item);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

@@ -21,4 +21,9 @@ class Range extends Constraint
     {
         return 'mbh_range';
     }
+
+    public function getTargets()
+    {
+        return [self::PROPERTY_CONSTRAINT, self::CLASS_CONSTRAINT];
+    }
 }

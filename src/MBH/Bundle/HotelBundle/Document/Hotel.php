@@ -2,24 +2,25 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\Common\Collections\ArrayCollection;
-use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
+use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 
 /**
  * @ODM\Document(collection="Hotels")
@@ -170,6 +171,9 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff", mappedBy="hotel") */
     protected $tariffs;
 
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\Special", mappedBy="hotel") */
+    protected $specials;
+
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\ServiceCategory", mappedBy="hotel") */
     protected $servicesCategories;
 
@@ -303,6 +307,7 @@ class Hotel extends Base implements \JsonSerializable
         $this->roomTypes = new ArrayCollection();
         $this->rooms = new ArrayCollection();
         $this->tariffs = new ArrayCollection();
+        $this->specials = new ArrayCollection();
         $this->dishMenuCategories = new ArrayCollection();
         $this->ingredientCategories = new ArrayCollection();
         $this->TableTypes = new ArrayCollection();
@@ -1264,5 +1269,41 @@ class Hotel extends Base implements \JsonSerializable
     public function addDishMenuCategories(DishMenuCategory $dishMenuCategory)
     {
         $this->dishMenuCategories->add($dishMenuCategory);
+    }
+
+    /**
+     * Add Special
+     *
+     * @param Special $special
+     * @return self
+     */
+    public function addSpecial(Special $special): self
+    {
+        $this->specials[] = $special;
+
+        return $this;
+    }
+
+    /**
+     * Remove Special
+     *
+     * @param Special $special
+     * @return self
+     */
+    public function removeSpecial(Special $special): self
+    {
+        $this->specials->removeElement($special);
+
+        return $this;
+    }
+
+    /**
+     * Get Specials
+     *
+     * @return \Doctrine\Common\Collections\Collection $specials
+     */
+    public function getSpecials()
+    {
+        return $this->specials;
     }
 }

@@ -5,12 +5,11 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\Form\Extension\DateTimeType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,14 +27,10 @@ class TaskType extends AbstractType
      */
     protected $dm;
 
-    public function __construct(DocumentManager $dm)
-    {
-        $this->dm = $dm;
-    }
-
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->dm = $options['dm'];
+
         if($options['scenario'] == self::SCENARIO_NEW) {
             $generalGroup = 'form.task.group.general_add';
         } elseif($options['scenario'] == self::SCENARIO_EDIT) {
@@ -61,7 +56,7 @@ class TaskType extends AbstractType
                 'required' => true,
                 'query_builder' => $queryBuilderSelectedHotelOnly
             ])
-            ->add('priority', ChoiceType::class, [
+            ->add('priority',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.task.priority',
                 'group' => $generalGroup,
                 'choices' => $options['priorities'],
@@ -73,6 +68,7 @@ class TaskType extends AbstractType
                 'html5' => false,
                 'group' => $generalGroup,
                 'required' => false,
+                'date_format' => 'dd.MM.yyyy',
                 'time_widget' => 'single_text',
                 'date_widget' => 'single_text',
                 //'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
@@ -92,7 +88,7 @@ class TaskType extends AbstractType
                 }
             ]);
             $floors = $this->dm->getRepository('MBHHotelBundle:Room')->getFloorsByHotel($hotel);
-            $builder->add('floor', ChoiceType::class, [
+            $builder->add('floor',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.task.floor',
                 'group' => $generalGroup,
                 'required' => false,
@@ -145,7 +141,7 @@ class TaskType extends AbstractType
                 'group' => 'form.task.group.settings',
                 'required' => false,
             ])
-            ->add('status', ChoiceType::class, [
+            ->add('status',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.task.status',
                 'group' => 'form.task.group.settings',
                 'required' => true,
@@ -162,12 +158,13 @@ class TaskType extends AbstractType
             'priorities' => [],
             'statuses' => [],
             'scenario' => self::SCENARIO_NEW,
-            'hotel' => null
+            'hotel' => null,
+            'dm' => null
         ]);
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_hotelbundle_task';
     }

@@ -7,7 +7,7 @@
     {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 3, 'entity': entity} %}
 
     <div class="tab-content">
-        {{ form_start(form, {'action': path('tourist_edit_address', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_start(form, {'action': path('tourist_edit_address', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}
         {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'tourist' } %}
         {{ form_end(form) }}

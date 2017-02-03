@@ -8,11 +8,11 @@ use MBH\Bundle\VegaBundle\Document\VegaDocumentType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
 use MBH\Bundle\VegaBundle\Document\VegaRegion;
 use MBH\Bundle\VegaBundle\Document\VegaState;
+use MBH\Bundle\VegaBundle\Service\FriendlyFormatter;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use MBH\Bundle\VegaBundle\Service\FriendlyFormatter;
 
 
 /**

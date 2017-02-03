@@ -2,12 +2,12 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class TariffsType extends AbstractType
@@ -17,7 +17,7 @@ class TariffsType extends AbstractType
     {
         foreach ($options['booking'] as $name => $info) {
 
-            $builder->add($name, 'document', [
+            $builder->add($name, DocumentType::class, [
                 'label' => $info['title'],
                 'class' => 'MBHPriceBundle:Tariff',
                 'query_builder' => function(DocumentRepository $er) use($options) {
@@ -27,14 +27,14 @@ class TariffsType extends AbstractType
                     }
                     return $qb;
                 },
-                'empty_value' => '',
+                'placeholder' => '',
                 'required' => false,
                 'attr' => ['placeholder' => 'tarifftype.placeholder']
             ]);
         }
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
             [
@@ -58,7 +58,7 @@ class TariffsType extends AbstractType
         };
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mbh_bundle_channelmanagerbundle_booking_type';
     }

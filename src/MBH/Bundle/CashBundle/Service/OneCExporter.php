@@ -64,6 +64,9 @@ class OneCExporter
             }
 
             $hotelOrganization = $cashDocument->getHotel()->getOrganization();
+            if (!$hotelOrganization) {
+                $hotelOrganization = new Organization();
+            }
 
             $text .= sprintf('СекцияДокумент=Платежное поручение
 Номер=' . $cashDocument->getNumber() . '

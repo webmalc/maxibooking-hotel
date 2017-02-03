@@ -3,7 +3,7 @@
 {% set layout = "box" %}
 
 {% block content %}
-    {% embed '@MBHBase/Partials/embed_filter.html.twig' with {'id': 'dishorder-table-filter-widget'}  %}
+    {% embed '@MBHBase/Partials/embed_filter.html.twig' with {'id': 'dishorder-table-filter-widget'} %}
         {% block content %}
             {% if form is defined %}
                 {{ form_start(form) }}
@@ -36,7 +36,7 @@
 
     </div>
 
-        <div class="box-body">
+    <div class="box-body">
         <table id="dishorder-table"
                class="table table-actions not-auto-datatable table-striped table-hover table-condensed table-icons">
             <thead>
@@ -45,7 +45,8 @@
                 <th>{{ 'restaurant.dishorder.table.number'|trans }}</th>
                 <th class="td-md text-center">{{ 'restaurant.dishorder.table.table'|trans }}</th>
                 <th class="td-xs">{{ 'restaurant.dishorder.table.time'|trans }}</th>
-                <th class="td-sm text-right">{{ 'restaurant.dishorder.table.price'|trans }} <i class="fa {{ currency().icon }}"></i></th>
+                <th class="td-sm text-right">{{ 'restaurant.dishorder.table.price'|trans }} <i
+                            class="fa {{ currency().icon }}"></i></th>
                 <th class="td-md text-center">{{ 'restaurant.dishorder.table.freezed'|trans }}</th>
                 <th class="td-sm text-center">{{ 'restaurant.dishorder.table.doing'|trans }}</th>
             </tr>
@@ -56,8 +57,12 @@
 
             </tbody>
         </table>
-        </div> <!-- /.box-body -->
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'restaurant_dishorder_new', 'role': 'RESTAURANT_DISHORDER'} %}
+    </div> <!-- /.box-body -->
+    {% if isDishes %}
+        {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'restaurant_dishorder_new', 'role': 'RESTAURANT_DISHORDER'} %}
+    {% else %}
+        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'restaurant.dishorder.nodish'|trans|capitalize }}. <a href="{{ path('restaurant_dishmenu_item') }}">{{ 'restaurant.dishmenu.item.action.new'|trans|capitalize }}?</a></div>
+    {% endif %}
 {% endblock %}
 
 

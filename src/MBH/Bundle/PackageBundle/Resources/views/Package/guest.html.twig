@@ -112,7 +112,7 @@
             {% endif %}
 
             {% if is_granted('ROLE_PACKAGE_GUESTS') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                {{ form_start(form, {'action': path('package_guest', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' ~ (not package.tourists|length < totalGuests ? ' hide': '') }}) }}
+                {{ form_start(form, {'action': path('package_guest', {'id': package.id}),  'attr': {'class': 'form-horizontal' ~ (not package.tourists|length < totalGuests ? ' hide': '') }}) }}
                 {{ form_widget(form) }}
             {% endif %}
                 {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_GUESTS'} %}

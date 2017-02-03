@@ -6,28 +6,32 @@ services:
         class: Twig_Extensions_Extension_Text
         tags:
             - name: twig.extension
+    twig.intl_extension:
+        class: Twig_Extensions_Extension_Intl
+        tags:
+            - name: twig.extension
 
-    #twig.date_extension:
-    #    class: Twig_Extensions_Extension_Date
-    #    tags:
-    #        - name: twig.extension
+    twig.date_extension:
+        class: Twig_Extensions_Extension_Date
+        tags:
+            - name: twig.extension
 
     doctrine_odm.mongodb.validator.unique:
       class: MBH\Bundle\BaseBundle\Validator\Constraints\UniqueEntityValidator
       arguments:
-        - @doctrine_mongodb
+        - '@doctrine_mongodb'
       tags:
         - { name: validator.constraint_validator, alias: doctrine_odm.mongodb.unique }
 
     mbh.base_on_request_listener:
         class: MBH\Bundle\BaseBundle\EventListener\OnRequest
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 
     mbh.base_on_controller_listener:
         class: MBH\Bundle\BaseBundle\EventListener\OnController
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
@@ -36,57 +40,42 @@ services:
 
     mbh.twig.hotel_selector_extension:
         class: MBH\Bundle\BaseBundle\Twig\HotelSelectorExtension
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: twig.extension }
 
     mbh.twig.extension:
         class: MBH\Bundle\BaseBundle\Twig\Extension
-        arguments: [@service_container]
+        arguments: ['@service_container']
         tags:
             - { name: twig.extension }
             
     mbh.form.fieldset_extension:
         class: MBH\Bundle\BaseBundle\Form\Extension\FieldsetExtension
         tags:
-            - { name: form.type_extension, alias: form }
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType, alias: form }
             
     mbh.form.help_extension:
         class: MBH\Bundle\BaseBundle\Form\Extension\HelpMessageTypeExtension
         tags:
-            - { name: form.type_extension, alias: form }
-
-    form.type.date:
-        class: MBH\Bundle\BaseBundle\Form\Extension\DateType
-        tags:
-          - { name: form.type, alias: date }
-
-    form.type.time:
-            class: MBH\Bundle\BaseBundle\Form\Extension\TimeType
-            tags:
-              - { name: form.type, alias: time }
-
-    form.type.datetime:
-            class: MBH\Bundle\BaseBundle\Form\Extension\DateTimeType
-            tags:
-              - { name: form.type, alias: datetime }
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType, alias: form }
             
     mbh.form.bottom_extension:
         class: MBH\Bundle\BaseBundle\Form\Extension\BottomMessageTypeExtension
         tags:
-            - { name: form.type_extension, alias: form }
+            - { name: form.type_extension, alias: form, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
             
     mbh.hotel.selector:
         class: MBH\Bundle\BaseBundle\Service\HotelSelector
-        arguments: [@service_container]
+        arguments: ['@service_container']
 
     mbh.currency:
             class: MBH\Bundle\BaseBundle\Service\Currency
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.helper:
             class: MBH\Bundle\BaseBundle\Service\Helper
-            arguments: [@service_container]
+            arguments: ['@service_container']
 
     mbh.pdf_generator:
         class: MBH\Bundle\BaseBundle\Service\PdfGenerator
@@ -95,11 +84,11 @@ services:
 
     mbh.mongo:
           class: MBH\Bundle\BaseBundle\Service\Mongo
-          arguments: [@service_container]
+          arguments: ['@service_container']
 
     doctrine_mongo_db_param_converter:
         class: Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter
-        arguments: [@doctrine_mongodb]
+        arguments: ['@doctrine_mongodb']
         tags:
           - { name: request.param_converter, converter: doctrine.odm }
 
@@ -110,21 +99,21 @@ services:
       calls:
         - [attach, ["@mbh.system.messenger"]]
         - [attach, ["@mbh.mailer"]]
-      arguments: [@service_container]
+      arguments: ['@service_container']
 
     mbh.notifier.mailer:
           class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
           calls:
             - [attach, ["@mbh.mailer"]]
-          arguments: [@service_container]
+          arguments: ['@service_container']
 
     mbh.mailer:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Mailer
-      arguments: [@service_container]
+      arguments: ['@service_container']
 
     mbh.system.messenger:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Messenger
-      arguments: [@service_container]
+      arguments: ['@service_container']
 
 
     form.type.facilities:
@@ -140,19 +129,9 @@ services:
         tags:
             - { name: form.type, alias: mbh_language }
 
-
-    #mbh.translatable_listener:
-    #    class: MBH\Bundle\BaseBundle\EventListener\TranslatableListener
-    #    calls:
-    #          - [ setDefaultLocale, [ 'ru_RU' ] ]
-    #          - [ setAnnotationReader, [ @annotation_reader ] ]
-    #    tags:
-    #          - { name: doctrine.event_subscriber, connection: default }
-
-
     mbh.event_listener.check_relation_subscriber:
             class: MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Subscriber
-            arguments: [@service_container]
+            arguments: ['@service_container']
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
@@ -165,7 +144,7 @@ services:
 
     mbh.event_listener.hotelable_listener:
         class: MBH\Bundle\BaseBundle\EventListener\HotelableListener
-        arguments: [@mbh.hotel.selector]
+        arguments: ['@mbh.hotel.selector']
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
     mbh.get_set_method_normalizer:
@@ -185,11 +164,14 @@ services:
 
     mbh.cache:
             class: MBH\Bundle\BaseBundle\Service\Cache
-            arguments: ['%mbh_cache%']
+            arguments: ['%mbh_cache%', '@doctrine_mongodb', '@validator']
 
-    #mbh.menu.voter.request:
-    #    class: MBH\Bundle\BaseBundle\Menu\RequestContentIdentityVoter
-    #    arguments:
-    #        - @service_container
-    #    tags:
-    #       - { name: knp_menu.voter }
+    mbh.task.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.task.logger_handler']]
+
+    mbh.task.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.task.log", 200]

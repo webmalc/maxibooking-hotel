@@ -4,22 +4,22 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\CashBundle\Validator\Constraints\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MyAllocator\phpsdk\src\Api\BookingList;
-use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
-use MyAllocator\phpsdk\src\Api\VendorSet;
+use MyAllocator\phpsdk\src\Api\ARIUpdate;
 use MyAllocator\phpsdk\src\Api\AssociateUserToPMS;
-use MyAllocator\phpsdk\src\Object\Auth;
+use MyAllocator\phpsdk\src\Api\BookingList;
 use MyAllocator\phpsdk\src\Api\MaApi;
 use MyAllocator\phpsdk\src\Api\PropertyList;
 use MyAllocator\phpsdk\src\Api\RoomList;
-use MyAllocator\phpsdk\src\Api\ARIUpdate;
+use MyAllocator\phpsdk\src\Api\VendorSet;
+use MyAllocator\phpsdk\src\Object\Auth;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 
 /**
@@ -499,6 +499,7 @@ class MyAllocator extends Base
                         $this->dm->getFilterCollection()->disable('softdeleteable');
                     }
                 }
+
                 //old order
                 $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
                     [
@@ -559,13 +560,12 @@ class MyAllocator extends Base
         $roomTypes = $this->getRoomTypes($config, true);
         $tariffs = $this->getTariffs($config, true);
         $guests = [];
-
+        $guestNote = '';
         //tourist
         if (!empty($booking['Customers'])) {
             foreach ($booking['Customers'] as $customer) {
 
                 $phone = null;
-                $guestNote = '';
 
                 if (!empty($customer['CustomerPhone'])) {
                     $phone = $customer['CustomerPhone'];
@@ -665,7 +665,8 @@ class MyAllocator extends Base
             ->setMainTourist(empty($guests[0]) ? null : $guests[0])
             ->setConfirmed(false)
             ->setStatus('channel_manager')
-            ->setNote($orderNote);
+            ->setNote($orderNote . $guestNote);
+
 
         $this->dm->persist($order);
         $this->dm->flush();
@@ -756,7 +757,7 @@ class MyAllocator extends Base
                 ->setEnd($endDate)
                 ->setRoomType($roomType)
                 ->setTariff($tariffs['base']['doc'])
-                ->setAdults((int)$room['Occupancy'])
+                ->setAdults(isset($room['Occupancy']) ? (int)$room['Occupancy']: 1)
                 ->setChildren(0)
                 ->setIsSmoking(!empty($room['OccupantSmoker']) ? true : false)
                 ->setPricesByDate($pricesByDate)
@@ -770,20 +771,21 @@ class MyAllocator extends Base
             ;
 
             $packageGuest = false;
-            $pGuestFirstName = empty($room['OccupantFName']) ? 'н/д' : $room['OccupantFName'];
-            $pGuestLastName = $room['OccupantLName'];
-            foreach ($guests as $guest) {
-                if ($guest->getFirstName() == $pGuestFirstName && $guest->getLastName() == $pGuestLastName) {
-                    $packageGuest = $guest;
+            if (isset($room['OccupantFName'])) {
+                $pGuestFirstName = empty($room['OccupantFName']) ? 'н/д' : $room['OccupantFName'];
+                $pGuestLastName = $room['OccupantLName'];
+                foreach ($guests as $guest) {
+                    if ($guest->getFirstName() == $pGuestFirstName && $guest->getLastName() == $pGuestLastName) {
+                        $packageGuest = $guest;
+                    }
                 }
+                if (!$packageGuest) {
+                    $packageGuest = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                        $pGuestLastName, $pGuestFirstName
+                    );
+                }
+                $package->addTourist($packageGuest);
             }
-
-            if (!$packageGuest) {
-                $packageGuest = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-                    $pGuestLastName, $pGuestFirstName
-                );
-            }
-            $package->addTourist($packageGuest);
 
             $order->addPackage($package);
             $this->dm->persist($package);

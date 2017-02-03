@@ -2,11 +2,11 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use MBH\Bundle\BaseBundle\Document\Base;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
  * @ODM\Document(collection="RoomCache", repositoryClass="MBH\Bundle\PriceBundle\Document\RoomCacheRepository")
