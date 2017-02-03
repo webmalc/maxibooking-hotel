@@ -101,7 +101,7 @@ class DeleteReason extends Base
      *
      * @return string $fullTitle
      */
-    public function getFullTitle()
+    public function getFullTitle(): ?string
     {
         return $this->fullTitle;
     }
