@@ -20,8 +20,6 @@ services:
                     arguments: ['@service_container']
 
     mbh.channelmanager.ostrovok:
-                class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
-                arguments: ['@service_container']
         class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
         arguments: ['@service_container']
 
