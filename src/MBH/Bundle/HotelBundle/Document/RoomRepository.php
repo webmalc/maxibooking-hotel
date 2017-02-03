@@ -49,7 +49,6 @@ class RoomRepository extends AbstractBaseRepository
 
             $qb->field('roomType')->references($package->getRoomType())
                 ->field('id')->notIn($rooms)
-                ->field('isEnabled')->equals(true)
                 ->sort(['fullTitle', 'title'])
             ;
         }

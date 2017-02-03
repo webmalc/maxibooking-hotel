@@ -51,11 +51,12 @@ class PackageRepository extends DocumentRepository
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
-     * @param boolean $group
-     * @return mixed
+     * @param RoomType|null $roomType
+     * @param bool $group
+     * @param Package|null $exclude
+     * @return array|mixed
      */
-    public function fetchWithVirtualRooms(\DateTime $begin, \DateTime $end, RoomType $roomType = null, bool $group = false)
+    public function fetchWithVirtualRooms(\DateTime $begin, \DateTime $end, RoomType $roomType = null, bool $group = false, Package $exclude = null)
     {
         $qb = $this->createQueryBuilder()
             ->field('begin')->lte($end)
@@ -65,6 +66,10 @@ class PackageRepository extends DocumentRepository
 
         if ($roomType) {
             $qb->field('roomType')->references($roomType);
+        }
+
+        if ($exclude) {
+            $qb->field('id')->notEqual($exclude->getId());
         }
 
         $packages = $qb->getQuery()->execute();
@@ -593,15 +598,7 @@ class PackageRepository extends DocumentRepository
                 $qb->addOr($qb->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')));
-
-            //Find by order
-            /** @var  DocumentManager $dm */
-            $order = $dm->getRepository('MBHOnlineBundle:Order')->find($query);
-            if ($order) {
-                $qb->addOr($qb->expr()->field('order.id')->equals($order->getId()));
-            }
-
+            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
         }
 
         //isCheckIn
@@ -868,45 +865,19 @@ class PackageRepository extends DocumentRepository
         return $queryPackage->getQuery()->execute();
     }
 
-    public function getNumbers(\DateTime $day, RoomType $roomType):array
-    {
-        $packages = $this->createQueryBuilder()
-            ->select('numberWithPrefix')
-            ->field('begin')->lte($day)
-            ->field('end')->gte($day)
-            ->field('roomType')->references($roomType)
-            ->field('deletedAt')->equals(null)
-            ->hydrate(false)
-            ->getQuery()
-            ->execute();
-
-        return array_map(function ($package) {
-            return $package['numberWithPrefix'];
-        }, iterator_to_array($packages));
-
-    }
-
     /**
-     * @return Package
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return mixed
      */
-    public function getPackageCategory(\DateTime $begin, \DateTime $end, $categoryRoomType = null,$count = false,$limit = false,  $skip = 0)
-    {
-        $queryBuilder = $this->createQueryBuilder()
+    public function getNotVirtualRoom(\DateTime $begin, \DateTime $end){
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
+            ->addOr($queryBuilder->expr()->field('virtualRoom')->exists(false)->equals(null))
             ->field('begin')->gte($begin)
-            ->sort('createdAt', 'desc')
-            ->skip($skip)
             ->field('end')->lte($end);
-
-        if ($limit){
-            $queryBuilder->limit(50);
-        }
-        if($count){
-            $queryBuilder->count();
-        }
-        if ($categoryRoomType) {
-            $queryBuilder->field('roomType.id')->in($categoryRoomType);
-        }
 
         return $queryBuilder->getQuery()->execute();
     }
+
 }

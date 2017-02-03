@@ -2,17 +2,3 @@ services:
     mbh.mbhs:
         class: MBH\Bundle\ClientBundle\Service\Mbhs
         arguments: ['@service_container']
-
-    mbh_package_zip:
-          class: MBH\Bundle\ClientBundle\Service\PackageZip
-          arguments: ['@doctrine.odm.mongodb.document_manager','@service_container','@validator','@mbh.packageZip.logger','@mbh.order_manager','@mbh.package.search','@mbh.helper']
-
-    mbh.packageZip.logger:
-          class:     Symfony\Bridge\Monolog\Logger
-          arguments: [app]
-          calls:
-              - [pushHandler, ['@mbh.packageZip.logger_handler']]
-
-    mbh.packageZip.logger_handler:
-          class:     Monolog\Handler\StreamHandler
-          arguments: [%kernel.logs_dir%/%kernel.environment%.packageZip.log, 200]

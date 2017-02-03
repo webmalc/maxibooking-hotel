@@ -4,8 +4,10 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -32,13 +34,20 @@ class Oktogo extends Base
     /**
      * Dev or test mode
      */
-    const TEST = true;
+    const TEST = false;
 
+    /**
+     * @var array
+     */
     public $servicesConfig = [
         'parking' => 'Parking space',
         'cot' => 'Babycot',
-        'DoubleBed' => 'DoubleBed',
-        'TwoBeds' => 'TwoBeds',
+        'CB' => 'Continental breakfast',
+        'BB' => 'Breakfast',
+        'BR' => 'Full english breakfast',
+        'HB' => 'Half board',
+        'FB' => 'Full board',
+        'AI' => 'All Inclusive',
     ];
 
     /**
@@ -49,8 +58,11 @@ class Oktogo extends Base
     /**
      * Base API URL
      */
-    const BASE_URL = 'https://hotelapi-release.oktogotest.ru/';
+    const BASE_URL = 'https://hotelapi.oktogo.ru/';
 
+    /**
+     * @var array
+     */
     private $headers = [
         'Content-Type: text/xml; charset=utf-8',
         'Accept: text/xml',
@@ -83,7 +95,7 @@ class Oktogo extends Base
             );
 
             $sendResult = $this->sendXml(static::BASE_URL . 'reservations', $request, $this->getHeaders(), true);
-
+            //TEST
 //            $sendResult = simplexml_load_string($this->templating->render('MBHChannelManagerBundle:Oktogo:test.xml.twig'));
 
             $this->log('Reservations count: ' . count($sendResult->reservation));
@@ -139,6 +151,11 @@ class Oktogo extends Base
         return $result;
     }
 
+    /**
+     * @param mixed $response
+     * @param array|null $params
+     * @return bool
+     */
     public function checkResponse($response, array $params = null)
     {
 
@@ -149,11 +166,45 @@ class Oktogo extends Base
         return $response == '<ok />' ? true : false;
     }
 
+    /**
+     * @param ChannelManagerConfigInterface $config
+     * @return ChannelManagerConfigInterface
+     */
+    public function clearConfig(ChannelManagerConfigInterface $config)
+    {
+        //roomTypes
+        $rooms = $this->pullRooms($config);
+        foreach ($config->getRooms() as $room) {
+            if (!isset($rooms[$room->getRoomId()])) {
+                $config->removeRoom($room);
+            }
+        }
+        //tariffs
+        $rates = $this->pullTariffs($config);
+        foreach ($config->getTariffs() as $tariff) {
+            if (!isset($rates[$tariff->getRoomType()][$tariff->getTariffId()])) {
+                $config->removeTariff($tariff);
+            }
+        }
+
+        $this->dm->persist($config);
+        $this->dm->flush();
+
+        return $config;
+    }
+
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     * @param RoomType|null $roomType
+     * @return bool
+     */
     public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
+        $calc = $this->container->get('mbh.calculation');
         // iterate hotels
         foreach ($this->getConfig() as $config) {
 
@@ -170,18 +221,22 @@ class Oktogo extends Base
                 $this->roomManager->useCategories
             );
 
-
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
                         if (isset($serviceTariffs[$roomTypeInfo['syncId']][$tariff['syncId']])) {
                             if (isset($priceCaches[$roomTypeId][$tariff['doc']->getId()][$day->format('d.m.Y')])) {
                                 $info = $priceCaches[$roomTypeId][$tariff['doc']->getId()][$day->format('d.m.Y')];
+
+                                $countPersons = $serviceTariffs[$roomTypeInfo['syncId']][$tariff['syncId']]['persons'];
+                                $priceFinal = $calc->calcPrices($info->getRoomType(), $tariff['doc'], $day, $day);
+
                                 $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                     'id_tariff' => $tariff['syncId'],
-                                    'price' => $info->getPrice() ? $info->getPrice() : null,
+                                    'price' => isset($priceFinal[$countPersons . '_0']['total']) ? $priceFinal[$countPersons . '_0']['total'] : null,
                                     'persons' => $info->getRoomType()->getPlaces(),
                                 ];
+
                             } else {
                                 $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
                                     'roomstosell' => 0
@@ -198,7 +253,6 @@ class Oktogo extends Base
             if (!isset($data)) {
                 continue;
             }
-
 
             $request = $this->templating->render(
                 'MBHChannelManagerBundle:Oktogo:updatePrices.xml.twig',
@@ -222,6 +276,12 @@ class Oktogo extends Base
         return $result;
     }
 
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     * @param RoomType|null $roomType
+     * @return bool
+     */
     public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
         $result = true;
@@ -274,7 +334,6 @@ class Oktogo extends Base
                 ]
             );
 
-
             $sendResult = $this->send(static::BASE_URL . 'availability', $request, $this->getHeaders(), true);
 
             if ($result) {
@@ -287,6 +346,12 @@ class Oktogo extends Base
         return $result;
     }
 
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     * @param RoomType|null $roomType
+     * @return bool
+     */
     public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
         $result = true;
@@ -386,6 +451,9 @@ class Oktogo extends Base
     }
 
 
+    /**
+     * @return bool|Order|mixed
+     */
     public function createPackages()
     {
         return $this->pullOrders();
@@ -578,7 +646,6 @@ class Oktogo extends Base
                 $packagePrices[] = new PackagePrice($date, (float)$priceItem, $tariff);
             }
 
-
             $packageNote = 'remarks: ' . $room->remarks . 'description: ' . (string)$reservation->special_request->description . '; MealType: ' . $room->meal . '; time = ' . $room->time . '; ' . ' contact_details = ' . $reservation->contract_details . '; ';
             $packageNote .= ' commissionamount=' . $room->commissionamount . '; currencycode = ' . $room->currencycode . '; ' . ' totalprice = ' . $room->totalprice . '; ';
             $packageNote .= $errorMessage;
@@ -586,7 +653,7 @@ class Oktogo extends Base
             if (isset($reservation->special_request)) {
                 $special = $reservation->special_request->attributes();
             } else {
-                $special['smoking'] = '';
+                $special['smoking_type'] = '';
             }
 
             $packageTotal = (float)$total;
@@ -600,7 +667,7 @@ class Oktogo extends Base
                 ->setTariff($tariff)
                 ->setAdults((int)$room->numberofguests - $countChildren)
                 ->setChildren($countChildren)
-                ->setIsSmoking(($special['smoking'] == 'Smoking') ? true : false)
+                ->setIsSmoking(($special['smoking_type'] == 'Smoking') ? true : false)
                 ->setPricesByDate($pricesByDate)
                 ->setPrices($packagePrices)
                 ->setPrice($packageTotal)
@@ -616,8 +683,11 @@ class Oktogo extends Base
             }
 
             //services
-            $servicesTotal = 0;
-            if (isset($special['parking']) || isset($special['cot']) || isset($special['bed_type'])) {
+            $mealType = (string)$room->meal;
+            if (isset($special['parking']) || isset($special['cot']) || isset($special['bed_type']) || isset($mealType)) {
+
+                is_array($special) ? $special[] = $mealType : $special->addAttribute('meal', $mealType);
+
                 foreach ($special as $service => $value) {
                     if (isset($this->servicesConfig[$service]) || isset($this->servicesConfig[(string)$value])) {
                         $packageService = new PackageService();
@@ -634,7 +704,6 @@ class Oktogo extends Base
                     }
                 }
             }
-
 
             $package->setServicesPrice(0);
             $package->setTotalOverwrite(0);
@@ -687,21 +756,18 @@ class Oktogo extends Base
             'MBHChannelManagerBundle:Oktogo:getRoomsTariffs.xml.twig',
             ['config' => $config]
         );
-
         $response = $this->sendXml(static::BASE_URL . 'roomrates', $request, $this->getHeaders());
-
         foreach ($response->room as $rates) {
             $attrRoom = $rates->attributes();
             foreach ($rates->rates->rate as $rate) {
                 $attrRate = $rate->attributes();
 
                 $result[(int)$attrRoom['id']][(int)$attrRate['id']] = [
-                    'title' => (string)$rate['rateplan_name'],
-                    'readonly' => empty((int)$rate['readonly']) ? false : true,
-                    'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
+                    'title' => (string)$rate['rate_name'],
                     'rate_id' => (int)$attrRate['id'],
                     'roomName' => (string)$attrRoom['room_name'],
                     'rooms' => (string)$attrRoom['id'],
+                    'persons' => (int)$rate['max_persons']
                 ];
 
             }
@@ -719,10 +785,7 @@ class Oktogo extends Base
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
         foreach ($this->pullTariffs($config) as $key => $tariff) {
-
-            if (!$tariff['readonly'] || !$tariff['is_child_rate']) {
-                $tariffs[$key] = $tariff;
-            }
+            $tariffs[$key] = $tariff;
         }
 
         $request = $this->templating->render(

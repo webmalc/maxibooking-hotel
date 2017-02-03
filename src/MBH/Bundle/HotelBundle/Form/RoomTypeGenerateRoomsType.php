@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class RoomTypeGenerateRoomsType extends AbstractType
 {
 
-    public static function rangeValidation($data, ExecutionContextInterface $context)
+    public function rangeValidation($data, ExecutionContextInterface $context)
     {
         if ($data['from'] >= $data['to']) {
             $context->addViolation('form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number');
@@ -58,8 +58,8 @@ class RoomTypeGenerateRoomsType extends AbstractType
             'class' => 'MBH\Bundle\HotelBundle\Document\Housing'
         ];
         $hotel = $options['hotel'];
-        if ($hotel) {
-            $housingOptions['query_builder'] = function (DocumentRepository $dr) use ($hotel) {
+        if($hotel) {
+            $housingOptions['query_builder'] = function(DocumentRepository $dr) use ($hotel) {
                 return $dr->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
             };
         }
@@ -88,7 +88,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
         $resolver->setDefaults(
             [
                 'constraints' => [
-                    new Callback(['callback' => [$this, 'rangeValidation'],]),
+                    new Callback([$this, 'rangeValidation'])
                 ],
                 'entity' => null,
                 'hotel' => null

@@ -35,8 +35,5 @@ parameters.yml
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
 web/online
-!web/assets/vendor/azovsky/
-web/assets/vendor/
-#web/assets
+app/supervisor
 docker_zalex
-app/supervisor/

@@ -8,7 +8,12 @@ var cashDocumentConfirmation = function (link) {
         url: link.attr('href'),
         success: function (response) {
             if (!response.error) {
-                $('#cash-table').dataTable().fnDraw();
+                if ($('#cash-table').length) {
+                    $('#cash-table').dataTable().fnDraw();
+                } else {
+                    link.hide();
+                    link.closest('tr').removeClass('info');
+                }
             } else {
                 alert('Error: ' + response.message);
             }

@@ -4,24 +4,29 @@
 {% set layout = 'box' %}
 
 {% block content %}
+    {% if ingredients is not empty %}
     {% embed '@MBHRestaurant/DishMenu/dishItemFormTemplate.html.twig' with {'path': 'restaurant_dishmenu_item_new'} %}
         {% block actions %}
             {% include 'MBHBaseBundle:Actions:new.html.twig' %}
         {% endblock %}
     {% endembed %}
+    {% else %}
+        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'restaurant.dishorder.noingredients'|trans|capitalize }}. <a href="{{ path('restaurant_ingredient') }}">{{ 'restaurant.dishmenu.item.action.new.action.new'|trans|capitalize }}?</a></div>
+    {% endif %}
 
 {% endblock %}
 
 {% block scripts %}
     {{ parent() }}
-
-    {% javascripts filter='uglifyjs2'
-    '@MBHRestaurantBundle/Resources/public/js/002-calculate-costprice.js'
-    '@MBHRestaurantBundle/Resources/public/js/001-add_dish_item.js'
-    %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    {% if ingredients is not empty %}
+        {% javascripts filter='uglifyjs2'
+        '@MBHRestaurantBundle/Resources/public/js/002-calculate-costprice.js'
+        '@MBHRestaurantBundle/Resources/public/js/001-add_dish_item.js'
+        %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
 
     {% include '@MBHRestaurant/DishMenu/dishMenuScripts.html.twig' with {'ingredients' : ingredients} %}
+    {% endif %}
 
 {% endblock scripts %}

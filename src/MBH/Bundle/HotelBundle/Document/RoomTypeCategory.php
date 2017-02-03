@@ -4,16 +4,15 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\ClientBundle\Document\RoomTypeZip;
-use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="RoomTypeCategory", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeCategoryRepository")
@@ -76,22 +75,6 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
      * )
      */
     protected $description;
-    /**
-     * @var RoomTypeZip $roomTypeZip
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\ClientBundle\Document\RoomTypeZip", mappedBy="categories")
-     */
-    protected $roomTypeZip;
-
-    /**
-     * @var
-     * @Gedmo\Versioned()
-     * @ODM\Field(type="string", name="descriptionUrl")
-     * @Assert\Length(
-     *     min=2,
-     *     max=512
-     * )
-     */
-    protected $descriptionUrl;
 
     /**
      * @var RoomType[]|ArrayCollection
@@ -113,14 +96,11 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
     }
 
     /**
-     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
-     * @return $this
+     * @param Hotel $hotel
      */
     public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
-
-        return $this;
     }
 
     /**
@@ -184,22 +164,6 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
         $this->types = $types;
     }
 
-    /**
-     * @return RoomType[]
-     */
-    public function getRoomTypes()
-    {
-        return $this->roomTypes;
-    }
-
-    /**
-     * @param RoomType[] $roomTypes
-     */
-    public function setRoomTypes($roomTypes)
-    {
-        $this->roomTypes = $roomTypes;
-    }
-
     public function getIsHostel()
     {
         return false;
@@ -213,16 +177,6 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
             $places = max($roomType->getAdditionalPlaces(), $places);
         }
         return $places;
-    }
-
-    public function getMainImage()
-    {
-        foreach($this->getRoomTypes() as $roomType) {
-            if($roomType->getMainImage()) {
-                return $roomType->getMainImage();
-            }
-        }
-        return null;
     }
 
     /**
@@ -247,38 +201,4 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
 
         return $this;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getDescriptionUrl()
-    {
-        return $this->descriptionUrl;
-    }
-
-    /**
-     * @param mixed $descriptionUrl
-     */
-    public function setDescriptionUrl($descriptionUrl)
-    {
-        $this->descriptionUrl = $descriptionUrl;
-    }
-
-
-    /**
-     * @return RoomTypeZip
-     */
-    public function getRoomTypeZip()
-    {
-        return $this->roomTypeZip;
-    }
-
-    /**
-     * @param RoomTypeZip $roomTypeZip
-     */
-    public function setRoomTypeZip(RoomTypeZip $roomTypeZip)
-    {
-        $this->roomTypeZip = $roomTypeZip;
-    }
-
 }

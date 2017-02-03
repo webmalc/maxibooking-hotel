@@ -2,8 +2,11 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
+use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Doctrine\ODM\MongoDB\Query\Builder;
+use MBH\Bundle\PriceBundle\Lib\TariffFilter;
 
 class TariffRepository extends DocumentRepository
 {
@@ -16,7 +19,7 @@ class TariffRepository extends DocumentRepository
             ->getQuery()
             ->execute()
         ;
-        
+
         return $result;
     }
 
@@ -144,5 +147,62 @@ class TariffRepository extends DocumentRepository
     public function fetch(Hotel $hotel = null, $tariffs = null, $enabled = false, $online = false)
     {
         return $this->fetchQueryBuilder($hotel, $tariffs, $enabled, $online)->getQuery()->execute();
+    }
+
+    /**
+     * @param TariffFilter $filter
+     * @return Builder
+     */
+    public function getFilteredQueryBuilder(TariffFilter $filter): Builder
+    {
+        $qb = $this->createQueryBuilder();
+
+        if ($filter->getSearch()) {
+            $fullNameRegex = new \MongoRegex('/.*' . $filter->getSearch() . '.*/ui');
+            $qb->field('fullTitle')->equals($fullNameRegex);
+        }
+
+        if ($filter->getBegin()) {
+            $qb->addAnd($qb->expr()->addOr(
+                $qb->expr()->field('end')->exists(true)->gte($filter->getBegin()),
+                $qb->expr()->field('end')->equals(null)
+            ));
+        }
+
+        if ($filter->getEnd()) {
+            $qb->addAnd($qb->expr()->addOr(
+                $qb->expr()->field('begin')->exists(true)->lte($filter->getEnd()),
+                $qb->expr()->field('begin')->equals(null)
+            ));
+        }
+
+        if (!$filter->getIsEnabled()) {
+            $qb->field('isEnabled')->equals(true);
+        }
+
+        if ($filter->getIsOnline() === 1) {
+            $qb->field('isOnline')->equals(true);
+        } elseif ($filter->getIsOnline() === 0) {
+            $qb->field('isOnline')->equals(false);
+        }
+
+        if ($filter->getHotel()) {
+            $qb->field('hotel')->references($filter->getHotel());
+        }
+
+        $qb->sort(['position' => 'desc', 'fullTitle' => 'asc']);
+
+        return $qb;
+    }
+
+    /**
+     * @param TariffFilter $filter
+     * @return CursorInterface
+     */
+    public function getFiltered(TariffFilter $filter): CursorInterface
+    {
+        $qb = $this->getFilteredQueryBuilder($filter);
+
+        return $qb->getQuery()->execute();
     }
 }

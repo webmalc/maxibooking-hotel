@@ -536,7 +536,6 @@ var docReadyForms = function () {
                 initSelection: function (element, callback) {
                     var id = $(element).val();
                     if (id !== "") {
-                        console.log(id);
                         $.ajax(Routing.generate('getPackageJsonById',
                             {
                                 id: id

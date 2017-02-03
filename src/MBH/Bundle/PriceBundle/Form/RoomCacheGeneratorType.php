@@ -44,7 +44,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'required' => false,
                     'multiple' => true,
                     'choices' => $options['weekdays'],
-                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
+                    'help' => 'Дни недели для которых будет произведена генерация наличия мест',
                     'attr' => array('placeholder' => 'Все дни недели'),
                 ])
                 ->add('roomTypes', DocumentType::class, [
@@ -55,7 +55,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'query_builder' => function(DocumentRepository $dr) use ($options) {
                         return $dr->fetchQueryBuilder($options['hotel']);
                     },
-                    'help' => 'Типы номеров для готорых будет произведена генерация наличия мест',
+                    'help' => 'Типы номеров для которых будет произведена генерация наличия мест',
                     'attr' => array('placeholder' => $options['hotel']. ': все типы номеров', 'class' => 'select-all'),
                 ])
                 ->add('quotas', CheckboxType::class, [
@@ -72,7 +72,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'query_builder' => function (DocumentRepository $dr) use ($options) {
                         return $dr->fetchChildTariffsQuery($options['hotel'], 'rooms');
                     },
-                    'help' => 'Тарифы для готорых будет произведена генерация квот',
+                    'help' => 'Тарифы для которых будет произведена генерация квот',
                     'attr' => array('placeholder' => 'Квоты не будут сгенерированы'),
                 ])
                 ->add('rooms', TextType::class, [

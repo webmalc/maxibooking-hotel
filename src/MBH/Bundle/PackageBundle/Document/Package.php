@@ -97,14 +97,6 @@ class Package extends Base implements \JsonSerializable
      * @ODM\Integer()
      */
     protected $number;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     */
-    protected $externalNumber;
-
     
 
     /**
@@ -270,7 +262,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "expedia", "hotels", "venere", "ostrovok"},
+     *      choices = {"vashotel", "booking", "expedia", "hotels", "venere", "ostrovok", "oktogo", "myallocator"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      */
@@ -478,24 +470,6 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
-     * @return string
-     */
-    public function getExternalNumber()
-    {
-        return $this->externalNumber;
-    }
-
-    /**
-     * @param string $externalNumber
-     */
-    public function setExternalNumber($externalNumber)
-    {
-        $this->externalNumber = $externalNumber;
-    }
-
-
-
-    /**
      * Set numberWithPrefix
      *
      * @param string $numberWithPrefix
@@ -561,13 +535,6 @@ class Package extends Base implements \JsonSerializable
         return $this->children;
     }
 
-    /**
-     * @return int
-     */
-    public function getCountPersons():int
-    {
-        return $this->getAdults() + $this->getChildren();
-    }
     /**
      * Set begin
      *

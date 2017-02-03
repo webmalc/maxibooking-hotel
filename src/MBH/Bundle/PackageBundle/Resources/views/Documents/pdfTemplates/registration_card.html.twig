@@ -92,7 +92,7 @@
                     </td>
                     <td style="width: 20%">
                         {% if hotel.logoUrl %}
-                            <img src="{{ asset(hotel.logoUrl, absolute=true) }}" style="height: 80px;float: right;">
+                            <img src="{{ absolute_url(asset(hotel.logoUrl)) }}" style="height: 80px;float: right;">
                         {% endif %}
                     </td>
                 </tr>

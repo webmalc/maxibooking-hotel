@@ -13,6 +13,7 @@
     "alcaeus/mongo-php-adapter": "^1.0.0",
     "ext-mongo": "*",
     "symfony/symfony": "3.1.*@stable",
+    "twig/twig": "^1",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
     "symfony/swiftmailer-bundle": "^2.3@stable",
