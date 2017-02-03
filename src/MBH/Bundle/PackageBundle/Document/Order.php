@@ -993,6 +993,7 @@ class Order extends Base
     public function setDeleteReason(DeleteReason $deleteReason)
     {
         $this->deleteReason = $deleteReason;
+
         return $this;
     }
 

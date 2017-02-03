@@ -1543,6 +1543,7 @@ class Package extends Base implements \JsonSerializable
     public function setDeleteReason(DeleteReason $deleteReason)
     {
         $this->deleteReason = $deleteReason;
+
         return $this;
     }
 
