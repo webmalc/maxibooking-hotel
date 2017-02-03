@@ -6,6 +6,8 @@ use MBH\Bundle\ChannelManagerBundle\Lib\AbstractRequestDataFormatter;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\Restriction;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 
 class HomeAwayDataFormatter extends AbstractRequestDataFormatter
 {
@@ -27,13 +29,16 @@ class HomeAwayDataFormatter extends AbstractRequestDataFormatter
         ChannelManagerConfigInterface $config
     ) {
         $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
-        $ratePeriodXMLElements = [];
         $currency = $this->container->getParameter('locale.currency');
         foreach ($requestDataArray as $roomTypeId => $pricesByDates) {
+            $ratesElement = new \SimpleXMLElement('<ratePeriods/>');
+            $ratesElement->addChild('listingExternalId', $roomTypeId);
+            $ratesElement->addChild('unitExternalId', $roomTypeId);
+            $ratePeriodsElement = $ratesElement->addChild('ratePeriods');
             foreach ($pricesByDates as $dateString => $priceByTariff) {
                 /** @var PriceCache $priceCache */
                 $priceCache = current($priceByTariff);
-                $ratePeriodElement = new \SimpleXMLElement('<ratePeriod/>');
+                $ratePeriodElement = $ratePeriodsElement->addChild('ratePeriod');
                 $dateRangeElement = $ratePeriodElement->addChild('dateRange');
                 $dateRangeElement->addChild('beginDate', $dateString);
                 $dateRangeElement->addChild('endDate', $dateString);
@@ -43,11 +48,11 @@ class HomeAwayDataFormatter extends AbstractRequestDataFormatter
                 $rateElement->addAttribute('rateType', 'EXTRA_NIGHT');
                 $amountElement = $rateElement->addChild('amount', $priceCache->getPrice());
                 $amountElement->addAttribute('currency', $currency);
-                $ratePeriodXMLElements[] = $ratePeriodElement;
+                $ratePeriodElements[] = $ratePeriodElement;
             }
         }
 
-        return $this->formatTemplateData($ratePeriodXMLElements);
+        return $this->formatTemplateData('sdf');
     }
 
     /**
@@ -102,19 +107,60 @@ class HomeAwayDataFormatter extends AbstractRequestDataFormatter
         // TODO: Implement formatGetBookingsData() method.
     }
 
-    private function formatAvailabilityData(\DateTime $begin, \DateTime $end, RoomType $roomType) {
-        $availabilityElement = new \SimpleXMLElement('unitAvailabilityEntities');
-        $availabilityElement->addChild('listingExternalId', $roomType->getId());
-        $availabilityElement->addChild('unitExternalId', $roomType->getId());
-        $unitAvailabilityElement = $availabilityElement->addChild('unitAvailability');
+    private function formatAvailabilityData(
+        \DateTime $begin,
+        \DateTime $end,
+        $roomTypes,
+        $serviceTariffs,
+        ChannelManagerConfigInterface $config
+    ) {
+        $restrictionData = $this->getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, $config);
+        $roomData = $this->getRoomData($begin, $end, $roomTypes, $config);
 
-        $unitAvailabilityElement = $availabilityElement->addChild('dateRange');
-        $unitAvailabilityElement->addChild('beginDate', $begin->format('Y-m-d'));
-        $unitAvailabilityElement->addChild('endDate', $end->format('Y-m-d'));
+        foreach ($restrictionData as $roomTypeId => $restrictionsByDates) {
+            $availabilityElement = new \SimpleXMLElement('unitAvailabilityEntities');
+            $availabilityElement->addChild('listingExternalId', $roomTypeId);
+            $availabilityElement->addChild('unitExternalId', $roomTypeId);
+            $unitAvailabilityElement = $availabilityElement->addChild('unitAvailability');
 
-        //TODO: Уточнить
-        $unitAvailabilityElement->addChild('maxStayDefault', 28);
+            $dateRangeElement = $availabilityElement->addChild('dateRange');
+            $dateRangeElement->addChild('beginDate', $begin->format('Y-m-d'));
+            $dateRangeElement->addChild('endDate', $end->format('Y-m-d'));
 
+            //TODO: Уточнить
+            $unitAvailabilityElement->addChild('maxStayDefault', 28);
+            $availabilityConfigElement = $unitAvailabilityElement->addChild('unitAvailabilityConfiguration');
+            
+            $availabilityConfigElement->addChild('availability');
+
+        }
+
+
+
+    }
+
+    private function getAvailabilityString(\DateTime $begin, \DateTime $end, $restrictionsByDates, $roomDataByDates)
+    {
+        $availabilityString = '';
+        $maxStayString = '';
+        $minStayString = '';
+        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+            /** @var \DateTime $day*/
+            $dayString = $day->format('Y-m-d');
+            /** @var Restriction $restrictionData */
+            $restrictionData = $restrictionsByDates[$dayString];
+            /** @var RoomCache $roomData */
+            $roomData = $roomDataByDates[$dayString];
+            $availabilityString .= $this->getIsAvailable($roomData, $restrictionData) ? 'Y' : 'N';
+            $maxStayString .= $restrictionData->getMaxStay() ? $restrictionData->getMaxStay() : 0;
+            $minStayString .= $restrictionData->getMinStay() ? $restrictionData->getMinStay() : 0;
+        }
+    }
+
+    private function getIsAvailable(?RoomCache $roomData, ?Restriction $restrictionData)
+    {
+        return $roomData && !$roomData->getIsClosed() && $roomData->getLeftRooms() > 0
+        && (!$restrictionData || !$restrictionData->getClosed());
     }
 
     private function formatTemplateData(array $xmlElements)
