@@ -105,13 +105,19 @@ abstract class AbstractRequestDataFormatter
         $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
         $roomTypeSyncData = $channelManagerHelper->getRoomTypesSyncData($config);
         $tariffs = $channelManagerHelper->getTariffsSyncData($config, true);
+        
+        $tariffIds = [];
+        foreach ($tariffs as $tariff) {
+            /** @var \MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff */
+            $tariffIds[] = $tariff->getTariff()->getId();
+        }
 
         $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
             $begin,
             $end,
             $config->getHotel(),
             $this->getRoomTypeArray($roomTypes),
-            [],
+            $tariffIds,
             true,
             $this->roomManager->useCategories
         );

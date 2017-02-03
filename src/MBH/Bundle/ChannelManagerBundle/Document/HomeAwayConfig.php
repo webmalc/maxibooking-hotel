@@ -10,6 +10,9 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="HomeAwayConfig")
@@ -46,7 +49,7 @@ class HomeAwayConfig extends Base implements ChannelManagerConfigInterface
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="homeAwayConfig")
-     * @Assert\NotNull(message=validator.document.homeawayconfig.no_hotel_selected)
+     * @Assert\NotNull(message="validator.document.homeawayconfig.no_hotel_selected")
      */
     protected $hotel;
 
