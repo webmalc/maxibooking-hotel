@@ -99,7 +99,7 @@ class DeleteReason extends Base
     /**
      * Get fullTitle
      *
-     * @return string $fullTitle
+     * @return null|string
      */
     public function getFullTitle(): ?string
     {
