@@ -22,6 +22,25 @@ services:
     mbh.channelmanager.ostrovok:
                 class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
                 arguments: ['@service_container']
+        class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
+        arguments: ['@service_container']
+
+    mbh.channelmanager.hundred_one_hotels:
+        class: MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels
+        arguments: ['@service_container']
+
+    mbh.channelmanager.hoh_order_info:
+        class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\OrderInfo
+        arguments: ['@service_container']
+        shared: false
+
+    mbh.channelmanager.hoh_package_info:
+        class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\PackageInfo
+        arguments: ['@service_container']
+        shared: false
+
+    mbh.channelmanager.hoh_request_formatter:
+        class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\HOHRequestFormatter
 
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
@@ -43,7 +62,7 @@ services:
 
     mbh.channelmanager.logger_handler:
         class:     Monolog\Handler\StreamHandler
-        arguments: ["%kernel.logs_dir%/%kernel.environment%.channelmanager.log", 200]
+        arguments: ['%kernel.logs_dir%/%kernel.environment%.channelmanager.log', 200]
 
     mbh.channelmanager.configs.subscriber:
             class: MBH\Bundle\ChannelManagerBundle\EventListener\ConfigsSubscriber
@@ -56,4 +75,11 @@ services:
         arguments: ['%mbh.channelmanager.services%']
 
     mbh_bundle_channel_manager.lib_ostrovok.ostrovok_data_generator:
+        class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator
+
+    mbh.channelmanager.ostrovok.api_service:
+        class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiService
+        arguments: ['%mbh.channelmanager.services%']
+
+    mbh.channelmanager.ostrovok.data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator
