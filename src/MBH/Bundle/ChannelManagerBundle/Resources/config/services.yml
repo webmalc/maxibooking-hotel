@@ -55,9 +55,6 @@ services:
         arguments: ['@service_container']
         shared: false
 
-    mbh.channelmanager.homeaway_request_formatter:
-        class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayRequestFormatter
-
     mbh.channelmanager.homeaway_data_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayDataFormatter
         arguments: ['@service_container']

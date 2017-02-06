@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractRequestDataFormatter;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -107,6 +108,38 @@ class HomeAwayDataFormatter extends AbstractRequestDataFormatter
         // TODO: Implement formatGetBookingsData() method.
     }
 
+    public function formatListingContentIndex(ChannelManagerConfigInterface $config, $dataType)
+    {
+        $rootElement = new \SimpleXMLElement('<listingContentIndex/>');
+        $advertisersElement = $rootElement->addChild('advertisers');
+        $advertiserElement = $advertisersElement->addChild('advertiser');
+        if ($dataType == 'availability') {
+            $urlName = 'homeaway_availability';
+            $nodeName = 'unitAvailabilityUrl';
+        } else {
+            $urlName = 'homeaway_rates';
+            $nodeName = 'unitRatesUrl';
+        }
+        //TODO: Получить значение
+        $assignedId = '';
+        $advertiserElement->addChild('assignedId', $assignedId);
+        foreach ($config->getRooms() as $channelManagerRoomType) {
+            /** @var Room $channelManagerRoomType */
+            $roomType = $channelManagerRoomType->getRoomType();
+            $listingEntry = $advertiserElement->addChild('listingContentIndexEntry');
+            $listingEntry->addChild('listingExternalId', $roomType->getId());
+            $listingEntry->addChild('listingHomeAwayId', $channelManagerRoomType->getRoomId());
+            $listingEntry->addChild('unitExternalId', $roomType->getId());
+            $listingEntry->addChild('active', $roomType->getIsEnabled());
+            $listingEntry->addChild('lastUpdatedDate', $roomType->getUpdatedAt()->format('Y-m-d\TH:i:s') . 'Z');
+            $listingEntry->addChild($nodeName,
+                $this->container->get('router')->generate($urlName, ['listingId' => $roomType->getId()]));
+//            $listingEntry->addChild('')
+        }
+
+        return $rootElement;
+    }
+
     private function formatAvailabilityData(
         \DateTime $begin,
         \DateTime $end,
@@ -118,7 +151,9 @@ class HomeAwayDataFormatter extends AbstractRequestDataFormatter
         $roomData = $this->getRoomData($begin, $end, $roomTypes, $config);
 
         foreach ($restrictionData as $roomTypeId => $restrictionsByDates) {
+            $roomDataByDates = $roomData[$roomTypeId];
             $availabilityElement = new \SimpleXMLElement('unitAvailabilityEntities');
+            //TODO: Сменить на свои id
             $availabilityElement->addChild('listingExternalId', $roomTypeId);
             $availabilityElement->addChild('unitExternalId', $roomTypeId);
             $unitAvailabilityElement = $availabilityElement->addChild('unitAvailability');
@@ -130,37 +165,28 @@ class HomeAwayDataFormatter extends AbstractRequestDataFormatter
             //TODO: Уточнить
             $unitAvailabilityElement->addChild('maxStayDefault', 28);
             $availabilityConfigElement = $unitAvailabilityElement->addChild('unitAvailabilityConfiguration');
-            
-            $availabilityConfigElement->addChild('availability');
 
+            $availabilityString = '';
+            $maxStayString = '';
+            $minStayString = '';
+            foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+                /** @var \DateTime $day */
+                $dayString = $day->format('Y-m-d');
+                /** @var Restriction $restrictionData */
+                $restrictionData = $restrictionsByDates[$dayString];
+                /** @var RoomCache $roomData */
+                $roomData = $roomDataByDates[$dayString];
+                $isAvailable = $roomData && !$roomData->getIsClosed() && $roomData->getLeftRooms() > 0
+                    && (!$restrictionData || !$restrictionData->getClosed());
+                $availabilityString .= $isAvailable ? 'Y' : 'N';
+                $maxStayString .= $restrictionData->getMaxStay() ? $restrictionData->getMaxStay() : 0;
+                $minStayString .= $restrictionData->getMinStay() ? $restrictionData->getMinStay() : 0;
+            }
+
+            $availabilityConfigElement->addChild('availability', $availabilityString);
+            $availabilityConfigElement->addChild('maxStay', $maxStayString);
+            $availabilityConfigElement->addChild('minStay', $minStayString);
         }
-
-
-
-    }
-
-    private function getAvailabilityString(\DateTime $begin, \DateTime $end, $restrictionsByDates, $roomDataByDates)
-    {
-        $availabilityString = '';
-        $maxStayString = '';
-        $minStayString = '';
-        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
-            /** @var \DateTime $day*/
-            $dayString = $day->format('Y-m-d');
-            /** @var Restriction $restrictionData */
-            $restrictionData = $restrictionsByDates[$dayString];
-            /** @var RoomCache $roomData */
-            $roomData = $roomDataByDates[$dayString];
-            $availabilityString .= $this->getIsAvailable($roomData, $restrictionData) ? 'Y' : 'N';
-            $maxStayString .= $restrictionData->getMaxStay() ? $restrictionData->getMaxStay() : 0;
-            $minStayString .= $restrictionData->getMinStay() ? $restrictionData->getMinStay() : 0;
-        }
-    }
-
-    private function getIsAvailable(?RoomCache $roomData, ?Restriction $restrictionData)
-    {
-        return $roomData && !$roomData->getIsClosed() && $roomData->getLeftRooms() > 0
-        && (!$restrictionData || !$restrictionData->getClosed());
     }
 
     private function formatTemplateData(array $xmlElements)

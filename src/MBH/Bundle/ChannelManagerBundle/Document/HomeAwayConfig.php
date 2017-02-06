@@ -100,7 +100,7 @@ class HomeAwayConfig extends Base implements ChannelManagerConfigInterface
     /**
      * @return string
      */
-    public function getHotelId(): string
+    public function getHotelId()
     {
         return $this->hotelId;
     }

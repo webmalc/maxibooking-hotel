@@ -206,10 +206,8 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\TableType", mappedBy="hotel") */
     protected $TableTypes;
 
-
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\DishMenuCategory", mappedBy="hotel") */
     protected $dishMenuCategories;
-
 
     /**
      * @Gedmo\Versioned
@@ -1222,24 +1220,6 @@ class Hotel extends Base implements \JsonSerializable
     public function setHomeAwayConfig($homeAwayConfig)
     {
         $this->homeAwayConfig = $homeAwayConfig;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRoomTypeZip()
-    {
-        return $this->roomTypeZip;
-    }
-
-    /**
-     * @param mixed $roomTypeZip
-     * @return Hotel
-     */
-    public function setRoomTypeZip($roomTypeZip)
-    {
-        $this->roomTypeZip = $roomTypeZip;
         return $this;
     }
 

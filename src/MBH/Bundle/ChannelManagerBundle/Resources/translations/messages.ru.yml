@@ -100,3 +100,9 @@ form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkOut: При выезде
 form.roomTypeTasks.daily: Каждые n дней проживания
 
+#HomeAway
+form.homeAwayType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.homeAwayType.is_included: Включен?
+form.homeAwayType.hotel_id: ID отеля
+form.homeAwayType.hotel_id_in_home_away: ID отеля в HomeAway
+controller.homeAwayController.settings_saved_success: 'Настройки успешно сохранены.'
