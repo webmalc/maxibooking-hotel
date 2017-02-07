@@ -1,5 +1,4 @@
 parameters:
-parameters:
     #currencies
     mbh.currency.ratio.fix: "%currency_ratio_fix%"
     mbh.currency.data:
@@ -191,6 +190,7 @@ parameters:
             height: 'auto'
             url: "%online_form_result_url%"
           payment_types:
+
             #in_hotel: 'Оплата при заселении'
             in_office: 'Оплата в офисе'
             by_receipt: 'Оплата по квитанции'
@@ -216,6 +216,7 @@ parameters:
         vashotel:
           title: 'ВашОтель'
           service: 'mbh.channelmanager.vashotel'
+          password: jguuE26t684Fl
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
@@ -238,6 +239,9 @@ parameters:
           service: 'mbh.channelmanager.oktogo'
           api_username: .maxiBooking_api
           api_password: qdcmBz9K
+        hundred_one_hotels:
+          title: '101 Отель'
+          service: 'mbh.channelmanager.hundred_one_hotels'
 
     #параметры логов
     mbh.logs.max: 100

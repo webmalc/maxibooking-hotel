@@ -12,6 +12,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
+use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
@@ -193,6 +194,9 @@ class Hotel extends Base implements \JsonSerializable
 
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig", mappedBy="hotel") */
     protected $myallocatorConfig;
+
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig", mappedBy="hotel") */
+    protected $hundredOneHotelsConfig;
 
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
     protected $ingredientCategories;
@@ -528,6 +532,24 @@ class Hotel extends Base implements \JsonSerializable
     {
         $this->vashotelConfig = $vashotelConfig;
 
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHundredOneHotelsConfig()
+    {
+        return $this->hundredOneHotelsConfig;
+    }
+
+    /**
+     * @param mixed $hundredOneHotelsConfig
+     * @return $this
+     */
+    public function setHundredOneHotelsConfig(HundredOneHotelsConfig $hundredOneHotelsConfig)
+    {
+        $this->hundredOneHotelsConfig = $hundredOneHotelsConfig;
         return $this;
     }
 
