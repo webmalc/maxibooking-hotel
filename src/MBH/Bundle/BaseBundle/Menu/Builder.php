@@ -351,6 +351,7 @@ class Builder implements ContainerAwareInterface
               ->setAttributes(['icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
+
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
             //$menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru']);
             $menu['services']->addChild('expedia', ['route' => 'expedia', 'label' => 'Expedia'])
@@ -358,7 +359,8 @@ class Builder implements ContainerAwareInterface
             $menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
         }
-
+        $menu['services']->addChild('hundredOneHotel', ['route' => 'hundred_one_hotels', 'label' => 'menu.communication.label.hundred_one_hotels'])
+            ->setAttributes(['icon' => 'fa fa-cloud-download']);
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма'])
             ->setAttributes(['icon' => 'fa fa-globe']);
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'Оценки'])
