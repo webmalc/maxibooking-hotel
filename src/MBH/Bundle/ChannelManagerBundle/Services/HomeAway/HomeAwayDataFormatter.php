@@ -5,14 +5,13 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractRequestDataFormatter;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class HomeAwayDataFormatter extends AbstractRequestDataFormatter
 {
-
     /**
      * Форматирование данных, отправляемых в запросе обновления цен сервиса
      * @param $begin
@@ -140,19 +139,22 @@ class HomeAwayDataFormatter extends AbstractRequestDataFormatter
         return $rootElement;
     }
 
-    private function formatAvailabilityData(
-        \DateTime $begin,
-        \DateTime $end,
-        $roomTypes,
-        $serviceTariffs,
-        ChannelManagerConfigInterface $config
-    ) {
-        $restrictionData = $this->getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, $config);
-        $roomData = $this->getRoomData($begin, $end, $roomTypes, $config);
+    private function formatAvailabilityData($roomTypeId, ChannelManagerConfigInterface $config) {
+        $beginDate = $this->getBeginDate();
+        $endDate = $this->getEndDate();
+        //TODO: Изменить значение тарифа
+        $tariff = '';
+        $priceCaches = $this->getPriceCaches($beginDate, $endDate, $config, $roomTypeId, $tariff);
+        $restrictions = $this->getRestrictions($beginDate, $endDate, $config, $roomTypeId, $tariff);
+        $roomCaches = $this->getRoomCaches($beginDate, $endDate, $config, $roomTypeId, $tariff);
 
+        foreach (new \DatePeriod($beginDate, new \DateInterval('P1D'), $endDate) as $iteratedDate) {
+            /** @var \DateTime $iteratedDate */
+
+        }
         foreach ($restrictionData as $roomTypeId => $restrictionsByDates) {
             $roomDataByDates = $roomData[$roomTypeId];
-            $availabilityElement = new \SimpleXMLElement('unitAvailabilityEntities');
+            $availabilityElement = new \SimpleXMLElement('<unitAvailabilityEntities/>');
             //TODO: Сменить на свои id
             $availabilityElement->addChild('listingExternalId', $roomTypeId);
             $availabilityElement->addChild('unitExternalId', $roomTypeId);
@@ -187,6 +189,53 @@ class HomeAwayDataFormatter extends AbstractRequestDataFormatter
             $availabilityConfigElement->addChild('maxStay', $maxStayString);
             $availabilityConfigElement->addChild('minStay', $minStayString);
         }
+    }
+
+    private function getPriceCaches($beginDate, $endDate, ChannelManagerConfigInterface $config, $roomTypeId, $tariffId)
+    {
+        return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+            $beginDate,
+            $endDate,
+            $config->getHotel(),
+            [$roomTypeId],
+            [$tariffId],
+            true,
+            $this->roomManager->useCategories
+        );
+    }
+
+    private function getRestrictions($beginDate, $endDate, ChannelManagerConfigInterface $config, $roomTypeId, $tariffId)
+    {
+        return $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
+            $beginDate,
+            $endDate,
+            $config->getHotel(),
+            [$roomTypeId],
+            [$tariffId],
+            true
+        );
+    }
+
+    private function getRoomCaches($beginDate, $endDate, ChannelManagerConfigInterface $config, $roomTypeId, $tariffId)
+    {
+        return $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+            $beginDate,
+            $endDate,
+            $config->getHotel(),
+            [$roomTypeId],
+            [$tariffId],
+            true
+        );
+    }
+
+    private function getBeginDate()
+    {
+        return new \DateTime();
+    }
+
+    private function getEndDate()
+    {
+        return new \DateTime('+2 year');
     }
 
     private function formatTemplateData(array $xmlElements)

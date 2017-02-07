@@ -10,6 +10,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -280,7 +281,6 @@ class ApiController extends Controller
         if (!$formConfig || !$formConfig->getEnabled()) {
             throw $this->createNotFoundException();
         }
-
         $query = new SearchQuery();
         $query->isOnline = true;
         $query->begin = $helper->getDateFromString($request->get('begin'));

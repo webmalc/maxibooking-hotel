@@ -6,6 +6,8 @@ use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Form\HomeAwayType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -126,5 +128,14 @@ class HomeAwayController extends BaseController
     public function availabilityAction(Request $request)
     {
 
+    }
+
+    /**
+     * @Route("/test")
+     */
+    public function testAction()
+    {
+
+        return new Response();
     }
 }
