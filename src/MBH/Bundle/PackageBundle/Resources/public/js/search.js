@@ -189,7 +189,7 @@ $(document).ready(function () {
         this.$searchRoomsSelect.select2({
             placeholder: 'при заезде',
             allowClear: true,
-            width: 'element',
+            width: 'element'
         });
         this.$searchRoomsSelect.val(null).trigger('change');
     }
@@ -281,7 +281,7 @@ $(document).ready(function () {
 
         $('.search-all-tariffs-link').click(function (e) {
             e.preventDefault();
-            $('#s_roomType').select2("val", $(this).attr('data-roomType'));
+            $('#s_roomType').select2("val", [$(this).attr('data-roomType')]);
             sendForm();
         });
 
