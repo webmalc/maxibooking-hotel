@@ -12,7 +12,7 @@ $(document).ready(function () {
     // set user Date (ClientConfig)
     if($('.daterangepicker-input').prev().is('#s_begin')){
         $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-        $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+        $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(1, 'days').toDate());
     }
     (function () {
 

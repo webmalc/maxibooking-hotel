@@ -451,16 +451,6 @@ var docReadyPackages = function () {
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
-    // set user Date (ClientConfig)
-    //get Phoenix sessionStorage data
-    var str = 'phoenixStorage.' + location.host + location.pathname + '.INPUT.package-filter-begin.',
-        strTwo = 'phoenixStorage.' + location.hostname + location.pathname + '.INPUT.package-filter-begin.';
-
-    if (!sessionStorage.getItem(str) && !sessionStorage.getItem(strTwo)) {
-        $('.begin-datepicker').datepicker("setDate", moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-        $('.end-datepicker').datepicker("setDate", moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-    }
-
     //package ajax tabs
     (function () {
         var tabs = $('#package-tabs');
