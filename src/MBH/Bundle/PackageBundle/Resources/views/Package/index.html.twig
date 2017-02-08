@@ -9,10 +9,11 @@
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'dishorder-table-filter-widget'} %}
         <form id="package-table-filter" class="form-inline remember" role="form">
             <div class="input">
+
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input type="text"
                                                                                               id="package-filter-begin"
                                                                                               class="datepicker package-filter begin-datepicker form-control input-sm"
-                                                                                              data-date-format="dd.mm.yyyy" value="{{  (date(client_config().beginDate) < date('midnight'|date('d.m.Y')))  and client_config().beginDate is empty and client_config().beginDate is not defined ? 'now'|date('d.m.Y') : client_config().beginDate|date('d.m.Y') }}">
+                                                                                              data-date-format="dd.mm.yyyy" value="{{  (date(client_config().beginDate) < date('midnight'))  or client_config().beginDate is empty or client_config().beginDate is not defined ? 'now'|date('d.m.Y') : client_config().beginDate|date('d.m.Y') }}">
             </div>
             <div class="input">
                 — &nbsp <input type="text" id="package-filter-end"
