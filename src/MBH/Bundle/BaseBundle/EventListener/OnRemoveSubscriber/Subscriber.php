@@ -67,7 +67,6 @@ class Subscriber implements EventSubscriber
                         ->field('deletedAt')->exists(false)
                         ->getQuery();
                     $count = $query->count();
-
                 }
                 if ($count > 0) {
                     $message = $setting->getErrorMessage() ? $setting->getErrorMessage() : 'exception.relation_delete.message'; // have existing relation
