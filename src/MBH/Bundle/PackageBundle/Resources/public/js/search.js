@@ -14,6 +14,10 @@ $(document).ready(function () {
         $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
         $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(1, 'days').toDate());
     }
+
+    $('#s_begin').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
+    $('#s_end').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
+
     (function () {
 
         $.ajax(Routing.generate('restriction_in_out_json'), {})
@@ -284,6 +288,7 @@ $(document).ready(function () {
         if (searchProcess) {
             return;
         }
+
         $.ajax({
             url: Routing.generate('package_search_results'),
             data: query,
