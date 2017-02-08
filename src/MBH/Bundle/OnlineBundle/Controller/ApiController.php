@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -289,8 +290,12 @@ class ApiController extends Controller
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
 
-        foreach ($formConfig->getHotels() as $h) {
-            foreach ($h->getRoomTypes() as $roomType) {
+        foreach ($formConfig->getHotels() as $hotel) {
+            if (is_null($query->tariff)) {
+                $defaultTariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(array('hotel.id' => $hotel->getId(), 'isOnline' => true, 'isDefault' => true, 'isEnabled' => true));
+                $query->tariff = !is_null($defaultTariff) ? $defaultTariff : $this->getTariffByHotel($hotel);
+            }
+            foreach ($hotel->getRoomTypes() as $roomType) {
                 $query->addAvailableRoomType($roomType->getId());
             }
         }
@@ -358,6 +363,20 @@ class ApiController extends Controller
             'hotels' => $hotels,
             'tariffResults' => $tariffResults
         ];
+    }
+
+    /**
+     * Get first not default tariff with online status in hotel
+     *
+     * @param Hotel $hotel
+     * @return mixed
+     */
+    public function getTariffByHotel ($hotel) {
+        foreach ($hotel->getTariffs() as $tariff) {
+            if (!$tariff->getIsDefault() && $tariff->getIsOnline()) {
+                return $tariff;
+            }
+        }
     }
 
     /**
