@@ -86,6 +86,7 @@ form.packageSourceType.inner_name: Внутреннее название
 form.packageSourceType.inner_maxibooking_name:  Название для использования внутри MaxiBooking
 form.deleteReasonsType.add_source: Добавить причину удаления
 form.deleteReasonsType.name: Название
+form.deleteReasonsType.default: Основная
 form.deleteReasonsType.adds: Отказ
 form.searchType.all_rooms: Все номера
 form.searchType.room_type: Тип номера

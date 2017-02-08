@@ -59,6 +59,15 @@ class DeleteReason extends Base
      */
     protected $system;
 
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean(name="isDefault")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isDefault = false;
+
     public function __construct()
     {
         $this->setSystem(false);
@@ -104,5 +113,28 @@ class DeleteReason extends Base
     public function getFullTitle(): ?string
     {
         return $this->fullTitle;
+    }
+
+    /**
+     * Set isDefault
+     *
+     * @param boolean $isDefault
+     * @return self
+     */
+    public function setIsDefault($isDefault)
+    {
+        $this->isDefault = $isDefault;
+
+        return $this;
+    }
+
+    /**
+     * Get isDefault
+     *
+     * @return boolean $isDefault
+     */
+    public function getIsDefault()
+    {
+        return $this->isDefault;
     }
 }

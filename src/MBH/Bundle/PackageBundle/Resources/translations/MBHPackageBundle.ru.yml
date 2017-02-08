@@ -200,6 +200,7 @@ package.index.placement: Размещение
 package.index.guests: Гости
 package.index.price: Стоимость
 package.index.created: Создана
+package.index.default: Основной
 package.index.isUpdated: Обновлён
 package.index.selection: 'Подбор'
 package.index.porter_link: 'Отчет портье'
