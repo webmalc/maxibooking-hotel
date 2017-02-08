@@ -1,63 +1,67 @@
 {% form_theme form '@MBHOnlineBooking/Form/children_age_entry_widget.twig' %}
-{{ form_start(form, {attr: {id: 'search-form', class: 'bronirovanie'}, action: requestSearchUrl }) }}
-<div class="hinform h2">Расчет стоимости</div>
-<div class="form-group">
+
+{{ form_start(form, {attr: {id: 'search-form'}, action: requestSearchUrl }) }}
+<div class="booking-title">Расчет стоимости</div>
+<div class="booking-group">
     {{ form_label(form.hotel) }}
-    <div class="input-group">
-        {{ form_widget(form.hotel, {attr: {'style': 'background: url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%'}}) }}
-    </div>
-</div>
-<div class="form-group hide">
-    <div class="input-group">
-        {{ form_widget(form.roomType,{attr: {'style': 'background: url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%'}}) }}
+    <div class="booking-select">
+        {{ form_widget(form.hotel) }}
     </div>
 </div>
 
+<div class="form-group hidden">
+    <div class="input-group">
+        {{ form_widget(form.roomType) }}
+    </div>
+</div>
 
-<div class="row sbrw">
-    <div class="col-md-6 col-xs-12">
-        <p>{{ form_label(form.begin) }}</p>
+<div class="booking-date clearfix">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        {{ form_label(form.begin) }}
         {{ form_widget(form.begin) }}
 
     </div>
-    <div class="col-md-6 col-xs-12">
-        <p>{{ form_label(form.end) }}</p>
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        {{ form_label(form.end) }}
         {{ form_widget(form.end) }}
 
     </div>
 </div>
-    {{ form_widget(form.begin) }}
-    {{ form_widget(form.end) }}
 
-<div class="nights">
-    <span id="nights_amount_container" class="hidden">Количество ночей:&nbsp;<span id="nights_amount"></span></span>
+<div class="booking-nights">
+    <span>Количество ночей:<span id="nights_amount"></span> </span>
 </div>
 
-
-    <div class="col-sm-6">
+<div class="booking-number clearfix">
+    <div class="col-md-6 col-sm-6 col-xs-6">
         {{ form_label(form.adults) }}
-        {#{{ form_widget(form.adults, {attr: {class:"bgnd"}}) }}#}
         {{ form_widget(form.adults) }}
     </div>
-    <div class="col-sm-6">
+    <div class="col-md-6 col-sm-6 col-xs-6">
         {{ form_label(form.children) }}
-        {#{{ form_widget(form.children,{attr: {class:"bgnd"}}) }}#}
         {{ form_widget(form.children) }}
     </div>
-    <div id="children_age_container">
-        {{ form_label(form.children_age) }}
-        {{ form_widget(form.children_age) }}
-    </div>
+</div>
+<div id="children_age_container" class="booking-age clearfix">
+    {{ form_label(form.children_age) }}
 
+    {{ form_widget(form.children_age) }}
 
+</div>
+<div class="clear"></div>
 
-<input type="submit" name="submit" value="Узнать цены" id="rsc" style="margin-top: 26px;">
-<div class="spinn"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
-<div class="hinform newmargin h2" style="padding:16px 0 11px; margin-top: 26px;"><a href="{{ payOnlineUrl }}" target="_blank"><img src="http://azovsky.ru/images/vzmc.png" style="margin-right:10px;height:30px;">Внести оплату Online</a></div>
+<div class="booking-submit">
+    <input type="submit" name="submit" value="Узнать цены">
+</div>
+{#<div class="spinn"><i class="fa fa-spinner fa-spin fa-2x"></i></div>#}
+{#<div class="hinform newmargin h2" style="padding:16px 0 11px; margin-top: 26px;"><a href="{{ payOnlineUrl }}" target="_blank"><img src="http://azovsky.ru/images/vzmc.png" style="margin-right:10px;height:30px;">Внести оплату Online</a></div>#}
+<div class="booking-title pay-online">
+    <a href="http://azovsky-billing.com/pay/" target="_blank">Внести оплату Online</a>
+</div>
 {{ form_end(form, {render_rest: false}) }}
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
-<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/form.css', null, true)) }}">
+{#<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/form.css', null, true)) }}">#}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css">
 <!-- Latest compiled and minified JavaScript -->
@@ -69,6 +73,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.ru.min.js"></script>
+<script src="{{ absolute_url(asset('/bundles/mbhonlinebooking/js/jquery.formstyler.js'))}}"></script>
+<link rel="stylesheet" href="{{ absolute_url(asset('/bundles/mbhonlinebooking/css/form-style.css')) }}">
 
 <script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/form.js', null, true)) }}"></script>
 <script src="{{ absolute_url(asset('bundles/fosjsrouting/js/router.js', null, true)) }}"></script>

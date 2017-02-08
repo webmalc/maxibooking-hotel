@@ -1,6 +1,22 @@
 var mytrigger = {
     recountChildren: ''
 };
+
+// (function($) {
+//     $(function() {
+//         $('.booking-form').find('input, select').styler({
+//             selectSearch: true
+//         });
+//     });
+// })(jQuery);
+(function($) {
+    $(function() {
+        $('.booking-form').find('input, select').styler({
+            selectSearch: true
+        });
+    });
+})(jQuery);
+
 $(function () {
 
     var restrictions,
@@ -166,6 +182,7 @@ $(function () {
     $search_form_end.mask('99.99.9999');
 
     moment.locale("ru");
+
     var dateBeginDefaults = function () {
             var defaultMinDate = '23.04.2017',
                 minDate = moment(defaultMinDate, "DD.MM.YYYY", true),

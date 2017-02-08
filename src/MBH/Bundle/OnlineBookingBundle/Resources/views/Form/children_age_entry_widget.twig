@@ -1,8 +1,10 @@
-{% extends 'bootstrap_3_layout.html.twig' %}
+{#{% extends 'bootstrap_3_layout.html.twig' %}#}
 
-{#{% block _search_form_children_age_entry_widget %}#}
-    {#{{ form(form) }}#}
-{#{% endblock %}#}
+{% block _search_form_children_age_entry_widget %}
+    <div class="booking-child-age">
+        {{ form_widget(form) }}
+    </div>
+{% endblock %}
 
 {#{%- block collection_widget -%}#}
     {#{% if prototype is defined %}#}
@@ -11,6 +13,7 @@
     {#{% endif %}#}
     {#{{- block('form_widget') -}}#}
 {#{%- endblock collection_widget -%}#}
+
 
 {#{% block form_row %}sfsdf#}
     {#{% spaceless %}#}

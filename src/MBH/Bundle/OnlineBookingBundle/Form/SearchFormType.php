@@ -80,7 +80,7 @@ class SearchFormType extends AbstractType
                 }
             ])
             ->add('begin', DateType::class, [
-                'label' => 'Заезд',
+                'label' => 'Дата заезда',
                 'widget' => 'single_text',
                 'required' => false,
                 'format' => 'dd.MM.yyyy',
@@ -88,11 +88,11 @@ class SearchFormType extends AbstractType
                     new NotBlank()
                 ],
                 'attr' => [
-                    'class' => 'input-small'
+                    'class' => 'tcal'
                 ]
             ])
             ->add('end', DateType::class, [
-                'label' => 'Выезд',
+                'label' => 'Дата выезда',
                 'widget' => 'single_text',
                 'required' => false,
                 'format' => 'dd.MM.yyyy',
@@ -100,7 +100,7 @@ class SearchFormType extends AbstractType
                     new NotBlank()
                 ],
                 'attr' => [
-                    'class' => 'input-small'
+                    'class' => 'tcal'
                 ]
             ])
             ->add('adults', ChoiceType::class, [
@@ -124,6 +124,7 @@ class SearchFormType extends AbstractType
                 'entry_type' => ChoiceType::class,
                 'entry_options' => [
                     'label' => false,
+                    'placeholder' => false,
                     'choices' => range(0,13),
                     'attr' => [
                         'class' => 'children_age_row'
@@ -145,7 +146,10 @@ class SearchFormType extends AbstractType
             ->setDefaults(
                 [
                     'method' => Request::METHOD_GET,
-                    'csrf_protection' => false
+                    'csrf_protection' => false,
+                    'attr' => [
+                        'class' => 'booking-form'
+                    ]
                 ]
             );
     }
