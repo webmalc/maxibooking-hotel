@@ -11,13 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class OrderDeleteReasonType extends AbstractType
 {
-    use DeleteReasonTrait {
-        buildForm as bf;
-    }
-
-    public function buildForm(FormBuilderInterface $builder, array $options) {
-        $this->bf($builder, $options);
-    }
+    use DeleteReasonTrait;
 
     public function configureOptions(OptionsResolver $resolver)
     {

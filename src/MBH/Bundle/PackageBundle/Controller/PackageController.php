@@ -1004,10 +1004,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form = $this->createForm(PackageDeleteReasonType::class, $entity);
         $form->handleRequest($request);
 
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
         if ($form->isValid()) {
-            if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-                throw $this->createNotFoundException();
-            }
 
             $orderId = $entity->getOrder()->getId();
             $this->dm->persist($entity);

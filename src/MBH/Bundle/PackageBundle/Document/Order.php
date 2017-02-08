@@ -10,6 +10,7 @@ use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -38,6 +39,11 @@ class Order extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    /**
+     * Delete Reason Trait
+     */
+    use DeleteReasonTrait;
 
     /**
      * @var int
@@ -236,12 +242,6 @@ class Order extends Base
      * @ODM\EmbedMany(targetDocument="OrderDocument")
      */
     protected $documents = [];
-
-    /**
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\DeleteReason")
-     */
-    protected $deleteReason;
 
     public function __construct()
     {
@@ -984,26 +984,4 @@ class Order extends Base
         return $this;
     }
 
-    /**
-     * Set delete reason id
-     *
-     * @param DeleteReason $deleteReason
-     * @return self
-     */
-    public function setDeleteReason(DeleteReason $deleteReason)
-    {
-        $this->deleteReason = $deleteReason;
-
-        return $this;
-    }
-
-    /**
-     * Get delete reason
-     *
-     * @return mixed
-     */
-    public function getDeleteReason()
-    {
-        return $this->deleteReason;
-    }
 }
