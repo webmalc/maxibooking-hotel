@@ -24,3 +24,4 @@ validator.document.expediaConfig.username_not_specified: Не указано и�
 validator.document.expediaConfig.password_not_specified: Не указан пароль
 validator.document.homeawayconfig.no_hotel_selected: Не выбран отель
 validator.document.homeawayconfig.no_hotel_id_specified: Не указан id отеля
+validator.document.homeawayconfig.main_tariff_not_specified: Не указан тариф

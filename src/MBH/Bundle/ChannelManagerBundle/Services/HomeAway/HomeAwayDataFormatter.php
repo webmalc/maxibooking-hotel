@@ -2,109 +2,73 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
-use MBH\Bundle\ChannelManagerBundle\Lib\AbstractRequestDataFormatter;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
-use MBH\Bundle\PriceBundle\Document\Tariff;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
-class HomeAwayDataFormatter extends AbstractRequestDataFormatter
+class HomeAwayDataFormatter
 {
+    /** @var  ChannelManagerHelper $channelManagerHelper */
+    private $channelManagerHelper;
+    private $localeCurrency;
+    /** @var  Router $router */
+    private $router;
+    private $dm;
+
+    public function __construct(ChannelManagerHelper $channelManagerHelper, $localeCurrency, Router $router, DocumentManager $dm)
+    {
+        $this->channelManagerHelper = $channelManagerHelper;
+        $this->localeCurrency = $localeCurrency;
+        $this->router = $router;
+        $this->dm = $dm;
+    }
+
     /**
      * Форматирование данных, отправляемых в запросе обновления цен сервиса
      * @param $begin
      * @param $end
-     * @param $roomTypes
-     * @param $serviceTariffs
-     * @param ChannelManagerConfigInterface $config
+     * @param $serviceRoomTypeId
+     * @param HomeAwayConfig $config
      * @return mixed
+     * @internal param $roomTypes
+     * @internal param $serviceTariffs
      */
     public function formatPriceRequestData(
         $begin,
         $end,
-        $roomTypes,
-        $serviceTariffs,
-        ChannelManagerConfigInterface $config
+        $serviceRoomTypeId,
+        HomeAwayConfig $config
     ) {
-        $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
-        $currency = $this->container->getParameter('locale.currency');
-        foreach ($requestDataArray as $roomTypeId => $pricesByDates) {
-            $ratesElement = new \SimpleXMLElement('<ratePeriods/>');
-            $ratesElement->addChild('listingExternalId', $roomTypeId);
-            $ratesElement->addChild('unitExternalId', $roomTypeId);
-            $ratePeriodsElement = $ratesElement->addChild('ratePeriods');
-            foreach ($pricesByDates as $dateString => $priceByTariff) {
-                /** @var PriceCache $priceCache */
-                $priceCache = current($priceByTariff);
-                $ratePeriodElement = $ratePeriodsElement->addChild('ratePeriod');
-                $dateRangeElement = $ratePeriodElement->addChild('dateRange');
-                $dateRangeElement->addChild('beginDate', $dateString);
-                $dateRangeElement->addChild('endDate', $dateString);
+        $mbhRoomTypeId = $this->channelManagerHelper
+            ->getMbhRoomTypeByServiceRoomTypeId($serviceRoomTypeId, $config)->getId();
+        $tariffId = '';
+        $priceCaches = $this->getPriceCaches($begin, $end, $config, $mbhRoomTypeId, $tariffId);
+        $ratePeriods = $this->channelManagerHelper->getPeriodsFromDayEntities($begin, $end, $priceCaches, ['getPrice']);
 
-                $ratesElement = $dateRangeElement->addChild('rates');
-                $rateElement = $ratesElement->addChild('rate');
-                $rateElement->addAttribute('rateType', 'EXTRA_NIGHT');
-                $amountElement = $rateElement->addChild('amount', $priceCache->getPrice());
-                $amountElement->addAttribute('currency', $currency);
-                $ratePeriodElements[] = $ratePeriodElement;
-            }
+        $ratesElement = new \SimpleXMLElement('<ratePeriods/>');
+        $ratesElement->addChild('listingExternalId', $mbhRoomTypeId);
+        $ratesElement->addChild('unitExternalId', $mbhRoomTypeId);
+        $ratePeriodsElement = $ratesElement->addChild('ratePeriods');
+        foreach ($ratePeriods as $ratePeriod) {
+            $ratePeriodElement = $ratePeriodsElement->addChild('ratePeriod');
+            $dateRangeElement = $ratePeriodElement->addChild('dateRange');
+            $dateRangeElement->addChild('beginDate', $ratePeriod['begin']->format('Y-m-d'));
+            $dateRangeElement->addChild('endDate', $ratePeriod['end']->format('Y-m-d'));
+
+            $ratesElement = $dateRangeElement->addChild('rates');
+            $rateElement = $ratesElement->addChild('rate');
+            $rateElement->addAttribute('rateType', 'EXTRA_NIGHT');
+            $amountElement = $rateElement->addChild('amount', $ratePeriod['entity']->getPrice());
+            $amountElement->addAttribute('currency', $this->localeCurrency);
+            $ratePeriodElements[] = $ratePeriodElement;
         }
 
         return $this->formatTemplateData('sdf');
-    }
-
-    /**
-     * Форматирование данных, отправляемых в запросе обновления квот на комнаты
-     * @param $begin
-     * @param $end
-     * @param $roomTypes
-     * @param ChannelManagerConfigInterface $config
-     * @return mixed
-     */
-    public function formatRoomRequestData($begin, $end, $roomTypes, ChannelManagerConfigInterface $config)
-    {
-        // TODO: Implement formatRoomRequestData() method.
-    }
-
-    /**
-     * Форматирование данных, отправляемых в запросе обновления ограничений
-     * @param $begin
-     * @param $end
-     * @param $roomTypes
-     * @param $serviceTariffs
-     * @param ChannelManagerConfigInterface $config
-     * @return mixed
-     */
-    public function formatRestrictionRequestData(
-        $begin,
-        $end,
-        $roomTypes,
-        $serviceTariffs,
-        ChannelManagerConfigInterface $config
-    ) {
-        // TODO: Implement formatRestrictionRequestData() method.
-    }
-
-    /**
-     * Форматирование данных, отправляемых в запросе закрытия продаж
-     * @param ChannelManagerConfigInterface $config
-     * @return mixed
-     */
-    public function formatCloseForConfigData(ChannelManagerConfigInterface $config)
-    {
-        // TODO: Implement formatCloseForConfigData() method.
-    }
-
-    /**
-     * Форматирование данных, отправляемых в запросе получения броней
-     * @param ChannelManagerConfigInterface $config
-     * @return mixed
-     */
-    public function formatGetBookingsData(ChannelManagerConfigInterface $config)
-    {
-        // TODO: Implement formatGetBookingsData() method.
     }
 
     public function formatListingContentIndex(ChannelManagerConfigInterface $config, $dataType)
@@ -132,68 +96,86 @@ class HomeAwayDataFormatter extends AbstractRequestDataFormatter
             $listingEntry->addChild('active', $roomType->getIsEnabled());
             $listingEntry->addChild('lastUpdatedDate', $roomType->getUpdatedAt()->format('Y-m-d\TH:i:s') . 'Z');
             $listingEntry->addChild($nodeName,
-                $this->container->get('router')->generate($urlName, ['listingId' => $roomType->getId()]));
+                $this->router->generate($urlName, ['listingId' => $roomType->getId()]));
 //            $listingEntry->addChild('')
         }
 
         return $rootElement;
     }
 
-    private function formatAvailabilityData($roomTypeId, ChannelManagerConfigInterface $config) {
+    private function formatAvailabilityData($homeAwayRoomTypeId, ChannelManagerConfigInterface $config)
+    {
+        $mbhRoomTypeId = $this->channelManagerHelper
+            ->getMbhRoomTypeByServiceRoomTypeId($homeAwayRoomTypeId, $config)->getId();
         $beginDate = $this->getBeginDate();
         $endDate = $this->getEndDate();
+
         //TODO: Изменить значение тарифа
         $tariff = '';
-        $priceCaches = $this->getPriceCaches($beginDate, $endDate, $config, $roomTypeId, $tariff);
-        $restrictions = $this->getRestrictions($beginDate, $endDate, $config, $roomTypeId, $tariff);
-        $roomCaches = $this->getRoomCaches($beginDate, $endDate, $config, $roomTypeId, $tariff);
+        $priceCaches = $this->getPriceCaches($beginDate, $endDate, $config, $mbhRoomTypeId, $tariff);
+        $restrictions = $this->getRestrictions($beginDate, $endDate, $config, $mbhRoomTypeId, $tariff);
+        $roomCaches = $this->getRoomCaches($beginDate, $endDate, $config, $mbhRoomTypeId, $tariff);
 
-        foreach (new \DatePeriod($beginDate, new \DateInterval('P1D'), $endDate) as $iteratedDate) {
-            /** @var \DateTime $iteratedDate */
+        $availabilityElement = new \SimpleXMLElement('<unitAvailabilityEntities/>');
+        //TODO: Сменить на свои id
+        $availabilityElement->addChild('listingExternalId', $mbhRoomTypeId);
+        $availabilityElement->addChild('unitExternalId', $mbhRoomTypeId);
+        $unitAvailabilityElement = $availabilityElement->addChild('unitAvailability');
 
+        $dateRangeElement = $availabilityElement->addChild('dateRange');
+        $dateRangeElement->addChild('beginDate', $beginDate->format('Y-m-d'));
+        $dateRangeElement->addChild('endDate', $endDate->format('Y-m-d'));
+
+        //TODO: Уточнить
+        $unitAvailabilityElement->addChild('maxStayDefault', 28);
+        $availabilityConfigElement = $unitAvailabilityElement->addChild('unitAvailabilityConfiguration');
+
+        $availabilityData = $this->getAvailabilityData($beginDate, $endDate, $roomCaches, $restrictions, $priceCaches,
+            $mbhRoomTypeId, $tariff);
+        $availabilityConfigElement->addChild('availability', $availabilityData['availability']);
+        $availabilityConfigElement->addChild('maxStay', $availabilityData['maxStay']);
+        $availabilityConfigElement->addChild('minStay', $availabilityData['minStay']);
+    }
+
+    private function getAvailabilityData(
+        $begin,
+        $end,
+        $roomCaches,
+        $restrictions,
+        $priceCaches,
+        $mbhRoomTypeId,
+        $tariffId
+    ) {
+        $availabilityString = '';
+        $maxStayString = '';
+        $minStayString = '';
+        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+            /** @var \DateTime $day */
+            $dayString = $day->format('d.m.Y');
+            /** @var Restriction $restrictionData */
+            $restrictionData = isset($restrictions[$mbhRoomTypeId][$tariffId][$dayString])
+                ? $restrictions[$mbhRoomTypeId][$tariffId][$dayString] : null;
+            /** @var RoomCache $roomData */
+            $roomData = isset($roomCaches[$mbhRoomTypeId][$tariffId][$dayString])
+                ? $roomCaches[$mbhRoomTypeId][$tariffId][$dayString] : null;
+            $isAvailable = $roomData && !$roomData->getIsClosed() && $roomData->getLeftRooms() > 0
+                && (!$restrictionData || !$restrictionData->getClosed())
+                && isset($priceCaches[$dayString]);
+            $availabilityString .= $isAvailable ? 'Y' : 'N';
+            $maxStayString .= $restrictionData->getMaxStay() ? $restrictionData->getMaxStay() : 0;
+            $minStayString .= $restrictionData->getMinStay() ? $restrictionData->getMinStay() : 0;
         }
-        foreach ($restrictionData as $roomTypeId => $restrictionsByDates) {
-            $roomDataByDates = $roomData[$roomTypeId];
-            $availabilityElement = new \SimpleXMLElement('<unitAvailabilityEntities/>');
-            //TODO: Сменить на свои id
-            $availabilityElement->addChild('listingExternalId', $roomTypeId);
-            $availabilityElement->addChild('unitExternalId', $roomTypeId);
-            $unitAvailabilityElement = $availabilityElement->addChild('unitAvailability');
 
-            $dateRangeElement = $availabilityElement->addChild('dateRange');
-            $dateRangeElement->addChild('beginDate', $begin->format('Y-m-d'));
-            $dateRangeElement->addChild('endDate', $end->format('Y-m-d'));
-
-            //TODO: Уточнить
-            $unitAvailabilityElement->addChild('maxStayDefault', 28);
-            $availabilityConfigElement = $unitAvailabilityElement->addChild('unitAvailabilityConfiguration');
-
-            $availabilityString = '';
-            $maxStayString = '';
-            $minStayString = '';
-            foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
-                /** @var \DateTime $day */
-                $dayString = $day->format('Y-m-d');
-                /** @var Restriction $restrictionData */
-                $restrictionData = $restrictionsByDates[$dayString];
-                /** @var RoomCache $roomData */
-                $roomData = $roomDataByDates[$dayString];
-                $isAvailable = $roomData && !$roomData->getIsClosed() && $roomData->getLeftRooms() > 0
-                    && (!$restrictionData || !$restrictionData->getClosed());
-                $availabilityString .= $isAvailable ? 'Y' : 'N';
-                $maxStayString .= $restrictionData->getMaxStay() ? $restrictionData->getMaxStay() : 0;
-                $minStayString .= $restrictionData->getMinStay() ? $restrictionData->getMinStay() : 0;
-            }
-
-            $availabilityConfigElement->addChild('availability', $availabilityString);
-            $availabilityConfigElement->addChild('maxStay', $maxStayString);
-            $availabilityConfigElement->addChild('minStay', $minStayString);
-        }
+        return [
+            'availability' => $availabilityString,
+            'minStay' => $minStayString,
+            'maxStay' => $maxStayString
+        ];
     }
 
     private function getPriceCaches($beginDate, $endDate, ChannelManagerConfigInterface $config, $roomTypeId, $tariffId)
     {
-        return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+        $requestedPriceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
             $beginDate,
             $endDate,
             $config->getHotel(),
@@ -202,10 +184,17 @@ class HomeAwayDataFormatter extends AbstractRequestDataFormatter
             true,
             $this->roomManager->useCategories
         );
+
+        return $requestedPriceCaches[$roomTypeId][$tariffId];
     }
 
-    private function getRestrictions($beginDate, $endDate, ChannelManagerConfigInterface $config, $roomTypeId, $tariffId)
-    {
+    private function getRestrictions(
+        $beginDate,
+        $endDate,
+        ChannelManagerConfigInterface $config,
+        $roomTypeId,
+        $tariffId
+    ) {
         return $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
             $beginDate,
             $endDate,

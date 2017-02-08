@@ -120,3 +120,5 @@ form.homeAwayType.is_included: Включен?
 form.homeAwayType.hotel_id: ID отеля
 form.homeAwayType.hotel_id_in_home_away: ID отеля в HomeAway
 controller.homeAwayController.settings_saved_success: 'Настройки успешно сохранены.'
+form.home_away_type.main_tariff.label: Тариф
+form.home_away_type.main_tariff.help: Тариф, данные по которому синхронизируются с HomeAway

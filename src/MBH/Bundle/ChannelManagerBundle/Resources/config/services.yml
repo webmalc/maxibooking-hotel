@@ -57,7 +57,7 @@ services:
 
     mbh.channelmanager.homeaway_data_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayDataFormatter
-        arguments: ['@service_container']
+        arguments: ['@mbh.channelmanager.helper', '%locale.currency%', '@router', '@doctrine.odm.mongodb.document_manager']
 
     mbh.channelmanager.hundred_one_hotels:
         class: MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels

@@ -7,11 +7,11 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class HomeAwayConfig extends Base implements ChannelManagerConfigInterface
+class HomeAwayConfig extends Base
 {
     public function getName()
     {
@@ -68,15 +68,15 @@ class HomeAwayConfig extends Base implements ChannelManagerConfigInterface
     protected $rooms;
 
     /**
-     * @var array
-     * @ODM\EmbedMany(targetDocument="Tariff")
+     * @var  Tariff
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
+     * @Assert\NotNull(message="validator.document.homeawayconfig.main_tariff_not_specified")
      */
-    protected $tariffs;
+    protected $mainTariff;
 
     public function __construct()
     {
         $this->rooms = new ArrayCollection();
-        $this->tariffs = new ArrayCollection();
     }
 
     /**
@@ -146,36 +146,6 @@ class HomeAwayConfig extends Base implements ChannelManagerConfigInterface
     }
 
     /**
-     * Add tariff
-     *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff
-     */
-    public function addTariff(Tariff $tariff)
-    {
-        $this->tariffs[] = $tariff;
-    }
-
-    /**
-     * Remove tariff
-     *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff
-     */
-    public function removeTariff(Tariff $tariff)
-    {
-        $this->tariffs->removeElement($tariff);
-    }
-
-    /**
-     * Get tariffs
-     *
-     * @return \Doctrine\Common\Collections\Collection $tariffs
-     */
-    public function getTariffs()
-    {
-        return $this->tariffs;
-    }
-
-    /**
      * @return $this
      */
     public function removeAllRooms()
@@ -186,12 +156,18 @@ class HomeAwayConfig extends Base implements ChannelManagerConfigInterface
     }
 
     /**
-     * @return $this
+     * @return mixed
      */
-    public function removeAllTariffs()
+    public function getMainTariff()
     {
-        $this->tariffs = new ArrayCollection();
+        return $this->mainTariff;
+    }
 
-        return $this;
+    /**
+     * @param mixed $mainTariff
+     */
+    public function setMainTariff($mainTariff)
+    {
+        $this->mainTariff = $mainTariff;
     }
 }

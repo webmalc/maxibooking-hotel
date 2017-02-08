@@ -101,7 +101,6 @@ abstract class AbstractRequestDataFormatter
     protected function getPriceData($begin, $end, $roomTypes, $serviceTariffs, ChannelManagerConfigInterface $config)
     {
         $resultData = [];
-
         $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
         $roomTypeSyncData = $channelManagerHelper->getRoomTypesSyncData($config);
         $tariffs = $channelManagerHelper->getTariffsSyncData($config, true);
@@ -131,14 +130,10 @@ abstract class AbstractRequestDataFormatter
                 $tariff = $tariffInfo['doc'];
                 $tariffId = $tariff->getId();
 
-                /** @var PriceCache $priceCache */
-                $priceCache = null;
                 foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
                     /** @var \DateTime $day */
-                    if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
-                        /** @var PriceCache $priceCache */
-                        $priceCache = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
-                    }
+                    $priceCache = isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])
+                        ? $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')] : null;
 
                     $this->formatPriceData($priceCache, $roomTypeInfo['doc'], $tariffInfo['doc'],
                         $roomTypeInfo['syncId'], $tariffInfo['syncId'], $resultData, $day);

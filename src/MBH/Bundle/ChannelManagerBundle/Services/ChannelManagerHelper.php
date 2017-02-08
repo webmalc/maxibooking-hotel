@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class ChannelManagerHelper
 {
@@ -53,32 +54,55 @@ class ChannelManagerHelper
     /**
      * Метод формирования периодов(цен, ограничений, доступности комнат) из массива данных о ценах, ограничениях, доступностях комнат
      *
-     * @param array $entities
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array $entitiesByDates
      * @param array $comparePropertyMethods Массив имен методов, используемых для сравнения переданных сущностей
-     * @param bool $isSorted Отсортирован ли переданный массив данных по дате
      * @return array
      */
-    public function getPeriodsFromDayEntities(array $entities, array $comparePropertyMethods, $isSorted = false)
-    {
-        $isSorted ?: $entities = $this->sortEntitiesByDate($entities);
-
+    public function getPeriodsFromDayEntities(
+        \DateTime $begin,
+        \DateTime $end,
+        array $entitiesByDates,
+        array $comparePropertyMethods
+    ) {
         $periods = [];
-        $currentPeriod = null;
-        $lastIteratedEntity = null;
-        foreach ($entities as $entity) {
-            if ($currentPeriod) {
-                if ($currentPeriod && $this->isEntityEquals($entity, $lastIteratedEntity, $comparePropertyMethods)) {
-                    $currentPeriod->getEndDate()->modify('+1 day');
-                } else {
-                    $periods[] = $currentPeriod;
-                    $currentPeriod = new \DatePeriod($entity->getDate(), new \DateInterval('P1D'), $entity->getDate());
-                }
+        $currentPeriod = [
+            'begin' => $begin,
+            'end' => $end,
+            'entity' => null
+        ];
+        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+            /** @var \DateTime $day */
+            $dayString = $day->format('d.m.Y');
+            $dateEntity = isset($entitiesByDates[$dayString]) ? $entitiesByDates[$dayString] : null;
+            if ($this->isEntityEquals($currentPeriod['entity'], $dateEntity, $comparePropertyMethods)) {
+                $currentPeriod['end'] = $day;
             } else {
-                $currentPeriod = new \DatePeriod($entity->getDate(), new \DateInterval('P1D'), $entity->getDate());
+                $periods[] = $currentPeriod;
+                $currentPeriod = [
+                    'begin' => $day,
+                    'end' => $day,
+                    'entity' => $dateEntity
+                ];
             }
         }
 
+        if ($currentPeriod['end'] > end($periods)['end']) {
+            $periods[] = $currentPeriod;
+        }
+
         return $periods;
+    }
+
+    public function getMbhRoomTypeByServiceRoomTypeId($roomTypeId, ChannelManagerConfigInterface $config) : RoomType
+    {
+        foreach ($config->getRooms() as $room) {
+            /** @var Room $room */
+            if ($room->getRoomId() == $roomTypeId) {
+                return $room->getRoomType();
+            }
+        }
     }
 
     /**
@@ -98,6 +122,12 @@ class ChannelManagerHelper
 
     private function isEntityEquals($firstEntity, $secondEntity, $comparePropertyMethods)
     {
+        if (is_null($firstEntity) xor is_null($secondEntity)) {
+            return false;
+        } elseif (is_null($firstEntity) && is_null($secondEntity)) {
+            return true;
+        }
+
         $isEqual = true;
         foreach ($comparePropertyMethods as $comparePropertyMethod) {
             if ($firstEntity->{$comparePropertyMethod}() != $secondEntity->{$comparePropertyMethod}()) {

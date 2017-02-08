@@ -38,7 +38,9 @@ class HomeAwayController extends BaseController
             $config->setHotel($this->hotel);
         }
 
-        $form = $this->createForm(HomeAwayType::class, $config);
+        $form = $this->createForm(HomeAwayType::class, $config, [
+            'hotel' => $this->hotel
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -135,7 +137,6 @@ class HomeAwayController extends BaseController
      */
     public function testAction()
     {
-
-        return new Response();
+        return new Response(true ? 'true' : 'false');
     }
 }
