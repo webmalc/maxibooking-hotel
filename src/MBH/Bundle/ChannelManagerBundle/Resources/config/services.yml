@@ -59,6 +59,10 @@ services:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayDataFormatter
         arguments: ['@mbh.channelmanager.helper', '%locale.currency%', '@router', '@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager']
 
+    mbh.channelmanager.homeaway_order_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayOrderInfo
+        arguments: ['@service_container']
+
     mbh.channelmanager.hundred_one_hotels:
         class: MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels
         arguments: ['@service_container']

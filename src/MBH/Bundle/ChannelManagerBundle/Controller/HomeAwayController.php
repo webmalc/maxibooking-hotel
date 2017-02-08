@@ -137,7 +137,17 @@ class HomeAwayController extends BaseController
 
     public function quoteRequestAction(Request $request)
     {
+        
+    }
 
+    public function bookingRequestAction(Request $request)
+    {
+        //TODO: Поменять название
+        $bookingRequest = $request->get('xml');
+        $bookingRequestXML = new \SimpleXMLElement($bookingRequest);
+        $documentVersion = (string)$bookingRequestXML->documentVersion;
+        $bookingRequestDetails = $bookingRequestXML->bookingRequestDetails;
+        $orderInfo = $this->get('mbh.channelmanager.homeaway_order_info')->setInitData($bookingRequestDetails);
     }
 
     /**
