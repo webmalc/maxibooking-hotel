@@ -125,9 +125,17 @@ class HomeAwayController extends BaseController
 
     /**
      * @Route("/routes/{listingId}", name="homeaway_availability")
-     * @param Request $request
+     * @param $listingId
+     * @return Response
      */
-    public function availabilityAction(Request $request)
+    public function availabilityAction($listingId)
+    {
+        $this->get('mbh.channelmanager.homeaway_data_formatter')->formatAvailabilityData($listingId);
+
+        return new Response();
+    }
+
+    public function quoteRequestAction(Request $request)
     {
 
     }

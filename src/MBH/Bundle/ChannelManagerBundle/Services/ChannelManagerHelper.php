@@ -22,7 +22,6 @@ class ChannelManagerHelper
      */
     public function getRoomTypesSyncData(ChannelManagerConfigInterface $config, $byService = false)
     {
-
         if (!$this->isRoomTypesInit) {
 
             foreach ($config->getRooms() as $room) {
@@ -52,7 +51,8 @@ class ChannelManagerHelper
     }
 
     /**
-     * Метод формирования периодов(цен, ограничений, доступности комнат) из массива данных о ценах, ограничениях, доступностях комнат
+     * Метод формирования периодов(цен, ограничений, доступности комнат) из массива данных о ценах,
+     * ограничениях или доступности комнат.
      *
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -103,6 +103,8 @@ class ChannelManagerHelper
                 return $room->getRoomType();
             }
         }
+
+        return null;
     }
 
     /**
