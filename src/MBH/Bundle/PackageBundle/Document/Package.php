@@ -262,7 +262,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "101Hotels", "expedia", "hotels", "venere", "ostrovok", "oktogo", "myallocator"},
+     *      choices = {"vashotel", "booking", "101Hotels", "expedia", "hotels", "venere", "ostrovok", "oktogo", "myallocator", "101Hotels"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      */

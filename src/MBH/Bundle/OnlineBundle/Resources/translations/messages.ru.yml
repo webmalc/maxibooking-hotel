@@ -32,3 +32,12 @@ payment_types:
   online_full: 'Онлайн оплата (100%)'
   online_first_day: 'Онлайн оплата (одни сутки)'
   online_half: 'Онлайн оплата (50%)'
+
+#booking confirmation
+booking_confirmation.order_successfull_created: Бронь успешно создана.
+booking_confirmation.order_not_exists: Брони не существует.
+booking_confirmation.order_price: Общая стоимость заказа
+booking_confirmation.room_type_name: Тип комнаты
+booking_confirmation.tariff: Тариф
+booking_confirmation.payer: Плательщик
+booking_confirmation.dates: Даты

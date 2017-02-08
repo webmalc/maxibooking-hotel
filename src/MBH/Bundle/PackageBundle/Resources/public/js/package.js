@@ -447,10 +447,10 @@ var docReadyPackages = function () {
     discountInit($('#mbh_bundle_packagebundle_package_main_type_discount'), $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount'))
 }
 
+
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
-
     //package ajax tabs
     (function () {
         var tabs = $('#package-tabs');

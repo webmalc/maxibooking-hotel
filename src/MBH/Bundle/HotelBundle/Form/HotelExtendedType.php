@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -52,10 +53,10 @@ class HotelExtendedType extends AbstractType
             ]);
 
         $builder->add('flat', TextType::class, [
-                'label' => 'form.hotelExtendedType.flat',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false,
-            ]);
+            'label' => 'form.hotelExtendedType.flat',
+            'group' => 'form.hotelExtendedType.address',
+            'required' => false,
+        ]);
         //}
         $builder
             ->add('latitude', TextType::class, [
@@ -77,14 +78,14 @@ class HotelExtendedType extends AbstractType
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
             ])
-            ->add('type',  InvertChoiceType::class, [
+            ->add('type', InvertChoiceType::class, [
                 'label' => 'form.hotelExtendedType.hotel_type',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
                 'choices' => (isset($options['config']['types'])) ? $options['config']['types'] : [],
                 'multiple' => true
             ])
-            ->add('theme',  InvertChoiceType::class, [
+            ->add('theme', InvertChoiceType::class, [
                 'label' => 'form.hotelExtendedType.hotel_theme',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
@@ -103,6 +104,26 @@ class HotelExtendedType extends AbstractType
             'group' => 'form.hotelExtendedType.integration',
             'required' => false
         ]);
+
+        $builder
+            ->add('contact_full_name', TextType::class, [
+                'label' => 'form.hotelExtendedType.contact_full_name.label',
+                'help' => 'form.hotelExtendedType.contact_full_name.help',
+                'group' => 'form.hotelExtendedType.contact_person_info',
+                'required' => false
+            ])
+            ->add('contact_email', EmailType::class, [
+                'label' => 'form.hotelExtendedType.contact_email.label',
+                'help' => 'form.hotelExtendedType.contact_email.help',
+                'group' => 'form.hotelExtendedType.contact_person_info',
+                'required' => false
+            ])
+            ->add('contact_phone_number', TextType::class, [
+                'label' => 'form.hotelExtendedType.contact_phone_number.label',
+                'help' => 'form.hotelExtendedType.contact_phone_number.help',
+                'group' => 'form.hotelExtendedType.contact_person_info',
+                'required' => false
+            ]);
 
         $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }

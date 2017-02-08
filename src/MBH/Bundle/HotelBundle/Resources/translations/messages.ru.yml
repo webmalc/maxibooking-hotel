@@ -42,6 +42,14 @@ form.hotelType.hostel_hotel_or_not: Хостел или нет?
 form.hotelType.is_default: Выбран по умолчанию?
 form.hotelType.logo: Логотип
 form.hotelType.is_default_maxibooking: Выбран по умолчанию при входе в MaxiBooking
+form.hotelExtendedType.contact_person_info: Контактное лицо отеля
+form.hotelExtendedType.contact_full_name.label: Имя
+form.hotelExtendedType.contact_full_name.help: ФИО контактного лица
+form.hotelExtendedType.contact_email.label: E-mail
+form.hotelExtendedType.contact_email.help: Электронная почта контактного лица
+form.hotelExtendedType.contact_phone_number.label: Номер телефона
+form.hotelExtendedType.contact_phone_number.help: Номер телефона контактного лица
+
 form.roomType.name: Название
 form.roomType.general_info: Общая информация
 form.roomType.inner_name: Внутреннее название
@@ -95,7 +103,7 @@ form.roomTypeType.prices: Ценообразование
 form.roomTypeType.isChildPrices: Основные детские цены?
 form.roomTypeType.isChildPricesDesc: Использовать ли основные детские цены для номера?
 form.roomTypeType.isIndividualAdditionalPrices: Индивидуальные цены на доп. места?
-form.roomTypeType.isIndividualAdditionalPricesDesc:  Использовать ли разные цены для каждого дополнительнго места?
+form.roomTypeType.isIndividualAdditionalPricesDesc:  Использовать ли разные цены для каждого дополнительного места?
 form.roomTypeType.room_main_places_amount: Количество основных мест в номере
 form.roomTypeType.additional_places: Дополнительные места
 form.roomTypeType.room_additional_places_amount: Количество дополнительных мест в номере

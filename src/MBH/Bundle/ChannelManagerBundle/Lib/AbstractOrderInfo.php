@@ -18,6 +18,7 @@ abstract class AbstractOrderInfo
     protected $dm;
     protected $translator;
     protected $orderNote = '';
+    protected $noteMessages = [];
 
     public function __construct(ContainerInterface $container)
     {
@@ -88,6 +89,49 @@ abstract class AbstractOrderInfo
     public function getOriginalPrice()
     {
         return $this->getPrice();
+    }
+
+    protected function addProblemMessage($transIdentifier, $params = [])
+    {
+        return $this->addMessage('problems', $transIdentifier, $params);
+    }
+
+    protected function addNotifyMessage($transIdentifier, $params = [])
+    {
+        return $this->addMessage('notifications', $transIdentifier, $params);
+    }
+
+    private function addMessage($status, $transIdentifier, $params)
+    {
+        $this->noteMessages[$status] = [
+            'identifier' => $transIdentifier,
+            'params' => $params
+        ];
+
+        return $this;
+    }
+
+    public function getPackageAndOrderMessages()
+    {
+        $messages = array_slice($this->noteMessages, 0);
+        foreach ($this->getPackagesData() as $packageInfo) {
+            $packageMessages = $packageInfo->getMessages();
+            if (count($packageMessages) > 0) {
+                if (count($packageMessages['problems']) > 0) {
+                    $messages['problems'][] = $packageMessages['problems'];
+                }
+                if (count($packageMessages['notifications'])) {
+                    $messages['notifications'][] = $packageMessages['notifications'];
+                }
+            }
+        }
+
+        return $messages;
+    }
+
+    public function getMessages() : array
+    {
+        return $this->noteMessages;
     }
 
     protected function addOrderNote($note, $preface) : string

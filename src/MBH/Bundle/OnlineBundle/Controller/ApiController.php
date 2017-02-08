@@ -469,6 +469,49 @@ class ApiController extends Controller
     }
 
     /**
+     * Страница, содержащая данные о подтверждении брони
+     * @Route("/booking_confirmation/{id}", name="booking_confirmation")
+     * @param Order $order
+     * @param Request $request
+     * @return array
+     * @Template()
+     */
+    public function bookingConfirmationAction(Order $order = null, Request $request)
+    {
+        $sessionId = $request->get('sessionId');
+        $isOrderExists = !is_null($order) && $order->getChannelManagerId()
+            && $order->getChannelManagerId() == $sessionId;
+
+        return [
+            'isOrderExists' => $isOrderExists,
+            'order' => $order,
+            'firstPackage' => $order->getPackages()[0]
+        ];
+    }
+
+    /**
+     * Страница на которой находится фрейм, ссылающийся на страницу данных о подтверждении брони
+     * @Route("/confirmation/page")
+     * @Template()
+     * @param Request $request
+     * @return array
+     */
+    public function bookingConfirmationPageAction(Request $request)
+    {
+        $orderId = $request->get('orderId');
+        $sessionId = $request->get('sessionId');
+        $width = $request->get('width') ? $request->get('width') : 600;
+        $height = $request->get('height') ? $request->get('height') : 500;
+
+        return [
+            'orderId' => $orderId,
+            'sessionId' => $sessionId,
+            'width' => $width,
+            'height' => $height
+        ];
+    }
+
+    /**
      * @param Order $order
      * @param string $arrival
      * @param string $departure

@@ -204,6 +204,12 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig", mappedBy="hotel") */
     protected $hundredOneHotelsConfig;
 
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig", mappedBy="hotel") */
+    protected $expediaConfig;
+
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig", mappedBy="hotel") */
+    protected $tripAdvisorConfig;
+
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
     protected $ingredientCategories;
 
@@ -877,6 +883,24 @@ class Hotel extends Base implements \JsonSerializable
     {
         $this->bookingConfig = $bookingConfig;
 
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTripAdvisorConfig()
+    {
+        return $this->tripAdvisorConfig;
+    }
+
+    /**
+     * @param mixed $tripAdvisorConfig
+     * @return Hotel
+     */
+    public function setTripAdvisorConfig($tripAdvisorConfig)
+    {
+        $this->tripAdvisorConfig = $tripAdvisorConfig;
         return $this;
     }
 

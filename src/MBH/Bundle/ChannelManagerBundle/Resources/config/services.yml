@@ -76,6 +76,27 @@ services:
     mbh.channelmanager.hoh_request_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\HOHRequestFormatter
 
+    mbh.channel_manager.order_handler:
+        class: MBH\Bundle\ChannelManagerBundle\Services\OrderHandler
+        arguments: ['@doctrine.odm.mongodb.document_manager']
+
+    mbh.channelmanager.hundred_one_hotels:
+        class: MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels
+        arguments: ['@service_container']
+
+    mbh.channelmanager.hoh_order_info:
+        class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\OrderInfo
+        arguments: ['@service_container']
+        shared: false
+
+    mbh.channelmanager.hoh_package_info:
+        class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\PackageInfo
+        arguments: ['@service_container']
+        shared: false
+
+    mbh.channelmanager.hoh_request_formatter:
+        class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\HOHRequestFormatter
+
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: ['@mbh.currency']
@@ -110,6 +131,24 @@ services:
 
     mbh_bundle_channel_manager.lib_ostrovok.ostrovok_data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator
+
+    mbh.channel_manager.trip_advisor_response_formatter:
+      class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter
+      arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%', '%online_form_result_url%']
+
+    mbh.channel_manager.trip_advisor_response_data_formatter:
+      class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorDataFormatter
+      arguments: ['@mbh.package.search', '@doctrine.odm.mongodb.document_manager']
+
+    mbh.channel_manager.trip_advisor_order_info:
+      class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo
+      arguments: ['@service_container']
+      shared: false
+
+    mbh.channel_manager.trip_advisor_package_info:
+      class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorPackageInfo
+      arguments: ['@service_container']
+      shared: false
 
     mbh.channelmanager.ostrovok.api_service:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiService

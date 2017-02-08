@@ -36,3 +36,4 @@ form.clientPaymentSystemType.payment_system_group: Платежная систе
 form.clientPaymentSystemType.payment_system_group_links: Ссылки
 form.clientConfigType.search_tariffs: Количество тарифов
 form.clientConfigType.search_tariffs_desc: Количество тарифов выводимое по умолчанию при подборе
+form.clientConfigType.add_start_date: Начальная дата
