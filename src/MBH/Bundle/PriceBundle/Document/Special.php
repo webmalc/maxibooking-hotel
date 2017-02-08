@@ -541,4 +541,33 @@ class Special extends Base
     {
         return $this->packages;
     }
+
+
+    /**
+     * @param $object
+     * @return bool
+     */
+    public function check($object): bool
+    {
+        if ($object instanceof RoomType) {
+            $entries = $this->getRoomTypes();
+        }
+        if ($object instanceof Tariff) {
+            $entries = $this->getTariffs();
+        }
+        if (!isset($entries)) {
+            throw new \InvalidArgumentException('Unsupported object');
+        }
+
+        if (count($entries)) {
+            foreach ($entries as $entry) {
+                if ($entry->getId() == $object->getId()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        return true;
+    }
 }
