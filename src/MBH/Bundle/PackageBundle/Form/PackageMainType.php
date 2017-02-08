@@ -165,7 +165,7 @@ class PackageMainType extends AbstractType
                     'query_builder' => function (DocumentRepository $dr) use ($options) {
                         return $dr->createQueryBuilder()
                             ->field('deletedAt')->exists(false)
-                            ->sort(['fullTitle' => 'asc', 'title' => 'asc']);
+                            ->sort(['isDefault' => 'desc']);
                     },
                     'required' => true
                 ]);
