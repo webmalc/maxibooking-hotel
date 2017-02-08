@@ -51,6 +51,21 @@ form.ostrovokType.in_included: Включен?
 form.ostrovokType.hotel_id: ID отеля
 form.ostrovokType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
 form.ostrovokType.ostrovok_ru_settings_hotel_id:  ID отеля в настройках Ostrovok.ru
+form.hundredOneHotels.is_included: Включен?
+form.hundredOneHotels.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.hundredOneHotels.hotel_id: ID отеля
+form.hundredOneHotels.hotel_id_in_101_hotels: ID отеля в 101hotels.ru
+form.hundredOneHotels.api_key.label: Ключ API
+form.hundredIneHotels.api_key.help: Ключ API для отеля
+form.hundredOneHotels.api_key.placeholder: Ключ API
+form.hundredOneHotels.error.invalid_api_key: Неверный API ключ
+form.hundredOneHotels.error.invalid_hotel_id: Неверный ID отеля
+services.hundredOneHotels.invalid_room_type_id: 'ОШИБКА: тип комнат с id = %id% сервиса 101Hotels не синхронизирован ни с одним типом комнат maxibooking'
+services.hundredOneHotels.invalid_tariff_id: 'ОШИБКА: тип размещения с id = %id% сервиса 101Hotels не синхронизирован ни с одним тарифом maxibooking.'
+services.hundredOneHotels.nor_one_room_type: 'В данном отеле не существует ни одного типа номера'
+services.hundredOneHotels.nor_one_tariff: 'В данном отеле не существует ни одного тарифа'
+controller.hundredOneHotelsController.settings_saved_success: 'Настройки успешно сохранены.'
+services.hundredOneHotels.cash_document_not_paid: 'Безналичный платеж не подтвержден'
 
 #myAllocator
 form.myallocatorType.username: Логин

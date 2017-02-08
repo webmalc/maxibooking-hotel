@@ -9,6 +9,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok;
 class OstrovokApiService
 {
 
+    const LIMIT = 0;
     /**
      *
      */
@@ -100,6 +101,7 @@ class OstrovokApiService
     private function callGet($api_method, array $data)
     {
         $data["token"] = $this->auth_token;
+        $data["limits"] = self::LIMIT;
         $data["sign"] = $this->getSignature($data, $this->private_token);
         $request = self::API_URL . $api_method . "?" . http_build_query($data) . "&";
 

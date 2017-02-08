@@ -12,6 +12,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
+use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
@@ -194,6 +195,9 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig", mappedBy="hotel") */
     protected $myallocatorConfig;
 
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig", mappedBy="hotel") */
+    protected $hundredOneHotelsConfig;
+
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig", mappedBy="hotel") */
     protected $expediaConfig;
 
@@ -303,29 +307,6 @@ class Hotel extends Base implements \JsonSerializable
      * @var string
      */
     protected $description;
-
-    /**
-     * @ODM\Field(type="string")
-     */
-    protected $contactFullName;
-
-    /**
-     * @ODM\Field(type="string", name="email")
-     * @Gedmo\Versioned
-     * @Assert\Email()
-     */
-    protected $contactEmail;
-
-    /**
-     * @ODM\Field(type="string")
-     * @Assert\Length(
-     *      min=2,
-     *      minMessage= "validator.document.hotel.min_phone",
-     *      max=100,
-     *      maxMessage= "validator.document.hotel.max_phone"
-     * )
-     */
-    protected $contactPhoneNumber;
 
     public function __construct()
     {
@@ -554,6 +535,24 @@ class Hotel extends Base implements \JsonSerializable
     {
         $this->vashotelConfig = $vashotelConfig;
 
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHundredOneHotelsConfig()
+    {
+        return $this->hundredOneHotelsConfig;
+    }
+
+    /**
+     * @param mixed $hundredOneHotelsConfig
+     * @return $this
+     */
+    public function setHundredOneHotelsConfig(HundredOneHotelsConfig $hundredOneHotelsConfig)
+    {
+        $this->hundredOneHotelsConfig = $hundredOneHotelsConfig;
         return $this;
     }
 
@@ -1351,62 +1350,5 @@ class Hotel extends Base implements \JsonSerializable
     public function getSpecials()
     {
         return $this->specials;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getContactFullName()
-    {
-        return $this->contactFullName;
-    }
-
-    /**
-     * @param mixed $contactFullName
-     * @return Hotel
-     */
-    public function setContactFullName($contactFullName)
-    {
-        $this->contactFullName = $contactFullName;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getContactEmail()
-    {
-        return $this->contactEmail;
-    }
-
-    /**
-     * @param mixed $contactEmail
-     * @return Hotel
-     */
-    public function setContactEmail($contactEmail)
-    {
-        $this->contactEmail = $contactEmail;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getContactPhoneNumber()
-    {
-        return $this->contactPhoneNumber;
-    }
-
-    /**
-     * @param mixed $contactPhoneNumber
-     * @return Hotel
-     */
-    public function setContactPhoneNumber($contactPhoneNumber)
-    {
-        $this->contactPhoneNumber = $contactPhoneNumber;
-
-        return $this;
     }
 }

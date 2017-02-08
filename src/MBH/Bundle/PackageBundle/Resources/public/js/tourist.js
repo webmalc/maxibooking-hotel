@@ -58,21 +58,17 @@ var docReadyTourists = function () {
 
     var $guestForm = $('form[name=mbh_bundle_packagebundle_package_order_tourist_type]');
     var fillGuestForm = function (data) {
-        $guestForm.find('.guestPhone').hide();
-        $guestForm.find('.guestEmail').hide();
         $guestForm.find('.guestLastName').val(data.lastName);
         $guestForm.find('.guestFirstName').val(data.firstName);
         $guestForm.find('.guestPatronymic').val(data.patronymic);
         $guestForm.find('.guestBirthday').val(data.birthday);
         $guestForm.find('.guestPhone').val(data.phone);
         $guestForm.find('.guestEmail').val(data.email);
-        $guestForm.find('select.guestCommunicationLanguage').select2('val', data.communicationLanguage);
+        $guestForm.find('select.guestCommunicationLanguage').select2('val', [data.communicationLanguage]);
     }
     var $guestSelect = $guestForm.find('.findGuest');
     $guestSelect.change(function () {
         if (!$(this).val()) {
-            $guestForm.find('.guestPhone').show();
-            $guestForm.find('.guestEmail').show();
             return null;
         }
         $.getJSON(Routing.generate('json_tourist', {'id': $(this).val()}), fillGuestForm);
@@ -129,7 +125,7 @@ var docReadyTourists = function () {
             $.each(detail, function (key, value) {
                 $('#organization_' + key).val(value);
             });
-            $('#organization_city').select2("val", detail.city)
+            $('#organization_city').select2("val", [detail.city])
             $('#organization_city').append('<option value="' + detail.city + '">' + detail.city_name + '</option>').val(detail.city).trigger('change');
         });
     }());

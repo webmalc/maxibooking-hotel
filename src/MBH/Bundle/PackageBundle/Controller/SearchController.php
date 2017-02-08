@@ -56,7 +56,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'hotel' => $this->hotel,
             'orderId' => $request->get('order'),
             'roomManager' => $this->manager,
-            'startDate' => new \DateTime()
         ]);
 
         $tourist = new Tourist();
@@ -90,6 +89,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
     {
         $query = new SearchQuery();
         $query->accommodations = true;
+        $specials = null;
         $form = $this->createForm(SearchType::class, $query, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
@@ -132,7 +132,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
 
             } else {
                 $errors = $form->getErrors();
-                $specials = null;
             }
         }
 

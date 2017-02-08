@@ -92,7 +92,7 @@ class WorkShiftController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $this->get('mbh.user.work_shift_manager')->lock($workShift);
+        //$this->get('mbh.user.work_shift_manager')->lock($workShift);
         //return new \Symfony\Component\HttpFoundation\Response('<body></body>');
 
         return $this->redirectToRoute('work_shift_wait');

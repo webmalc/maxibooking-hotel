@@ -139,6 +139,7 @@ ROLE_OSTROVOK: Ostrovok
 ROLE_OKTOGO: Oktogo
 ROLE_HOTELINN: Hotel-inn
 ROLE_MYALLOCATOR: MyAllocator
+ROLE_101HOTELS: 101 Отель
 
 ROLE_ONLINE_FORM: Онлайн форма
 ROLE_ONLINE_FORM_VIEW: Просмотр онлайн форм
@@ -285,5 +286,3 @@ ROLE_RESTAURANT_TABLE_ITEM_DELETE: Удалить стул
 ROLE_RESTAURANT_TABLE_CATEGORY_NEW: Добавить категорию
 ROLE_RESTAURANT_TABLE_CATEGORY_EDIT: Редактировать категорию
 ROLE_RESTAURANT_TABLE_CATEGORY_DELETE: Удалить категорию
-
-ROLE_NO_OWN_ONLINE_VIEW: Подтверждение онлайн броней
