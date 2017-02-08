@@ -5,21 +5,9 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use MBH\Bundle\PackageBundle\Document\DeleteReason;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DeleteReasonSubscriber implements EventSubscriber
 {
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    protected $container;
-
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
     public function getSubscribedEvents()
     {
         return array(
