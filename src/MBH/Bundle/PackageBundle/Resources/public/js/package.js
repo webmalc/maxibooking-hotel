@@ -143,9 +143,43 @@ var initAccommodationTab = function () {
     });
 }
 
+var deleteUndaid = function () {
+    $('.booking-delete-link').on('click', function (e) {
+        e.preventDefault();
+        $('#modal_delete_package').attr('data-order', $(this).data('order'));
+        $('.modal-body').html(mbh.loader.html);
+
+        return $.ajax({
+            url: Routing.generate('package_delete', {'id': $(this).data('id')}),
+            type: "GET",
+            data: {},
+            success: function (urlFromController) {
+                $('#modal_delete_package').html(urlFromController);
+                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
+                $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+            }
+        });
+    });
+    $('.order-booking-delete-link').on('click', function (e) {
+        e.preventDefault();
+        $('.modal-body').html(mbh.loader.html);
+
+        return $.ajax({
+            url: Routing.generate('order_delete', {'id': $(this).data('id')}),
+            type: "GET",
+            data: {},
+            success: function (urlFromController) {
+                $('#modal_delete_package').html(urlFromController);
+                $('#mbh_bundle_packagebundle_delete_reason_type_order').val($('#modal_delete_package').attr('data-order'));
+                $('select#mbh_bundle_packagebundle_order_delete_reason_type_deleteReason').select2();
+            }
+        });
+    });
+}
 
 var docReadyPackages = function () {
     'use strict';
+    deleteUndaid();
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
@@ -297,10 +331,12 @@ var docReadyPackages = function () {
         "drawCallback": function (settings, json) {
 
             $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
-            deleteLink();
             $('.deleted-entry').closest('tr').addClass('danger');
             $('.not-confirmed-entry').closest('tr').addClass('info');
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
+            $('.booking-delete-link').attr('data-toggle', 'modal');
+
+            deleteUndaid();
 
             //summary
             $('#package-summary-total').html(settings.json.package_summary_total || '-');
@@ -310,7 +346,6 @@ var docReadyPackages = function () {
             $('#package-summary-guests').html(settings.json.package_summary_guests || '-');
         }
     });
-
 
     // package datatable filter
     (function () {

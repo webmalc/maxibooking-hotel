@@ -1,0 +1,14 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = "package.edit.edit_delete_reasons"|trans({}, "MBHPackageBundle") ~ reason.id  %}
+{% set layout='box' %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('reason_update',  {'id': reason.id}),  'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'delete_route': 'delete_reasons_delete'} %}
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': reason, 'logs': logs} %}
+
+{% endblock %}
