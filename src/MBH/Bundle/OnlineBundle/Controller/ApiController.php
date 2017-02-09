@@ -292,7 +292,7 @@ class ApiController extends Controller
 
         foreach ($formConfig->getHotels() as $hotel) {
             if (is_null($query->tariff)) {
-                $defaultTariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(array('hotel.id' => $hotel->getId(), 'isOnline' => true, 'isDefault' => true, 'isEnabled' => true));
+                $defaultTariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['hotel.id' => $hotel->getId(), 'isOnline' => true, 'isDefault' => true, 'isEnabled' => true]);
                 $query->tariff = !is_null($defaultTariff) ? $defaultTariff : $this->getTariffByHotel($hotel);
             }
             foreach ($hotel->getRoomTypes() as $roomType) {
