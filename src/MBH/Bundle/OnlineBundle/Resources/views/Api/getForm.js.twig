@@ -103,7 +103,7 @@ jQuery(document).ready(function () {
     if (adults.length) {
         adults.change(function () {
             var val = parseInt(adults.val());
-            if (isNaN(val) || (val < 0) || (val == 0)) {
+            if (isNaN(val)) {
                 adults.val(1);
             } else {
                 adults.val(val);
@@ -113,7 +113,7 @@ jQuery(document).ready(function () {
     if (children.length) {
         children.change(function () {
             var val = parseInt(children.val());
-            if (isNaN(val) || (val < 0) || (val == 0)) {
+            if (isNaN(val)) {
                 children.val(0);
             } else {
                 children.val(val);
