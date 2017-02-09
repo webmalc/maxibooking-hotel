@@ -390,6 +390,6 @@ csv.form.modal_generate: Сгенерировать
 csv.form.countNight: Кол-во Ночей
 csv.form.countPersons: Кол-во Людей
 
-report.porter.note: Комментарий
+report.porter.note: 'Комментарий:'
 modal.form.delete.reasons.reason: Причина удаления
 modal.form.delete.delete_reason_package: Причина удаления брони

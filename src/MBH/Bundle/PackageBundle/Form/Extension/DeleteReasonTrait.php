@@ -15,11 +15,9 @@ trait DeleteReasonTrait
                 'label' => 'report.porter.note',
                 'required' => false,
                 'attr' => ['rows' => '10'],
-                'label_attr' => ['class' => 'col-sm-2', 'class' => 'col-md-2']
             ])
             ->add('deleteReason', DocumentType::class, [
                 'label' => 'modal.form.delete.reasons.reason',
-                'label_attr' => ['class' => 'col-sm-2', 'class' => 'col-md-2'],
                 'class' => 'MBH\Bundle\PackageBundle\Document\DeleteReason',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->createQueryBuilder()
