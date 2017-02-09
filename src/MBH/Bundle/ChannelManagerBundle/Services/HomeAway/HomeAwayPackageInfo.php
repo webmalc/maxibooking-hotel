@@ -12,6 +12,8 @@ class HomeAwayPackageInfo extends AbstractPackageInfo
     private $bookingRequest;
     /** @var  HomeAwayConfig $config */
     private $config;
+    private $price;
+    private $tourists;
 
     /**
      * @param \SimpleXMLElement $bookingRequest
@@ -80,19 +82,26 @@ class HomeAwayPackageInfo extends AbstractPackageInfo
         return (int)$this->getReservationData()->numberOfChildren;
     }
 
+    public function setPrice($price)
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
     public function getPrices()
     {
-        // TODO: Implement getPrices() method.
+        return [];
     }
 
     public function getPrice()
     {
-        // TODO: Implement getPrice() method.
+        return $this->price;
     }
 
     public function getNote()
     {
-        // TODO: Implement getNote() method.
+        return $this->note;
     }
 
     public function getIsCorrupted()
@@ -102,17 +111,24 @@ class HomeAwayPackageInfo extends AbstractPackageInfo
 
     public function getTourists()
     {
-        // TODO: Implement getTourists() method.
+        return $this->tourists;
+    }
+
+    public function setTourists($tourists)
+    {
+        $this->tourists = $tourists;
+
+        return $this;
     }
 
     public function getIsSmoking()
     {
-        // TODO: Implement getIsSmoking() method.
+        return false;
     }
 
     public function getChannelManagerId()
     {
-        // TODO: Implement getChannelManagerId() method.
+        return trim((string)$this->bookingRequest->inquiryId);
     }
 
     private function getPaymentData()

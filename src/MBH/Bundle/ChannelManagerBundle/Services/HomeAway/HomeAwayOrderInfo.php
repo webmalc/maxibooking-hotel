@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
@@ -17,6 +18,9 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
     private $bookingData;
     /** @var  HomeAwayConfig $config */
     private $config;
+
+    private $isCashDocumentsInit = false;
+    private $cashDocuments;
 
     /**
      * @param \SimpleXMLElement $bookingData
@@ -59,23 +63,51 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
 
     public function getPrice()
     {
-        // TODO: Implement getPrice() method.
+        $price = 0;
+        foreach ($this->bookingData->orderItemList as $orderItem) {
+            /** @var \SimpleXMLElement $orderItem */
+            $totalPriceInCurrency = trim((float)$orderItem->totalAmount);
+            $currency = (string)$orderItem->totalAmount->attributes()['currency'];
+            $price += $this->getPriceInLocaleCurrency($totalPriceInCurrency, $currency);
+        }
+
+        return $price;
+    }
+    
+    public function getCashDocuments(Order $order) 
+    {
+        if (!$this->isCashDocumentsInit) {
+            //TODO: Уточнить
+            $payMethod = !is_null($this->getCreditCard()) ? 'electronic' : 'cash';
+
+            foreach ($this->bookingData->orderItemList as $orderItem) {
+                /** @var \SimpleXMLElement $orderItem */
+                $totalPriceInCurrency = trim((float)$orderItem->totalAmount);
+                $operation = $totalPriceInCurrency > 0 ? 'in' : 'out';
+                $currency = (string)$orderItem->totalAmount->attributes()['currency'];
+
+                //Если не указан статус оплаты - значит статус "ACCEPTED"
+                $isPaid = empty($orderItem->status) || trim((string)$orderItem->status) == 'ACCEPTED';
+                $this->cashDocuments[] = (new CashDocument())
+                    ->setMethod($payMethod)
+                    ->setOperation($operation)
+                    ->setOrder($order)
+                    ->setTouristPayer($this->getPayer())
+                    ->setTotal($this->getPriceInLocaleCurrency(abs($totalPriceInCurrency), $currency))
+                    ->setIsPaid($isPaid);
+            }
+            $this->isCashDocumentsInit = true;
+        }
+        
+        return $this->cashDocuments;
     }
 
-    public function getCashDocuments(Order $order)
+    private function getPriceInLocaleCurrency($price, $currency)
     {
-        $cashDocuments = [];
-        $paymentData = $this->bookingData->paymentForm[0];
-        $paymentDataNode = null;
-        if (!empty($paymentData->paymentCard)) {
-            $paymentDataNode = $paymentData->paymentCard;
-        } elseif (!empty($paymentData->paymentInvoice)) {
-            $paymentDataNode = $paymentData->paymentInvoice;
-        }
-
-        if (!is_null($paymentDataNode)) {
-
-        }
+        $localeCurrency = $this->container->getParameter('locale.currency');
+        return $currency != strtoupper($localeCurrency)
+            ? $this->container->get('mbh.currency')->convertToRub($price, $currency)
+            : $price;
     }
 
     public function getSource() : ?PackageSource
@@ -92,6 +124,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
         return [
             $this->container->get('mbh.channelmanager.homeaway_package_info')
                 ->setInitData($this->bookingData, $this->config)
+                ->setPrice($this->getPrice())
         ];
     }
 
@@ -100,7 +133,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
      */
     public function getServices()
     {
-        // TODO: Implement getServices() method.
+        return [];
     }
 
     /**
@@ -115,7 +148,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
         if ($isCardSpecified) {
             $card = new CreditCard();
             $cardTypeDescription = $paymentCardData->paymentCardDescriptor[0];
-            $cardType = trim((string)$cardTypeDescription->cardCode) . ' ' 
+            $cardType = trim((string)$cardTypeDescription->cardCode) . ' '
                 . trim((string)$cardTypeDescription->codeType) . ' '
                 . trim((string)$cardTypeDescription->paymentFormType);
 
