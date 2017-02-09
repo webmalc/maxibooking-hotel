@@ -204,9 +204,11 @@ package.index.placement: Размещение
 package.index.guests: Гости
 package.index.price: Стоимость
 package.index.created: Создана
+package.index.default: Основной
 package.index.isUpdated: Обновлён
 package.index.selection: 'Подбор'
 package.index.porter_link: 'Отчет портье'
+package.index.deleted: Удаленные?
 package.json.reservation_type: 'Тип брони:'
 package.json.edit_record: Редактирование записи
 package.json.edit_record.order: заказа
@@ -356,6 +358,13 @@ package.index.summary.paid: Оплачено
 package.index.summary.debt: Долг
 package.index.summary.nights: Ночей
 package.index.summary.guests: Гостей
+package.index.name: Название
+package.index.inner_name: Внутреннее название
+package.index.created: Создан
+package.index.delete_reason: причины удаления
+package.index.edit_record: Редактирование записи
+package.index.delete_record: Удаление записи
+package.edit.edit_delete_reasons: редактирование причины удаления
 accommodation.alert: Не рекомендуется размещать гостей до их заезда в отель
 
 
@@ -427,5 +436,11 @@ report.porter.out.table: Выезд
 
 report.porter.note: Комментарий
 
-
 report.work_shift.small_title: 'Рабочие смены'
+
+modal.form.delete.reasons.confirmation: Точно удалить эту запись?
+modal.form.delete.reasons.package: Причина удаления брони
+modal.form.delete.reasons.order: Причина удаления заказа
+modal.form.delete.reasons.reason_default: Не указана
+modal.form.delete.reasons.close: Отмена
+modal.form.delete.reasons.delete: Удалить

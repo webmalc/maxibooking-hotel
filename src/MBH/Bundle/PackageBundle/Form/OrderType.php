@@ -15,6 +15,9 @@ class OrderType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var Package $package */
+        $order = $options['data'];
+
         $builder
                 ->add('source', DocumentType::class, [
                     'label' => 'form.orderType.source',
@@ -36,10 +39,20 @@ class OrderType extends AbstractType
                     'label' => 'form.orderType.is_confirmed',
                     'value' => true,
                     'required' => false
-                ])
-        ;
-                
-        ;
+                ]);
+        if ($order->isDeleted()) {
+            $builder
+                ->add('deleteReason', DocumentType::class, [
+                    'label' => 'modal.form.delete.reasons.reason',
+                    'class' => 'MBH\Bundle\PackageBundle\Document\DeleteReason',
+                    'query_builder' => function (DocumentRepository $dr) use ($options) {
+                        return $dr->createQueryBuilder()
+                            ->field('deletedAt')->exists(false)
+                            ->sort(['isDefault' => 'desc']);
+                    },
+                    'required' => true
+                ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
