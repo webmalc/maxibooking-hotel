@@ -1,19 +1,10 @@
-<div class="modal-dialog modal-xxl">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h4 class="modal-title">{{ 'modal.form.delete.reasons.confirmation'|trans({}, 'MBHPackageBundle') }}</h4>
-        </div>
-        <div class="modal-body">
-            {% form_theme form 'MBHPackageBundle:Documents:modalFormFields.html.twig' %}
-            {{ form_start(form, {'action': path(controllerName, { 'id': entity.id }), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
-            {{ form_errors(form) }}
-            {{ form_widget(form) }}
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'modal.form.delete.reasons.close'|trans({}, 'MBHPackageBundle') }}</button>
-                <button type="submit" class="btn btn-danger">{{ 'modal.form.delete.reasons.delete'|trans({}, 'MBHPackageBundle') }}</button>
+<div id="modal_delete_package" class="modal fade">
+    <div class="modal-dialog modal-xxl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ 'modal.form.delete.reasons.confirmation'|trans({}, 'MBHPackageBundle') }}</h4>
             </div>
-            {{ form_end(form) }}
+            <div class="modal-body"></div>
         </div>
     </div>
 </div>

@@ -996,7 +996,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/modal/package_delete_modal", name="package_delete", options={"expose"=true})
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', id) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
-     * @Template()
+     * @Template("@MBHPackage/Package/deleteModalContent.html.twig")
      * @return array|RedirectResponse
      */
     public function deleteModalAction(Request $request, Package $entity)
