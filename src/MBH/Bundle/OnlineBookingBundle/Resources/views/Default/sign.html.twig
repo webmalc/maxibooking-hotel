@@ -159,17 +159,18 @@
 {#</script>#}
 
 {% if form.reservation is defined %}
-    {% set gaGoal, yaGoal = 'Отправка заявки', 'mb_bron_orde' %}
+    {% set gaGoal, yaGoal = 'Отправка заявки', 'mb_bron_order' %}
 {% else %}
     {% set gaGoal, yaGoal = 'Купить Онлайн МБ', 'mb_bron_payment_online' %}
 {% endif %}
 <script>
     $("form#sign-form").on('submit', function (e) {
         if ('undefined' !== typeof yaCounter10885255) {
-            yaCounter10885255.reachGoal({{ 'yaGoal' }});
+            yaCounter10885255.reachGoal('{{ yaGoal }}');
         }
         if ('undefined' !== typeof ga) {
-            ga('send', 'event', 'Бронирование МБ', '{{ gaGoal }}', parseInt($(e.target).find("input#form_total").val()));
+            var total = parseInt($(e.target).find("input#form_total").val());
+            ga('send', 'event', 'Бронирование МБ', '{{ gaGoal }}', total);
         }
     });
 
