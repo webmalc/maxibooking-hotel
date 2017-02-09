@@ -57,28 +57,17 @@ services:
 
     mbh.channelmanager.homeaway_data_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayDataFormatter
-        arguments: ['@mbh.channelmanager.helper', '%locale.currency%', '@router', '@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager']
+        arguments: ['@mbh.channelmanager.helper', '%locale.currency%', '@router', '@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager', '@mbh.package.search']
 
     mbh.channelmanager.homeaway_order_info:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayOrderInfo
         arguments: ['@service_container']
-
-    mbh.channelmanager.hundred_one_hotels:
-        class: MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels
-        arguments: ['@service_container']
-
-    mbh.channelmanager.hoh_order_info:
-        class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\OrderInfo
-        arguments: ['@service_container']
         shared: false
 
-    mbh.channelmanager.hoh_package_info:
-        class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\PackageInfo
+    mbh.channelmanager.homeaway_package_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayPackageInfo
         arguments: ['@service_container']
         shared: false
-
-    mbh.channelmanager.hoh_request_formatter:
-        class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\HOHRequestFormatter
 
     mbh.channel_manager.order_handler:
         class: MBH\Bundle\ChannelManagerBundle\Services\OrderHandler

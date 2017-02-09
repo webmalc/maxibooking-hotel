@@ -204,9 +204,6 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig", mappedBy="hotel") */
     protected $hundredOneHotelsConfig;
 
-    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig", mappedBy="hotel") */
-    protected $expediaConfig;
-
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig", mappedBy="hotel") */
     protected $tripAdvisorConfig;
 

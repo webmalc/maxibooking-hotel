@@ -20,7 +20,6 @@ class ExpediaPackageInfo extends AbstractPackageInfo
     private $roomTypes;
     private $tariffs;
     private $payer;
-    private $isCorrupted = false;
     private $isPricesInit = false;
     private $prices = [];
     private $isSmoking = false;
@@ -118,7 +117,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         return $tariff;
     }
 
-    public function getBeginDate()
+    public function getBeginDate() : \DateTime
     {
         $prices = $this->getPrices();
         /** @var PackagePrice $firstPackagePrice */
@@ -127,7 +126,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         return $firstPackagePrice->getDate();
     }
 
-    public function getEndDate()
+    public function getEndDate() : \DateTime
     {
         $prices = $this->getPrices();
         /** @var PackagePrice $lastPackagePrice */

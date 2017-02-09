@@ -8,7 +8,6 @@ use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
 class TripAdvisorPackageInfo extends AbstractPackageInfo
 {
-    private $isCorrupted;
     private $roomData;
     private $checkInDate;
     private $checkOutDate;
@@ -37,12 +36,12 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
         return $this;
     }
 
-    public function getBeginDate()
+    public function getBeginDate() : \DateTime
     {
         return $this->helper->getDateFromString($this->checkInDate, 'Y-m-d');
     }
 
-    public function getEndDate()
+    public function getEndDate() : \DateTime
     {
         return $this->helper->getDateFromString($this->checkOutDate, 'Y-m-d');
     }

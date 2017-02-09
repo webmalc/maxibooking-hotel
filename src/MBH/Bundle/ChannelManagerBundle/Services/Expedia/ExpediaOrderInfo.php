@@ -114,7 +114,6 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     public function getCashDocuments(Order $order)
     {
         $cashDocuments = [];
-        /** @var \SimpleXMLElement $cardElement */
         $sourceAttributeData = (string)$this->orderDataXMLElement->attributes()['source'];
         if (!($sourceAttributeData[0] == 'A')) {
             $cashDocument = new CashDocument();
@@ -125,8 +124,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
                 ->setOrder($order)
                 ->setTouristPayer($this->getPayer())
                 ->setTotal($this->getPrice());
-            $this->orderNote .= $this->translator->trans('order_info.expedia.need_сonfirm_cash_payment_document') . "\n";
-
+            $this->addOrderNote($this->translator->trans('order_info.expedia.need_сonfirm_cash_payment_document'));
             $amountOfTaxes = $this->orderDataXMLElement->xpath('RoomStay/Total/@amountOfTaxes');
             if ($amountOfTaxes) {
                 $feeCashDocument = new CashDocument();

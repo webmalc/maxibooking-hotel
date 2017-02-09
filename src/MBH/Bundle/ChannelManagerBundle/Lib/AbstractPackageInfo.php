@@ -14,6 +14,7 @@ abstract class AbstractPackageInfo
     protected $note = '';
     protected $translator;
     protected $noteMessages = [];
+    protected $isCorrupted = false;
 
     public function __construct(ContainerInterface $container)
     {
@@ -22,8 +23,8 @@ abstract class AbstractPackageInfo
         $this->translator = $container->get('translator');
     }
 
-    abstract public function getBeginDate();
-    abstract public function getEndDate();
+    abstract public function getBeginDate() : \DateTime;
+    abstract public function getEndDate() : \DateTime;
     abstract public function getRoomType();
     abstract public function getTariff();
     abstract public function getAdultsCount();

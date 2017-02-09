@@ -137,7 +137,7 @@ class HomeAwayController extends BaseController
 
     public function quoteRequestAction(Request $request)
     {
-        
+
     }
 
     public function bookingRequestAction(Request $request)
@@ -146,7 +146,7 @@ class HomeAwayController extends BaseController
         $bookingRequest = $request->get('xml');
         $bookingRequestXML = new \SimpleXMLElement($bookingRequest);
         $documentVersion = (string)$bookingRequestXML->documentVersion;
-        $bookingRequestDetails = $bookingRequestXML->bookingRequestDetails;
+        $bookingRequestDetails = $bookingRequestXML->bookingRequestDetails[0];
         $orderInfo = $this->get('mbh.channelmanager.homeaway_order_info')->setInitData($bookingRequestDetails);
     }
 
@@ -155,6 +155,23 @@ class HomeAwayController extends BaseController
      */
     public function testAction()
     {
+        $xml = '<inquirer>
+            <title>Ms.</title>
+            <firstName>Amy</firstName>
+            <lastName>Smith</lastName>
+            <emailAddress>amy@gmail.com</emailAddress>
+            <phoneNumber> 5125551212</phoneNumber>
+            <address rel="BILLING">
+                <addressLine1>10 Main Street</addressLine1>
+                <addressLine3>Austin</addressLine3>
+                <addressLine4>TX</addressLine4>
+                <country>US</country>
+                <postalCode>78703</postalCode>
+            </address>
+        </inquirer>';
+
+        $xmlElement = new \SimpleXMLElement($xml);
+
         return new Response(true ? 'true' : 'false');
     }
 }

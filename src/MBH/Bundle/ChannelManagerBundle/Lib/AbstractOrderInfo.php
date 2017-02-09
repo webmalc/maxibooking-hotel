@@ -134,7 +134,7 @@ abstract class AbstractOrderInfo
         return $this->noteMessages;
     }
 
-    protected function addOrderNote($note, $preface) : string
+    protected function addOrderNote($note, $preface = null) : string
     {
         $note = trim($note);
         if ($note !== '') {

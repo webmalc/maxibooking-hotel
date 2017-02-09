@@ -95,7 +95,7 @@ form.expedia.password.placeholder: Пароль
 form.expedia.username.label: Имя пользователя
 form.expedia.username.help: Имя пользователя для входа в аккаунт Expedia
 form.expedia.username.placeholder: Имя пользователя
-order_info.expedia.need_сonfirm_cash_payment_document: Необходимо подвердить кассовый документ о платеже
+order_info.expedia.need_сonfirm_cash_payment_document: Необходимо подтвердить кассовый документ о платеже
 order_info.expedia.need_сonfirm_cash_tax_document: Необходимо подвердить кассовый документ о комиссии
 order_info.expedia.required_data_missing: Ошибка при обработке синхронизации броней. В полученных от сервиса данных отсутствуют %elementDescription%
 order_info.expedia.required_order_data: 'обязательные данные: "%dataAttribute% заказа"'
@@ -121,6 +121,8 @@ form.homeAwayType.hotel_id_in_home_away: ID отеля в HomeAway
 controller.homeAwayController.settings_saved_success: 'Настройки успешно сохранены.'
 form.home_away_type.main_tariff.label: Тариф
 form.home_away_type.main_tariff.help: Тариф, данные по которому синхронизируются с HomeAway
+services.home_away.invalid_room_type_id: Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking
+services.home_away.nor_one_room_type: Не найдено ни одного типа комнат для данного отеля
 #tripadvisor
 package_info.tripadvisor.children_age: 'Возраст детей: %ages%'
 form.trip_advisor_type.hotel_id: ID отеля
