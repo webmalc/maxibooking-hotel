@@ -3,12 +3,17 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Currency;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\OrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
@@ -30,6 +35,9 @@ class HomeAwayDataFormatter
     private $roomManager;
     /** @var  SearchFactory $search */
     private $searchFactory;
+    /** @var  Currency $currencyHandler */
+    private $currencyHandler;
+    private $locale;
 
     public function __construct(
         ChannelManagerHelper $channelManagerHelper,
@@ -37,7 +45,8 @@ class HomeAwayDataFormatter
         Router $router,
         DocumentManager $dm,
         RoomTypeManager $manager,
-        SearchFactory $searchFactory
+        SearchFactory $searchFactory,
+        Currency $currencyHandler
     ) {
         $this->channelManagerHelper = $channelManagerHelper;
         $this->localeCurrency = $localeCurrency;
@@ -45,6 +54,7 @@ class HomeAwayDataFormatter
         $this->dm = $dm;
         $this->roomManager = $manager;
         $this->searchFactory = $searchFactory;
+        $this->currencyHandler = $currencyHandler;
     }
 
     public function formatListingContentIndex(ChannelManagerConfigInterface $config, $dataType)
@@ -112,7 +122,7 @@ class HomeAwayDataFormatter
         return $ratesElement;
     }
 
-    public function formatAvailabilityData($homeAwayRoomTypeId)
+    public function formatAvailabilityData($homeAwayRoomTypeId, HomeAwayConfig $config)
     {
         $config = $this->dm->getRepository('MBHChannelManagerBundle:HomeAwayConfig')
             ->findOneBy(['rooms.roomId' => $homeAwayRoomTypeId]);
@@ -121,11 +131,9 @@ class HomeAwayDataFormatter
         $beginDate = $this->getBeginDate();
         $endDate = $this->getEndDate();
 
-        //TODO: Изменить значение тарифа
-        $tariff = '';
-        $priceCaches = $this->getPriceCaches($beginDate, $endDate, $config, $mbhRoomTypeId, $tariff);
-        $restrictions = $this->getRestrictions($beginDate, $endDate, $config, $mbhRoomTypeId, $tariff);
-        $roomCaches = $this->getRoomCaches($beginDate, $endDate, $config, $mbhRoomTypeId, $tariff);
+        $priceCaches = $this->getPriceCaches($beginDate, $endDate, $config, $mbhRoomTypeId, $config->getMainTariff());
+        $restrictions = $this->getRestrictions($beginDate, $endDate, $config, $mbhRoomTypeId, $config->getMainTariff());
+        $roomCaches = $this->getRoomCaches($beginDate, $endDate, $config, $mbhRoomTypeId, $config->getMainTariff());
 
         $availabilityElement = new \SimpleXMLElement('<unitAvailabilityEntities/>');
         $availabilityElement->addChild('listingExternalId', $mbhRoomTypeId);
@@ -142,7 +150,7 @@ class HomeAwayDataFormatter
         $availabilityConfigElement = $unitAvailabilityElement->addChild('unitAvailabilityConfiguration');
 
         $availabilityData = $this->getAvailabilityData($beginDate, $endDate, $roomCaches, $restrictions, $priceCaches,
-            $mbhRoomTypeId, $tariff);
+            $mbhRoomTypeId, $config->getMainTariff());
         $availabilityConfigElement->addChild('availability', $availabilityData['availability']);
         $availabilityConfigElement->addChild('maxStay', $availabilityData['maxStay']);
         $availabilityConfigElement->addChild('minStay', $availabilityData['minStay']);
@@ -165,28 +173,34 @@ class HomeAwayDataFormatter
         $responseDetailsElement->addChild('quoteResponseDetails', $locale);
         $orderListElement = $responseDetailsElement->addChild('orderList');
         $orderElement = $orderListElement->addChild('order');
-        //TODO: Валюта может быть одной из: USD, EUR, GBP
-        $currency = '';
+
+        // В HomeAway валюта может быть одной из: USD, EUR, GBP;
+        $upperLocaleCurrency = strtoupper($this->localeCurrency);
+        $currency = $this->getAvailableCurrency($upperLocaleCurrency);
         $orderElement->addChild('currency', $currency);
         $orderItemListElement = $orderElement->addChild('orderItemList');
 
         $searchResults = $this->getSearchResults($roomTypeId, $adultCount, $childrenCount, $beginString, $endString,
             $config->getMainTariff());
+
         if (count($searchResults) > 0) {
             $roomTypeQuoteData = current($searchResults);
             //Поиск ведется только по 1 синхронизируемому тарифу для 1 типа номера
             $searchResult = current($roomTypeQuoteData['results']);
             /** @var SearchResult $searchResult */
             $orderItemElement = $orderItemListElement->addChild('orderItem');
+
             //TODO: Добавить везде данные
             $orderItemElement->addChild('description', 'Rent');
             $orderItemElement->addChild('feeType', 'RENTAL');
             $orderItemElement->addChild('name', 'Rent');
 
             $price = $searchResult->getPrice($adultCount, $childrenCount);
-            $preTaxAmountElement = $orderItemElement->addChild('preTaxAmount', $price);
+            $resultPrice = $this->isLocalCurrencyAvailable($upperLocaleCurrency)
+                ? $price : $this->currencyHandler->convertFromRub($price, $currency);
+            $preTaxAmountElement = $orderItemElement->addChild('preTaxAmount', $resultPrice);
             $preTaxAmountElement->addAttribute('currency', $currency);
-            $totalAmountElement = $orderItemElement->addChild('totalAmount', $price);
+            $totalAmountElement = $orderItemElement->addChild('totalAmount', $resultPrice);
             $totalAmountElement->addAttribute('currency', $currency);
 
             $paymentScheduleElement = $orderItemListElement->addChild('paymentSchedule');
@@ -208,7 +222,7 @@ class HomeAwayDataFormatter
             //TODO: Расписание платежей. Какую указывать дату?
             $paymentItemListElement = $paymentScheduleElement->addChild('paymentScheduleItemList');
             $paymentItemElement = $paymentItemListElement->addChild('paymentScheduleItem');
-            $amountElement = $paymentItemElement->addChild('amount', $price);
+            $amountElement = $paymentItemElement->addChild('amount', $resultPrice);
             $amountElement->addAttribute('currency', $currency);
             //TODO: Заполнить, когда появятся соответствующие поля (НЕОБЯЗАТЕЛЬНЫЕ)
             $paymentItemElement->addChild('refundable');
@@ -228,9 +242,52 @@ class HomeAwayDataFormatter
         $rentalAgreementElement->addChild('agreementText');
     }
 
-    public function getBookingResponse($documentVersion)
+    public function getBookingResponse($documentVersion, $bookingResult, $messages)
     {
+        $bookingResponse = new \SimpleXMLElement('<bookingResponse/>');
 
+        if ($bookingResult instanceof Order) {
+            $responseDetailsNode = $bookingResponse->addChild('bookingResponseDetails');
+            $responseDetailsNode->addChild('documentVersion', $documentVersion);
+            $responseDetailsNode->addChild('externalId', $bookingResult->getPackages()[0]->getNumberWithPrefix());
+
+            /** @var Tourist $payer */
+            $payer = $bookingResult->getPayer();
+            $responseDetailsNode->addChild('guestProfileExternalId', $payer->getId());
+            //TODO: Установить локаль. Состоит из языка + _ + кода страны
+            $responseDetailsNode->addChild('locale', $this->locale);
+            $orderListNode = $responseDetailsNode->addChild('orderList');
+            $orderNode = $orderListNode->addChild('order');
+
+            $upperLocalCurrency = strtoupper($this->locale);
+            $currency = $this->getAvailableCurrency($upperLocalCurrency);
+            $orderNode->addChild('currency', $currency);
+            $orderNode->addChild('externalId', $bookingResult->getId());
+            //TODO: Заполнить
+            $orderItemListNode = $orderNode->addChild('orderItemList');
+            foreach ($bookingResult->getCashDocuments() as $cashDocument) {
+                /** @var CashDocument $cashDocument */
+                $orderItemNode = $orderItemListNode->addChild('orderItem');
+                $orderItemNode->addChild('externalId', $cashDocument->getId());
+                //TODO: Уточнить
+                $feeType = $cashDocument->getOperation() == 'in' ? 'RENTAL' : 'DISCOUNT';
+                $orderItemNode->addChild('feeType', $feeType);
+                $orderItemNode->addChild('Name', $feeType);
+                $price = $this->isLocalCurrencyAvailable($upperLocalCurrency)
+                    ? $cashDocument->getTotal()
+                    : $this->currencyHandler->convertFromRub($cashDocument->getTotal(), $currency);
+                $orderItemNode->addChild('preTaxAmount', $cashDocument->getTotal());
+            }
+            //TODO: Заполнить, когда будут данные
+            $orderNode->addChild('paymentSchedule');
+            //TODO: Заполнить, когда будут данные
+            $orderNode->addChild('reservationCancellationPolicy');
+            //TODO: Можно добавить
+            $orderNode->addChild('stayFees');
+
+        }
+
+        return $bookingResponse;
     }
     
     private function getAvailabilityData(
@@ -269,7 +326,7 @@ class HomeAwayDataFormatter
         ];
     }
 
-    private function getSearchResults(
+    public function getSearchResults(
         $roomTypeId,
         $adultCount,
         $childrenCount,
@@ -290,7 +347,7 @@ class HomeAwayDataFormatter
         return $this->searchFactory->setWithTariffs()->search($query);
     }
 
-    private function getPriceCaches($beginDate, $endDate, HomeAwayConfig $config, $roomTypeId, $tariffId)
+    public function getPriceCaches($beginDate, $endDate, HomeAwayConfig $config, $roomTypeId, $tariffId)
     {
         $requestedPriceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
             $beginDate,
@@ -305,7 +362,7 @@ class HomeAwayDataFormatter
         return $requestedPriceCaches[$roomTypeId][$tariffId];
     }
 
-    private function getRestrictions(
+    public function getRestrictions(
         $beginDate,
         $endDate,
         ChannelManagerConfigInterface $config,
@@ -322,7 +379,7 @@ class HomeAwayDataFormatter
         );
     }
 
-    private function getRoomCaches($beginDate, $endDate, ChannelManagerConfigInterface $config, $roomTypeId, $tariffId)
+    public function getRoomCaches($beginDate, $endDate, ChannelManagerConfigInterface $config, $roomTypeId, $tariffId)
     {
         return $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $beginDate,
@@ -332,6 +389,16 @@ class HomeAwayDataFormatter
             [$tariffId],
             true
         );
+    }
+
+    private function isLocalCurrencyAvailable($upperLocalCurrency)
+    {
+        return in_array($upperLocalCurrency, ['USD', 'EUR', 'GBP']);
+    }
+
+    private function getAvailableCurrency($upperLocalCurrency)
+    {
+        return $this->isLocalCurrencyAvailable($upperLocalCurrency) ? $upperLocalCurrency: 'USD';
     }
 
     private function getBeginDate()

@@ -105,26 +105,6 @@ class HotelExtendedType extends AbstractType
             'required' => false
         ]);
 
-        $builder
-            ->add('contact_full_name', TextType::class, [
-                'label' => 'form.hotelExtendedType.contact_full_name.label',
-                'help' => 'form.hotelExtendedType.contact_full_name.help',
-                'group' => 'form.hotelExtendedType.contact_person_info',
-                'required' => false
-            ])
-            ->add('contact_email', EmailType::class, [
-                'label' => 'form.hotelExtendedType.contact_email.label',
-                'help' => 'form.hotelExtendedType.contact_email.help',
-                'group' => 'form.hotelExtendedType.contact_person_info',
-                'required' => false
-            ])
-            ->add('contact_phone_number', TextType::class, [
-                'label' => 'form.hotelExtendedType.contact_phone_number.label',
-                'help' => 'form.hotelExtendedType.contact_phone_number.help',
-                'group' => 'form.hotelExtendedType.contact_person_info',
-                'required' => false
-            ]);
-
         $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }
 

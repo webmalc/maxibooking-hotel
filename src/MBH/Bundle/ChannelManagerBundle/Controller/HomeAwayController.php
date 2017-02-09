@@ -147,7 +147,13 @@ class HomeAwayController extends BaseController
         $bookingRequestXML = new \SimpleXMLElement($bookingRequest);
         $documentVersion = (string)$bookingRequestXML->documentVersion;
         $bookingRequestDetails = $bookingRequestXML->bookingRequestDetails[0];
-        $orderInfo = $this->get('mbh.channelmanager.homeaway_order_info')->setInitData($bookingRequestDetails);
+        $config = $this->hotel->getHomeAwayConfig();
+        $orderInfo = $this->get('mbh.channelmanager.homeaway_order_info')->setInitData($bookingRequestDetails, $config);
+        $resultOfCreation = $this->get('mbh.channel_manager.order_handler')->createOrder($orderInfo);
+        $bookingCreationResponse = $this->get('mbh.channelmanager.homeaway_data_formatter')
+            ->getBookingResponse($documentVersion, $orderInfo, $orderInfo->getMessages());
+
+
     }
 
     /**
