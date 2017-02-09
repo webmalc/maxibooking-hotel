@@ -53,6 +53,13 @@ class DeleteReason extends Base
     protected $fullTitle;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string", name="code")
+     */
+    protected $code;
+
+    /**
      * @var boolean
      * @ODM\Field(type="boolean", name="system")
      * @Assert\NotNull()
@@ -113,6 +120,28 @@ class DeleteReason extends Base
     public function getFullTitle(): ?string
     {
         return $this->fullTitle;
+    }
+
+    /**
+     * Set code
+     *
+     * @param string $code
+     * @return self
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+        return $this;
+    }
+
+    /**
+     * Get code
+     *
+     * @return string $code
+     */
+    public function getCode(): string
+    {
+        return $this->code;
     }
 
     /**

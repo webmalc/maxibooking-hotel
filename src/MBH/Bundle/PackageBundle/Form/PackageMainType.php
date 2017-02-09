@@ -179,6 +179,8 @@ class PackageMainType extends AbstractType
         if ($package->isDeleted()) {
             $builder
                 ->add('deleteReason', DocumentType::class, [
+                    'empty_data'  => null,
+                    'required'    => false,
                     'label' => 'modal.form.delete.reasons.reason',
                     'group' => 'modal.form.delete.delete_reason_package',
                     'class' => 'MBH\Bundle\PackageBundle\Document\DeleteReason',
@@ -187,7 +189,6 @@ class PackageMainType extends AbstractType
                             ->field('deletedAt')->exists(false)
                             ->sort(['isDefault' => 'desc']);
                     },
-                    'required' => true
                 ]);
         }
         if ($options['corrupted']) {
