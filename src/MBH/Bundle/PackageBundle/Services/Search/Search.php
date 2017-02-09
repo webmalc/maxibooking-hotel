@@ -302,12 +302,14 @@ class Search implements SearchInterface
                 continue;
             }
 
-            $check = PromotionConditionFactory::checkConditions(
-                $tariff, $duration, $query->adults, $query->children
-            );
+            if (!$query->forceBooking) {
+                $check = PromotionConditionFactory::checkConditions(
+                    $tariff, $duration, $query->adults, $query->children
+                );
 
-            if (!$check) {
-                continue;
+                if (!$check) {
+                    continue;
+                }
             }
 
 
