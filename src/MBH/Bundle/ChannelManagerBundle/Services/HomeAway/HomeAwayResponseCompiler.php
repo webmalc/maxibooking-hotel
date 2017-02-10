@@ -67,13 +67,25 @@ class HomeAwayResponseCompiler
             $listingEntry->addChild('listingHomeAwayId', $channelManagerRoomType->getRoomId());
             $listingEntry->addChild('unitExternalId', $roomType->getId());
             $listingEntry->addChild('active', $roomType->getIsEnabled());
-            $listingEntry->addChild('lastUpdatedDate', $roomType->getUpdatedAt()->format('Y-m-d\TH:i:s') . 'Z');
+            $listingEntry->addChild('lastUpdatedDate', $roomType->getUpdatedAt()->format('Y-m-d\TH:i:s\Z'));
             $listingEntry->addChild($nodeName,
                 $this->router->generate($urlName, ['listingId' => $roomType->getId()]));
 //            $listingEntry->addChild('')
         }
 
         return $rootElement;
+    }
+
+    //TODO: Реализовать если потребуется.
+    public function formatBookingContentIndex(HomeAwayConfig $config, \SimpleXMLElement $bookingContentIndexData, $orders)
+    {
+        foreach ($bookingContentIndexData->advertisers->advertiser as $advertiserData) {
+            /** @var \SimpleXMLElement $advertiserData */
+            $roomTypeId = trim((string)$advertiserData->assignedId);
+            foreach ($advertiserData->inquirers->inquirer as $inquirerData) {
+                $inquirerEmail = trim((string)$inquirerData->emailAddress);
+            }
+        }
     }
 
     public function formatRatePeriodsData($begin, $end, $serviceRoomTypeId, HomeAwayConfig $config, $priceCaches)
@@ -220,6 +232,11 @@ class HomeAwayResponseCompiler
         $rentalAgreementElement = $responseDetailsElement->addChild('rentalAgreement');
         //TODO: Заполнить данными о договоре аренды. Мб текстом или URL.
         $rentalAgreementElement->addChild('agreementText');
+    }
+
+    public function formatBookingUpdateResponse($documentVersion, Order $order)
+    {
+
     }
 
     public function getBookingResponse($documentVersion, $bookingResult, $messages)

@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Restriction;
@@ -35,7 +36,7 @@ class HomeAwayDataFormatter
         return $this->dm->getRepository('MBHChannelManagerBundle:HomeAwayConfig')
             ->findOneBy(['rooms.roomId' => $homeAwayRoomTypeId]);
     }
-
+    
     public function getSearchResults(
         $roomTypeId,
         $adultCount,
@@ -99,5 +100,13 @@ class HomeAwayDataFormatter
             [$tariffId],
             true
         );
+    }
+
+    public function getOrdersByUpdateDate(string $updateDateString)
+    {
+        $updateDate = \DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $updateDateString);
+
+        return $this->dm->getRepository('MBHPackageBundle:Order')
+            ->fetchByUpdateDateAndCMType($updateDate, 'homeaway');
     }
 }

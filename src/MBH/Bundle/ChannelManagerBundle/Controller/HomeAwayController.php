@@ -157,27 +157,19 @@ class HomeAwayController extends BaseController
     }
 
     /**
+     * @Route("/booking_update/{roomTypeId}/{orderId}", name="booking_update")
+     * @param Request $request
+     */
+    public function bookingUpdateAction(Request $request)
+    {
+
+    }
+
+    /**
      * @Route("/test")
      */
-    public function testAction()
+    public function testAction(Request $request)
     {
-        $xml = '<inquirer>
-            <title>Ms.</title>
-            <firstName>Amy</firstName>
-            <lastName>Smith</lastName>
-            <emailAddress>amy@gmail.com</emailAddress>
-            <phoneNumber> 5125551212</phoneNumber>
-            <address rel="BILLING">
-                <addressLine1>10 Main Street</addressLine1>
-                <addressLine3>Austin</addressLine3>
-                <addressLine4>TX</addressLine4>
-                <country>US</country>
-                <postalCode>78703</postalCode>
-            </address>
-        </inquirer>';
-
-        $xmlElement = new \SimpleXMLElement($xml);
-
         return new Response(true ? 'true' : 'false');
     }
 }
