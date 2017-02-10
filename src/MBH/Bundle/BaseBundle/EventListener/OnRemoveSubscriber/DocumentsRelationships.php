@@ -164,7 +164,8 @@ class DocumentsRelationships
                 new Relationship(Organization::class, 'region', 'exception.region_relation_delete.message.organization')
             ],
             Service::class => [
-                new Relationship(PackageService::class, 'service', 'exception.service_relation_delete.message.packageService')
+                new Relationship(PackageService::class, 'service', 'exception.service_relation_delete.message.packageService'),
+                new Relationship(Tariff::class, 'services', 'exception.service_relation_delete.message.tariff', true)
             ],
             VegaState::class => [
                 new Relationship(Tourist::class, 'citizenship', 'exception.vegaState_relation_delete.message.tourist'),

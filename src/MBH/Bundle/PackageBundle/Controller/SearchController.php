@@ -56,7 +56,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'hotel' => $this->hotel,
             'orderId' => $request->get('order'),
             'roomManager' => $this->manager,
-            'startDate' => new \DateTime()
         ]);
 
         $tourist = new Tourist();

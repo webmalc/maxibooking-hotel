@@ -12,6 +12,7 @@ use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -32,6 +33,7 @@ class Package extends Base implements \JsonSerializable
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
+    use DeleteReasonTrait;
 
     const ROOM_STATUS_OPEN = 'open';
     const ROOM_STATUS_WAIT = 'wait'; //Не заехал
@@ -1586,6 +1588,5 @@ class Package extends Base implements \JsonSerializable
 
         return $this;
     }
-
 
 }

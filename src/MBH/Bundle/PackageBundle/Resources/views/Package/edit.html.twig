@@ -1,4 +1,4 @@
- {% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
+{% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ package.numberWithPrefix %}
 {% set layout = 'tabs' %}
@@ -31,7 +31,7 @@
                     <table class="table not-auto-datatable table-striped">
                         <tbody>
                         <tr>
-                            <td>
+                            <td class="col-md-3">
                                 <strong>{{ 'package.edit.tariff'|trans({}, 'MBHPackageBundle') }}</strong>
                             </td>
                             <td>
@@ -39,7 +39,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>
+                            <td class="col-md-3">
                                 <strong>{{ 'package.edit.price'|trans({}, 'MBHPackageBundle') }}</strong>
                             </td>
                             <td>
@@ -59,7 +59,7 @@
 
                         {% if package.prices is not empty %}
                             <tr>
-                                <td>
+                                <td class="col-md-3">
                                     <strong>{{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>
@@ -102,7 +102,7 @@
 
                         {% if package.pricesByDate is not empty and package.prices is empty %}
                             <tr>
-                                <td>
+                                <td class="col-md-3">
                                     <strong>{{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle') }}</strong>
                                 </td>
                                 <td>
@@ -123,9 +123,7 @@
                                 </td>
                             </tr>
                         {% endif %}
-                </div>
-
-                </tbody>
+                    </tbody>
                 </table>
             </div>
             <div class="col-md-6">
@@ -184,8 +182,6 @@
                 </table>
             </div>
         </div>
-
-
     </div>
     </div>
 

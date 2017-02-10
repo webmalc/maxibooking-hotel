@@ -28,7 +28,7 @@
                     </td>
                 </tr>
 
-                <tr class="header">
+                <tr class="header" data-copy-row-id="{{ roomType.id }}">
                     <td class="first-th"></td>
                     {% for date in period %}
                         <td class="header-td {% if date|date('N') >= 6 %} text-danger{% endif %}">
@@ -45,7 +45,7 @@
                 {% endif %}
 
                 {% for categoryId, category in cats %}
-                    <tr>
+                    <tr data-copy-row-id="{{ roomType.id }}">
                         <td class="first-td">
                             <small>{{ category }}</small>
                         </td>

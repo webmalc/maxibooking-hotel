@@ -153,6 +153,16 @@ class ClientConfig extends Base
      */
     protected $roomTypeZip;
 
+
+    /**
+     * @var \DateTime
+     * @ODM\Date
+     * @Gedmo\Versioned
+     * @Assert\Type(type="DateTime")
+     */
+    protected $beginDate;
+
+
     /**
      * Set sendSms
      *
@@ -479,5 +489,22 @@ class ClientConfig extends Base
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getBeginDate(): ?\DateTime
+    {
+        return $this->beginDate;
+    }
+
+    /**
+     * @param mixed $beginDate
+     */
+    public function setBeginDate(?\DateTime $beginDate)
+    {
+        $this->beginDate = $beginDate;
+    }
+
 
 }

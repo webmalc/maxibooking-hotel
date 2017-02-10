@@ -34,6 +34,7 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
     public function indexAction(Request $request)
     {
         $filter = new SpecialFilter();
+        $filter->setBegin(new \DateTime('midnight'));
         $filter->setHotel($this->hotel);
 
         $form = $this->createForm(SpecialFilterType::class, $filter);
