@@ -20,6 +20,7 @@ class OrderHandler
 
     public function createOrder(AbstractOrderInfo $orderInfo, ?Order $order = null) : Order
     {
+        //TODO: Добавить валидацию сущностей перед созданием
         if (!$order) {
             $order = new Order();
             $order->setChannelManagerStatus('new');

@@ -148,12 +148,12 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
 
     public function getChannelManagerName() : string
     {
-        return 'TripAdvisor';
+        return 'tripadvisor';
     }
 
     public function getChannelManagerDisplayedName() : string
     {
-        return $this->getChannelManagerName();
+        return 'TripAdvisor';
     }
 
     public function isOrderModified() : bool

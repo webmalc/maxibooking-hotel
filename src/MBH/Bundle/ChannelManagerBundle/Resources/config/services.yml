@@ -57,7 +57,11 @@ services:
 
     mbh.channelmanager.homeaway_data_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayDataFormatter
-        arguments: ['@mbh.channelmanager.helper', '%locale.currency%', '@router', '@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager', '@mbh.package.search']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager']
+
+    mbh.channelmanager.homeaway_response_compiler:
+        class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayResponseCompiler
+        arguments: ['@mbh.channelmanager.homeaway_data_formatter', '%locale.currency%', '@mbh.currency', '%locale%', '@mbh.channelmanager.helper', '@router']
 
     mbh.channelmanager.homeaway_order_info:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayOrderInfo

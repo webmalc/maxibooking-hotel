@@ -106,6 +106,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
     {
         $localeCurrency = $this->container->getParameter('locale.currency');
         return $currency != strtoupper($localeCurrency)
+            //TODO: Сменить на конвертирование из локальной валюты
             ? $this->container->get('mbh.currency')->convertToRub($price, $currency)
             : $price;
     }
@@ -164,13 +165,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
 
     public function getChannelManagerName() : string
     {
-        $channelName = $this->getChannelManagerDisplayedName();
-        $underscoreLinePosition = strpos($channelName, '_');
-        if ($underscoreLinePosition === false) {
-            return $channelName;
-        }
-
-        return substr($channelName, 0, $underscoreLinePosition);
+        return 'homeaway';
     }
 
     public function getChannelManagerDisplayedName() : string
