@@ -111,6 +111,10 @@ services:
           class: MBH\Bundle\PackageBundle\Services\CsvGenerate
           arguments: ['@service_container']
 
+    mbh.package.dynamic.sales.generator:
+              class: MBH\Bundle\PackageBundle\Services\DynamicSalesGenerator
+              arguments: ['@service_container']
+
     mbh.acl_document_owner_maker:
         class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
         arguments: ['@security.acl.provider', '@doctrine.odm.mongodb.document_manager']

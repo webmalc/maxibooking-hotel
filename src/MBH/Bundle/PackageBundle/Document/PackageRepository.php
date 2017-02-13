@@ -880,4 +880,18 @@ class PackageRepository extends DocumentRepository
         return $queryBuilder->getQuery()->execute();
     }
 
+    public function getPackgesRoomTypes(\DateTime $begin, \DateTime $end, $roomTypes = null){
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
+            ->field('createdAt')->gte($begin)
+            ->field('createdAt')->lte($end)
+            ->sort('createdAt', 'asc');
+        if($roomTypes)
+        {
+            $queryBuilder->field('roomType.id')->in($roomTypes);
+        }
+
+        return $queryBuilder->getQuery()->execute();
+    }
+
 }
