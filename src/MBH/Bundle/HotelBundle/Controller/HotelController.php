@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Form\HotelAdditionalInfoType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use MBH\Bundle\HotelBundle\Form\HotelType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -274,6 +275,30 @@ class HotelController extends Controller
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         );
+    }
+
+    /**
+     * @param Request $request
+     * @param Hotel $hotel
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
+     * @Route("/{id}/edit/additional", name="hotel_additional_information")
+     * @Template()
+     * @return array
+     */
+    public function additionalInformationAction(Request $request, Hotel $hotel)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(HotelAdditionalInfoType::class, $hotel);
+
+
+        return [
+            'entity' => $hotel,
+            'form' => $form->createView(),
+            'logs' => $this->logs($hotel)
+        ];
     }
 
     /**

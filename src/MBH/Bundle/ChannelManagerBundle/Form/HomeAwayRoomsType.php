@@ -18,10 +18,10 @@ class HomeAwayRoomsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         foreach ($options['booking'] as $id => $name) {
-
+            $groupName = $name . '(' . $id . ')';
             $builder->add($options['room_field_prefix'] . $id, DocumentType::class, [
                 'label' => 'form.home_away_rooms_type.sync_room_type.label',
-                'group' => $name,
+                'group' => $groupName,
                 'class' => 'MBHHotelBundle:RoomType',
                 'query_builder' => function (DocumentRepository $er) use ($options) {
                     $qb = $er->createQueryBuilder();
@@ -36,7 +36,7 @@ class HomeAwayRoomsType extends AbstractType
             ]);
 
             $builder->add($options['rental_agreement_field_prefix'] . $id, TextareaType::class, [
-                'group' => $name,
+                'group' => $groupName,
                 'label' => 'form.home_away_rooms_type.rental_agreement.label',
                 'help' => 'form.home_away_rooms_type.rental_agreement.help',
                 'required' => false

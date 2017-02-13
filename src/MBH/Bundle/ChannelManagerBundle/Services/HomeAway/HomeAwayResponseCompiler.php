@@ -56,7 +56,7 @@ class HomeAwayResponseCompiler
             $urlName = 'homeaway_rates';
             $nodeName = 'unitRatesUrl';
         }
-        //TODO: Получить значение
+        //TODO: Получить значение. ID нашей системы в HomeAway
         $assignedId = '';
         $advertiserElement->addChild('assignedId', $assignedId);
         foreach ($config->getRooms() as $channelManagerRoomType) {
@@ -155,6 +155,7 @@ class HomeAwayResponseCompiler
         $responseDetailsElement->addChild('quoteResponseDetails', $locale);
         $orderListElement = $responseDetailsElement->addChild('orderList');
         $orderElement = $orderListElement->addChild('order');
+
         // В HomeAway валюта может быть одной из: USD, EUR, GBP;
         $upperLocaleCurrency = strtoupper($this->localCurrency);
         $isLocaleCurrencyAvailable = in_array($upperLocaleCurrency, ['USD', 'EUR', 'GBP']);
@@ -198,7 +199,6 @@ class HomeAwayResponseCompiler
             $invoiceDescriptorElement->addChild('paymentFormType', 'INVOICE');
             //TODO: Можно добавить данные о платеже через накладную
             $invoiceDescriptorElement->addChild('paymentNote', '');
-
 
             //TODO: Расписание платежей. Какую указывать дату?
             $paymentItemListElement = $paymentScheduleElement->addChild('paymentScheduleItemList');

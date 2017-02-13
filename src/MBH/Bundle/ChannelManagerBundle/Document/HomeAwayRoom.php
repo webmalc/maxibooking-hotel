@@ -13,7 +13,7 @@ class HomeAwayRoom
 {
     /**
      * @var RoomType
-     * @ODM\ReferenceOne(targetDocument="RoomType")
+     * @ODM\ReferenceOne(targetDocument="\MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull()
      */
     protected $roomType;
@@ -27,7 +27,7 @@ class HomeAwayRoom
 
     /**
      * @var string
-     * @ODM\Field(type="string", rental_agreement)
+     * @ODM\Field(type="string", name="rental_agreement")
      * @Assert\NotNull()
      */
     protected $rentalAgreement;

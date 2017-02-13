@@ -309,6 +309,24 @@ class Hotel extends Base implements \JsonSerializable
      */
     protected $description;
 
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Choice( choices = {"none", "partial", "full"})
+     */
+    protected $refundableType;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $cancellationPolicy;
+
+//    /**
+//     * @var
+//     */
+//    protected $availableCardTypes;
+
     public function __construct()
     {
         $this->roomTypes = new ArrayCollection();
@@ -319,6 +337,7 @@ class Hotel extends Base implements \JsonSerializable
         $this->ingredientCategories = new ArrayCollection();
         $this->TableTypes = new ArrayCollection();
     }
+
     /**
      * @return mixed
      */
@@ -334,6 +353,7 @@ class Hotel extends Base implements \JsonSerializable
     {
         $this->TableTypes = $TableTypes;
     }
+
     /**
      * Get fullTitle
      *
@@ -1083,7 +1103,7 @@ class Hotel extends Base implements \JsonSerializable
     }
 
     /**
-     * @param Housing[] $$housings
+     * @param Housing [] $$housings
      */
     public function setHousings(array $housings)
     {
@@ -1142,7 +1162,7 @@ class Hotel extends Base implements \JsonSerializable
      */
     public function getUploadRootDir()
     {
-        return __DIR__.'/../../../../../web/upload/hotelLogos';
+        return __DIR__ . '/../../../../../web/upload/hotelLogos';
     }
 
     /**
@@ -1164,8 +1184,8 @@ class Hotel extends Base implements \JsonSerializable
     public function uploadFile()
     {
         if ($this->getFile() instanceof UploadedFile) { //$this->getFile()->getPath() != $this->getUploadRootDir()
-            if($this->getLogo()) {
-                $this->setLogo($this->getId(). '_' . uniqid() . '.'.$this->getFile()->getClientOriginalExtension());
+            if ($this->getLogo()) {
+                $this->setLogo($this->getId() . '_' . uniqid() . '.' . $this->getFile()->getClientOriginalExtension());
             }
 
             $this->file = $this->getFile()->move($this->getUploadRootDir(), $this->getLogo());
@@ -1369,5 +1389,43 @@ class Hotel extends Base implements \JsonSerializable
     public function getSpecials()
     {
         return $this->specials;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRefundableType()
+    {
+        return $this->refundableType;
+    }
+
+    /**
+     * @param string $refundableType
+     * @return Hotel
+     */
+    public function setRefundableType(string $refundableType): Hotel
+    {
+        $this->refundableType = $refundableType;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCancellationPolicy()
+    {
+        return $this->cancellationPolicy;
+    }
+
+    /**
+     * @param string $cancellationPolicy
+     * @return Hotel
+     */
+    public function setCancellationPolicy(string $cancellationPolicy): Hotel
+    {
+        $this->cancellationPolicy = $cancellationPolicy;
+
+        return $this;
     }
 }

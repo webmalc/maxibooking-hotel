@@ -49,6 +49,11 @@ form.hotelExtendedType.contact_email.label: E-mail
 form.hotelExtendedType.contact_email.help: Электронная почта контактного лица
 form.hotelExtendedType.contact_phone_number.label: Номер телефона
 form.hotelExtendedType.contact_phone_number.help: Номер телефона контактного лица
+form.hotel_additional_info_type.refundable_type.label: Возвращаются ли деньги?
+form.hotel_additional_info_type.refundable_type.none: Нет
+form.hotel_additional_info_type.refundable_type.partial: Частично
+form.hotel_additional_info_type.refundable_type.full: Полностью
+form.hotel_additional_info_type.cancellation_policy.label: Правила закрытия броней
 
 form.roomType.name: Название
 form.roomType.general_info: Общая информация

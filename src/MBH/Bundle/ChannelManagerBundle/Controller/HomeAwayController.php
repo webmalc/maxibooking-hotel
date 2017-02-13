@@ -188,7 +188,7 @@ class HomeAwayController extends BaseController
      */
     public function testAction(Request $request)
     {
-        $response = $this->get('mbh.channelmanager.homeaway')->testRequest();
+        $codes = $this->getParameter('mbh.card.codes');
         return new Response(true ? 'true' : 'false');
     }
 }

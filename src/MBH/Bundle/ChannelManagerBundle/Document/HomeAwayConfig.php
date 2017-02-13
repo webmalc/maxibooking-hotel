@@ -7,7 +7,6 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -26,7 +25,6 @@ class HomeAwayConfig extends Base
         return 'homeaway';
     }
 
-    use ConfigTrait;
 
     /**
      * Hook timestampable behavior
@@ -168,5 +166,10 @@ class HomeAwayConfig extends Base
     public function setMainTariff($mainTariff)
     {
         $this->mainTariff = $mainTariff;
+    }
+
+    public function getSyncRoomTypes()
+    {
+
     }
 }
