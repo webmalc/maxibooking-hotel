@@ -101,12 +101,4 @@ class HomeAwayDataFormatter
             true
         );
     }
-
-    public function getOrdersByUpdateDate(string $updateDateString)
-    {
-        $updateDate = \DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $updateDateString);
-
-        return $this->dm->getRepository('MBHPackageBundle:Order')
-            ->fetchByUpdateDateAndCMType($updateDate, 'homeaway');
-    }
 }

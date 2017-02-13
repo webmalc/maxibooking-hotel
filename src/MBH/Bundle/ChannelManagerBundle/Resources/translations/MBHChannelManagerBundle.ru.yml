@@ -123,3 +123,5 @@ channelManager.hundredOneHotels.notification.edit: 'Изменен заказ %o
 channelManager.hundredOneHotels.notification.delete: 'Удален заказ %order% из 101hotels.ru. Номера броней: %packages%'
 channelManager.hundredOneHotels.notification.error.subject: 'Ошибка 101hotels.ru'
 channelManager.hundredOneHotels.notification.error: 'Ошибка при обработке заказа 101hotels.ru. Информация: %info%'
+
+channelmanager.homeaway.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы отель, типы номеров или тариф

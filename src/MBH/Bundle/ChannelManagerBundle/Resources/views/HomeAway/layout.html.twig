@@ -1,0 +1,40 @@
+{% extends "MBHChannelManagerBundle::layout.html.twig" %}
+
+{% set title = "HomeAway" %}
+{% set title_url = path('homeaway') %}
+
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle') %}
+{% set layout = 'tabs' %}
+{% set active = 1 %}
+
+{% set menu = [
+{'route': 'homeaway', 'title': '<i class="fa fa-info-circle"></i>'~'views.tabs.main_settings'|trans({}, 'MBHChannelManagerBundle')},
+{'route': 'homeaway_room', 'title': '<i class="fa fa-bed"></i>'~'views.tabs.room_types'|trans({}, 'MBHChannelManagerBundle')},
+] %}
+
+{% block content %}
+
+    {% if config and (config.rooms.count == 0 or config.hotelId is empty or config.mainTariff is empty) %}
+        <div class="alert alert-danger">
+            <i class="fa fa-exclamation-circle"></i>&nbsp;
+            {{ 'channelmanager.homeaway.empty.config'|trans({}, 'MBHChannelManagerBundle') }}
+        </div>
+    {% endif %}
+
+    {% block innerContent %}
+    {% endblock %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            {{ form_start(form, {'action': path('homeaway'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHChannelManagerBundle::actions.html.twig' %}
+            {{ form_end(form) }}
+
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

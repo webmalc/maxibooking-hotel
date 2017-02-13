@@ -6,8 +6,6 @@ use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Form\HomeAwayType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
-use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PackageBundle\Document\Package;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -54,7 +52,7 @@ class HomeAwayController extends BaseController
         }
 
         return [
-            'doc' => $this->hotel->getHomeAwayConfig(),
+            'config' => $this->hotel->getHomeAwayConfig(),
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
@@ -80,7 +78,7 @@ class HomeAwayController extends BaseController
 
         $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
-            //TODO: получать комнаты
+//            TODO: получать комнаты
 //            'booking' => $this->get('mbh.channelmanager.homeaway_data_formatter')->pullRooms($config),
         ]);
 
@@ -153,15 +151,6 @@ class HomeAwayController extends BaseController
         $bookingCreationResponse = $this->get('mbh.channelmanager.homeaway_data_formatter')
             ->getBookingResponse($documentVersion, $orderInfo, $orderInfo->getMessages());
 
-
-    }
-
-    /**
-     * @Route("/booking_update/{roomTypeId}/{orderId}", name="booking_update")
-     * @param Request $request
-     */
-    public function bookingUpdateAction(Request $request)
-    {
 
     }
 

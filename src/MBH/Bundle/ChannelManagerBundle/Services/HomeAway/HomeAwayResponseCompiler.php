@@ -76,18 +76,6 @@ class HomeAwayResponseCompiler
         return $rootElement;
     }
 
-    //TODO: Реализовать если потребуется.
-    public function formatBookingContentIndex(HomeAwayConfig $config, \SimpleXMLElement $bookingContentIndexData, $orders)
-    {
-        foreach ($bookingContentIndexData->advertisers->advertiser as $advertiserData) {
-            /** @var \SimpleXMLElement $advertiserData */
-            $roomTypeId = trim((string)$advertiserData->assignedId);
-            foreach ($advertiserData->inquirers->inquirer as $inquirerData) {
-                $inquirerEmail = trim((string)$inquirerData->emailAddress);
-            }
-        }
-    }
-
     public function formatRatePeriodsData($begin, $end, $serviceRoomTypeId, HomeAwayConfig $config, $priceCaches)
     {
         $mbhRoomTypeId = $this->channelManagerHelper
@@ -211,6 +199,7 @@ class HomeAwayResponseCompiler
             //TODO: Можно добавить данные о платеже через накладную
             $invoiceDescriptorElement->addChild('paymentNote', '');
 
+
             //TODO: Расписание платежей. Какую указывать дату?
             $paymentItemListElement = $paymentScheduleElement->addChild('paymentScheduleItemList');
             $paymentItemElement = $paymentItemListElement->addChild('paymentScheduleItem');
@@ -232,11 +221,6 @@ class HomeAwayResponseCompiler
         $rentalAgreementElement = $responseDetailsElement->addChild('rentalAgreement');
         //TODO: Заполнить данными о договоре аренды. Мб текстом или URL.
         $rentalAgreementElement->addChild('agreementText');
-    }
-
-    public function formatBookingUpdateResponse($documentVersion, Order $order)
-    {
-
     }
 
     public function getBookingResponse($documentVersion, $bookingResult, $messages)

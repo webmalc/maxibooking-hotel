@@ -37,5 +37,5 @@ parameters:
           service: 'mbh.channelmanager.expedia'
 
     mbh.mbhs:
-          mbhs: 'aHR0cDovL21iaHMuaC9hcHBfZGV2LnBocC8=' #http://mbhs.h/app_dev.php/
+          mbhs: 'aHR0cDovL21iaHMuaC9hcHBfZGV2LnBocC8='
           key: 2743004999743693560727430049997436935607

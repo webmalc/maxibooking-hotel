@@ -65,15 +65,6 @@ class OrderRepository extends DocumentRepository
         }
     }
 
-    public function fetchByUpdateDateAndCMType(\DateTime $updateDate, $channelManagerType)
-    {
-        $this->createQueryBuilder()
-            ->field('updatedAt')->gte($updateDate)
-            ->field('channelManagerType')->equals($channelManagerType)
-            ->getQuery()
-            ->execute();
-    }
-
     /**
      * @param $data
      * @return \MBH\Bundle\PackageBundle\Document\Order[]
