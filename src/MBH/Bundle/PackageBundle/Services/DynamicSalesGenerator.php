@@ -51,7 +51,7 @@ class DynamicSalesGenerator
             $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
         }
 
-        $result = $this->dynamicSalesDataTwoInterval($begin, $end, $roomTypes);
+        $result = $this->dynamicSalesDataInterval($begin, $end, $roomTypes);
 
         return $result;
     }
@@ -62,7 +62,7 @@ class DynamicSalesGenerator
      * @param $roomTypes
      * @return array
      */
-    public function dynamicSalesDataTwoInterval($begin, $end, $roomTypes)
+    public function dynamicSalesDataInterval($begin, $end, $roomTypes)
     {
 
         $roomTypesIds = $this->container->get('mbh.helper')->toIds($roomTypes);
@@ -86,7 +86,6 @@ class DynamicSalesGenerator
                     return [];
                 }
             }
-
 
         }
         $res = [];
@@ -127,27 +126,25 @@ class DynamicSalesGenerator
             }
 
             if (count($dynamicSale->getPeriods()) > 1) {
-                $volumePersentPeriod = [];
+
                 for ($i = 1; $i <= (count($dynamicSale->getPeriods()) - 1); $i++) {
                     $mainPeriod = $dynamicSale->getPeriods()[0];
                     array_pop($mainPeriod);
-
+                    $volumePersentPeriod = [];
                     foreach ($mainPeriod as $itemSalesMain => $daySalesMain) {
                         foreach ($dynamicSale->getPeriods()[$i] as $itemSalesDay => $daySales) {
                             if ($itemSalesMain == $itemSalesDay && $itemSalesMain !== 'summ' && $itemSalesDay !== 'summ') {
 
                                 $volumeDay = new DynamicSalesDay();
                                 $volumeDay->setTotalSales($daySalesMain->getTotalSales() - $daySales->getTotalSales());
-
                                 $volumeDay->setPersentDayVolume(self::percentCalc($daySales, $daySalesMain, 'getTotalSales', $volumeDay->getTotalSales()));
-
                                 $volumeDay->setAvaregeVolume($daySalesMain->getvolumeGrowth() - $daySales->getvolumeGrowth());
-
                                 $volumeDay->setPersentDayGrowth(self::percentCalc($daySales, $daySalesMain, 'getvolumeGrowth', $volumeDay->getAvaregeVolume()));
                             }
 
                         }
                         $volumePersentPeriod[] = $volumeDay;
+
                     }
                     $dynamicSale->addComparison($volumePersentPeriod);
                 }

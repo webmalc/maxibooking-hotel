@@ -3,7 +3,7 @@
 $(document).ready(function ($) {
     'use strict';
     $('#dynamic-sales-filter-begin2').val('');
-
+    $('#dynamic-sales-filter-begin3').val('');
     //Show table
     var pricesProcessing = false,
         showTable = function () {
@@ -54,6 +54,11 @@ $(document).ready(function ($) {
         "autoApply": true
     });
 
+    $('#dynamic-sales-filter-begin3').daterangepicker({
+        autoUpdateInput: false,
+        "autoApply": true
+    });
+
     $('#dynamic-sales-filter-begin2').on('apply.daterangepicker', function(ev, picker) {
         $(this).val(picker.startDate.format('DD.MM.YYYY') + ' - ' + picker.endDate.format('DD.MM.YYYY'));
     });
@@ -62,9 +67,13 @@ $(document).ready(function ($) {
         $(this).val('');
     });
 
-    // $('.dynamic-sales-filter').change(function () {
-    //
-    // });
+    $('#dynamic-sales-filter-begin3').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD.MM.YYYY') + ' - ' + picker.endDate.format('DD.MM.YYYY'));
+    });
+
+    $('#dynamic-sales-filter-begin3').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+    });
 
     showTable();
 

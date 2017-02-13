@@ -1,14 +1,13 @@
 {% if error is defined and error is not empty %}
     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
 {% else %}
-    <table id="room-cache-overview-table"
-           class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+    <table id="dynamic-sales-table"
+           class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid text-center">
         <tbody>
         {% for dynamicSale in dynamicSales %}
             <tr class="mbh-grid-header2 warning">
-                <td colspan="{{ dynamicSale.periods|first|length +2 }}">
+                <td colspan="{{ dynamicSale.periods|first|length +2 }}" style="text-align: left">
                     <strong>{{ dynamicSale.roomType.title }}</strong>&nbsp;-&nbsp;
-                    <small></small>
                 </td>
             </tr>
             <tr>
@@ -66,7 +65,7 @@
                     </td>
                     {% for dynamicSaleDay  in dynamicSalePeriod %}
                         {% if loop.last %}
-                            <td>
+                            <td class="text-right">
                                 Среднее <strong>{{ dynamicSaleDay.avaregeVolume }}</strong>
                             </td>
                         {% else %}
@@ -82,7 +81,7 @@
                             -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
                         {% for dynamicSaleDay  in dynamicSalePeriod %}
                             {% if loop.last %}
-                                <td>
+                                <td class="text-right">
                                     Среднее <strong>{{ dynamicSaleDay.avaregeVolume }}</strong>
                                 </td>
                             {% else %}
@@ -109,7 +108,7 @@
                     </td>
                     {% for dynamicSaleDay  in dynamicSalePeriod %}
                         {% if loop.last %}
-                            <td>
+                            <td style="text-align: right">
                                 <strong>{{ dynamicSaleDay.totalSales }}</strong>
                             </td>
                         {% else %}
@@ -125,7 +124,7 @@
                             -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
                         {% for dynamicSaleDay  in dynamicSalePeriod %}
                             {% if loop.last %}
-                                <td>
+                                <td style="text-align: right">
                                     <strong>{{ dynamicSaleDay.totalSales }}</strong>
                                 </td>
                             {% else %}
@@ -179,49 +178,106 @@
                 {% endfor %}
 
                 <tr class="success">
-                <td class="first-th" colspan="2" rowspan="{{ dynamicSale.periods|length }}">
+                <td class="first-th"  rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
                     Дневной объем продаж
                 </td>
+                <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                    Сумма
+                </td>
                 {% for dynamicSaleComparison in dynamicSale.comparison %}
-                    {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
-                        <td>
-                            {{ dynamicSaleComparisonDay.TotalSales }}
-                        </td>
-                    {% endfor %}
-                    </tr>
-                    <tr class="success">
+
+                    {% if loop.first %}
                         {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
                             <td>
-                                {{ dynamicSaleComparisonDay.PersentDayVolume }} %
+                                {{ dynamicSaleComparisonDay.TotalSales }}
                             </td>
                         {% endfor %}
-                    </tr>
+                        </tr>
+                        {% else %}
+                        <tr class="warning">
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                <td>
+                                    {{ dynamicSaleComparisonDay.TotalSales }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+                {% endfor %}
 
+                <tr class="success">
+                <td rowspan="{{ dynamicSale.periods|length }}">
+                    %
+                </td>
+                {% for dynamicSaleComparison in dynamicSale.comparison %}
+                    {% if loop.first %}
+                        <tr class="success">
+                        {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                            <td>
+                                {{ dynamicSaleComparisonDay.PersentDayVolume }}%
+                            </td>
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr class="warning">
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                <td>
+                                    {{ dynamicSaleComparisonDay.PersentDayVolume }}%
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+
+                {#next#}
+                <tr class="danger">
+                <td class="first-th"  rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
+                    Дневной объем продаж нарастающим итогом
+                </td>
+                <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                    Сумма
+                </td>
+                {% for dynamicSaleComparison in dynamicSale.comparison %}
+
+                    {% if loop.first %}
+                        {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                            <td>
+                                {{ dynamicSaleComparisonDay.avaregeVolume }}
+                            </td>
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr class="warning">
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                <td>
+                                    {{ dynamicSaleComparisonDay.avaregeVolume }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
                 {% endfor %}
 
                 <tr class="danger">
-                <td class="first-th" colspan="2" rowspan="{{ dynamicSale.periods|length }}">
-                    Дневной объем продаж нарастающим итогом
+                <td rowspan="{{ dynamicSale.periods|length }}">
+                    %
                 </td>
                 {% for dynamicSaleComparison in dynamicSale.comparison %}
-                    {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
-
-                        <td>
-                            {{ dynamicSaleComparisonDay.avaregeVolume }}
-                        </td>
-
-                    {% endfor %}
-                    </tr>
-                    <tr class="danger">
-                        {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
-
-                            <td>
-                                {{ dynamicSaleComparisonDay.persentDayGrowth }} %
-                            </td>
-
-                        {% endfor %}
-                    </tr>
-
+                    {% if loop.first %}
+                        <tr class="danger">
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                <td>
+                                    {{ dynamicSaleComparisonDay.persentDayGrowth }}%
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr class="warning">
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                <td>
+                                    {{ dynamicSaleComparisonDay.persentDayGrowth }}%
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
                 {% endfor %}
 
             {% endif %}
