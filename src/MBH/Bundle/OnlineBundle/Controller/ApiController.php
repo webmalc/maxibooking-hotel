@@ -357,6 +357,7 @@ class ApiController extends Controller
         }
 
         return [
+            'selectTariff' => $query->tariff,
             'facilityArray' => $facilityArray,
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
