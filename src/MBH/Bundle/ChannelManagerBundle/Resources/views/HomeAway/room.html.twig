@@ -1,15 +1,14 @@
 {% extends "MBHChannelManagerBundle:HomeAway:layout.html.twig" %}
+{% set active = 2 %}
 
 {% block innerContent %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
-
             {{ form_start(form, {'action': path('homeaway_room'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             {% include 'MBHChannelManagerBundle::actions.html.twig'%}
             {{ form_end(form) }}
-
         </div>
     </div>
 

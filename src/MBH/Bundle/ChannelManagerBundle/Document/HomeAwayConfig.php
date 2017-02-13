@@ -63,7 +63,7 @@ class HomeAwayConfig extends Base
 
     /**
      * @var array
-     * @ODM\EmbedMany(targetDocument="Room")
+     * @ODM\EmbedMany(targetDocument="HomeAwayRoom")
      */
     protected $rooms;
 
@@ -116,11 +116,10 @@ class HomeAwayConfig extends Base
     }
 
     /**
-     * Add room
-     *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Room $room
+     * Add channel manager room
+     * @param HomeAwayRoom $room
      */
-    public function addRoom(Room $room)
+    public function addRoom(HomeAwayRoom $room)
     {
         $this->rooms[] = $room;
     }
@@ -128,9 +127,9 @@ class HomeAwayConfig extends Base
     /**
      * Remove room
      *
-     * @param \MBH\Bundle\ChannelManagerBundle\Document\Room $room
+     * @param HomeAwayRoom $room
      */
-    public function removeRoom(Room $room)
+    public function removeRoom(HomeAwayRoom $room)
     {
         $this->rooms->removeElement($room);
     }

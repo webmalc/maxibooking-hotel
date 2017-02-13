@@ -63,6 +63,9 @@ services:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayResponseCompiler
         arguments: ['@mbh.channelmanager.homeaway_data_formatter', '%locale.currency%', '@mbh.currency', '%locale%', '@mbh.channelmanager.helper', '@router']
 
+    mbh.channelmanager.homeaway:
+        class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway
+
     mbh.channelmanager.homeaway_order_info:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayOrderInfo
         arguments: ['@service_container']

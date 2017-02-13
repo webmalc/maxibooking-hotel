@@ -3,9 +3,10 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
-use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayRoom;
+use MBH\Bundle\ChannelManagerBundle\Form\HomeAwayRoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\HomeAwayType;
-use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -76,21 +77,49 @@ class HomeAwayController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
+        $roomTypes = [
+            '123' => 'Первая комната',
+            '124' => 'Вторая комната'
+        ];
+
+        $rentalAgreementFieldPrefix = 'agreement';
+        $roomFieldPrefix = 'room';
+
+        $form = $this->createForm(HomeAwayRoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
-//            TODO: получать комнаты
-//            'booking' => $this->get('mbh.channelmanager.homeaway_data_formatter')->pullRooms($config),
+            //TODO: Вернуть когда будет реализована аутентификация
+//            'booking' => $this->get('mbh.channelmanager.homeaway')->getRoomTypes(),
+            'booking' => $roomTypes,
+            'room_field_prefix' => $roomFieldPrefix,
+            'rental_agreement_field_prefix' => $rentalAgreementFieldPrefix
         ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $config->removeAllRooms();
-            foreach ($form->getData() as $id => $roomType) {
-                if ($roomType) {
-                    $configRoom = new Room();
-                    $configRoom->setRoomType($roomType)->setRoomId($id);
+            $formData = $form->getData();
+            $groupedFormData = [];
+            foreach ($formData as $index => $value) {
+                if (!is_null($value)) {
+                    if ($value instanceof RoomType) {
+                        $homeAwayUnitId = substr($index, strlen($roomFieldPrefix));
+                        $groupedFormData[$homeAwayUnitId]['roomType'] = $value;
+                    } else {
+                        if (!empty(trim($value))) {
+                            $homeAwayUnitId = substr($index, strlen($rentalAgreementFieldPrefix));
+                            $groupedFormData[$homeAwayUnitId]['agreement'] = $value;
+                        }
+                    }
+                }
+            }
+            foreach ($groupedFormData as $homeAwayUnitId => $roomTypeData) {
+                if (count($roomTypeData) == 2) {
+                    $configRoom = new HomeAwayRoom();
+                    $configRoom->setRoomType($roomTypeData['roomType'])
+                        ->setRoomId($homeAwayUnitId)
+                        ->setRentalAgreement($roomTypeData['agreement']);
+
                     $config->addRoom($configRoom);
-                    $this->dm->persist($config);
                 }
             }
             $this->dm->flush();
@@ -159,6 +188,7 @@ class HomeAwayController extends BaseController
      */
     public function testAction(Request $request)
     {
+        $response = $this->get('mbh.channelmanager.homeaway')->testRequest();
         return new Response(true ? 'true' : 'false');
     }
 }

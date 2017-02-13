@@ -121,8 +121,12 @@ form.homeAwayType.hotel_id_in_home_away: ID отеля в HomeAway
 controller.homeAwayController.settings_saved_success: 'Настройки успешно сохранены.'
 form.home_away_type.main_tariff.label: Тариф
 form.home_away_type.main_tariff.help: Тариф, данные по которому синхронизируются с HomeAway
+form.home_away_rooms_type.sync_room_type.label: Тип комнаты
+form.home_away_rooms_type.rental_agreement.label: Договор аренды
+form.home_away_rooms_type.rental_agreement.help: Данные о договоре аренды. Может быть текстовым описанием или ссылкой на него.
 services.home_away.invalid_room_type_id: Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking
 services.home_away.nor_one_room_type: Не найдено ни одного типа комнат для данного отеля
+
 #tripadvisor
 package_info.tripadvisor.children_age: 'Возраст детей: %ages%'
 form.trip_advisor_type.hotel_id: ID отеля
