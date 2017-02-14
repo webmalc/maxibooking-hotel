@@ -55,7 +55,7 @@ class CsvGenerate
     {
         $translator = $this->container->get('translator');
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
-        $title = '';
+        $title = [];
         foreach (self::DATA as $key => $item) {
             if (!empty($formData[$key])) {
 
@@ -95,6 +95,7 @@ class CsvGenerate
         }
 
         $content = implode("\n", $rows);
+        $content = iconv( 'UTF-8','windows-1251', $content);
         return $content;
 
     }
