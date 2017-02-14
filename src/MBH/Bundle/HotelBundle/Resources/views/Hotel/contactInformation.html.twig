@@ -3,59 +3,20 @@
 {% set small_title = 'views.hotel.contact_info.editing_number'|trans({}, 'MBHHotelBundle') ~ entity.id %}
 {% set layout = "tabs" %}
 
-{% form_theme form _self %}
-
-{% block form_widget_compound %}
-    dump(form)
-    dgsdfgsdfgdsfgsdfgsdfgs
-    <div {{ block('widget_container_attributes') }}>
-        {% if form.parent is empty %}
-
-            {% if errors|length > 0 %}
-                <div class="alert alert-danger global-errors">{{ form_errors(form) }}</div>{% endif %}
-        {% endif %}
-
-        {% set groups = {'form.main.group': form.children|keys} %}
-        {% if form.vars.groups is defined %}
-            {% set groups = form.vars.groups %}
-        {% endif %}
-
-        {% for group, items in groups %}
-
-            <div class="box box-default box-solid">
-
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ group|trans }}</h3>
-
-                    <div class="box-tools pull-right">
-                        <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
-                                id="{{ id }}-group-{{ loop.index }}"><i class="fa fa-minus"></i></button>
-                    </div>
-                </div>
-
-                <div class="box-body">
-                    {% for item in items %}
-                        {{ form_row(form[item]) }}
-                    {% endfor %}
-                </div>
-            </div>
-        {% endfor %}
-
-        {{ form_rest(form) }}
-    </div>
-{% endblock form_widget_compound %}
 
 {% block content %}
     {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 2, 'entity': entity} %}
-
+    {% form_theme form '@MBHHotel/Hotel/embeddedFormTheme.html.twig' %}
     <div class="tab-content">
-        {{ form_start(form, {'action': path('hotel_edit_extended_save', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_start(form, {'action': path('hotel_contact_information', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}
         {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'hotel' } %}
         {{ form_end(form) }}
 
         {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
     </div>
+
+
 
     <div class="modal fade" id="hotel_coordinates_help" tabindex="-1" role="dialog" aria-labelledby="hotel_coordinates_help_label" aria-hidden="true">
         <div class="modal-dialog">

@@ -4,7 +4,10 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\LanguageType;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -74,9 +77,13 @@ class HotelContactInformationType extends AbstractType
             ]);
 
 
-            $builder
-                ->add('contactInformation', ContactInfoType::class, [
-                ]);
+        $builder
+            ->add('contactInformation', ContactInfoType::class)
+            //TODO: Добавить в группу
+            ->add('supportedLanguages', LanguageType::class, [
+                'multiple' => true
+            ])
+        ;
 //            ->add('refundableType', ChoiceType::class, [
 //                'required' => false,
 //                'label' => 'form.hotel_additional_info_type.refundable_type.label',
@@ -98,7 +105,7 @@ class HotelContactInformationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
+            'data_class' => Hotel::class,
         ]);
     }
 

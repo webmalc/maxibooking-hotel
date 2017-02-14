@@ -65,3 +65,7 @@ services:
         arguments: ['@doctrine.odm.mongodb.document_manager']
         tags:
             - { name: form.type}
+
+    mbh.hotel.extended_type:
+        class: MBH\Bundle\HotelBundle\Form\HotelExtendedType
+        arguments: '@doctrine.odm.mongodb.document_manager'

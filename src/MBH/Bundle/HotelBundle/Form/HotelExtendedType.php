@@ -2,19 +2,27 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
+use MBH\Bundle\CashBundle\Document\CardType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HotelExtendedType extends AbstractType
 {
+    /** @var  DocumentManager */
+    private $dm;
+
+    public function __construct(DocumentManager $dm)
+    {
+        $this->dm = $dm;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -41,14 +49,25 @@ class HotelExtendedType extends AbstractType
                 'label' => 'form.hotelExtendedType.hotel_amenities',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
+            ])
+            ->add('acceptedCardTypes', DocumentType::class, [
+                'label' => 'form.hotelExtendedType.accepted_card_type.label',
+                'help' => 'form.hotelExtendedType.accepted_card_type.help',
+                'class' => CardType::class,
+                'placeholder' => '',
+                'required' => false,
+                'attr' => ['placeholder' => 'roomtype.placeholder'],
+                'multiple' => true,
+//                'data' => $builder->getData()->getAcceptedCardTypes()
             ]);
+        ;
 
-        $builder->add('vega_address_id', NumberType::class, [
-            'label' => 'form.hotelExtendedType.vega_address_id',
-            'help' => 'form.hotelExtendedType.vega_address_id_help',
-            'group' => 'form.hotelExtendedType.integration',
-            'required' => false
-        ]);
+//        $builder->add('vega_address_id', NumberType::class, [
+//            'label' => 'form.hotelExtendedType.vega_address_id',
+//            'help' => 'form.hotelExtendedType.vega_address_id_help',
+//            'group' => 'form.hotelExtendedType.integration',
+//            'required' => false
+//        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

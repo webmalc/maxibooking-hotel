@@ -3,6 +3,7 @@
 namespace MBH\Bundle\CashBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="CardType")
@@ -20,12 +21,16 @@ class CardType
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
+     * @Assert\Choice(callback="getCardCodes")
      */
     protected $cardCode;
 
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Assert\Choice(callback="getCardCategories")
+     *
      */
     protected $cardCategory;
 
@@ -83,5 +88,42 @@ class CardType
     {
         $this->id = $id;
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->cardCode . " ({$this->cardCategory})";
+    }
+
+    public static function getCardCategories()
+    {
+        return [
+            'CREDIT',
+            'DEBIT'
+        ];
+    }
+
+    public static function getCardCodes()
+    {
+        return [
+            'VISA',
+            'AMEX',
+            'DINERS',
+            'JCB',
+            'JAL',
+            'DELTA',
+            'VISA_ELECTRON',
+            'LASER',
+            'CARTA_SI',
+            'MASTERCARD',
+            'DISCOVER',
+            'CARTE_BLANCHE',
+            'ENROUTE',
+            'MAESTRO_UK',
+            'SOLO',
+            'DANKORT',
+            'CARTE_BLEU',
+            'MAESTRO_INTERNATIONAL',
+        ];
     }
 }

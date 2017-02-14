@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
@@ -109,8 +110,7 @@ class HotelController extends Controller
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'));
 
             //todo: create services
             $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
@@ -147,8 +147,7 @@ class HotelController extends Controller
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'));
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
 
@@ -197,7 +196,7 @@ class HotelController extends Controller
      */
     public function deleteLogoAction(Hotel $entity)
     {
-        if($entity->getFile() || $entity->getLogo()) {
+        if ($entity->getFile() || $entity->getLogo()) {
             $entity->setLogo(null);
             $entity->deleteFile();
 
@@ -260,8 +259,7 @@ class HotelController extends Controller
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'));
 
             return $this->afterSaveRedirect('hotel', $entity->getId(), [], '_edit_extended');
         }
@@ -279,7 +277,7 @@ class HotelController extends Controller
      * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Route("/{id}/edit/contact", name="hotel_contact_information")
      * @Template()
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function contactInformationAction(Request $request, Hotel $hotel)
     {
@@ -288,6 +286,17 @@ class HotelController extends Controller
         }
 
         $form = $this->createForm(HotelContactInformationType::class, $hotel);
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $this->dm->persist($hotel);
+            $this->dm->flush();
+
+            $this->addFlash('success',
+                $this->get('translator')->trans('controller.hotelController.record_edited_success'));
+
+            return $this->afterSaveRedirect('hotel_contact_information', $hotel->getId(), [], '');
+        }
 
 
         return [
@@ -312,12 +321,12 @@ class HotelController extends Controller
         }
 
         if (!empty($id)) {
-            $city =  $this->dm->getRepository('MBHHotelBundle:City')->find($id);
+            $city = $this->dm->getRepository('MBHHotelBundle:City')->find($id);
 
             if ($city) {
                 return new JsonResponse([
                     'id' => $city->getId(),
-                    'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' .$city->getTitle()
+                    'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' . $city->getTitle()
                 ]);
             }
         }
@@ -325,23 +334,21 @@ class HotelController extends Controller
         $cities = $this->dm->getRepository('MBHHotelBundle:City')->createQueryBuilder('q')
             ->field('title')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
 
         $data = [];
 
         foreach ($cities as $city) {
             $data[] = [
                 'id' => $city->getId(),
-                'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' .$city->getTitle()
+                'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' . $city->getTitle()
             ];
         }
 
         $regions = $this->dm->getRepository('MBHHotelBundle:Region')->createQueryBuilder('q')
             ->field('title')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
 
         foreach ($regions as $region) {
             foreach ($region->getCities() as $city) {
@@ -349,7 +356,7 @@ class HotelController extends Controller
 
                 $data[] = [
                     'id' => $city->getId(),
-                    'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' .$city->getTitle()
+                    'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' . $city->getTitle()
                 ];
             }
         }

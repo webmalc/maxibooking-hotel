@@ -12,6 +12,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
+use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -309,6 +310,24 @@ class Hotel extends Base implements \JsonSerializable
      */
     protected $contactInformation;
 
+    /**
+     * @var array
+     * @ODM\Collection()
+     */
+    protected $supportedLanguages = [];
+
+    /**
+     * @var array
+     * @ODM\ReferenceMany(targetDocument="CardType")
+     */
+    protected $acceptedCardTypes;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isInvoiceAccepted = true;
+
     public function __construct()
     {
         $this->roomTypes = new ArrayCollection();
@@ -318,6 +337,7 @@ class Hotel extends Base implements \JsonSerializable
         $this->dishMenuCategories = new ArrayCollection();
         $this->ingredientCategories = new ArrayCollection();
         $this->TableTypes = new ArrayCollection();
+        $this->acceptedCardTypes = new ArrayCollection();
     }
     /**
      * @return mixed
@@ -1331,4 +1351,91 @@ class Hotel extends Base implements \JsonSerializable
         $this->contactInformation = $contactInformation;
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getSupportedLanguages(): array
+    {
+        return $this->supportedLanguages;
+    }
+
+    /**
+     * @param array $supportedLanguages
+     * @return Hotel
+     */
+    public function setSupportedLanguages(array $supportedLanguages): Hotel
+    {
+        $this->supportedLanguages = $supportedLanguages;
+
+        return $this;
+    }
+
+    public function addSupportedLanguages(string $languageCode) : Hotel
+    {
+        $this->supportedLanguages[] = $languageCode;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAcceptedCardTypes()
+    {
+        return $this->acceptedCardTypes;
+    }
+
+    /**
+     * @param array $acceptedCardTypes
+     * @return Hotel
+     */
+    public function setAcceptedCardTypes(array $acceptedCardTypes) : Hotel
+    {
+        $this->acceptedCardTypes = $acceptedCardTypes;
+
+        return $this;
+    }
+
+    /**
+     * @param CardType $cardType
+     * @return Hotel
+     */
+    public function addAcceptedCardType(CardType $cardType) : Hotel
+    {
+        $this->acceptedCardTypes[] = $cardType;
+
+        return $this;
+    }
+
+    /**
+     * @param CardType $cardType
+     * @return Hotel
+     */
+    public function removeAcceptedCardType(CardType $cardType)
+    {
+        $this->acceptedCardTypes->remove($cardType);
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsInvoiceAccepted(): bool
+    {
+        return $this->isInvoiceAccepted;
+    }
+
+    /**
+     * @param bool $isInvoiceAccepted
+     * @return Hotel
+     */
+    public function setIsInvoiceAccepted(bool $isInvoiceAccepted): Hotel
+    {
+        $this->isInvoiceAccepted = $isInvoiceAccepted;
+        return $this;
+    }
+
+
 }

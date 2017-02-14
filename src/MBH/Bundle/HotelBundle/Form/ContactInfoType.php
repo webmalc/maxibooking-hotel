@@ -16,16 +16,19 @@ class ContactInfoType extends AbstractType
                 'label' => 'form.contact_info_type.full_name.label',
                 'help' => 'form.contact_info_type.full_name.help',
                 'required' => false,
+                'group' => 'form.hotel_contact_information.contact_info.group'
             ])
             ->add('phoneNumber', TextType::class, [
                 'label' => 'form.contact_info_type.phone.label',
                 'help' => 'form.contact_info_type.phone.help',
                 'required' => false,
+                'group' => 'form.hotel_contact_information.contact_info.group'
             ])
             ->add('email', TextType::class, [
                 'label' => 'form.contact_info_type.email.label',
                 'help' => 'form.contact_info_type.email.help',
                 'required' => false,
+                'group' => 'form.hotel_contact_information.contact_info.group'
             ])
             ;
     }
