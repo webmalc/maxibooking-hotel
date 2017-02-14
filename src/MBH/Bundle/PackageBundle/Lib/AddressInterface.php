@@ -9,6 +9,11 @@ interface AddressInterface
     /**
      * @return string
      */
+    public function getName();
+
+    /**
+     * @return string
+     */
     public function getCountry();
 
     /**
