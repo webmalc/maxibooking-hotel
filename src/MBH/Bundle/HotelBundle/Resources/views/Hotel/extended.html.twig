@@ -5,7 +5,7 @@
 
 {% block content %}
 
-        {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 2, 'entity': entity} %}
+        {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 3, 'entity': entity} %}
 
         <div class="tab-content">
             {{ form_start(form, {'action': path('hotel_edit_extended_save', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
