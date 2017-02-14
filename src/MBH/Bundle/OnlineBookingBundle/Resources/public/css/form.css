@@ -1,0 +1,123 @@
+.datepicker table tr td.day {
+  font-weight: bolder!important;
+}
+.datepicker table tr td.disabled {
+  opacity: 0.5;
+}
+select#search_form_hotel,
+select#search_form_roomType {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
+}
+.input-group {
+  width: 100%;
+}
+.time_form {
+  margin-top: 7px;
+  background: #f4f4f4 url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%;
+  cursor: pointer;
+  font-weight: bolder;
+}
+#search_form_begin {
+  margin-top: 7px;
+  background: #f4f4f4 url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%;
+  cursor: pointer;
+  font-weight: bolder;
+}
+#search_form_end {
+  margin-top: 7px;
+  background: #f4f4f4 url("http://azovsky.ru/images/fico3.png") no-repeat scroll right center / auto 100%;
+  cursor: pointer;
+  font-weight: bolder;
+}
+#children-icon {
+  position: relative;
+  bottom: 15px;
+}
+#search-form .popover {
+  max-width: 350px;
+}
+#search-form .popover-content input {
+  width: 55px;
+  margin-right: 5px;
+}
+#search-form .popover-content input:last-child {
+  margin-right: 0;
+}
+#search-form .popover-content div {
+  white-space: nowrap;
+}
+#search-form h3.popover-title {
+  font-size: 10px;
+}
+.form-group {
+  margin: 5px 7% 15px;
+}
+.bronirovanie select {
+  margin: 0 !important;
+  width: 100% !important;
+}
+.bronirovanie label {
+  font-weight: normal !important;
+}
+.bronirovanie input {
+  margin: 0;
+}
+.bronirovanie input[type="text"] {
+  margin: 0;
+  width: 100% !important;
+  padding: 0 12px;
+}
+.bronirovanie span > i {
+  color: #f7f7f7;
+}
+.bcy {
+  background-color: #ebb630;
+}
+.bgnd {
+  background: #f4f4f4 url(../images/fico4.png) no-repeat scroll right center / auto 100% !important;
+}
+.break {
+  clear: both;
+  height: 55px;
+}
+#children_age_container {
+  clear: both;
+}
+#children_age_container .children_age_label {
+  margin: 7px 0 0 20px;
+}
+#children_age_container #search_form_children_age {
+  overflow: hidden;
+  -webkit-transition: height 0.3s;
+  -moz-transition: height 0.3s;
+  -ms-transition: height 0.3s;
+  -o-transition: height 0.3s;
+  transition: height 0.3s;
+}
+#children_age_container #search_form_children_age .form-group {
+  margin: 10px 5px 0 13px;
+  float: left;
+}
+.nights {
+  height: 20px;
+  margin: 10px 0 10px 16px;
+}
+.newmargin {
+  margin-top: 70px!important;
+}
+.formmainpage {
+  position: relative !important;
+  z-index: 100;
+}
+.spinn {
+  position: absolute;
+  left: 44%;
+  color: #79ee43;
+  display: none;
+}
+#rsc {
+  height: 40px;
+}
