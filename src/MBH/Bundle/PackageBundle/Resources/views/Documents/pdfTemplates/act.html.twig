@@ -55,7 +55,7 @@
         <table border="0" width="100%">
             <tr>
                 <td width="15%">{{ "package.pdf.executor"|trans({}, "MBHPackageBundle") }}</td>
-                <td width="85%">{% if hotel.organization.hotels is defined %}<strong>{{ hotel.organization.name }}</strong>{% else %}{% if hotel and hotel.fullTitle %}<strong>"{{ hotel.fullTitle }}"</strong>{% endif %}{% endif %}</td>
+                <td width="85%"><strong>{{ entity.address.name }}</strong></td>
             </tr>
             <tr>
                 <td>{{ "package.pdf.customer"|trans({}, "MBHPackageBundle") }} </td>
