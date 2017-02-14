@@ -37,3 +37,4 @@ web/assets
 web/online
 docker_zalex
 app/supervisor/
+node_modules/
