@@ -9,6 +9,14 @@ var setSearchDatepickers = function (date) {
 
 $(document).ready(function () {
     'use strict';
+    // set user Date (ClientConfig)
+    if($('.daterangepicker-input').prev().is('#s_begin')){
+        $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+        $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(1, 'days').toDate());
+    }
+
+    $('#s_begin').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
+    $('#s_end').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
 
     (function () {
 
@@ -189,7 +197,7 @@ $(document).ready(function () {
         this.$searchRoomsSelect.select2({
             placeholder: 'при заезде',
             allowClear: true,
-            width: 'element',
+            width: 'element'
         });
         this.$searchRoomsSelect.val(null).trigger('change');
     }
@@ -281,7 +289,7 @@ $(document).ready(function () {
 
         $('.search-all-tariffs-link').click(function (e) {
             e.preventDefault();
-            $('#s_roomType').select2("val", $(this).attr('data-roomType'));
+            $('#s_roomType').select2("val", [$(this).attr('data-roomType')]);
             sendForm();
         });
 
@@ -302,6 +310,7 @@ $(document).ready(function () {
         if (searchProcess) {
             return;
         }
+
         $.ajax({
             url: Routing.generate('package_search_results'),
             data: query,

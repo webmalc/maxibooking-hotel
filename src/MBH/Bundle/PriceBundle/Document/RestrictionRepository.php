@@ -9,51 +9,6 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class RestrictionRepository extends DocumentRepository
 {
-
-    public function fetchMinStay(\DateTime $date)
-    {
-        $date->modify('midnight');
-        $tariffsIds = $hotelIds = $roomTypeIds = [];
-        foreach ($this->dm->getRepository('MBHPriceBundle:Tariff')->findBy(['deletedAt' => null]) as $tariff) {
-            $tariffsIds[] = $tariff->getId();
-        }
-
-        foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findBy(['deletedAt' => null]) as $hotel) {
-            $hotelIds[] = $hotel->getId();
-        }
-
-        foreach ($this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['deletedAt' => null]) as $roomType) {
-            $roomTypeIds[] = $roomType->getId();
-        }
-
-        $qb = $this->createQueryBuilder();
-        $qb
-            ->field('date')->equals($date)
-            ->field('tariff.id')->in($tariffsIds)
-            ->field('hotel.id')->in($hotelIds)
-            ->field('roomType.id')->in($roomTypeIds)
-            ->field('isEnabled')->equals(true)
-        ;
-
-        $data = $hotels = $categories = [];
-
-        // roomTypes
-        /** @var Restriction $restriction */
-        $dateStr = $date->format('d.m.Y');
-        foreach ($qb->getQuery()->execute() as $restriction) {
-            if ($restriction->getTariff()->getIsDefault()) {
-                $minStay = $restriction->getMinStay();
-                $hotel = $restriction->getRoomType()->getHotel();
-                $data['hotel_' . $hotel->getId()]['category_' . $restriction->getRoomType()->getCategory()->getId()] = $minStay;
-//                $data[$restriction->getRoomType()->getId()][$dateStr] = $minStay;
-
-            }
-        };
-
-
-
-        return $data;
-    }
     /**
      * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
@@ -74,8 +29,8 @@ class RestrictionRepository extends DocumentRepository
             $roomTypeIds[] = $roomType->getId();
         }
 
-        $data = $hotels = $categories = [];
-        $qb = $this->createQueryBuilder();
+        $data = $hotels = [];
+        $qb = $this->createQueryBuilder('q');
         $qb
             ->field('date')->gte(new \DateTime('midnight'))
             ->field('date')->lte(new \DateTime('midnight +365 days'))
@@ -90,8 +45,8 @@ class RestrictionRepository extends DocumentRepository
                     ->field('closedOnDeparture')->equals(true)
             );
 
-        // roomTypes
-        foreach ($qb->getQuery()->execute() as $restriction) {
+        foreach ($qb->getQuery()->execute() as $restriction)
+        {
             if ($restriction->getTariff()->getIsDefault()) {
                 $dateStr = $restriction->getDate()->format('d.m.Y');
                 $hotel = $restriction->getRoomType()->getHotel();
@@ -99,27 +54,13 @@ class RestrictionRepository extends DocumentRepository
                 $data[$restriction->getRoomType()->getId()][$dateStr] = $dateStr;
                 $data['allrooms_' . $hotel->getId()][$dateStr] = $dateStr;
                 $hotels[$hotel->getId()] = $hotel;
-                $category = $restriction->getRoomType()->getCategory();
-                if ($category) {
-                    $data['category_' . $category->getId()][$dateStr] = $dateStr;
-                    $categories[$category->getId()] = $category;
-                }
             }
         };
 
-
-        // hotels
         foreach ($hotels as $hotel) {
             foreach ($hotel->getRoomTypes() as $roomType) {
                 isset($data[$roomType->getId()]) ? $dates = $data[$roomType->getId()] : $dates = [];
                 $data['allrooms_' . $hotel->getId()] = array_intersect($data['allrooms_' . $hotel->getId()], $dates);
-            }
-        }
-        // roomTypeCategories
-        foreach ($categories as $category) {
-            foreach ($category->getTypes() as $roomType) {
-                isset($data[$roomType->getId()]) ? $dates = $data[$roomType->getId()] : $dates = [];
-                $data['category_' . $category->getId()] = array_intersect($data['category_' . $category->getId()], $dates);
             }
         }
 
