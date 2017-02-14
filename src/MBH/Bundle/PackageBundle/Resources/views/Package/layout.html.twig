@@ -8,6 +8,6 @@
     {% include 'MBHPackageBundle:Documents:documentFormModal.html.twig' %}
 {% endblock %}
 
-{% if package is not defined and entity is defined and entity.isLocked is defined %}
+{% if package is not defined and entity is defined %}{#todo remove#}
     {% set package = entity %}
 {% endif %}

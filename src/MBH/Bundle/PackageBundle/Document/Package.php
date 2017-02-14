@@ -12,6 +12,7 @@ use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -32,6 +33,7 @@ class Package extends Base implements \JsonSerializable
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
+    use DeleteReasonTrait;
 
     const ROOM_STATUS_OPEN = 'open';
     const ROOM_STATUS_WAIT = 'wait'; //Не заехал
@@ -97,14 +99,6 @@ class Package extends Base implements \JsonSerializable
      * @ODM\Integer()
      */
     protected $number;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     */
-    protected $externalNumber;
-
     
 
     /**
@@ -270,7 +264,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "ostrovok"},
+     *      choices = {"vashotel", "booking", "ostrovok", "oktogo", "myallocator", "101Hotels"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      */
@@ -478,24 +472,6 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
-     * @return string
-     */
-    public function getExternalNumber()
-    {
-        return $this->externalNumber;
-    }
-
-    /**
-     * @param string $externalNumber
-     */
-    public function setExternalNumber($externalNumber)
-    {
-        $this->externalNumber = $externalNumber;
-    }
-
-
-
-    /**
      * Set numberWithPrefix
      *
      * @param string $numberWithPrefix
@@ -561,13 +537,6 @@ class Package extends Base implements \JsonSerializable
         return $this->children;
     }
 
-    /**
-     * @return int
-     */
-    public function getCountPersons():int
-    {
-        return $this->getAdults() + $this->getChildren();
-    }
     /**
      * Set begin
      *
@@ -1586,6 +1555,5 @@ class Package extends Base implements \JsonSerializable
 
         return $this;
     }
-
 
 }

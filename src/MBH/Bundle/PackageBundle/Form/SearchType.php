@@ -86,7 +86,6 @@ class SearchType extends AbstractType
                 'label' => 'form.searchType.check_in',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'data' => $options['startDate'],
                 'required' => true,
                 'error_bubbling' => true,
                 'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
@@ -95,7 +94,6 @@ class SearchType extends AbstractType
                 'label' => 'Отъезд',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'data' => (clone $options['startDate'])->modify("+1 day"),
                 'required' => true,
                 'error_bubbling' => true,
                 'attr' => array('class' => 'datepicker end-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')

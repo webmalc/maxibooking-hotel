@@ -2,12 +2,11 @@
 
 namespace MBH\Bundle\HotelBundle\Service;
 
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\RoomType;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class RoomTypeManager

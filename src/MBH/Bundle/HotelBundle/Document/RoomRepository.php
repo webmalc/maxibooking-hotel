@@ -304,7 +304,8 @@ class RoomRepository extends AbstractBaseRepository
         if ($limit !== null) {
             $qb->limit((int)$limit);
         }
-        $qb->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
+        $qb->field('deletedAt')->equals(null)
+            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
 
         return $qb;
     }

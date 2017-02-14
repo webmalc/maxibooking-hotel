@@ -30,7 +30,8 @@ views.tabs.tariffs: ' Тарифы'
 views.tabs.services: ' Услуги'
 views.tabs.must_fill_main_settings: "Необходимо заполнить основные настройки!"
 views.ostrovok.layout.ostrovok: "Ostrovok"
-
+views.hundredOneHotels.layout.hundredOneHotels: "101 отель"
+views.hundredOneHotels.settings: "настройки"
 
 #channelManager
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
@@ -85,3 +86,13 @@ channelManager.ostrovok.notification.edit: "Изменен заказ %order% и
 channelManager.ostrovok.notification.delete: "Удален заказ %order% из Ostrovok.ru. Номера броней: %packages%"
 channelManager.ostrovok.notification.error.subject: Ошибка Ostrovok.ru
 channelManager.ostrovok.notification.error: "Ошибка при обработке заказа Ostrovok.ru. Информация: %info%"
+
+
+channelManager.hundredOneHotels.notification.subject.new: 'Новый заказ 101hotels.ru'
+channelManager.hundredOneHotels.notification.subject.edit: 'Изменен заказ 101hotels.ru'
+channelManager.hundredOneHotels.notification.subject.delete: 'Удален заказ 101hotels.ru'
+channelManager.hundredOneHotels.notification.new: 'Новый заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.hundredOneHotels.notification.edit: 'Изменен заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.hundredOneHotels.notification.delete: 'Удален заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.hundredOneHotels.notification.error.subject: 'Ошибка 101hotels.ru'
+channelManager.hundredOneHotels.notification.error: 'Ошибка при обработке заказа 101hotels.ru. Информация: %info%'
