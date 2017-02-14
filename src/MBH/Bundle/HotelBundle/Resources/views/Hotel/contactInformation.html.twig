@@ -1,0 +1,99 @@
+{% extends 'MBHHotelBundle:Hotel:layout.html.twig' %}
+
+{% set small_title = 'views.hotel.contact_info.editing_number'|trans({}, 'MBHHotelBundle') ~ entity.id %}
+{% set layout = "tabs" %}
+
+{% form_theme form _self %}
+
+{% block form_widget_compound %}
+    dump(form)
+    dgsdfgsdfgdsfgsdfgsdfgs
+    <div {{ block('widget_container_attributes') }}>
+        {% if form.parent is empty %}
+
+            {% if errors|length > 0 %}
+                <div class="alert alert-danger global-errors">{{ form_errors(form) }}</div>{% endif %}
+        {% endif %}
+
+        {% set groups = {'form.main.group': form.children|keys} %}
+        {% if form.vars.groups is defined %}
+            {% set groups = form.vars.groups %}
+        {% endif %}
+
+        {% for group, items in groups %}
+
+            <div class="box box-default box-solid">
+
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ group|trans }}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
+                                id="{{ id }}-group-{{ loop.index }}"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+
+                <div class="box-body">
+                    {% for item in items %}
+                        {{ form_row(form[item]) }}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+        {{ form_rest(form) }}
+    </div>
+{% endblock form_widget_compound %}
+
+{% block content %}
+    {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 2, 'entity': entity} %}
+
+    <div class="tab-content">
+        {{ form_start(form, {'action': path('hotel_edit_extended_save', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'hotel' } %}
+        {{ form_end(form) }}
+
+        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+    </div>
+
+    <div class="modal fade" id="hotel_coordinates_help" tabindex="-1" role="dialog" aria-labelledby="hotel_coordinates_help_label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{{ 'views.hotel.extended.close'|trans({}, 'MBHHotelBundle') }}</span></button>
+                    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-question-circle"></i>&nbsp;{{ 'views.hotel.extended.how_to_know_hotel_coordinates'|trans({}, 'MBHHotelBundle') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <h3>{{ 'views.hotel.extended.google_maps'|trans({}, 'MBHHotelBundle') }} <small><a target="_blank" href="https://support.google.com/maps/answer/18539?hl=ru">{{ 'views.hotel.extended.help_is_on_site'|trans({}, 'MBHHotelBundle') }}Google.com</a></small></h3>
+                    <ol>
+                        <li>
+                            {{ 'views.hotel.extended.go_to_site'|trans({}, 'MBHHotelBundle') }} <a href="https://www.google.ru/maps/{{ entity.city is null ? '' : 'place/' ~ entity.city.title|url_encode }}" target="_blank">https://www.google.ru/maps</a>
+                        </li>
+                        <li>{{ 'views.hotel.extended.find_hotel_on_map'|trans({}, 'MBHHotelBundle') }}</li>
+                        <li>{{ 'views.hotel.extended.left_click_on_hotel_on_map'|trans({}, 'MBHHotelBundle') }}</li>
+                        <li>{{ 'views.hotel.extended.copy_coordinates_like_this'|trans({}, 'MBHHotelBundle') }}</li>
+                    </ol>
+
+                    <h3>{{ 'views.hotel.extended.yandex_maps'|trans({}, 'MBHHotelBundle') }}</h3>
+                    <ol>
+                        <li>
+                            {{ 'views.hotel.extended.go_to_site'|trans({}, 'MBHHotelBundle') }}<a href="http://maps.yandex.ru/{{ entity.city is null ? '' : '?text=' ~ entity.city.title|url_encode }}" target="_blank">http://maps.yandex.ru</a>
+                        </li>
+                        <li>{{ 'views.hotel.extended.find_hotel_on_map'|trans({}, 'MBHHotelBundle') }}</li>
+                        <li>{{ 'views.hotel.extended.right_click_on_hotel_on_map'|trans({}, 'MBHHotelBundle') }}</li>
+                        <li>{{ 'views.hotel.extended.yandex_copy_coordinates_like_this'|trans({}, 'MBHHotelBundle') }}</li>
+                    </ol>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'views.hotel.extended.close'|trans({}, 'MBHHotelBundle') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+
+

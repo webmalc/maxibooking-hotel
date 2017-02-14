@@ -4,7 +4,7 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Form\HotelContactInformation;
+use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use MBH\Bundle\HotelBundle\Form\HotelType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -287,7 +287,7 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(HotelContactInformation::class, $hotel);
+        $form = $this->createForm(HotelContactInformationType::class, $hotel);
 
 
         return [

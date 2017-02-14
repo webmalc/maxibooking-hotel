@@ -9,6 +9,7 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 
 /**
  * @ODM\EmbeddedDocument()
@@ -74,11 +75,12 @@ class ContactInfo
     }
 
     /**
+     * @param bool $original
      * @return string
      */
-    public function getPhoneNumber(): string
+    public function getPhoneNumber($original = false): string
     {
-        return $this->phoneNumber;
+        return Tourist::formatPhone($this->phoneNumber, $original);
     }
 
     /**
@@ -87,7 +89,7 @@ class ContactInfo
      */
     public function setPhoneNumber(string $phoneNumber): ContactInfo
     {
-        $this->phoneNumber = $phoneNumber;
+        $this->phoneNumber = Tourist::cleanPhone($phoneNumber);
 
         return $this;
     }

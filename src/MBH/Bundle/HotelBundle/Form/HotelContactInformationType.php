@@ -9,7 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class HotelContactInformation extends AbstractType
+class HotelContactInformationType extends AbstractType
 {
     /** @var  DocumentManager $dm */
     private $dm;
@@ -75,7 +75,8 @@ class HotelContactInformation extends AbstractType
 
 
             $builder
-                ->add('')
+                ->add('contactInformation', ContactInfoType::class, [
+                ]);
 //            ->add('refundableType', ChoiceType::class, [
 //                'required' => false,
 //                'label' => 'form.hotel_additional_info_type.refundable_type.label',

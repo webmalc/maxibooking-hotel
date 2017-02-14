@@ -228,6 +228,7 @@ class Hotel extends Base implements \JsonSerializable
     protected $city;
 
     /**
+     * @Assert\Valid()
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      */
@@ -301,6 +302,12 @@ class Hotel extends Base implements \JsonSerializable
      * @var string
      */
     protected $description;
+
+    /**
+     * @var ContactInfo
+     * @ODM\EmbedOne(targetDocument="ContactInfo")
+     */
+    protected $contactInformation;
 
     public function __construct()
     {
@@ -1305,5 +1312,23 @@ class Hotel extends Base implements \JsonSerializable
     public function getSpecials()
     {
         return $this->specials;
+    }
+
+    /**
+     * @return ContactInfo
+     */
+    public function getContactInformation(): ?ContactInfo
+    {
+        return $this->contactInformation;
+    }
+
+    /**
+     * @param ContactInfo $contactInformation
+     * @return Hotel
+     */
+    public function setContactInformation(ContactInfo $contactInformation): Hotel
+    {
+        $this->contactInformation = $contactInformation;
+        return $this;
     }
 }

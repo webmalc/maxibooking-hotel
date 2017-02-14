@@ -22,6 +22,12 @@ form.hotelExtendedType.hotel_theme: Тема отеля
 form.hotelExtendedType.hotel_amenities: Удобства отеля
 form.hotelExtendedType.vega_address_id: ID адреса для ПК "Вега"
 form.hotelExtendedType.vega_address_id_help: ID адреса для ПК "Вега"
+form.contact_info_type.phone.label: Номер телефона
+form.contact_info_type.phone.help: Номер контактного телефона
+form.contact_info_type.full_name.label: Полное имя
+form.contact_info_type.full_name.help: Полное имя контакта
+form.contact_info_type.email.label: E-mail контакта
+form.contact_info_type.email.help: Электронная почта контактного лица
 form.hotelType.name: Название
 form.hotelType.general_info: Общая информация
 form.taskType.general_info: Добавление типа
