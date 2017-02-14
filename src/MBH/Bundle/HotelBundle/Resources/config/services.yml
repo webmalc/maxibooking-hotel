@@ -59,3 +59,9 @@ services:
         arguments: ['@service_container']
         tags:
             - { name: form.type, alias: MBH\Bundle\HotelBundle\Form\SearchTaskType }
+
+    mbh.hotel_contact_information:
+        class: MBH\Bundle\HotelBundle\Form\HotelContactInformation
+        arguments: ['@doctrine.odm.mongodb.document_manager']
+        tags:
+            - { name: form.type}

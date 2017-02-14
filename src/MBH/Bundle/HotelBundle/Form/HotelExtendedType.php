@@ -15,64 +15,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HotelExtendedType extends AbstractType
 {
-    private $dm;
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $this->dm = $options['dm'];
-
         $builder
-            ->add('city', TextType::class, [
-                'label' => 'form.hotelExtendedType.city',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => true,
-                'attr' => [
-                    'class' => 'citySelect',
-                    'placeholder' => 'form.hotelExtendedType.city',
-                ]
-            ])
-            ->add('settlement', TextType::class, [
-                'label' => 'form.hotelExtendedType.settlement',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false,
-            ])
-            ->add('street', TextType::class, [
-                'label' => 'form.hotelExtendedType.street',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false
-            ])
-            ->add('house', TextType::class, [
-                'label' => 'form.hotelExtendedType.house',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false
-            ])
-            ->add('corpus', TextType::class, [
-                'label' => 'form.hotelExtendedType.corpus',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false
-            ]);
-
-        $builder->add('flat', TextType::class, [
-            'label' => 'form.hotelExtendedType.flat',
-            'group' => 'form.hotelExtendedType.address',
-            'required' => false,
-        ]);
-        //}
-        $builder
-            ->add('latitude', TextType::class, [
-                'label' => 'form.hotelExtendedType.latitude',
-                'group' => 'form.hotelExtendedType.location',
-                'required' => false,
-                'attr' => ['placeholder' => '55.752014'],
-                'help' => 'form.hotelExtendedType.gps_coordinates_latitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
-            ])
-            ->add('longitude', TextType::class, [
-                'label' => 'form.hotelExtendedType.longitude',
-                'group' => 'form.hotelExtendedType.location',
-                'required' => false,
-                'attr' => ['placeholder' => '37.617515'],
-                'help' => 'form.hotelExtendedType.gps_coordinates_longitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
-            ])
             ->add('rating', TextType::class, [
                 'label' => 'form.hotelExtendedType.how_many_stars_hotel',
                 'group' => 'form.hotelExtendedType.parameters',
@@ -104,17 +49,13 @@ class HotelExtendedType extends AbstractType
             'group' => 'form.hotelExtendedType.integration',
             'required' => false
         ]);
-
-        $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
-            'city' => null,
             'config' => null,
-            'dm' => null
         ]);
     }
 
