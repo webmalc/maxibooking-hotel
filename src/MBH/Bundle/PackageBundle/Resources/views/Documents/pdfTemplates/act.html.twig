@@ -59,7 +59,9 @@
             </tr>
             <tr>
                 <td>{{ "package.pdf.customer"|trans({}, "MBHPackageBundle") }} </td>
-                <td><strong>{{ entity.order.mainTourist.fullName|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong></td>
+                <td>
+                    <strong>{{ entity.order.payer.name|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong>
+                </td>
             </tr>
         </table>
 
