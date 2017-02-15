@@ -15,6 +15,7 @@ Room
      * @var \MBH\Bundle\HotelBundle\Document\RoomType
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $roomType;
 
@@ -22,6 +23,7 @@ Room
      * @var string
      * @ODM\Field(type="string", name="roomId")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $roomId;
 

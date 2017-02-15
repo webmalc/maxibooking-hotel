@@ -61,6 +61,7 @@ class Hotel extends Base implements \JsonSerializable
      *      max=100,
      *      maxMessage="validator.document.hotel.max_name"
      * )
+     * @ODM\Index()
      */
     protected $fullTitle;
 
@@ -74,6 +75,7 @@ class Hotel extends Base implements \JsonSerializable
      *      max=100,
      *      maxMessage="validator.document.hotel.min_name"
      * )
+     * @ODM\Index()
      */
     protected $title;
 
@@ -87,6 +89,7 @@ class Hotel extends Base implements \JsonSerializable
      *      max=100,
      *      maxMessage="validator.document.hotel.max_prefix"
      * )
+     * @ODM\Index()
      */
     protected $prefix;
 
@@ -96,6 +99,7 @@ class Hotel extends Base implements \JsonSerializable
      * @ODM\Boolean()
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isHostel = false;
 
@@ -105,6 +109,7 @@ class Hotel extends Base implements \JsonSerializable
      * @ODM\Boolean(name="isDefault")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isDefault = false;
 
@@ -113,6 +118,7 @@ class Hotel extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric", message= "validator.document.hotel.wrong_latitude")
+     * @ODM\Index()
      */
     protected $latitude;
 
@@ -121,6 +127,7 @@ class Hotel extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric", message="validator.document.hotel.wrong_longitude")
+     * @ODM\Index()
      */
     protected $longitude;
 
@@ -212,24 +219,28 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country")
+     * @ODM\Index()
      */
     protected $country;
 
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Region")
+     * @ODM\Index()
      */
     protected $region;
 
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="City")
+     * @ODM\Index()
      */
     protected $city;
 
     /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $settlement;
 
@@ -237,12 +248,14 @@ class Hotel extends Base implements \JsonSerializable
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $street;
 
     /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $house;
 
@@ -250,12 +263,14 @@ class Hotel extends Base implements \JsonSerializable
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $corpus;
 
     /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $flat;
 
@@ -299,6 +314,7 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @ODM\Field(type="string")
      * @var string
+     * @ODM\Index()
      */
     protected $description;
 

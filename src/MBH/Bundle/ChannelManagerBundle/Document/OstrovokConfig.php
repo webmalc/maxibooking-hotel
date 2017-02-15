@@ -25,6 +25,7 @@ class OstrovokConfig extends Base implements BaseInterface
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="ostrovokConfig")
      * @Assert\NotNull(message="validator.document.ostrovokConfig.no_hotel_selected")
+     * @ODM\Index()
      */
     protected $hotel;
 

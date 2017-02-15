@@ -39,6 +39,14 @@ class PackageSubscriber implements EventSubscriber
         );
     }
 
+    private function _removeCache()
+    {
+        $cache = $this->container->get('mbh.cache');
+        $cache->clear('accommodation_rooms');
+        $cache->clear('room_cache');
+        $cache->clear('packages');
+    }
+
     public function preRemove(LifecycleEventArgs $args)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
@@ -66,10 +74,10 @@ class PackageSubscriber implements EventSubscriber
             $entity->setServicesPrice(0);
             $dm->persist($entity);
             $dm->flush();
-
-            $this->container->get('mbh.cache')->clear('accommodation_rooms');
-            $this->container->get('mbh.cache')->clear('room_cache_fetch');
         }
+
+        $this->_removeCache();
+
         return;
     }
 
@@ -169,6 +177,7 @@ class PackageSubscriber implements EventSubscriber
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff(), false
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
+            $this->_removeCache();
         }
     }
 
@@ -218,6 +227,7 @@ class PackageSubscriber implements EventSubscriber
         if($package->getTariff() && $package->getTariff()->getDefaultPromotion()) {
             $package->setPromotion($package->getTariff()->getDefaultPromotion());
         }
+        $this->_removeCache();
     }
 
     public function preUpdate(LifecycleEventArgs $args)
@@ -235,6 +245,7 @@ class PackageSubscriber implements EventSubscriber
             $meta = $dm->getClassMetadata(get_class($package));
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $package);
         }
+        $this->_removeCache();
     }
 
     public function postUpdate(LifecycleEventArgs $args)

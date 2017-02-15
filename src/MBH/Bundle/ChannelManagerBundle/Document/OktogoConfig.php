@@ -46,6 +46,7 @@ class OktogoConfig extends Base implements BaseInterface
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="oktogoConfig")
      * @Assert\NotNull(message="validator.document.oktogoConfig.no_hotel_selected")
+     * @ODM\Index()
      */
     protected $hotel;
 
