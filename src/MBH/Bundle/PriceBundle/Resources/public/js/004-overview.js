@@ -2,13 +2,18 @@
 /*jslint regexp: true */
 $(document).ready(function () {
     'use strict';
+
     // set user Date (ClientConfig)
-    if($('.daterangepicker-input').prev().is('#room-overview-filter-begin')){
-        $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-        $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").day(+45).toDate());
-        $('#room-overview-filter-begin').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
-        $('#room-overview-filter-end').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
+    if ($('.daterangepicker-input').prev().is('#room-overview-filter-begin')) {
+
+        if (!($('#room-overview-filter-begin').val()) && !($('#room-overview-filter-end').val())) {
+            $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+            $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(45, 'days').toDate());
+            $('#room-overview-filter-begin').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
+            $('#room-overview-filter-end').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
+        }
     }
+
     //Show table
     var pricesProcessing = false,
         showTable = function () {
@@ -29,7 +34,9 @@ $(document).ready(function () {
                 $.ajax({
                     url: Routing.generate('room_overview_table'),
                     data: data,
-                    beforeSend: function () { pricesProcessing = true; },
+                    beforeSend: function () {
+                        pricesProcessing = true;
+                    },
                     success: function (data) {
                         wrapper.html(data);
                         pricesProcessing = false;

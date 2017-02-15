@@ -8,15 +8,17 @@ var setSearchDatepickers = function (date) {
 };
 
 $(document).ready(function () {
-    'use strict';
-    // set user Date (ClientConfig)
-    if($('.daterangepicker-input').prev().is('#s_begin')){
-        $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-        $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(1, 'days').toDate());
-    }
 
-    $('#s_begin').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
-    $('#s_end').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
+    'use strict';
+
+    if ($('.daterangepicker-input').prev().is('#s_begin')) {
+        if (!($('#s_begin').val()) && !($('#s_end').val())) {
+            $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+            $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(1, 'days').toDate());
+            $('#s_begin').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
+            $('#s_end').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
+        }
+    }
 
     (function () {
 
