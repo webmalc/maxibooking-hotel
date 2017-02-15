@@ -119,7 +119,7 @@ class Search implements SearchInterface
         //roomCache with tariffs
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null,
-            $query->roomTypes, false, false, $this->memcached
+            $query->roomTypes, false, false /*, $this->memcached*/
         );
 
         //group caches
