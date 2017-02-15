@@ -22,7 +22,7 @@ class CacheItem extends Base
     /**
      * @var string
      * @ODM\Field(type="string")
-     * @Assert\NotNull()
+     * @Assert\NotNull()X
      */
     protected $key;
 

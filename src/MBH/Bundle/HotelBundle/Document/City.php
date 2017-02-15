@@ -40,6 +40,7 @@ class City extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country", inversedBy="cities")
      * @Assert\NotNull(message="validator.document.city.country_not_selected")
+     * @ODM\Index()
      */
     protected $country;
 
@@ -47,6 +48,7 @@ class City extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Region", inversedBy="cities")
      * @Assert\NotNull(message="validator.document.city.region_not_selected")
+     * @ODM\Index()
      */
     protected $region;
 
@@ -60,6 +62,7 @@ class City extends Base
      *      max=100,
      *      maxMessage="validator.document.city.max_name"
      * )
+     * @ODM\Index()
      */
     protected $title;
 

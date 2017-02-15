@@ -53,6 +53,7 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="myallocatorConfig")
      * @Assert\NotNull(message="document.myallocatorConfig.no_hotel_selected")
+     * @ODM\Index()
      */
     protected $hotel;
 
