@@ -10,6 +10,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\CashBundle\Document\CardType;
@@ -243,6 +244,13 @@ class Hotel extends Base implements \JsonSerializable
     protected $street;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
+    protected $internationalStreetName;
+
+    /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      */
@@ -262,11 +270,21 @@ class Hotel extends Base implements \JsonSerializable
     protected $flat;
 
     /**
+     * @ODM\Field(type="string")
+     * @Gedmo\Versioned()
+     */
+    protected $zipCode;
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\BaseBundle\Document\Image")
+     */
+    protected $images;
+
+    /**
      * @var Housing[]
      * @ODM\ReferenceMany(targetDocument="Housing", mappedBy="hotel")
      */
     protected $housings;
-
 
     /**
      * @var UploadedFile
@@ -318,7 +336,7 @@ class Hotel extends Base implements \JsonSerializable
 
     /**
      * @var array
-     * @ODM\ReferenceMany(targetDocument="CardType")
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CardType")
      */
     protected $acceptedCardTypes;
 
@@ -327,6 +345,12 @@ class Hotel extends Base implements \JsonSerializable
      * @ODM\Field(type="bool")
      */
     protected $isInvoiceAccepted = true;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $checkinoutPolicy;
 
     public function __construct()
     {
@@ -338,6 +362,7 @@ class Hotel extends Base implements \JsonSerializable
         $this->ingredientCategories = new ArrayCollection();
         $this->TableTypes = new ArrayCollection();
         $this->acceptedCardTypes = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
     /**
      * @return mixed
@@ -1437,5 +1462,64 @@ class Hotel extends Base implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getInternationalStreetName(): ?string
+    {
+        return $this->internationalStreetName;
+    }
 
+    /**
+     * @param string $internationalStreetName
+     * @return Hotel
+     */
+    public function setInternationalStreetName(string $internationalStreetName): Hotel
+    {
+        $this->internationalStreetName = $internationalStreetName;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCheckinoutPolicy() : ?string
+    {
+        return $this->checkinoutPolicy;
+    }
+
+    /**
+     * @param string $checkinoutPolicy
+     * @return Hotel
+     */
+    public function setCheckinoutPolicy(string $checkinoutPolicy): Hotel
+    {
+        $this->checkinoutPolicy = $checkinoutPolicy;
+
+        return $this;
+    }
+
+    /**
+     * Add image
+     * @param Image $image
+     */
+    public function addImage(Image $image)
+    {
+        $this->images->add($image);
+    }
+
+    /**
+     * Remove image
+     * @param Image $image
+     */
+    public function removeImage(Image $image)
+    {
+        $this->images->removeElement($image);
+    }
+
+    public function getImages()
+    {
+        return $this->images;
+    }
 }

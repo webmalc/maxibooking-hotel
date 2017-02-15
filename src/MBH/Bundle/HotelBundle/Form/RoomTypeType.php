@@ -50,7 +50,7 @@ class RoomTypeType extends AbstractType
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
                 'attr' => ['placeholder' => 'form.roomTypeType.comport_plus_rooms_in_new_housing'],
-                'help' => 'Название для использования внутри MaxiBooking'
+                'help' => 'form.roomTypeType.inner_name.help'
             ])
             ->add('internationalTitle', TextType::class, [
                 'label' => 'form.roomTypeType.international_title',
@@ -81,6 +81,13 @@ class RoomTypeType extends AbstractType
                 //'label' => 'form.roomTypeType.is_included',
                 'group' => 'form.roomTypeType.general_info',
                 'required' => false
+            ])
+            ->add('isSmoking', CheckboxType::class, [
+                'label' => 'form.hotelType.isSmoking.label',
+                'group' => 'form.roomTypeType.general_info',
+                'value' => true,
+                'required' => false,
+                'help' => 'form.hotelType.isSmoking.help'
             ])
             ->add('isHostel', CheckboxType::class, [
                 'label' => 'form.hotelType.hostel',

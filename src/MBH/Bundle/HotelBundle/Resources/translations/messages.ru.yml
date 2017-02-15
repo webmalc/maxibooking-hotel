@@ -1,6 +1,8 @@
 form.hotelExtendedType.city: Город
 form.hotelExtendedType.settlement: Населенный пункт
 form.hotelExtendedType.street: Улица
+form.hotelExtendedType.international_street_name.label: Международное название
+form.hotelExtendedType.international_street_name.help: Международное название улицы
 form.hotelExtendedType.house: Дом
 form.hotelExtendedType.corpus: Корпус
 form.hotelExtendedType.flat: Квартира
@@ -22,10 +24,15 @@ form.hotelExtendedType.hotel_theme: Тема отеля
 form.hotelExtendedType.hotel_amenities: Удобства отеля
 form.hotelExtendedType.vega_address_id: ID адреса для ПК "Вега"
 form.hotelExtendedType.vega_address_id_help: ID адреса для ПК "Вега"
-form.hotelExtendedType.accepted_card_type.label: Принимаемые карты
-form.hotelExtendedType.accepted_card_type.help: Принимаемые типы карт
-card_type.debit_category.name: Дебетовая
-card_type.credit_category.name: Кредитная
+form.hotelExtendedType.accepted_payment_types: Способы платежа
+form.hotelExtendedType.accepted_card_type.label: Типы карт
+form.hotelExtendedType.accepted_card_type.help: Принимаемые типы платежных карт
+form.hotelExtendedType.is_invoice_accepted.label: Накладные
+form.hotelExtendedType.is_invoice_accepted.help: Принимаются ли для оплаты накладные
+form.hotelExtendedType.check_in_out_policy.label: Правила въезда/выезда
+form.hotelExtendedType.check_in_out_policy.help: Правила въезда/выезда, включая предметы необходимые при въезде
+form.contact_info_type.available_languages.label: Языки
+form.contact_info_type.available_languages.help: Языки, поддерживаемые отелем
 form.contact_info_type.phone.label: Телефон
 form.contact_info_type.phone.help: Номер контактного телефона
 form.contact_info_type.full_name.label: Имя
@@ -49,6 +56,8 @@ form.hotelType.sale_days_amount: Количество дней продажи
 form.hotelType.settings: Настройки
 form.hotelType.how_long_sale_opened_since_today: На сколько дней открыта продажа от текущего числа
 form.hotelType.hostel: Хостел?
+form.hotelType.isSmoking.label: Разрешено курение?
+form.hotelType.isSmoking.help: Разрешено ли курение в номере?
 form.hotelType.hostel_hotel_or_not: Хостел или нет?
 form.hotelType.is_default: Выбран по умолчанию?
 form.hotelType.logo: Логотип
@@ -92,6 +101,7 @@ form.roomTypeType.name: Название
 form.roomTypeType.general_info: Общая информация
 form.roomTypeType.comfort_plus: Комфорт плюс
 form.roomTypeType.inner_name: Внутреннее название
+form.roomTypeType.inner_name.help: Название для использования внутри MaxiBooking
 form.roomTypeType.international_title: Международное название
 form.roomTypeType.comport_plus_rooms_in_new_housing: Комфорт плюс - номера в новом корпусе
 form.roomTypeType.description: Описание
@@ -99,6 +109,7 @@ form.roomTypeType.color: Цвет
 form.roomTypeType.online_reservation_room_description: Описание типа номера для онлайн бронирования
 form.roomTypeType.chess_room_type_color: Цвет типа номера на шахматке
 form.roomTypeType.image: Изображение
+form.roomTypeType.image.help: Изображние типа номера для онлайн бронирования
 form.roomTypeType.main_places: Основные места
 form.roomTypeType.settings: Настройки
 form.roomTypeType.places: Места

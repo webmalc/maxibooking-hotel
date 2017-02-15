@@ -4,9 +4,11 @@ namespace MBH\Bundle\CashBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
  * @ODM\Document(collection="CardType")
+ * @MongoDBUnique(fields={"cardCode", "cardCategory"}, message="validator.document.card_type.unique_constraint")
  * Class CardType
  * @package MBH\Bundle\CashBundle\Document
  */

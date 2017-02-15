@@ -180,6 +180,12 @@ class RoomType extends Base implements RoomTypeInterface
      */
     protected $category;
 
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isSmoking = false;
+
     public function __construct()
     {
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
@@ -644,6 +650,24 @@ class RoomType extends Base implements RoomTypeInterface
     {
         $this->category = $category;
 
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsSmoking(): ?bool
+    {
+        return $this->isSmoking;
+    }
+
+    /**
+     * @param bool $isSmoking
+     * @return RoomType
+     */
+    public function setIsSmoking(bool $isSmoking): RoomType
+    {
+        $this->isSmoking = $isSmoking;
         return $this;
     }
 }

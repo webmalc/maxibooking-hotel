@@ -364,6 +364,12 @@ class Package extends Base implements \JsonSerializable
     protected $isForceBooking = false;
 
     /**
+     * @var array
+     * @ODM\Collection()
+     */
+    protected $childAges = [];
+
+    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff

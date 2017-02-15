@@ -44,6 +44,12 @@ class HotelContactInformationType extends AbstractType
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false
             ])
+            ->add('internationalStreetName', TextType::class, [
+                'group' => 'form.hotelExtendedType.address',
+                'label' => 'form.hotelExtendedType.international_street_name.label',
+                'help' => 'form.hotelExtendedType.international_street_name.help',
+                'required' => false
+            ])
             ->add('house', TextType::class, [
                 'label' => 'form.hotelExtendedType.house',
                 'group' => 'form.hotelExtendedType.address',
@@ -76,12 +82,15 @@ class HotelContactInformationType extends AbstractType
                 'help' => 'form.hotelExtendedType.gps_coordinates_longitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
             ]);
 
-
         $builder
             ->add('contactInformation', ContactInfoType::class)
-            //TODO: Добавить в группу
             ->add('supportedLanguages', LanguageType::class, [
-                'multiple' => true
+                'multiple' => true,
+                'label' => 'form.contact_info_type.available_languages.label',
+                //TODO: Уточнить текст
+                'help' => 'form.contact_info_type.available_languages.help',
+                'group' => 'form.hotelType.general_info',
+                'required' => false
             ])
         ;
 //            ->add('refundableType', ChoiceType::class, [
