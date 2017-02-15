@@ -11,15 +11,6 @@ $(document).ready(function () {
 
     'use strict';
 
-    if ($('.daterangepicker-input').prev().is('#s_begin')) {
-        if (!($('#s_begin').val()) && !($('#s_end').val())) {
-            $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-            $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(1, 'days').toDate());
-            $('#s_begin').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
-            $('#s_end').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
-        }
-    }
-
     (function () {
 
         $.ajax(Routing.generate('restriction_in_out_json'), {})

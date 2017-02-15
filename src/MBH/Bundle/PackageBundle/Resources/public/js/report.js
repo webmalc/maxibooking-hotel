@@ -3,17 +3,6 @@
 $(document).ready(function () {
     'use strict';
 
-    // set user Date (ClientConfig)
-    if ($('.daterangepicker-input').prev().is('#windows-report-filter-begin')) {
-
-        if (!($('#windows-report-filter-begin').val()) && !($('#windows-report-filter-end').val())) {
-            $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
-            $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(45, 'days').toDate());
-            $('#windows-report-filter-begin').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
-            $('#windows-report-filter-end').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
-        }
-    }
-
     //table
     var packageData = null,
         choosePackages = function () {
