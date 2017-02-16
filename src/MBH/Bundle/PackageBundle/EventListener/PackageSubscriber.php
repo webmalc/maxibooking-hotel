@@ -39,12 +39,16 @@ class PackageSubscriber implements EventSubscriber
         );
     }
 
-    private function _removeCache()
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     */
+    private function _removeCache(\DateTime $begin = null, \DateTime $end = null)
     {
         $cache = $this->container->get('mbh.cache');
-        $cache->clear('accommodation_rooms');
-        $cache->clear('room_cache');
-        $cache->clear('packages');
+        $cache->clear('accommodation_rooms', $begin, $end);
+        $cache->clear('room_cache', $begin, $end);
+        $cache->clear('packages', $begin, $end);
     }
 
     public function preRemove(LifecycleEventArgs $args)
@@ -54,7 +58,7 @@ class PackageSubscriber implements EventSubscriber
         $entity = $args->getDocument();
 
         //Calc services price
-        if($entity instanceof PackageService) {
+        if ($entity instanceof PackageService) {
             try {
                 $package = $entity->getPackage();
                 $this->container->get('mbh.calculation')->setServicesPrice($package, null, $entity);
@@ -66,7 +70,7 @@ class PackageSubscriber implements EventSubscriber
         }
 
         //Calc package
-        if($entity instanceof Package) {
+        if ($entity instanceof Package) {
             foreach ($entity->getServices() as $packageService) {
                 $packageService->setDeletedAt(new \DateTime());
                 $dm->persist($packageService);
@@ -76,7 +80,7 @@ class PackageSubscriber implements EventSubscriber
             $dm->flush();
         }
 
-        $this->_removeCache();
+        $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
 
         return;
     }
@@ -116,12 +120,11 @@ class PackageSubscriber implements EventSubscriber
                     ->setHotel($package->getRoomType()->getHotel())
                     ->setEnd(new \DateTime('+10 minute'))
                     ->setLinkText('mailer.to_package')
-                    ->setLink($this->container->get('router')->generate('package_edit', ['id' => $package->getId()], true))
-                ;
+                    ->setLink($this->container->get('router')->generate('package_edit', ['id' => $package->getId()], true));
                 $notifier->setMessage($message)->notify();
             }
 
-            $request =  $this->container->get('request_stack')->getCurrentRequest();
+            $request = $this->container->get('request_stack')->getCurrentRequest();
             $this->container->get('mbh.mbhs')->sendPackageInfo($package, $request ? $request->getClientIp() : null);
         }
     }
@@ -147,8 +150,7 @@ class PackageSubscriber implements EventSubscriber
                         ->setPrice($changes['price'][1])
                         ->setNights($changes['nights'][1])
                         ->setPersons($changes['persons'][1])
-                        ->setService(!empty($changes['service'][1]) ? $changes['service'][1] : $doc->getService())
-                    ;
+                        ->setService(!empty($changes['service'][1]) ? $changes['service'][1] : $doc->getService());
 
                     $this->container->get('mbh.calculation')->setServicesPrice($package, $new, $doc);
                     $order = $package->getOrder()->calcPrice();
@@ -177,7 +179,7 @@ class PackageSubscriber implements EventSubscriber
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff(), false
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
-            $this->_removeCache();
+            $this->_removeCache(clone $doc->getBegin(), clone $doc->getEnd());
         }
     }
 
@@ -186,7 +188,7 @@ class PackageSubscriber implements EventSubscriber
         $entity = $args->getDocument();
 
         //Calc services price
-        if($entity instanceof PackageService) {
+        if ($entity instanceof PackageService) {
             $package = $entity->getPackage();
             $this->container->get('mbh.calculation')->setServicesPrice($package, $entity);
         }
@@ -208,8 +210,7 @@ class PackageSubscriber implements EventSubscriber
                 ->field('order.id')->equals($package->getOrder()->getId())
                 ->sort('number', 'desc')
                 ->getQuery()
-                ->getSingleResult()
-            ;
+                ->getSingleResult();
 
             $dm->getFilterCollection()->enable('softdeleteable');
 
@@ -220,14 +221,14 @@ class PackageSubscriber implements EventSubscriber
             }
 
             if ($package->getTariff() && empty($package->getNumberWithPrefix())) {
-                $package->setNumberWithPrefix($package->getTariff()->getHotel()->getPrefix() . $package->getOrder()->getId(). '/' . $number);
+                $package->setNumberWithPrefix($package->getTariff()->getHotel()->getPrefix() . $package->getOrder()->getId() . '/' . $number);
             }
         }
 
-        if($package->getTariff() && $package->getTariff()->getDefaultPromotion()) {
+        if ($package->getTariff() && $package->getTariff()->getDefaultPromotion()) {
             $package->setPromotion($package->getTariff()->getDefaultPromotion());
         }
-        $this->_removeCache();
+        $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
     }
 
     public function preUpdate(LifecycleEventArgs $args)
@@ -240,12 +241,12 @@ class PackageSubscriber implements EventSubscriber
 
         $dm = $args->getDocumentManager();
         $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($package);
-        if(isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
+        if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
             $package->setIsLocked(true);
             $meta = $dm->getClassMetadata(get_class($package));
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $package);
         }
-        $this->_removeCache();
+        $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
     }
 
     public function postUpdate(LifecycleEventArgs $args)
