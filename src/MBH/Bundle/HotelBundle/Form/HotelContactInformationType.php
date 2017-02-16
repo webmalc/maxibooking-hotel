@@ -7,7 +7,6 @@ use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\LanguageType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -64,7 +63,13 @@ class HotelContactInformationType extends AbstractType
                 'label' => 'form.hotelExtendedType.flat',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,
-            ]);
+            ])
+            ->add('zipCode', TextType::class, [
+                'label' => 'form.hotelExtendedType.zip_code',
+                'group' => 'form.hotelExtendedType.address',
+                'required' => false,
+            ])
+        ;
 
         $builder
             ->add('latitude', TextType::class, [

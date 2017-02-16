@@ -6,6 +6,7 @@ form.hotelExtendedType.international_street_name.help: Международно�
 form.hotelExtendedType.house: Дом
 form.hotelExtendedType.corpus: Корпус
 form.hotelExtendedType.flat: Квартира
+form.hotelExtendedType.zip_code: Почтовый индекс
 form.hotelExtendedType.location: Местоположение
 form.hotelExtendedType.address: Адрес
 form.hotelExtendedType.placeholder_location: Москва, Московская обл., Щелково
@@ -31,6 +32,8 @@ form.hotelExtendedType.is_invoice_accepted.label: Накладные
 form.hotelExtendedType.is_invoice_accepted.help: Принимаются ли для оплаты накладные
 form.hotelExtendedType.check_in_out_policy.label: Правила въезда/выезда
 form.hotelExtendedType.check_in_out_policy.help: Правила въезда/выезда, включая предметы необходимые при въезде
+form.hotelExtendedType.smoking_policy.label: Правила курения
+form.hotelExtendedType.check_in_out_policy.placeholder: При въезде необходимо предоставить валидную кредитную или дебетовую карту
 form.contact_info_type.available_languages.label: Языки
 form.contact_info_type.available_languages.help: Языки, поддерживаемые отелем
 form.contact_info_type.phone.label: Телефон

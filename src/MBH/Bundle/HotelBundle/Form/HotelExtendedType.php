@@ -9,14 +9,10 @@ use MBH\Bundle\BaseBundle\Form\FacilitiesType;
 use MBH\Bundle\CashBundle\Document\CardType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Image;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class HotelExtendedType extends AbstractType
 {
@@ -76,7 +72,17 @@ class HotelExtendedType extends AbstractType
                 'label' => 'form.hotelExtendedType.check_in_out_policy.label',
                 'help' => 'form.hotelExtendedType.check_in_out_policy.help',
                 'required' => false,
+                'group' => 'form.hotelExtendedType.parameters',
+                'attr' => [
+                    'placeholder' => 'form.hotelExtendedType.check_in_out_policy.placeholder'
+                ]
             ])
+            //TODO: Не доделал тк нет источника
+//            ->add('smokingPolicy', ChoiceType::class, [
+//                'label' => 'form.hotelExtendedType.smoking_policy.label',
+//                'required' => false,
+//                'choices' => []
+//            ])
         ;
 
 //        $builder->add('vega_address_id', NumberType::class, [

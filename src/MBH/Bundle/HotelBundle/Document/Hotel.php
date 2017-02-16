@@ -352,6 +352,12 @@ class Hotel extends Base implements \JsonSerializable
      */
     protected $checkinoutPolicy;
 
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $smokingPolicy;
+
     public function __construct()
     {
         $this->roomTypes = new ArrayCollection();
@@ -1521,5 +1527,41 @@ class Hotel extends Base implements \JsonSerializable
     public function getImages()
     {
         return $this->images;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getZipCode()
+    {
+        return $this->zipCode;
+    }
+
+    /**
+     * @param mixed $zipCode
+     * @return Hotel
+     */
+    public function setZipCode($zipCode)
+    {
+        $this->zipCode = $zipCode;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmokingPolicy(): ?string
+    {
+        return $this->smokingPolicy;
+    }
+
+    /**
+     * @param string $smokingPolicy
+     * @return Hotel
+     */
+    public function setSmokingPolicy(string $smokingPolicy): Hotel
+    {
+        $this->smokingPolicy = $smokingPolicy;
+        return $this;
     }
 }
