@@ -6,3 +6,4 @@ validator.negativeprice: Цена не может быть меньше нуля
 validator.field.short: Слишком короткое
 validator.field.long: Слишком длинное
 validator.hotel.empty: Не выбран отель
+validator.image.max_size_exceeded: Превышен максимальный размер загружаемого файла

@@ -23,6 +23,7 @@ class Image
     /**
      * @var File
      * @Vich\UploadableField(mapping="upload_image", fileNameProperty="imageName")
+     * @Assert\File(maxSize = "1024k", maxSizeMessage="validator.image.max_size_exceeded")
      */
     protected $imageFile;
 

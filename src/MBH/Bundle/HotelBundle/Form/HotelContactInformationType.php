@@ -98,20 +98,6 @@ class HotelContactInformationType extends AbstractType
                 'required' => false
             ])
         ;
-//            ->add('refundableType', ChoiceType::class, [
-//                'required' => false,
-//                'label' => 'form.hotel_additional_info_type.refundable_type.label',
-//                'choices' => [
-//                    'form.hotel_additional_info_type.refundable_type.full' => 'full',
-//                    'form.hotel_additional_info_type.refundable_type.partial' => 'partial',
-//                    'form.hotel_additional_info_type.refundable_type.none' => 'none'
-//                ]
-//            ])
-//            ->add('cancellationPolicy', TextareaType::class, [
-//                'required' => false,
-//                'label' => 'form.hotel_additional_info_type.cancellation_policy.label'
-//            ])
-        ;
 
         $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }
