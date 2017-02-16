@@ -26,6 +26,7 @@ class CsvGenerate
 
     const DATA = [
         'type' => ['title' => 'csv.type.package', 'method' => 'getStatus'],
+        'typeOrder' => ['title' => 'csv.type.order.type', 'method' => 'getOrder'],
         'numberWithPrefix' => ['title' => '#', 'method' => 'getNumberWithPrefix'],
         'dateBegin' => ['title' => 'csv.type.begin', 'method' => 'getBegin'],
         'dateEnd' => ['title' => 'csv.type.end', 'method' => 'getEnd'],
@@ -76,6 +77,8 @@ class CsvGenerate
 
                         $dataCsv[] = $entity->getAdults() + $entity->getChildren();
 
+                    } elseif ($method == 'getOrder') {
+                        $entity->getStatus() == 'channel_manager' ? $dataCsv[] = $translator->trans('manager.channel_manager.' . $entity->getChannelManagerType()) : $dataCsv[] = '';
                     } else {
 
                         $call = $entity->$method();
@@ -95,7 +98,7 @@ class CsvGenerate
         }
 
         $content = implode("\n", $rows);
-        $content = iconv( 'UTF-8','windows-1251', $content);
+        $content = iconv('UTF-8', 'windows-1251', $content);
         return $content;
 
     }

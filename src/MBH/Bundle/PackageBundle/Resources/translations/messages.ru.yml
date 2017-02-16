@@ -357,8 +357,15 @@ report.windows.modal.title: 'Информация'
 manager.offline: Оффлайн
 manager.online: Онлайн
 manager.channel_manager: Channel manager
+manager.channel_manager.vashotel: Ваш отель
+manager.channel_manager.booking: Booking
+manager.channel_manager.myallocator: Myalllocator
+manager.channel_manager.ostrovok: Островок
+manager.channel_manager.101Hotels: 101 Отель
+manager.channel_manager.oktogo: Oktogo
 
 csv.type.package: Тип брони
+csv.type.order.type: Тип заказа
 csv.type.begin: С
 csv.type.end: По
 csv.type.tariffType: Тип номера
