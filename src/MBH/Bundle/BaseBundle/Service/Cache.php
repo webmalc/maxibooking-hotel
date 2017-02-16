@@ -49,10 +49,12 @@ class Cache
 
     /**
      * @param string|null $prefix
+     * @param \DateTime $begin
+     * @param \DateTime $end
      * @param bool $all
-     * @return self
+     * @return int
      */
-    public function clear(string $prefix = null, bool $all = false): self
+    public function clear(string $prefix = null, \DateTime $begin = null, \DateTime $end = null, bool $all = false): int
     {
         if (!$this->isEnabled) {
             return $this;
@@ -63,10 +65,12 @@ class Cache
         }
 
         $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
-        $this->cache->deleteItems($this->dm->getRepository('MBHBaseBundle:CacheItem')->getKeysByPrefix($prefix));
-        $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix);
 
-        return $this;
+        $this->cache->deleteItems(
+            $this->dm->getRepository('MBHBaseBundle:CacheItem')->getKeysByPrefix($prefix, $begin, $end)
+        );
+
+        return $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix);;
     }
 
     /**
@@ -114,6 +118,7 @@ class Cache
         }
 
         $key = $this->generateKey($prefix, $keys);
+
         $item = $this->cache->getItem($this->generateKey($prefix, $keys));
         $item->set($value)->expiresAfter(self::LIFETIME);
         $this->cache->save($item);
@@ -122,6 +127,17 @@ class Cache
         $cacheItem = new CacheItem($key);
 
         if (!count($this->validator->validate($cacheItem))) {
+            $dates = array_values(array_filter($keys, function ($entry) {
+                return $entry instanceof \DateTime;
+            }));
+
+            if (isset($dates[0])) {
+                $cacheItem->setBegin($dates[0]);
+            }
+            if (isset($dates[1])) {
+                $cacheItem->setEnd($dates[1]);
+            }
+
             $this->dm->persist($cacheItem);
             $this->dm->flush();
         }

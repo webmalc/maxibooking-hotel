@@ -74,6 +74,11 @@ class Search implements SearchInterface
     {
         $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
         $token = $this->container->get('security.token_storage')->getToken();
+
+        if (!$query->memcached) {
+            $this->memcached = null;
+        }
+
         if ($token && !$this->container->get('security.authorization_checker')->isGranted('ROLE_FORCE_BOOKING')) {
             $query->forceBooking = false;
         }

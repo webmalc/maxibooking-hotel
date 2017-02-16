@@ -42,12 +42,16 @@ class OrderSubscriber implements EventSubscriber
         );
     }
 
-    private function _removeCache()
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     */
+    private function _removeCache(\DateTime $begin = null, \DateTime $end = null)
     {
         $cache = $this->container->get('mbh.cache');
-        $cache->clear('accommodation_rooms');
-        $cache->clear('room_cache');
-        $cache->clear('packages');
+        $cache->clear('accommodation_rooms', $begin, $end);
+        $cache->clear('room_cache', $begin, $end);
+        $cache->clear('packages', $begin, $end);
     }
 
     public function preRemove(LifecycleEventArgs $args)
@@ -189,7 +193,7 @@ class OrderSubscriber implements EventSubscriber
                 if (isset($uow->getDocumentChangeSet($entity)['accommodation'])) {
                     $this->container->get('mbh.cache')->clear('accommodation_rooms');
                 }
-                $this->_removeCache();
+                $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
             }
 
         }
