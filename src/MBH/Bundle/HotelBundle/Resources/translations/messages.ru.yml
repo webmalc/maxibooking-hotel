@@ -23,6 +23,10 @@ form.hotelExtendedType.integration: Интеграция
 form.hotelExtendedType.hotel_type: Тип отеля
 form.hotelExtendedType.hotel_theme: Тема отеля
 form.hotelExtendedType.hotel_amenities: Удобства отеля
+form.hotelExtendedType.all_rooms_non_smoking: Все номера для некурящих
+form.hotelExtendedType.non_smoking_room: Общие комнаты для некурящих
+form.hotelExtendedType.all_public_areas_non_smoking: Во всех общественных местах запрещено курение
+form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms: Курение разрешено в специально отведенных местах и номерах
 form.hotelExtendedType.vega_address_id: ID адреса для ПК "Вега"
 form.hotelExtendedType.vega_address_id_help: ID адреса для ПК "Вега"
 form.hotelExtendedType.accepted_payment_types: Способы платежа

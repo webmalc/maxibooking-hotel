@@ -7,6 +7,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="Images")
@@ -191,15 +192,4 @@ class Image
 
         return $this;
     }
-
-
-//    public function uploadImage(UploadedFile $uploadedImage)
-//    {
-//        if (is_null($uploadedImage)) {
-//            return;
-//        }
-//        $this->setName($uploadedImage->getClientOriginalName());
-//        $uploadedImage->move($this->getUploadRootDir(), $uploadedImage->getClientOriginalName());
-//        $this->setFile(self::HOTEL_UPLOAD_DIR.'/'. $uploadedImage->getClientOriginalName());
-//    }
 }

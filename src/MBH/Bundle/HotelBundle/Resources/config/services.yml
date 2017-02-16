@@ -68,6 +68,6 @@ services:
 
     mbh.hotel.extended_type:
         class: MBH\Bundle\HotelBundle\Form\HotelExtendedType
-        arguments: ['@doctrine_mongodb.odm.document_manager']
+        arguments: ['@doctrine_mongodb.odm.document_manager', '%mbh.smoking_policy%']
         tags:
             - { name: form.type}

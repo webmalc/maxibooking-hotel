@@ -18,10 +18,12 @@ class HotelExtendedType extends AbstractType
 {
     /** @var  DocumentManager */
     private $dm;
+    private $smokingPolicyOptions;
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, $smokingPolicyOptions)
     {
         $this->dm = $dm;
+        $this->smokingPolicyOptions = $smokingPolicyOptions;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -77,12 +79,12 @@ class HotelExtendedType extends AbstractType
                     'placeholder' => 'form.hotelExtendedType.check_in_out_policy.placeholder'
                 ]
             ])
-            //TODO: Не доделал тк нет источника
-//            ->add('smokingPolicy', ChoiceType::class, [
-//                'label' => 'form.hotelExtendedType.smoking_policy.label',
-//                'required' => false,
-//                'choices' => []
-//            ])
+            ->add('smokingPolicy', InvertChoiceType::class, [
+                'label' => 'form.hotelExtendedType.smoking_policy.label',
+                'required' => false,
+                'group' => 'form.hotelExtendedType.parameters',
+                'choices' => $this->smokingPolicyOptions
+            ])
         ;
 
 //        $builder->add('vega_address_id', NumberType::class, [
