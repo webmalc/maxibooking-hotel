@@ -26,7 +26,7 @@ class HundredOneHotels extends Base
      */
     const CONFIG = 'HundredOneHotelsConfig';
 
-    const CHANNEL_MANAGER_TYPE = 'hundredOneHotels';
+    const CHANNEL_MANAGER_TYPE = '101Hotels';
 
     /**
      * Base API URL
