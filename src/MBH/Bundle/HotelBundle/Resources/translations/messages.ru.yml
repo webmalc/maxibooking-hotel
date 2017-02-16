@@ -40,6 +40,10 @@ form.contact_info_type.full_name.help: Полное имя контакта
 form.contact_info_type.email.label: E-mail
 form.contact_info_type.email.help: Электронная почта контактного лица
 form.hotel_contact_information.contact_info.group: Данные контактов поддержки клиента
+form.hotel_images.image_file.label: Изображение
+form.hotel_images.image_file.help: Изображение отеля для онлайн бронирования
+form.hotel_images.image_is_default.label: Основное?
+form.hotel_images.image_is_default.help: Является ли изображение основным для отеля?
 form.hotelType.name: Название
 form.hotelType.general_info: Общая информация
 form.taskType.general_info: Добавление типа
@@ -75,6 +79,9 @@ form.roomType.status: Статус
 form.roomType.facilities: Удобства
 form.roomType.housing: Корпус
 form.roomType.floor: Этаж
+form.roomType.is_smoking.label: Разрешено курение?
+form.roomType_generator.is_smoking.label: Курящий?
+form.roomType.is_smoking.help: Разрешено ли в комнате курение?
 
 form:
     roomTypeCategory:
@@ -109,7 +116,7 @@ form.roomTypeType.color: Цвет
 form.roomTypeType.online_reservation_room_description: Описание типа номера для онлайн бронирования
 form.roomTypeType.chess_room_type_color: Цвет типа номера на шахматке
 form.roomTypeType.image: Изображение
-form.roomTypeType.image.help: Изображние типа номера для онлайн бронирования
+form.roomTypeType.image.help: Изображение типа номера для онлайн бронирования
 form.roomTypeType.main_places: Основные места
 form.roomTypeType.settings: Настройки
 form.roomTypeType.places: Места
@@ -131,10 +138,20 @@ form.roomTypeType.help.empty_facilities: Используются удобств
 controller.hotelController.record_created_success: 'Запись успешно создана.'
 
 controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
+controller.hotelController.success_delete_photo: Изображение успешно удалено.
+controller.hotelController.success_main_image_set: Изображение установлено как основное для данного отеля
+hotel_images.set_image_main: Cделать изображение основным для данного отеля
+hotel_images.main_image: Главная фотография
+hotel_images.remove_image: Удалить картинку
 controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
+controller.roomController.success_room_creation: Комната успешно добавлена.
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
 controller.TaskTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
 controller.TaskTypeController.record_edited_success: 'Запись успешно отредактирована.'
+controller.roomTypeController.success_set_main_photo: Фотография успешно была сделана главной.
+controller.roomTypeController.success_set_photo: Фотография успешно создана.
+controller.roomTypeController.success_delete_photo: Изображение успешно удалено.
+controller.roomTypeController.success_room_type_creation: Новый тип номера успешно создан
 
 controller.hotelController.task_created_notall: 'Не все задачи созданы/отредактированы, сначала закройте открытые задачи для данного типа'
 controller.hotelController.task_created_failed: 'Не удалось создать ни одной задачи'

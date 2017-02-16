@@ -111,6 +111,12 @@ class Room extends Base
     protected $facilities;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isSmoking = false;
+
+    /**
      * Room constructor.
      */
     public function __construct()
@@ -327,5 +333,24 @@ class Room extends Base
     public function setFacilities($facilities)
     {
         $this->facilities = $facilities;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsSmoking(): ?bool
+    {
+        return $this->isSmoking;
+    }
+
+    /**
+     * @param bool $isSmoking
+     * @return Room
+     */
+    public function setIsSmoking(bool $isSmoking): Room
+    {
+        $this->isSmoking = $isSmoking;
+
+        return $this;
     }
 }

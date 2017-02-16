@@ -300,7 +300,7 @@ class HotelController extends Controller
             $this->addFlash('success',
                 $this->get('translator')->trans('controller.hotelController.record_edited_success'));
 
-            return $this->afterSaveRedirect('hotel_contact_information', $hotel->getId(), [], '');
+            return $this->afterSaveRedirect('hotel', $hotel->getId(), [], '_contact_information');
         }
 
         return [
@@ -317,32 +317,96 @@ class HotelController extends Controller
      * @Template()
      * @param Request $request
      * @param Hotel $hotel
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function imagesAction(Request $request, Hotel $hotel)
     {
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
             throw $this->createNotFoundException();
         }
-        $form = $this->createForm(HotelImageType::class, $hotel);
+        $form = $this->createForm(HotelImageType::class);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-
-            $this->dm->persist($hotel);
+            /** @var Image $image */
+            $image = $form->getData();
+            $hotel->addImage($image);
+            if ($image->getIsDefault()) {
+                $this->setHotelMainImage($hotel, $image);
+            }
+            $this->dm->persist($image);
             $this->dm->flush();
 
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.hotelController.record_edited_success'));
+            $this->addFlash('success', 'controller.hotelController.record_edited_success');
 
-            return $this->afterSaveRedirect('hotel_contact_information', $hotel->getId(), [], '');
+            return $this->afterSaveRedirect('hotel', $hotel->getId(), [], '_images');
         }
 
         return [
             'entity' => $hotel,
             'form' => $form->createView(),
-            'logs' => $this->logs($hotel)
+            'images' => $hotel->getImages()
         ];
+    }
+
+    /**
+     * Delete image
+     *
+     * @Route("/{id}/delete/images/{imageId}", name="hotel_image_delete")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_HOTEL_DELETE')")
+     * @param Hotel $hotel
+     * @ParamConverter("image", options={"id" = "imageId"})
+     * @param Image $image
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function imageDelete(Hotel $hotel, Image $image)
+    {
+        if (!$hotel || !$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
+            throw $this->createNotFoundException();
+        }
+        $hotel->removeImage($image);
+        $this->dm->flush();
+
+        $this->addFlash('success', 'controller.hotelController.success_delete_photo');
+
+        return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
+    }
+
+    /**
+     * Make image main.
+     *
+     * @Route("/{id}/set_main/images/{imageId}", name="hotel_image_make_main")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
+     * @ParamConverter("newMainImage", options={"id" = "imageId"})
+     * @param Hotel $hotel
+     * @param Image $newMainImage
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function makeMainHotelImageAction(Hotel $hotel, Image $newMainImage)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
+            throw $this->createNotFoundException();
+        }
+        $this->setHotelMainImage($hotel, $newMainImage);
+
+        $this->dm->flush();
+        $this->addFlash('success', 'controller.hotelController.success_main_image_set');
+
+        return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
+    }
+
+    private function setHotelMainImage(Hotel $hotel, Image $newMainImage)
+    {
+        foreach ($hotel->getImages() as $image) {
+            /** @var Image $image */
+            if ($image->getIsDefault() && $image->getId() != $newMainImage->getId()) {
+                $image->setIsDefault(false);
+            }
+        }
+        $newMainImage->setIsDefault(true);
+
+        return $hotel;
     }
 
     /**

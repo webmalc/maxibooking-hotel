@@ -82,6 +82,13 @@ class RoomType extends AbstractType
                 'group' => 'form.roomType.general_info',
                 'required' => false
             ])
+            ->add('isSmoking', CheckboxType::class, [
+                'label' => 'form.roomType.is_smoking.label',
+                'help' => 'form.roomType.is_smoking.help',
+                'group' => 'form.roomType.general_info',
+                'required' => false,
+                'value' => false,
+            ])
             ->add('status', DocumentType::class, [
                 'label' => 'form.roomType.status',
                 'group' => 'form.roomType.settings',
