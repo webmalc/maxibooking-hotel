@@ -71,3 +71,15 @@ services:
         arguments: ['@doctrine_mongodb.odm.document_manager', '%mbh.smoking_policy%']
         tags:
             - { name: form.type}
+
+    mbh.room_form:
+        class: MBH\Bundle\HotelBundle\Form\RoomType
+        arguments: ['@translator.default']
+        tags:
+            - { name: form.type}
+
+    mbh.room_type_form:
+        class: MBH\Bundle\HotelBundle\Form\RoomTypeType
+        arguments: ['@translator.default']
+        tags:
+            - { name: form.type}

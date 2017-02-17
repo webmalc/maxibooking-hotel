@@ -117,13 +117,18 @@ class Room extends Base
     protected $isSmoking = false;
 
     /**
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomViewType")
+     */
+    protected $roomViewsTypes;
+
+    /**
      * Room constructor.
      */
     public function __construct()
     {
         $this->status = new ArrayCollection();
+        $this->roomViewsTypes = new ArrayCollection();
     }
-
 
     /**
      * Set hotel
@@ -350,6 +355,33 @@ class Room extends Base
     public function setIsSmoking(bool $isSmoking): Room
     {
         $this->isSmoking = $isSmoking;
+
+        return $this;
+    }
+
+    public function getRoomViewsTypes()
+    {
+        return $this->roomViewsTypes;
+    }
+
+    /**
+     * @param RoomViewType $roomViewType
+     * @return Room
+     */
+    public function removeRoomViewType(RoomViewType $roomViewType): Room
+    {
+        $this->roomViewsTypes->remove($roomViewType);
+
+        return $this;
+    }
+
+    /**
+     * @param RoomViewType $roomViewType
+     * @return Room
+     */
+    public function addRoomViewType(RoomViewType $roomViewType): Room
+    {
+        $this->roomViewsTypes->add($roomViewType);
 
         return $this;
     }

@@ -3,10 +3,14 @@
 namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
+use MBH\Bundle\HotelBundle\Document\RoomViewType;
+use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,6 +20,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class RoomType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -88,6 +98,19 @@ class RoomType extends AbstractType
                 'group' => 'form.roomType.general_info',
                 'required' => false,
                 'value' => false,
+            ])
+            ->add('roomViewsTypes', DocumentType::class, [
+                'choice_label' => function($value) {
+                    return $this->translator->trans($value);
+                },
+                'label' => 'form.roomType.room_view_types.label',
+                'group' => 'form.roomType.general_info',
+                'required' => false,
+                'query_builder' => function (DocumentRepository $documentRepository) {
+                    return $documentRepository->createQueryBuilder();
+                },
+                'class' => RoomViewType::class,
+                'multiple' => 'true',
             ])
             ->add('status', DocumentType::class, [
                 'label' => 'form.roomType.status',
