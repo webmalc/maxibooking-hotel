@@ -51,6 +51,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
      * @Assert\NotNull(message="Не выбран отель")
+     * @ODM\Index()
      */
     protected $hotel;
 
@@ -68,6 +69,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      max=100,
      *      maxMessage="validator.document.roomType.max_name"
      * )
+     * @ODM\Index()
      */
     protected $fullTitle;
 
@@ -81,6 +83,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      max=100,
      *      maxMessage="validator.document.roomType.max_name"
      * )
+     * @ODM\Index()
      */
     protected $title;
 
@@ -95,6 +98,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      max=1000,
      *      maxMessage="validator.document.roomType.max_description"
      * )
+     * @ODM\Index()
      */
     protected $description;
 
@@ -122,6 +126,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      min=1,
      *      minMessage="validator.document.roomType.min_places_amount"
      * )
+     * @ODM\Index()
      */
     protected $places = 1;
 
@@ -136,6 +141,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      minMessage="validator.document.roomType.places_amount_less_zero",
      *      max=5
      * )
+     * @ODM\Index()
      */
     protected $additionalPlaces = 0;
 
@@ -143,6 +149,7 @@ class RoomType extends Base implements RoomTypeInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="roomSpace")
+     * @ODM\Index()
      */
     protected $roomSpace;
 
@@ -159,6 +166,7 @@ class RoomType extends Base implements RoomTypeInterface
      * @ODM\Boolean()
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isHostel = false;
     /**

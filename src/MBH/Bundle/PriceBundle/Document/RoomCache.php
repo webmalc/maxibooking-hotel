@@ -20,6 +20,7 @@ class RoomCache extends Base
      * @var \MBH\Bundle\HotelBundle\Document\Hotel
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $hotel;
 
@@ -27,12 +28,14 @@ class RoomCache extends Base
      * @var \MBH\Bundle\HotelBundle\Document\RoomType
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $roomType;
 
     /**
      * @var \MBH\Bundle\PriceBundle\Document\Tariff
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
+     * @ODM\Index()
      */
     protected $tariff;
 
@@ -41,6 +44,7 @@ class RoomCache extends Base
      * @ODM\Date()
      * @Assert\Date()
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $date;
 
@@ -50,6 +54,7 @@ class RoomCache extends Base
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
+     * @ODM\Index()
      */
     protected $totalRooms;
 
@@ -59,6 +64,7 @@ class RoomCache extends Base
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
+     * @ODM\Index()
      */
     protected $packagesCount = 0;
 
@@ -66,6 +72,7 @@ class RoomCache extends Base
      * @var int
      * @ODM\Integer()
      * @Assert\Type(type="numeric")
+     * @ODM\Index()
      */
     protected $leftRooms;
 

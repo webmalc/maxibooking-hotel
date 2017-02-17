@@ -14,6 +14,7 @@ class Service
      * @var \MBH\Bundle\PriceBundle\Document\Service
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Service")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $service;
 
@@ -21,6 +22,7 @@ class Service
      * @var string
      * @ODM\Field(type="string")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $serviceId;
 

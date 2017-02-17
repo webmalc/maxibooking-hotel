@@ -28,12 +28,14 @@ class DailyTaskSetting
      * @Assert\LessThanOrEqual(value = 60)
      * @Assert\Type(type="numeric")
      * @Assert\NotBlank()
+     * @ODM\Index()
      */
     private $day;
     /**
      * @var TaskType|null
      * @ODM\ReferenceOne(targetDocument="TaskType")
      * @Assert\NotBlank()
+     * @ODM\Index()
      */
     private $taskType;
 

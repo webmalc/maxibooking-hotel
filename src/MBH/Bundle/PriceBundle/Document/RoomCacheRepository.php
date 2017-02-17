@@ -19,7 +19,7 @@ class RoomCacheRepository extends DocumentRepository
     {
         $qb = $this->createQueryBuilder()
             ->field('date')->gte($begin)->lte($end)
-            ->field('roomType')->references($roomType)
+            ->field('roomType.id')->equals($roomType->getId())
             ->sort('totalRooms')->limit(1);
 
         if ($tariff) {

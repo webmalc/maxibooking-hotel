@@ -14,24 +14,28 @@ class Message extends Base implements \JsonSerializable
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $text;
 
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $type = 'info';
 
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $category = 'notification';
     
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $from;
     
