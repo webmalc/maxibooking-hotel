@@ -1,0 +1,25 @@
+room_view_types.airport_view: Airport view
+room_view_types.bay_view: Bay view
+room_view_types.city_view: City view
+room_view_types.courtyard_view: Courtyard view
+room_view_types.golf_view: Golf view
+room_view_types.harbor_view: Harbor view
+room_view_types.intercoastal_view: Intercoastal view
+room_view_types.lake_view: Lake view
+room_view_types.marina_view: Marina view
+room_view_types.mountain_view: Mountain view
+room_view_types.ocean_view: Ocean view
+room_view_types.pool_view: Pool view
+room_view_types.river_view: River view
+room_view_types.water_view: Water view
+room_view_types.beach_view: Beach view
+room_view_types.garden_view: Garden view
+room_view_types.park_view: Park view
+room_view_types.forest_view: Forest view
+room_view_types.rain_forest_view: Rain forest view
+room_view_types.various_views: Various views
+room_view_types.limited_view: Limited view
+room_view_types.slope_view: Slope view
+room_view_types.strip_view: Strip view
+room_view_types.countryside_view: Countryside view
+room_view_types.sea_view: Sea view
