@@ -38,6 +38,8 @@ class CsvGenerate
         'countNight' => ['title' => 'csv.form.countNight', 'method' => 'getNights'],
         'countPersons' => ['title' => 'csv.form.countPersons', 'method' => 'countPersons'],
         'price' => ['title' => 'csv.type.price', 'method' => 'getPrice'],
+        'paids' => ['title' => 'csv.type.paids', 'method' => 'getPaids'],
+        'rest' => ['title' => 'csv.type.rest', 'method' => 'getRest'],
         'tariff' => ['title' => 'csv.type.tariff', 'method' => 'getTariff'],
         'createdAt' => ['title' => 'csv.type.createdAt', 'method' => 'getCreatedAt'],
         'createdBy' => ['title' => 'csv.type.createdBy', 'method' => 'getCreatedBy'],
@@ -79,6 +81,10 @@ class CsvGenerate
 
                     } elseif ($method == 'getOrder') {
                         $entity->getStatus() == 'channel_manager' ? $dataCsv[] = $translator->trans('manager.channel_manager.' . $entity->getChannelManagerType()) : $dataCsv[] = '';
+                    } elseif ($method == 'getPaids') {
+                        $dataCsv[] = $entity->getPaid();
+                    } elseif ($method == 'getRest') {
+                        $dataCsv[] = $entity->getPrice() - $entity->getPaid();
                     } else {
 
                         $call = $entity->$method();

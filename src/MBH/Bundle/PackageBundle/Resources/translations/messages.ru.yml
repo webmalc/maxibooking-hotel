@@ -374,6 +374,8 @@ csv.type.guests: Плательщик
 csv.type.adults: Взрослых
 csv.type.children: Детей
 csv.type.price: Стоимость
+csv.type.paids: Оплачено
+csv.type.rest: Долг
 csv.type.tariff: Тариф
 csv.type.createdAt: Дата создания
 csv.type.createdBy: Создал
@@ -389,6 +391,8 @@ csv.form.guests: Плательщик
 csv.form.adults: Взрослые
 csv.form.children: Дети
 csv.form.price: Стоимость
+csv.form.paids: Оплачено
+csv.form.rest: Долг
 csv.form.tariff: Тариф
 csv.form.createdAt: Дата создания
 csv.form.createdBy: Создал
