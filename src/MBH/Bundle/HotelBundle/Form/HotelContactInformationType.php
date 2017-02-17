@@ -38,6 +38,11 @@ class HotelContactInformationType extends AbstractType
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,
             ])
+            ->add('zipCode', TextType::class, [
+                'label' => 'form.hotelExtendedType.zip_code',
+                'group' => 'form.hotelExtendedType.address',
+                'required' => false,
+            ])
             ->add('street', TextType::class, [
                 'label' => 'form.hotelExtendedType.street',
                 'group' => 'form.hotelExtendedType.address',
@@ -61,11 +66,6 @@ class HotelContactInformationType extends AbstractType
             ])
             ->add('flat', TextType::class, [
                 'label' => 'form.hotelExtendedType.flat',
-                'group' => 'form.hotelExtendedType.address',
-                'required' => false,
-            ])
-            ->add('zipCode', TextType::class, [
-                'label' => 'form.hotelExtendedType.zip_code',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,
             ])

@@ -370,6 +370,7 @@ class Hotel extends Base implements \JsonSerializable
         $this->acceptedCardTypes = new ArrayCollection();
         $this->images = new ArrayCollection();
     }
+
     /**
      * @return mixed
      */
@@ -1544,6 +1545,7 @@ class Hotel extends Base implements \JsonSerializable
     public function setZipCode($zipCode)
     {
         $this->zipCode = $zipCode;
+
         return $this;
     }
 
@@ -1562,6 +1564,7 @@ class Hotel extends Base implements \JsonSerializable
     public function setSmokingPolicy(string $smokingPolicy): Hotel
     {
         $this->smokingPolicy = $smokingPolicy;
+
         return $this;
     }
 }
