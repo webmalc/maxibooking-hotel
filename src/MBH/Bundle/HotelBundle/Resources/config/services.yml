@@ -61,7 +61,25 @@ services:
             - { name: form.type, alias: MBH\Bundle\HotelBundle\Form\SearchTaskType }
 
     mbh.hotel_contact_information:
-        class: MBH\Bundle\HotelBundle\Form\HotelContactInformation
+        class: MBH\Bundle\HotelBundle\Form\HotelContactInformationType
         arguments: ['@doctrine.odm.mongodb.document_manager']
+        tags:
+            - { name: form.type}
+
+    mbh.hotel.extended_type:
+        class: MBH\Bundle\HotelBundle\Form\HotelExtendedType
+        arguments: ['@doctrine_mongodb.odm.document_manager', '%mbh.smoking_policy%']
+        tags:
+            - { name: form.type}
+
+    mbh.room_form:
+        class: MBH\Bundle\HotelBundle\Form\RoomType
+        arguments: ['@translator.default']
+        tags:
+            - { name: form.type}
+
+    mbh.room_type_form:
+        class: MBH\Bundle\HotelBundle\Form\RoomTypeType
+        arguments: ['@translator.default']
         tags:
             - { name: form.type}

@@ -10,8 +10,10 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
+use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -260,6 +262,13 @@ class Hotel extends Base implements \JsonSerializable
     protected $street;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
+    protected $internationalStreetName;
+
+    /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      * @ODM\Index()
@@ -282,11 +291,21 @@ class Hotel extends Base implements \JsonSerializable
     protected $flat;
 
     /**
+     * @ODM\Field(type="string")
+     * @Gedmo\Versioned()
+     */
+    protected $zipCode;
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\BaseBundle\Document\Image")
+     */
+    protected $images;
+
+    /**
      * @var Housing[]
      * @ODM\ReferenceMany(targetDocument="Housing", mappedBy="hotel")
      */
     protected $housings;
-
 
     /**
      * @var UploadedFile
@@ -326,22 +345,40 @@ class Hotel extends Base implements \JsonSerializable
     protected $description;
 
     /**
-     * @var string
-     * @ODM\Field(type="string")
-     * @Assert\Choice( choices = {"none", "partial", "full"})
+     * @var ContactInfo
+     * @ODM\EmbedOne(targetDocument="ContactInfo")
      */
-    protected $refundableType;
+    protected $contactInformation;
+
+    /**
+     * @var array
+     * @ODM\Collection()
+     */
+    protected $supportedLanguages = [];
+
+    /**
+     * @var array
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CardType")
+     */
+    protected $acceptedCardTypes;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isInvoiceAccepted = true;
 
     /**
      * @var string
      * @ODM\Field(type="string")
      */
-    protected $cancellationPolicy;
+    protected $checkinoutPolicy;
 
-//    /**
-//     * @var
-//     */
-//    protected $availableCardTypes;
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $smokingPolicy;
 
     public function __construct()
     {
@@ -352,6 +389,8 @@ class Hotel extends Base implements \JsonSerializable
         $this->dishMenuCategories = new ArrayCollection();
         $this->ingredientCategories = new ArrayCollection();
         $this->TableTypes = new ArrayCollection();
+        $this->acceptedCardTypes = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     /**
@@ -1119,7 +1158,7 @@ class Hotel extends Base implements \JsonSerializable
     }
 
     /**
-     * @param Housing [] $$housings
+     * @param Housing[] $$housings
      */
     public function setHousings(array $housings)
     {
@@ -1408,20 +1447,123 @@ class Hotel extends Base implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return ContactInfo
      */
-    public function getRefundableType()
+    public function getContactInformation(): ?ContactInfo
     {
-        return $this->refundableType;
+        return $this->contactInformation;
     }
 
     /**
-     * @param string $refundableType
+     * @param ContactInfo $contactInformation
      * @return Hotel
      */
-    public function setRefundableType(string $refundableType): Hotel
+    public function setContactInformation(ContactInfo $contactInformation): Hotel
     {
-        $this->refundableType = $refundableType;
+        $this->contactInformation = $contactInformation;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSupportedLanguages(): array
+    {
+        return $this->supportedLanguages;
+    }
+
+    /**
+     * @param array $supportedLanguages
+     * @return Hotel
+     */
+    public function setSupportedLanguages(array $supportedLanguages): Hotel
+    {
+        $this->supportedLanguages = $supportedLanguages;
+
+        return $this;
+    }
+
+    public function addSupportedLanguages(string $languageCode) : Hotel
+    {
+        $this->supportedLanguages[] = $languageCode;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAcceptedCardTypes()
+    {
+        return $this->acceptedCardTypes;
+    }
+
+    /**
+     * @param array $acceptedCardTypes
+     * @return Hotel
+     */
+    public function setAcceptedCardTypes(array $acceptedCardTypes) : Hotel
+    {
+        $this->acceptedCardTypes = $acceptedCardTypes;
+
+        return $this;
+    }
+
+    /**
+     * @param CardType $cardType
+     * @return Hotel
+     */
+    public function addAcceptedCardType(CardType $cardType) : Hotel
+    {
+        $this->acceptedCardTypes[] = $cardType;
+
+        return $this;
+    }
+
+    /**
+     * @param CardType $cardType
+     * @return Hotel
+     */
+    public function removeAcceptedCardType(CardType $cardType)
+    {
+        $this->acceptedCardTypes->remove($cardType);
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsInvoiceAccepted(): bool
+    {
+        return $this->isInvoiceAccepted;
+    }
+
+    /**
+     * @param bool $isInvoiceAccepted
+     * @return Hotel
+     */
+    public function setIsInvoiceAccepted(bool $isInvoiceAccepted): Hotel
+    {
+        $this->isInvoiceAccepted = $isInvoiceAccepted;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInternationalStreetName(): ?string
+    {
+        return $this->internationalStreetName;
+    }
+
+    /**
+     * @param string $internationalStreetName
+     * @return Hotel
+     */
+    public function setInternationalStreetName(string $internationalStreetName): Hotel
+    {
+        $this->internationalStreetName = $internationalStreetName;
 
         return $this;
     }
@@ -1429,18 +1571,79 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @return string
      */
-    public function getCancellationPolicy()
+    public function getCheckinoutPolicy() : ?string
     {
-        return $this->cancellationPolicy;
+        return $this->checkinoutPolicy;
     }
 
     /**
-     * @param string $cancellationPolicy
+     * @param string $checkinoutPolicy
      * @return Hotel
      */
-    public function setCancellationPolicy(string $cancellationPolicy): Hotel
+    public function setCheckinoutPolicy(string $checkinoutPolicy): Hotel
     {
-        $this->cancellationPolicy = $cancellationPolicy;
+        $this->checkinoutPolicy = $checkinoutPolicy;
+
+        return $this;
+    }
+
+    /**
+     * Add image
+     * @param Image $image
+     */
+    public function addImage(Image $image)
+    {
+        $this->images->add($image);
+    }
+
+    /**
+     * Remove image
+     * @param Image $image
+     */
+    public function removeImage(Image $image)
+    {
+        $this->images->removeElement($image);
+    }
+
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getZipCode()
+    {
+        return $this->zipCode;
+    }
+
+    /**
+     * @param mixed $zipCode
+     * @return Hotel
+     */
+    public function setZipCode($zipCode)
+    {
+        $this->zipCode = $zipCode;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmokingPolicy(): ?string
+    {
+        return $this->smokingPolicy;
+    }
+
+    /**
+     * @param string $smokingPolicy
+     * @return Hotel
+     */
+    public function setSmokingPolicy(string $smokingPolicy): Hotel
+    {
+        $this->smokingPolicy = $smokingPolicy;
 
         return $this;
     }

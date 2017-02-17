@@ -36,7 +36,10 @@ validator.document.roomType.max_hex_code: HEX-код цвета должен б�
 validator.document.roomType.min_places_amount: Количество мест не может быть меньше одного
 validator.document.roomType.places_amount_less_zero: Количество мест не может быть меньше нуля
 validator.document.roomType.internationalTitle.only_english: Международное название должно быть только на английском
-
+validator.document.contact_info.phone_number.to_short: Слишком короткий номер телефона
+validator.document.contact_info.phone_number.too_long: Номер телефона должен содержать не более 50 символов
+validator.document.contact_info.email.to_short: Слишком коротки адрес электронной почты
+validator.document.contact_info.email.too_long: Слишком длинный адрес электронной почты
 
 validator.document.task.title_no_selected: Не выбрана задача
 validator.document.task.taskType_no_selected: Не выбран тип задачи

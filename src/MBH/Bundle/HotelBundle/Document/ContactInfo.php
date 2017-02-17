@@ -1,14 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danya
- * Date: 14.02.17
- * Time: 11:57
- */
 
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\EmbeddedDocument()
@@ -26,19 +22,31 @@ class ContactInfo
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Assert\Length(
+     *     min=4,
+     *      minMessage="validator.document.contact_info.email.to_short",
+     *      max=256,
+     *      maxMessage="validator.document.contact_info.email.too_long"
+     * )
      */
     protected $email;
 
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Assert\Length(
+     *     min=3,
+     *      minMessage="validator.document.contact_info.phone_number.to_short",
+     *      max=50,
+     *      maxMessage="validator.document.contact_info.phone_number.too_long"
+     * )
      */
     protected $phoneNumber;
 
     /**
      * @return string
      */
-    public function getFullName(): string
+    public function getFullName(): ?string
     {
         return $this->fullName;
     }
@@ -47,7 +55,7 @@ class ContactInfo
      * @param string $fullName
      * @return ContactInfo
      */
-    public function setFullName(string $fullName): ContactInfo
+    public function setFullName(?string $fullName): ContactInfo
     {
         $this->fullName = $fullName;
 
@@ -57,7 +65,7 @@ class ContactInfo
     /**
      * @return string
      */
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -66,7 +74,7 @@ class ContactInfo
      * @param string $email
      * @return ContactInfo
      */
-    public function setEmail(string $email): ContactInfo
+    public function setEmail(?string $email): ContactInfo
     {
         $this->email = $email;
 
@@ -74,20 +82,23 @@ class ContactInfo
     }
 
     /**
+     * @param bool $original
      * @return string
      */
-    public function getPhoneNumber(): string
+    public function getPhoneNumber($original = false): ?string
     {
-        return $this->phoneNumber;
+        return Tourist::formatPhone($this->phoneNumber, $original);
     }
 
     /**
      * @param string $phoneNumber
      * @return ContactInfo
      */
-    public function setPhoneNumber(string $phoneNumber): ContactInfo
+    public function setPhoneNumber(?string $phoneNumber): ContactInfo
     {
-        $this->phoneNumber = $phoneNumber;
+        if (!is_null($phoneNumber)) {
+            $this->phoneNumber = Tourist::cleanPhone($phoneNumber);
+        }
 
         return $this;
     }

@@ -93,7 +93,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $this->addFlash('success', 'controller.roomTypeController.success_room_type_creation');
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -123,7 +123,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $this->dm->persist($entity);
         $this->dm->flush();
 
-        $this->getRequest()->getSession()->getFlashBag()->set('success', 'Изображение успешно удалено.');
+        $this->addFlash('success', 'controller.TaskTypeController.success_delete_photo');
 
         return $this->redirectToRoute('room_type_image_edit', ['id' => $id, 'imageTab' => 'active']);
 
@@ -223,7 +223,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
                 $this->dm->persist($roomType->getTaskSettings());
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success',
+                $this->ad('success',
                     $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
 
                 return $this->afterSaveRedirect('room_type', $roomType->getId(), [], '_task_edit');
@@ -267,8 +267,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $this->dm->persist($entity);
         $this->dm->flush();
 
-        $request->getSession()->getFlashBag()
-            ->set('success', 'Фотография успешно была сделана главной.');
+        $this->addFlash('success', 'controller.roomTypeController.success_set_main_photo');
 
         return $this->redirectToRoute('room_type_image_edit', ['id' => $entity->getId()]);
     }
@@ -299,7 +298,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Фотография успешно создана.');
+            $this->addFlash('success', 'controller.roomTypeController.success_set_photo');
 
             return $this->redirectToRoute('room_type_image_edit', [
                 'id' => $entity->getId()
