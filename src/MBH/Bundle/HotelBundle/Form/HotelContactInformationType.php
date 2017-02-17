@@ -92,8 +92,6 @@ class HotelContactInformationType extends AbstractType
             ->add('supportedLanguages', LanguageType::class, [
                 'multiple' => true,
                 'label' => 'form.contact_info_type.available_languages.label',
-                //TODO: Уточнить текст
-                'help' => 'form.contact_info_type.available_languages.help',
                 'group' => 'form.hotelType.general_info',
                 'required' => false
             ])

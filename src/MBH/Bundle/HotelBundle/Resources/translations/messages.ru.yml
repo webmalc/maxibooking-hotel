@@ -38,8 +38,7 @@ form.hotelExtendedType.check_in_out_policy.label: Правила въезда/в
 form.hotelExtendedType.check_in_out_policy.help: Правила въезда/выезда, включая предметы необходимые при въезде
 form.hotelExtendedType.smoking_policy.label: Правила курения
 form.hotelExtendedType.check_in_out_policy.placeholder: При въезде необходимо предоставить валидную кредитную или дебетовую карту
-form.contact_info_type.available_languages.label: Языки
-form.contact_info_type.available_languages.help: Языки, поддерживаемые отелем
+form.contact_info_type.available_languages.label: Языки общения
 form.contact_info_type.phone.label: Телефон
 form.contact_info_type.phone.help: Номер контактного телефона
 form.contact_info_type.full_name.label: Имя
