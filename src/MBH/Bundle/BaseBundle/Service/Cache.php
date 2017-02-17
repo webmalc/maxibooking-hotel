@@ -57,11 +57,11 @@ class Cache
     public function clear(string $prefix = null, \DateTime $begin = null, \DateTime $end = null, bool $all = false): int
     {
         if (!$this->isEnabled) {
-            return $this;
+            return 0;
         }
         if ($all) {
             $this->cache->clear();
-            return $this;
+            return 0;
         }
 
         $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
@@ -70,7 +70,7 @@ class Cache
             $this->dm->getRepository('MBHBaseBundle:CacheItem')->getKeysByPrefix($prefix, $begin, $end)
         );
 
-        return $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix);;
+        return $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix);
     }
 
     /**
