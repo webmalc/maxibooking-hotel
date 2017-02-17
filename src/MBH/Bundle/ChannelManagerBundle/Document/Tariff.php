@@ -14,6 +14,7 @@ class Tariff
      * @var string $tariffId
      * @ODM\Field(type="string")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $tariffId;
 
@@ -21,6 +22,7 @@ class Tariff
      * @var \MBH\Bundle\PriceBundle\Document\Tariff
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $tariff;
 
@@ -28,6 +30,7 @@ class Tariff
      * @var string $roomType
      * @ODM\Field(type="string")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $roomType;
 

@@ -51,6 +51,7 @@ class FormConfig extends Base
      * @ODM\Boolean()
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $enabled = true;
 

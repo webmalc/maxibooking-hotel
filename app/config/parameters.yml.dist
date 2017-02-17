@@ -60,6 +60,10 @@ parameters:
   mbh_cache:
     is_enabled: true
     prefix: mbh
+    search:
+      months: 6
+      max_duration: 21
+      min_duration: 3
 
   wkhtmltopdf_path: '/usr/local/bin/wkhtmltopdf'
 

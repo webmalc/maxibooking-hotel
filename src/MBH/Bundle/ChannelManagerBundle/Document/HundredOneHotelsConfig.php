@@ -47,6 +47,7 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="hundredOneHotelsConfig")
      * @Assert\NotNull(message="validator.document.hundredOneHotelsConfig.no_hotel_selected")
+     * @ODM\Index()
      */
     protected $hotel;
 

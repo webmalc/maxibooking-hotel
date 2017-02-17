@@ -43,6 +43,7 @@ class Region extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country", inversedBy="regions")
      * @Assert\NotNull(message="validator.document.region.country_not_selected")
+     * @ODM\Index()
      */
     protected $country;
 
@@ -56,6 +57,7 @@ class Region extends Base
      *      max=100,
      *      maxMessage="validator.document.region.max_name"
      * )
+     * @ODM\Index()
      */
     protected $title;
 

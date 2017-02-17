@@ -20,6 +20,7 @@ class Restriction extends Base
      * @var \MBH\Bundle\HotelBundle\Document\Hotel
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $hotel;
 
@@ -27,6 +28,7 @@ class Restriction extends Base
      * @var \MBH\Bundle\HotelBundle\Document\RoomType
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $roomType;
 
@@ -34,12 +36,14 @@ class Restriction extends Base
      * @var \MBH\Bundle\PriceBundle\Document\Tariff
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $tariff;
 
     /**
      * @var \DateTime
      * @ODM\Date()
+     * @ODM\Index()
      * @Assert\Date()
      * @Assert\NotNull()
      */

@@ -88,6 +88,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.order.price_min_message"
      * )
+     * @ODM\Index()
      */
     protected $price;
 
@@ -100,6 +101,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.order.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $originalPrice;
 
@@ -112,6 +114,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.package.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $totalOverwrite;
 
@@ -124,6 +127,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.order.payed_sum_min_message"
      * )
+     * @ODM\Index()
      */
     protected $paid = 0;
 
@@ -132,6 +136,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isPaid = false;
 
@@ -140,6 +145,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $confirmed = false;
 
@@ -151,6 +157,7 @@ class Order extends Base
      *      choices = {"offline", "online", "channel_manager"},
      *      message = "validator.document.order.wrong_status"
      * )
+     * @ODM\Index()
      */
     protected $status;
 
@@ -173,6 +180,7 @@ class Order extends Base
      *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "oktogo", "101Hotels", "homeaway", "tripadvisor"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
+     * @ODM\Index()
      */
     protected $channelManagerType;
 
@@ -180,6 +188,7 @@ class Order extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerId")
+     * @ODM\Index()
      */
     protected $channelManagerId;
 
@@ -215,6 +224,7 @@ class Order extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="note")
+     * @ODM\Index()
      */
     protected $note;
 

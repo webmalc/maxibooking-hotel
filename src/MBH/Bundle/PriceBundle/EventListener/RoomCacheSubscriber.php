@@ -33,7 +33,7 @@ class RoomCacheSubscriber implements EventSubscriber
         ];
     }
 
-    public function prePersist(LifecycleEventArgs $args)
+    private function update(LifecycleEventArgs $args)
     {
         $doc = $args->getDocument();
 
@@ -48,23 +48,18 @@ class RoomCacheSubscriber implements EventSubscriber
                 'roomTypes' => [$doc->getRoomType()->getId()]
             ]
         ));
+
+        $this->container->get('mbh.cache')->clear('room_cache');
+    }
+
+    public function prePersist(LifecycleEventArgs $args)
+    {
+        $this->update($args);
     }
 
     public function preUpdate(LifecycleEventArgs $args)
     {
-        $doc = $args->getDocument();
-
-        if (!$doc instanceof RoomCache) {
-            return;
-        }
-
-        $this->container->get('old_sound_rabbit_mq.task_room_cache_recalculate_producer')->publish(serialize(
-            [
-                'begin' => $doc->getDate(),
-                'end' => $doc->getDate(),
-                'roomTypes' => [$doc->getRoomType()->getId()]
-            ]
-        ));
+        $this->update($args);
     }
 
     /**

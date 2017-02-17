@@ -61,6 +61,7 @@ class CashDocument extends Base
      * @ODM\Field(type="string")
      * @Assert\Type(type="string")
      * @Assert\Length(max=40)
+     * @ODM\Index()
      *
      */
     protected $number;
@@ -73,6 +74,7 @@ class CashDocument extends Base
      *      choices = {"cash", "cashless", "electronic"},
      *      message = "validator.document.cashDocument.wrong_tariff_type"
      * )
+     * @ODM\Index()
      */
     protected $method;
 
@@ -85,6 +87,7 @@ class CashDocument extends Base
      *      min=0.1,
      *      minMessage="validator.document.cashDocument.min_sum_less_1"
      * )
+     * @ODM\Index()
      */
     protected $total;
 
@@ -96,6 +99,7 @@ class CashDocument extends Base
      *      choices = {"in", "out", "fine", "fee"},
      *      message = "validator.document.cashDocument.wrong_tariff_type"
      * )
+     * @ODM\Index()
      */
     protected $operation;
 
@@ -103,6 +107,7 @@ class CashDocument extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $note;
 
@@ -111,6 +116,7 @@ class CashDocument extends Base
      * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isConfirmed = false;
 
@@ -119,6 +125,7 @@ class CashDocument extends Base
      * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isPaid = true;
 
@@ -126,6 +133,7 @@ class CashDocument extends Base
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date()
+     * @ODM\Index()
      */
     protected $documentDate;
 
@@ -133,6 +141,7 @@ class CashDocument extends Base
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date()
+     * @ODM\Index()
      */
     protected $paidDate;
 

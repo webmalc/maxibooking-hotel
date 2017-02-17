@@ -74,6 +74,11 @@ class Search implements SearchInterface
     {
         $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
         $token = $this->container->get('security.token_storage')->getToken();
+
+        if (!$query->memcached) {
+            $this->memcached = null;
+        }
+
         if ($token && !$this->container->get('security.authorization_checker')->isGranted('ROLE_FORCE_BOOKING')) {
             $query->forceBooking = false;
         }
@@ -119,7 +124,7 @@ class Search implements SearchInterface
         //roomCache with tariffs
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null,
-            $query->roomTypes, false, false /*, $this->memcached*/
+            $query->roomTypes, false, false, $this->memcached
         );
 
         //group caches
@@ -345,11 +350,14 @@ class Search implements SearchInterface
                     $min = $tariffMin[$hotelId][$roomTypeId];
                 }
 
+                $roomType = $caches[0]->getRoomType();
+                if (method_exists($roomType, '__isInitialized') && !$roomType->__isInitialized()) {
+                    $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($roomType->getId());
+                }
+
                 if ($caches[0]->getRoomType()->getTotalPlaces() < $adults + $children) {
                     continue;
                 }
-
-                $roomType = $caches[0]->getRoomType();
                 $useCategories = $query->isOnline && $this->config && $this->config->getUseRoomTypeCategory();
                 $result = new SearchResult();
                 $tourists = $roomType->getAdultsChildrenCombination($adults, $children, $this->manager->useCategories);
@@ -461,7 +469,7 @@ class Search implements SearchInterface
         $preferredRoom = null;
         $emptyRoom = null;
         $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')
-            ->findOneByDate($begin, $roomType, $tariff, $this->memcached);
+            ->findOneByDate($begin, $roomType, $tariff);
 
         if ($restriction && $restriction->getMinStayArrival()) {
             $begin->modify('-' . $restriction->getMinStayArrival() . ' days');
@@ -469,7 +477,7 @@ class Search implements SearchInterface
         }
 
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')
-            ->fetchWithVirtualRooms($begin, $end, $roomType, false, $package)
+            ->fetchWithVirtualRooms($begin, $end, $roomType, false, $package, $this->memcached)
         ;
 
         $minRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->getMinTotal(
@@ -482,9 +490,10 @@ class Search implements SearchInterface
         }
 
         $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
-            ->fetchQuery(null, [$result->getRoomType()->getId()], null, null, null, $minRoomCache, true)
-            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'desc'])->getQuery()->execute();
-
+            ->fetch(
+                null, [$result->getRoomType()->getId()], null, null, null, $minRoomCache, false, true,
+                ['roomType.id' => 'asc', 'fullTitle' => 'desc'], $this->memcached
+            );
 
         $min = 0;
         $preferredRooms = new \SplObjectStorage();
@@ -513,15 +522,14 @@ class Search implements SearchInterface
         }
         $result->setRoomsCount($emptyRooms->count() + $preferredRooms->count());
 
-        if ($preferredRooms->count()) {
-            $preferredRooms->rewind();
-            $result->setVirtualRoom($preferredRooms->current());
+        $collection = $preferredRooms->count() ? $preferredRooms :  $emptyRooms;
 
-            return $result;
-        }
-        elseif ($emptyRooms->count()) {
-            $emptyRooms->rewind();
-            $result->setVirtualRoom($emptyRooms->current());
+        if ($collection->count()) {
+            $collection->rewind();
+            $room = $collection->current();
+            $this->dm->merge($room);
+            $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($room->getId());
+            $result->setVirtualRoom($room);
 
             return $result;
         }
