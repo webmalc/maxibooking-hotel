@@ -82,7 +82,9 @@
         </form>
 
     </div></div>
-
+    {% if is_granted('ROLE_SHOW_BUTTON_PACKAGES') %}
+        <input type="hidden" id="showButtonsTablePackage" value ="1">
+    {% endif %}
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'package-table-links-widget', 'header': 'form.quick_links', 'class': 'no'} %}
     <ul id="package-table-quick-links">
         <li><a class="btn btn-xs btn-default" data-value="begin-today"
@@ -150,13 +152,15 @@
                 : </b> <span id="package-summary-nights">-</span></span>
         <span class="package-summary-row"><b>{{ 'package.index.summary.guests'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-guests">-</span></span>
-        {% if is_granted('ROLE_ADMIN') %}
+        {% if is_granted('ROLE_SUMM_MONEY_PACKAGES') %}
         <span class="package-summary-row"><b>{{ 'package.index.summary.total'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-total">-</span></span>
         {% endif %}
+        {% if is_granted('ROLE_SUMM_MONEY_PACKAGES') %}
         <span class="package-summary-row"><b>{{ 'package.index.summary.paid'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-paid">-</span></span>
-        {% if is_granted('ROLE_ADMIN') %}
+        {% endif %}
+        {% if is_granted('ROLE_SUMM_MONEY_PACKAGES') %}
         <span class="package-summary-row"><b>{{ 'package.index.summary.debt'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-debt">-</span></span>
         {% endif %}

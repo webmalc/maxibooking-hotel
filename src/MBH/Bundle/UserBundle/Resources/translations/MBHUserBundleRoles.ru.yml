@@ -152,6 +152,8 @@ ROLE_ANALYTICS: Аналитика
 
 ROLE_PACKAGE: Брони
 ROLE_SEARCH: Подбор
+ROLE_SUMM_MONEY_PACKAGES: Показывать денежные суммы
+ROLE_SHOW_BUTTON_PACKAGES: Показывать кнопки отчетов
 ROLE_PACKAGE_VIEW: Просмотр брони
 ROLE_PACKAGE_NEW: Создание брони
 ROLE_ORDER_EDIT: Редактирование информации заказа

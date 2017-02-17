@@ -203,10 +203,9 @@ var docReadyPackages = function () {
         });
     }());
 
-    //package datatable
-    var pTable = $('#package-table').dataTable({
-        dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-        buttons: [
+    var settingButton = [];
+    if($('#showButtonsTablePackage').val()){
+         settingButton =[
             {
                 extend: 'excel',
                 text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
@@ -265,7 +264,13 @@ var docReadyPackages = function () {
 
                 }
             }
-        ],
+        ];
+    }
+
+    //package datatable
+    var pTable = $('#package-table').dataTable({
+        dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
+        buttons: settingButton,
         "processing": true,
         "serverSide": true,
         "ordering": true,
