@@ -78,7 +78,7 @@ class HomeAwayConfig extends Base
     }
 
     /**
-     * @return mixed
+     * @return Hotel
      */
     public function getHotel()
     {
@@ -92,6 +92,7 @@ class HomeAwayConfig extends Base
     public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
+
         return $this;
     }
 
@@ -110,6 +111,7 @@ class HomeAwayConfig extends Base
     public function setHotelId($hotelId): HomeAwayConfig
     {
         $this->hotelId = $hotelId;
+
         return $this;
     }
 

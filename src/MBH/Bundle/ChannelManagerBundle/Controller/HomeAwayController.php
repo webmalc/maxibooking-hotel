@@ -48,8 +48,7 @@ class HomeAwayController extends BaseController
             $this->dm->flush();
             $this->hotel->setHomeAwayConfig($config);
 
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.homeAwayController.settings_saved_success'));
+            $this->addFlash('success', 'controller.homeAwayController.settings_saved_success');
         }
 
         return [
@@ -82,6 +81,7 @@ class HomeAwayController extends BaseController
             '124' => 'Вторая комната'
         ];
 
+        //Префиксы добавляемые к Id комнат для различия различных типов передавываемых в форме данных
         $rentalAgreementFieldPrefix = 'agreement';
         $roomFieldPrefix = 'room';
 
