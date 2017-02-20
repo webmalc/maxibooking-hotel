@@ -2,16 +2,19 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\Currency;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Symfony\Component\Routing\Router;
@@ -45,7 +48,7 @@ class HomeAwayResponseCompiler
         $this->router = $router;
     }
 
-    public function formatListingContentIndex(ChannelManagerConfigInterface $config, $dataType)
+    public function formatListingContentIndex(HomeAwayConfig $config, $dataType)
     {
         $rootElement = new \SimpleXMLElement('<listingContentIndex/>');
         $advertisersElement = $rootElement->addChild('advertisers');
@@ -61,7 +64,7 @@ class HomeAwayResponseCompiler
         $assignedId = '';
         $advertiserElement->addChild('assignedId', $assignedId);
         foreach ($config->getRooms() as $channelManagerRoomType) {
-            /** @var Room $channelManagerRoomType */
+            /** @var HomeAwayRoom $channelManagerRoomType */
             $roomType = $channelManagerRoomType->getRoomType();
             $listingEntry = $advertiserElement->addChild('listingContentIndexEntry');
             $listingEntry->addChild('listingExternalId', $roomType->getId());
@@ -73,18 +76,22 @@ class HomeAwayResponseCompiler
                 $this->router->generate($urlName, ['listingId' => $roomType->getId()]));
         }
 
-        return $rootElement;
+        return $rootElement->asXML();
     }
 
-    public function formatRatePeriodsData($begin, $end, $roomTypeId, HomeAwayConfig $config, $priceCaches)
-    {
+    public function formatRatePeriodsData(
+        \DateTime $begin,
+        \DateTime $end,
+        $roomTypeId,
+        $priceCaches
+    ) {
         $ratePeriods = $this->channelManagerHelper->getPeriodsFromDayEntities($begin, $end, $priceCaches, ['getPrice']);
 
-        $ratesElement = new \SimpleXMLElement('<ratePeriods/>');
-        $ratesElement->addChild('listingExternalId', $roomTypeId);
-        $ratesElement->addChild('unitExternalId', $roomTypeId);
+        $unitRatePeriodsNode = new \SimpleXMLElement('<unitRatePeriods/>');
+        $unitRatePeriodsNode->addChild('listingExternalId', $roomTypeId);
+        $unitRatePeriodsNode->addChild('unitExternalId', $roomTypeId);
 
-        $ratePeriodsElement = $ratesElement->addChild('ratePeriods');
+        $ratePeriodsElement = $unitRatePeriodsNode->addChild('ratePeriods');
         foreach ($ratePeriods as $ratePeriod) {
             /** @var \SimpleXMLElement $ratePeriodElement */
             $ratePeriodElement = $ratePeriodsElement->addChild('ratePeriod');
@@ -95,11 +102,14 @@ class HomeAwayResponseCompiler
             $ratesElement = $ratePeriodElement->addChild('rates');
             $rateElement = $ratesElement->addChild('rate');
             $rateElement->addAttribute('rateType', 'EXTRA_NIGHT');
-            $amountElement = $rateElement->addChild('amount', $ratePeriod['entity']->getPrice());
+            /** @var PriceCache $priceCache */
+            $priceCache = $ratePeriod['entity'];
+            $price = is_null($priceCache) ? 0 : $priceCache->getPrice();
+            $amountElement = $rateElement->addChild('amount', $price);
             $amountElement->addAttribute('currency', $this->localCurrency);
         }
 
-        return $ratesElement;
+        return $unitRatePeriodsNode->asXML();
     }
 
     public function formatAvailabilityData(
@@ -126,21 +136,21 @@ class HomeAwayResponseCompiler
         $unitAvailabilityElement->addChild('maxStayDefault', 28);
         $availabilityConfigElement = $unitAvailabilityElement->addChild('unitAvailabilityConfiguration');
 
-        $availabilityData = $this->getAvailabilityData($beginDate, $endDate, $roomCaches, $restrictions, $priceCaches,
-            $mbhRoomTypeId, $config->getMainTariff());
+        $availabilityData = $this->getAvailabilityData($beginDate, $endDate, $roomCaches, $restrictions, $priceCaches);
         $availabilityConfigElement->addChild('availability', $availabilityData['availability']);
         $availabilityConfigElement->addChild('maxStay', $availabilityData['maxStay']);
         $availabilityConfigElement->addChild('minStay', $availabilityData['minStay']);
+
+        return $availabilityElement->asXML();
     }
 
     public function getQuoteResponse(
-        $roomTypeId,
+        HomeAwayRoom $homeAwayRoomType,
         $adultCount,
         $childrenCount,
-        $beginString,
-        $endString,
         $documentVersion,
-        HomeAwayConfig $config
+        HomeAwayConfig $config,
+        $searchResults
     ) {
         $quoteResponse = new \SimpleXMLElement('<quoteResponse/>');
         $quoteResponse->addChild('documentVersion', $documentVersion);
@@ -158,8 +168,7 @@ class HomeAwayResponseCompiler
         $orderElement->addChild('currency', $currency);
 
         $orderItemListElement = $orderElement->addChild('orderItemList');
-        $searchResults = $this->dataFormatter->getSearchResults($roomTypeId, $adultCount, $childrenCount, $beginString,
-            $endString, $config->getMainTariff());
+
         if (count($searchResults) > 0) {
             $roomTypeQuoteData = current($searchResults);
             //Поиск ведется только по 1 синхронизируемому тарифу для 1 типа номера
@@ -195,22 +204,18 @@ class HomeAwayResponseCompiler
             $paymentItemElement = $paymentItemListElement->addChild('paymentScheduleItem');
             $amountElement = $paymentItemElement->addChild('amount', $resultPrice);
             $amountElement->addAttribute('currency', $currency);
-//            //TODO: Заполнить, когда появятся соответствующие поля (НЕОБЯЗАТЕЛЬНЫЕ)
-//            $paymentItemElement->addChild('refundable');
-//            $paymentItemElement->addChild('refundDescription');
-//            $paymentItemElement->addChild('refundPercent');
 
             $cancellationPolicyElement = $orderItemListElement->addChild('reservationCancellationPolicy');
             //TODO: Заполнить обязательно, либо использовать другие поля. Рекомендуется использовать тестовое описание
             //Возможно заполнение URL, PDF или текстом описания
-            $cancellationPolicyElement->addChild('description');
-            //TODO: Также можно добавить amount,deadline, penaltyType, percentPenalty, но необязательно.
-            //TODO: Можно добавить дополнительные комиссии. Поле stayFees. К примеру городские комиссии.
+            $cancellationPolicyElement->addChild('description', $config->getCancellationPolicy());
         }
 
         $rentalAgreementElement = $responseDetailsElement->addChild('rentalAgreement');
         //TODO: Заполнить данными о договоре аренды. Мб текстом или URL.
-        $rentalAgreementElement->addChild('agreementText');
+        $rentalAgreementElement->addChild('agreementText', $homeAwayRoomType->getRentalAgreement());
+
+        return $quoteResponse->asXML();
     }
 
     public function getBookingResponse($documentVersion, $bookingResult, $messages)
@@ -219,8 +224,12 @@ class HomeAwayResponseCompiler
         $bookingResponse->addChild('documentVersion', $documentVersion);
 
         if ($bookingResult instanceof Order) {
+            $reservationData = $bookingResult->getPackages()[0];
+            $hotel = $reservationData->getHotel();
+            $config = $hotel->getHomeAwayConfig();
+
             $responseDetailsNode = $bookingResponse->addChild('bookingResponseDetails');
-            $responseDetailsNode->addChild('externalId', $bookingResult->getPackages()[0]->getNumberWithPrefix());
+            $responseDetailsNode->addChild('externalId', $reservationData->getNumberWithPrefix());
 
             /** @var Tourist $payer */
             $payer = $bookingResult->getPayer();
@@ -244,30 +253,56 @@ class HomeAwayResponseCompiler
                 $feeType = $cashDocument->getOperation() == 'in' ? 'RENTAL' : 'DISCOUNT';
                 $orderItemNode->addChild('feeType', $feeType);
                 $orderItemNode->addChild('Name', $feeType);
+
                 $price = $this->isLocalCurrencyAvailable($upperLocalCurrency)
                     ? $cashDocument->getTotal()
                     //TODO: Сменить на конвертирование из локальной валюты
                     : $this->currencyHandler->convertFromRub($cashDocument->getTotal(), $currency);
-                $preTaxAmountNode = $orderItemNode->addChild('preTaxAmount', $cashDocument->getTotal());
+                $preTaxAmountNode = $orderItemNode->addChild('preTaxAmount', $price);
                 $preTaxAmountNode->addAttribute('currency', $currency);
-                $orderItemNode->addChild('status', $cashDocument->getIsConfirmed() ? 'ACCEPTED' : 'DECLINED_BY_SYSTEM');
+                $orderItemNode->addChild('status', 'PENDING');
                 $totalAmountNode = $orderItemNode->addChild('totalAmount', $price);
                 $totalAmountNode->addAttribute('currency', $currency);
             }
 
-            //TODO: Заполнить, когда будут данные
-            $orderNode->addChild('paymentSchedule');
-            //TODO: Заполнить, когда будут данные
-            $orderNode->addChild('reservationCancellationPolicy');
-            //TODO: Можно добавить
-            $orderNode->addChild('stayFees');
+            $paymentScheduleNode = $orderNode->addChild('paymentSchedule');
+            $paymentFormsElement = $paymentScheduleNode->addChild('acceptedPaymentForms');
+            $cardList = $hotel->getAcceptedCardTypes();
+            foreach ($cardList as $cardType) {
+                /** @var CardType $cardType */
+                $cardDescriptorElement = $paymentFormsElement->addChild('paymentCardDescriptor');
+                $cardDescriptorElement->addChild('paymentFormType', 'CARD');
+                $cardDescriptorElement->addChild('cardCode', $cardType->getCardCode());
+                $cardDescriptorElement->addChild('cardType', $cardType->getCardCategory());
+            }
+            $invoiceDescriptorElement = $paymentFormsElement->addChild('paymentInvoiceDescriptor');
+            $invoiceDescriptorElement->addChild('paymentFormType', 'INVOICE');
 
-            //TODO: Добавить договор аренды
-            $responseDetailsNode->addChild('rentalAgreement', '');
+            //TODO: Расписание платежей. Какую указывать дату?
+            $paymentItemListElement = $paymentScheduleNode->addChild('paymentScheduleItemList');
+            $paymentItemElement = $paymentItemListElement->addChild('paymentScheduleItem');
+            $amountElement = $paymentItemElement->addChild('amount',
+                $this->currencyHandler->convertFromRub($bookingResult->getPrice(), $currency));
+            $amountElement->addAttribute('currency', $currency);
+
+            $orderNode->addChild('reservationCancellationPolicy', $config->getCancellationPolicy());
+
+            $currentHomeAwayRoom = null;
+            foreach ($hotel->getHomeAwayConfig()->getRooms() as $homeAwayRoom) {
+                /** @var HomeAwayRoom $homeAwayRoom */
+                if ($homeAwayRoom->getRoomType()->getId() == $reservationData->getRoomType()->getId()) {
+                    $currentHomeAwayRoom = $homeAwayRoom;
+                }
+            }
+            if (is_null($currentHomeAwayRoom)) {
+                //TODO: Изменить
+                throw new Exception();
+            }
+
+            $responseDetailsNode->addChild('rentalAgreement', $currentHomeAwayRoom->getRentalAgreement());
             $responseDetailsNode->addChild('reservationPaymentStatus', $this->getPaymentStatus($bookingResult));
 
             $reservationNode = $responseDetailsNode->addChild('reservation');
-            $reservationData = $bookingResult->getPackages()[0];
             $reservationNode->addChild('numberOfAdults', $reservationData->getAdults());
             $reservationNode->addChild('numberOfChildren', $reservationData->getChildren());
             $reservationDatesNode = $reservationNode->addChild('reservationDates');
@@ -285,7 +320,7 @@ class HomeAwayResponseCompiler
             }
         }
 
-        return $bookingResponse;
+        return $bookingResponse->asXML();
     }
 
     private function getPaymentStatus(Order $order)
@@ -308,9 +343,7 @@ class HomeAwayResponseCompiler
         $end,
         $roomCaches,
         $restrictions,
-        $priceCaches,
-        $mbhRoomTypeId,
-        $tariffId
+        $priceCaches
     ) {
         $availabilityString = '';
         $maxStayData = [];
@@ -319,17 +352,17 @@ class HomeAwayResponseCompiler
             /** @var \DateTime $day */
             $dayString = $day->format('d.m.Y');
             /** @var Restriction $restrictionData */
-            $restrictionData = isset($restrictions[$mbhRoomTypeId][$tariffId][$dayString])
-                ? $restrictions[$mbhRoomTypeId][$tariffId][$dayString] : null;
+            $restrictionData = isset($restrictions[$dayString])
+                ? $restrictions[$dayString] : null;
             /** @var RoomCache $roomData */
-            $roomData = isset($roomCaches[$mbhRoomTypeId][$tariffId][$dayString])
-                ? $roomCaches[$mbhRoomTypeId][$tariffId][$dayString] : null;
+            $roomData = isset($roomCaches[$dayString])
+                ? $roomCaches[$dayString] : null;
             $isAvailable = $roomData && !$roomData->getIsClosed() && $roomData->getLeftRooms() > 0
                 && (!$restrictionData || !$restrictionData->getClosed())
                 && isset($priceCaches[$dayString]);
             $availabilityString .= $isAvailable ? 'Y' : 'N';
-            $maxStayData[] = $restrictionData->getMaxStay() ? $restrictionData->getMaxStay() : 0;
-            $minStayData[] = $restrictionData->getMinStay() ? $restrictionData->getMinStay() : 0;
+            $maxStayData[] = is_null($restrictionData) || !$restrictionData->getMaxStay() ? 0 : $restrictionData->getMaxStay();
+            $minStayData[] = is_null($restrictionData) || !$restrictionData->getMinStay() ? 0 : $restrictionData->getMinStay();
         }
         $maxStayString = join(',', $maxStayData);
         $minStayString = join(',', $minStayData);

@@ -4,14 +4,10 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
-use MBH\Bundle\PriceBundle\Document\Restriction;
-use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class HomeAwayDataFormatter
@@ -25,18 +21,14 @@ class HomeAwayDataFormatter
 
     public function __construct(
         DocumentManager $dm,
-        RoomTypeManager $manager
+        RoomTypeManager $manager,
+        SearchFactory $searchFactory
     ) {
         $this->dm = $dm;
         $this->roomManager = $manager;
+        $this->searchFactory = $searchFactory;
     }
 
-    public function getHomeAwayConfigByRoomId($homeAwayRoomTypeId)
-    {
-        return $this->dm->getRepository('MBHChannelManagerBundle:HomeAwayConfig')
-            ->findOneBy(['rooms.roomId' => $homeAwayRoomTypeId]);
-    }
-    
     public function getSearchResults(
         $roomTypeId,
         $adultCount,
@@ -58,12 +50,12 @@ class HomeAwayDataFormatter
         return $this->searchFactory->setWithTariffs()->search($query);
     }
 
-    public function getPriceCaches($beginDate, $endDate, HomeAwayConfig $config, $roomTypeId, $tariffId)
+    public function getPriceCaches($beginDate, $endDate, Hotel $hotel, $roomTypeId, $tariffId)
     {
         $requestedPriceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
             $beginDate,
             $endDate,
-            $config->getHotel(),
+            $hotel,
             [$roomTypeId],
             [$tariffId],
             true,
@@ -76,29 +68,33 @@ class HomeAwayDataFormatter
     public function getRestrictions(
         $beginDate,
         $endDate,
-        ChannelManagerConfigInterface $config,
+        Hotel $hotel,
         $roomTypeId,
         $tariffId
     ) {
-        return $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
+        $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
             $beginDate,
             $endDate,
-            $config->getHotel(),
+            $hotel,
             [$roomTypeId],
             [$tariffId],
             true
         );
+
+        return isset($restrictions[$roomTypeId][$tariffId]) ? $restrictions[$roomTypeId][$tariffId] : [];
     }
 
-    public function getRoomCaches($beginDate, $endDate, ChannelManagerConfigInterface $config, $roomTypeId, $tariffId)
+    public function getRoomCaches($beginDate, $endDate, Hotel $hotel, $roomTypeId, $tariffId)
     {
-        return $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+        $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $beginDate,
             $endDate,
-            $config->getHotel(),
+            $hotel,
             [$roomTypeId],
-            [$tariffId],
+            false,
             true
         );
+
+        return isset($roomCaches[$roomTypeId]) ? current($roomCaches[$roomTypeId]) : [];
     }
 }

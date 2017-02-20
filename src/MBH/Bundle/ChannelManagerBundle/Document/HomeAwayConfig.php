@@ -7,6 +7,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -25,6 +26,7 @@ class HomeAwayConfig extends Base
         return 'homeaway';
     }
 
+    use ConfigTrait;
 
     /**
      * Hook timestampable behavior
@@ -71,6 +73,12 @@ class HomeAwayConfig extends Base
      * @Assert\NotNull(message="validator.document.homeawayconfig.main_tariff_not_specified")
      */
     protected $mainTariff;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $cancellationPolicy;
 
     public function __construct()
     {
@@ -170,8 +178,22 @@ class HomeAwayConfig extends Base
         $this->mainTariff = $mainTariff;
     }
 
-    public function getSyncRoomTypes()
+    /**
+     * @return string
+     */
+    public function getCancellationPolicy(): ?string
     {
+        return $this->cancellationPolicy;
+    }
 
+    /**
+     * @param string $cancellationPolicy
+     * @return HomeAwayConfig
+     */
+    public function setCancellationPolicy(string $cancellationPolicy): HomeAwayConfig
+    {
+        $this->cancellationPolicy = $cancellationPolicy;
+
+        return $this;
     }
 }

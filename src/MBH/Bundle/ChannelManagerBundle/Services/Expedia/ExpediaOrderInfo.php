@@ -148,7 +148,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $cashDocuments;
     }
 
-    public function getChannelManagerDisplayedName() : string
+    public function getChannelManagerName() : string
     {
         $sourceString = (string)$this->getCommonOrderData('source');
 
@@ -328,10 +328,5 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     {
         return $this->dm->getRepository('MBHPackageBundle:PackageSource')
             ->findOneBy(['code' => $this->getChannelManagerName()]);
-    }
-
-    public function getChannelManagerName() : string
-    {
-        return $this->getChannelManagerDisplayedName();
     }
 }

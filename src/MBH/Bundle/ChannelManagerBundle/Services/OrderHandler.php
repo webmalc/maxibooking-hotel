@@ -20,7 +20,6 @@ class OrderHandler
 
     public function createOrder(AbstractOrderInfo $orderInfo, ?Order $order = null) : Order
     {
-        //TODO: Добавить валидацию сущностей перед созданием
         if (!$order) {
             $order = new Order();
             $order->setChannelManagerStatus('new');
@@ -37,7 +36,7 @@ class OrderHandler
             $order->setDeletedAt(null);
         }
 
-        $order->setChannelManagerType($orderInfo->getChannelManagerDisplayedName())
+        $order->setChannelManagerType($orderInfo->getChannelManagerName())
             ->setChannelManagerId($orderInfo->getChannelManagerOrderId())
             ->setMainTourist($orderInfo->getPayer())
             ->setConfirmed(false)
@@ -119,6 +118,7 @@ class OrderHandler
             $this->dm->remove($electronicCashDocument);
         }
         foreach ($orderInfo->getCashDocuments($order) as $cashDocument) {
+            $order->addCashDocument($cashDocument);
             /** @var CashDocument $cashDocument */
             $this->dm->persist($cashDocument);
         }

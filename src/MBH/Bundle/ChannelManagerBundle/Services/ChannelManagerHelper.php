@@ -67,19 +67,23 @@ class ChannelManagerHelper
         array $comparePropertyMethods
     ) {
         $periods = [];
-        $currentPeriod = [
-            'begin' => $begin,
-            'end' => $end,
-            'entity' => null
-        ];
+        $currentPeriod = null;
+
         foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
             /** @var \DateTime $day */
             $dayString = $day->format('d.m.Y');
             $dateEntity = isset($entitiesByDates[$dayString]) ? $entitiesByDates[$dayString] : null;
-            if ($this->isEntityEquals($currentPeriod['entity'], $dateEntity, $comparePropertyMethods)) {
+            //Если это начало цикла и переменная, хранящая перид не инициализирована
+            if (is_null($currentPeriod)) {
+                $currentPeriod = [
+                    'begin' => $day,
+                    'end' => $day,
+                    'entity' => $dateEntity
+                ];
+            } elseif ($this->isEntityEquals($currentPeriod['entity'], $dateEntity, $comparePropertyMethods)) {
                 $currentPeriod['end'] = $day;
             } else {
-                $periods[] = $currentPeriod;
+                is_null($currentPeriod) ?: $periods[] = $currentPeriod;
                 $currentPeriod = [
                     'begin' => $day,
                     'end' => $day,
@@ -87,10 +91,7 @@ class ChannelManagerHelper
                 ];
             }
         }
-
-        if ($currentPeriod['end'] > end($periods)['end']) {
-            $periods[] = $currentPeriod;
-        }
+        $periods[] = $currentPeriod;
 
         return $periods;
     }

@@ -33,7 +33,7 @@ class HomeAwayPackageInfo extends AbstractPackageInfo
         $reservationDates = $this->getReservationData()->reservationDates;
         $beginDateString = trim((string)$reservationDates->beginDate);
 
-        return Helper::getDateFromString('Y-m-d', $beginDateString);
+        return Helper::getDateFromString($beginDateString, 'Y-m-d');
     }
 
     public function getEndDate() : \DateTime
@@ -41,7 +41,7 @@ class HomeAwayPackageInfo extends AbstractPackageInfo
         $reservationDates = $this->getReservationData()->reservationDates;
         $endDateString = trim((string)$reservationDates->endDate);
 
-        return Helper::getDateFromString('Y-m-d', $endDateString);
+        return Helper::getDateFromString($endDateString, 'Y-m-d');
     }
 
     public function getRoomType()

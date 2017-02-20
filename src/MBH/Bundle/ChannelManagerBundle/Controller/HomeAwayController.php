@@ -140,47 +140,186 @@ class HomeAwayController extends BaseController
     }
 
     /**
-     * @Route("/rates/{listingId}", name="homeaway_rates")
-     * @param Request $request
+     * @Route("/rates/{hotelId}/{roomTypeId}", name="homeaway_rates")
+     * @param $roomTypeId
+     * @param $hotelId
      * @return Response
      */
-    public function ratesAction(Request $request)
+    public function ratesAction($roomTypeId, $hotelId)
     {
-//        $this->get('mbh.channelmanager.homeaway_data_formatter')->formatListingContentIndex()
-        return new Response();
+        $begin = new \DateTime('midnight');
+        $end = (clone $begin)->modify('+2 year');
+        $hotel = $this->dm->find('MBHHotelBundle:Hotel', $hotelId);
+        /** @var HomeAwayConfig $config */
+        $config = $hotel->getHomeAwayConfig();
+
+        $priceCacheData = $this->get('mbh.channelmanager.homeaway_data_formatter')
+            ->getPriceCaches($begin, $end, $hotel, $roomTypeId, $config->getMainTariff()->getId());
+
+        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')
+            ->formatRatePeriodsData($begin, $end, $roomTypeId, $priceCacheData);
+
+        return new Response($response);
     }
 
     /**
-     * @Route("/routes/{listingId}", name="homeaway_availability")
-     * @param $listingId
+     * @Route("/availability/{hotelId}/{roomTypeId}", name="homeaway_availability")
+     * @param $roomTypeId
+     * @param $hotelId
      * @return Response
      */
-    public function availabilityAction($listingId)
+    public function availabilityAction($roomTypeId, $hotelId)
     {
-        $this->get('mbh.channelmanager.homeaway_data_formatter')->formatAvailabilityData($listingId);
+        $begin = new \DateTime('midnight');
+        $end = (clone $begin)->modify('+2 year');
 
-        return new Response();
+        $hotel = $this->dm->find('MBHHotelBundle:Hotel', $hotelId);
+        /** @var HomeAwayConfig $config */
+        $config = $hotel->getHomeAwayConfig();
+        $dataFormatter = $this->get('mbh.channelmanager.homeaway_data_formatter');
+        $tariffId = $config->getMainTariff()->getId();
+
+        $priceCacheData = $dataFormatter->getPriceCaches($begin, $end, $this->hotel, $roomTypeId, $tariffId);
+        $restrictionData = $dataFormatter->getRestrictions($begin, $end, $hotel, $roomTypeId, $tariffId);
+        $roomCacheData = $dataFormatter->getRoomCaches($begin, $end, $hotel, $roomTypeId, $tariffId);
+
+        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')
+            ->formatAvailabilityData($roomTypeId, $config, $priceCacheData, $restrictionData, $roomCacheData);
+
+        return new Response($response, 200, ['Content-Type' => 'xml']);
     }
 
+    /**
+     *
+     * @Route("/quotes")
+     * @param Request $request
+     * @return Response
+     * @throws \Exception
+     */
     public function quoteRequestAction(Request $request)
     {
+        $requestXML = new \SimpleXMLElement($request->getContent());
 
+        $requestDetailsNode = $requestXML->quoteRequestDetails[0];
+        $roomTypeId = (string)$requestDetailsNode->listingExternalId;
+        $adultsCount = (int)$requestDetailsNode->reservation->numberOfAdults;
+        $childrenCount = (int)$requestDetailsNode->reservation->numberOfChildren;
+        $beginString = (string)$requestDetailsNode->reservation->reservationDates->beginDate;
+        $endString = (string)$requestDetailsNode->reservation->reservationDates->endDate;
+        $documentVersion = (string)$requestXML->documentVersion;
+
+        /** @var HomeAwayConfig $config */
+        $config = $this->hotel->getHomeAwayConfig();
+        $currentRoomType = null;
+        foreach ($config->getRooms() as $homeAwayRoomType) {
+            /** @var HomeAwayRoom $homeAwayRoomType */
+            if ($homeAwayRoomType->getRoomType()->getId() == $roomTypeId) {
+                $currentRoomType = $homeAwayRoomType;
+            }
+        }
+        if (is_null($currentRoomType)) {
+            //TODO: Какую?
+            throw new \Exception();
+        }
+
+        $searchResults = $this->get('mbh.channelmanager.homeaway_data_formatter')->getSearchResults($roomTypeId,
+            $adultsCount, $childrenCount, $beginString, $endString, $config->getMainTariff());
+
+        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')->getQuoteResponse($currentRoomType, $adultsCount,
+            $childrenCount, $documentVersion, $config, $searchResults);
+
+        return new Response($response, 200, ['Content-Type' => 'xml']);
     }
 
+    /**
+     * @Route("/booking")
+     * @param Request $request
+     * @return Response
+     */
     public function bookingRequestAction(Request $request)
     {
-        //TODO: Поменять название
-        $bookingRequest = $request->get('xml');
+//        $bookingRequest = $request->getContent();
+        $bookingRequest = '<?xml version="1.0" encoding="UTF-8"?>
+            <bookingRequest>
+            <documentVersion>1.1</documentVersion>
+            <bookingRequestDetails>
+            <advertiserAssignedId>1931</advertiserAssignedId>
+            <listingExternalId>58a55fa205fe9808e80b2384</listingExternalId>
+            <unitExternalId>58a55fa205fe9808e80b2384</unitExternalId>
+            <propertyUrl>http://stage.homeaway.com/vacation-rental/p3173184</propertyUrl>
+            <listingChannel>HOMEAWAY_US</listingChannel>
+            <masterListingChannel>HOMEAWAY_US</masterListingChannel>
+            <message>I will need a crib provided.</message>
+            <inquirer>
+            <title>Ms.</title>
+            <firstName>Amy</firstName>
+            <lastName>Smith</lastName>
+            <emailAddress>amy@gmail.com</emailAddress>
+            <phoneNumber> 5125551212</phoneNumber>
+            <address rel="BILLING">
+            <addressLine1>10 Main Street</addressLine1>
+            <addressLine3>Austin</addressLine3>
+            <addressLine4>TX</addressLine4>
+            <country>US</country>
+            <postalCode>78703</postalCode>
+            </address>
+            </inquirer>
+            <commission/>
+            <reservation>
+            <numberOfAdults>2</numberOfAdults>
+            <numberOfChildren>1</numberOfChildren>
+            <numberOfPets>0</numberOfPets>
+            <reservationDates>
+            <beginDate>2017-02-19</beginDate>
+            <endDate>2017-02-27</endDate>
+            </reservationDates>
+            </reservation>
+            <orderItemList>
+            <orderItem>
+            <feeType>MISC</feeType>
+            <name>name</name>
+            <preTaxAmount currency="USD">0.00</preTaxAmount>
+            <totalAmount currency="USD">2399.85</totalAmount>
+            </orderItem>
+            </orderItemList>
+            <paymentForm>
+            <paymentCard>
+            <paymentFormType>CARD</paymentFormType>
+            <billingAddress rel="BILLING">
+            <addressLine1>10 Main Street</addressLine1>
+            <addressLine3>Austin</addressLine3>
+            <addressLine4>TX</addressLine4>
+            <country>US</country>
+            <postalCode>78703</postalCode>
+            </billingAddress>
+            <cvv>123</cvv>
+            <expiration>02/2017</expiration>
+            <maskedNumber>************1111</maskedNumber>
+            <nameOnCard>Amy Smith</nameOnCard>
+            <number>4111111111111111</number>
+            <numberToken>8ec791fd-e6ba-4069-ab3e-2eb0e5758817</numberToken>
+            <paymentCardDescriptor>
+            <paymentFormType>CARD</paymentFormType>
+            <cardCode>VISA</cardCode>
+            <cardType>CREDIT</cardType>
+            </paymentCardDescriptor>
+            </paymentCard>
+            </paymentForm>
+            <trackingUuid>20c98eb5-b596-4e1a-b74d-a391e3fd2a93</trackingUuid>
+            <travelerSource>HOMEAWAY_US</travelerSource>
+            </bookingRequestDetails>
+            </bookingRequest>';
+
         $bookingRequestXML = new \SimpleXMLElement($bookingRequest);
         $documentVersion = (string)$bookingRequestXML->documentVersion;
         $bookingRequestDetails = $bookingRequestXML->bookingRequestDetails[0];
         $config = $this->hotel->getHomeAwayConfig();
         $orderInfo = $this->get('mbh.channelmanager.homeaway_order_info')->setInitData($bookingRequestDetails, $config);
         $resultOfCreation = $this->get('mbh.channel_manager.order_handler')->createOrder($orderInfo);
-        $bookingCreationResponse = $this->get('mbh.channelmanager.homeaway_data_formatter')
-            ->getBookingResponse($documentVersion, $orderInfo, $orderInfo->getMessages());
+        $bookingCreationResponse = $this->get('mbh.channelmanager.homeaway_response_compiler')
+            ->getBookingResponse($documentVersion, $resultOfCreation, $orderInfo->getMessages());
 
-
+        return new Response($bookingCreationResponse, 200, ['Content-Type' => 'xml']);
     }
 
     /**
@@ -188,7 +327,7 @@ class HomeAwayController extends BaseController
      */
     public function testAction(Request $request)
     {
-        $codes = $this->getParameter('mbh.card.codes');
+        $this->dm->find('MBHPackageBundle:Order', 16)->getCashDocuments();
         return new Response(true ? 'true' : 'false');
     }
 }

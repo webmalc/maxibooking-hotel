@@ -57,7 +57,7 @@ services:
 
     mbh.channelmanager.homeaway_data_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayDataFormatter
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.hotel.room_type_manager', '@mbh.package.search']
 
     mbh.channelmanager.homeaway_response_compiler:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayResponseCompiler

@@ -58,13 +58,14 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
 
     public function getChannelManagerOrderId() : string
     {
+        //TODO: Может не быть
         return trim((string)$this->bookingData->inquiryId);
     }
 
     public function getPrice()
     {
         $price = 0;
-        foreach ($this->bookingData->orderItemList as $orderItem) {
+        foreach ($this->bookingData->orderItemList->orderItem as $orderItem) {
             /** @var \SimpleXMLElement $orderItem */
             $totalPriceInCurrency = trim((float)$orderItem->totalAmount);
             $currency = (string)$orderItem->totalAmount->attributes()['currency'];
@@ -80,7 +81,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
             //TODO: Уточнить
             $payMethod = !is_null($this->getCreditCard()) ? 'electronic' : 'cash';
 
-            foreach ($this->bookingData->orderItemList as $orderItem) {
+            foreach ($this->bookingData->orderItemList->orderItem as $orderItem) {
                 /** @var \SimpleXMLElement $orderItem */
                 $totalPriceInCurrency = trim((float)$orderItem->totalAmount);
                 $operation = $totalPriceInCurrency > 0 ? 'in' : 'out';
@@ -126,6 +127,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
             $this->container->get('mbh.channelmanager.homeaway_package_info')
                 ->setInitData($this->bookingData, $this->config)
                 ->setPrice($this->getPrice())
+                ->setTourists([$this->getPayer()])
         ];
     }
 
@@ -166,11 +168,6 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
     public function getChannelManagerName() : string
     {
         return 'homeaway';
-    }
-
-    public function getChannelManagerDisplayedName() : string
-    {
-        return (string)$this->bookingData->listingChannel;
     }
 
     public function isOrderModified() : bool

@@ -123,6 +123,7 @@ form.homeAwayType.hotel_id_in_home_away: ID отеля в HomeAway
 controller.homeAwayController.settings_saved_success: 'Настройки успешно сохранены.'
 form.home_away_type.main_tariff.label: Тариф
 form.home_away_type.main_tariff.help: Тариф, данные по которому синхронизируются с HomeAway
+form.home_away_type.cancellation_policy.label: Правила закрытия брони
 form.home_away_rooms_type.sync_room_type.label: Тип комнаты
 form.home_away_rooms_type.rental_agreement.label: Договор аренды
 form.home_away_rooms_type.rental_agreement.help: Текстовое описание договора аренды или ссылка на него.

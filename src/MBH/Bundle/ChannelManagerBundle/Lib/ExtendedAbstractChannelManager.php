@@ -2,12 +2,10 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
-use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\Response;
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Order;
 
 /**
@@ -267,7 +265,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
                     [
                         'channelManagerId' => $orderInfo->getChannelManagerOrderId(),
-                        'channelManagerType' => $orderInfo->getChannelManagerDisplayedName()
+                        'channelManagerType' => $orderInfo->getChannelManagerName()
                     ]
                 );
                 if ($orderInfo->isOrderModified()) {
@@ -278,7 +276,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 //new
                 if ($orderInfo->isHandleAsNew($order)) {
                     $result = $this->createOrder($orderInfo, $order);
-                    $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'new');
+                    $this->notify($result, $orderInfo->getChannelManagerName(), 'new');
 
                 }
 
@@ -288,14 +286,14 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                     if ($orderInfo->getModifiedDate()) {
                         $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
                     }
-                    $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'edit');
+                    $this->notify($result, $orderInfo->getChannelManagerName(), 'edit');
                 }
 
                 //delete
                 if ($orderInfo->isHandleAsCancelled($order)) {
                     $this->dm->persist($order);
                     $this->dm->flush();
-                    $this->notify($order, $orderInfo->getChannelManagerDisplayedName(), 'delete');
+                    $this->notify($order, $orderInfo->getChannelManagerName(), 'delete');
                     $this->dm->remove($order);
                     $this->dm->flush();
                     $result = true;
@@ -317,7 +315,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     public function createOrder(AbstractOrderInfo $orderInfo, Order $order = null) : Order
     {
         $this->log('creating order');
-        return $this->container->get('mbh.channel_manager.order_creator')->createOrder($orderInfo, $order);
+        return $this->container->get('mbh.channel_manager.order_handler')->createOrder($orderInfo, $order);
     }
 
     /**

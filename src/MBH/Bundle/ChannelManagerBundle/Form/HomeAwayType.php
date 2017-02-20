@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -42,7 +43,11 @@ class HomeAwayType extends AbstractType
                     return $qb;
                 },
                 'required' => true,
-            ]);
+            ])
+            ->add('cancellationPolicy', TextareaType::class, [
+                'label' => 'form.home_away_type.cancellation_policy.label'
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
