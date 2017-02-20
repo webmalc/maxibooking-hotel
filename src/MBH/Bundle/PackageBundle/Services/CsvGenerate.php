@@ -26,6 +26,7 @@ class CsvGenerate
 
     const DATA = [
         'type' => ['title' => 'csv.type.package', 'method' => 'getStatus'],
+        'typeOrder' => ['title' => 'csv.type.order.type', 'method' => 'getOrder'],
         'numberWithPrefix' => ['title' => '#', 'method' => 'getNumberWithPrefix'],
         'dateBegin' => ['title' => 'csv.type.begin', 'method' => 'getBegin'],
         'dateEnd' => ['title' => 'csv.type.end', 'method' => 'getEnd'],
@@ -37,6 +38,8 @@ class CsvGenerate
         'countNight' => ['title' => 'csv.form.countNight', 'method' => 'getNights'],
         'countPersons' => ['title' => 'csv.form.countPersons', 'method' => 'countPersons'],
         'price' => ['title' => 'csv.type.price', 'method' => 'getPrice'],
+        'paids' => ['title' => 'csv.type.paids', 'method' => 'getPaids'],
+        'rest' => ['title' => 'csv.type.rest', 'method' => 'getRest'],
         'tariff' => ['title' => 'csv.type.tariff', 'method' => 'getTariff'],
         'createdAt' => ['title' => 'csv.type.createdAt', 'method' => 'getCreatedAt'],
         'createdBy' => ['title' => 'csv.type.createdBy', 'method' => 'getCreatedBy'],
@@ -55,7 +58,7 @@ class CsvGenerate
     {
         $translator = $this->container->get('translator');
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
-        $title = '';
+        $title = [];
         foreach (self::DATA as $key => $item) {
             if (!empty($formData[$key])) {
 
@@ -76,6 +79,12 @@ class CsvGenerate
 
                         $dataCsv[] = $entity->getAdults() + $entity->getChildren();
 
+                    } elseif ($method == 'getOrder') {
+                        $entity->getStatus() == 'channel_manager' ? $dataCsv[] = $translator->trans('manager.channel_manager.' . $entity->getChannelManagerType()) : $dataCsv[] = '';
+                    } elseif ($method == 'getPaids') {
+                        $dataCsv[] = $entity->getPaid();
+                    } elseif ($method == 'getRest') {
+                        $dataCsv[] = $entity->getPrice() - $entity->getPaid();
                     } else {
 
                         $call = $entity->$method();
@@ -95,6 +104,7 @@ class CsvGenerate
         }
 
         $content = implode("\n", $rows);
+        $content = iconv('UTF-8', 'windows-1251', $content);
         return $content;
 
     }
