@@ -78,9 +78,9 @@ class PackageSubscriber implements EventSubscriber
             $entity->setServicesPrice(0);
             $dm->persist($entity);
             $dm->flush();
-        }
 
-        $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
+            $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
+        }
 
         return;
     }

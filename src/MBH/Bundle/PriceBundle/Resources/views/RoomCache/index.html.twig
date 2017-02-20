@@ -6,7 +6,7 @@
 {% block content %}
 
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'room-cache-overview-filter-widget' } %}
-        <form id="room-cache-overview-filter" class="form-inline filter-form remember" role="form">
+        <form id="room-cache-overview-filter" class="form-inline filter-form remember mbh-start-date" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
                 <input type="text" id="room-cache-overview-filter-begin" class="datepicker room-cache-overview-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" >

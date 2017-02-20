@@ -34,11 +34,12 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
     private function getSource(): array
     {
         return [
+            '101Отель' => '101hotels',
             'Expedia.com' => 'expedia',
             'Venere.com' => 'venere',
             'Hotels.com' => 'hotels',
-            '101Отель' => '101hotel',
             'Островок' => 'ostrovok',
+            'Oktogo' => 'oktogo',
             'Booking.com' => 'booking',
             'Myallocator.com' => 'myallocator',
             'ВашОтель.ру' => 'vashotel',
