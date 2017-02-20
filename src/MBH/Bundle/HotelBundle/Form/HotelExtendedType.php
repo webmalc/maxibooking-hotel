@@ -9,6 +9,7 @@ use MBH\Bundle\BaseBundle\Form\FacilitiesType;
 use MBH\Bundle\CashBundle\Document\CardType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -84,6 +85,11 @@ class HotelExtendedType extends AbstractType
                 'required' => false,
                 'group' => 'form.hotelExtendedType.parameters',
                 'choices' => $this->smokingPolicyOptions
+            ])
+            ->add('cancellationPolicy', TextareaType::class, [
+                'required' => false,
+                'group' => 'form.hotelExtendedType.parameters',
+                'label' => 'form.hotel_additional_info_type.cancellation_policy.label'
             ])
         ;
 

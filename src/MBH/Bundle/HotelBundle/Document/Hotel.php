@@ -380,6 +380,12 @@ class Hotel extends Base implements \JsonSerializable
      */
     protected $smokingPolicy;
 
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $cancellationPolicy;
+
     public function __construct()
     {
         $this->roomTypes = new ArrayCollection();
@@ -1644,6 +1650,25 @@ class Hotel extends Base implements \JsonSerializable
     public function setSmokingPolicy(string $smokingPolicy): Hotel
     {
         $this->smokingPolicy = $smokingPolicy;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCancellationPolicy(): ?string
+    {
+        return $this->cancellationPolicy;
+    }
+
+    /**
+     * @param string $cancellationPolicy
+     * @return Hotel
+     */
+    public function setCancellationPolicy(string $cancellationPolicy): Hotel
+    {
+        $this->cancellationPolicy = $cancellationPolicy;
 
         return $this;
     }
