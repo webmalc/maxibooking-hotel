@@ -95,7 +95,7 @@
         </table>
     {% else %}
         <p style="font-size: 32px; color: darkgreen; font-weight: bold; text-align: center;">
-           Нет броней с виртуальными номерами из закрытог8о фонда
+           Нет броней с виртуальными номерами из закрытого фонда
         </p>
     {% endif %}
     {% if result is defined %}
@@ -161,10 +161,10 @@
                             <small>{{ entry.numbers|sort|join('<br>')|raw }}</small>
                         </td>
                         <td style="vertical-align: top; white-space: nowrap; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
-                            <small>{{ entry.non_oneC|join('<br>')|raw }}</small>
+                            <small>{{ entry.non_mb|join('<br>')|raw }}</small>
                         </td>
                         <td style="vertical-align: top; white-space: nowrap; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
-                            <small>{{ entry.non_mb|join('<br>')|raw }}</small>
+                            <small>{{ entry.non_oneC|join('<br>')|raw }}</small>
                         </td>
                     </tr>
                 {% endfor %}
