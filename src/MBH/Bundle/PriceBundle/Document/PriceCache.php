@@ -24,18 +24,21 @@ class PriceCache extends Base
      * @var \MBH\Bundle\HotelBundle\Document\Hotel
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $hotel;
 
     /**
      * @var \MBH\Bundle\HotelBundle\Document\RoomType
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
+     * @ODM\Index()
      */
     protected $roomType;
 
     /**
      * @var \MBH\Bundle\HotelBundle\Document\RoomTypeCategory
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomTypeCategory")
+     * @ODM\Index()
      */
     protected $roomTypeCategory;
 
@@ -43,6 +46,7 @@ class PriceCache extends Base
      * @var \MBH\Bundle\PriceBundle\Document\Tariff
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $tariff;
 
@@ -51,6 +55,7 @@ class PriceCache extends Base
      * @ODM\Date()
      * @Assert\Date()
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $date;
 
@@ -60,6 +65,7 @@ class PriceCache extends Base
      * @Assert\Type(type="numeric")
      * @Assert\NotNull()
      * @Assert\Range(min=0)
+     * @ODM\Index()
      */
     protected $price;
 
@@ -68,6 +74,7 @@ class PriceCache extends Base
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
+     * @ODM\Index()
      */
     protected $childPrice;
 
@@ -76,6 +83,7 @@ class PriceCache extends Base
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $isPersonPrice = false;
 
@@ -84,6 +92,7 @@ class PriceCache extends Base
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
+     * @ODM\Index()
      */
     protected $additionalPrice = null;
 
@@ -99,6 +108,7 @@ class PriceCache extends Base
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
+     * @ODM\Index()
      */
     protected $additionalChildrenPrice = null;
 
@@ -114,6 +124,7 @@ class PriceCache extends Base
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
+     * @ODM\Index()
      */
     protected $singlePrice = null;
 

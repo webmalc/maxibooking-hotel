@@ -5,6 +5,7 @@ namespace Tests\Bundle\BaseBundle\Service;
 use MBH\Bundle\BaseBundle\Document\CacheItemRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use MBH\Bundle\BaseBundle\Service\Cache;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class CacheTest extends KernelTestCase
 {
@@ -75,5 +76,24 @@ class CacheTest extends KernelTestCase
         $this->assertEquals(false, $this->cache->get(self::PREFIX, self::BASIC_KEYS));
         $this->assertEquals($anotherValue, $this->cache->get($anotherPrefix, self::BASIC_KEYS));
         $this->testClear($anotherPrefix);
+    }
+
+    public function testDates()
+    {
+        $anotherValue = 'another_value';
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight + 12 days');
+        $anotherKeys = [122, 'test', $begin, $end];
+
+        $this->cache->set(self::BASIC_VALUE, self::PREFIX, self::BASIC_KEYS);
+        $this->cache->set($anotherValue, self::PREFIX, $anotherKeys);
+
+        $this->cache->clear(self::PREFIX, new \DateTime('midnight +13 days'), new \DateTime('midnight +18 days'));
+        $this->assertEquals(self::BASIC_VALUE, $this->cache->get(self::PREFIX, self::BASIC_KEYS));
+        $this->assertEquals($anotherValue, $this->cache->get(self::PREFIX, $anotherKeys));
+
+        $this->cache->clear(self::PREFIX, new \DateTime('midnight +10 days'), new \DateTime('midnight +18 days'));
+        $this->assertEquals(self::BASIC_VALUE, $this->cache->get(self::PREFIX, self::BASIC_KEYS));
+        $this->assertEquals(false, $this->cache->get(self::PREFIX, $anotherKeys));
     }
 }

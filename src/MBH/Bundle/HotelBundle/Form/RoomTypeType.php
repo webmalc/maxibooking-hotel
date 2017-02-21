@@ -5,6 +5,8 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
+use MBH\Bundle\HotelBundle\Document\RoomViewType;
+use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -17,6 +19,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class RoomTypeType extends AbstractType
 {
+    /** @var  Translator $translator */
+    private $translator;
+
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         if ($options['useRoomTypeCategory']) {
@@ -50,7 +60,7 @@ class RoomTypeType extends AbstractType
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
                 'attr' => ['placeholder' => 'form.roomTypeType.comport_plus_rooms_in_new_housing'],
-                'help' => 'Название для использования внутри MaxiBooking'
+                'help' => 'form.roomTypeType.inner_name.help'
             ])
             ->add('internationalTitle', TextType::class, [
                 'label' => 'form.roomTypeType.international_title',
@@ -81,6 +91,26 @@ class RoomTypeType extends AbstractType
                 //'label' => 'form.roomTypeType.is_included',
                 'group' => 'form.roomTypeType.general_info',
                 'required' => false
+            ])
+            ->add('roomViewsTypes', DocumentType::class, [
+                'choice_label' => function($value) {
+                    return $this->translator->trans($value);
+                },
+                'label' => 'form.roomType.room_view_types.label',
+                'group' => 'form.roomTypeType.general_info',
+                'required' => false,
+                'query_builder' => function (DocumentRepository $documentRepository) {
+                    return $documentRepository->createQueryBuilder();
+                },
+                'class' => RoomViewType::class,
+                'multiple' => 'true',
+            ])
+            ->add('isSmoking', CheckboxType::class, [
+                'label' => 'form.hotelType.isSmoking.label',
+                'group' => 'form.roomTypeType.general_info',
+                'value' => true,
+                'required' => false,
+                'help' => 'form.hotelType.isSmoking.help'
             ])
             ->add('isHostel', CheckboxType::class, [
                 'label' => 'form.hotelType.hostel',

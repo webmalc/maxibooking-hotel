@@ -53,6 +53,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="bookingConfig")
      * @Assert\NotNull(message="document.bookingConfig.no_hotel_selected")
+     * @ODM\Index()
      */
     protected $hotel;
 

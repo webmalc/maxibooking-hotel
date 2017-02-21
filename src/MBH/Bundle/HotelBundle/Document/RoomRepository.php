@@ -216,6 +216,8 @@ class RoomRepository extends AbstractBaseRepository
      * @param int $limit
      * @param bool $group
      * @param bool $isEnabled
+     * @param array|null $sort
+     * @param Cache|null $cache
      * @return array
      */
     public function fetch(
@@ -226,10 +228,19 @@ class RoomRepository extends AbstractBaseRepository
         $skip = null,
         $limit = null,
         $group = false,
-        $isEnabled = null
+        $isEnabled = null,
+        array $sort = null,
+        Cache $cache = null
     )
     {
-        $result = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit, $isEnabled)->getQuery()->execute();
+        if ($cache) {
+            $cacheEntry = $cache->get('rooms_fetch', func_get_args());
+            if ($cacheEntry !== false) {
+                return $cacheEntry;
+            }
+        }
+
+        $result = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit, $isEnabled, $sort)->getQuery()->execute();
 
         if ($group) {
             $grouped = [];
@@ -237,21 +248,30 @@ class RoomRepository extends AbstractBaseRepository
                 $grouped[$doc->getRoomType()->getId()][] = $doc;
             }
 
+            if ($cache) {
+                $cache->set($grouped, 'rooms_fetch', func_get_args());
+            }
+
             return $grouped;
+        }
+
+        if ($cache) {
+            $cache->set(iterator_to_array($result), 'rooms_fetch', func_get_args());
         }
 
         return $result;
     }
 
     /**
-     * @param Hotel $hotel
-     * @param mixed $roomTypes
-     * @param mixed $housing
-     * @param mixed $floor
-     * @param int $skip
-     * @param int $limit
-     * @param bool $isEnabled
-     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     * @param Hotel|null $hotel
+     * @param null $roomTypes
+     * @param null $housing
+     * @param null $floor
+     * @param null $skip
+     * @param null $limit
+     * @param null $isEnabled
+     * @param array|null $sort
+     * @return \Doctrine\ODM\MongoDB\Query\Builder|\MBH\Bundle\BaseBundle\Lib\QueryBuilder
      */
     public function fetchQuery(
         Hotel $hotel = null,
@@ -260,7 +280,8 @@ class RoomRepository extends AbstractBaseRepository
         $floor = null,
         $skip = null,
         $limit = null,
-        $isEnabled = null
+        $isEnabled = null,
+        array $sort = null
     ) {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder('s');
@@ -304,7 +325,12 @@ class RoomRepository extends AbstractBaseRepository
         if ($limit !== null) {
             $qb->limit((int)$limit);
         }
-        $qb->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
+        $qb->field('deletedAt')->equals(null)
+            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
+
+        if ($sort) {
+            $qb->sort($sort);
+        }
 
         return $qb;
     }

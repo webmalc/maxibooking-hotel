@@ -135,7 +135,7 @@ class RestrictionRepository extends DocumentRepository
         $result = $qb->getQuery()->getSingleResult();
 
         if ($memcached) {
-            $memcached->set($result, 'price_caches_fetch', func_get_args());
+            $memcached->set($result, 'restrictions_find_one_by_date', func_get_args());
         }
 
         return $result;

@@ -16,3 +16,4 @@ controller.cashController.payment_confirmed_success: 'Платеж успешн�
 
 cashDocumentCriteria.type.order: По заказам
 cashDocumentCriteria.type.other: Без заказов
+

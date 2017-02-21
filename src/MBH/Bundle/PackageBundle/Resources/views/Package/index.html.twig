@@ -4,8 +4,6 @@
 {% set layout = 'box' %}
 
 {% block content %}
-
-
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'dishorder-table-filter-widget'} %}
         <form id="package-table-filter" class="form-inline remember" role="form">
             <div class="input">
@@ -72,10 +70,8 @@
             </div>
             {% if environment == 'prod' %}
                 <div class="input">
-                    <i class="fa fa-trash-o" title='Удаленные?' data-toggle='tooltip'></i>&nbsp <input type="checkbox"
-                                                                                                       id="package-filter-deleted"
-                                                                                                       class="package-filter"
-                                                                                                       value="1"/>
+                    <i class="fa fa-trash-o" title='{{ 'package.index.deleted'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'></i>
+                    &nbsp <input type="checkbox" id="package-filter-deleted" class="package-filter" value="1"/>
                 </div>
             {% endif %}
 
@@ -171,4 +167,7 @@
             </ul>
         </div>
     </div>
+
+    {{ include('@MBHPackage/Package/deleteModal.html.twig') }}
+
 {% endblock content %}

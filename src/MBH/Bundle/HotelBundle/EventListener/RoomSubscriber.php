@@ -37,6 +37,7 @@ class RoomSubscriber implements EventSubscriber
         $document = $args->getDocument();
         if($document instanceof Room) {
             $this->container->get('mbh.cache')->clear('accommodation_rooms');
+            $this->container->get('mbh.cache')->clear('rooms');
         }
     }
 

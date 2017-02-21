@@ -204,7 +204,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             ->set('success', 'Изменения успешно сохранены.');
 
         $this->get('mbh.channelmanager')->updatePricesInBackground();
-        $this->get('mbh.cache')->clear();
+        $this->get('mbh.cache')->clear('price_cache');
 
         return $this->redirect($this->generateUrl('price_cache_overview', [
             'begin' => $request->get('begin'),
@@ -326,7 +326,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             );
 
             $this->get('mbh.channelmanager')->updatePricesInBackground();
-            $this->get('mbh.cache')->clear();
+            $this->get('mbh.cache')->clear('price_cache');
 
             $session->getFlashBag()->set('success', 'Данные успешно сгенерированы.');
 
