@@ -12,6 +12,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
@@ -132,8 +133,6 @@ class HomeAwayResponseCompiler
         $dateRangeElement->addChild('endDate', $endDate->format('Y-m-d'));
 
         $unitAvailabilityElement->addChild('availabilityDefault', 'N');
-        //TODO: Уточнить
-        $unitAvailabilityElement->addChild('maxStayDefault', 28);
         $availabilityConfigElement = $unitAvailabilityElement->addChild('unitAvailabilityConfiguration');
 
         $availabilityData = $this->getAvailabilityData($beginDate, $endDate, $roomCaches, $restrictions, $priceCaches);
@@ -155,9 +154,7 @@ class HomeAwayResponseCompiler
         $quoteResponse = new \SimpleXMLElement('<quoteResponse/>');
         $quoteResponse->addChild('documentVersion', $documentVersion);
         $responseDetailsElement = $quoteResponse->addChild('quoteResponseDetails');
-        //TODO: Получить
-        $locale = '';
-        $responseDetailsElement->addChild('quoteResponseDetails', $locale);
+        $responseDetailsElement->addChild('locale', $config->getLocale());
         $orderListElement = $responseDetailsElement->addChild('orderList');
         $orderElement = $orderListElement->addChild('order');
 
@@ -179,40 +176,21 @@ class HomeAwayResponseCompiler
             $orderItemElement->addChild('name', 'Rent');
 
             $price = $searchResult->getPrice($adultCount, $childrenCount);
-            $resultPrice = $isLocaleCurrencyAvailable ? $price : $this->currencyHandler->convertFromRub($price,
-                $currency);
+            $resultPrice = $isLocaleCurrencyAvailable
+                ? $price : $this->currencyHandler->convertFromRub($price, $currency);
             $preTaxAmountElement = $orderItemElement->addChild('preTaxAmount', $resultPrice);
             $preTaxAmountElement->addAttribute('currency', $currency);
             $totalAmountElement = $orderItemElement->addChild('totalAmount', $resultPrice);
             $totalAmountElement->addAttribute('currency', $currency);
 
-            $paymentScheduleElement = $orderItemListElement->addChild('paymentSchedule');
-            $paymentFormsElement = $paymentScheduleElement->addChild('acceptedPaymentForms');
-            $cardList = $config->getHotel()->getAcceptedCardTypes();
-            foreach ($cardList as $cardType) {
-                /** @var CardType $cardType */
-                $cardDescriptorElement = $paymentFormsElement->addChild('paymentCardDescriptor');
-                $cardDescriptorElement->addChild('paymentFormType', 'CARD');
-                $cardDescriptorElement->addChild('cardCode', $cardType->getCardCode());
-                $cardDescriptorElement->addChild('cardType', $cardType->getCardCategory());
-            }
-            $invoiceDescriptorElement = $paymentFormsElement->addChild('paymentInvoiceDescriptor');
-            $invoiceDescriptorElement->addChild('paymentFormType', 'INVOICE');
-
-            //TODO: Расписание платежей. Какую указывать дату?
-            $paymentItemListElement = $paymentScheduleElement->addChild('paymentScheduleItemList');
-            $paymentItemElement = $paymentItemListElement->addChild('paymentScheduleItem');
-            $amountElement = $paymentItemElement->addChild('amount', $resultPrice);
-            $amountElement->addAttribute('currency', $currency);
+            $this->addPaymentScheduleNode($orderItemListElement, $searchResult->getBegin(), $config, $price, $currency);
 
             $cancellationPolicyElement = $orderItemListElement->addChild('reservationCancellationPolicy');
-            //TODO: Заполнить обязательно, либо использовать другие поля. Рекомендуется использовать тестовое описание
             //Возможно заполнение URL, PDF или текстом описания
             $cancellationPolicyElement->addChild('description', $config->getCancellationPolicy());
         }
 
         $rentalAgreementElement = $responseDetailsElement->addChild('rentalAgreement');
-        //TODO: Заполнить данными о договоре аренды. Мб текстом или URL.
         $rentalAgreementElement->addChild('agreementText', $homeAwayRoomType->getRentalAgreement());
 
         return $quoteResponse->asXML();
@@ -226,6 +204,7 @@ class HomeAwayResponseCompiler
         if ($bookingResult instanceof Order) {
             $reservationData = $bookingResult->getPackages()[0];
             $hotel = $reservationData->getHotel();
+            /** @var HomeAwayConfig $config */
             $config = $hotel->getHomeAwayConfig();
 
             $responseDetailsNode = $bookingResponse->addChild('bookingResponseDetails');
@@ -234,8 +213,7 @@ class HomeAwayResponseCompiler
             /** @var Tourist $payer */
             $payer = $bookingResult->getPayer();
             $responseDetailsNode->addChild('guestProfileExternalId', $payer->getId());
-            //TODO: Установить локаль. Состоит из языка + _ + кода страны
-            $responseDetailsNode->addChild('locale', $this->locale);
+            $responseDetailsNode->addChild('locale', $config->getLocale());
             $orderListNode = $responseDetailsNode->addChild('orderList');
             $orderNode = $orderListNode->addChild('order');
 
@@ -243,7 +221,7 @@ class HomeAwayResponseCompiler
             $currency = $this->getAvailableCurrency($upperLocalCurrency);
             $orderNode->addChild('currency', $currency);
             $orderNode->addChild('externalId', $bookingResult->getId());
-            //TODO: Заполнить
+
             $orderItemListNode = $orderNode->addChild('orderItemList');
             foreach ($bookingResult->getCashDocuments() as $cashDocument) {
                 /** @var CashDocument $cashDocument */
@@ -265,26 +243,8 @@ class HomeAwayResponseCompiler
                 $totalAmountNode->addAttribute('currency', $currency);
             }
 
-            $paymentScheduleNode = $orderNode->addChild('paymentSchedule');
-            $paymentFormsElement = $paymentScheduleNode->addChild('acceptedPaymentForms');
-            $cardList = $hotel->getAcceptedCardTypes();
-            foreach ($cardList as $cardType) {
-                /** @var CardType $cardType */
-                $cardDescriptorElement = $paymentFormsElement->addChild('paymentCardDescriptor');
-                $cardDescriptorElement->addChild('paymentFormType', 'CARD');
-                $cardDescriptorElement->addChild('cardCode', $cardType->getCardCode());
-                $cardDescriptorElement->addChild('cardType', $cardType->getCardCategory());
-            }
-            $invoiceDescriptorElement = $paymentFormsElement->addChild('paymentInvoiceDescriptor');
-            $invoiceDescriptorElement->addChild('paymentFormType', 'INVOICE');
-
-            //TODO: Расписание платежей. Какую указывать дату?
-            $paymentItemListElement = $paymentScheduleNode->addChild('paymentScheduleItemList');
-            $paymentItemElement = $paymentItemListElement->addChild('paymentScheduleItem');
-            $amountElement = $paymentItemElement->addChild('amount',
-                $this->currencyHandler->convertFromRub($bookingResult->getPrice(), $currency));
-            $amountElement->addAttribute('currency', $currency);
-
+            $this->addPaymentScheduleNode($orderNode, $reservationData->getBegin(), $config, $bookingResult->getPrice(),
+                $currency);
             $orderNode->addChild('reservationCancellationPolicy', $config->getCancellationPolicy());
 
             $currentHomeAwayRoom = null;
@@ -372,6 +332,55 @@ class HomeAwayResponseCompiler
             'minStay' => $minStayString,
             'maxStay' => $maxStayString
         ];
+    }
+
+    private function addPaymentScheduleNode(
+        \SimpleXMLElement $mainNode,
+        \DateTime $beginDate,
+        HomeAwayConfig $config,
+        $price,
+        $currency
+    ) {
+        $paymentScheduleNode = $mainNode->addChild('paymentSchedule');
+        $paymentFormsElement = $paymentScheduleNode->addChild('acceptedPaymentForms');
+        $cardList = $config->getHotel()->getAcceptedCardTypes();
+        foreach ($cardList as $cardType) {
+            /** @var CardType $cardType */
+            $cardDescriptorElement = $paymentFormsElement->addChild('paymentCardDescriptor');
+            $cardDescriptorElement->addChild('paymentFormType', 'CARD');
+            $cardDescriptorElement->addChild('cardCode', $cardType->getCardCode());
+            $cardDescriptorElement->addChild('cardType', $cardType->getCardCategory());
+        }
+        $invoiceDescriptorElement = $paymentFormsElement->addChild('paymentInvoiceDescriptor');
+        $invoiceDescriptorElement->addChild('paymentFormType', 'INVOICE');
+
+        $paymentItemListElement = $paymentScheduleNode->addChild('paymentScheduleItemList');
+        $paymentScheduleData = $this->getPaymentScheduleData($config->getPaymentType(), $price, $beginDate);
+        foreach ($paymentScheduleData as $paymentScheduleItemData) {
+            $paymentItemElement = $paymentItemListElement->addChild('paymentScheduleItem');
+            $amountElement = $paymentItemElement->addChild('amount',
+                $this->currencyHandler->convertFromRub($paymentScheduleItemData['amount'], $currency));
+            $amountElement->addAttribute('currency', $currency);
+        }
+    }
+
+    private function getPaymentScheduleData($paymentType, $price, \DateTime $beginDate)
+    {
+        $data = [];
+        switch ($paymentType) {
+            case 'in_hotel':
+                $data[] = ['amount' => $price, 'date' => $beginDate->format('Y-m-d')];
+                break;
+            case 'online_full':
+                $data[] = ['amount' => $price, 'date' => (new \DateTime())->format('Y-m-d')];
+                break;
+            case 'online_half':
+                $data[] = ['amount' => $price / 2, 'date' => (new \DateTime())->format('Y-m-d')];
+                $data[] = ['amount' => $price / 2, 'date' => $beginDate->format('Y-m-d')];
+                break;
+        }
+
+        return $data;
     }
 
     private function isLocalCurrencyAvailable($upperLocalCurrency)

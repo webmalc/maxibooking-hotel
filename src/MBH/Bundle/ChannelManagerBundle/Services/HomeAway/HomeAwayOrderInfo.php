@@ -147,7 +147,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
     {
         $card = null;
         $paymentCardData = $this->bookingData->paymentForm->paymentCard;
-        $isCardSpecified = isset($paymentData);
+        $isCardSpecified = isset($paymentCardData);
         if ($isCardSpecified) {
             $card = new CreditCard();
             $cardTypeDescription = $paymentCardData->paymentCardDescriptor[0];

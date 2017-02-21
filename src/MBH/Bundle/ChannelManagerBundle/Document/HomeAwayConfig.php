@@ -80,6 +80,17 @@ class HomeAwayConfig extends Base
      */
     protected $cancellationPolicy;
 
+    /**
+     * @var string
+     */
+    protected $paymentType;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $locale;
+
     public function __construct()
     {
         $this->rooms = new ArrayCollection();
@@ -193,6 +204,44 @@ class HomeAwayConfig extends Base
     public function setCancellationPolicy(string $cancellationPolicy): HomeAwayConfig
     {
         $this->cancellationPolicy = $cancellationPolicy;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPaymentType(): ?string
+    {
+        return $this->paymentType;
+    }
+
+    /**
+     * @param string $paymentType
+     * @return HomeAwayConfig
+     */
+    public function setPaymentType(string $paymentType): HomeAwayConfig
+    {
+        $this->paymentType = $paymentType;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     * @return HomeAwayConfig
+     */
+    public function setLocale(string $locale): HomeAwayConfig
+    {
+        $this->locale = $locale;
 
         return $this;
     }

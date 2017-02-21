@@ -124,11 +124,39 @@ controller.homeAwayController.settings_saved_success: 'Настройки усп
 form.home_away_type.main_tariff.label: Тариф
 form.home_away_type.main_tariff.help: Тариф, данные по которому синхронизируются с HomeAway
 form.home_away_type.cancellation_policy.label: Правила закрытия брони
+form.home_away_type.payment_type.label: Тип оплаты
 form.home_away_rooms_type.sync_room_type.label: Тип комнаты
 form.home_away_rooms_type.rental_agreement.label: Договор аренды
 form.home_away_rooms_type.rental_agreement.help: Текстовое описание договора аренды или ссылка на него.
 services.home_away.invalid_room_type_id: Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking
 services.home_away.nor_one_room_type: Не найдено ни одного типа комнат для данного отеля
+language.da_DK: Датский(Дания)
+language.de_DE: Немецкий(Германия)
+language.en_CA: Английский(Канада)
+language.en_IE: Английский(Ирландия)
+language.en_NZ: Английский(Новая Зеландия)
+language.es_AR: Испанский(Аргентина)
+language.es_ES: Испанский(Испания)
+language.fi_FI: Финский(Финляндия)
+language.fr_FR: Французкий(Франция)
+language.nl_NL: Голландский(Нидерланды)
+language.pt_BR: Португальский(Бразилия)
+language.ru_RU: Русский(Россия)
+language.el_GR: Греческий(Греция)
+language.tr_TR: Турецкий(Турция)
+language.de_AT: Немецкий(Австрия)
+language.en_AU: Английский(Австралия)
+language.en_GB: Английский(Великобритания)
+language.en_IN: Английский(Индия)
+language.en_US: Английский(США)
+language.es_CO: Испанский(Колумбия)
+language.es_MX: Испанский(Мексика)
+language.fr_CA: Французкий(Канада)
+language.it_IT: Итальянский(Италия)
+language.no_NO: Норвежский(Норвегия)
+language.pt_PT: Португальский(Португалия)
+language.sv_SE: Шведский(Швеция)
+language.pl_PL: Польский(Польша)
 
 #tripadvisor
 package_info.tripadvisor.children_age: 'Возраст детей: %ages%'

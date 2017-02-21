@@ -372,3 +372,31 @@ parameters:
         268: form.hotelExtendedType.all_public_areas_non_smoking
         900201:	form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms
 
+    full_locales:
+        - da_DK
+        - de_DE
+        - en_CA
+        - en_IE
+        - en_NZ
+        - es_AR
+        - es_ES
+        - fi_FI
+        - fr_FR
+        - nl_NL
+        - pt_BR
+        - ru_RU
+        - el_GR
+        - tr_TR
+        - de_AT
+        - en_AU
+        - en_GB
+        - en_IN
+        - en_US
+        - es_CO
+        - es_MX
+        - fr_CA
+        - it_IT
+        - no_NO
+        - pt_PT
+        - sv_SE
+        - pl_PL

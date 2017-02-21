@@ -4,9 +4,11 @@ namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -47,6 +49,17 @@ class HomeAwayType extends AbstractType
             ->add('cancellationPolicy', TextareaType::class, [
                 'label' => 'form.home_away_type.cancellation_policy.label'
             ])
+            ->add('paymentType', InvertChoiceType::class, [
+                'label' => 'form.home_away_type.payment_type.label',
+                'choices' => $options['payment_types']
+            ])
+            ->add('locale', ChoiceType::class, [
+                'label' => 'form.languageType.label',
+                'choice_label' => function($label) {
+                    return 'language.'.$label;
+                },
+                'choices' => $options['languages']
+            ])
         ;
     }
 
@@ -56,6 +69,8 @@ class HomeAwayType extends AbstractType
             array(
                 'data_class' => 'MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig',
                 'hotel' => null,
+                'payment_types' => [],
+                'languages' => []
             )
         );
     }

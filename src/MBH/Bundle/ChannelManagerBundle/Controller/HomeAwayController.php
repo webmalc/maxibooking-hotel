@@ -37,8 +37,12 @@ class HomeAwayController extends BaseController
             $config->setHotel($this->hotel);
         }
 
+        $paymentTypes = $this->getParameter('mbh.online.form')['payment_types'];
+        array_splice($paymentTypes, 2, 1);
         $form = $this->createForm(HomeAwayType::class, $config, [
-            'hotel' => $this->hotel
+            'hotel' => $this->hotel,
+            'payment_types' => $paymentTypes,
+            'languages' => $this->getParameter('full_locales')
         ]);
 
         $form->handleRequest($request);
@@ -327,7 +331,7 @@ class HomeAwayController extends BaseController
      */
     public function testAction(Request $request)
     {
-        $this->dm->find('MBHPackageBundle:Order', 16)->getCashDocuments();
+        $locales = $this->getParameter('full_locales');
         return new Response(true ? 'true' : 'false');
     }
 }
