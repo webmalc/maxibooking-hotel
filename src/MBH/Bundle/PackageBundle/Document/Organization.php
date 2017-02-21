@@ -14,6 +14,7 @@ use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -26,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\HasLifecycleCallbacks
  * @MongoDBUnique(fields="inn", message="Такой ИНН уже существует")
  */
-class Organization implements PayerInterface, RecipientInterface
+class Organization implements PayerInterface, RecipientInterface, AddressInterface
 {
     use TimestampableDocument;
     use BlameableDocument;

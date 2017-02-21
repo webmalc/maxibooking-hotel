@@ -11,8 +11,10 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -1567,6 +1569,14 @@ class Package extends Base implements \JsonSerializable
         $this->special = $special;
 
         return $this;
+    }
+
+    /**
+     * @return AddressInterface|null
+     */
+    public function getAddress(): AddressInterface
+    {
+        return $this->getHotel()->getOrganization() ?? $this->getHotel();
     }
 
 }

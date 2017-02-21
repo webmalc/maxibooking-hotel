@@ -241,6 +241,8 @@ package.pdf.short_housing_extend: кор
 package.pdf.short_apartment_extend: кв
 package.pdf.short_street_extend: ул
 package.pdf.inn: ИНН
+package.pdf.notifies_customers: 'извещает Заказчика:'
+package.pdf.with_an_address: 'расположенный по адресу:'
 package.pdf.count_paid_total: Всего оплачено услуг на сумму
 package.pdf.customer: 'Заказчик:'
 package.pdf.not_specified: 'Не указан'

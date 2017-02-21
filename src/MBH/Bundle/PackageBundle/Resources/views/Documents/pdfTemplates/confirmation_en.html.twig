@@ -73,14 +73,11 @@
 
     <div class="main">
         <p class="indent">
-            The Hotel {% if hotel and hotel.name %}<strong>“{{ hotel.name|transToLat }}”</strong>{% else %}____________________{% endif %} with an address at
-
-            {#Russia, Krasnodar region, Mostovskoy city, Chuguevka village, str. Smirnova 11, bldg. A, fl. 246, TIN 123123810923#}
-            {% if hotel and hotel.country and hotel.city and hotel.street %}
-            {{ hotel.country }}, {% if hotel.region %} {{ hotel.region|transToLat }}, {% endif %} {{ hotel.city|transToLat }} city{% if hotel.settlement|transToLat %}, {{ hotel.settlement|transToLat }}{% endif %}, str. {{ hotel.street|transToLat }},
-            {% if hotel.house %} {{ hotel.house }}{% endif %}{% if hotel.corpus %}, bldg. {{ hotel.corpus|transToLat }}{% endif %}{% if hotel.flat %}, fl. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
-            TIN {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %},
-            informs the Client:
+            <strong>{{ entity.address.name|transToLat }}</strong> {{ "package.pdf.with_an_address"|trans({}, "MBHPackageBundle") }}
+            {% if entity.address and entity.address.country and entity.address.city and entity.address.street %}
+            {{ entity.address.country }}, {% if entity.address.region %} {{ entity.address.region|transToLat }}, {% endif %} {{ entity.address.city|transToLat }} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}{% if entity.address.settlement is defined %}, {{ entity.address.settlement|transToLat }}{% endif %}, {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.street|transToLat }},
+            {% if entity.address.house %} {{ entity.address.house }}{% endif %}{% if entity.address.corpus %}, {{ "package.pdf.short_housing_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.corpus|transToLat }}{% endif %}{% if entity.address.flat %}, {{ "package.pdf.short_apartment_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.flat }}{% endif %}{% else %}_________________________________________{% endif %},
+            {{ "package.pdf.inn"|trans({}, "MBHPackageBundle") }} {% if entity.address.inn is defined %}{{ entity.address.inn }}{% else %}________________________{% endif %}, {{ "package.pdf.notifies_customers"|trans({}, "MBHPackageBundle") }}
         </p>
 
 
@@ -113,7 +110,7 @@
                                     {{ tourist.addressObjectDecomposed.country }}{% if tourist.addressObjectDecomposed.region %}, {{ tourist.addressObjectDecomposed.region|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.city %}, {{ tourist.addressObjectDecomposed.city|transToLat }} city{% endif %}{% if tourist.addressObjectDecomposed.street %}, str. {{ tourist.addressObjectDecomposed.street|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
                                     {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, bldg. {{ tourist.addressObjectDecomposed.corpus|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, fl. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
                                 {% endif %}
-                            {% endif %}
+                                {% endif %}
                             {% endif %}
                         </div>
                     </td>
