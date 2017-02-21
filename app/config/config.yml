@@ -251,5 +251,5 @@ vich_uploader:
     db_driver: mongodb
     mappings:
         upload_image:
-            uri_prefix:         /upload/hotels
-            upload_destination: '%kernel.root_dir%/../web/upload/hotels'
+            uri_prefix:         /upload/images
+            upload_destination: '%kernel.root_dir%/../web/upload/images'
