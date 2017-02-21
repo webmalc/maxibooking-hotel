@@ -31,7 +31,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
      */
     public function compare1CAction(Request $request)
     {
-        $form = $this->createForm(new RoomCacheCompare1CType(), []);
+        $form = $this->createForm(RoomCacheCompare1CType::class, []);
 
         $form->handleRequest($request);
 
