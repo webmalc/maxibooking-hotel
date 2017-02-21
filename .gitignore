@@ -36,4 +36,5 @@ parameters.yml
 web/assets
 web/online
 app/supervisor
-docker_zalex
+docker_zalex/
+node_modules/

@@ -5,6 +5,8 @@ framework:
     test: ~
     session:
         storage_id: session.storage.php_bridge
+    profiler:
+        enabled: true
 
 swiftmailer:
     disable_delivery: true
