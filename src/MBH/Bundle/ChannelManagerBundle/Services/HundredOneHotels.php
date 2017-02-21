@@ -26,7 +26,7 @@ class HundredOneHotels extends Base
      */
     const CONFIG = 'HundredOneHotelsConfig';
 
-    const CHANNEL_MANAGER_TYPE = 'hundredOneHotels';
+    const CHANNEL_MANAGER_TYPE = '101Hotels';
 
     /**
      * Base API URL
@@ -371,9 +371,21 @@ class HundredOneHotels extends Base
                         $this->dm->getFilterCollection()->enable('softdeleteable');
                     }
                 }
+
                 //new
-                if ($orderInfo->getLastAction() == 'created' && !$order) {
-                    $result = $this->createOrder($orderInfo, $order);
+                /**
+                 * Status of the booking:
+                    1 – new
+                    2 – cancelled
+                    3 – accepted
+                    4 – client arrived
+                    5 – archived
+                    7 – no-show reported by hotel
+                 */
+                if (($orderInfo->getLastAction() == 'created' && !$order)
+                    || ($orderInfo->getLastAction() == 'modified'
+                        && ($orderInfo->getOrderState() == 1 || $orderInfo->getOrderState() == 3) && !$order)) {
+                    $result = $this->createOrder($orderInfo, null);
                     $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'new');
                 }
 

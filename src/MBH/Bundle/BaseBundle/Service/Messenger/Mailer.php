@@ -103,6 +103,8 @@ class Mailer implements \SplObserver
     {
         $baseUrl = str_replace('app_dev.php/', '', $this->container->get('router')->generate('_welcome', [], true));
         $crawler = new Crawler($this->twig->render($template, $data));
+        $rootDir = $this->container->get('kernel')->getRootDir();
+
         foreach ($crawler->filterXpath('//img') as $domElement) {
             $id = $domElement->getAttribute('data-name');
             $src = $domElement->getAttribute('src');
@@ -111,7 +113,8 @@ class Mailer implements \SplObserver
 
             if (!empty($id) && !empty($src)) {
                 $data[$id] = $message->embed(
-                    \Swift_Image::fromPath($http . $src));
+                    \Swift_Image::fromPath(realpath($rootDir.'/../web').$http.$src)
+                );
             }
         }
 

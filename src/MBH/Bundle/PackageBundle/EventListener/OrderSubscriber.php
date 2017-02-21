@@ -77,8 +77,6 @@ class OrderSubscriber implements EventSubscriber
                 $this->container->get('mbh.room.cache')->recalculate(
                     $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff(), false
                 );
-                $this->container->get('mbh.cache')->clear('accommodation_rooms');
-                $this->container->get('mbh.cache')->clear('room_cache_fetch');
             }
             $entity->setPrice(0);
             $dm->persist($entity);
