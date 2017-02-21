@@ -3,7 +3,6 @@
     <ul>
         {% for tariff in tariffResults %}
             <li>
-
                 <p class="mbh-results-tariffs-label">
                     {% if (tariff.id == app.request.query.get('tariff')) or (app.request.query.get('tariff') is null and tariff.isDefault) %}
                         <input type="radio" disabled checked><span id="mbh-results-tariffs-selected"

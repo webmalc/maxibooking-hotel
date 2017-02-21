@@ -1,0 +1,57 @@
+{#{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}#}
+
+{% block text %}
+
+    {% if orders is not empty %}
+        <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #dddddd;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
+            {#<img data-name="fa_hotel" src="{{ fa_hotel|default('bundles/mbhbase/images/fa-hotel.png') }}"#}
+                 {#align="absmiddle">#}
+            {{ 'mailer.notice.unpaid.packages'|trans }}
+        </div>
+        <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+            <thead>
+            <tr>
+                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:5%;">
+                    #
+                </th>
+                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:18%;">
+                    {{ 'mailer.notice.unpaid.package.list'|trans }}
+                </th>
+                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:19%;">
+                    {{ 'mailer.notice.unpaid.need.price'|trans }}
+                </th>
+                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:19%;">
+                    {{ 'mailer.notice.unpaid.paid'|trans }}
+                </th>
+                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:center;width:19%;">
+                    {{ 'mailer.notice.unpaid.full_name'|trans }}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set count = 1 %}
+            {% for order in orders %}
+                <tr>
+                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;">
+                        {{ count }}
+                        {% set count = count + 1 %}
+                    </td>
+                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;">
+                        {{ order.id }}
+                    </td>
+                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;">
+                        {{ order.price|number_format(2) }}
+                    </td>
+                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;">
+                        {{ order.paid|number_format(2) }}
+                    </td>
+                    <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;">
+                        {{ order.getMainTourist.getFullName }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+{% endblock %}

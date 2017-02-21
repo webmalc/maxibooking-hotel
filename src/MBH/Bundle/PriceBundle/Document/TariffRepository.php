@@ -87,7 +87,7 @@ class TariffRepository extends DocumentRepository
     /**
      * @param Hotel $hotel
      * @param mixed $online
-     * @return Tariff|null
+     * @return array|null|object
      */
     public function fetchBaseTariff(Hotel $hotel, $online = null)
     {
