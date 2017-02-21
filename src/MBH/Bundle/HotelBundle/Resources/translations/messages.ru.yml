@@ -237,31 +237,5 @@ technical: Техника
 mailer.new_task.subject: 'Вам назначена новая задача'
 mailer.new_task.text: 'Вам назначили задачу "%taskType%"'
 
-room_view_types.airport_view: Вид на аэропорт
-room_view_types.bay_view: Вид на залив
-room_view_types.city_view: Вид на город
-room_view_types.courtyard_view: Вид во двор
-room_view_types.golf_view: Вид на поле
-room_view_types.harbor_view: Вид на гавань
-room_view_types.intercoastal_view: Вид на побережье
-room_view_types.lake_view: Вид на озеро
-room_view_types.marina_view: Вид на гавань
-room_view_types.mountain_view: Вид на горы
-room_view_types.ocean_view: Вид на океан
-room_view_types.pool_view: Вид на бассейн
-room_view_types.river_view: Вид на реку
-room_view_types.water_view: Вид на воду
-room_view_types.beach_view: Вид на пляж
-room_view_types.garden_view: Вид на сад
-room_view_types.park_view: Вид на парк
-room_view_types.forest_view: Вид на лес
-room_view_types.rain_forest_view: С видом на тропический лес
-room_view_types.various_views: Различные виды
-room_view_types.limited_view: Ограниченный просмотр
-room_view_types.slope_view: Вид на склон
-room_view_types.strip_view: Узкий вид
-room_view_types.countryside_view: Вид на сельскую местность
-room_view_types.sea_view: Вид на море
-
 
 

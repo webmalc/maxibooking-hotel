@@ -1497,7 +1497,7 @@ class Hotel extends Base implements \JsonSerializable
      * @param string $internationalStreetName
      * @return Hotel
      */
-    public function setInternationalStreetName(string $internationalStreetName): Hotel
+    public function setInternationalStreetName(?string $internationalStreetName): Hotel
     {
         $this->internationalStreetName = $internationalStreetName;
 
@@ -1516,7 +1516,7 @@ class Hotel extends Base implements \JsonSerializable
      * @param string $checkinoutPolicy
      * @return Hotel
      */
-    public function setCheckinoutPolicy(string $checkinoutPolicy): Hotel
+    public function setCheckinoutPolicy(?string $checkinoutPolicy): Hotel
     {
         $this->checkinoutPolicy = $checkinoutPolicy;
 
@@ -1577,7 +1577,7 @@ class Hotel extends Base implements \JsonSerializable
      * @param string $smokingPolicy
      * @return Hotel
      */
-    public function setSmokingPolicy(string $smokingPolicy): Hotel
+    public function setSmokingPolicy(?string $smokingPolicy): Hotel
     {
         $this->smokingPolicy = $smokingPolicy;
 
