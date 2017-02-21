@@ -1,5 +1,7 @@
 <?php namespace MBH\Bundle\WarehouseBundle\Lib;
 
+use MBH\Bundle\WarehouseBundle\Document\WareItem;
+
 class RecordQuery
 {
     public $isSystem;
@@ -56,6 +58,13 @@ class RecordQuery
         return $this->sortBy;
     }
 
+    public function setWareItem($item)
+    {
+        $this->wareItem = $item;
+
+        return $this;
+    }
+
     public function getWareItem()
     {
         return $this->wareItem;
@@ -64,6 +73,11 @@ class RecordQuery
     public function getHotel()
     {
         return $this->hotel;
+    }
+
+    public function setSearch($search)
+    {
+        $this->search = $search;
     }
 
     public function getSearch()

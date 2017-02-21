@@ -21,18 +21,6 @@ class RecordFilterType extends AbstractType
     {
         $wareCategories = $options['wareCategories'];
 
-        $ware = [];
-
-        foreach ($wareCategories as $wareCategory) {
-
-            $ware[$wareCategory->getName()]['form.searchType.all_products'] = 'allproducts_' . $wareCategory->getId();
-
-            foreach ($wareCategory->getItems() as $item) {
-                $ware[$wareCategory->getName()][$item->getFullTitle()] = $item->getId();
-            }
-
-        }
-
         $builder
             ->add('recordDateFrom', DateType::class, [
                 'widget' => 'single_text',
@@ -70,13 +58,29 @@ class RecordFilterType extends AbstractType
             ])
 			->add('wareItem', ChoiceType::class, [
 				'required' => false,
-                'choices' => $ware,
-//                'class' => WareItem::class
+                'choices' => $this->getWareItemChoices($options['wareCategories']),
 			])
             ->add('search', TextType::class, [
                 'required' => false
             ])
 		;
+    }
+
+    private function getWareItemChoices($wareCategories)
+    {
+        $ware = [];
+
+        foreach ($wareCategories as $wareCategory) {
+
+            $ware[$wareCategory->getName()]['form.searchType.all_products'] = 'allproducts_' . $wareCategory->getId();
+
+            foreach ($wareCategory->getItems() as $item) {
+                $ware[$wareCategory->getName()][$item->getFullTitle()] = $item->getId();
+            }
+
+        }
+
+        return $ware;
     }
 
     public function configureOptions(OptionsResolver $resolver)

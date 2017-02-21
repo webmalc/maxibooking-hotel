@@ -142,14 +142,22 @@ class RecordController extends Controller
             3 => 'qtty'
         ]);
 
-        $formData = (array) $request->get('form');
+        $wareCategories = $this->dm->getRepository('MBHWarehouseBundle:WareCategory')->createQueryBuilder()
+            ->sort('fullTitle', 'asc')
+            ->getQuery()
+            ->execute();
+
+        $formData = (array)$request->get('form');
         $formData['search'] = $tableParams->getSearch();
 
-        $form = $this->createForm(RecordFilterType::class, $query);
+        $form = $this->createForm(RecordFilterType::class, $query, [
+            'wareCategories' => $wareCategories
+        ]);
 
-        $aa = $form->submit($formData);
-
+        $form->submit($formData);
+        $form->getErrors();
         $criteria = $form->getData();
+        $criteria->wareItem = $this->dm->getRepository('MBHWarehouseBundle:WareItem')->find($formData['wareItem']);
 
         if ($getFirstSort = $tableParams->getFirstSort()) {
 			if ($getFirstSort[0] == 'foo') { // at page load w/o settings made by user
