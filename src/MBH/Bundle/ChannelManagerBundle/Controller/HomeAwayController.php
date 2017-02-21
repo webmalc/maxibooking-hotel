@@ -188,7 +188,7 @@ class HomeAwayController extends BaseController
         $roomCacheData = $dataFormatter->getRoomCaches($begin, $end, $hotel, $roomTypeId, $tariffId);
 
         $response = $this->get('mbh.channelmanager.homeaway_response_compiler')
-            ->formatAvailabilityData($roomTypeId, $config, $priceCacheData, $restrictionData, $roomCacheData);
+            ->formatAvailabilityData($roomTypeId, $priceCacheData, $restrictionData, $roomCacheData);
 
         return new Response($response, 200, ['Content-Type' => 'xml']);
     }
@@ -324,14 +324,5 @@ class HomeAwayController extends BaseController
             ->getBookingResponse($documentVersion, $resultOfCreation, $orderInfo->getMessages());
 
         return new Response($bookingCreationResponse, 200, ['Content-Type' => 'xml']);
-    }
-
-    /**
-     * @Route("/test")
-     */
-    public function testAction(Request $request)
-    {
-        $locales = $this->getParameter('full_locales');
-        return new Response(true ? 'true' : 'false');
     }
 }

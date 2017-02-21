@@ -43,6 +43,7 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
             'Booking.com' => 'booking',
             'Myallocator.com' => 'myallocator',
             'ВашОтель.ру' => 'vashotel',
+            'HomeAway.com' => 'homeaway',
             'Он-лайн бронирование' => 'online',
             'Менеджер' => 'offline',
             'Постоянный клиент' => 'regular_customer',

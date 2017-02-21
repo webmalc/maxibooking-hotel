@@ -74,7 +74,7 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
         return $payer;
     }
 
-    public function getChannelManagerOrderId() : string
+    public function getChannelManagerOrderId() : ?string
     {
         return (string)$this->bookingSession;
     }

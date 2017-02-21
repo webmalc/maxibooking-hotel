@@ -241,6 +241,8 @@ parameters:
           title: 'Expedia'
           service: 'mbh.channelmanager.expedia'
 
+    home_away_assigned_id: 123
+
     #параметры логов
     mbh.logs.max: 100
 

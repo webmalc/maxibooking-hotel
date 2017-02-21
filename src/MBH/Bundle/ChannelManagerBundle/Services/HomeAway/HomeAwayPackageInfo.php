@@ -14,6 +14,7 @@ class HomeAwayPackageInfo extends AbstractPackageInfo
     private $config;
     private $price;
     private $tourists;
+    private $channelManagerId;
 
     /**
      * @param \SimpleXMLElement $bookingRequest
@@ -126,14 +127,16 @@ class HomeAwayPackageInfo extends AbstractPackageInfo
         return false;
     }
 
-    public function getChannelManagerId()
+    public function setChannelManagerId($id)
     {
-        return trim((string)$this->bookingRequest->inquiryId);
+        $this->channelManagerId = $id;
+
+        return $this;
     }
 
-    private function getPaymentData()
+    public function getChannelManagerId()
     {
-        return $this->bookingRequest->paymentForm;
+        return $this->channelManagerId;
     }
 
     private function getReservationData() : \SimpleXMLElement

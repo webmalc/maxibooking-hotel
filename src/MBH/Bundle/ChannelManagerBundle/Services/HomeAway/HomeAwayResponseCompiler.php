@@ -8,11 +8,8 @@ use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayRoom;
-use MBH\Bundle\ChannelManagerBundle\Document\Room;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
@@ -22,6 +19,8 @@ use Symfony\Component\Routing\Router;
 
 class HomeAwayResponseCompiler
 {
+    const HOME_AWAY_DATE_FORMAT = 'Y-m-d';
+    const HOME_AWAY_DATE_TIME_FORMAT = 'Y-m-d\TH:i:s\Z';
     /** @var  ChannelManagerHelper $channelManagerHelper */
     private $channelManagerHelper;
     /** @var  HomeAwayDataFormatter $dataFormatter */
@@ -29,24 +28,24 @@ class HomeAwayResponseCompiler
     private $localCurrency;
     /** @var  Currency $currencyHandler */
     private $currencyHandler;
-    private $locale;
     /** @var  Router $router */
     private $router;
+    private $assignedId;
 
     public function __construct(
         HomeAwayDataFormatter $dataFormatter,
         $localCurrency,
         Currency $currencyHandler,
-        $locale,
         ChannelManagerHelper $channelManagerHelper,
-        Router $router
+        Router $router,
+        $assignedId
     ) {
         $this->dataFormatter = $dataFormatter;
         $this->localCurrency = $localCurrency;
         $this->currencyHandler = $currencyHandler;
-        $this->locale = $locale;
         $this->channelManagerHelper = $channelManagerHelper;
         $this->router = $router;
+        $this->assignedId = $assignedId;
     }
 
     public function formatListingContentIndex(HomeAwayConfig $config, $dataType)
@@ -61,9 +60,7 @@ class HomeAwayResponseCompiler
             $urlName = 'homeaway_rates';
             $nodeName = 'unitRatesUrl';
         }
-        //TODO: Получить значение. ID нашей системы в HomeAway
-        $assignedId = '';
-        $advertiserElement->addChild('assignedId', $assignedId);
+        $advertiserElement->addChild('assignedId', $this->assignedId);
         foreach ($config->getRooms() as $channelManagerRoomType) {
             /** @var HomeAwayRoom $channelManagerRoomType */
             $roomType = $channelManagerRoomType->getRoomType();
@@ -72,7 +69,8 @@ class HomeAwayResponseCompiler
             $listingEntry->addChild('listingHomeAwayId', $channelManagerRoomType->getRoomId());
             $listingEntry->addChild('unitExternalId', $roomType->getId());
             $listingEntry->addChild('active', $roomType->getIsEnabled());
-            $listingEntry->addChild('lastUpdatedDate', $roomType->getUpdatedAt()->format('Y-m-d\TH:i:s\Z'));
+            $listingEntry->addChild('lastUpdatedDate',
+                $roomType->getUpdatedAt()->format(self::HOME_AWAY_DATE_TIME_FORMAT));
             $listingEntry->addChild($nodeName,
                 $this->router->generate($urlName, ['listingId' => $roomType->getId()]));
         }
@@ -97,8 +95,8 @@ class HomeAwayResponseCompiler
             /** @var \SimpleXMLElement $ratePeriodElement */
             $ratePeriodElement = $ratePeriodsElement->addChild('ratePeriod');
             $dateRangeElement = $ratePeriodElement->addChild('dateRange');
-            $dateRangeElement->addChild('beginDate', $ratePeriod['begin']->format('Y-m-d'));
-            $dateRangeElement->addChild('endDate', $ratePeriod['end']->format('Y-m-d'));
+            $dateRangeElement->addChild('beginDate', $ratePeriod['begin']->format(self::HOME_AWAY_DATE_FORMAT));
+            $dateRangeElement->addChild('endDate', $ratePeriod['end']->format(self::HOME_AWAY_DATE_FORMAT));
 
             $ratesElement = $ratePeriodElement->addChild('rates');
             $rateElement = $ratesElement->addChild('rate');
@@ -115,7 +113,6 @@ class HomeAwayResponseCompiler
 
     public function formatAvailabilityData(
         $mbhRoomTypeId,
-        HomeAwayConfig $config,
         $priceCaches,
         $restrictions,
         $roomCaches
@@ -129,8 +126,8 @@ class HomeAwayResponseCompiler
         $unitAvailabilityElement = $availabilityElement->addChild('unitAvailability');
 
         $dateRangeElement = $availabilityElement->addChild('dateRange');
-        $dateRangeElement->addChild('beginDate', $beginDate->format('Y-m-d'));
-        $dateRangeElement->addChild('endDate', $endDate->format('Y-m-d'));
+        $dateRangeElement->addChild('beginDate', $beginDate->format(self::HOME_AWAY_DATE_FORMAT));
+        $dateRangeElement->addChild('endDate', $endDate->format(self::HOME_AWAY_DATE_FORMAT));
 
         $unitAvailabilityElement->addChild('availabilityDefault', 'N');
         $availabilityConfigElement = $unitAvailabilityElement->addChild('unitAvailabilityConfiguration');
@@ -217,7 +214,7 @@ class HomeAwayResponseCompiler
             $orderListNode = $responseDetailsNode->addChild('orderList');
             $orderNode = $orderListNode->addChild('order');
 
-            $upperLocalCurrency = strtoupper($this->locale);
+            $upperLocalCurrency = strtoupper($this->localCurrency);
             $currency = $this->getAvailableCurrency($upperLocalCurrency);
             $orderNode->addChild('currency', $currency);
             $orderNode->addChild('externalId', $bookingResult->getId());
@@ -227,7 +224,6 @@ class HomeAwayResponseCompiler
                 /** @var CashDocument $cashDocument */
                 $orderItemNode = $orderItemListNode->addChild('orderItem');
                 $orderItemNode->addChild('externalId', $cashDocument->getId());
-                //TODO: Уточнить
                 $feeType = $cashDocument->getOperation() == 'in' ? 'RENTAL' : 'DISCOUNT';
                 $orderItemNode->addChild('feeType', $feeType);
                 $orderItemNode->addChild('Name', $feeType);
@@ -236,6 +232,10 @@ class HomeAwayResponseCompiler
                     ? $cashDocument->getTotal()
                     //TODO: Сменить на конвертирование из локальной валюты
                     : $this->currencyHandler->convertFromRub($cashDocument->getTotal(), $currency);
+                //Если кешдокумент содержит информацию о расходе, то значение суммы должно быть отрицательным
+                if ($feeType == 'DISCOUNT') {
+                    $price = $price * (-1);
+                }
                 $preTaxAmountNode = $orderItemNode->addChild('preTaxAmount', $price);
                 $preTaxAmountNode->addAttribute('currency', $currency);
                 $orderItemNode->addChild('status', 'PENDING');
@@ -266,8 +266,9 @@ class HomeAwayResponseCompiler
             $reservationNode->addChild('numberOfAdults', $reservationData->getAdults());
             $reservationNode->addChild('numberOfChildren', $reservationData->getChildren());
             $reservationDatesNode = $reservationNode->addChild('reservationDates');
-            $reservationDatesNode->addChild('beginDate', $reservationData->getBegin()->format('Y-m-d'));
-            $reservationDatesNode->addChild('endDate', $reservationData->getEnd()->format('Y-m-d'));
+            $reservationDatesNode->addChild('beginDate',
+                $reservationData->getBegin()->format(self::HOME_AWAY_DATE_FORMAT));
+            $reservationDatesNode->addChild('endDate', $reservationData->getEnd()->format(self::HOME_AWAY_DATE_FORMAT));
 
             $responseDetailsNode->addChild('reservationStatus',
                 $bookingResult->getConfirmed() ? 'CONFIRMED' : 'UNCONFIRMED');
@@ -369,14 +370,14 @@ class HomeAwayResponseCompiler
         $data = [];
         switch ($paymentType) {
             case 'in_hotel':
-                $data[] = ['amount' => $price, 'date' => $beginDate->format('Y-m-d')];
+                $data[] = ['amount' => $price, 'date' => $beginDate->format(self::HOME_AWAY_DATE_FORMAT)];
                 break;
             case 'online_full':
-                $data[] = ['amount' => $price, 'date' => (new \DateTime())->format('Y-m-d')];
+                $data[] = ['amount' => $price, 'date' => (new \DateTime())->format(self::HOME_AWAY_DATE_FORMAT)];
                 break;
             case 'online_half':
-                $data[] = ['amount' => $price / 2, 'date' => (new \DateTime())->format('Y-m-d')];
-                $data[] = ['amount' => $price / 2, 'date' => $beginDate->format('Y-m-d')];
+                $data[] = ['amount' => $price / 2, 'date' => (new \DateTime())->format(self::HOME_AWAY_DATE_FORMAT)];
+                $data[] = ['amount' => $price / 2, 'date' => $beginDate->format(self::HOME_AWAY_DATE_FORMAT)];
                 break;
         }
 

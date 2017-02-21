@@ -36,7 +36,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $this;
     }
 
-    public function getChannelManagerOrderId() : string
+    public function getChannelManagerOrderId() : ?string
     {
         return (string)$this->getCommonOrderData('id');
     }

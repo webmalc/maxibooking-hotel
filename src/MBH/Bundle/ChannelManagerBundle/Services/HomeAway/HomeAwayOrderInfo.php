@@ -58,8 +58,12 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
 
     public function getChannelManagerOrderId() : string
     {
-        //TODO: Может не быть
-        return trim((string)$this->bookingData->inquiryId);
+        $channelManagerOrderId = trim((string)$this->bookingData->inquiryId);
+        if (empty($channelManagerOrderId)) {
+            return 'homeaway';
+        }
+
+        return $channelManagerOrderId;
     }
 
     public function getPrice()
@@ -78,7 +82,6 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
     public function getCashDocuments(Order $order) 
     {
         if (!$this->isCashDocumentsInit) {
-            //TODO: Уточнить
             $payMethod = !is_null($this->getCreditCard()) ? 'electronic' : 'cash';
 
             foreach ($this->bookingData->orderItemList->orderItem as $orderItem) {
@@ -128,6 +131,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
                 ->setInitData($this->bookingData, $this->config)
                 ->setPrice($this->getPrice())
                 ->setTourists([$this->getPayer()])
+                ->setChannelManagerId($this->getChannelManagerOrderId())
         ];
     }
 
@@ -172,17 +176,17 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
 
     public function isOrderModified() : bool
     {
-        // TODO: Implement isOrderModified() method.
+        return false;
     }
 
     public function isOrderCreated() : bool
     {
-        // TODO: Implement isOrderCreated() method.
+        return true;
     }
 
     public function isOrderCancelled() : bool
     {
-        // TODO: Implement isOrderCancelled() method.
+        return false;
     }
 
     /**
@@ -192,7 +196,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
      */
     public function isHandleAsNew(?Order $order) : bool
     {
-        // TODO: Implement isHandleAsNew() method.
+        return true;
     }
 
     /**
@@ -202,7 +206,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
      */
     public function isHandleAsModified(?Order $order) : bool
     {
-        // TODO: Implement isHandleAsModified() method.
+        return false;
     }
 
     /**
@@ -212,7 +216,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
      */
     public function isHandleAsCancelled(?Order $order) : bool
     {
-        // TODO: Implement isHandleAsCancelled() method.
+        return false;
     }
 
     public function getNote() : string

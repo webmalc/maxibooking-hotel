@@ -27,7 +27,7 @@ abstract class AbstractOrderInfo
         $this->translator = $container->get('translator');
     }
     abstract public function getPayer() : Tourist;
-    abstract public function getChannelManagerOrderId() : string;
+    abstract public function getChannelManagerOrderId() : ?string;
     abstract public function getPrice();
     abstract public function getCashDocuments(Order $order);
     abstract public function getSource() : ?PackageSource;
