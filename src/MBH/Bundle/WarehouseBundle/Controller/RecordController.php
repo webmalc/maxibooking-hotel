@@ -4,10 +4,13 @@ namespace MBH\Bundle\WarehouseBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\WarehouseBundle\Document\Record;
+use MBH\Bundle\WarehouseBundle\Document\RecordFilter;
 use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use MBH\Bundle\WarehouseBundle\Form\RecordFilterType;
 use MBH\Bundle\WarehouseBundle\Form\RecordType;
+use MBH\Bundle\WarehouseBundle\Lib\RecordQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -103,7 +106,16 @@ class RecordController extends Controller
      */
     public function inventoryAction()
     {
-		$form = $this->createForm(RecordFilterType::class);
+        $query = new RecordQuery();
+        $wareCategories = $this->dm->getRepository('MBHWarehouseBundle:WareCategory')->createQueryBuilder()
+            ->sort('fullTitle', 'asc')
+            ->getQuery()
+            ->execute();
+
+		$form = $this->createForm(RecordFilterType::class, $query, [
+		    'dm' => $this->dm,
+            'wareCategories' => $wareCategories,
+        ]);
 		
         return [
 			'form' => $form->createView(),
@@ -120,41 +132,42 @@ class RecordController extends Controller
      */
     public function jsonInventoryAction(Request $request)
     {
+        $query = new RecordQuery();
         $tableParams = ClientDataTableParams::createFromRequest($request);
-		
+
 		$tableParams->setSortColumnFields([
 			0 => 'foo',
             1 => 'fullTitle',
             2 => 'category',
             3 => 'qtty'
         ]);
-		
+
         $formData = (array) $request->get('form');
         $formData['search'] = $tableParams->getSearch();
-		
-        $form = $this->createForm(RecordFilterType::class);
 
-        $form->submit($formData);
-		
+        $form = $this->createForm(RecordFilterType::class, $query);
+
+        $aa = $form->submit($formData);
+
         $criteria = $form->getData();
 
-        if ($getFirstSort = $tableParams->getFirstSort()) {			
+        if ($getFirstSort = $tableParams->getFirstSort()) {
 			if ($getFirstSort[0] == 'foo') { // at page load w/o settings made by user
 				$criteria->setSortBy('fullTitle');
 			} else {
 				$criteria->setSortDirection($getFirstSort[1]); // 1 or -1
 			}
-			
+
 			$criteria->setSortBy($getFirstSort[0]);
         }
-		
+
 		$repository = $this->dm->getRepository('MBHWarehouseBundle:Record');
-		
+
 		// this step could be hidden, but is left here to see what is going on
         $summary = $repository->fetchSummary($criteria);
-		
+
 		$items = $repository->getItemsByIds($criteria, $summary, $tableParams->getStart(), $tableParams->getLength());
-		
+
         return [
             'inventory' => $items,
             'total' => count($summary),

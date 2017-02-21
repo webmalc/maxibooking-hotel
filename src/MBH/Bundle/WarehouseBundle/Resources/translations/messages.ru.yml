@@ -67,3 +67,4 @@ warehouse:
           quantity: Кол-во
           price: Цена
 
+form.searchType.all_products: Все продукты

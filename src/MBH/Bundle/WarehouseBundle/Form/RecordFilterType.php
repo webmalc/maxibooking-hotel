@@ -6,10 +6,12 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 
 
 class RecordFilterType extends AbstractType
@@ -17,6 +19,20 @@ class RecordFilterType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $wareCategories = $options['wareCategories'];
+
+        $ware = [];
+
+        foreach ($wareCategories as $wareCategory) {
+
+            $ware[$wareCategory->getName()]['form.searchType.all_products'] = 'allproducts_' . $wareCategory->getId();
+
+            foreach ($wareCategory->getItems() as $item) {
+                $ware[$wareCategory->getName()][$item->getFullTitle()] = $item->getId();
+            }
+
+        }
+
         $builder
             ->add('recordDateFrom', DateType::class, [
                 'widget' => 'single_text',
@@ -52,10 +68,10 @@ class RecordFilterType extends AbstractType
                 'required' => false,
                 'class' => Hotel::class,
             ])
-			->add('wareItem', DocumentType::class, [
+			->add('wareItem', ChoiceType::class, [
 				'required' => false,
-				'class' => WareItem::class,
-				'group_by' => 'category',
+                'choices' => $ware,
+//                'class' => WareItem::class
 			])
             ->add('search', TextType::class, [
                 'required' => false
@@ -66,7 +82,10 @@ class RecordFilterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\WarehouseBundle\Document\RecordFilter',
+            'wareCategories' => [],
+            'dm' => null,
+            'method' => 'POST',
+            'data_class' => 'MBH\Bundle\WarehouseBundle\Lib\RecordQuery',
             'operations' => [],
         ]);
     }
