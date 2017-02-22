@@ -23,7 +23,7 @@
 					<i class="fa fa-book" title='{{ 'warehouse.record.goods'|trans }}' data-toggle="tooltip"></i>&nbsp;
 					{{ form_widget(form.wareItem) }}
 				</div>
-
+            {{ form_widget(form._token) }}
 			{{ form_end(form, {render_rest: false}) }}		
 			</div></div>
 			

@@ -77,12 +77,17 @@ class RecordRepository extends DocumentRepository
      */
     public function fetchSummary($criteria)
     {
-		$qb = $this->createQueryBuilder('q');
+		$qb = $this->createQueryBuilder();
 		
 		// a set of conditions (if any)
 		if ($criteria->getWareItem()) {
 	        $qb->field('wareItem')->references($criteria->getWareItem());
-		}		
+		}
+		if ($criteria->getWareCategory()) {
+		    $wareItems = $this->getItemsByCategoryId($criteria->getWareCategory())->toArray();
+
+		    $qb->field('wareItem.id')->in(array_keys($wareItems));
+        }
 		if ($criteria->getHotel()) {
 	        $qb->field('hotel')->references($criteria->getHotel());
 		}		
@@ -120,6 +125,20 @@ class RecordRepository extends DocumentRepository
 		}
 		
         return $summary;
+    }
+
+    /**
+     * Get ware items by category id
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function getItemsByCategoryId($id)
+    {
+        return $this->dm->getRepository('MBHWarehouseBundle:WareItem')->createQueryBuilder()
+            ->field('category.id')->equals($id)
+            ->getQuery()
+            ->execute();
     }
 	
 	/**

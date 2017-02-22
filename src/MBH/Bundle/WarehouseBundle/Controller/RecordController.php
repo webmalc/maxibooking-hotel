@@ -155,9 +155,16 @@ class RecordController extends Controller
         ]);
 
         $form->submit($formData);
-        $form->getErrors();
+
         $criteria = $form->getData();
-        $criteria->wareItem = $this->dm->getRepository('MBHWarehouseBundle:WareItem')->find($formData['wareItem']);
+        if (mb_stripos($formData['wareItem'], 'allproducts_') !== false) {
+            $wareCategory = str_replace('allproducts_', '', $formData['wareItem']);
+            $criteria->setWareCategory($wareCategory);
+        }
+        if ($formData['wareItem']) {
+            $criteria->setWareItem($this->dm->getRepository('MBHWarehouseBundle:WareItem')->find($formData['wareItem']));
+        }
+
 
         if ($getFirstSort = $tableParams->getFirstSort()) {
 			if ($getFirstSort[0] == 'foo') { // at page load w/o settings made by user

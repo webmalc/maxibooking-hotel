@@ -20,6 +20,8 @@ class RecordQuery
 
     public $wareItem;
 
+    private $wareCategory;
+
     public $price;
 
     public $qtty;
@@ -68,6 +70,18 @@ class RecordQuery
     public function getWareItem()
     {
         return $this->wareItem;
+    }
+
+    public function setWareCategory($category)
+    {
+        $this->wareCategory = $category;
+
+        return $this;
+    }
+
+    public function getWareCategory()
+    {
+        return $this->wareCategory;
     }
 
     public function getHotel()
