@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
 
+use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -18,6 +19,7 @@ use MBH\Bundle\PriceBundle\Document\TariffService;
 class TripAdvisorResponseFormatter
 {
     const API_VERSION = 7;
+
 
     private $confirmationPage;
     private $domainName;
@@ -66,29 +68,22 @@ class TripAdvisorResponseFormatter
         $this->onlineFormUrl = $onlineFormUrl;
     }
 
-    public function formatConfigResponse()
+    public function formatConfigResponse(Hotel $hotel)
     {
         $response = [];
         $response['api_version'] = TripAdvisorResponseFormatter::API_VERSION;
 
         $configurationData = [];
 
-        //TODO: Получить данные
-        $emergencyContacts = [];
-        foreach ($emergencyContacts as $emergencyContact) {
-            $configurationData['emergency_contacts'][] = $this->getContactInfo($emergencyContact['name'],
-                $emergencyContact['email'], $emergencyContact['phone']);
-        }
+        $hotelContactInformation = $hotel->getContactInformation();
+        $configurationData['emergency_contacts'][] = $this->getContactInfo($hotelContactInformation->getFullName(),
+            $hotelContactInformation->getEmail(), $hotelContactInformation->getPhoneNumber());
 
-        //TODO: Получить данные
-        $infoContacts = [];
-        foreach ($infoContacts as $infoContact) {
-            $configurationData['info_contacts'][] =
-                $this->getContactInfo($infoContact['name'], $infoContact['email'], $infoContact['phone']);
-        }
+        $configurationData['info_contacts'][] = $this->getContactInfo($hotelContactInformation->getFullName(),
+                $hotelContactInformation->getEmail(), $hotelContactInformation->getPhoneNumber());
 
         //TODO: Какой и откуда брать язык
-        $configurationData['languages'] = ['en'];
+        $configurationData['languages'][] = $hotel->getSupportedLanguages();
         //pref_hotels(предпочитаемое кол-во отелей за запрос)
         // и five_min_rate_limit(предпочитаемое кол-во запросов за 5 минут)
 
@@ -299,7 +294,12 @@ class TripAdvisorResponseFormatter
 //            ]
 //        ],
         //TODO: нет
-//        $response['accepted_credit_cards'] (Обязательно) [Visa, MasterCard, AmericanExpress, Discover]
+        $acceptedCardTypeCodes = [];
+        foreach ($hotel->getAcceptedCardTypes() as $acceptedCardType) {
+            /** @var CardType $acceptedCardType */
+            $acceptedCardTypeCodes[] = $acceptedCardType->getCardCode();
+        }
+        $response['accepted_credit_cards'] = $acceptedCardTypeCodes;
         //TODO: Посмотреть так же
 //        'errors' => [
 //
@@ -615,7 +615,7 @@ class TripAdvisorResponseFormatter
             'reservation_id' => $order->getId(),
             'status' => 'Booked',
             //TODO: Правильно ли?
-            'confirmation_url' => $this->confirmationPage. '?' . $order->getId()
+            'confirmation_url' => $this->confirmationPage . '?' . $order->getId()
                 . http_build_query(['sessionId' => $order->getChannelManagerId()]),
             'checkin_date' => $orderFirstPackage->getBegin(),
             'checkout_date' => $orderFirstPackage->getEnd(),

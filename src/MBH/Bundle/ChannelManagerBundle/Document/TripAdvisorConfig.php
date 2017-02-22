@@ -46,7 +46,7 @@ class TripAdvisorConfig extends Base
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="bookingConfig")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="tripAdvisorConfig")
      * @Assert\NotNull(message="validator.document.trip_advisor_config.no_hotel_selected")
      */
     protected $hotel;
@@ -65,6 +65,12 @@ class TripAdvisorConfig extends Base
      * @Assert\NotNull(message="validator.document.trip_advisor_config.main_tariff_not_specified")
      */
     protected $mainTariff;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $locale;
 
     /**
      * @return mixed
@@ -123,4 +129,22 @@ class TripAdvisorConfig extends Base
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     * @return TripAdvisorConfig
+     */
+    public function setLocale(string $locale): TripAdvisorConfig
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
 }

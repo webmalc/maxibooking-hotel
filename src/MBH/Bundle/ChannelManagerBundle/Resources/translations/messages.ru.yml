@@ -115,6 +115,34 @@ form.roomTypeTasks.checkOut: При выезде
 form.roomTypeTasks.checkOut.help: При выезде гостя
 form.roomTypeTasks.daily: Каждые n дней проживания
 
+language.da_DK: Датский(Дания)
+language.de_DE: Немецкий(Германия)
+language.en_CA: Английский(Канада)
+language.en_IE: Английский(Ирландия)
+language.en_NZ: Английский(Новая Зеландия)
+language.es_AR: Испанский(Аргентина)
+language.es_ES: Испанский(Испания)
+language.fi_FI: Финский(Финляндия)
+language.fr_FR: Французкий(Франция)
+language.nl_NL: Голландский(Нидерланды)
+language.pt_BR: Португальский(Бразилия)
+language.ru_RU: Русский(Россия)
+language.el_GR: Греческий(Греция)
+language.tr_TR: Турецкий(Турция)
+language.de_AT: Немецкий(Австрия)
+language.en_AU: Английский(Австралия)
+language.en_GB: Английский(Великобритания)
+language.en_IN: Английский(Индия)
+language.en_US: Английский(США)
+language.es_CO: Испанский(Колумбия)
+language.es_MX: Испанский(Мексика)
+language.fr_CA: Французкий(Канада)
+language.it_IT: Итальянский(Италия)
+language.no_NO: Норвежский(Норвегия)
+language.pt_PT: Португальский(Португалия)
+language.sv_SE: Шведский(Швеция)
+language.pl_PL: Польский(Польша)
+
 #tripadvisor
 package_info.tripadvisor.children_age: 'Возраст детей: %ages%'
 form.trip_advisor_type.hotel_id: ID отеля
@@ -123,4 +151,6 @@ form.trip_advisor_type.should_we_use_in_channel_manager: Использоват�
 form.trip_advisor_type.hotel_id_in_trip_advisor: ID отеля в настройках TripAdvisor
 form.trip_advisor_type.main_tariff.label: Тариф
 form.trip_advisor_type.main_tariff.help: Основной тариф
+
+form.trip_advisor_type.language.label: Язык
 controller.tripadvisor_controller.settings_saved_success: 'Настройки успешно сохранены.'

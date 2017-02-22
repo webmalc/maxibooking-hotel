@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="Hotels")
+ * @ODM\Document(collection="Hotels", repositoryClass="MBH\Bundle\HotelBundle\Document\HotelRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
@@ -1542,7 +1542,7 @@ class Hotel extends Base implements \JsonSerializable
      * @param string $internationalStreetName
      * @return Hotel
      */
-    public function setInternationalStreetName(?string $internationalStreetName): Hotel
+    public function setInternationalStreetName(string $internationalStreetName = null): Hotel
     {
         $this->internationalStreetName = $internationalStreetName;
 
@@ -1552,7 +1552,7 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @return string
      */
-    public function getCheckinoutPolicy() : ?string
+    public function getCheckinoutPolicy()
     {
         return $this->checkinoutPolicy;
     }
@@ -1561,7 +1561,7 @@ class Hotel extends Base implements \JsonSerializable
      * @param string $checkinoutPolicy
      * @return Hotel
      */
-    public function setCheckinoutPolicy(?string $checkinoutPolicy): Hotel
+    public function setCheckinoutPolicy($checkinoutPolicy): Hotel
     {
         $this->checkinoutPolicy = $checkinoutPolicy;
 
@@ -1622,7 +1622,7 @@ class Hotel extends Base implements \JsonSerializable
      * @param string $smokingPolicy
      * @return Hotel
      */
-    public function setSmokingPolicy(?string $smokingPolicy): Hotel
+    public function setSmokingPolicy(string $smokingPolicy = null): Hotel
     {
         $this->smokingPolicy = $smokingPolicy;
 

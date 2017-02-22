@@ -6,6 +6,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -43,8 +44,15 @@ class TripAdvisorType extends AbstractType
                     return $qb;
                 },
                 'placeholder' => '',
-                'required' => false,
+                'required' => true,
                 'attr' => ['placeholder' => 'tarifftype.placeholder']
+            ])
+            ->add('locale', ChoiceType::class, [
+                'label' => 'form.trip_advisor_type.language.label',
+                'choice_label' => function($label) {
+                    return 'language.'.$label;
+                },
+                'choices' => $options['languages']
             ])
         ;
     }
@@ -55,6 +63,7 @@ class TripAdvisorType extends AbstractType
             array(
                 'data_class' => 'MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig',
                 'hotel' => null,
+                'languages' => []
             )
         );
     }

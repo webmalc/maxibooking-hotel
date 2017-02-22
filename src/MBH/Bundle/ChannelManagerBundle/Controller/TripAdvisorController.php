@@ -39,9 +39,11 @@ class TripAdvisorController extends BaseController
             $config->setHotel($this->hotel);
         }
 
+        $languages = $this->getParameter('full_locales');
         $form = $this->createForm(
             TripAdvisorType::class, $config, [
-            'hotel' => $this->hotel
+            'hotel' => $this->hotel,
+            'languages' => $languages
         ]);
 
         $form->handleRequest($request);
@@ -49,9 +51,7 @@ class TripAdvisorController extends BaseController
 
             $this->dm->persist($config);
             $this->dm->flush();
-
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.tripadvisor_controller.settings_saved_success'));
+            $this->addFlash('success', 'controller.tripadvisor_controller.settings_saved_success');
         }
 
         return [
@@ -68,7 +68,8 @@ class TripAdvisorController extends BaseController
      */
     public function getConfigDataAction()
     {
-        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')->formatConfigResponse();
+        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->getHotelWithFilledContacts();
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')->formatConfigResponse($hotel);
 
         return new JsonResponse($response);
     }
@@ -178,7 +179,7 @@ class TripAdvisorController extends BaseController
     }
 
     /**
-     * //TODO: Вернуть GET
+     * //TODO: Вернуть POST
      * @Method("GET")
      * @Route("/booking_submit")
      * @param Request $request
@@ -377,5 +378,14 @@ class TripAdvisorController extends BaseController
             ->formatRoomInformationResponse($apiVersion, $hotelData, $language, $queryKey, $hotel);
 
         return new JsonResponse($response);
+    }
+
+    /**
+     * @Route("/test")
+     * @return Response
+     */
+    public function testAction()
+    {
+        return $this->redirectToRoute('tripadvisor');
     }
 }
