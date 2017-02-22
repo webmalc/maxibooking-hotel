@@ -18,21 +18,26 @@ class RoomViewTypeData extends AbstractFixture implements OrderedFixtureInterfac
     public function load(ObjectManager $manager)
     {
         $existingRoomViews = $manager->getRepository('MBHHotelBundle:RoomViewType')->findAll();
+        $translationRepository = $manager->getRepository('GedmoTranslatable:Translation');
 
         foreach ($this->getRoomViewData() as $code => $roomViewTypeData) {
             $roomViewType = new RoomViewType();
             $roomViewType->setOpenTravelCode($code);
             $roomViewType->setCodeName(RoomViewType::getRoomViewTypes()[$code]);
             if (!$this->isRoomViewTypeExists($existingRoomViews, $roomViewType)) {
-                foreach ($roomViewTypeData as $locale => $titleValue) {
-                    $roomViewType->setTitle($titleValue);
-                    $roomViewType->setLocale($locale);
-                    $manager->persist($roomViewType);
-                    $manager->flush();
-                }
+                $roomViewType->setTitle($roomViewTypeData['ru']);
+                $roomViewType->setLocale('ru_RU');
+                $translationRepository
+                    ->translate($roomViewType, 'title', 'ru_RU', $roomViewTypeData['ru'])
+                    ->translate($roomViewType, 'title', 'en_EN', $roomViewTypeData['en']);
+
+                $manager->persist($roomViewType);
+
                 $this->setReference('room_view_' . $code, $roomViewType);
             }
         }
+
+        $manager->flush();
     }
 
     /**
