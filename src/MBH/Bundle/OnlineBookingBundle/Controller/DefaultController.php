@@ -107,7 +107,7 @@ class DefaultController extends BaseController
 
             $searchQuery->accommodations = true;
             $searchQuery->forceRoomTypes = false;
-//            $searchQuery->range = 2;
+            //$searchQuery->range = 2;
 
             if ($formData['children_age']) {
                 $searchQuery->setChildrenAges($formData['children_age']);
@@ -115,7 +115,7 @@ class DefaultController extends BaseController
 
             $searchService = $this->get('mbh.package.search');
             $searchResults = $searchService
-                ->setAdditionalDates()
+                /*->setAdditionalDates()*/
                 ->setWithTariffs()
                 ->search($searchQuery);
             ///////TODO: Убирать тут
@@ -151,6 +151,7 @@ class DefaultController extends BaseController
             [
                 'searchResults' => $searchResults,
                 'requestSearchUrl' => $requestSearchUrl,
+                'useCharts' => $this->getParameter('use_сharts')
             ]
         );
     }

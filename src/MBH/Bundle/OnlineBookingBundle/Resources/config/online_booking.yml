@@ -9,4 +9,6 @@ parameters:
     domain_access_control_prod: 'http://testaz.maxibooking.ru'
     domain_access_control_dev: 'http://localhost:8080'
 
+    use_сharts: false
+
 

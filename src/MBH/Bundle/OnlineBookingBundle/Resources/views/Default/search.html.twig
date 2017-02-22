@@ -265,17 +265,17 @@
         this.tariffRows.forEach(function (t) {
             t.update();
         })
-    }
+    };
 
     RoomTypeRow.prototype.init = function () {
         this.bindEventHandlers();
         this.initTariff();
         this.update();
-    }
+    };
 
     RoomTypeRow.prototype.bindEventHandlers = function () {
 
-    }
+    };
 
     RoomTypeRow.prototype.initTariff = function () {
         var that = this;
@@ -477,7 +477,7 @@
             this.roomTypeRow.chart = new Highcharts.Chart(this.roomTypeRow.chartContainer, options);
         }
 
-        //Алярма!, массив с данными передается по ссылке по-умолчанию по сему
+        //Алярма!, массив с данными передается по ссылке  - по-умолчанию по сему
         //тут копия, которую и передаем. -3чч
         var prices = JSON.parse(JSON.stringify(this.chartData['prices']));
 
@@ -563,7 +563,9 @@
             roomTypeRow.tariffRows.forEach(function (tariffRow) {
                 myrows.push(tariffRow);
                 tariffRow.$row.on('click', function () {
-                    tariffRow.drawChart();
+                    if({{ useCharts }}) {
+                        tariffRow.drawChart();
+                    }
                     tariffRow.selected();
                     start_bron(this);
                 });
