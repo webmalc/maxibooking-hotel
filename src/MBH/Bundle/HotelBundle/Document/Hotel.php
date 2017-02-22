@@ -240,7 +240,6 @@ class Hotel extends Base implements \JsonSerializable
     protected $city;
 
     /**
-     * @Assert\Valid()
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      * @ODM\Index()
@@ -340,6 +339,7 @@ class Hotel extends Base implements \JsonSerializable
 
     /**
      * @var ContactInfo
+     * @Assert\Valid()
      * @ODM\EmbedOne(targetDocument="ContactInfo")
      */
     protected $contactInformation;
@@ -1497,7 +1497,7 @@ class Hotel extends Base implements \JsonSerializable
      * @param string $internationalStreetName
      * @return Hotel
      */
-    public function setInternationalStreetName(?string $internationalStreetName): Hotel
+    public function setInternationalStreetName(string $internationalStreetName = null): Hotel
     {
         $this->internationalStreetName = $internationalStreetName;
 
@@ -1516,7 +1516,7 @@ class Hotel extends Base implements \JsonSerializable
      * @param string $checkinoutPolicy
      * @return Hotel
      */
-    public function setCheckinoutPolicy(?string $checkinoutPolicy): Hotel
+    public function setCheckinoutPolicy(string $checkinoutPolicy = null): Hotel
     {
         $this->checkinoutPolicy = $checkinoutPolicy;
 
@@ -1577,7 +1577,7 @@ class Hotel extends Base implements \JsonSerializable
      * @param string $smokingPolicy
      * @return Hotel
      */
-    public function setSmokingPolicy(?string $smokingPolicy): Hotel
+    public function setSmokingPolicy(string $smokingPolicy = null): Hotel
     {
         $this->smokingPolicy = $smokingPolicy;
 
