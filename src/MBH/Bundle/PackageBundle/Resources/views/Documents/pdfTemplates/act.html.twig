@@ -55,11 +55,13 @@
         <table border="0" width="100%">
             <tr>
                 <td width="15%">{{ "package.pdf.executor"|trans({}, "MBHPackageBundle") }}</td>
-                <td width="85%">{% if hotel and hotel.organization %} <strong>{{ hotel.organization.name }}</strong> {% else %} _____________________________ {% endif %}</td>
+                <td width="85%"><strong>{{ entity.address.name }}</strong></td>
             </tr>
             <tr>
                 <td>{{ "package.pdf.customer"|trans({}, "MBHPackageBundle") }} </td>
-                <td><strong>{{ entity.order.mainTourist.fullName|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong></td>
+                <td>
+                    <strong>{{ entity.order.payer.name|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong>
+                </td>
             </tr>
         </table>
 

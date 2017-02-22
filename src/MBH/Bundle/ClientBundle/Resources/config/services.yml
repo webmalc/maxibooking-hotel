@@ -2,6 +2,9 @@ services:
     mbh.mbhs:
         class: MBH\Bundle\ClientBundle\Service\Mbhs
         arguments: ['@service_container']
+    mbh.notice.unpaid:
+        class: MBH\Bundle\ClientBundle\Service\NoticeUnpaid
+        arguments: ['@service_container','@doctrine_mongodb', '@mbh.notifier.mailer']
 
     mbh_package_zip:
           class: MBH\Bundle\ClientBundle\Service\PackageZip

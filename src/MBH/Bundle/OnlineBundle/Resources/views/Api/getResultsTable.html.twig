@@ -99,7 +99,16 @@
                             {% if result.roomType.description is not empty %}
                                 <tr class="mbh-left mbh-results-roomType-description-tr">
                                     <td class="mbh-left mbh-results-roomType-description" colspan="5">
-                                        {{ result.roomType.description|nl2br }}
+                                        {% if result.roomType.facilities is not empty %}
+                                            <h3>{{ 'views.api.getResultsTable.facilities'|trans({}, 'MBHOnlineBundle') }}</h3>
+                                            <ul class="inline-facility">
+                                                {% for facility in result.roomType.facilities %}
+                                                    <li><button class="btn btn-xs btn-default"><span class="fa fa-2x mbf-{{ facility }}" data-title="{% for key, val in facilityArray %}{% if key == facility %}{{ val }}{% endif %}{% endfor %}"></span></button></li>
+                                                {% endfor %}
+                                            </ul>
+                                            <hr><br />
+                                        {% endif %}
+                                        {{ result.roomType.description|raw }}
                                     </td>
                                 </tr>
                             {% endif %}
@@ -136,6 +145,5 @@
         <div class="mbh-results-error"><i
                     class="fa fa-exclamation-circle"> </i> {{ 'views.api.getResultsTable.nothing_found_for_your_query'|trans({}, 'MBHOnlineBundle') }}
         </div>
-
     {% endif %}
 {% endspaceless %}

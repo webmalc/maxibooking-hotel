@@ -164,6 +164,33 @@ class ClientConfig extends Base
 
 
     /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0, max=365)
+     */
+     protected $noticeUnpaid = 0;
+
+    /**
+     * @return integer
+     */
+    public function getNoticeUnpaid(): int
+    {
+        return $this->noticeUnpaid ?? 0;
+    }
+
+    /**
+     * @return ClientConfig
+     */
+    public function setNoticeUnpaid(int $noticeUnpaid)
+    {
+        $this->noticeUnpaid = $noticeUnpaid;
+        return $this;
+    }
+
+    /**
      * Set sendSms
      *
      * @param boolean $isSendSms
@@ -199,6 +226,7 @@ class ClientConfig extends Base
     public function setUseRoomTypeCategory($useRoomTypeCategory)
     {
         $this->useRoomTypeCategory = $useRoomTypeCategory;
+        return $this;
     }
 
     /**

@@ -3,6 +3,8 @@ form.clientConfigType.search_group: Параметры подбора броне
 form.clientConfigType.search_windows: Использовать систему "окна"?
 form.clientConfigType.search_windows_desc: Подбор номеров без создания "окон"
 form.clientConfigType.sms_notification: Смс оповещение?
+form.clientConfigType.notice_unpaid: Уведомление
+form.clientConfigType.is_notice_unpaid: Отправлять уведомление о неоплаченной брони, через указанное колличество дней
 form.clientConfigType.search_dates: Дополнительные дни поиска
 form.clientConfigType.search_dates_desc: Количество дополнительных дней для подбора броней.
 form.clientConfigType.is_disabled_room_type_category: Группы для типов номеров
@@ -35,6 +37,15 @@ form.clientPaymentSystemType.failUrlDesc: URl для перенаправлен�
 form.clientPaymentSystemType.payment_system_group: Платежная система
 form.clientPaymentSystemType.payment_system_group_links: Ссылки
 form.RoomTypeZip.group: Параметры автообновления
+mailer.notice.unpaid.packages: Неоплаченные брони
+mailer.notice.unpaid.order.list: Список броней с просроченной оплатой
+mailer.notice.unpaid.package.list: № Заказа
+mailer.notice.unpaid.need.price: Сумма к оплате
+mailer.notice.unpaid.paid: Оплачено
+mailer.notice.unpaid.phone: Телефон
+mailer.notice.unpaid.mobile.phone: Мобильный телефон
+mailer.notice.unpaid.no.data: Нет данных
+mailer.notice.unpaid.full_name: ФИО
 form.clientConfigType.search_tariffs: Количество тарифов
 form.clientConfigType.search_tariffs_desc: Количество тарифов выводимое по умолчанию при подборе
 form.clientConfigType.add_start_date: Начальная дата
