@@ -109,11 +109,11 @@ class Mailer implements \SplObserver
             $id = $domElement->getAttribute('data-name');
             $src = $domElement->getAttribute('src');
 
-            strpos($src, 'http') === false ? $http = $baseUrl : $http = '';
+            strpos($src, 'http') === false ? $http = $baseUrl : $http = realpath($rootDir.'/../web');
 
             if (!empty($id) && !empty($src)) {
                 $data[$id] = $message->embed(
-                    \Swift_Image::fromPath(realpath($rootDir.'/../web').$http.$src)
+                    \Swift_Image::fromPath($http.$src)
                 );
             }
         }
