@@ -39,7 +39,6 @@ form.hotelExtendedType.check_in_out_policy.help: Правила въезда/в�
 form.hotelExtendedType.smoking_policy.label: Правила курения
 form.hotelExtendedType.check_in_out_policy.placeholder: При въезде необходимо предоставить валидную кредитную или дебетовую карту
 form.contact_info_type.available_languages.label: Языки общения
-form.hotel_additional_info_type.cancellation_policy.label: Правила закрытия броней
 form.contact_info_type.phone.label: Телефон
 form.contact_info_type.phone.help: Номер контактного телефона
 form.contact_info_type.full_name.label: Имя
@@ -245,32 +244,6 @@ technical: Техника
 
 mailer.new_task.subject: 'Вам назначена новая задача'
 mailer.new_task.text: 'Вам назначили задачу "%taskType%"'
-
-room_view_types.airport_view: Вид на аэропорт
-room_view_types.bay_view: Вид на залив
-room_view_types.city_view: Вид на город
-room_view_types.courtyard_view: Вид во двор
-room_view_types.golf_view: Вид на поле
-room_view_types.harbor_view: Вид на гавань
-room_view_types.intercoastal_view: Вид на побережье
-room_view_types.lake_view: Вид на озеро
-room_view_types.marina_view: Вид на гавань
-room_view_types.mountain_view: Вид на горы
-room_view_types.ocean_view: Вид на океан
-room_view_types.pool_view: Вид на бассейн
-room_view_types.river_view: Вид на реку
-room_view_types.water_view: Вид на воду
-room_view_types.beach_view: Вид на пляж
-room_view_types.garden_view: Вид на сад
-room_view_types.park_view: Вид на парк
-room_view_types.forest_view: Вид на лес
-room_view_types.rain_forest_view: С видом на тропический лес
-room_view_types.various_views: Различные виды
-room_view_types.limited_view: Ограниченный просмотр
-room_view_types.slope_view: Вид на склон
-room_view_types.strip_view: Узкий вид
-room_view_types.countryside_view: Вид на сельскую местность
-room_view_types.sea_view: Вид на море
 
 
 

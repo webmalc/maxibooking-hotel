@@ -86,11 +86,6 @@ class HotelExtendedType extends AbstractType
                 'group' => 'form.hotelExtendedType.parameters',
                 'choices' => $this->smokingPolicyOptions
             ])
-            ->add('cancellationPolicy', TextareaType::class, [
-                'required' => false,
-                'group' => 'form.hotelExtendedType.parameters',
-                'label' => 'form.hotel_additional_info_type.cancellation_policy.label'
-            ])
         ;
 
 //        $builder->add('vega_address_id', NumberType::class, [
