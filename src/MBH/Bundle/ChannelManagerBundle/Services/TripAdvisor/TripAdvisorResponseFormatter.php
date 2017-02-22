@@ -6,6 +6,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
+use MBH\Bundle\HotelBundle\Document\ContactInfo;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
@@ -20,6 +21,7 @@ class TripAdvisorResponseFormatter
 {
     const API_VERSION = 7;
 
+    const TRIP_ADVISOR_AVAILABLE_CARD_TYPES = ['Visa', 'MasterCard', 'AmericanExpress', 'Discover'];
 
     private $confirmationPage;
     private $domainName;
@@ -76,11 +78,9 @@ class TripAdvisorResponseFormatter
         $configurationData = [];
 
         $hotelContactInformation = $hotel->getContactInformation();
-        $configurationData['emergency_contacts'][] = $this->getContactInfo($hotelContactInformation->getFullName(),
-            $hotelContactInformation->getEmail(), $hotelContactInformation->getPhoneNumber());
+        $configurationData['emergency_contacts'][] = $this->getContactInfo($hotelContactInformation);
 
-        $configurationData['info_contacts'][] = $this->getContactInfo($hotelContactInformation->getFullName(),
-                $hotelContactInformation->getEmail(), $hotelContactInformation->getPhoneNumber());
+        $configurationData['info_contacts'][] = $this->getContactInfo($hotelContactInformation);
 
         //TODO: Какой и откуда брать язык
         $configurationData['languages'][] = $hotel->getSupportedLanguages();
@@ -293,11 +293,13 @@ class TripAdvisorResponseFormatter
 //                'description' => 'Support phone line'
 //            ]
 //        ],
-        //TODO: нет
         $acceptedCardTypeCodes = [];
         foreach ($hotel->getAcceptedCardTypes() as $acceptedCardType) {
             /** @var CardType $acceptedCardType */
-            $acceptedCardTypeCodes[] = $acceptedCardType->getCardCode();
+            $cardCode = $acceptedCardType->getCardCode();
+            if (in_array($cardCode, self::TRIP_ADVISOR_AVAILABLE_CARD_TYPES)) {
+                $acceptedCardTypeCodes[] = $acceptedCardType->getCardCode();
+            }
         }
         $response['accepted_credit_cards'] = $acceptedCardTypeCodes;
         //TODO: Посмотреть так же
@@ -824,13 +826,13 @@ class TripAdvisorResponseFormatter
         return $imagesData;
     }
 
-    private function getContactInfo($fullName, $email, $phoneNumber)
+    private function getContactInfo(ContactInfo $contactInfo)
     {
         //TODO: Если email больше 256 и ном.телефона больше 50 что делать?
         return [
-            'full_name' => $fullName,
-            'email' => $email,
-            'phone_number' => $phoneNumber
+            'full_name' => $contactInfo->getFullName(),
+            'email' => $contactInfo->getEmail(),
+            'phone_number' => $contactInfo->getPhoneNumber()
         ];
     }
 }

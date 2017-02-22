@@ -3,7 +3,6 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
 
 class YandexTranslator
 {
@@ -18,26 +17,24 @@ class YandexTranslator
     }
 
     /**
-     * @param $translatableText
+     * @param array $translatableText
      * @param $languageCombination
-     * @return mixed
+     * @return array
      */
-    public function translate($translatableText, $languageCombination = self::RUSSIAN_TO_ENGLISH_TRANSLATION_DIRECTION)
+    public function translate(array $translatableText, $languageCombination = self::RUSSIAN_TO_ENGLISH_TRANSLATION_DIRECTION)
     {
         $requestOptions = [
             'key' => $this->apiKey,
-            'text' => $translatableText,
             'lang' => $languageCombination
         ];
 
-        $client = $client = new Client();
-        $request = new Request('POST', self::YANDEX_TRANSLATE_API_URL, [
-            'form_params' => $requestOptions,
-        ]);
-        $jsonResponse = $client->send($request);
+        $url = self::YANDEX_TRANSLATE_API_URL . '?' . http_build_query($requestOptions);
+        $textString = join('&text=', $translatableText);
+
+        $jsonResponse = (new Client())->request('POST', $url . '&text=' . $textString);
         $response = json_decode($jsonResponse->getBody(), true);
 
-        return $response;
+        return $response['text'];
     }
 
 }

@@ -85,7 +85,7 @@ class RecordController extends Controller
 		
         $records = $this->dm->getRepository('MBHWarehouseBundle:Record')
 			->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
-		
+
         return [
             'records' => iterator_to_array($records),
             'total' => count($records),

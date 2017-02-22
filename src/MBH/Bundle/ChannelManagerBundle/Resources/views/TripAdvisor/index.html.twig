@@ -1,7 +1,10 @@
-{% extends 'MBHChannelManagerBundle:Booking:layout.html.twig' %}
+{% extends 'MBHChannelManagerBundle::layout.html.twig' %}
 
 {% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
 {% set layout = 'tabs' %}
+
+{% set title = "TripAdvisor.com" %}
+{% set title_url = path('tripadvisor') %}
 
 {% block content %}
     <div class="tab-content">
