@@ -19,7 +19,7 @@ var docReadyRecords = function () {
         ordering: true,
         ajax: {
             method: "POST",
-            url: Routing.generate('records_json'),
+            url: Routing.generate('warehouse_record'),
             data: function (requestData) {
                 requestData.form = {
                     recordDateFrom: $(prefix+'recordDateFrom').val(),

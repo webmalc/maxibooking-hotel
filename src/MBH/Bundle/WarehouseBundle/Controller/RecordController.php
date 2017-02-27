@@ -28,12 +28,12 @@ class RecordController extends Controller
 	/**
      * Lists all records. Simple display using Ajax jsonAction.
      *
-     * @Route("/", name="warehouse_record")
+     * @Route("/", name="warehouse_record", options={"expose"=true})
      * @Security("is_granted('ROLE_WAREHOUSE_RECORD_VIEW')")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $query = new RecordQuery();
 
@@ -45,74 +45,55 @@ class RecordController extends Controller
         $form = $this->createForm(RecordFilterType::class, $query, [
             'wareCategories' => $wareCategories
         ]);
+
+        if ($request->isXmlHttpRequest()) {
+            $tableParams = ClientDataTableParams::createFromRequest($request);
+
+            $tableParams->setSortColumnFields([
+                0 => 'createdAt',
+                1 => 'wareItem',
+                2 => 'recordDate',
+                3 => 'operation',
+                4 => 'hotel',
+                5 => 'qtty',
+                6 => 'unit',
+                7 => 'price',
+                8 => 'amount',
+                9 => 'foo',
+            ]);
+
+            $formData = (array)$request->get('form');
+            $formData['search'] = $tableParams->getSearch();
+
+            $form->submit($formData);
+
+            if (mb_stripos($formData['wareItem'], 'allproducts_') !== false) {
+                $wareCategory = str_replace('allproducts_', '', $formData['wareItem']);
+                $query->setWareCategory($wareCategory);
+            }
+
+            if ($getFirstSort = $tableParams->getFirstSort()) {
+                $query->setSortBy($getFirstSort[0]);
+
+                if ($getFirstSort[0] == 'createdAt') { // at page load w/o settings made by user
+                    $query->setSortDirection(-1);
+                } else {
+                    $query->setSortDirection($getFirstSort[1]); // 1 or -1
+                }
+            }
+
+            $records = $this->dm->getRepository('MBHWarehouseBundle:Record')
+                ->findByQueryCriteria($query, $tableParams->getStart(), $tableParams->getLength());
+
+            return $this->render('@MBHWarehouse/Record/json.json.twig', [
+                'records' => $records,
+                'total' => count($records),
+                'draw' => $request->get('draw'),
+            ]);
+        }
 		
         return [
 			'form' => $form->createView(),
-        ];
-    }
-
-    /**
-     * Lists all entities as json.
-     *
-     * @Route("/json", name="records_json", defaults={"_format"="json"}, options={"expose"=true})
-     * @Method("POST")
-     * @Security("is_granted('ROLE_WAREHOUSE_RECORD_VIEW')")
-     * @Template()
-     */
-    public function jsonAction(Request $request)
-    {
-        $query = new RecordQuery();
-        $tableParams = ClientDataTableParams::createFromRequest($request);
-
-        $wareCategories = $this->dm->getRepository('MBHWarehouseBundle:WareCategory')->createQueryBuilder()
-            ->sort('fullTitle', 'asc')
-            ->getQuery()
-            ->execute();
-		
-		$tableParams->setSortColumnFields([
-			0 => 'createdAt',
-            1 => 'wareItem',
-            2 => 'recordDate',
-            3 => 'operation',
-            4 => 'hotel',
-            5 => 'qtty',
-            6 => 'unit',
-            7 => 'price',
-            8 => 'amount',
-            9 => 'foo',
-        ]);
-
-        $formData = (array) $request->get('form');
-        $formData['search'] = $tableParams->getSearch();
-
-        $form = $this->createForm(RecordFilterType::class, $query, [
-            'wareCategories' => $wareCategories
-        ]);
-
-        $form->submit($formData);
-
-        if (mb_stripos($formData['wareItem'], 'allproducts_') !== false) {
-            $wareCategory = str_replace('allproducts_', '', $formData['wareItem']);
-            $query->setWareCategory($wareCategory);
-        }
-		
-        if ($getFirstSort = $tableParams->getFirstSort()) {
-            $query->setSortBy($getFirstSort[0]);
-			
-			if ($getFirstSort[0] == 'createdAt') { // at page load w/o settings made by user
-                $query->setSortDirection(-1);
-			} else {
-                $query->setSortDirection($getFirstSort[1]); // 1 or -1
-			}
-        }
-
-        $records = $this->dm->getRepository('MBHWarehouseBundle:Record')
-			->findByQueryCriteria($query, $tableParams->getStart(), $tableParams->getLength());
-
-        return [
-            'records' => $records,
-            'total' => count($records),
-            'draw' => $request->get('draw'),
         ];
     }
 
