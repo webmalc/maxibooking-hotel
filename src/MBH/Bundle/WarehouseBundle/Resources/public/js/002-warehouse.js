@@ -65,7 +65,7 @@ var docReadyInventory = function () {
         ordering: true,
         ajax: {
             method: "POST",
-            url: Routing.generate('inventory_json'),
+            url: Routing.generate('warehouse_record_inventory'),
             data: function (requestData) {
                 requestData.form = {
                     hotel: $(prefix+'hotel').val(),

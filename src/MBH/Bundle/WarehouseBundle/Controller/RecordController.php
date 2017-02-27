@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
 class RecordController extends Controller
 {
 	/**
-     * Lists all records. Simple display using Ajax jsonAction.
+     * Lists all records. Simple display using Ajax jsonAction. Lists inventory
      *
      * @Route("/", name="warehouse_record", options={"expose"=true})
      * @Security("is_granted('ROLE_WAREHOUSE_RECORD_VIEW')")
@@ -98,14 +98,14 @@ class RecordController extends Controller
     }
 
 	/**
-     * Lists inventory.
+     * Lists inventory, lists goods balance.
      *
-     * @Route("/inventory", name="warehouse_record_inventory")
+     * @Route("/inventory", name="warehouse_record_inventory", options={"expose"=true})
      * @Security("is_granted('ROLE_WAREHOUSE_RECORD_VIEW')")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Template()
      */
-    public function inventoryAction()
+    public function inventoryAction(Request $request)
     {
         $query = new RecordQuery();
         $wareCategories = $this->dm->getRepository('MBHWarehouseBundle:WareCategory')->createQueryBuilder()
@@ -116,75 +116,56 @@ class RecordController extends Controller
 		$form = $this->createForm(RecordFilterType::class, $query, [
             'wareCategories' => $wareCategories,
         ]);
+
+		if ($request->isXmlHttpRequest()) {
+            $tableParams = ClientDataTableParams::createFromRequest($request);
+
+            $tableParams->setSortColumnFields([
+                0 => 'foo',
+                1 => 'fullTitle',
+                2 => 'category',
+                3 => 'qtty'
+            ]);
+
+            $formData = (array)$request->get('form');
+            $formData['search'] = $tableParams->getSearch();
+
+            $form->submit($formData);
+
+            if (mb_stripos($formData['wareItem'], 'allproducts_') !== false) {
+                $wareCategory = str_replace('allproducts_', '', $formData['wareItem']);
+                $query->setWareCategory($wareCategory);
+            }
+            if ($formData['wareItem']) {
+                $query->setWareItem($formData['wareItem']);
+            }
+
+            if ($getFirstSort = $tableParams->getFirstSort()) {
+                if ($getFirstSort[0] == 'foo') { // at page load w/o settings made by user
+                    $query->setSortBy('fullTitle');
+                } else {
+                    $query->setSortDirection($getFirstSort[1]); // 1 or -1
+                }
+
+                $query->setSortBy($getFirstSort[0]);
+            }
+
+            $repository = $this->dm->getRepository('MBHWarehouseBundle:Record');
+
+            // this step could be hidden, but is left here to see what is going on
+            $summary = $repository->fetchSummary($query);
+
+            $items = $repository->getItemsByIds($query, $summary, $tableParams->getStart(), $tableParams->getLength());
+
+            return $this->render('@MBHWarehouse/Record/jsonInventory.json.twig', [
+                'inventory' => $items,
+                'total' => count($summary),
+                'draw' => $request->get('draw'),
+            ]);
+        }
 		
         return [
 			'form' => $form->createView(),
-        ];
-    }
-
-    /**
-     * Lists goods balance.
-     *
-     * @Route("/inventory/json", name="inventory_json", defaults={"_format"="json"}, options={"expose"=true})
-     * @Method("POST")
-     * @Security("is_granted('ROLE_WAREHOUSE_RECORD_VIEW')")
-     * @Template()
-     */
-    public function jsonInventoryAction(Request $request)
-    {
-        $query = new RecordQuery();
-        $tableParams = ClientDataTableParams::createFromRequest($request);
-
-		$tableParams->setSortColumnFields([
-			0 => 'foo',
-            1 => 'fullTitle',
-            2 => 'category',
-            3 => 'qtty'
-        ]);
-
-        $wareCategories = $this->dm->getRepository('MBHWarehouseBundle:WareCategory')->createQueryBuilder()
-            ->sort('fullTitle', 'asc')
-            ->getQuery()
-            ->execute();
-
-        $formData = (array)$request->get('form');
-        $formData['search'] = $tableParams->getSearch();
-
-        $form = $this->createForm(RecordFilterType::class, $query, [
-            'wareCategories' => $wareCategories
-        ]);
-
-        $form->submit($formData);
-
-        if (mb_stripos($formData['wareItem'], 'allproducts_') !== false) {
-            $wareCategory = str_replace('allproducts_', '', $formData['wareItem']);
-            $query->setWareCategory($wareCategory);
-        }
-        if ($formData['wareItem']) {
-            $query->setWareItem($formData['wareItem']);
-        }
-
-        if ($getFirstSort = $tableParams->getFirstSort()) {
-			if ($getFirstSort[0] == 'foo') { // at page load w/o settings made by user
-                $query->setSortBy('fullTitle');
-			} else {
-                $query->setSortDirection($getFirstSort[1]); // 1 or -1
-			}
-
-            $query->setSortBy($getFirstSort[0]);
-        }
-
-		$repository = $this->dm->getRepository('MBHWarehouseBundle:Record');
-
-		// this step could be hidden, but is left here to see what is going on
-        $summary = $repository->fetchSummary($query);
-
-		$items = $repository->getItemsByIds($query, $summary, $tableParams->getStart(), $tableParams->getLength());
-
-        return [
-            'inventory' => $items,
-            'total' => count($summary),
-            'draw' => $request->get('draw'),
         ];
     }
 
