@@ -434,3 +434,5 @@ report.work_shift.small_title: 'Рабочие смены'
 package.dynamic.sale: 'Динамика продаж'
 package.dynamic.sale.search: 'Показать'
 dynamic.sales.layout.title: Отчеты
+dynamic.sales.error.range: Период не должен превышать
+dynamic.sales.error.day: дней

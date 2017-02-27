@@ -65,3 +65,4 @@ parameters:
 
   mbh_modules:
     tasks: true
+  mbh_dynamic_sale_period: 90

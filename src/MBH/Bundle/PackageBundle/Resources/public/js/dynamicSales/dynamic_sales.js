@@ -46,6 +46,8 @@ $(document).ready(function ($) {
         };
 
     $('#dynamic-sales-filter-begin').daterangepicker({
+        startDate: moment(),
+        endDate: moment().add(45,'days'),
         "autoApply": true
     });
 

@@ -45,6 +45,12 @@ class DynamicSalesGenerator
         $begin = $request->get('begin');
         $end = $request->get('end');
 
+        $begin = array_diff($begin, array('', NULL, false));
+        $end = array_diff($end, array('', NULL, false));
+
+        $begin = array_values($begin);
+        $end = array_values($end);
+
         if ($request->get('roomTypes')) {
             $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
         } else {
@@ -64,30 +70,27 @@ class DynamicSalesGenerator
      */
     public function dynamicSalesDataInterval($begin, $end, $roomTypes)
     {
-
         $roomTypesIds = $this->container->get('mbh.helper')->toIds($roomTypes);
+
+        $periodRange = $this->container->getParameter('mbh_dynamic_sale_period');
+
+        $translator = $this->container->get('translator');
 
         for ($i = 0; $i < count($begin); $i++) {
 
-            $packagesAll[$i] = $this->dm->getRepository('MBHPackageBundle:Package')->getPackgesRoomTypes(new \DateTime($begin[$i]), new \DateTime($end[$i]), $roomTypesIds);
+            $ends = new \DateTime($end[$i]);
+            $begins = new \DateTime($begin[$i]);
 
-            if ($i <= 0) {
-                $periods[$i] = new \DatePeriod(new \DateTime($begin[$i]), \DateInterval::createFromDateString('1 day'), new \DateTime($end[$i]));
-            } else {
-                $oldEnd = new \DateTime($end[$i - 1]);
-                $oldBegin = new \DateTime($begin[$i - 1]);
-
-                $ends = new \DateTime($end[$i]);
-                $begins = new \DateTime($begin[$i]);
-
-                if ($oldEnd->diff($oldBegin)->days == $ends->diff($begins)->days) {
-                    $periods[$i] = new \DatePeriod(new \DateTime($begin[$i]), \DateInterval::createFromDateString('1 day'), new \DateTime($end[$i]));
-                } else {
-                    return [];
-                }
+            if ($ends->diff($begins)->days > $periodRange) {
+                return ['error' => $translator->trans('dynamic.sales.error.range', [], 'MBHPackageBundle') . ' ' . $periodRange . ' ' . $translator->trans('dynamic.sales.error.day', [], 'MBHPackageBundle')];
             }
 
+            $packagesAll[$i] = $this->dm->getRepository('MBHPackageBundle:Package')->getPackgesRoomTypes(new \DateTime($begin[$i]), new \DateTime($end[$i]), $roomTypesIds);
+            $packagesAll[$i] = $packagesAll[$i]->toArray();
+            $periods[$i] = new \DatePeriod(new \DateTime($begin[$i]), \DateInterval::createFromDateString('1 day'), new \DateTime($end[$i]));
+
         }
+
         $res = [];
         foreach ($roomTypes as $roomType) {
 
@@ -96,33 +99,44 @@ class DynamicSalesGenerator
             $dynamicSale->setRoomType($roomType);
 
             foreach ($periods as $period => $valPeriod) {
+
                 $resultPeriod = [];
                 $countDay = 0;
                 $summary = new DynamicSalesDay();
 
                 foreach ($valPeriod as $day) {
+
                     $infoDay = new DynamicSalesDay();
+                    $infoDay->setDateSales(clone $day);
+                    $summary->setDateSales(clone $day);
+
                     foreach ($packagesAll as $packages) {
                         foreach ($packages as $package) {
-                            $infoDay->setDateSales(clone $day);
-                            $summary->setDateSales(clone $day);
+
                             if ($package->getRoomType() == $roomType) {
+
                                 if ($package->getCreatedAt()->format('d.m.Y') == $day->format('d.m.Y')) {
                                     $infoDay->setTotalSales($infoDay->getTotalSales() + $package->getPrice());
                                 }
                             }
+                            unset($package);
                         }
+                        unset($packages);
                     }
 
                     $summary->setTotalSales($summary->getTotalSales() + $infoDay->getTotalSales());
                     $infoDay->setVolumeGrowth($summary->getTotalSales());
                     $resultPeriod[] = $infoDay;
                     $countDay++;
+
+                    unset($day);
                 }
+
                 $summary->setAvaregeVolume($summary->getTotalSales() / $countDay);
                 $resultPeriod['summ'] = $summary;
 
                 $dynamicSale->addPeriods($resultPeriod);
+                unset($period);
             }
 
             if (count($dynamicSale->getPeriods()) > 1) {
@@ -130,7 +144,7 @@ class DynamicSalesGenerator
                 for ($i = 1; $i <= (count($dynamicSale->getPeriods()) - 1); $i++) {
                     $mainPeriod = $dynamicSale->getPeriods()[0];
                     array_pop($mainPeriod);
-                    $volumePersentPeriod = [];
+                    $volumePercentPeriod = [];
                     foreach ($mainPeriod as $itemSalesMain => $daySalesMain) {
                         foreach ($dynamicSale->getPeriods()[$i] as $itemSalesDay => $daySales) {
                             if ($itemSalesMain == $itemSalesDay && $itemSalesMain !== 'summ' && $itemSalesDay !== 'summ') {
@@ -141,12 +155,10 @@ class DynamicSalesGenerator
                                 $volumeDay->setAvaregeVolume($daySalesMain->getvolumeGrowth() - $daySales->getvolumeGrowth());
                                 $volumeDay->setPersentDayGrowth(self::percentCalc($daySales, $daySalesMain, 'getvolumeGrowth', $volumeDay->getAvaregeVolume()));
                             }
-
                         }
-                        $volumePersentPeriod[] = $volumeDay;
-
+                        $volumePercentPeriod[] = $volumeDay;
                     }
-                    $dynamicSale->addComparison($volumePersentPeriod);
+                    $dynamicSale->addComparison($volumePercentPeriod);
                 }
 
             }

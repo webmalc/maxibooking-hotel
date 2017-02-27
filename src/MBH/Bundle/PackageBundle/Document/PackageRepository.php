@@ -886,6 +886,7 @@ class PackageRepository extends DocumentRepository
             ->field('createdAt')->gte($begin)
             ->field('createdAt')->lte($end)
             ->sort('createdAt', 'asc');
+
         if($roomTypes)
         {
             $queryBuilder->field('roomType.id')->in($roomTypes);

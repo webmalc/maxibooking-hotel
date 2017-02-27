@@ -47,9 +47,13 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
     public function dynamicSalesTableAction(Request $request)
     {
         $hotel = $this->hotel;
-
         $dynamicSales = $this->get('mbh.package.dynamic.sales.generator')->generateDynamicSales($request, $hotel);
+        $error = false;
+        (array_key_exists('error', $dynamicSales)) ? $error = $dynamicSales['error'] : null;
 
-        return ['dynamicSales' => $dynamicSales];
+        return [
+            'dynamicSales' => $dynamicSales,
+            'error' => $error
+        ];
     }
 }
