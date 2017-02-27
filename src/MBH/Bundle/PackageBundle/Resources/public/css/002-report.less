@@ -1,9 +1,11 @@
 .accommodation-report-pagination ul {
   margin: 5px;
 }
+
 #accommodation-report-filter-floor {
   width: 120px !important;
 }
+
 #accommodation-report-content {
   #calendarWrapper {
     border: 1px solid #ddd;
@@ -431,7 +433,7 @@
 .room-types-table {
   .wait-accommodation {
     //background-color: #f4fafd;
-    td:nth-child(4),:nth-child(5),:nth-child(6),:nth-child(7),:nth-child(8) {
+    td:nth-child(4), :nth-child(5), :nth-child(6), :nth-child(7), :nth-child(8) {
       opacity: 0.35;
     }
     td:last-child .btn-info {
@@ -450,7 +452,7 @@
       background-color: transparent;
       border: none;
     }
-    .select2-selection__rendered{
+    .select2-selection__rendered {
       padding-right: 0;
     }
     .select2-selection {
@@ -459,19 +461,17 @@
   }
 }
 
-
-
 #filling-table td:nth-child(1) small {
   color: #777;
   white-space: nowrap;
 }
 
 #filling-report-filter-roomType {
-    width: 300px;
+  width: 300px;
 }
 
-#filling-table-filter .datepicker-period-select{
-    width: 250px;
+#filling-table-filter .datepicker-period-select {
+  width: 250px;
 }
 
 #work-shift-list-table {
@@ -479,7 +479,6 @@
     cursor: pointer;
   }
 }
-
 
 #work-shift-detail-header {
   margin-bottom: 5px;
@@ -489,4 +488,33 @@
     margin-left: 5px;
     font-weight: bold;
   }
+}
+
+.pos {
+  position: relative;
+  height: 30px;
+  width: 44px;
+}
+
+.dates {
+  position: absolute;
+  display: none;
+  font-size: 10px;
+  text-align: center;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  font-weight: 400;
+}
+
+a .dates {
+  font-size: 10px;
+  color: #000;
+  font-weight: normal!important;
+
+}
+
+tr:hover td .dates {
+  display: block;
 }
