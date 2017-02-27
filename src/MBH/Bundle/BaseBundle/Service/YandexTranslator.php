@@ -11,6 +11,14 @@ class YandexTranslator
     const RUSSIAN_TO_ENGLISH_TRANSLATION_DIRECTION = 'ru-en';
     const ENGLISH_TO_RUSSIAN_TRANSLATION_DIRECTION = 'en-ru';
 
+    public static function getTranslationOptions()
+    {
+        return [
+            self::RUSSIAN_TO_ENGLISH_TRANSLATION_DIRECTION,
+            self::ENGLISH_TO_RUSSIAN_TRANSLATION_DIRECTION
+        ];
+    }
+
     public function __construct($apiKey)
     {
         $this->apiKey = $apiKey;
