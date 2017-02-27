@@ -151,6 +151,13 @@ form.trip_advisor_type.should_we_use_in_channel_manager: Использоват�
 form.trip_advisor_type.hotel_id_in_trip_advisor: ID отеля в настройках TripAdvisor
 form.trip_advisor_type.main_tariff.label: Тариф
 form.trip_advisor_type.main_tariff.help: Основной тариф
-
 form.trip_advisor_type.language.label: Язык
+form.trip_advisor_type.hotel_url.label: URL отеля
+form.trip_advisor_type.hotel_url.help: URL - адрес страницы описания отеля
+form.trip_advisor_type.hotel_payment_policy.label: Правила платежей
+form.trip_advisor_type.hotel_payment_policy.help: Информация о том, как будут использоваться данные о платежных картах
+form.trip_advisor_type.hotel_payment_policy.placeholder: Данные о платежных картах сохраняются
+form.trip_advisor_type.terms_and_confitions.label: Общие условия
+form.trip_advisor_type.terms_and_confitions.help: Общие положение и условия
+form.trip_advisor_type.payment_type.label: Тип оплаты
 controller.tripadvisor_controller.settings_saved_success: 'Настройки успешно сохранены.'

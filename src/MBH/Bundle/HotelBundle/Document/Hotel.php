@@ -16,6 +16,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -958,7 +959,7 @@ class Hotel extends Base implements \JsonSerializable
     }
 
     /**
-     * @return mixed
+     * @return TripAdvisorConfig
      */
     public function getTripAdvisorConfig()
     {
@@ -972,6 +973,7 @@ class Hotel extends Base implements \JsonSerializable
     public function setTripAdvisorConfig($tripAdvisorConfig)
     {
         $this->tripAdvisorConfig = $tripAdvisorConfig;
+
         return $this;
     }
 

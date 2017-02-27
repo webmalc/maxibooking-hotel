@@ -4,10 +4,14 @@ namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -54,6 +58,25 @@ class TripAdvisorType extends AbstractType
                 },
                 'choices' => $options['languages']
             ])
+            ->add('hotelUrl', TextType::class, [
+                'label' => 'form.trip_advisor_type.hotel_url.label',
+                'help' => 'form.trip_advisor_type.hotel_url.help'
+            ])
+            ->add('paymentPolicy', TextareaType::class, [
+                'label' => 'form.trip_advisor_type.hotel_payment_policy.label',
+                'help' => 'form.trip_advisor_type.hotel_payment_policy.help',
+                'attr' => [
+                    'placeholder' => 'form.trip_advisor_type.hotel_payment_policy.placeholder'
+                ]
+            ])
+            ->add('termsAndConditions', TextareaType::class, [
+                'label' => 'form.trip_advisor_type.terms_and_confitions.label',
+                'help' => 'form.trip_advisor_type.terms_and_confitions.help'
+            ])
+            ->add('paymentType', InvertChoiceType::class, [
+                'label' => 'form.trip_advisor_type.payment_type.label',
+                'choices' => $options['payment_types']
+            ])
         ;
     }
 
@@ -63,7 +86,8 @@ class TripAdvisorType extends AbstractType
             array(
                 'data_class' => 'MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig',
                 'hotel' => null,
-                'languages' => []
+                'languages' => [],
+                'payment_types' => []
             )
         );
     }

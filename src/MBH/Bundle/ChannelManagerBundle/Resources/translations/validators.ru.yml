@@ -25,3 +25,4 @@ validator.document.expediaConfig.password_not_specified: Не указан па�
 validator.document.trip_advisor_config.no_hotel_selected: Не выбран отель
 validator.document.trip_advisor_config.no_hotel_id_specified: Не указан id отеля
 validator.document.trip_advisor_config.main_tariff_not_specified: Не указан основной тариф для TripAdvisor
+validator.document.trip_advisor_config.hotel_url.not_specified: URL-адрес не указан

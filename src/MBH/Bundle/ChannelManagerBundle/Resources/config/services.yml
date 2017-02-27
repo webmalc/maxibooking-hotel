@@ -113,7 +113,7 @@ services:
 
     mbh.channel_manager.trip_advisor_response_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter
-      arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%', '%online_form_result_url%']
+      arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%', '%online_form_result_url%', '%locale%', '@doctrine_mongodb.odm.document_manager', '@vich_uploader.templating.helper.uploader_helper']
 
     mbh.channel_manager.trip_advisor_response_data_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorDataFormatter

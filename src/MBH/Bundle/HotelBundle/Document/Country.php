@@ -9,6 +9,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\Translatable\Translatable;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Lib\TranslatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -16,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class Country extends Base implements Translatable
+class Country extends Base implements TranslatableInterface
 {
     /**
      * Hook timestampable behavior

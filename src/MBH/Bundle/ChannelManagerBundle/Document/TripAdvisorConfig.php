@@ -9,6 +9,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -73,7 +74,33 @@ class TripAdvisorConfig extends Base
     protected $locale;
 
     /**
-     * @return mixed
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\NotNull(message="validator.document.trip_advisor_config.hotel_url.not_specified")
+     */
+    protected $hotelUrl;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     */
+    protected $paymentPolicy;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     */
+    protected $termsAndConditions;
+
+    /**
+     * @var string
+     */
+    protected $paymentType;
+
+    /**
+     * @return Hotel
      */
     public function getHotel()
     {
@@ -144,6 +171,82 @@ class TripAdvisorConfig extends Base
     public function setLocale(string $locale): TripAdvisorConfig
     {
         $this->locale = $locale;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHotelUrl(): ?string
+    {
+        return $this->hotelUrl;
+    }
+
+    /**
+     * @param string $hotelUrl
+     * @return TripAdvisorConfig
+     */
+    public function setHotelUrl(string $hotelUrl = null): TripAdvisorConfig
+    {
+        $this->hotelUrl = $hotelUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPaymentPolicy(): ?string
+    {
+        return $this->paymentPolicy;
+    }
+
+    /**
+     * @param string $paymentPolicy
+     * @return TripAdvisorConfig
+     */
+    public function setPaymentPolicy(string $paymentPolicy): TripAdvisorConfig
+    {
+        $this->paymentPolicy = $paymentPolicy;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTermsAndConditions(): ?string
+    {
+        return $this->termsAndConditions;
+    }
+
+    /**
+     * @param string $termsAndConditions
+     * @return TripAdvisorConfig
+     */
+    public function setTermsAndConditions(string $termsAndConditions): TripAdvisorConfig
+    {
+        $this->termsAndConditions = $termsAndConditions;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPaymentType(): ?string
+    {
+        return $this->paymentType;
+    }
+
+    /**
+     * @param string $paymentType
+     * @return TripAdvisorConfig
+     */
+    public function setPaymentType(string $paymentType): TripAdvisorConfig
+    {
+        $this->paymentType = $paymentType;
 
         return $this;
     }

@@ -40,9 +40,12 @@ class TripAdvisorController extends BaseController
         }
 
         $languages = $this->getParameter('full_locales');
+        $paymentTypes = $this->getParameter('mbh.online.form')['payment_types'];
+        array_splice($paymentTypes, 2, 1);
         $form = $this->createForm(TripAdvisorType::class, $config, [
             'hotel' => $this->hotel,
-            'languages' => $languages
+            'languages' => $languages,
+            'payment_types' => $paymentTypes
         ]);
 
         $form->handleRequest($request);

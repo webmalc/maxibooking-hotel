@@ -672,7 +672,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @return bool
      */
-    public function isIsSmoking(): ?bool
+    public function getIsSmoking(): ?bool
     {
         return $this->isSmoking;
     }
@@ -689,7 +689,7 @@ class RoomType extends Base implements RoomTypeInterface
     }
 
     /**
-     * @return array
+     * @return RoomViewType[]
      */
     public function getRoomViewsTypes()
     {
