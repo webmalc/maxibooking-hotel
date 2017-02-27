@@ -35,7 +35,16 @@ class RecordController extends Controller
      */
     public function indexAction()
     {
-		$form = $this->createForm(RecordFilterType::class);
+        $query = new RecordQuery();
+
+        $wareCategories = $this->dm->getRepository('MBHWarehouseBundle:WareCategory')->createQueryBuilder()
+            ->sort('fullTitle', 'asc')
+            ->getQuery()
+            ->execute();
+
+        $form = $this->createForm(RecordFilterType::class, $query, [
+            'wareCategories' => $wareCategories
+        ]);
 		
         return [
 			'form' => $form->createView(),
@@ -52,7 +61,13 @@ class RecordController extends Controller
      */
     public function jsonAction(Request $request)
     {
+        $query = new RecordQuery();
         $tableParams = ClientDataTableParams::createFromRequest($request);
+
+        $wareCategories = $this->dm->getRepository('MBHWarehouseBundle:WareCategory')->createQueryBuilder()
+            ->sort('fullTitle', 'asc')
+            ->getQuery()
+            ->execute();
 		
 		$tableParams->setSortColumnFields([
 			0 => 'createdAt',
@@ -66,31 +81,36 @@ class RecordController extends Controller
             8 => 'amount',
             9 => 'foo',
         ]);
-		
+
         $formData = (array) $request->get('form');
         $formData['search'] = $tableParams->getSearch();
-		
-        $form = $this->createForm(RecordFilterType::class);
+
+        $form = $this->createForm(RecordFilterType::class, $query, [
+            'wareCategories' => $wareCategories
+        ]);
 
         $form->submit($formData);
-		
-        $criteria = $form->getData();
-		
-        if ($getFirstSort = $tableParams->getFirstSort()) {
-            $criteria->setSortBy($getFirstSort[0]);
-			
-			if ($getFirstSort[0] == 'createdAt') { // at page load w/o settings made by user
-				$criteria->setSortDirection(-1);
-			} else {
-				$criteria->setSortDirection($getFirstSort[1]); // 1 or -1
-			}
+
+        if (mb_stripos($formData['wareItem'], 'allproducts_') !== false) {
+            $wareCategory = str_replace('allproducts_', '', $formData['wareItem']);
+            $query->setWareCategory($wareCategory);
         }
 		
+        if ($getFirstSort = $tableParams->getFirstSort()) {
+            $query->setSortBy($getFirstSort[0]);
+			
+			if ($getFirstSort[0] == 'createdAt') { // at page load w/o settings made by user
+                $query->setSortDirection(-1);
+			} else {
+                $query->setSortDirection($getFirstSort[1]); // 1 or -1
+			}
+        }
+
         $records = $this->dm->getRepository('MBHWarehouseBundle:Record')
-			->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
-		
+			->findByQueryCriteria($query, $tableParams->getStart(), $tableParams->getLength());
+
         return [
-            'records' => iterator_to_array($records),
+            'records' => $records,
             'total' => count($records),
             'draw' => $request->get('draw'),
         ];
@@ -113,7 +133,6 @@ class RecordController extends Controller
             ->execute();
 
 		$form = $this->createForm(RecordFilterType::class, $query, [
-		    'dm' => $this->dm,
             'wareCategories' => $wareCategories,
         ]);
 		
@@ -156,32 +175,30 @@ class RecordController extends Controller
 
         $form->submit($formData);
 
-        $criteria = $form->getData();
         if (mb_stripos($formData['wareItem'], 'allproducts_') !== false) {
             $wareCategory = str_replace('allproducts_', '', $formData['wareItem']);
-            $criteria->setWareCategory($wareCategory);
+            $query->setWareCategory($wareCategory);
         }
         if ($formData['wareItem']) {
-            $criteria->setWareItem($this->dm->getRepository('MBHWarehouseBundle:WareItem')->find($formData['wareItem']));
+            $query->setWareItem($formData['wareItem']);
         }
-
 
         if ($getFirstSort = $tableParams->getFirstSort()) {
 			if ($getFirstSort[0] == 'foo') { // at page load w/o settings made by user
-				$criteria->setSortBy('fullTitle');
+                $query->setSortBy('fullTitle');
 			} else {
-				$criteria->setSortDirection($getFirstSort[1]); // 1 or -1
+                $query->setSortDirection($getFirstSort[1]); // 1 or -1
 			}
 
-			$criteria->setSortBy($getFirstSort[0]);
+            $query->setSortBy($getFirstSort[0]);
         }
 
 		$repository = $this->dm->getRepository('MBHWarehouseBundle:Record');
 
 		// this step could be hidden, but is left here to see what is going on
-        $summary = $repository->fetchSummary($criteria);
+        $summary = $repository->fetchSummary($query);
 
-		$items = $repository->getItemsByIds($criteria, $summary, $tableParams->getStart(), $tableParams->getLength());
+		$items = $repository->getItemsByIds($query, $summary, $tableParams->getStart(), $tableParams->getLength());
 
         return [
             'inventory' => $items,

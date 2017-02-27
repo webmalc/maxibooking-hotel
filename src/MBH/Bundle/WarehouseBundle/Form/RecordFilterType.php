@@ -19,7 +19,6 @@ class RecordFilterType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $wareCategories = $options['wareCategories'];
 
         $builder
             ->add('recordDateFrom', DateType::class, [
@@ -66,7 +65,13 @@ class RecordFilterType extends AbstractType
 		;
     }
 
-    private function getWareItemChoices($wareCategories)
+    /**
+     * Get array ware categories and items
+     *
+     * @param $wareCategories
+     * @return array
+     */
+    private function getWareItemChoices($wareCategories = [])
     {
         $ware = [];
 
@@ -87,7 +92,6 @@ class RecordFilterType extends AbstractType
     {
         $resolver->setDefaults([
             'wareCategories' => [],
-            'dm' => null,
             'method' => 'POST',
             'data_class' => 'MBH\Bundle\WarehouseBundle\Lib\RecordQuery',
             'operations' => [],
