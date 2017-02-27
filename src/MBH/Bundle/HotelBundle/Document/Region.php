@@ -58,8 +58,15 @@ class Region extends Base
      *      maxMessage="validator.document.region.max_name"
      * )
      * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $title;
+
+    /**
+     * @var string
+     * @Gedmo\Locale
+     */
+    protected $locale;
 
     /**
      * Set title
@@ -143,5 +150,10 @@ class Region extends Base
     public function __toString()
     {
         return (string) $this->getTitle();
+    }
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }

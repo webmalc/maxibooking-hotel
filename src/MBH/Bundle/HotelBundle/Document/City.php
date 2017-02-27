@@ -63,8 +63,15 @@ class City extends Base
      *      maxMessage="validator.document.city.max_name"
      * )
      * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $title;
+
+    /**
+     * @var string
+     * @Gedmo\Locale
+     */
+    protected $locale;
 
     /**
      * Set title
@@ -135,5 +142,10 @@ class City extends Base
     public function __toString()
     {
         return is_string($this->getTitle()) ? $this->getTitle() : parent::__toString();
+    }
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }
