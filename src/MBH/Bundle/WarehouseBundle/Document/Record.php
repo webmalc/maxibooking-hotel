@@ -9,8 +9,6 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\WarehouseBundle\Document\WareCategory;
-use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
