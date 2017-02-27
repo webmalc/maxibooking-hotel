@@ -15,6 +15,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
@@ -29,7 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
  * @ODM\HasLifecycleCallbacks
  */
-class Hotel extends Base implements \JsonSerializable
+class Hotel extends Base implements \JsonSerializable, AddressInterface
 {
 
     /**
@@ -364,6 +365,16 @@ class Hotel extends Base implements \JsonSerializable
         $this->fullTitle = $fullTitle;
 
         return $this;
+    }
+
+    /**
+     * Get Full title
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->fullTitle;
     }
 
     /**
@@ -1322,4 +1333,5 @@ class Hotel extends Base implements \JsonSerializable
     {
         return $this->specials;
     }
+
 }

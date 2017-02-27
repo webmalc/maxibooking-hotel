@@ -3,11 +3,10 @@
     <ul>
         {% for tariff in tariffResults %}
             <li>
-
                 <p class="mbh-results-tariffs-label">
                     {% if (tariff.id == app.request.query.get('tariff')) or (app.request.query.get('tariff') is null and tariff.isDefault) %}
                         <input type="radio" disabled checked><span id="mbh-results-tariffs-selected"
-                              data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>
+                                                                   data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>
                     {% else %}
                         {% set href = app.request.query.all|merge({'tariff': tariff.isDefault ? null : tariff.id })|url_encode %}
                         <input type="radio" disabled><a href="?{{ href }}">{{ tariff.fullTitle }}</a>

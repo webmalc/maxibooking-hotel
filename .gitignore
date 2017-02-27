@@ -92,3 +92,5 @@ local.properties
 .cache-main
 .scala_dependencies
 .worksheet
+docker_zalex/
+node_modules/

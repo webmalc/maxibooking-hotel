@@ -69,12 +69,12 @@
     <hr>
 
     <div class="main">
-        <p class="indent">Отель {% if hotel and hotel.name %}<strong>"{{ hotel.name }}"</strong>{% else %}____________________{% endif %}, расположенный по
-            адресу: {% if hotel and hotel.country and hotel.city and hotel.street %}
-            {{ hotel.country.title }}, {% if hotel.region %}{{ hotel.region.title }},{% endif %} г. {{ hotel.city.title }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
-            {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
-            ИНН {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}, извещает
-            Заказчика:
+        <p class="indent">
+            <strong>{{ entity.address.name }}</strong>, {{ "package.pdf.with_an_address"|trans({}, "MBHPackageBundle") }}
+            {{ "package.pdf.address"|trans({}, "MBHPackageBundle") }}: {% if entity.address and entity.address.country and entity.address.city and entity.address.street %}
+            {{ entity.address.country.title }}, {% if entity.address.region %}{{ entity.address.region.title }},{% endif %} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.city.title }}{% if entity.address.settlement is defined %}, {{ entity.address.settlement }}{% endif %}, {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.street }},
+            {% if entity.address.house %} {{ "package.pdf.short_home_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.house }}{% endif %}{% if entity.address.corpus %}, {{ "package.pdf.short_housing_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.corpus }}{% endif %}{% if entity.address.flat %}, {{ "package.pdf.short_apartment_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.flat }}{% endif %}{% else %}_________________________________________{% endif %},
+            {{ "package.pdf.inn"|trans({}, "MBHPackageBundle") }} {% if entity.address.inn is defined %}{{ entity.address.inn }}{% else %}________________________{% endif %}, {{ "package.pdf.notifies_customers"|trans({}, "MBHPackageBundle") }}
         </p>
         <style>
             .ta table {

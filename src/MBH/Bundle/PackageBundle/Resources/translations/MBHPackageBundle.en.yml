@@ -1,1 +1,8 @@
 package.pdf.hotel_accommodation: Hotel accommodation
+package.pdf.short_city_extend: city
+package.pdf.short_housing_extend: bldg
+package.pdf.short_apartment_extend: fl
+package.pdf.short_street_extend: str
+package.pdf.inn: TIN
+package.pdf.notifies_customers: 'informs the Client:'
+package.pdf.with_an_address: with an address at
