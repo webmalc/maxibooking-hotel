@@ -72,7 +72,7 @@ class ApiController extends Controller
                 ->field($type)->gte($begin)
                 ->field($type)->lte($end);
         }
-        
+
         return [
             'packages' => $qb->getQuery()->execute()
         ];
@@ -343,7 +343,16 @@ class ApiController extends Controller
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
+        $facilityArray = array();
+
+        foreach ($this->getParameter('mbh.hotel')['facilities'] as $facilityVal) {
+            foreach ($facilityVal as $key => $val) {
+                $facilityArray[$key] = $val;
+            }
+        }
+
         return [
+            'facilityArray' => $facilityArray,
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
             'hotels' => $hotels,

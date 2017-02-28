@@ -2,21 +2,30 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 
-use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
-use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
-
-class HotelRepository extends AbstractBaseRepository
+/**
+ * Class HotelRepository
+ */
+class HotelRepository extends DocumentRepository
 {
+
+    /**
+     * Get last Hotel or null
+     *
+     * @return array|null|object
+     */
+    public function getLastHotel()
+    {
+        $qb = $this->createQueryBuilder()->sort('createdAt', 'desc')->limit(1)->getQuery()->getSingleResult()->execute();
+
+        return $qb ?? null;
+    }
+
     public function getHotelWithFilledContacts()
     {
         $this->createQueryBuilder()
             ->field('contactInformation')->exists(true)->notEqual(null)
             ->getQuery()->getSingleResult();
-    }
-
-    public function findByCriteria(QueryCriteriaInterface $criteria)
-    {
-        // TODO: Implement findByCriteria() method.
     }
 }

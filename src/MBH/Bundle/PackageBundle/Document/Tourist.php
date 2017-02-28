@@ -888,6 +888,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
     public function setCommunicationLanguage($communicationLanguage)
     {
         $this->communicationLanguage = $communicationLanguage;
+        return $this;
     }
 
     /**

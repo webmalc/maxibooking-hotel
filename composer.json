@@ -17,6 +17,7 @@
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
     "symfony/swiftmailer-bundle": "^2.3@stable",
+    "swiftmailer/swiftmailer": "^5.0@stable",
     "symfony/monolog-bundle": "^2.8@stable",
     "sensio/distribution-bundle": "^5.0@stable",
     "symfony/polyfill-apcu": "^1.0",

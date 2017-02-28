@@ -68,7 +68,7 @@ class SearchCacheCommand extends ContainerAwareCommand
         $start = new \DateTime();
         $this->container = $this->getContainer();
         $helper = $this->container->get('mbh.helper');
-        $this->container->get('mbh.cache')->clear();
+        #$this->container->get('mbh.cache')->clear();
 
         $this->params = $this->container->getParameter('mbh_cache')['search'];
         

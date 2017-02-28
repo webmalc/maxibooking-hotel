@@ -83,7 +83,7 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Index()
      */
     protected $title;
-    
+
     /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="description")
@@ -96,7 +96,7 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Index()
      */
     protected $description;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -106,7 +106,7 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Index()
      */
     protected $isDefault = false;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned

@@ -11,8 +11,10 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -402,6 +404,13 @@ class Package extends Base implements \JsonSerializable
         public function getTariff()
     {
         return $this->tariff;
+    }
+
+    public function allowPercentagePrice($price)
+    {
+        $minPerPay = $this->getTariff()->getMinPerPrepay();
+
+        return $price * $minPerPay / 100;
     }
 
     /**
@@ -972,6 +981,7 @@ class Package extends Base implements \JsonSerializable
     public function setIsPercentDiscount($isPercentDiscount)
     {
         $this->isPercentDiscount = $isPercentDiscount;
+        return $this;
     }
 
     /**
@@ -1317,6 +1327,7 @@ class Package extends Base implements \JsonSerializable
     public function setIsCheckOut($isCheckOut)
     {
         $this->isCheckOut = $isCheckOut;
+        return $this;
     }
 
     /**
@@ -1592,6 +1603,14 @@ class Package extends Base implements \JsonSerializable
         $this->childAges = $childAges;
 
         return $this;
+    }
+
+    /**
+     * @return AddressInterface|null
+     */
+    public function getAddress(): AddressInterface
+    {
+        return $this->getHotel()->getOrganization() ?? $this->getHotel();
     }
 
 }
