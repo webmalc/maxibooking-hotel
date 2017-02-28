@@ -2,13 +2,10 @@ parameters:
     online_booking:
           request_search_url: '/mbresults.php'
           payonlineurl: http://azovsky-billing.com/pay/
+          use_charts: false
 
     online_reservation_manager_email: "mail@azovsky.ru"
     offera: "https://yadi.sk/i/aSRIUwg0zjWVw"
 
     domain_access_control_prod: 'http://testaz.maxibooking.ru'
     domain_access_control_dev: 'http://localhost:8080'
-
-    use_сharts: false
-
-

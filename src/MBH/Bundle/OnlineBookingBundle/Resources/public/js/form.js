@@ -1,21 +1,29 @@
-var mytrigger = {
-    recountChildren: ''
-};
 
-// (function($) {
-//     $(function() {
-//         $('.booking-form').find('input, select').styler({
-//             selectSearch: true
-//         });
-//     });
-// })(jQuery);
-(function($) {
-    $(function() {
-        $('.booking-form').find('input, select').styler({
-            selectSearch: true
-        });
+
+<!--Заполняем форму-->
+function formFill() {
+    var search_form_name = 'search_form';
+    var hashParams = window.location.search.substr(1).split('&');
+    for (var i = 0; i < hashParams.length; i++) {
+        var p = hashParams[i].split('=');
+        var element_name = decodeURIComponent(p[0]);
+        if (element_name.split(['['])[0] == search_form_name) {
+            var element = document.getElementsByName(element_name)[0];
+            if (element && element.type !== 'submit') {
+                element.value = decodeURIComponent(p[1]);
+                if (element.id == 'search_form_children') {
+                    $(element).trigger('change');
+                }
+            }
+        }
+    }
+    $('.booking-form').find('input, select').styler({
+        selectSearch: true
     });
-})(jQuery);
+    $("#search_form_hotel").trigger("change");
+    $("#search_form_children").trigger('change');
+}
+
 
 $(function () {
 
@@ -365,7 +373,7 @@ $(function () {
         checkShowAgeLabel();
     });
 
-    mytrigger.recountChildren = function () {
-        $children.trigger('change')
-    };
+    //заполняем форму
+    formFill();
+
 });

@@ -13,17 +13,17 @@
                 {% set renderedImage = false %}
                 {% for searchResult in result.results if not renderedImage %}
                     {% if searchResult.roomType.mainImage %}
-                        <a class="fancybox" href="{{ asset(searchResult.roomType.mainImage.path, null, true) }}"
+                        <a class="fancybox" href="{{ absolute_url(asset(searchResult.roomType.mainImage.path)) }}"
                            rel="cat{{ loop.parent.loop.index }}">
                             <img class="oblimg"
-                                 src="{{ asset(searchResult.roomType.mainImage.path|imagine_filter('thumb_275x210'), null, true) }}">
+                                 src="{{ absolute_url(asset(searchResult.roomType.mainImage.path|imagine_filter('thumb_275x210'))) }}">
                         </a>
                         {% set renderedImage = true %}
                     {% endif %}
                 {% endfor %}
                 {% if not renderedImage %}
                     {#<div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>#}
-                    <img src="{{ asset('bundles/mbhonlinebooking/images/no-image.jpg', null, true) }}">
+                    <img src="{{ absolute_url(asset('bundles/mbhonlinebooking/images/no-image.jpg')) }}">
                 {% endif %}
                 <div class="row">
                     {% if result.results|first.roomType.images is not empty %}
@@ -31,9 +31,9 @@
                             {% for image in result.results|first.roomType.images %}
 
                                 {% if not image.ismain %}
-                                    <a href="{{ asset(image.path, null, true) }}" class="fancybox"
+                                    <a href="{{ absolute_url(asset(image.path)) }}" class="fancybox"
                                        rel="cat{{ loop.parent.loop.index }}">
-                                        <img src="{{ asset(image.path|imagine_filter('thumb_40x40'), null, true) }}"
+                                        <img src="{{ absolute_url(asset(image.path|imagine_filter('thumb_40x40'))) }}"
                                              alt="{{ result.results|first.roomType.name }}">
                                     </a>
                                 {% endif %}
@@ -50,7 +50,7 @@
                             {{ result.roomType.hotel.fullTitle }}&nbsp;
                         </div>
                         <div class="hotellogo">
-                            <img src="{{ asset(result.roomType.hotel.logoUrl, null, true ) }}"
+                            <img src="{{ absolute_url(asset(result.roomType.hotel.logoUrl)) }}"
                                  alt="{{ result.roomType.hotel.name }}">
                         </div>
                         <div class="subtitle infocontainer">
@@ -563,7 +563,7 @@
             roomTypeRow.tariffRows.forEach(function (tariffRow) {
                 myrows.push(tariffRow);
                 tariffRow.$row.on('click', function () {
-                    if({{ useCharts }}) {
+                    if({{ useCharts?'true':'false' }}) {
                         tariffRow.drawChart();
                     }
                     tariffRow.selected();

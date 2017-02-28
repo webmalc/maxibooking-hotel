@@ -151,7 +151,7 @@ class DefaultController extends BaseController
             [
                 'searchResults' => $searchResults,
                 'requestSearchUrl' => $requestSearchUrl,
-                'useCharts' => $this->getParameter('use_сharts')
+                'useCharts' => $this->getParameter('online_booking')['use_charts']
             ]
         );
     }
@@ -502,7 +502,6 @@ class DefaultController extends BaseController
             'minstay' => $minStays,
         ];
 
-        $env = $this->get('kernel')->getEnvironment();
         $response = new JsonResponse(json_encode($data));
         $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
 

@@ -64,6 +64,7 @@ class Search implements SearchInterface
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $this->hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         $this->memcached = $this->container->get('mbh.cache');
+//        $this->memcached = null;
     }
 
     /**
@@ -351,7 +352,12 @@ class Search implements SearchInterface
                 }
 
                 $roomType = $caches[0]->getRoomType();
-                if (method_exists($roomType, '__isInitialized') && !$roomType->__isInitialized()) {
+
+                //TODO: Repair.
+                /*if (method_exists($roomType, '__isInitialized') && !$roomType->__isInitialized()) {
+                    $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($roomType->getId());
+                }*/
+                if ($this->memcached) {
                     $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($roomType->getId());
                 }
 
