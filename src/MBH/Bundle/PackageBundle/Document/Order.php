@@ -177,7 +177,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "oktogo", "101Hotels"},
+     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "oktogo", "101Hotels", "homeaway"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      * @ODM\Index()

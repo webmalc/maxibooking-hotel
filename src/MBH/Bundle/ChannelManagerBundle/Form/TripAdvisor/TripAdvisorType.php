@@ -1,10 +1,11 @@
 <?php
 
-namespace MBH\Bundle\ChannelManagerBundle\Form;
+namespace MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisorTariffType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -76,6 +77,9 @@ class TripAdvisorType extends AbstractType
             ->add('paymentType', InvertChoiceType::class, [
                 'label' => 'form.trip_advisor_type.payment_type.label',
                 'choices' => $options['payment_types']
+            ])
+            ->add('dsfsdf', TripAdvisorFeeType::class, [
+                'mapped' => false
             ])
         ;
     }

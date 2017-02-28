@@ -119,7 +119,6 @@ class TripAdvisorResponseFormatter
 
         $configurationData['info_contacts'][] = $this->getContactInfo($hotelContactInformation);
 
-        //TODO: Какой и откуда брать язык
         $configurationData['languages'] = $hotel->getSupportedLanguages();
         //pref_hotels(предпочитаемое кол-во отелей за запрос)
         // и five_min_rate_limit(предпочитаемое кол-во запросов за 5 минут)
@@ -309,7 +308,7 @@ class TripAdvisorResponseFormatter
                 $response['hotel_rate_plans'][$tariff->getId()] = $this->getTariffData($tariff);
                 $response['hotel_room_types'][$roomType->getId()] = $this->getRoomTypeData($roomType, $language);
                 $hotelRoomRate = $this->getHotelRoomRates($searchResult, $adultsChildrenCombination, $currency,
-                    $hotel->getTripAdvisorConfig());
+                    $hotel->getTripAdvisorConfig(), $language);
                 if ($hotelRoomRate) {
                     $response['hotel_room_rates'][] = $hotelRoomRate;
                 }
@@ -334,7 +333,6 @@ class TripAdvisorResponseFormatter
         $bookingCreationResult,
         $messages,
         $countryCode,
-        $roomStayData,
         $currency,
         Hotel $hotel,
         $language
@@ -391,45 +389,45 @@ class TripAdvisorResponseFormatter
         ];
     }
 
-    public function formatBookingSyncResponse($syncOrderData)
-    {
-        //TODO: Получить currency
-        $currency = '';
-        $bookingSyncResponse = [];
-        foreach ($syncOrderData as $orderData) {
-            /** @var Order $order */
-            $order = $orderData['order'];
-            $packages = $orderData['packages'];
-            $status = $this->getSyncOrderData($order, $packages);
-
-            $totalFee = 0;
-            foreach ($order->getFee() as $feeCashDocument) {
-                /** @var CashDocument $feeCashDocument */
-                $totalFee += $feeCashDocument->getTotal();
-            }
-
-            $orderResponseData = [
-                'reservation_id' => $orderData['orderId'],
-                'partner_hotel_code' => $orderData['hotelId'],
-                'status' => $status,
-                'total_rate' => $this->getPriceObject($order->getPrice(), $currency),
-                'total_taxes' => $this->getPriceObject(0, $currency),
-                'total_fees' => $this->getPriceObject($totalFee, $currency)
-            ];
-
-            if ($status != 'Cancelled') {
-                $orderResponseData['checkin_date'] = $this->getOrderCheckedIn($packages);
-                $orderResponseData['checkout_date'] = $this->getOrderCheckedOut($packages);
-            } else {
-                $orderResponseData['cancelled_date'] = $order->getDeletedAt()->format(self::TRIP_ADVISOR_DATE_FORMAT);
-                $orderResponseData['cancellation_number'] = $order->getChannelManagerId();
-            }
-
-            $bookingSyncResponse[] = $orderResponseData;
-        }
-
-        return $bookingSyncResponse;
-    }
+//    public function formatBookingSyncResponse($syncOrderData)
+//    {
+//        //TODO: Получить currency
+//        $currency = '';
+//        $bookingSyncResponse = [];
+//        foreach ($syncOrderData as $orderData) {
+//            /** @var Order $order */
+//            $order = $orderData['order'];
+//            $packages = $orderData['packages'];
+//            $status = $this->getSyncOrderData($order, $packages);
+//
+//            $totalFee = 0;
+//            foreach ($order->getFee() as $feeCashDocument) {
+//                /** @var CashDocument $feeCashDocument */
+//                $totalFee += $feeCashDocument->getTotal();
+//            }
+//
+//            $orderResponseData = [
+//                'reservation_id' => $orderData['orderId'],
+//                'partner_hotel_code' => $orderData['hotelId'],
+//                'status' => $status,
+//                'total_rate' => $this->getPriceObject($order->getPrice(), $currency),
+//                'total_taxes' => $this->getPriceObject(0, $currency),
+//                'total_fees' => $this->getPriceObject($totalFee, $currency)
+//            ];
+//
+//            if ($status != 'Cancelled') {
+//                $orderResponseData['checkin_date'] = $this->getOrderCheckedIn($packages);
+//                $orderResponseData['checkout_date'] = $this->getOrderCheckedOut($packages);
+//            } else {
+//                $orderResponseData['cancelled_date'] = $order->getDeletedAt()->format(self::TRIP_ADVISOR_DATE_FORMAT);
+//                $orderResponseData['cancellation_number'] = $order->getChannelManagerId();
+//            }
+//
+//            $bookingSyncResponse[] = $orderResponseData;
+//        }
+//
+//        return $bookingSyncResponse;
+//    }
 
     public function formatRoomInformationResponse($apiVersion, $hotelData, $language, $queryKey, Hotel $hotel)
     {
@@ -462,7 +460,7 @@ class TripAdvisorResponseFormatter
     {
         $availableAmenities = [];
         foreach ($amenities as $amenity) {
-            if (isset((self::HOTEL_AMENITIES[$amenity])) && !in_array($amenity, $amenities)) {
+            if (in_array($amenity, array_keys(self::HOTEL_AMENITIES)) && !in_array($amenity, $amenities)) {
                 $availableAmenities[] = self::HOTEL_AMENITIES[$amenity];
             }
         }
@@ -482,25 +480,6 @@ class TripAdvisorResponseFormatter
         ];
 
         return $this->onlineFormUrl . '?' . http_build_query($params);
-    }
-
-    private function getOrderCheckedIn($packages)
-    {
-        $firstBeginDate = null;
-        foreach ($packages as $package) {
-            /** @var Package $package */
-            if (is_null($firstBeginDate) || $firstBeginDate > $package->getBegin()) {
-                $firstBeginDate = $package->getBegin();
-            }
-        }
-
-        return $firstBeginDate;
-    }
-
-    //TODO: Реализовать
-    private function getOrderCheckedOut($packages)
-    {
-        return new \DateTime();
     }
 
     private function getSyncOrderData(?Order $order, $packages)
@@ -871,7 +850,7 @@ class TripAdvisorResponseFormatter
 
         foreach ($roomType->getFacilities() as $facility) {
             if (!in_array($facility, $roomAmenities['custom']) && !in_array($facility, $roomAmenities['standard'])) {
-                if (isset(self::ROOM_AMENITIES[$facility])) {
+                if (in_array(array_keys(self::ROOM_AMENITIES), $facility)) {
                     $roomAmenities['standard'][] = self::ROOM_AMENITIES[$facility];
                 } else {
                     $roomAmenities['custom'][] = $facility;
@@ -977,7 +956,7 @@ class TripAdvisorResponseFormatter
         $rateAmenities = [];
         foreach ($tariff->getDefaultServices() as $service) {
             $serviceCode = $service->getService()->getCode();
-            if (isset(self::RATE_AMENITIES[$serviceCode])) {
+            if (in_array($serviceCode, array_keys(self::RATE_AMENITIES))) {
                 $rateMealPlanes['standard'][] = self::RATE_AMENITIES[$serviceCode];
             } else {
                 if (!in_array($serviceCode, array_keys(self::RATE_MEAL_TYPES))) {
@@ -996,7 +975,7 @@ class TripAdvisorResponseFormatter
             /** @var TariffService $service */
             $serviceCode = $service->getService()->getCode();
 
-            if (isset(self::RATE_MEAL_TYPES[$serviceCode])) {
+            if (in_array($serviceCode, array_keys(self::RATE_MEAL_TYPES))) {
                 $rateMealPlanes['standard'][] = self::RATE_MEAL_TYPES[$serviceCode];
             }
         }

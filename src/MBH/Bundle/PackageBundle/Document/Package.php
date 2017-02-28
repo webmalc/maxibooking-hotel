@@ -11,7 +11,6 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
@@ -278,7 +277,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "ostrovok", "oktogo", "myallocator", "101Hotels"},
+     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "oktogo", "101Hotels", "homeaway"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      * @ODM\Index()

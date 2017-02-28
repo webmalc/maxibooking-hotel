@@ -11,7 +11,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Order;
 
 /**
- * Для реализация данного интерфейса, необходимо также реализовать:
+ * Для реализация данного абстрактного класса, необходимо также реализовать:
  * 1) Класс AbstractRequestFormatter, отвечающий за формирование данных о запросах(url, заголовки, передаваемые данные)
  * 2) Класс AbstractRequestDataFormatter, отвечающий за формирование данных, передаваемых в запросе
  * 3) Класс AbstractResponseHandler, отвечающий за основную обработку приходящих ответов

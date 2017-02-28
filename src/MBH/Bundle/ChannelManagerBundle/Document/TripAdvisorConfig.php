@@ -100,6 +100,12 @@ class TripAdvisorConfig extends Base
     protected $paymentType;
 
     /**
+     * @var TripAdvisorTariff
+     * @ODM\ReferenceMany(targetDocument="")
+     */
+    protected $tariffs;
+
+    /**
      * @return Hotel
      */
     public function getHotel()

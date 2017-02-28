@@ -4,9 +4,8 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
-use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisorType;
+use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorType;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo;
-use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

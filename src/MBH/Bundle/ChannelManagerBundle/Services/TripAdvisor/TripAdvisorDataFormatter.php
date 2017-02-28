@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -148,8 +149,9 @@ class TripAdvisorDataFormatter
         $query = new SearchQuery();
 
         $query->accommodations = true;
-        $query->begin = \DateTime::createFromFormat('Y-m-d' . ' H:i:s', $startDate . ' 00:00:00');
-        $query->end = \DateTime::createFromFormat('Y-m-d' . ' H:i:s', $endDate . ' 00:00:00');
+
+        $query->begin = Helper::getDateFromString($startDate, 'Y-m-d');
+        $query->end = Helper::getDateFromString($endDate, 'Y-m-d');
         $query->addHotel($hotel);
         $query->adults = 0;
         $query->children = 0;

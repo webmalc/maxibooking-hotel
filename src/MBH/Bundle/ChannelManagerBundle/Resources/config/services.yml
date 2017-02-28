@@ -135,3 +135,9 @@ services:
 
     mbh.channelmanager.ostrovok.data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator
+
+    mbh.channelmanager.trip_advisor_fee_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorFeeType
+        arguments: ['@mbh.currency']
+        tags:
+            - { name: form.type }

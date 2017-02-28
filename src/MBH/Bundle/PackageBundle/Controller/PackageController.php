@@ -991,7 +991,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $this->dm->flush();
 
         $request->getSession()->getFlashBag()
-            ->set('success', $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
+            ->set('success', 'controller.packageController.placement_deleted_success');
 
         return $this->redirect($this->generateUrl('package_accommodation', ['id' => $entity->getId()]));
     }
