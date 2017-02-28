@@ -1141,21 +1141,28 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         foreach ($packageServices as $packageService) {
             $package = $packageService->getPackage();
 
-            $data['packageCreatedAt'] = $package->getBegin();
-            $data['packageServiceCreatedAt'] = $packageService->getCreatedAt();
+            $data['packageBegin'] = $package->getBegin();
+            $data['packageEnd'] = $package->getEnd();
+            $data['packageServiceBegin'] = $packageService->getBegin();
             $data['packageNumber'] = $package->getNumberWithPrefix();
             $data['serviceTitle'] = $packageService->getService()->getFullTitle();
-            $data['differenceDay'] = date_diff($package->getBegin(), $packageService->getCreatedAt())->days;
-            $data['day'] = ((strtotime($data['packageCreatedAt']->format('d-m-Y')) != strtotime($data['packageServiceCreatedAt']->format('d-m-Y')))
+            $data['differenceDay'] = date_diff($data['packageBegin'], $data['packageServiceBegin'])->days;
+            $data['day'] = ((strtotime($data['packageBegin']->format('d-m-Y')) != strtotime($data['packageServiceBegin']->format('d-m-Y')))
                 && $data['differenceDay'] == 0) ? 1 : $data['differenceDay'];
 
-            if ($data['differenceDay'] != 0) {
-                echo $this->differenceTemplate($data);
-            }
-            elseif ((strtotime($data['packageCreatedAt']->format('d-m-Y')) != strtotime($data['packageServiceCreatedAt']->format('d-m-Y')))
-                && $data['differenceDay'] == 0) {
+            if (((date_diff($package->getBegin(), $packageService->getEnd())->format("%R%a") < 0) &&
+                (date_diff($package->getBegin(), $packageService->getBegin())->format("%R%a") < 0)) ||
+                ((date_diff($package->getEnd(), $packageService->getBegin())->format("%R%a") > 0) &&
+                (date_diff($package->getEnd(), $packageService->getEnd())->format("%R%a") > 0))) {
 
-                echo $this->differenceTemplate($data);
+                if ($data['differenceDay'] != 0) {
+                    echo $this->differenceTemplate($data);
+                } elseif ((strtotime($data['packageBegin']->format('d-m-Y')) != strtotime($data['packageServiceBegin']->format('d-m-Y')))
+                    && $data['differenceDay'] == 0
+                ) {
+
+                    echo $this->differenceTemplate($data);
+                }
             }
         }
 
@@ -1182,11 +1189,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                           </tr>
                           <tr>
                             <td>Дата заезда</td>
-                            <td><b>{$array['packageCreatedAt']->format('d/m/Y')}</b></td>
+                            <td><b>{$array['packageBegin']->format('d/m/Y')}</b></td>
                           </tr>
                           <tr>
-                            <td>Дата создания услуги</td>
-                            <td><b>{$array['packageServiceCreatedAt']->format('d/m/Y')}</b></td>
+                            <td>Дата выезда</td>
+                            <td><b>{$array['packageEnd']->format('d/m/Y')}</b></td>
+                          </tr>
+                          <tr>
+                            <td>Дата услуги</td>
+                            <td><b>{$array['packageServiceBegin']->format('d/m/Y')}</b></td>
                           </tr>
                           <tr>
                             <td>Разница</td>
