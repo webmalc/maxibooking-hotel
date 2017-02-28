@@ -1128,4 +1128,72 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         return new JsonResponse(['results' => $data]);
     }
 
+    /**
+     * Difference dates booking service
+     *
+     * @Route("/difference")
+     * @Method({"GET", "POST"})
+     */
+    public function differenceAction()
+    {
+        $packageServices = $this->dm->getRepository('MBHPackageBundle:PackageService')->findAll();
+
+        foreach ($packageServices as $packageService) {
+            $package = $packageService->getPackage();
+
+            $data['packageCreatedAt'] = $package->getBegin();
+            $data['packageServiceCreatedAt'] = $packageService->getCreatedAt();
+            $data['packageNumber'] = $package->getNumberWithPrefix();
+            $data['serviceTitle'] = $packageService->getService()->getFullTitle();
+            $data['differenceDay'] = date_diff($package->getBegin(), $packageService->getCreatedAt())->days;
+            $data['day'] = ((strtotime($data['packageCreatedAt']->format('d-m-Y')) != strtotime($data['packageServiceCreatedAt']->format('d-m-Y')))
+                && $data['differenceDay'] == 0) ? 1 : $data['differenceDay'];
+
+            if ($data['differenceDay'] != 0) {
+                echo $this->differenceTemplate($data);
+            }
+            elseif ((strtotime($data['packageCreatedAt']->format('d-m-Y')) != strtotime($data['packageServiceCreatedAt']->format('d-m-Y')))
+                && $data['differenceDay'] == 0) {
+
+                echo $this->differenceTemplate($data);
+            }
+        }
+
+        exit();
+    }
+
+    /**
+     * Template for difference action
+     *
+     * @param $array
+     * @return string
+     */
+    public function differenceTemplate($array)
+    {
+        return "<div style='outline: 2px solid #000; border: 3px solid #fff; border-radius: 10px;'>
+                        <table>
+                          <tr>
+                            <td>Бронь № </td>
+                            <td><b>{$array['packageNumber']}</b></td>
+                          </tr>
+                          <tr>
+                            <td>Услуга</td>
+                            <td><b>{$array['serviceTitle']}</b></td>
+                          </tr>
+                          <tr>
+                            <td>Дата заезда</td>
+                            <td><b>{$array['packageCreatedAt']->format('d/m/Y')}</b></td>
+                          </tr>
+                          <tr>
+                            <td>Дата создания услуги</td>
+                            <td><b>{$array['packageServiceCreatedAt']->format('d/m/Y')}</b></td>
+                          </tr>
+                          <tr>
+                            <td>Разница</td>
+                            <td><b>{$array['day']} дня(ей)</b></td>
+                          </tr>
+                        </table>
+                            </div><br />";
+    }
+
 }
