@@ -38,6 +38,10 @@ web/online
 app/supervisor
 docker_zalex
 
+#vim
+tags
+.phpcomplete_extended
+
 #Eclipse
 tmp/
 *.tmp
