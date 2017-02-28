@@ -149,7 +149,8 @@ class OrderHandler
             ->setNote($packageInfo->getNote())
             ->setOrder($order)
             ->setCorrupted($packageInfo->getIsCorrupted())
-            ->setIsSmoking($packageInfo->getIsSmoking());
+            ->setIsSmoking($packageInfo->getIsSmoking())
+            ->setChildAges($packageInfo->getChildrenAges());
 
         foreach ($packageInfo->getTourists() as $tourist)
         {

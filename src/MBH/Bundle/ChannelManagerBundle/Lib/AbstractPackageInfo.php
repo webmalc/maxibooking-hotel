@@ -78,4 +78,8 @@ abstract class AbstractPackageInfo
 
         return $this->note;
     }
+
+    public function getChildAges() {
+        return [];
+    }
 }

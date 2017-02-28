@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisorType;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo;
+use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -262,7 +263,8 @@ class TripAdvisorController extends BaseController
             ],
             "roomTypeId" => "5864fc922f77d901104b57ac",
             "tariffId" => "5864fc912f77d901104b5794",
-            "hotelId" => "5864e3da2f77d9004b580232"
+            "hotelId" => "5864e3da2f77d9004b580232",
+            'language' => 'en_US'
         ];
 
         /** @var TripAdvisorOrderInfo $orderInfo */
@@ -272,10 +274,13 @@ class TripAdvisorController extends BaseController
 
         $bookingCreationResult = $this->get('mbh.channel_manager.order_handler')->createOrder($orderInfo);
 
+        $language = $bookingMainData['language'];
         $currency = $finalPriceAtCheckout['currency'];
+        $hotel = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
+            ->getHotelById($bookingMainData['hotelId']);
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatSubmitBookingResponse($bookingSession, $bookingCreationResult,
-                $orderInfo->getPackageAndOrderMessages(), $customerData['country'], $roomsData, $currency);
+                $orderInfo->getPackageAndOrderMessages(), $customerData['country'], $roomsData, $currency, $hotel, $language);
 
         return new JsonResponse($response);
     }
@@ -381,4 +386,12 @@ class TripAdvisorController extends BaseController
 
         return new JsonResponse($response);
     }
+     /**
+      * @Route("/test")
+      * @return Response
+      */
+      public function testAction()
+      {
+         return new Response();
+      }
 }

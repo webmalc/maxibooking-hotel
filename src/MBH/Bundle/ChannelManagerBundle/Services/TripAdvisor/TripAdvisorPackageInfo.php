@@ -154,4 +154,9 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
     {
         return $this->bookingSessionId;
     }
+
+    public function getChildAges()
+    {
+        return $this->getChildrenData();
+    }
 }

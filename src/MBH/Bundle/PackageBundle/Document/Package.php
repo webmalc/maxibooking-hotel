@@ -1575,4 +1575,23 @@ class Package extends Base implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function getChildAges(): array
+    {
+        return $this->childAges;
+    }
+
+    /**
+     * @param array $childAges
+     * @return Package
+     */
+    public function setChildAges(array $childAges): Package
+    {
+        $this->childAges = $childAges;
+
+        return $this;
+    }
+
 }
