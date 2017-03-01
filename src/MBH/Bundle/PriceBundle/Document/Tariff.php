@@ -71,6 +71,13 @@ class Tariff extends Base implements ConditionsInterface
     protected $fullTitle;
 
     /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int", name="minPerPrepay")
+     */
+    protected $minPerPrepay;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="title")
@@ -293,6 +300,23 @@ class Tariff extends Base implements ConditionsInterface
     {
         return $this->fullTitle;
     }
+
+    /**
+     * @return int
+     */
+    public function getMinPerPrepay()
+    {
+        return $this->minPerPrepay;
+    }
+
+    /**
+     * @param int $minPrepay
+     */
+    public function setMinPerPrepay(int $minPerPrepay)
+    {
+        $this->minPerPrepay = $minPerPrepay;
+    }
+
 
     /**
      * Set title
