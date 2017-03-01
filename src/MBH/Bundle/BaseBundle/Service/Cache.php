@@ -70,7 +70,7 @@ class Cache
             $this->dm->getRepository('MBHBaseBundle:CacheItem')->getKeysByPrefix($prefix, $begin, $end)
         );
 
-        return $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix);
+        return $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix, $begin, $end);
     }
 
     /**

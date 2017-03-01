@@ -96,3 +96,4 @@ local.properties
 .worksheet
 docker_zalex/
 node_modules/
+tags
