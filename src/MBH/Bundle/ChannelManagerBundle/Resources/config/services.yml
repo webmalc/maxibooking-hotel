@@ -129,6 +129,16 @@ services:
       arguments: ['@service_container']
       shared: false
 
+    mbh.channel_manager.trip_advisor.tariff_type:
+      class: MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffType
+      tags:
+          - { name: form.type }
+
+    mbh.channel_manager.trip_advisor.tariffs_type:
+      class: MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffsType
+      tags:
+          - { name: form.type }
+
     mbh.channelmanager.ostrovok.api_service:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiService
         arguments: ['%mbh.channelmanager.services%']

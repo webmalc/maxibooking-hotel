@@ -65,7 +65,7 @@ class TripAdvisorTariff
     /**
      * @return TripAdvisorFee[]
      */
-    public function getFees(): array
+    public function getFees()
     {
         return $this->fees;
     }
@@ -95,7 +95,7 @@ class TripAdvisorTariff
     /**
      * @return Tariff
      */
-    public function getTariff(): Tariff
+    public function getTariff(): ?Tariff
     {
         return $this->tariff;
     }

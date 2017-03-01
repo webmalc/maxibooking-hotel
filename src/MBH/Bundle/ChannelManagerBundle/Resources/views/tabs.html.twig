@@ -1,22 +1,36 @@
 {% if services is not defined %}
     {% set services = true %}
 {% endif %}
+{% if tariffs is not defined %}
+    {% set tariffs = true %}
+{% endif %}
+{% if rooms is not defined %}
+    {% set rooms = true %}
+{% endif %}
 
 {% set menu = [
-    {'route': base, 'title': '<i class="fa fa-info-circle"></i>'~'views.tabs.main_settings'|trans({}, 'MBHChannelManagerBundle')},
-    {'route': base ~ '_room', 'title': '<i class="fa fa-bed"></i>'~'views.tabs.room_types'|trans({}, 'MBHChannelManagerBundle')},
-    {'route': base ~ '_tariff', 'title': '<i class="fa fa-sliders"></i>'~'views.tabs.tariffs'|trans({}, 'MBHChannelManagerBundle')}
-]
-%}
+{'route': base, 'title': '<i class="fa fa-info-circle"></i>'~'views.tabs.main_settings'|trans({}, 'MBHChannelManagerBundle')},
+] %}
+
+{% if rooms %}
+    {% set menu = menu|merge([
+        {'route': base ~ '_room', 'title': '<i class="fa fa-bed"></i>'~'views.tabs.room_types'|trans({}, 'MBHChannelManagerBundle')},
+    ]) %}
+{% endif %}
+
+{% if tariffs %}
+    {% set menu = menu|merge([
+        {'route': base ~ '_tariff', 'title': '<i class="fa fa-sliders"></i>'~'views.tabs.tariffs'|trans({}, 'MBHChannelManagerBundle')}
+    ]) %}
+{% endif %}
 
 {% if services %}
     {% set menu = menu|merge([
-            {'route': base ~ '_service', 'title': '<i class="fa fa-plug"></i>'~'views.tabs.services'|trans({}, 'MBHChannelManagerBundle')}
-        ])
-    %}
+    {'route': base ~ '_service', 'title': '<i class="fa fa-plug"></i>'~'views.tabs.services'|trans({}, 'MBHChannelManagerBundle')}
+    ]) %}
 {% endif %}
 
-{% if entity and (entity.rooms.count == 0 or entity.tariffs.count == 0 or entity.hotelId is empty) %}
+{% if entity and ((entity.rooms is defined and entity.rooms.count == 0) or (entity.tariffs and entity.tariffs.count == 0) or entity.hotelId is empty) %}
     <div class="alert alert-danger">
         <i class="fa fa-exclamation-circle"></i>&nbsp;
         {{ 'channelmanager.empty.config'|trans({}, 'MBHChannelManagerBundle') }}
@@ -24,16 +38,17 @@
 {% endif %}
 
 <ul class="nav nav-tabs" role="tablist">
-{% for item in menu %}
-    {% if (entity is null or not entity.isEnabled) and loop.index != 1 %}
-        <li class="disabled">
-            <a href="#" role="tab" data-toggle="tooltip"
-               title="{{ 'views.tabs.must_fill_main_settings'|trans({}, 'MBHChannelManagerBundle') }}">{{ item.title|raw }}</a>
-        </li>
-    {% else  %}
-        <li {% if loop.index == active %}class="active"{% endif %}>
-            <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route) }}"{% endif %}>{{item.title|raw}}</a>
-        </li>
-    {% endif  %}
-{% endfor %}
+    {% for item in menu %}
+        {% if (entity is null or not entity.isEnabled) and loop.index != 1 %}
+            <li class="disabled">
+                <a href="#" role="tab" data-toggle="tooltip"
+                   title="{{ 'views.tabs.must_fill_main_settings'|trans({}, 'MBHChannelManagerBundle') }}">{{ item.title|raw }}</a>
+            </li>
+        {% else %}
+            <li {% if loop.index == active %}class="active"{% endif %}>
+                <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"
+                   {% else %}href="{{ path(item.route) }}"{% endif %}>{{ item.title|raw }}</a>
+            </li>
+        {% endif %}
+    {% endfor %}
 </ul>

@@ -2,7 +2,7 @@
 
 {% block form_row %}
     {% spaceless %}
-        {% if form.children|length  == 0%}
+        {% if form.children|length  == 0 or (attr and attr['data-is-date-time']) %}
         <div class="form-group {% if errors|length > 0 %} has-error{% endif %}">
             {{ form_label(form) }}
 
@@ -23,3 +23,47 @@
             {% endif %}
     {% endspaceless %}
 {% endblock form_row %}
+
+{% block form_widget_compound %}
+    <div {{ block('widget_container_attributes') }}>
+        {% if form.parent is empty %}
+            {% if errors|length > 0 %}
+                <div class="alert alert-danger global-errors">{{ form_errors(form) }}</div>
+            {% endif %}
+        {% endif %}
+
+        {% set groups = {'form.main.group': form.children|keys} %}
+        {% if form.vars.groups is defined %}
+            {% set groups = form.vars.groups %}
+        {% endif %}
+
+        {% for group, items in groups %}
+            {% if group %}
+                <div class="box box-default box-solid">
+
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{ group|trans }}</h3>
+
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
+                                    id="{{ id }}-group-{{ loop.index }}"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="box-body">
+                        {% for item in items %}
+                            {{ form_row(form[item]) }}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                {% for item in items %}
+                    {{ form_row(form[item]) }}
+                {% endfor %}
+            {% endif %}
+
+        {% endfor %}
+
+        {{ form_rest(form) }}
+    </div>
+{% endblock form_widget_compound %}

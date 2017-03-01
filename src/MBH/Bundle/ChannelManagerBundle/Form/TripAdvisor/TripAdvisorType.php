@@ -78,9 +78,6 @@ class TripAdvisorType extends AbstractType
                 'label' => 'form.trip_advisor_type.payment_type.label',
                 'choices' => $options['payment_types']
             ])
-            ->add('dsfsdf', TripAdvisorFeeType::class, [
-                'mapped' => false
-            ])
         ;
     }
 

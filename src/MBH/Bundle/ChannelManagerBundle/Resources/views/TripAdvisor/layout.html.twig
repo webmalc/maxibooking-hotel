@@ -1,0 +1,14 @@
+{% extends 'MBHChannelManagerBundle::layout.html.twig' %}
+
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set layout = 'tabs' %}
+
+{% set title = "TripAdvisor.com" %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHChannelManagerBundle/Resources/public/css/tripadvisor.less'%}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}

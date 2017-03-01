@@ -161,15 +161,24 @@ form.trip_advisor_type.terms_and_confitions.label: Общие условия
 form.trip_advisor_type.terms_and_confitions.help: Общие положение и условия
 form.trip_advisor_type.payment_type.label: Тип оплаты
 controller.tripadvisor_controller.settings_saved_success: 'Настройки успешно сохранены.'
+controller.tripadvisor_controller.config_not_found: Основные настройки не сохранены
 form.trip_advisor_tariff_type.refundable_type.none: Без возврата
 form.trip_advisor_tariff_type.refundable_type.partial: Частично
 form.trip_advisor_tariff_type.refundable_type.full: Полностью
+form.trip_advisor_tariff_type.refundable_type.label: Возвратный
+form.trip_advisor_tariff_type.refundable_type.help: Возвращаются ли деньги при отмене брони?
 form.trip_advisor_fee_type.amount_type.fixed: Фиксированная
 form.trip_advisor_fee_type.amount_type.percent: В процентах
 form.trip_advisor_fee_type.amount_type.numNights: В кол-ве ночей
 form.trip_advisor_fee_type.amount_type.label: Тип размерности комиссии
 form.trip_advisor_fee_type.currency.label: Валюта
 form.trip_advisor_fee_type.price.label: Цена
+form.trip_advisor_fee_type.days_before_arrival.label: Дней до заезда
 form.trip_advisor_tariff_type.sync_tariff.label: Синхронизируемый тариф
 form.trip_advisor_tariff_type.deadline.label: Крайний срок
 form.trip_advisor_tariff_type.deadline.help: Дата и время, после которого нельзя свободно отменить заказ
+form.trip_advisor_tariff_type.is_penalty_exists.label: Штраф
+form.trip_advisor_tariff_type.is_penalty_exists.help: Есть ли штраф при отмене брони?
+form.trip_advisor_tariff_type.policy_info.label: Правила закрытия
+form.trip_advisor_tariff_type.policy_info.help: Описание правил отмены брони
+form.trip_advisor_tariff_type.fees.label: Комиссии

@@ -4,7 +4,10 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
 use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorType;
+use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffsType;
+use MBH\Bundle\ChannelManagerBundle\Model\TripAdvisor\TripAdvisorFee;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -51,6 +54,42 @@ class TripAdvisorController extends BaseController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $this->dm->persist($config);
+            $this->dm->flush();
+            $this->addFlash('success', 'controller.tripadvisor_controller.settings_saved_success');
+        }
+
+        return [
+            'doc' => $config,
+            'form' => $form->createView(),
+            'logs' => $this->logs($config)
+        ];
+    }
+
+    /**
+     * @Route("/tariff", name="tripadvisor_tariff")
+     * @Security("is_granted('ROLE_TRIPADVISOR')")
+     * @Template()
+     * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function tariffsAction(Request $request)
+    {
+        $config = $this->hotel->getTripAdvisorConfig();
+        if (is_null($config)) {
+            $this->addFlash('error', 'controller.tripadvisor_controller.config_not_found');
+
+            return $this->redirectToRoute('tripadvisor');
+        }
+        $config->addTariff((new TripAdvisorTariff())->addFee(new TripAdvisorFee()));
+
+        $form = $this->createForm(TripAdvisorTariffsType::class, $config, [
+            'hotel' => $this->hotel
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($config);
             $this->dm->flush();
             $this->addFlash('success', 'controller.tripadvisor_controller.settings_saved_success');

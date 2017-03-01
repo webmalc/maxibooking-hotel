@@ -78,7 +78,7 @@ class TripAdvisorFee
     /**
      * @return int
      */
-    public function getDaysBeforeArrival(): int
+    public function getDaysBeforeArrival(): ?int
     {
         return $this->daysBeforeArrival;
     }

@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
@@ -96,14 +97,20 @@ class TripAdvisorConfig extends Base
 
     /**
      * @var string
+     * @ODM\Field(type="string")
      */
     protected $paymentType;
 
     /**
-     * @var TripAdvisorTariff
-     * @ODM\ReferenceMany(targetDocument="")
+     * @var ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="TripAdvisorTariff")
      */
     protected $tariffs;
+
+    public function __construct()
+    {
+        $this->tariffs = new ArrayCollection();
+    }
 
     /**
      * @return Hotel
@@ -253,6 +260,36 @@ class TripAdvisorConfig extends Base
     public function setPaymentType(string $paymentType): TripAdvisorConfig
     {
         $this->paymentType = $paymentType;
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getTariffs()
+    {
+        return $this->tariffs;
+    }
+
+    /**
+     * @param TripAdvisorTariff $tariff
+     * @return TripAdvisorConfig
+     */
+    public function addTariff(TripAdvisorTariff $tariff)
+    {
+        $this->tariffs->add($tariff);
+
+        return $this;
+    }
+
+    /**
+     * @param TripAdvisorTariff $tariff
+     * @return TripAdvisorConfig
+     */
+    public function removeTariff(TripAdvisorTariff $tariff)
+    {
+        $this->tariffs->remove($tariff);
 
         return $this;
     }

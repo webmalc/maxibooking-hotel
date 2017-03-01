@@ -1,11 +1,10 @@
 <?php
 
-namespace MBH\Bundle\ChannelManagerBundle\Form;
+namespace MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
-use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorFeeType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -28,13 +27,17 @@ class TripAdvisorTariffType extends AbstractType
                     $builder = $repository->createQueryBuilder()->field('hotel.id')->equals($options['hotel']->getId());
                     return $builder;
                 },
-                'required' => true
+                'required' => true,
+                'group' => false
             ])
             ->add('refundableType', ChoiceType::class, [
                 'choices' => TripAdvisorTariff::getRefundableTypes(),
                 'choice_label' => function ($value) {
                     return 'form.trip_advisor_tariff_type.refundable_type.' . $value;
-                }
+                },
+                'label' => 'form.trip_advisor_tariff_type.refundable_type.label',
+                'help' => 'form.trip_advisor_tariff_type.refundable_type.help',
+                'group' => false
             ])
             ->add('deadline', DateTimeType::class, array(
                 'label' => 'form.trip_advisor_tariff_type.deadline.label',
@@ -44,15 +47,26 @@ class TripAdvisorTariffType extends AbstractType
                 'date_format' => 'dd.MM.yyyy',
                 'time_widget' => 'single_text',
                 'date_widget' => 'single_text',
+                'attr' => [
+                    'data-is-date-time' => true,
+                ],
+                'group' => false
             ))
             ->add('isPenaltyExists', CheckboxType::class, [
-
+                'label' => 'form.trip_advisor_tariff_type.is_penalty_exists.label',
+                'help' => 'form.trip_advisor_tariff_type.is_penalty_exists.help',
+                'group' => false
             ])
             ->add('policyInfo', TextareaType::class, [
-
+                'label' => 'form.trip_advisor_tariff_type.policy_info.label',
+                'help' => 'form.trip_advisor_tariff_type.policy_info.help',
+                'group' => false
             ])
             ->add('fees', CollectionType::class, [
-                'entry_type' => TripAdvisorFeeType::class
+                'entry_type' => TripAdvisorFeeType::class,
+                'group' => 'Комиссии',
+//                'label' => 'form.trip_advisor_tariff_type.fees.label',
+                'required' => false
             ])
         ;
     }
@@ -61,7 +75,8 @@ class TripAdvisorTariffType extends AbstractType
     {
         $resolver
             ->setDefaults([
-                'data_class' => TripAdvisorTariff::class
+                'data_class' => TripAdvisorTariff::class,
+                'hotel' => null
             ]);
     }
 
