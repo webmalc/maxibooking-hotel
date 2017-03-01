@@ -82,7 +82,15 @@ class TripAdvisorController extends BaseController
 
             return $this->redirectToRoute('tripadvisor');
         }
-        $config->addTariff((new TripAdvisorTariff())->addFee(new TripAdvisorFee()));
+
+        $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
+            ->findAll();
+//            ->findBy(['hotel.id' => $this->hotel->getId()]);
+
+
+        foreach ($tariffs as $tariff) {
+            $config->addTariff((new TripAdvisorTariff())->setTariff($tariff));
+        }
 
         $form = $this->createForm(TripAdvisorTariffsType::class, $config, [
             'hotel' => $this->hotel
@@ -132,7 +140,7 @@ class TripAdvisorController extends BaseController
 
         //TODO: Уточнить нужно ли реализовывать
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatHotelInventoryData($apiVersion, $language, $inventoryType, $configuredHotels);
+            ->formatHotelInventoryData($apiVersion, $language, $configuredHotels);
 
         return new JsonResponse($response);
     }

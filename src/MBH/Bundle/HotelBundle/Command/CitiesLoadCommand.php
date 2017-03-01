@@ -139,8 +139,8 @@ class CitiesLoadCommand extends ContainerAwareCommand
         foreach ($combinedArray as $countryInfo) {
             $country = new Country();
             !isset($countryInfo['ISO-3166-Alpha-2']) ?: $country->setIsoAlpha2($countryInfo['ISO-3166-Alpha-2']);
-            !isset($countryInfo['ISO-3166-Alpha-3']) ?: $country->setIsoAlpha2($countryInfo['ISO-3166-Alpha-3']);
-            !isset($countryInfo['ISO-3166-digital']) ?: $country->setIsoAlpha2($countryInfo['ISO-3166-digital']);
+            !isset($countryInfo['ISO-3166-Alpha-3']) ?: $country->setIsoAlpha3($countryInfo['ISO-3166-Alpha-3']);
+            !isset($countryInfo['ISO-3166-digital']) ?: $country->setIsoDigital($countryInfo['ISO-3166-digital']);
 
             $country->setTitle($countryInfo['title_ru']);
             $country->setTranslatableLocale('ru_RU');

@@ -112,14 +112,14 @@ class TariffType extends AbstractType
                 'attr' => [
                     'class' => 'spinner',
                 ],
+            ])
+            ->add('minPerPrepay', TextType::class, [
+                'label' => 'Минимальная предоплата',
+                'group' => 'Условия и ограничения',
+                'required' => false,
+                'attr' => ['placeholder' => 'Минимальный процент предоплаты'],
+                'help' => 'Процент от суммы заказа от 0 до 100%'
             ]);
-//            ->add('minPerPrepay', TextType::class, [
-//                'label' => 'Минимальная предоплата',
-//                'group' => 'Условия и ограничения',
-//                'required' => false,
-//                'attr' => ['placeholder' => 'Минимальный процент предоплаты'],
-//                'help' => 'Процент от суммы заказа от 0 до 100%'
-//            ]);
         $builder
             ->add('isOnline', CheckboxType::class, [
                 'label' => 'Онлайн?',

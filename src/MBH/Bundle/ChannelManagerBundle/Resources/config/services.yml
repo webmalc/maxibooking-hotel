@@ -136,6 +136,7 @@ services:
 
     mbh.channel_manager.trip_advisor.tariffs_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffsType
+      arguments: ['@doctrine.odm.mongodb.document_manager']
       tags:
           - { name: form.type }
 

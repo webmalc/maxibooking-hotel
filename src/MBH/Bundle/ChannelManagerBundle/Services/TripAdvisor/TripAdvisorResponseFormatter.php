@@ -9,6 +9,7 @@ use MBH\Bundle\BaseBundle\Lib\TranslatableInterface;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
 use MBH\Bundle\HotelBundle\Document\ContactInfo;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -545,18 +546,18 @@ class TripAdvisorResponseFormatter
         ];
     }
 
-    private function getTariffData(Tariff $tariff)
+    private function getTariffData(TripAdvisorTariff $tripAdvisorTariff)
     {
+        $tariff = $tripAdvisorTariff->getTariff();
         /** @var Tariff $tariff */
         $tariffData = [
             'code' => $tariff->getId(),
             'name' => $tariff->getName(),
             'description' => $tariff->getDescription() ? $tariff->getDescription() : $tariff->getName(),
             'rate_amenities' => $this->getRateAmenities($tariff),
-            //TODO: Узнать про него. У нас такого поля нет. Заполнить обязательно
-            'refundable',
+            'refundable' => $tripAdvisorTariff->getRefundableType(),
             //TODO: То же самое, у нас данных об этом нет
-            'cancellation_rules',
+//            'cancellation_rules',
             'meal_plan' => $this->getRateMealPlanes($tariff)
         ];
 
@@ -614,8 +615,6 @@ class TripAdvisorResponseFormatter
                 //TODO: Пока что вроде как только при бронировании берется, но мб потом добавим
                 'final_price_at_checkout' => $this->getPriceObject(0, $currency)
             ]
-            //TODO: Можно добавить доп. данные
-//            'legal_text' 'comments'
         ];
 
         return $reservationData;
