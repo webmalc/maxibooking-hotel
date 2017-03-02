@@ -22,7 +22,8 @@ $(document).ready(function ($) {
             var data = {
                 'begin': begin,
                 'end': end,
-                'roomTypes': $('#dynamic-sales-filter-roomType').val()
+                'roomTypes': $('#dynamic-sales-filter-roomType').val(),
+                'optionsShow': $('#dynamic-sales-show-filter-roomType').val()
             };
 
             if (wrapper.length === 0) {

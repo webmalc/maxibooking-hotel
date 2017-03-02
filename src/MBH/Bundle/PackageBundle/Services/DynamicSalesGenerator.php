@@ -110,13 +110,24 @@ class DynamicSalesGenerator
                     $infoDay->setDateSales(clone $day);
                     $summary->setDateSales(clone $day);
 
+                    $countPeople = 0;
+                    $countDayPackage = 0;
+                    $countRoom = 0;
+
                     foreach ($packagesAll as $packages) {
                         foreach ($packages as $package) {
 
                             if ($package->getRoomType() == $roomType) {
 
                                 if ($package->getCreatedAt()->format('d.m.Y') == $day->format('d.m.Y')) {
+
+                                    $infoDay->setAmountPackages($infoDay->getAmountPackages() + 1);
                                     $infoDay->setTotalSales($infoDay->getTotalSales() + $package->getPrice());
+
+                                    $countPeople  =+ ($package->getAdults()+$package->getChildren());
+                                    $countDayPackage =+ $package->getDays();
+                                    $countRoom++;
+
                                 }
                             }
                             unset($package);
@@ -124,15 +135,28 @@ class DynamicSalesGenerator
                         unset($packages);
                     }
 
+                    $summary->setTotalAmountPackages($summary->getTotalAmountPackages() + $infoDay->getAmountPackages());
                     $summary->setTotalSales($summary->getTotalSales() + $infoDay->getTotalSales());
+
                     $infoDay->setVolumeGrowth($summary->getTotalSales());
+                    $infoDay->setTotalAmountPackages($summary->getTotalAmountPackages());
+
+                    $summary->setTotalCountPeople($summary->getTotalCountPeople() + $countPeople*$countDayPackage);
+                    $summary->setTotalCountNumbers($summary->getTotalCountNumbers() + $countRoom*$countDayPackage);
+
+                    $infoDay->setTotalCountPeople($summary->getTotalCountPeople());
+                    $infoDay->setTotalCountNumbers($summary->getTotalCountNumbers());
+
                     $resultPeriod[] = $infoDay;
                     $countDay++;
-
+                    unset($countPeople);
+                    unset($countDayPackage);
+                    unset($countRoom);
                     unset($day);
                 }
 
                 $summary->setAvaregeVolume($summary->getTotalSales() / $countDay);
+                $summary->setAmountPackages($summary->getTotalAmountPackages() / $countDay);
                 $resultPeriod['summ'] = $summary;
 
                 $dynamicSale->addPeriods($resultPeriod);
@@ -154,6 +178,17 @@ class DynamicSalesGenerator
                                 $volumeDay->setPersentDayVolume(self::percentCalc($daySales, $daySalesMain, 'getTotalSales', $volumeDay->getTotalSales()));
                                 $volumeDay->setAvaregeVolume($daySalesMain->getvolumeGrowth() - $daySales->getvolumeGrowth());
                                 $volumeDay->setPersentDayGrowth(self::percentCalc($daySales, $daySalesMain, 'getvolumeGrowth', $volumeDay->getAvaregeVolume()));
+                                //comparison count package
+                                $volumeDay->setAmountPackages($daySalesMain->getAmountPackages() - $daySales->getAmountPackages());
+                                $volumeDay->setPercentAmountPackages(self::percentCalc($daySales, $daySalesMain, 'getAmountPackages', $volumeDay->getAmountPackages()));
+                                $volumeDay->setTotalAmountPackages($daySalesMain->getTotalAmountPackages() - $daySales->getTotalAmountPackages());
+                                $volumeDay->setPercentTotalAmountPackages(self::percentCalc($daySales, $daySalesMain, 'getTotalAmountPackages', $volumeDay->getTotalAmountPackages()));
+                                //comparison count People
+                                $volumeDay->setTotalCountPeople($daySalesMain->getTotalCountPeople() - $daySales->getTotalCountPeople());
+                                $volumeDay->setPercentCountPeople(self::percentCalc($daySales, $daySalesMain, 'getTotalCountPeople', $volumeDay->getTotalCountPeople()));
+                                //comparison count Numbers
+                                $volumeDay->setTotalCountNumbers($daySalesMain->getTotalCountNumbers() - $daySales->getTotalCountNumbers());
+                                $volumeDay->setPercentCountNumbers(self::percentCalc($daySales, $daySalesMain, 'getTotalCountNumbers', $volumeDay->getTotalCountNumbers()));
                             }
                         }
                         $volumePercentPeriod[] = $volumeDay;

@@ -436,3 +436,20 @@ package.dynamic.sale.search: 'Показать'
 dynamic.sales.layout.title: Отчеты
 dynamic.sales.error.range: Период не должен превышать
 dynamic.sales.error.day: дней
+
+dynamic.sales.day.periods: Периоды
+dynamic.sales.day.summary: Итого
+dynamic.sales.day.sales.volume: Дневной объем продаж
+dynamic.sales.period.sales.volume: Объем продаж за месяц нарастающим итогом
+dynamic.sales.day.packages: Кол-во броней
+dynamic.sales.day.packages.growth: Продано броней нарастающим итогом
+dynamic.sales.day.sales.comparison: Сравнение
+dynamic.sales.day.sales.summ: Сумма
+dynamic.sales.day.sales.amounts: Кол-во
+dynamic.sales.day.sales.volume: Дневной объем продаж
+dynamic.sales.day.sales.count.people: Человекодней
+dynamic.sales.day.sales.count.room: Номеровдней
+
+dynamic.sales.dates: Даты
+dynamic.sales.show.title: Что показывать ?
+dynamic.sales.type.room: Тип номера

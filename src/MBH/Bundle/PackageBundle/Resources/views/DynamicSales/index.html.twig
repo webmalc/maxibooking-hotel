@@ -13,24 +13,27 @@
         </div>
 
         <div class="input">
-            <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+            <i class="fa fa-calendar" title='{{ 'dynamic.sales.dates'|trans({},'MBHPackageBundle') }}'
+               data-toggle='tooltip'></i>&nbsp
             <input type="text" name="begin2" id="dynamic-sales-filter-begin2"
                    class="dynamic-sales-filter not-set-date form-control input-sm" data-date-format="dd.mm.yyyy"
                    value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
         </div>
 
         <div class="input">
-            <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+            <i class="fa fa-calendar" title='{{ 'dynamic.sales.dates'|trans({},'MBHPackageBundle') }}'
+               data-toggle='tooltip'></i>&nbsp
             <input type="text" name="begin2" id="dynamic-sales-filter-begin3"
                    class="dynamic-sales-filter not-set-date form-control input-sm" data-date-format="dd.mm.yyyy"
                    value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
         </div>
 
         <div class="input">
-            <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp <select name="roomType" multiple
-                                                                                            data-placeholder="Тип номера"
-                                                                                            id="dynamic-sales-filter-roomType"
-                                                                                            class="dynamic-sale-filter-filter form-control input-sm">
+            <i class="fa fa-bed" title='{{ 'dynamic.sales.type.room'|trans({},'MBHPackageBundle') }}'
+               data-toggle='tooltip'></i>&nbsp <select name="roomType" multiple
+                                                       data-placeholder="{{ 'dynamic.sales.type.room'|trans({},'MBHPackageBundle') }}"
+                                                       id="dynamic-sales-filter-roomType"
+                                                       class="dynamic-sale-filter-filter form-control input-sm">
                 <option></option>
                 {% for roomType in roomTypes %}
                     <option value="{{ roomType.id }}"
@@ -39,6 +42,18 @@
             </select>
         </div>
 
+        <div class="input">
+            <i class="fa fa-bed" title='{{ 'dynamic.sales.show.title'|trans({},'MBHPackageBundle') }}'
+               data-toggle='tooltip'></i>&nbsp <select name="dynamicSales" multiple
+                                                       data-placeholder="{{ 'dynamic.sales.show.title'|trans({},'MBHPackageBundle') }}"
+                                                       id="dynamic-sales-show-filter-roomType"
+                                                       class="dynamic-sale-filter-filter form-control input-sm">
+                <option></option>
+                {% for optionShowDynamicSales,value  in optionsShowDynamicSales %}
+                    <option value="{{ value }}">{{ optionShowDynamicSales|trans({},'MBHPackageBundle') }}</option>
+                {% endfor %}
+            </select>
+        </div>
         <div class="input">
             <button class="btn btn-primary" id="dynamic-sales-submit-button"><i
                         class="fa fa-search"></i> {{ 'package.dynamic.sale.search'|trans({},'MBHPackageBundle') }}
