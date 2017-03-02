@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "388c5362611902a8fc388822df8c0dc2",
+    "content-hash": "e0349e159ac90f3d554dad6cda9599c0",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -3987,6 +3987,73 @@
             "time": "2015-12-28T13:12:39+00:00"
         },
         {
+            "name": "symfony/cache",
+            "version": "3.2.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/cache.git",
+                "reference": "a7e07a10de463de3a814aad732650b1a20a7c039"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/a7e07a10de463de3a814aad732650b1a20a7c039",
+                "reference": "a7e07a10de463de3a814aad732650b1a20a7c039",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9",
+                "psr/cache": "~1.0",
+                "psr/log": "~1.0"
+            },
+            "provide": {
+                "psr/cache-implementation": "1.0"
+            },
+            "require-dev": {
+                "cache/integration-tests": "dev-master",
+                "doctrine/cache": "~1.6",
+                "doctrine/dbal": "~2.4",
+                "predis/predis": "~1.0"
+            },
+            "suggest": {
+                "symfony/polyfill-apcu": "For using ApcuAdapter on HHVM"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Cache\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony implementation of PSR-6",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "caching",
+                "psr6"
+            ],
+            "time": "2017-02-28 14:39:50"
+        },
+        {
             "name": "symfony/monolog-bundle",
             "version": "2.12.0",
             "source": {
@@ -5037,9 +5104,9 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "symfony/symfony": 0,
-        "symfony/cache": 20,
         "twig/extensions": 0,
         "symfony/assetic-bundle": 0,
+        "symfony/cache": 20,
         "symfony/swiftmailer-bundle": 0,
         "swiftmailer/swiftmailer": 0,
         "symfony/monolog-bundle": 0,
