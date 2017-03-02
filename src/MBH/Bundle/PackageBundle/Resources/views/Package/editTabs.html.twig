@@ -38,10 +38,12 @@
     'class': 'label-warning'
     } %}
 {% endif %}
+
 {% set newPrice = 0 %}
 {% for defaultService in entity.tariff.defaultServices %}
     {% set newPrice = newPrice + (defaultService.service.price * defaultService.amount * defaultService.persons * defaultService.nights) %}
 {% endfor %}
+
 {% set sumPrice = newPrice + entity.servicesPrice %}
 {% set menu = [
     {
