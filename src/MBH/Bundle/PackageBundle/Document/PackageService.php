@@ -276,18 +276,7 @@ class PackageService extends Base
      */
     public function getTotalAmount()
     {
-        $result = $this->getAmount();
-
-        if ($this->getCalcType() == 'per_night') {
-            $result *= $this->getNights();
-        }
-
-        if (!in_array($this->getCalcType(), ['not_applicable', 'day_percent'])) {
-            $result *= $this->getPersons();
-        }
-
-        return $result;
-
+        return $this->calcPrice();
     }
 
     public function getCalcType()
@@ -327,17 +316,7 @@ class PackageService extends Base
             return $this->getTotalOverwrite();
         }
 
-        $price = $this->getPrice() * $this->getAmount();
-
-        if ($this->getCalcType() == 'per_night') {
-            $price *= $this->getNights();
-        }
-
-        if (!in_array($this->getCalcType(), ['not_applicable', 'day_percent'])) {
-            $price *= $this->getPersons();
-        }
-
-        return $price;
+        return $this->calcPrice($this->getPrice());
     }
 
     /**
@@ -540,6 +519,27 @@ class PackageService extends Base
     public function __toString()
     {
         return $this->service->getName();
+    }
+
+    /**
+     * Get calc price with amount, count night and count persons
+     *
+     * @param float|int $price
+     * @return float|int
+     */
+    public function calcPrice($price = 1)
+    {
+        $price *= $this->getAmount();
+
+        if ($this->getCalcType() == 'per_night') {
+            $price *= $this->getNights();
+        }
+
+        if (!in_array($this->getCalcType(), ['not_applicable', 'day_percent'])) {
+            $price *= $this->getPersons();
+        }
+
+        return $price;
     }
 
 }

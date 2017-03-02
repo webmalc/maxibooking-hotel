@@ -52,6 +52,8 @@
                     </tr>
                     </thead>
                     <tbody>
+                    {% set packageServices = [] %}
+                    {% set pricePackageServices = [] %}
                     {% for service in package.services %}
                         <tr {% if service.deletedAt %}class="danger"{% endif %}>
                             <td class="text-center table-icon"><i class="fa fa-plug"></i></td>
@@ -63,9 +65,47 @@
                             <td class="text-center">
                                 {{ service.service.time ? service.time|date('H:i') : ''  }}
                             </td>
-                            <td class="text-right text-success">{{ service.price|number_format(2) }}</td>
+                            <td class="text-right text-success">
+                                {% set priceDefaultServices = service.package.tariff.defaultServices %}
+                                {% set existPackageService = 'false' %}
+
+                                {% for packageService in pricePackageServices if packageService == service.service.id %}
+                                    {% set existPackageService = 'true' %}
+                                {% endfor %}
+
+                                {% if priceDefaultServices is not empty %}
+                                    {% for defaultService in priceDefaultServices if defaultService.service.id == service.service.id and existPackageService != 'true' %}
+                                        {{ service.service.price|number_format(2) }}
+                                        {% set pricePackageServices = pricePackageServices|merge([service.service.id]) %}
+                                    {% endfor %}
+                                    {% for defaultService in priceDefaultServices if defaultService.service.id == service.service.id and existPackageService == 'true' %}
+                                        {{ service.price|number_format(2) }}
+                                    {% endfor %}
+                                {% else %}
+                                    {{ service.price|number_format(2) }}
+                                {% endif %}
+                            </td>
                             <td>{{ config.calcTypes[service.calcType] }}</td>
-                            <td class="text-right text-success">{{ service.total|number_format(2) }}</td>
+                            <td class="text-right text-success">
+                                {% set defaultServices = service.package.tariff.defaultServices %}
+                                {% set existPackageService = 'false' %}
+
+                                {% for packageService in packageServices if packageService == service.service.id %}
+                                    {% set existPackageService = 'true' %}
+                                {% endfor %}
+
+                                {% if defaultServices is not empty %}
+                                    {% for defaultService in defaultServices if defaultService.service.id == service.service.id and existPackageService != 'true' %}
+                                        {{ service.calcPrice(service.service.price)|number_format(2) }}
+                                        {% set packageServices = packageServices|merge([service.service.id]) %}
+                                    {% endfor %}
+                                    {% for defaultService in defaultServices if defaultService.service.id == service.service.id and existPackageService == 'true' %}
+                                        {{ service.total|number_format(2) }}
+                                    {% endfor %}
+                                {% else %}
+                                    {{ service.total|number_format(2) }}
+                                {% endif %}
+                            </td>
                             <td>{{ service.note }}</td>
                             <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
 
