@@ -38,7 +38,11 @@
     'class': 'label-warning'
     } %}
 {% endif %}
-
+{% set newPrice = 0 %}
+{% for defaultService in entity.tariff.defaultServices %}
+    {% set newPrice = newPrice + (defaultService.service.price * defaultService.amount * defaultService.persons * defaultService.nights) %}
+{% endfor %}
+{% set sumPrice = newPrice + entity.servicesPrice %}
 {% set menu = [
     {
         'route': 'package_order_edit',
@@ -68,7 +72,7 @@
         'route': 'package_service',
         'order': false,
         'title': '<i class="fa fa-plug"></i> '~'package.editTabs.services'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ services ~ '</small>',
-        'append': entity.services|length > 0 ? entity.services|length ~ ' ' ~ ('services')|transchoice(entity.services|length) ~ ', ' ~ entity.servicesPrice|number_format(2) : 'dash',
+        'append': entity.services|length > 0 ? entity.services|length ~ ' ' ~ ('services')|transchoice(entity.services|length) ~ ', ' ~ sumPrice|number_format(2) : 'dash',
     },
     {
         'route': 'package_accommodation',
