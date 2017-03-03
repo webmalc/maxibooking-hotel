@@ -10,6 +10,7 @@ use MBH\Bundle\BaseBundle\Service\Currency;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorRoomType;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
 use MBH\Bundle\HotelBundle\Document\ContactInfo;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -155,6 +156,7 @@ class TripAdvisorResponseFormatter
                 'country' => $this->getTranslatableTitle($hotel->getCountry()),
                 'amenities' => $this->getAvailableHotelAmenities($hotel->getFacilities()),
                 'url' => $config->getHotelUrl(),
+                'room_types' => []
             ];
             if ($contactInformation->getPhoneNumber()) {
                 $hotelData['phone'] = $contactInformation->getPhoneNumber();
@@ -176,7 +178,8 @@ class TripAdvisorResponseFormatter
             }
 
             foreach ($hotel->getRoomTypes() as $roomType) {
-                if ($roomType->getDescription()) {
+                $tripAdvisorRoomType = $config->getTARoomTypeByMBHRoomTypeId($roomType->getId());
+                if ($roomType->getDescription() && !is_null($tripAdvisorRoomType) && $tripAdvisorRoomType->getIsEnabled()) {
                     $roomTypeData = [];
                     if ($roomType->getDescription()) {
                         $roomTypeData['desc'] = $roomType->getDescription();
@@ -240,7 +243,11 @@ class TripAdvisorResponseFormatter
                 //Для каждого типа номера используется только 1 тариф, поэтому 1 результат
                 /** @var SearchResult $roomTypeAvailabilityData */
                 $roomTypeAvailabilityData = current($roomTypeAvailabilityResults['results']);
-                if ($roomTypeAvailabilityData) {
+                $config = $roomTypeAvailabilityData->getRoomType()->getHotel()->getTripAdvisorConfig();
+                $tripAdvisorRoomType =
+                    $config->getTARoomTypeByMBHRoomTypeId($roomTypeAvailabilityData->getRoomType()->getId());
+
+                if ($roomTypeAvailabilityData && !is_null($tripAdvisorRoomType) && $tripAdvisorRoomType->getIsEnabled()) {
                     $priceData = $this->getPriceDataByAdultsChildrenCombinations($adultsChildrenCombinations,
                         $roomTypeAvailabilityData);
 
@@ -337,10 +344,10 @@ class TripAdvisorResponseFormatter
             foreach ($roomTypeAvailabilityData['results'] as $searchResult) {
                 /** @var SearchResult $searchResult */
                 $tariff = $searchResult->getTariff();
-                if (in_array($tariff, $config->getMBHTariffs())) {
-                    $tripAdvisorTariff = $this->getTATariffByMBHTariffId($tariff->getId(), $config);
+                $tripAdvisorTariff = $config->getTATariffByMBHTariffId($tariff->getId());
+                $response['hotel_room_types'][$roomType->getId()] = $this->getRoomTypeData($roomType, $language);
+                if (!is_null($tripAdvisorTariff) && $tripAdvisorTariff->isIsEnabled()) {
                     $response['hotel_rate_plans'][$tariff->getId()] = $this->getTariffData($tripAdvisorTariff);
-                    $response['hotel_room_types'][$roomType->getId()] = $this->getRoomTypeData($roomType, $language);
                     $hotelRoomRate = $this->getHotelRoomRates($searchResult, $adultsChildrenCombination, $currency,
                         $config, $language);
                     if ($hotelRoomRate) {
@@ -502,18 +509,6 @@ class TripAdvisorResponseFormatter
         return $tariffData;
     }
 
-    private function getTATariffByMBHTariffId($tariffId, TripAdvisorConfig $config)
-    {
-        foreach ($config->getTariffs() as $tripAdvisorTariff) {
-            /** @var TripAdvisorTariff $tripAdvisorTariff */
-            if ($tripAdvisorTariff->getTariff()->getId() == $tariffId) {
-                return $tripAdvisorTariff;
-            }
-        }
-
-        return null;
-    }
-
     private function getReservationData(Order $order)
     {
         /** @var Package $orderFirstPackage */
@@ -632,7 +627,7 @@ class TripAdvisorResponseFormatter
             'checkinout_policy' => $hotel->getCheckinoutPolicy(),
             'checkin_time' => $this->arrivalTime . ':00',
             'checkout_time' => $this->departureTime . ':00',
-            'hotel_smoking_policy' => ['standard' => [$hotel->getSmokingPolicy()]],
+            'hotel_smoking_policy' => ['custom' => [$hotel->getSmokingPolicy()]],
         ];
 
         if ($hotel->getLatitude()) {
@@ -744,10 +739,8 @@ class TripAdvisorResponseFormatter
     {
         if ($this->isRequestedLanguageLocal($locale)) {
             $roomTypeName = $roomType->getName();
-
         } else {
             $roomTypeName = $roomType->getInternationalTitle();
-
         }
         $roomTypeResponseData = [
             'code' => $roomType->getId(),
@@ -777,7 +770,6 @@ class TripAdvisorResponseFormatter
     private function getRoomTypePhotoData(RoomType $roomType)
     {
         $imagesData = [];
-        $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomType->getId());
         foreach ($roomType->getImages() as $image) {
             $roomTypeImageData = [];
             /** @var RoomTypeImage $image */
@@ -805,7 +797,8 @@ class TripAdvisorResponseFormatter
         foreach ($hotel->getImages() as $image) {
             $roomTypeImageData = [];
             /** @var Image $image */
-            $roomTypeImageData['url'] = $this->domainName . $this->uploaderHelper->asset($image, 'imageFile', Image::class);
+            $roomTypeImageData['url'] = $this->domainName . $this->uploaderHelper->asset($image, 'imageFile',
+                    Image::class);
             if ($image->getWidth()) {
                 $roomTypeImageData['width'] = $image->getWidth();
             }

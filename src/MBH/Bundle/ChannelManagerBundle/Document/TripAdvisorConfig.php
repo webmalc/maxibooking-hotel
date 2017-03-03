@@ -11,6 +11,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -109,13 +110,14 @@ class TripAdvisorConfig extends Base
 
     /**
      * @var ArrayCollection
-     * @ODM\EmbedMany(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorRoomType")
+     * @ODM\EmbedMany(targetDocument="TripAdvisorRoomType")
      */
     protected $rooms;
 
     public function __construct()
     {
         $this->tariffs = new ArrayCollection();
+        $this->rooms = new ArrayCollection();
     }
 
     /**
@@ -157,7 +159,7 @@ class TripAdvisorConfig extends Base
     }
 
     /**
-     * @return mixed
+     * @return Tariff
      */
     public function getMainTariff()
     {
@@ -361,5 +363,31 @@ class TripAdvisorConfig extends Base
         $this->rooms = new ArrayCollection();
 
         return $this;
+    }
+
+    public function getTATariffByMBHTariffId($tariffId)
+    {
+        foreach ($this->getTariffs() as $tripAdvisorTariff) {
+            /** @var TripAdvisorTariff $tripAdvisorTariff */
+            if ($tripAdvisorTariff->getTariff()->getId() == $tariffId) {
+                return $tripAdvisorTariff;
+            }
+        }
+
+        return null;
+    }
+
+    public function getTARoomTypeByMBHRoomTypeId($roomTypeId)
+    {
+        if (!is_null($this->getRooms())) {
+            foreach ($this->getRooms() as $tripAdvisorRoomType) {
+                /** @var TripAdvisorRoomType $tripAdvisorRoomType */
+                if ($tripAdvisorRoomType->getRoomType()->getId() == $roomTypeId) {
+                    return $tripAdvisorRoomType;
+                }
+            }
+        }
+
+        return null;
     }
 }

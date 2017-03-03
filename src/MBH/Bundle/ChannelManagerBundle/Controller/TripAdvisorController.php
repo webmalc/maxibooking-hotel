@@ -11,6 +11,7 @@ use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorRoomTypesForm;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -43,6 +44,7 @@ class TripAdvisorController extends BaseController
         if (!$config) {
             $config = new TripAdvisorConfig();
             $config->setHotel($this->hotel);
+            $config->setIsEnabled(false);
         }
 
         $languages = $this->getParameter('full_locales');
@@ -56,6 +58,9 @@ class TripAdvisorController extends BaseController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            if (!$this->checkHotelDataFilling($this->hotel)) {
+
+            }
             $this->dm->persist($config);
             $this->dm->flush();
             $this->addFlash('success', 'controller.tripadvisor_controller.settings_saved_success');
@@ -88,8 +93,13 @@ class TripAdvisorController extends BaseController
         if (count($config->getTariffs()) == 0) {
             $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
                 ->findBy(['hotel.id' => $this->hotel->getId()]);
+            $mainTariffId = $config->getMainTariff()->getId();
             foreach ($tariffs as $tariff) {
-                $config->addTariff((new TripAdvisorTariff())->setTariff($tariff));
+                $tripAdvisorTariff = (new TripAdvisorTariff())->setTariff($tariff);
+                if ($tariff->getId() == $mainTariffId) {
+                    $tripAdvisorTariff->setIsEnabled(true);
+                }
+                $config->addTariff($tripAdvisorTariff);
             }
         }
 
@@ -99,11 +109,6 @@ class TripAdvisorController extends BaseController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $config->removeAllTariffs();
-            foreach ($form->getData() as $tripAdvisorTariff) {
-                $config->addTariff($tripAdvisorTariff);
-            }
-            $this->dm->persist($config);
             $this->dm->flush();
             $this->addFlash('success', 'controller.tripadvisor_controller.settings_saved_success');
         }
@@ -146,12 +151,6 @@ class TripAdvisorController extends BaseController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $config->removeAllRooms();
-            foreach ($form->getData() as $channelManagerRoomType) {
-                $config->addRoom($channelManagerRoomType);
-            }
-
-            $this->dm->persist($config);
             $this->dm->flush();
             $this->addFlash('success', 'controller.tripadvisor_controller.settings_saved_success');
         }
@@ -219,9 +218,9 @@ class TripAdvisorController extends BaseController
 //        $deviceType = $request->get('device_type');
 
         $apiVersion = 7;
-        $requestedHotels = [["ta_id" => 123, "partner_id" => "58a55f9f05fe9808e80b22d2"]];
-        $startDate = '2017-03-02';
-        $endDate = '2017-03-03';
+        $requestedHotels = [["ta_id" => 123, "partner_id" => "58b937c5a84718004a438a52"]];
+        $startDate = '2017-03-05';
+        $endDate = '2017-03-06';
         $requestedAdultsChildrenCombination = [["adults" => 1, 'children' => [7]], ["adults" => 2]];
         $language = 'en_US';
         $queryKey = 'sadfafasdf';
@@ -262,9 +261,9 @@ class TripAdvisorController extends BaseController
 //        $bookingRequestId = $request->get('booking_request_id');
 
         $apiVersion = 7;
-        $requestedHotel = ["ta_id" => 123, "partner_hotel_code" => "58a55f9f05fe9808e80b22d2"];
-        $startDate = '2017-03-02';
-        $endDate = '2017-03-03';
+        $requestedHotel = ["ta_id" => 123, "partner_hotel_code" => "58b937c5a84718004a438a52"];
+        $startDate = '2017-03-06';
+        $endDate = '2017-03-07';
         $requestedAdultsChildrenCombination = [["adults" => 2], ["adults" => 1]];
         $language = 'en_US';
         $queryKey = 'sadfafasdf';
@@ -363,9 +362,9 @@ class TripAdvisorController extends BaseController
                     "17_01_2017" => 555
                 ]
             ],
-            "roomTypeId" => "5864fc922f77d901104b57ac",
-            "tariffId" => "5864fc912f77d901104b5794",
-            "hotelId" => "5864e3da2f77d9004b580232",
+            "roomTypeId" => "58b93c03a8471801ee458562",
+            "tariffId" => "58b93bd4a8471801dc3eb862",
+            "hotelId" => "58b937c5a84718004a438a52",
             'language' => 'en_US'
         ];
 
@@ -514,6 +513,21 @@ class TripAdvisorController extends BaseController
             && !is_null($hotel->getRegion())
             && !is_null($hotel->getCountry())
             && !is_null($hotel->getCity())
+            && !is_null($hotelContactInformation)
+            && !is_null($hotelContactInformation->getEmail())
+            && !is_null($hotelContactInformation->getFullName())
+            && !is_null($hotelContactInformation->getPhoneNumber())
+            && !is_null($hotel->getSmokingPolicy())
+            && !is_null($hotel->getCheckinoutPolicy())
+
+            ;
+    }
+
+    private function checkRoomTypeDataFilling(RoomType $roomType)
+    {
+        return !is_null($roomType->getInternationalTitle())
+            && !is_null($roomType->getDescription())
+
             ;
     }
 }

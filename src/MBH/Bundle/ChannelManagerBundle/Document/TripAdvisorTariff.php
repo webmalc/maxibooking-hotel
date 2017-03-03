@@ -4,7 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\ChannelManagerBundle\Model\TripAdvisor\TripAdvisorFee;
+use MBH\Bundle\ChannelManagerBundle\Model\TripAdvisor\TripAdvxisorFee;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
@@ -60,10 +60,10 @@ class TripAdvisorTariff
 //     */
 //    protected $fees;
 
-    public function __construct()
-    {
-        $this->fees = new ArrayCollection();
-    }
+//    public function __construct()
+//    {
+//        $this->fees = new ArrayCollection();
+//    }
 
 //    /**
 //     * @return TripAdvisorFee[]

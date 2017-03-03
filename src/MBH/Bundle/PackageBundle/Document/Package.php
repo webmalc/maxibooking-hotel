@@ -11,6 +11,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
@@ -277,7 +278,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "oktogo", "101Hotels", "homeaway"},
+     *      callback="getChannelManagerNames",
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      * @ODM\Index()
@@ -1612,4 +1613,8 @@ class Package extends Base implements \JsonSerializable
         return $this->getHotel()->getOrganization() ?? $this->getHotel();
     }
 
+    private static function getChannelManagerNames()
+    {
+        return AbstractChannelManagerService::getChannelManagerNames();
+    }
 }

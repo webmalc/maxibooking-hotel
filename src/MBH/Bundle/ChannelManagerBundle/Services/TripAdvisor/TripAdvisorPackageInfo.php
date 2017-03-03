@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerException;
 
 class TripAdvisorPackageInfo extends AbstractPackageInfo
 {
@@ -64,7 +65,7 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
         }
 
         if (!$roomType) {
-            throw new \ChannelManagerException($this->translator->trans('services.expedia.nor_one_room_type'));
+            throw new ChannelManagerException($this->translator->trans('services.expedia.nor_one_room_type'));
         }
 
         return $roomType;

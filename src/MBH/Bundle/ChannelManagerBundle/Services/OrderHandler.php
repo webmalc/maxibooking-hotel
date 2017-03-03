@@ -150,7 +150,7 @@ class OrderHandler
             ->setOrder($order)
             ->setCorrupted($packageInfo->getIsCorrupted())
             ->setIsSmoking($packageInfo->getIsSmoking())
-            ->setChildAges($packageInfo->getChildrenAges());
+            ->setChildAges($packageInfo->getChildAges());
 
         foreach ($packageInfo->getTourists() as $tourist)
         {

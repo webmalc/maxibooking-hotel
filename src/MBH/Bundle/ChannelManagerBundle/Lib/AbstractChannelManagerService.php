@@ -585,4 +585,21 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
         return $amount;
     }
+
+    public static function getChannelManagerNames()
+    {
+        return [
+            "vashotel",
+            "booking",
+            "myallocator",
+            "ostrovok",
+            "expedia",
+            "hotels",
+            "venere",
+            "oktogo",
+            "101Hotels",
+            "homeaway",
+            "tripadvisor"
+        ];
+    }
 }
