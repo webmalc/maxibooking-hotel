@@ -3,7 +3,9 @@
 namespace MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Form\AbstractType;
@@ -20,19 +22,27 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TripAdvisorTariffType extends AbstractType
 {
+    /** @var  DocumentManager $dm */
+    private $dm;
+
+    public function __construct(DocumentManager $dm)
+    {
+        $this->dm = $dm;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var TripAdvisorTariff $tripAdvisorTariff */
+        $tripAdvisorTariff = $options['tariffs'][$builder->getName()];
+        $tariff = $tripAdvisorTariff->getTariff();
+
         $builder
-//            ->add('tariff', DocumentType::class, [
-//                'class' => Tariff::class,
-//                'label' => 'form.trip_advisor_tariff_type.sync_tariff.label',
-//                'query_builder' => function(DocumentRepository $repository) use ($options) {
-//                    $builder = $repository->createQueryBuilder()->field('hotel.id')->equals($options['hotel']->getId());
-//                    return $builder;
-//                },
-//                'required' => true,
-//                'group' => false
-//            ])
+            ->add('isEnabled', CheckboxType::class, [
+                'label' => 'form.trip_advisor_tariff_type.isSynchronized.label',
+                'help' => 'form.trip_advisor_tariff_type.isSynchronized.help',
+                'required' => false,
+                'group' => $tariff->getName()
+            ])
             ->add('refundableType', ChoiceType::class, [
                 'choices' => TripAdvisorTariff::getRefundableTypes(),
                 'choice_label' => function ($value) {
@@ -40,7 +50,8 @@ class TripAdvisorTariffType extends AbstractType
                 },
                 'label' => 'form.trip_advisor_tariff_type.refundable_type.label',
                 'help' => 'form.trip_advisor_tariff_type.refundable_type.help',
-
+                'empty_data'  => null,
+                'group' => $tariff->getName()
             ])
 //            ->add('deadline', DateTimeType::class, array(
 //                'label' => 'form.trip_advisor_tariff_type.deadline.label',
@@ -72,18 +83,6 @@ class TripAdvisorTariffType extends AbstractType
 //                'required' => false
 //            ])
         ;
-        $builder->addEventListener(FormEvents::PRE_SET_DATA,
-            function (FormEvent $event) use ($builder)
-            {
-                $form = $event->getForm();
-                $child = $event->getData();
-
-                if ($child instanceof TripAdvisorTariff) {
-                    $form->all()['refundableType']->getConfig()->getOptions()['group'] = $child->getTariff()->getName();
-                    $form->getConfig()->getOptions()['tariff'] = $child;
-                }
-            }
-        );
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -92,7 +91,7 @@ class TripAdvisorTariffType extends AbstractType
             ->setDefaults([
                 'data_class' => TripAdvisorTariff::class,
                 'hotel' => null,
-                'tariff' => null
+                'tariffs' => null
             ]);
     }
 

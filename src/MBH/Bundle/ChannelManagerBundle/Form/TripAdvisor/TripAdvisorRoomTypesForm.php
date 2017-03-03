@@ -8,16 +8,16 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TripAdvisorTariffsType extends AbstractType
+class TripAdvisorRoomTypesForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('tariffs', CollectionType::class, [
-                'entry_type' => TripAdvisorTariffType::class,
+            ->add('rooms', CollectionType::class, [
+                'entry_type' => TripAdvisorRoomTypeForm::class,
                 'entry_options' => [
                     'hotel' => $options['hotel'],
-                    'tariffs' => $builder->getData()->getTariffs()
+                    'roomTypes' => $builder->getData()->getRooms()
                 ],
                 'group' => false
             ]);
@@ -28,13 +28,12 @@ class TripAdvisorTariffsType extends AbstractType
         $resolver
             ->setDefaults([
                 'data_class' => TripAdvisorConfig::class,
-                'hotel' => null,
-                'group' => null
+                'hotel' => null
             ]);
     }
 
     public function getBlockPrefix()
     {
-        return 'mbhchannel_manager_bundle_trip_advisor_tariffs_type';
+        return 'mbhchannel_manager_bundle_trip_advisor_room_types_form';
     }
 }

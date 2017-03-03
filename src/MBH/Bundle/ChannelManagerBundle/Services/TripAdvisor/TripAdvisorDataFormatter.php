@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorRoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -54,12 +55,12 @@ class TripAdvisorDataFormatter
     public function getTripAdvisorConfigs($tripAdvisorHotelIds = null)
     {
         $tripAdvisorConfigRepository = $this->dm->getRepository('MBHChannelManagerBundle:TripAdvisorConfig');
-        if ($tripAdvisorHotelIds) {
+        if (is_null($tripAdvisorHotelIds)) {
             return $tripAdvisorConfigRepository->findAll();
         }
 
         return $tripAdvisorConfigRepository->createQueryBuilder()
-            ->field('hotelId')->in($tripAdvisorHotelIds);
+            ->field('hotel.id')->in($tripAdvisorHotelIds)->getQuery()->execute();
     }
 
     public function getBookingOptionsByHotel($startDate, $endDate, Hotel $hotel)
@@ -94,8 +95,16 @@ class TripAdvisorDataFormatter
     public function getAvailableRoomTypes(Hotel $requestedHotel)
     {
         if (!$this->isAvailableRoomTypesInit) {
+            $availableRoomTypeIds = [];
+            foreach ($requestedHotel->getTripAdvisorConfig()->getRooms() as $tripAdvisorRoomType) {
+                /** @var TripAdvisorRoomType $tripAdvisorRoomType */
+                if ($tripAdvisorRoomType->getIsEnabled()) {
+                    $availableRoomTypeIds[] = $tripAdvisorRoomType->getRoomType()->getId();
+                }
+            }
 
-            $this->availableRoomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($requestedHotel);
+            $this->availableRoomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+                ->fetch($requestedHotel, $availableRoomTypeIds);
             $this->isAvailableRoomTypesInit = true;
         }
 
@@ -106,7 +115,6 @@ class TripAdvisorDataFormatter
     public function getAvailableTariffs(Hotel $requestedHotel, \DateTime $begin, \DateTime $end)
     {
         if (!$this->isAvailableTariffsInit) {
-
             $this->availableTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
                 ->getTariffsByDates($requestedHotel, $begin, $end);
             $this->isAvailableTariffsInit = true;

@@ -103,9 +103,15 @@ class TripAdvisorConfig extends Base
 
     /**
      * @var ArrayCollection
-     * @ODM\ReferenceMany(targetDocument="TripAdvisorTariff")
+     * @ODM\EmbedMany(targetDocument="TripAdvisorTariff")
      */
     protected $tariffs;
+
+    /**
+     * @var ArrayCollection
+     * @ODM\EmbedMany(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorRoomType")
+     */
+    protected $rooms;
 
     public function __construct()
     {
@@ -290,6 +296,69 @@ class TripAdvisorConfig extends Base
     public function removeTariff(TripAdvisorTariff $tariff)
     {
         $this->tariffs->remove($tariff);
+
+        return $this;
+    }
+
+    /**
+     * @return TripAdvisorConfig
+     */
+    public function removeAllTariffs()
+    {
+        $this->tariffs = new ArrayCollection();
+
+        return $this;
+    }
+
+    public function getMBHTariffs()
+    {
+        $tariffs = [];
+        foreach ($this->getTariffs() as $tripAdvisorTariff) {
+            /** @var TripAdvisorTariff $tripAdvisorTariff */
+            $tariffs[] = $tripAdvisorTariff->getTariff();
+        }
+
+        return $tariffs;
+    }
+
+    /**
+     * @param TripAdvisorRoomType $room
+     * @return TripAdvisorConfig
+     */
+    public function addRoom(TripAdvisorRoomType $room)
+    {
+        $this->rooms->add($room);
+
+        return $this;
+    }
+
+    /**
+     * @param TripAdvisorRoomType $room
+     * @return TripAdvisorConfig
+     */
+    public function removeRoom(TripAdvisorRoomType $room)
+    {
+        $this->rooms->removeElement($room);
+
+        return $this;
+    }
+
+    /**
+     * Get rooms
+     *
+     * @return \Doctrine\Common\Collections\Collection $rooms
+     */
+    public function getRooms()
+    {
+        return $this->rooms;
+    }
+
+    /**
+     * @return $this
+     */
+    public function removeAllRooms()
+    {
+        $this->rooms = new ArrayCollection();
 
         return $this;
     }

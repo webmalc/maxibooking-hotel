@@ -38,7 +38,7 @@
         {% endif %}
 
         {% for group, items in groups %}
-            {% if group %}
+            {% if group and (group != 'form.main.group') %}
                 <div class="box box-default box-solid">
 
                     <div class="box-header with-border">

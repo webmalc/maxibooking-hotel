@@ -167,6 +167,8 @@ form.trip_advisor_tariff_type.refundable_type.partial: Частично
 form.trip_advisor_tariff_type.refundable_type.full: Полностью
 form.trip_advisor_tariff_type.refundable_type.label: Возвратный
 form.trip_advisor_tariff_type.refundable_type.help: Возвращаются ли деньги при отмене брони?
+form.trip_advisor_tariff_type.isSynchronized.label: Включен
+form.trip_advisor_tariff_type.isSynchronized.help: Используется ли тариф в Tripadvisor.com?
 form.trip_advisor_fee_type.amount_type.fixed: Фиксированная
 form.trip_advisor_fee_type.amount_type.percent: В процентах
 form.trip_advisor_fee_type.amount_type.numNights: В кол-ве ночей

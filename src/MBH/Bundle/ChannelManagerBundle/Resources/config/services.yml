@@ -113,7 +113,7 @@ services:
 
     mbh.channel_manager.trip_advisor_response_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter
-      arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%', '%online_form_result_url%', '%locale%', '@doctrine_mongodb.odm.document_manager', '@vich_uploader.templating.helper.uploader_helper']
+      arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%', '%online_form_result_url%', '%locale%', '@doctrine_mongodb.odm.document_manager', '@vich_uploader.templating.helper.uploader_helper', '@mbh.currency', '%locale.currency%']
 
     mbh.channel_manager.trip_advisor_response_data_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorDataFormatter
@@ -131,12 +131,12 @@ services:
 
     mbh.channel_manager.trip_advisor.tariff_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffType
+      arguments: ['@doctrine.odm.mongodb.document_manager']
       tags:
           - { name: form.type }
 
     mbh.channel_manager.trip_advisor.tariffs_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffsType
-      arguments: ['@doctrine.odm.mongodb.document_manager']
       tags:
           - { name: form.type }
 
