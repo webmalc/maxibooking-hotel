@@ -15,7 +15,12 @@
 
             <tr class="mbh-grid-header2 warning">
                 <td colspan="{{ maxCount +2 }}" style="text-align: left">
-                    <strong>{{ dynamicSale.roomType.title }}</strong>&nbsp;&nbsp;
+                    {% if (dynamicSale.roomType is null ) %}
+                        <strong>{{ 'dynamic.sales.result'|trans({},'MBHPackageBundle') }}</strong>&nbsp;&nbsp;
+                    {% else %}
+                        <strong>{{ dynamicSale.roomType.title }}</strong>&nbsp;&nbsp;
+                    {% endif %}
+
                 </td>
             </tr>
             <tr>
@@ -25,7 +30,6 @@
             <td class="first-th" rowspan="{{ dynamicSale.periods|length }}" style="min-width: 100px;">
                 <small>{{ 'dynamic.sales.day.periods'|trans({},'MBHPackageBundle') }}</small>
             </td>
-
             {% for dynamicSalePeriod in dynamicSale.periods %}
                 {% set index = loop.index %}
                 {% if  loop.index == 1 %}
@@ -464,7 +468,7 @@
                         {% set index = loop.index %}
                         {% if loop.first %}
                             {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
-                                {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                {% if loop.index < dynamicSale.periods[index]|length and index > 0 %}
                                     <td>
                                         <div class="{% if dynamicSaleComparisonDay.TotalSales < 0 %} text-danger{% endif %}">
                                             {{ dynamicSaleComparisonDay.TotalSales|number_format(2) }}

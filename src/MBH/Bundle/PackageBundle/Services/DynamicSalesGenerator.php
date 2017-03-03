@@ -92,6 +92,7 @@ class DynamicSalesGenerator
         }
 
         $res = [];
+
         foreach ($roomTypes as $roomType) {
 
             $dynamicSale = new DynamicSales();
@@ -124,8 +125,8 @@ class DynamicSalesGenerator
                                     $infoDay->setAmountPackages($infoDay->getAmountPackages() + 1);
                                     $infoDay->setTotalSales($infoDay->getTotalSales() + $package->getPrice());
 
-                                    $countPeople  =+ ($package->getAdults()+$package->getChildren());
-                                    $countDayPackage =+ $package->getDays();
+                                    $countPeople = +($package->getAdults() + $package->getChildren());
+                                    $countDayPackage = +$package->getDays();
                                     $countRoom++;
 
                                 }
@@ -141,8 +142,8 @@ class DynamicSalesGenerator
                     $infoDay->setVolumeGrowth($summary->getTotalSales());
                     $infoDay->setTotalAmountPackages($summary->getTotalAmountPackages());
 
-                    $summary->setTotalCountPeople($summary->getTotalCountPeople() + $countPeople*$countDayPackage);
-                    $summary->setTotalCountNumbers($summary->getTotalCountNumbers() + $countRoom*$countDayPackage);
+                    $summary->setTotalCountPeople($summary->getTotalCountPeople() + $countPeople * $countDayPackage);
+                    $summary->setTotalCountNumbers($summary->getTotalCountNumbers() + $countRoom * $countDayPackage);
 
                     $infoDay->setTotalCountPeople($summary->getTotalCountPeople());
                     $infoDay->setTotalCountNumbers($summary->getTotalCountNumbers());
@@ -156,7 +157,7 @@ class DynamicSalesGenerator
                 }
 
                 $summary->setAvaregeVolume($summary->getTotalSales() / $countDay);
-                $summary->setAmountPackages($summary->getTotalAmountPackages() / $countDay);
+                $summary->setAmountPackages(round($summary->getTotalAmountPackages() / $countDay));
                 $resultPeriod['summ'] = $summary;
 
                 $dynamicSale->addPeriods($resultPeriod);
@@ -172,23 +173,7 @@ class DynamicSalesGenerator
                     foreach ($mainPeriod as $itemSalesMain => $daySalesMain) {
                         foreach ($dynamicSale->getPeriods()[$i] as $itemSalesDay => $daySales) {
                             if ($itemSalesMain == $itemSalesDay && $itemSalesMain !== 'summ' && $itemSalesDay !== 'summ') {
-
-                                $volumeDay = new DynamicSalesDay();
-                                $volumeDay->setTotalSales($daySalesMain->getTotalSales() - $daySales->getTotalSales());
-                                $volumeDay->setPersentDayVolume(self::percentCalc($daySales, $daySalesMain, 'getTotalSales', $volumeDay->getTotalSales()));
-                                $volumeDay->setAvaregeVolume($daySalesMain->getvolumeGrowth() - $daySales->getvolumeGrowth());
-                                $volumeDay->setPersentDayGrowth(self::percentCalc($daySales, $daySalesMain, 'getvolumeGrowth', $volumeDay->getAvaregeVolume()));
-                                //comparison count package
-                                $volumeDay->setAmountPackages($daySalesMain->getAmountPackages() - $daySales->getAmountPackages());
-                                $volumeDay->setPercentAmountPackages(self::percentCalc($daySales, $daySalesMain, 'getAmountPackages', $volumeDay->getAmountPackages()));
-                                $volumeDay->setTotalAmountPackages($daySalesMain->getTotalAmountPackages() - $daySales->getTotalAmountPackages());
-                                $volumeDay->setPercentTotalAmountPackages(self::percentCalc($daySales, $daySalesMain, 'getTotalAmountPackages', $volumeDay->getTotalAmountPackages()));
-                                //comparison count People
-                                $volumeDay->setTotalCountPeople($daySalesMain->getTotalCountPeople() - $daySales->getTotalCountPeople());
-                                $volumeDay->setPercentCountPeople(self::percentCalc($daySales, $daySalesMain, 'getTotalCountPeople', $volumeDay->getTotalCountPeople()));
-                                //comparison count Numbers
-                                $volumeDay->setTotalCountNumbers($daySalesMain->getTotalCountNumbers() - $daySales->getTotalCountNumbers());
-                                $volumeDay->setPercentCountNumbers(self::percentCalc($daySales, $daySalesMain, 'getTotalCountNumbers', $volumeDay->getTotalCountNumbers()));
+                                $volumeDay = self::generateComparisonDay($daySalesMain, $daySales);
                             }
                         }
                         $volumePercentPeriod[] = $volumeDay;
@@ -201,7 +186,99 @@ class DynamicSalesGenerator
             $res[] = $dynamicSale;
         }
 
+        if (count($roomTypes) > 1) {
+            $allRes = new DynamicSales();
+            $allResultPeriod = [];
+
+            foreach ($res as $daySaleDays) {
+
+                $countPeriods = count($daySaleDays->getPeriods());
+
+                for ($i = 0; $i < $countPeriods; $i++) {
+
+                    $countDay = 0;
+                    $amountDay = count($daySaleDays->getPeriods()[$i]);
+
+                    foreach ($daySaleDays->getPeriods()[$i] as $daySale) {
+                        isset($allResultPeriod[$i][$countDay]) ? $day = $allResultPeriod[$i][$countDay] : $day = new DynamicSalesDay();
+
+                        $day->setDateSales($daySale->getDateSales());
+                        $day->setTotalSales($day->getTotalSales() + $daySale->getTotalSales());
+                        $day->setVolumeGrowth($day->getVolumeGrowth() + $daySale->getVolumeGrowth());
+                        $day->setAvaregeVolume($day->getAvaregeVolume() + $daySale->getAvaregeVolume());
+                        $day->setPersentDayVolume($day->getPersentDayVolume() + $daySale->getPersentDayVolume());
+                        $day->setPersentDayGrowth($day->getPersentDayGrowth() + $daySale->getPersentDayGrowth());
+                        $day->setAmountPackages($day->getAmountPackages() + $daySale->getAmountPackages());
+                        $day->setTotalAmountPackages($day->getTotalAmountPackages() + $daySale->getTotalAmountPackages());
+                        $day->setPercentTotalAmountPackages($day->getPercentTotalAmountPackages() + $daySale->getPercentTotalAmountPackages());
+                        $day->setPercentCountPeople($day->getPercentCountPeople() + $daySale->getPercentCountPeople());
+                        $day->setPercentCountNumbers($day->getPercentCountNumbers() + $daySale->getPercentCountNumbers());
+                        $day->setTotalCountPeople($day->getTotalCountPeople() + $daySale->getTotalCountPeople());
+                        $day->setTotalCountNumbers($day->getTotalCountNumbers() + $daySale->getTotalCountNumbers());
+
+                        ($countDay == $amountDay - 1) ? $day->setAmountPackages(round($day->getTotalAmountPackages() / $countDay)) : null;
+
+                        $allResultPeriod[$i][$countDay] = $day;
+                        $countDay++;
+
+                    }
+
+                }
+
+            }
+
+            foreach ($allResultPeriod as $allResPer) {
+                $allRes->addPeriods($allResPer);
+            }
+
+            if ($countPeriods > 1) {
+                for ($i = 1; $i <= $countPeriods - 1; $i++) {
+                    $allMainPeriods = $allResultPeriod[0];
+                    array_pop($allMainPeriods);
+
+                    foreach ($allMainPeriods as $indexMain => $allMainPeriod) {
+                        foreach ($allResultPeriod[$i] as $index => $nextPeriod) {
+                            if ($indexMain == $index) {
+                                $volumeDay = self::generateComparisonDay($allMainPeriod, $nextPeriod);
+                            }
+
+                        }
+
+                        $comparisonPeriod[] = $volumeDay;
+                    }
+                    $allRes->addComparison($comparisonPeriod);
+                    unset($comparisonPeriod);
+                }
+
+            }
+
+            $res[] = $allRes;
+        }
+
         return $res;
+    }
+
+    public static function generateComparisonDay($allMainPeriod, $nextPeriod)
+    {
+
+        $volumeDay = new DynamicSalesDay();
+        $volumeDay->setTotalSales($allMainPeriod->getTotalSales() - $nextPeriod->getTotalSales());
+        $volumeDay->setPersentDayVolume(self::percentCalc($nextPeriod, $allMainPeriod, 'getTotalSales', $volumeDay->getTotalSales()));
+        $volumeDay->setAvaregeVolume($allMainPeriod->getvolumeGrowth() - $nextPeriod->getvolumeGrowth());
+        $volumeDay->setPersentDayGrowth(self::percentCalc($nextPeriod, $allMainPeriod, 'getvolumeGrowth', $volumeDay->getAvaregeVolume()));
+        //comparison count package
+        $volumeDay->setAmountPackages($allMainPeriod->getAmountPackages() - $nextPeriod->getAmountPackages());
+        $volumeDay->setPercentAmountPackages(self::percentCalc($nextPeriod, $allMainPeriod, 'getAmountPackages', $volumeDay->getAmountPackages()));
+        $volumeDay->setTotalAmountPackages($allMainPeriod->getTotalAmountPackages() - $nextPeriod->getTotalAmountPackages());
+        $volumeDay->setPercentTotalAmountPackages(self::percentCalc($nextPeriod, $allMainPeriod, 'getTotalAmountPackages', $volumeDay->getTotalAmountPackages()));
+        //comparison count People
+        $volumeDay->setTotalCountPeople($allMainPeriod->getTotalCountPeople() - $nextPeriod->getTotalCountPeople());
+        $volumeDay->setPercentCountPeople(self::percentCalc($nextPeriod, $allMainPeriod, 'getTotalCountPeople', $volumeDay->getTotalCountPeople()));
+        //comparison count Numbers
+        $volumeDay->setTotalCountNumbers($allMainPeriod->getTotalCountNumbers() - $nextPeriod->getTotalCountNumbers());
+        $volumeDay->setPercentCountNumbers(self::percentCalc($nextPeriod, $allMainPeriod, 'getTotalCountNumbers', $volumeDay->getTotalCountNumbers()));
+
+        return $volumeDay;
     }
 
     /**
