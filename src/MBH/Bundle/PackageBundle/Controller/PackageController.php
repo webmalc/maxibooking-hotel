@@ -1166,6 +1166,13 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                         echo $this->differenceTemplate($data);
                     }
                 }
+            } else {
+                echo "<span style='color: red'>Alarm!!!</span>
+                <br />Возможно бронь была удалена. Не исключено, что PackageService остался и ссылается на эту бронь!<br />
+                <u>Package id:</u> <b>".$packageService->getPackage()->getId()."</b>
+                <br />
+                <u>PackageService id:</u> <b>".$packageService->getId()."</b>
+                <br /><br />";
             }
         }
 
