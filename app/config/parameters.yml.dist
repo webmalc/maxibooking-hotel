@@ -59,7 +59,7 @@ parameters:
 
   #Cache
   mbh_cache:
-    is_enabled: true
+    is_enabled: false
     prefix: mbh
     search:
       months: 6
