@@ -1139,29 +1139,32 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $packageServices = $this->dm->getRepository('MBHPackageBundle:PackageService')->findAll();
 
         foreach ($packageServices as $packageService) {
-            $package = $packageService->getPackage();
+            if ($this->dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder()->field('id')->equals($packageService->getPackage()->getId())->exists(true)) {
+                $package = $packageService->getPackage();
 
-            $data['packageBegin'] = $package->getBegin();
-            $data['packageEnd'] = $package->getEnd();
-            $data['packageServiceBegin'] = $packageService->getBegin();
-            $data['packageNumber'] = $package->getNumberWithPrefix();
-            $data['serviceTitle'] = $packageService->getService()->getFullTitle();
-            $data['differenceDay'] = date_diff($data['packageBegin'], $data['packageServiceBegin'])->days;
-            $data['day'] = ((strtotime($data['packageBegin']->format('d-m-Y')) != strtotime($data['packageServiceBegin']->format('d-m-Y')))
-                && $data['differenceDay'] == 0) ? 1 : $data['differenceDay'];
+                $data['packageBegin'] = $package->getBegin();
+                $data['packageEnd'] = $package->getEnd();
+                $data['packageServiceBegin'] = $packageService->getBegin();
+                $data['packageNumber'] = $package->getNumberWithPrefix();
+                $data['serviceTitle'] = $packageService->getService()->getFullTitle();
+                $data['differenceDay'] = date_diff($data['packageBegin'], $data['packageServiceBegin'])->days;
+                $data['day'] = ((strtotime($data['packageBegin']->format('d-m-Y')) != strtotime($data['packageServiceBegin']->format('d-m-Y')))
+                    && $data['differenceDay'] == 0) ? 1 : $data['differenceDay'];
 
-            if (((date_diff($package->getBegin(), $packageService->getEnd())->format("%R%a") < 0) &&
-                (date_diff($package->getBegin(), $packageService->getBegin())->format("%R%a") < 0)) ||
-                ((date_diff($package->getEnd(), $packageService->getBegin())->format("%R%a") > 0) &&
-                (date_diff($package->getEnd(), $packageService->getEnd())->format("%R%a") > 0))) {
-
-                if ($data['differenceDay'] != 0) {
-                    echo $this->differenceTemplate($data);
-                } elseif ((strtotime($data['packageBegin']->format('d-m-Y')) != strtotime($data['packageServiceBegin']->format('d-m-Y')))
-                    && $data['differenceDay'] == 0
+                if (((date_diff($package->getBegin(), $packageService->getEnd())->format("%R%a") < 0) &&
+                        (date_diff($package->getBegin(), $packageService->getBegin())->format("%R%a") < 0)) ||
+                    ((date_diff($package->getEnd(), $packageService->getBegin())->format("%R%a") > 0) &&
+                        (date_diff($package->getEnd(), $packageService->getEnd())->format("%R%a") > 0))
                 ) {
 
-                    echo $this->differenceTemplate($data);
+                    if ($data['differenceDay'] != 0) {
+                        echo $this->differenceTemplate($data);
+                    } elseif ((strtotime($data['packageBegin']->format('d-m-Y')) != strtotime($data['packageServiceBegin']->format('d-m-Y')))
+                        && $data['differenceDay'] == 0
+                    ) {
+
+                        echo $this->differenceTemplate($data);
+                    }
                 }
             }
         }
