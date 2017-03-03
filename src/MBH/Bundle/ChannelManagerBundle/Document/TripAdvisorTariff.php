@@ -197,7 +197,7 @@ class TripAdvisorTariff
     /**
      * @return bool
      */
-    public function isIsEnabled(): ?bool
+    public function getIsEnabled(): ?bool
     {
         return $this->isEnabled;
     }

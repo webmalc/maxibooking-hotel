@@ -1613,8 +1613,8 @@ class Package extends Base implements \JsonSerializable
         return $this->getHotel()->getOrganization() ?? $this->getHotel();
     }
 
-    private static function getChannelManagerNames()
+    public static function getChannelManagerNames()
     {
-        return AbstractChannelManagerService::getChannelManagerNames();
+        return AbstractChannelManagerService::CHANNEL_MANAGER_NAMES;
     }
 }

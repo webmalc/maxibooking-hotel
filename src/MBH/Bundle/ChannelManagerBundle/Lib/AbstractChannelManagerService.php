@@ -19,6 +19,20 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     CONST TEST = true;
 
+    const CHANNEL_MANAGER_NAMES = [
+        "vashotel",
+        "booking",
+        "myallocator",
+        "ostrovok",
+        "expedia",
+        "hotels",
+        "venere",
+        "oktogo",
+        "101Hotels",
+        "homeaway",
+        "tripadvisor"
+    ];
+
     /**
      * Default period for room/prices upload
      */
@@ -584,22 +598,5 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
 
         return $amount;
-    }
-
-    public static function getChannelManagerNames()
-    {
-        return [
-            "vashotel",
-            "booking",
-            "myallocator",
-            "ostrovok",
-            "expedia",
-            "hotels",
-            "venere",
-            "oktogo",
-            "101Hotels",
-            "homeaway",
-            "tripadvisor"
-        ];
     }
 }

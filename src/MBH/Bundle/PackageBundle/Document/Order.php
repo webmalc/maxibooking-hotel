@@ -1014,8 +1014,8 @@ class Order extends Base
         return $this;
     }
 
-    private static function getChannelManagerNames()
+    public static function getChannelManagerNames()
     {
-        return AbstractChannelManagerService::getChannelManagerNames();
+        return AbstractChannelManagerService::CHANNEL_MANAGER_NAMES;
     }
 }

@@ -115,7 +115,7 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
         foreach ($this->roomsData as $roomData) {
             $packagesData[] = $this->container->get('mbh.channel_manager.trip_advisor_package_info')
                 ->setInitData($roomData, $this->checkInDate, $this->checkOutDate, $this->bookingMainData,
-                    $this->bookingSession);
+                    $this->bookingSession, $this->getPayer());
         }
 
         return $packagesData;

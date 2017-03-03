@@ -382,6 +382,7 @@ class TripAdvisorController extends BaseController
             $bookingCreationResult->addAdditionalData('language', $language);
             $bookingCreationResult->addAdditionalData('currency', $currency);
             $bookingCreationResult->addAdditionalData('countryCode', $countryCode);
+            $this->dm->flush();
         }
 
         $hotel = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
@@ -415,8 +416,9 @@ class TripAdvisorController extends BaseController
         return new JsonResponse($response);
     }
 
+    //TODO: Вернуть POST
     /**
-     * @Method("POST")
+     * @Method("GET")
      * @Route("/booking_cancel")
      * @param Request $request
      * @return string
@@ -426,8 +428,9 @@ class TripAdvisorController extends BaseController
         $hotelId = $request->get('partner_hotel_code');
         $orderId = $request->get('reservation_id');
 
-        $order = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
-            ->getOrderById($orderId, true);
+        $dataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
+        $order = $dataFormatter->getOrderById($orderId, true);
+        $hotel = $dataFormatter->getHotelById($hotelId);
         if (is_null($order)) {
             $removalStatus = 'UnknownReference';
         } elseif ($order->isDeleted()) {
@@ -444,27 +447,7 @@ class TripAdvisorController extends BaseController
         }
 
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatBookingCancelResponse($removalStatus, $hotelId, $orderId);
-
-        return new JsonResponse($response);
-    }
-
-    /**
-     * @Method("POST")
-     * @Route("/booking_sync")
-     * @param Request $request
-     * @return string
-     */
-    public function bookingSyncAction(Request $request)
-    {
-        //TODO: Сменить имя, неизвестно какое
-        $syncOrderData = $request->get('array');
-
-        $syncOrders = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
-            ->getBookingSyncData($syncOrderData);
-
-        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatBookingSyncResponse($syncOrders);
+            ->formatBookingCancelResponse($removalStatus, $hotel, $orderId);
 
         return new JsonResponse($response);
     }

@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerException;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 
 class TripAdvisorPackageInfo extends AbstractPackageInfo
 {
@@ -15,6 +16,8 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
     private $checkOutDate;
     private $bookingMainData;
     private $bookingSessionId;
+    /** @var  Tourist $payer */
+    private $payer;
     /** @var Helper $helper */
     private $helper;
 
@@ -27,13 +30,14 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
         $this->helper = $this->container->get('mbh.helper');
     }
 
-    public function setInitData($roomData, $checkInDate, $checkOutDate, $bookingMainData, $bookingSessionId)
+    public function setInitData($roomData, $checkInDate, $checkOutDate, $bookingMainData, $bookingSessionId, $payer)
     {
         $this->roomData = $roomData;
         $this->checkOutDate = $checkOutDate;
         $this->checkInDate = $checkInDate;
         $this->bookingMainData = $bookingMainData;
         $this->bookingSessionId = $bookingSessionId;
+        $this->payer = $payer;
 
         return $this;
     }
@@ -136,14 +140,21 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     public function getTourists()
     {
-        $firstName = $this->roomData['traveler_first_name'];
-        $lastName = $this->roomData['traveler_last_name'];
-        $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-            $lastName,
-            $firstName
-        );
+        $firstName = trim($this->roomData['traveler_first_name']);
+        $lastName = trim($this->roomData['traveler_last_name']);
+        if ($this->payer->getFirstName() == $firstName && $this->payer->getLastName() == $lastName) {
+            $tourist = $this->payer;
+        } else {
+            $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                $lastName,
+                $firstName
+            );
+        }
 
-        return [$payer];
+        $this->dm->persist($tourist);
+        $this->dm->flush();
+
+        return [$tourist];
     }
 
     public function getIsSmoking()

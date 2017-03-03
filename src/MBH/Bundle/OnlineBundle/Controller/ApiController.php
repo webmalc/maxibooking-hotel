@@ -499,28 +499,6 @@ class ApiController extends Controller
     }
 
     /**
-     * Страница на которой находится фрейм, ссылающийся на страницу данных о подтверждении брони
-     * @Route("/confirmation/page")
-     * @Template()
-     * @param Request $request
-     * @return array
-     */
-    public function bookingConfirmationPageAction(Request $request)
-    {
-        $orderId = $request->get('orderId');
-        $sessionId = $request->get('sessionId');
-        $width = $request->get('width') ? $request->get('width') : 600;
-        $height = $request->get('height') ? $request->get('height') : 500;
-
-        return [
-            'orderId' => $orderId,
-            'sessionId' => $sessionId,
-            'width' => $width,
-            'height' => $height
-        ];
-    }
-
-    /**
      * @param Order $order
      * @param string $arrival
      * @param string $departure

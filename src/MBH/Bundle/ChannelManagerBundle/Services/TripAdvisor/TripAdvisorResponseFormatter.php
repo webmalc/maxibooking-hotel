@@ -346,7 +346,7 @@ class TripAdvisorResponseFormatter
                 $tariff = $searchResult->getTariff();
                 $tripAdvisorTariff = $config->getTATariffByMBHTariffId($tariff->getId());
                 $response['hotel_room_types'][$roomType->getId()] = $this->getRoomTypeData($roomType, $language);
-                if (!is_null($tripAdvisorTariff) && $tripAdvisorTariff->isIsEnabled()) {
+                if (!is_null($tripAdvisorTariff) && $tripAdvisorTariff->getIsEnabled()) {
                     $response['hotel_rate_plans'][$tariff->getId()] = $this->getTariffData($tripAdvisorTariff);
                     $hotelRoomRate = $this->getHotelRoomRates($searchResult, $adultsChildrenCombination, $currency,
                         $config, $language);
@@ -422,13 +422,20 @@ class TripAdvisorResponseFormatter
     public function formatRoomInformationResponse($apiVersion, $hotelData, $language, $queryKey, Hotel $hotel)
     {
         $hotelRoomTypes = [];
+        $config = $hotel->getTripAdvisorConfig();
         foreach ($hotel->getRoomTypes() as $roomType) {
-            $hotelRoomTypes[] = $this->getRoomTypeData($roomType, $language);
+            $taRoomType = $config->getTARoomTypeByMBHRoomTypeId($roomType->getId());
+            if (!is_null($taRoomType) && $taRoomType->getIsEnabled()) {
+                $hotelRoomTypes[] = $this->getRoomTypeData($roomType, $language);
+            }
         }
 
         $tariffsData = [];
         foreach ($hotel->getTariffs() as $tariff) {
-            $tariffsData[] = $this->getTariffData($tariff);
+            $taTariff = $config->getTATariffByMBHTariffId($tariff->getId());
+            if (!is_null($taTariff) && $taTariff->getIsEnabled()) {
+                $tariffsData[] = $this->getTariffData($tariff);
+            }
         }
 
         $response = [

@@ -49,6 +49,7 @@ class OrderHandler
         if ($orderInfo->getSource()) {
             $order->setSource($orderInfo->getSource());
         }
+
         $this->dm->persist($order);
         $this->dm->flush();
 
@@ -58,6 +59,7 @@ class OrderHandler
             $package = $this->createPackage($packageInfo, $order);
             $order->addPackage($package);
             $this->dm->persist($package);
+            $this->dm->flush();
         }
 
         $creditCard = $orderInfo->getCreditCard();
@@ -73,7 +75,6 @@ class OrderHandler
 
     public function deleteOrder(Order $order)
     {
-        //TODO: Проверить нужно ли что еще делать
         $this->dm->remove($order);
         $this->dm->flush();
     }
