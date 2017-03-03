@@ -146,12 +146,46 @@ class MagicCalculation extends Calculation
         }
 
         foreach ($combinations as $combination) {
-            $total = 0;
+
             $dayPrices = $packagePrices = [];
+            $total = 0;
+            $table = $this->getMagicTable();
+            $ageGroups = $this->getAgeGroups($ages);
             /**
              * @var PriceCache $cache
              */
             foreach ($caches as $day => $cache) {
+                $dayPrice = 0;
+                $bulkPrice = $cache->getPrice();
+                $discountPercent = null;
+                //count adults price
+                for ($i = 0; $i < $adults; $i++) {
+                    $discountPercent = $table[(string)$adults.'adult']['discount'][$i+1]??null;
+                    if ($discountPercent) {
+                        $discount = $bulkPrice * $discountPercent / 100;
+                    } else {
+                        $discount = 0;
+                    }
+                    $dayPrice += $bulkPrice - $discount;
+                }
+                //count children price by ageGroups
+                $discountPercent = null;
+                foreach ($ageGroups as $groupName => $ages) {
+                    foreach ($ages as $index => $age) {
+                        $discountPercent = $table[$adults.'adult'][(string)(($index+1).$groupName)]['discount'];
+                        if ($discountPercent) {
+                            $discount = $bulkPrice * $discountPercent / 100;
+                        } else {
+                            $discount = 0;
+                        }
+                        $dayPrice += $bulkPrice-$discount;
+                    }
+
+                }
+
+                $total += $dayPrice;
+                $packagePrices[] = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $roomType, $special);
+
 //                $promoConditions = PromotionConditionFactory::checkConditions(
 //                    $promotion, $duration, $combination['adults'], $combination['children']
 //                );
@@ -284,37 +318,6 @@ class MagicCalculation extends Calculation
 //            if ($promoConditions) {
 //                $total -= PromotionConditionFactory::calcDiscount($promotion, $total, false);
 //            }
-
-
-            $bulkPrice = $cache->getPrice();
-            $table = $this->getMagicTable();
-            $ageGroups = $this->getAgeGroups($ages);
-            $total = 0;
-            $discountPercent = null;
-            //count adults price
-            for ($i = 0; $i < $adults; $i++) {
-                $discountPercent = $table[(string)$adults.'adult']['discount'][$i+1]??null;
-                if ($discountPercent) {
-                    $discount = $bulkPrice * $discountPercent / 100;
-                } else {
-                    $discount = 0;
-                }
-                $total += $bulkPrice - $discount;
-            }
-            //count children price by ageGroups
-            $discountPercent = null;
-            foreach ($ageGroups as $groupName => $ages) {
-                foreach ($ages as $index => $age) {
-                    $discountPercent = $table[$adults.'adult'][(string)(($index+1).$groupName)]['discount'];
-                    if ($discountPercent) {
-                        $discount = $bulkPrice * $discountPercent / 100;
-                    } else {
-                        $discount = 0;
-                    }
-                    $total += $bulkPrice-$discount;
-                }
-
-            }
 
             $prices[$combination['adults'].'_'.$combination['children']] = [
                 'adults' => $combination['adults'],
