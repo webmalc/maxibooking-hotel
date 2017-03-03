@@ -1139,7 +1139,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $packageServices = $this->dm->getRepository('MBHPackageBundle:PackageService')->findAll();
 
         foreach ($packageServices as $packageService) {
-            if ($this->dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder()->field('id')->equals($packageService->getPackage()->getId())->exists(true)) {
+            if ($this->dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder()->field('id')->equals($packageService->getPackage()->getId())->exists(true)->getQuery()->execute()->toArray()) {
                 $package = $packageService->getPackage();
 
                 $data['packageBegin'] = $package->getBegin();
