@@ -25,6 +25,10 @@ services:
             class: MBH\Bundle\PackageBundle\Services\Calculation
             arguments: ['@service_container']
 
+    mbh.magic.calculation:
+            class: MBH\Bundle\PackageBundle\Services\MagicCalculation
+            arguments: ['@service_container']
+
     mbh.order_manager:
             class: MBH\Bundle\PackageBundle\Services\OrderManager
             arguments: ['@service_container']

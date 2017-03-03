@@ -401,11 +401,24 @@ class Search implements SearchInterface
                 }
 
                 //prices
-                $prices = $calc->calcPrices(
-                    $roomType, $tariff, $query->begin, $end,
-                    $tourists['adults'], $tourists['children'], $promotion,
-                    $this->manager->useCategories, $query->getSpecial()
-                );
+                //TODO: Убирать отседа
+                //Achtung!!Achtung!! Меня заставили!
+                $hardCodeTariffId= '58b7fd0f5bdfb60029435da8';
+                /** @var Tariff $tariff */
+                if ($tariff->getId() == $hardCodeTariffId) {
+                    $mcalc = $this->container->get('mbh.magic.calculation');
+                    $prices = $mcalc->calcPrices(
+                        $roomType, $tariff, $query->begin, $end,
+                        $tourists['adults'], $tourists['children'], $promotion,
+                        $this->manager->useCategories, $query->getSpecial(), true, $query->childrenAges
+                    );
+                } else { //TODO: Убирать доседа
+                    $prices = $calc->calcPrices(
+                        $roomType, $tariff, $query->begin, $end,
+                        $tourists['adults'], $tourists['children'], $promotion,
+                        $this->manager->useCategories, $query->getSpecial()
+                    );
+                }
 
                 if (!$prices || (($query->adults + $query->children) != 0 && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {
                     continue;

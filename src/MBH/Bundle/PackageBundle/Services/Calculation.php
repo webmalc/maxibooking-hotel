@@ -35,7 +35,7 @@ class Calculation
     /**
      * @var RoomTypeManager
      */
-    private $manager;
+    protected $manager;
 
     /**
      * @var \MBH\Bundle\BaseBundle\Service\Helper
