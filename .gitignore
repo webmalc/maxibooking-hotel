@@ -95,3 +95,10 @@ local.properties
 docker_zalex/
 node_modules/
 tags
+
+GPATH
+GRTAGS
+GTAGS
+ctags
+env
+gtags

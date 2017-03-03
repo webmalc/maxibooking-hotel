@@ -16,6 +16,8 @@
     "twig/twig": "^1",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
+    "symfony/cache": "3.*@stable",
+    "predis/predis": "*@stable",
     "symfony/swiftmailer-bundle": "^2.3@stable",
     "swiftmailer/swiftmailer": "^5.0@stable",
     "symfony/monolog-bundle": "^2.8@stable",
