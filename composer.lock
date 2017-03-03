@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "72c75af5d587905d3203e3897d113566",
+    "content-hash": "388c5362611902a8fc388822df8c0dc2",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -5037,6 +5037,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "symfony/symfony": 0,
+        "symfony/cache": 20,
         "twig/extensions": 0,
         "symfony/assetic-bundle": 0,
         "symfony/swiftmailer-bundle": 0,

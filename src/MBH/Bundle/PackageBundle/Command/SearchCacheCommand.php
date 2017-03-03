@@ -68,10 +68,10 @@ class SearchCacheCommand extends ContainerAwareCommand
         $start = new \DateTime();
         $this->container = $this->getContainer();
         $helper = $this->container->get('mbh.helper');
-        /*$this->container->get('mbh.cache')->clear();*/
+        #$this->container->get('mbh.cache')->clear();
 
         $this->params = $this->container->getParameter('mbh_cache')['search'];
-        
+
         $from = $helper->getDateFromString($input->getOption('begin')) ?? new \DateTime('midnight');
         $to = $helper->getDateFromString($input->getOption('end')) ?? new \DateTime('midnight +' . $this->params['months'] . ' months');
 
@@ -168,11 +168,15 @@ class SearchCacheCommand extends ContainerAwareCommand
 
         foreach ($dates as $key => $pair) {
             $num++;
+            $startSearch = new \DateTime();
             $output->writeln(sprintf('Start search #%d-%d [%s - %s]', $num, count($dates), $pair[0]->format('d.m.Y'), $pair[1]->format('d.m.Y')));
             //run command
             $command = 'nohup php ' . $console . 'mbh:search:cache --begin='. $pair[0]->format('d.m.Y') .' --end='. $pair[1]->format('d.m.Y') .' --force --env=prod';
             $process = new Process($command);
             $process->setTimeout(null)->setIdleTimeout(null)->run();
+            $timeSearch = $startSearch->diff(new \DateTime());
+
+            $output->writeln(sprintf('Time elapsed: %s', $timeSearch->format('%H:%I:%S')));
         }
 
         $time = $start->diff(new \DateTime());
