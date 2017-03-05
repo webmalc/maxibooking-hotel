@@ -2,6 +2,7 @@
 /*jslint regexp: true */
 $(document).ready(function () {
     'use strict';
+
     //Show table
     var pricesProcessing = false,
         showTable = function () {
@@ -22,7 +23,9 @@ $(document).ready(function () {
                 $.ajax({
                     url: Routing.generate('room_overview_table'),
                     data: data,
-                    beforeSend: function () { pricesProcessing = true; },
+                    beforeSend: function () {
+                        pricesProcessing = true;
+                    },
                     success: function (data) {
                         wrapper.html(data);
                         pricesProcessing = false;

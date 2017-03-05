@@ -3,7 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use MBH\Bundle\BaseBundle\Document\CacheItem;
-use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
@@ -24,7 +24,7 @@ class Cache
     private $isEnabled;
 
     /**
-     * @var \ApcuAdapter
+     * @var \RedisAdapter
      */
     private $cache;
 
@@ -42,31 +42,36 @@ class Cache
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
-        $this->cache = new ApcuAdapter();
+        $redis = RedisAdapter::createConnection('redis://mbh-redis');
+        $this->cache = new RedisAdapter($redis);
         $this->dm = $dm->getManager();
         $this->validator = $validator;
     }
 
     /**
      * @param string|null $prefix
+     * @param \DateTime $begin
+     * @param \DateTime $end
      * @param bool $all
-     * @return self
+     * @return int
      */
-    public function clear(string $prefix = null, bool $all = false): self
+    public function clear(string $prefix = null, \DateTime $begin = null, \DateTime $end = null, bool $all = false): int
     {
         if (!$this->isEnabled) {
-            return $this;
+            return 0;
         }
         if ($all) {
             $this->cache->clear();
-            return $this;
+            return 0;
         }
 
         $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
-        $this->cache->deleteItems($this->dm->getRepository('MBHBaseBundle:CacheItem')->getKeysByPrefix($prefix));
-        $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix);
 
-        return $this;
+        $this->cache->deleteItems(
+            $this->dm->getRepository('MBHBaseBundle:CacheItem')->getKeysByPrefix($prefix, $begin, $end)
+        );
+
+        return $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix, $begin, $end);
     }
 
     /**
@@ -114,6 +119,7 @@ class Cache
         }
 
         $key = $this->generateKey($prefix, $keys);
+
         $item = $this->cache->getItem($this->generateKey($prefix, $keys));
         $item->set($value)->expiresAfter(self::LIFETIME);
         $this->cache->save($item);
@@ -122,6 +128,17 @@ class Cache
         $cacheItem = new CacheItem($key);
 
         if (!count($this->validator->validate($cacheItem))) {
+            $dates = array_values(array_filter($keys, function ($entry) {
+                return $entry instanceof \DateTime;
+            }));
+
+            if (isset($dates[0])) {
+                $cacheItem->setBegin($dates[0]);
+            }
+            if (isset($dates[1])) {
+                $cacheItem->setEnd($dates[1]);
+            }
+
             $this->dm->persist($cacheItem);
             $this->dm->flush();
         }

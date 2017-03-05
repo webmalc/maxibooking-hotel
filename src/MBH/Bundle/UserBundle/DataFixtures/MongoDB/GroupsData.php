@@ -21,7 +21,7 @@ class GroupsData extends AbstractFixture implements OrderedFixtureInterface, Con
                 'ROLE_HOTEL', 'ROLE_CITY', 'ROLE_LOGS', 'ROLE_CASH', 'ROLE_CLIENT_CONFIG',
                 'ROLE_DOCUMENT_TEMPLATE', 'ROLE_HOUSING', 'ROLE_ROOM', 'ROLE_ROOM_TYPE', 'ROLE_TASK_MANAGER',
                 'ROLE_MANAGER', 'ROLE_OVERVIEW', 'ROLE_PRICE_CACHE', 'ROLE_RESTRICTION', 'ROLE_ROOM_CACHE',
-                'ROLE_SERVICE', 'ROLE_SERVICE_CATEGORY', 'ROLE_TARIFF', 'ROLE_CHANNEL_MANAGER',
+                'ROLE_SERVICE', 'ROLE_SERVICE_CATEGORY', 'ROLE_TARIFF', 'ROLE_SPECIAL', 'ROLE_CHANNEL_MANAGER',
                 'ROLE_ONLINE_FORM', 'ROLE_POLLS', 'ROLE_REPORTS', 'ROLE_PACKAGE', 'ROLE_SOURCE', 'ROLE_PROMOTION',
                 'ROLE_ROOM_TYPE_CATEGORY', 'ROLE_WORK_SHIFT', 'ROLE_RESTAURANT_MAIN_MANAGER'
             ]
@@ -29,7 +29,7 @@ class GroupsData extends AbstractFixture implements OrderedFixtureInterface, Con
         'analytics' => [
             'title' => 'Аналитик',
             'roles' => [
-                'ROLE_TARIFF_VIEW', 'ROLE_SERVICE_VIEW', 'ROLE_ROOM_CACHE_VIEW', 'ROLE_RESTRICTION_VIEW',
+                'ROLE_TARIFF_VIEW', 'ROLE_SPECIAL_VIEW','ROLE_SERVICE_VIEW', 'ROLE_ROOM_CACHE_VIEW', 'ROLE_RESTRICTION_VIEW',
                 'ROLE_PRICE_CACHE_VIEW', 'ROLE_TASK_TYPE_CATEGORY_VIEW',
                 'ROLE_TASK_VIEW', 'ROLE_TASK_OWN_VIEW', 'ROLE_SOURCE_VIEW', 'ROLE_ORGANIZATION_VIEW',
                 'ROLE_TOURIST_VIEW', 'ROLE_PACKAGE_VIEW', 'ROLE_LOGS',

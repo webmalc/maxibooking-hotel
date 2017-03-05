@@ -12,9 +12,12 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
+use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
+use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -27,7 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
  * @ODM\HasLifecycleCallbacks
  */
-class Hotel extends Base implements \JsonSerializable
+class Hotel extends Base implements \JsonSerializable, AddressInterface
 {
 
     /**
@@ -59,6 +62,7 @@ class Hotel extends Base implements \JsonSerializable
      *      max=100,
      *      maxMessage="validator.document.hotel.max_name"
      * )
+     * @ODM\Index()
      */
     protected $fullTitle;
 
@@ -72,6 +76,7 @@ class Hotel extends Base implements \JsonSerializable
      *      max=100,
      *      maxMessage="validator.document.hotel.min_name"
      * )
+     * @ODM\Index()
      */
     protected $title;
 
@@ -85,6 +90,7 @@ class Hotel extends Base implements \JsonSerializable
      *      max=100,
      *      maxMessage="validator.document.hotel.max_prefix"
      * )
+     * @ODM\Index()
      */
     protected $prefix;
 
@@ -94,6 +100,7 @@ class Hotel extends Base implements \JsonSerializable
      * @ODM\Boolean()
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isHostel = false;
 
@@ -103,6 +110,7 @@ class Hotel extends Base implements \JsonSerializable
      * @ODM\Boolean(name="isDefault")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isDefault = false;
 
@@ -111,6 +119,7 @@ class Hotel extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric", message= "validator.document.hotel.wrong_latitude")
+     * @ODM\Index()
      */
     protected $latitude;
 
@@ -119,6 +128,7 @@ class Hotel extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric", message="validator.document.hotel.wrong_longitude")
+     * @ODM\Index()
      */
     protected $longitude;
 
@@ -169,6 +179,9 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff", mappedBy="hotel") */
     protected $tariffs;
 
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\Special", mappedBy="hotel") */
+    protected $specials;
+
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\ServiceCategory", mappedBy="hotel") */
     protected $servicesCategories;
 
@@ -193,6 +206,9 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig", mappedBy="hotel") */
     protected $expediaConfig;
 
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig", mappedBy="hotel") */
+    protected $hundredOneHotelsConfig;
+
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
     protected $ingredientCategories;
 
@@ -207,24 +223,28 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country")
+     * @ODM\Index()
      */
     protected $country;
 
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Region")
+     * @ODM\Index()
      */
     protected $region;
 
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="City")
+     * @ODM\Index()
      */
     protected $city;
 
     /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $settlement;
 
@@ -232,12 +252,14 @@ class Hotel extends Base implements \JsonSerializable
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $street;
 
     /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $house;
 
@@ -245,12 +267,14 @@ class Hotel extends Base implements \JsonSerializable
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $corpus;
 
     /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $flat;
 
@@ -294,6 +318,7 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @ODM\Field(type="string")
      * @var string
+     * @ODM\Index()
      */
     protected $description;
 
@@ -302,6 +327,7 @@ class Hotel extends Base implements \JsonSerializable
         $this->roomTypes = new ArrayCollection();
         $this->rooms = new ArrayCollection();
         $this->tariffs = new ArrayCollection();
+        $this->specials = new ArrayCollection();
         $this->dishMenuCategories = new ArrayCollection();
         $this->ingredientCategories = new ArrayCollection();
         $this->TableTypes = new ArrayCollection();
@@ -342,6 +368,16 @@ class Hotel extends Base implements \JsonSerializable
         $this->fullTitle = $fullTitle;
 
         return $this;
+    }
+
+    /**
+     * Get Full title
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->fullTitle;
     }
 
     /**
@@ -523,6 +559,24 @@ class Hotel extends Base implements \JsonSerializable
     {
         $this->vashotelConfig = $vashotelConfig;
 
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHundredOneHotelsConfig()
+    {
+        return $this->hundredOneHotelsConfig;
+    }
+
+    /**
+     * @param mixed $hundredOneHotelsConfig
+     * @return $this
+     */
+    public function setHundredOneHotelsConfig(HundredOneHotelsConfig $hundredOneHotelsConfig)
+    {
+        $this->hundredOneHotelsConfig = $hundredOneHotelsConfig;
         return $this;
     }
 
@@ -1267,4 +1321,41 @@ class Hotel extends Base implements \JsonSerializable
     {
         $this->dishMenuCategories->add($dishMenuCategory);
     }
+
+    /**
+     * Add Special
+     *
+     * @param Special $special
+     * @return self
+     */
+    public function addSpecial(Special $special): self
+    {
+        $this->specials[] = $special;
+
+        return $this;
+    }
+
+    /**
+     * Remove Special
+     *
+     * @param Special $special
+     * @return self
+     */
+    public function removeSpecial(Special $special): self
+    {
+        $this->specials->removeElement($special);
+
+        return $this;
+    }
+
+    /**
+     * Get Specials
+     *
+     * @return \Doctrine\Common\Collections\Collection $specials
+     */
+    public function getSpecials()
+    {
+        return $this->specials;
+    }
+
 }

@@ -139,6 +139,7 @@ ROLE_OSTROVOK: Ostrovok
 ROLE_OKTOGO: Oktogo
 ROLE_HOTELINN: Hotel-inn
 ROLE_MYALLOCATOR: MyAllocator
+ROLE_101HOTELS: 101 Отель
 
 ROLE_ONLINE_FORM: Онлайн форма
 ROLE_ONLINE_FORM_VIEW: Просмотр онлайн форм
@@ -173,6 +174,7 @@ ROLE_PACKAGE_PRICE_EDIT: Редактирование цены брони
 ROLE_INDIVIDUAL_PROMOTION_ADD: Добавление индивидуальной акции
 ROLE_PROMOTION_ADD: Добавление акции
 ROLE_FORCE_BOOKING: Принудительное бронирование
+ROLE_PACKAGE_DELETE_REASON: Причина удаления брони
 
 ROLE_TOURIST: Клиенты
 ROLE_TOURIST_REPORT: Отчет по клиентам

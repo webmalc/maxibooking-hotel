@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -145,6 +146,25 @@ class PackageMainType extends AbstractType
                     'group' => 'Скидка'
                 ]);
         }
+        if($options['special']) {
+            $builder
+                ->add('special', DocumentType::class, [
+                    'group' => 'Спецпредложение',
+                    'label' => 'form.packageMainType.special',
+                    'class' => 'MBH\Bundle\PriceBundle\Document\Special',
+                    'required' => false,
+                    'group' => 'Спецпредложение',
+                    'query_builder' => function (DocumentRepository $dr) use ($package) {
+                        $filter = new SpecialFilter();
+                        $filter->setHotel($package->getHotel())
+                            ->setTariff($package->getTariff())
+                            ->setRemain(1)
+                            ->setExcludeSpecial($package->getSpecial())
+                        ;
+                        return $dr->getFilteredQueryBuilder($filter);
+                    },
+                ]);
+        }
         $builder
             ->add('numberWithPrefix', TextType::class, [
                 'label' => 'Номер брони',
@@ -156,7 +176,21 @@ class PackageMainType extends AbstractType
                 'group' => 'Информация',
                 'required' => false,
             ]);
-
+        if ($package->isDeleted()) {
+            $builder
+                ->add('deleteReason', DocumentType::class, [
+                    'empty_data'  => null,
+                    'required'    => false,
+                    'label' => 'modal.form.delete.reasons.reason',
+                    'group' => 'modal.form.delete.delete_reason_package',
+                    'class' => 'MBH\Bundle\PackageBundle\Document\DeleteReason',
+                    'query_builder' => function (DocumentRepository $dr) use ($options) {
+                        return $dr->createQueryBuilder()
+                            ->field('deletedAt')->exists(false)
+                            ->sort(['isDefault' => 'desc']);
+                    },
+                ]);
+        }
         if ($options['corrupted']) {
             $builder
                 ->add('corrupted', CheckboxType::class, [
@@ -173,6 +207,7 @@ class PackageMainType extends AbstractType
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
             'discount' => false,
+            'special' => false,
             'hotel' => null,
             'corrupted' => false,
             'promotion' => false,

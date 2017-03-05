@@ -43,12 +43,14 @@ class Room extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="rooms")
      * @Assert\NotNull(message="validator.document.room.hotel_not_selected")
+     * @ODM\Index()
      */
     protected $hotel;
     
     /**
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull(message="validator.document.room.room_type_not_selected")
+     * @ODM\Index()
      */
     protected $roomType;
 
@@ -63,6 +65,7 @@ class Room extends Base
      *      max=100,
      *      maxMessage="validator.document.room.max_name"
      * )
+     * @ODM\Index()
      */
     protected $fullTitle;
 
@@ -76,12 +79,14 @@ class Room extends Base
      *      max=100,
      *      maxMessage="validator.document.room.max_name"
      * )
+     * @ODM\Index()
      */
     protected $title;
 
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Housing")
+     * @ODM\Index()
      */
     protected $housing;
 
@@ -95,6 +100,7 @@ class Room extends Base
      *      max=10,
      *      maxMessage="validator.document.room.max_floor"
      * )
+     * @ODM\Index()
      */
     protected $floor;
 

@@ -101,17 +101,19 @@ class Mailer implements \SplObserver
      */
     public function addImages($data, \Swift_Message $message, $template)
     {
-        $baseUrl = str_replace('app_dev.php/', '', $this->container->get('router')->generate('_welcome', [], true));
         $crawler = new Crawler($this->twig->render($template, $data));
+        $rootDir = $this->container->get('kernel')->getRootDir();
+
         foreach ($crawler->filterXpath('//img') as $domElement) {
             $id = $domElement->getAttribute('data-name');
             $src = $domElement->getAttribute('src');
 
-            strpos($src, 'http') === false ? $http = $baseUrl : $http = '';
+            $path = $rootDir.'/../web/'.str_replace('/app_dev.php/', '', parse_url($src)['path']);
 
             if (!empty($id) && !empty($src)) {
                 $data[$id] = $message->embed(
-                    \Swift_Image::fromPath($http . $src));
+                    \Swift_Image::fromPath($path)
+                );
             }
         }
 
@@ -133,7 +135,7 @@ class Mailer implements \SplObserver
         }
 
         $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy(
-            [$category . 's' => true, 'enabled' => true, 'locked' => false]
+            [$category . 's' => true, 'enabled' => true, 'locked' => false, 'username' => ['$ne'=>'mb']]
         );
 
         if ($hotel) {

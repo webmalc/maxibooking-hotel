@@ -1,7 +1,8 @@
-/*global window, $, document, Routing*/
-/*jslint regexp: true */
+/*global window, $, document, Routing, mbhGridCopy*/
+
 $(document).ready(function () {
     'use strict';
+
     //Show table
     var pricesProcessing = false,
         showTable = function () {
@@ -54,6 +55,7 @@ $(document).ready(function () {
                         end.val($('#restriction-overview-end').val());
                         inputs();
                         pricesProcessing = false;
+                        mbhGridCopy();
                     },
                     dataType: 'html'
                 });

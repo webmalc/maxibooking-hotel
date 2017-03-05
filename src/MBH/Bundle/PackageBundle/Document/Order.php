@@ -10,6 +10,7 @@ use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -38,6 +39,11 @@ class Order extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    /**
+     * Delete Reason Trait
+     */
+    use DeleteReasonTrait;
 
     /**
      * @var int
@@ -82,6 +88,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.order.price_min_message"
      * )
+     * @ODM\Index()
      */
     protected $price;
 
@@ -94,6 +101,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.order.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $originalPrice;
 
@@ -106,6 +114,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.package.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $totalOverwrite;
 
@@ -118,6 +127,7 @@ class Order extends Base
      *      min=0,
      *      minMessage= "validator.document.order.payed_sum_min_message"
      * )
+     * @ODM\Index()
      */
     protected $paid = 0;
 
@@ -126,6 +136,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isPaid = false;
 
@@ -134,6 +145,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $confirmed = false;
 
@@ -145,6 +157,7 @@ class Order extends Base
      *      choices = {"offline", "online", "channel_manager"},
      *      message = "validator.document.order.wrong_status"
      * )
+     * @ODM\Index()
      */
     protected $status;
 
@@ -164,9 +177,10 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere"},
+     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "101Hotels","oktogo"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
+     * @ODM\Index()
      */
     protected $channelManagerType;
 
@@ -174,6 +188,7 @@ class Order extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerId")
+     * @ODM\Index()
      */
     protected $channelManagerId;
 
@@ -209,6 +224,7 @@ class Order extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="note")
+     * @ODM\Index()
      */
     protected $note;
 

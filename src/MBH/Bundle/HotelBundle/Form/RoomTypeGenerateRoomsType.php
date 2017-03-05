@@ -12,12 +12,12 @@ use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
-use Symfony\Component\Validator\ExecutionContextInterface;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class RoomTypeGenerateRoomsType extends AbstractType
 {
 
-    public static function rangeValidation($data, ExecutionContextInterface $context)
+    public function rangeValidation($data, ExecutionContextInterface $context)
     {
         if ($data['from'] >= $data['to']) {
             $context->addViolation('form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number');
@@ -88,7 +88,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
         $resolver->setDefaults(
             [
                 'constraints' => [
-                    new Callback(['methods' => [[get_class($this), 'rangeValidation']]])
+                    new Callback([$this, 'rangeValidation'])
                 ],
                 'entity' => null,
                 'hotel' => null

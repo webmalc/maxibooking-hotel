@@ -181,7 +181,7 @@ parameters:
     #параметры онлайн формы
     mbh.online.form:
           sites: "%online_form_sites%"
-          packages_max: 5
+          packages_max: "%mbh_online_form_max_packages%"
           messages: true
           form:
             width: '300px'
@@ -220,8 +220,8 @@ parameters:
         ostrovok:
           title: 'Ostrovok'
           service: 'mbh.channelmanager.ostrovok'
-          username: 722ac50470d8af33d509c069ccb83443
-          password: edfdfba3f6902eb63aa254935e9a8a36
+          username: 59a0ed03e26016ab59a3fe1cfdeb9479
+          password: 1b9952573d01aef185ca3edc17432aab
         myallocator:
           title: 'MyAllocator'
           service: 'mbh.channelmanager.myallocator'
@@ -233,6 +233,14 @@ parameters:
           title: 'Expedia'
           service: 'mbh.channelmanager.expedia'
 
+        hundred_one_hotels:
+          title: '101 Отель'
+          service: 'mbh.channelmanager.hundred_one_hotels'
+        oktogo:
+          title: 'Oktogo'
+          service: 'mbh.channelmanager.oktogo'
+          api_username: .maxiBooking_api
+          api_password: qdcmBz9K
 
     #параметры логов
     mbh.logs.max: 100

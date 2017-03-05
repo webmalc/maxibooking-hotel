@@ -509,7 +509,7 @@ var docReadyForms = function () {
     }());
 
     //order select
-    (function (){
+    (function () {
         var orderSelect = $('.order-select');
 
         if (orderSelect.length !== 1) {
@@ -536,14 +536,13 @@ var docReadyForms = function () {
                 initSelection: function (element, callback) {
                     var id = $(element).val();
                     if (id !== "") {
-                        console.log(id);
                         $.ajax(Routing.generate('getPackageJsonById',
                             {
                                 id: id
                             }), {dataType: "json"})
                             .done(function (data) {
-                            callback(data);
-                        });
+                                callback(data);
+                            });
                     }
                 },
                 dropdownCssClass: "bigdrop"
@@ -621,19 +620,24 @@ var select2TemplateResult = {
         if (!state.id) {
             return state.text;
         }
-        var icons = state.element.getAttribute('data-icon').split(';'),
+        var rawIcons = state.element.getAttribute('data-icon'),
             result = '';
-        $.each(icons, function (key, icon) {
-            if (icon) {
-                result += '<i class="fa ' + icon + '"></i>';
-            }
-        });
+        if (rawIcons) {
+            var icons = rawIcons.split(';');
+
+            $.each(icons, function (key, icon) {
+                if (icon) {
+                    result += '<i class="fa ' + icon + '"></i>';
+                }
+            });
+        }
+
         return result ? result : null;
     },
     appendIcon: function (state) {
         var iconHtml = select2TemplateResult._iconHtml(state);
         var html = iconHtml ?
-        state.text + ' ' + iconHtml :
+            state.text + ' ' + iconHtml :
             state.text;
 
         return $('<div>' + html + '</div>');
@@ -641,7 +645,7 @@ var select2TemplateResult = {
     prependIcon: function (state) {
         var iconHtml = select2TemplateResult._iconHtml(state);
         var html = iconHtml ?
-        iconHtml + ' ' + state.text :
+            iconHtml + ' ' + state.text :
             state.text;
 
         return $('<div>' + html + '</div>');
@@ -906,8 +910,23 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     return this;
 };
 
+var mbhStartDate = function (e) {
+    if ($('form').is('.mbh-start-date')) {
+        if (!($('.begin-datepicker').val()) && !($('.end-datepicker').val())) {
+            console.log('loaded');
+            $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+            $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
+            $('.begin-datepicker').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
+            $('.end-datepicker').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
+        }
+    }
+};
+
+
 $(document).ready(function () {
     'use strict';
 
     docReadyForms();
+
+    mbhStartDate();
 });

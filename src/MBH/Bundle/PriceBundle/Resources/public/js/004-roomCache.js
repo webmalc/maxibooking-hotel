@@ -1,7 +1,8 @@
-/*global window, $, document, Routing*/
-/*jslint regexp: true */
+/*global window, $, document, Routing, mbhGridCopy*/
+
 $(document).ready(function () {
     'use strict';
+
     //Show table
     var roomProcessing = false,
         showTable = function () {
@@ -57,6 +58,7 @@ $(document).ready(function () {
                         end.val($('#room-cache-overview-end').val());
                         inputs();
                         roomProcessing = false;
+                        mbhGridCopy();
                     },
                     dataType: 'html'
                 });

@@ -5,70 +5,60 @@
 
 {% block content %}
 
-    <table class="tariffs-table table table-striped table-hover table-condensed table-icons table-actions">
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'tariff-filter-widget'} %}
+        {% block content %}
+            {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'mbh_filter_form'}}) }}
+            <div class="form-group">
+                <div class="input">
+                    <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                    {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
+                    {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
+                </div>
+                <div class="input">
+                    <label><i class="fa fa-chevron-down " title='{{ 'tariff.filter.status'|trans({}, 'MBHPriceBundle') }}' data-toggle='tooltip'></i></label>
+                    {{ form_widget(form.isOnline) }}
+                </div>
+                <div class="input">
+                    <label><i class="fa fa-check" title="{{ 'tariff.filter.state'|trans({}, 'MBHPriceBundle') }}" data-toggle="tooltip"></i></label>
+                    {{ form_widget(form.isEnabled) }}
+                </div>
+                {{ form_widget(form._token) }}
+            </div>
+            {{ form_end(form, {render_rest: false}) }}
+        {% endblock %}
+    {% endembed %}
+
+    <table id="tariff-table" class="tariff-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th>Название</th>
-            <th>База</th>
-            <th class="td-xs text-center">Ребенок</th>
-            <th class="td-xs text-center">Инфант</th>
-            <th class="td-md text-center">Сроки</th>
-            <th class="td-sm text-center">Основной</th>
-            <th class="td-sm text-center">Онлайн</th>
-            <th class="td-sm"></th>
+            <th class="td-xs text-center">
+                <i class="fa fa-sort-numeric-desc" data-toggle="tooltip" data-placement="top" title="{{ 'position'|trans }}"></i>
+            </th>
+            <th>{{ 'tariff.table.name'|trans({}, 'MBHPriceBundle') }}</th>
+            <th>{{ 'tariff.table.base'|trans({}, 'MBHPriceBundle') }}</th>
+            <th class="td-xs text-center">
+                {{ 'tariff.table.children'|trans({}, 'MBHPriceBundle') }}
+            </th>
+            <th class="td-xs text-center">
+                {{ 'tariff.table.infant'|trans({}, 'MBHPriceBundle') }}
+            </th>
+            <th class="td-md text-center">
+                {{ 'tariff.table.terms'|trans({}, 'MBHPriceBundle') }}
+            </th>
+            <th class="td-sm text-center">
+                {{ 'tariff.table.default'|trans({}, 'MBHPriceBundle') }}
+            </th>
+            <th class="td-sm text-center">
+                {{ 'tariff.table.online'|trans({}, 'MBHPriceBundle') }}
+            </th>
+            <th class="td-sm sorting_disabled"></th>
         </tr>
         </thead>
         <tbody>
-        {% for entity in entities %}
-            <tr {% if entity.isEnabled is empty %} class="danger"{% endif %}>
-                <td class="text-center table-icon {{ entity.parent ? 'text-primary' }}"><i class="fa fa-sliders"></i></td>
-                <td>
-                    {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'tariff'} %}{% endembed %}
-                </td>
-                <td>
-                    <small>{{ entity.parent }}</small>
-                </td>
-                <td class="text-center">
-                    {{ entity.childAge }}
-                </td>
-                <td class="text-center">
-                    {{ entity.infantAge }}
-                </td>
-                <td class="text-center">
-                    {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}
-                </td>
-                <td class="text-center">
-                    {% if entity.isDefault %}
-                        <span class="label label-success">Да</span>
-                    {% else %}
-                        <span class="label label-default">Нет</span>
-                    {% endif %}
-                </td>
-                <td class="text-center">
-                    {% if entity.isOnline %}
-                        <span class="label label-success">Да</span>
-                    {% else %}
-                        <span class="label label-default">Нет</span>
-                    {% endif %}
-                </td>
-                <td class="table-actions-td text-right">
-                    {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tariff', 'copy': entity.parent is empty } %}
-                        {% block additional_buttons %}
-                            {% if entity.parent is empty and is_granted('ROLE_TARIFF_NEW') %}
-                                <a href='{{ path('tariff_extend', { 'id': entity.id }) }}' class='btn btn-default btn-xs' title='Создать дочерний тариф' data-toggle='tooltip'>
-                                    <i class='fa fa-arrow-circle-right'></i>
-                                </a>
-                            {% endif %}
-                        {% endblock %}
-                    {% endembed %}
-                </td>
-            </tr>
-        {% endfor %}
         </tbody>
     </table>
 
     {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'tariff_new', 'role': 'TARIFF'} %}
 
-{% endblock %} 
-
+{% endblock %}

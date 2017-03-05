@@ -368,10 +368,13 @@ class TaskController extends Controller
     /**
      * @Route("/ajax/my_total", name="task_ajax_total_my_open", options={"expose": true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_TASK_OWN_VIEW')")
      */
     public function ajaxMyOpenTaskTotal()
     {
+        if (!$this->isGranted('ROLE_TASK_OWN_VIEW')) {
+                return new JsonResponse(['total' => 0]);
+        }
+
         $queryCriteria = new TaskQueryCriteria();
         $queryCriteria->userGroups = $this->getUser()->getGroups();
         $queryCriteria->performer = $this->getUser()->getId();

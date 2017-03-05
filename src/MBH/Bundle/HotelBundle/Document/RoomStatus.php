@@ -29,12 +29,14 @@ class RoomStatus extends Base
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     public $code;
 
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     public $title;
 

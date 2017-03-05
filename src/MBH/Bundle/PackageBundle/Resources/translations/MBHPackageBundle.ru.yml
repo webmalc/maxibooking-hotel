@@ -109,6 +109,10 @@ package.actions.bill: Счёт
 package.actions.act: Акт
 package.actions.xls_notice: Уведомление о прибытии ИГ
 
+package.window.not.virtual.room: Брони без номера
+package.window.not.virtual.room.expand: Развернуть
+package.window.not.virtual.room.turn: Свернуть
+
 package.actions.find_similar:  Найти похожую
 package.actions.cancel: Отмена
 package.actions.save: 'Сохранить'
@@ -200,11 +204,14 @@ package.index.placement: Размещение
 package.index.guests: Гости
 package.index.price: Стоимость
 package.index.created: Создана
+package.index.default: Основной
 package.index.isUpdated: Обновлён
 package.index.selection: 'Подбор'
 package.index.porter_link: 'Отчет портье'
+package.index.deleted: Удаленные?
 package.json.reservation_type: 'Тип брони:'
 package.json.edit_record: Редактирование записи
+package.json.edit_record.order: заказа
 package.json.deleted: удалена
 package.json.corrupted: ошибка
 package.json.edit_order: Редактирование заказа
@@ -227,6 +234,16 @@ package.listTabs.clients: Клиенты
 package.new.reservation_error: "ошибка бронирования"
 package.new.reservation_error_try_again: При бронировании произошла ошибка. Попробуйте еще раз.
 package.pdf.executor: 'Исполнитель:'
+package.pdf.address: Адрес
+package.pdf.short_city_extend: г
+package.pdf.short_home_extend: д
+package.pdf.short_housing_extend: кор
+package.pdf.short_apartment_extend: кв
+package.pdf.short_street_extend: ул
+package.pdf.inn: ИНН
+package.pdf.notifies_customers: 'извещает Заказчика:'
+package.pdf.with_an_address: 'расположенный по адресу:'
+package.pdf.count_paid_total: Всего оплачено услуг на сумму
 package.pdf.customer: 'Заказчик:'
 package.pdf.not_specified: 'Не указан'
 package.pdf.services_name: Наименование работ, услуг
@@ -343,6 +360,13 @@ package.index.summary.paid: Оплачено
 package.index.summary.debt: Долг
 package.index.summary.nights: Ночей
 package.index.summary.guests: Гостей
+package.index.name: Название
+package.index.inner_name: Внутреннее название
+package.index.created: Создан
+package.index.delete_reason: причины удаления
+package.index.edit_record: Редактирование записи
+package.index.delete_record: Удаление записи
+package.edit.edit_delete_reasons: редактирование причины удаления
 accommodation.alert: Не рекомендуется размещать гостей до их заезда в отель
 
 
@@ -414,5 +438,11 @@ report.porter.out.table: Выезд
 
 report.porter.note: Комментарий
 
-
 report.work_shift.small_title: 'Рабочие смены'
+
+modal.form.delete.reasons.confirmation: Точно удалить эту запись?
+modal.form.delete.reasons.package: Причина удаления брони
+modal.form.delete.reasons.order: Причина удаления заказа
+modal.form.delete.reasons.reason_default: Не указана
+modal.form.delete.reasons.close: Отмена
+modal.form.delete.reasons.delete: Удалить

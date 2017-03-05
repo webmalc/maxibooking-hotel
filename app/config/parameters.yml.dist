@@ -6,6 +6,7 @@ parameters:
   mailer_user: robot@example.com
   mailer_password: password
   from_email: robot@example.com
+  mailer_encryption: ssl
 
   #MongoBD
   mongodb_url: 'mongodb://mbh-mongo:27017/mbh'
@@ -38,6 +39,7 @@ parameters:
   mbh_package_arrival_time: 12
   mbh_package_departure_time: 14
   mbh_package_notpaid_time: '-5 days'
+  mbh_online_form_max_packages: 5
 
   #Mailer
   mailer_user_arrival_links:
@@ -57,8 +59,14 @@ parameters:
 
   #Cache
   mbh_cache:
-    is_enabled: true
+    is_enabled: false
     prefix: mbh
+    search:
+      months: 6
+      max_duration: 21
+      min_duration: 3
+
+  wkhtmltopdf_path: '/usr/local/bin/wkhtmltopdf'
 
   mbh_modules:
     tasks: true

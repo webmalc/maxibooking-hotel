@@ -10,6 +10,7 @@ validator.document.order.wrong_status: Неверный статус.
 validator.document.package.order_not_selected: Не выбран заказ
 validator.document.package.order_not_selected: Не выбран заказ
 validator.document.package.tariff_not_selected: Не выбран тариф
+validator.document.package.delete_reasons.source_exist: Такой источник уже существует
 validator.document.package.room_type_not_selected: Не выбран тип номера
 validator.document.package.adults_amount_less_zero: Количество взрослых не может быть меньше нуля
 validator.document.package.children_amount_less_zero: Количество детей не может быть меньше нуля
@@ -26,6 +27,7 @@ validator.document.package.check_out_time_less_zero: Время отъезда �
 validator.document.package.check_out_time_greater_23: Время отъезда не может быть больше 23
 validator.document.package.discount_less_1: Скидка не может быть меньше 1%
 validator.document.package.discount_greater_100: Скидка не может быть больше 100%
+validator.document.package.delete_reason_greater_1000: Комментарий не может содержать более 1000 символов
 validator.document.packageService.no_service_selected: Не выбрана услуга
 validator.document.packageService.no_reservation_selected: Не выбрана бронь
 validator.document.packageService.price_less_zero: Цена не может быть меньше нуля
@@ -57,3 +59,4 @@ validator.document.Tourist.max_note: Слишком длинное примеч�
 validator.document.OrderDocument.type: Тип должен быть выбран
 validator.document.OrderDocument.file_type: Тип файла не поддерживается. Поддерживаемые форматы png, jpeg, jpg, gif, pdf, xls, doc.
 form.searchType.range_validator: Некорректно заполнено поле "Дополнительные дни поиска"
+validator.package.special_message: Некорректное спецпредложение

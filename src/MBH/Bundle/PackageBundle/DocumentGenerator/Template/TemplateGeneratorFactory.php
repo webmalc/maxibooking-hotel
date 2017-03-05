@@ -83,7 +83,7 @@ class TemplateGeneratorFactory implements GeneratorFactoryInterface
     public function createFormByType($type, $options = [])
     {
         if ($type == self::TYPE_CONFIRMATION_EN ||$type == self::TYPE_CONFIRMATION || $type == self::TYPE_ACT) {
-            return $this->container->get('form.factory')->create(new Template\Type\ConfirmationTemplateType(), null, $options);
+            return $this->container->get('form.factory')->create(Template\Type\ConfirmationTemplateType::class, null, $options);
         }
 
         return null;

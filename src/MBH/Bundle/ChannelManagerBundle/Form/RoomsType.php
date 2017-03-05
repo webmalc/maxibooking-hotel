@@ -40,7 +40,7 @@ class RoomsType extends AbstractType
     {
         $resolver->setDefaults(
             [
-//                'constraints' => [new Callback(['methods' => [[$this,'check']]])],
+                'constraints' => [new Callback([$this, 'check'])],
                 'booking' => [],
                 'hotel' => null,
             ]

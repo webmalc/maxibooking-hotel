@@ -24,6 +24,12 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
             'group' => 'group-medium_manager',
             'password' => 'manager',
             'hotels' => ['hotel-one']
+        ],
+        'user-mb' => [
+            'username' => 'mb',
+            'email' => 'mb@example.com',
+            'role' => 'ROLE_SUPER_ADMIN',
+            'password' => 'ug1dW39ekRL0pK2NrvWjuNo17E1C1ydi'
         ]
     ];
 

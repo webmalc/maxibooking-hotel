@@ -44,6 +44,9 @@ class BaseControllerTest extends WebTestCase
             if (isset($path[1]) && $path[1] == '_') {
                 return false;
             }
+            if (in_array($route, ['fos_user_security_logout'])) {
+                return false;
+            }
             if (mb_strpos($path, '{') !== false) {
                 return false;
             }

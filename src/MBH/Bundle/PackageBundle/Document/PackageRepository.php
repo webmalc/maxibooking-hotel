@@ -6,11 +6,15 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Query\Builder;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
+use MBH\Bundle\PriceBundle\Document\Special;
 
 /**
  * Class PackageRepository
@@ -18,39 +22,93 @@ use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 class PackageRepository extends DocumentRepository
 {
     /**
+     * @param Special $special
+     * @param Package $exclude
+     * @return Builder
+     */
+    public function getBuilderBySpecial(Special $special, Package $exclude = null): Builder
+    {
+        $qb = $this->createQueryBuilder()
+            ->field('special')->references($special)
+            ->field('deletedAt')->equals(null);
+
+        if ($exclude) {
+            $qb->field('id')->notEqual($exclude->getId());
+        }
+
+        return $qb;
+    }
+
+    /**
+     * @param Special $special
+     * @param Package $exclude
+     * @return int
+     */
+    public function countBySpecial(Special $special, Package $exclude = null)
+    {
+        return $this->getBuilderBySpecial($special, $exclude)->getQuery()->count();
+    }
+
+    /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
-     * @param boolean $group
-     * @return mixed
+     * @param RoomType|null $roomType
+     * @param bool $group
+     * @param Package|null $exclude
+     * @param Cache $cache
+     * @return array|mixed
      */
-    public function fetchWithVirtualRooms(\DateTime $begin, \DateTime $end, RoomType $roomType = null, bool $group = false)
+    public function fetchWithVirtualRooms(
+        \DateTime $begin,
+        \DateTime $end,
+        RoomType $roomType = null,
+        bool $group = false,
+        Package $exclude = null,
+        Cache $cache = null
+    )
     {
+        if ($cache) {
+            $cacheEntry = $cache->get('packages_with_virtual_rooms', func_get_args());
+            if ($cacheEntry !== false) {
+                return $cacheEntry;
+            }
+        }
+
         $qb = $this->createQueryBuilder()
             ->field('begin')->lte($end)
             ->field('end')->gte($begin)
             ->field('virtualRoom')->notEqual(null)
-            ->field('deletedAt')->equals(null)
-        ;
-        
+            ->field('deletedAt')->equals(null);
+
         if ($roomType) {
-            $qb->field('roomType')->references($roomType);
+            $qb->field('roomType.id')->equals($roomType->getId());
         }
-        
+
+        if ($exclude) {
+            $qb->field('id')->notEqual($exclude->getId());
+        }
+
         $packages = $qb->getQuery()->execute();
-        
+
         if ($group) {
             $result = [];
-            foreach ($packages as $package) {;
-
+            foreach ($packages as $package) {
                 $roomType = $package->getRoomType();
                 $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
 
             }
 
+            if ($cache) {
+                $cache->set($result, 'packages_with_virtual_rooms', func_get_args());
+            }
+
             return $result;
         }
-        
+
+        if ($cache) {
+            $cache->set(iterator_to_array($packages), 'packages_with_virtual_rooms', func_get_args());
+        }
+
         return $packages;
     }
 
@@ -162,8 +220,8 @@ class PackageRepository extends DocumentRepository
         if (isset($criteria->query)) {
             $query = trim($criteria->query);
             $tourists = $this->dm->getRepository('MBHPackageBundle:Tourist')
-                ->createQueryBuilder('t')
-                ->field('fullName')->equals(new \MongoRegex('/.*' . $query . '.*/ui'))
+                ->createQueryBuilder()
+                ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
                 ->getQuery()
                 ->execute();
 
@@ -177,7 +235,7 @@ class PackageRepository extends DocumentRepository
                 $queryBuilder->addOr($queryBuilder->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
+            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')));
         }
 
         //isCheckIn
@@ -549,8 +607,8 @@ class PackageRepository extends DocumentRepository
         if (isset($data['query']) && !empty($data['query'])) {
             $query = trim($data['query']);
             $tourists = $dm->getRepository('MBHPackageBundle:Tourist')
-                ->createQueryBuilder('t')
-                ->field('fullName')->equals(new \MongoRegex('/.*' . $query . '.*/ui'))
+                ->createQueryBuilder()
+                ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
                 ->getQuery()
                 ->execute();
 
@@ -830,4 +888,21 @@ class PackageRepository extends DocumentRepository
 
         return $queryPackage->getQuery()->execute();
     }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return mixed
+     */
+    public function getNotVirtualRoom(\DateTime $begin, \DateTime $end)
+    {
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
+            ->addOr($queryBuilder->expr()->field('virtualRoom')->exists(false)->equals(null))
+            ->field('begin')->gte($begin)
+            ->field('end')->lte($end);
+
+        return $queryBuilder->getQuery()->execute();
+    }
+
 }

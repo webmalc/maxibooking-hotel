@@ -30,7 +30,8 @@ views.tabs.tariffs: ' Тарифы'
 views.tabs.services: ' Услуги'
 views.tabs.must_fill_main_settings: "Необходимо заполнить основные настройки!"
 views.ostrovok.layout.ostrovok: "Ostrovok"
-
+views.hundredOneHotels.layout.hundredOneHotels: "101 отель"
+views.hundredOneHotels.settings: "настройки"
 
 #channelManager
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
@@ -61,6 +62,15 @@ channelManager.vashotel.notification.edit: "Изменен заказ %order% и
 channelManager.vashotel.notification.delete: "Удален заказ %order% из ВашОтель.RU. Номера броней: %packages%"
 channelManager.vashotel.notification.error.subject: Ошибка Vashotel.ru
 channelManager.vashotel.notification.error: "Ошибка при обработке заказа Vashotel.ru. Информация: %info%"
+
+channelManager.oktogo.notification.subject.new: Новый заказ Oktogo.ru
+channelManager.oktogo.notification.subject.edit: Изменен заказ Oktogo.ru
+channelManager.oktogo.notification.subject.delete: Удален заказ Oktogo.ru
+channelManager.oktogo.notification.new: "Новый заказ %order% из Oktogo.ru. Номера броней: %packages%"
+channelManager.oktogo.notification.edit: "Изменен заказ %order% из Oktogo.ru. Номера броней: %packages%"
+channelManager.oktogo.notification.delete: "Удален заказ %order% из Oktogo.ru. Номера броней: %packages%"
+channelManager.oktogo.notification.error.subject: Ошибка Oktogo.ru
+channelManager.oktogo.notification.error: "Ошибка при обработке заказа Oktogo.ru. Информация: %info%"
 
 channelManager.expedia.notification.subject.new: Новый заказ Expedia.com
 channelManager.expedia.notification.subject.edit: Изменен заказ Expedia.com
@@ -93,3 +103,23 @@ channelManager.booking.notification.bottom: Внимание! Требуется
 
 channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы отель, типы номеров, тарифы или услуги
 views.channelmanager.actions.sync: Синхронизировать
+
+
+channelManager.ostrovok.notification.subject.new: Новый заказ Ostrovok.ru
+channelManager.ostrovok.notification.subject.edit: Изменен заказ Ostrovok.ru
+channelManager.ostrovok.notification.subject.delete: Удален заказ Ostrovok.ru
+channelManager.ostrovok.notification.new: "Новый заказ %order% из Ostrovok.ru. Номера броней: %packages%"
+channelManager.ostrovok.notification.edit: "Изменен заказ %order% из Ostrovok.ru. Номера броней: %packages%"
+channelManager.ostrovok.notification.delete: "Удален заказ %order% из Ostrovok.ru. Номера броней: %packages%"
+channelManager.ostrovok.notification.error.subject: Ошибка Ostrovok.ru
+channelManager.ostrovok.notification.error: "Ошибка при обработке заказа Ostrovok.ru. Информация: %info%"
+
+
+channelManager.hundredOneHotels.notification.subject.new: 'Новый заказ 101hotels.ru'
+channelManager.hundredOneHotels.notification.subject.edit: 'Изменен заказ 101hotels.ru'
+channelManager.hundredOneHotels.notification.subject.delete: 'Удален заказ 101hotels.ru'
+channelManager.hundredOneHotels.notification.new: 'Новый заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.hundredOneHotels.notification.edit: 'Изменен заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.hundredOneHotels.notification.delete: 'Удален заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.hundredOneHotels.notification.error.subject: 'Ошибка 101hotels.ru'
+channelManager.hundredOneHotels.notification.error: 'Ошибка при обработке заказа 101hotels.ru. Информация: %info%'

@@ -8,7 +8,7 @@
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'package-search-filter-widget' } %}
         {% block content %}
 
-            {{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-inline search-form filter-form', 'id': 'package-search-form'}}) }}
+            {{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-inline search-form filter-form mbh-start-date mbh-start-date-search', 'id': 'package-search-form'}}) }}
             {{ form_errors(form) }}
             <div class="input">
                 <i class="fa fa-calendar" title='{{ 'form.searchType.check_in'|trans() }}'
@@ -64,7 +64,6 @@
                     </button>
                 </div>
             {% endif %}
-
             <div class="hide">
                 {{ form_end(form) }}
             </div>
