@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
-
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Lib\TranslatableInterface;
@@ -10,7 +9,6 @@ use MBH\Bundle\BaseBundle\Service\Currency;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
-use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorRoomType;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
 use MBH\Bundle\HotelBundle\Document\ContactInfo;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -584,6 +582,7 @@ class TripAdvisorResponseFormatter
     {
         $roomStayData = [];
         foreach ($packages as $package) {
+            /** @var Package $package */
             /** @var Tourist $mainTraveller */
             $mainTraveller = $package->getTourists()[0];
             $roomStayData[] = [

@@ -490,10 +490,12 @@ class ApiController extends Controller
         $sessionId = $request->get('sessionId');
         $isOrderExists = !is_null($order) && $order->getChannelManagerId()
             && $order->getChannelManagerId() == $sessionId;
+        $currency = $isOrderExists ? $order->getAdditionalData()['currency'] : '';
 
         return [
             'isOrderExists' => $isOrderExists,
             'order' => $order,
+            'currency' => $currency,
             'firstPackage' => $order->getPackages()[0]
         ];
     }

@@ -1,7 +1,6 @@
 {% stylesheets filter='cssrewrite, uglifycss'
-    'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
-    '@MBHOnlineBundle/Resources/public/css/bookingConfirmation.css'
-%}
+'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
+'@MBHOnlineBundle/Resources/public/css/bookingConfirmation.css' %}
 <link rel="stylesheet" href="{{ asset_url }}"/>
 {% endstylesheets %}
 
@@ -14,11 +13,11 @@
         {% endif %}
     </div>
     {% if isOrderExists %}
-    <div class="details">
-        <table class="table not-auto-datatable table-striped">
-            <tbody>
+        <div class="details">
+            <table class="table not-auto-datatable table-striped">
+                <tbody>
                 <tr>
-                    <td>#</td>
+                    <td>{{ 'booking_confirmation.order_number'|trans }}</td>
                     <td>{{ order.name }}</td>
                 </tr>
                 <tr>
@@ -26,23 +25,50 @@
                     <td>{{ (firstPackage.begin|mbh_format ~ ' - ' ~ firstPackage.end|mbh_format)|raw }}</td>
                 </tr>
                 <tr>
-                    <td>{{ 'booking_confirmation.room_type_name'|trans }}</td>
-                    <td>{{ firstPackage.roomType.name }}</td>
-                </tr>
-                <tr>
-                    <td>{{ 'booking_confirmation.tariff'|trans }}</td>
-                    <td>{{ firstPackage.tariff.name }}</td>
-                </tr>
-                <tr>
                     <td>{{ 'booking_confirmation.payer'|trans }}</td>
                     <td>{{ order.payer.name }}</td>
                 </tr>
                 <tr>
                     <td>{{ 'booking_confirmation.order_price'|trans }}</td>
-                    <td>{{ order.price }}</td>
+                    <td>{{ order.price ~ ' ' ~ currency }}</td>
                 </tr>
-            </tbody>
-        </table>
-    </div>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% for package in order.packages %}
+                    <tr>
+                        <td>{{ 'booking_confirmation.package_number'|trans }}</td>
+                        <td>{{ package.numberWithPrefix }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ 'booking_confirmation.room_type_name'|trans }}</td>
+                        <td>{{ package.roomType.name }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ 'booking_confirmation.tariff'|trans }}</td>
+                        <td>{{ package.tariff.name }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ 'booking_confirmation.adults'|trans }}</td>
+                        <td>{{ package.adults }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ 'booking_confirmation.children'|trans }}</td>
+                        <td>{{ package.children }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ 'booking_confirmation.package_price'|trans }}</td>
+                        <td>{{ package.price ~ ' ' ~ currency }}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
     {% endif %}
 </div>

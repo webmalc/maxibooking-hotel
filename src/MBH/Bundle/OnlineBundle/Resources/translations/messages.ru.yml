@@ -34,10 +34,15 @@ payment_types:
   online_half: 'Онлайн оплата (50%)'
 
 #booking confirmation
-booking_confirmation.order_successfull_created: Бронь успешно создана.
-booking_confirmation.order_not_exists: Брони не существует.
+booking_confirmation.order_successfull_created: Заказ успешно создан.
+booking_confirmation.order_not_exists: Заказа не существует.
+booking_confirmation.order_number: '# заказа'
+booking_confirmation.package_number: '# брони'
 booking_confirmation.order_price: Общая стоимость заказа
+booking_confirmation.package_price: Цена брони
 booking_confirmation.room_type_name: Тип комнаты
 booking_confirmation.tariff: Тариф
 booking_confirmation.payer: Плательщик
 booking_confirmation.dates: Даты
+booking_confirmation.adults: Взрослых
+booking_confirmation.children: Детей

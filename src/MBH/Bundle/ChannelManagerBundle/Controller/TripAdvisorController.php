@@ -221,7 +221,7 @@ class TripAdvisorController extends BaseController
         $requestedHotels = [["ta_id" => 123, "partner_id" => "58b937c5a84718004a438a52"]];
         $startDate = '2017-03-05';
         $endDate = '2017-03-06';
-        $requestedAdultsChildrenCombination = [["adults" => 1, 'children' => [7]], ["adults" => 2]];
+        $requestedAdultsChildrenCombination = [["adults" => 2, 'children' => [7]], ["adults" => 2]];
         $language = 'en_US';
         $queryKey = 'sadfafasdf';
         $currency = 'USD';
@@ -409,7 +409,7 @@ class TripAdvisorController extends BaseController
 
         $dataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
         $order = $dataFormatter->getOrderById($orderId);
-
+        //TODO: Проверку на наличие брони
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatBookingVerificationResponse($order, $channelManagerOrderId);
 
