@@ -114,11 +114,11 @@ class TariffType extends AbstractType
                 ],
             ])
             ->add('minPerPrepay', TextType::class, [
-                'label' => 'Минимальная предоплата',
-                'group' => 'Условия и ограничения',
+                'label' => 'form.tariffType.minPrepay',
+                'group' => 'form.tariffType.conditions_and_restructions',
                 'required' => false,
-                'attr' => ['placeholder' => 'Минимальный процент предоплаты'],
-                'help' => 'Процент от суммы заказа от 0 до 100%'
+                'attr' => ['placeholder' => 'form.tariffType.minPerPrepay'],
+                'help' => 'form.tariffType.help'
             ]);
         $builder
             ->add('isOnline', CheckboxType::class, [
