@@ -38,7 +38,7 @@
     "ob/highcharts-bundle": "*@stable",
     "knplabs/knp-snappy-bundle": "*@stable",
     "liip/imagine-bundle": "*@stable",
-    "jms/translation-bundle": "*@stable",
+    "jms/translation-bundle": "dev-master",
     "jms/di-extra-bundle": "*@stable",
     "liuggio/excelbundle": "^2.0@dev",
     "ornicar/gravatar-bundle": "^1.1@dev",
@@ -51,7 +51,8 @@
     "dinhkhanh/mongodb-acl-bundle": "dev-master",
     "guzzlehttp/guzzle": "^6.2",
     "php-amqplib/rabbitmq-bundle": "^1.12",
-    "phobetor/rabbitmq-supervisor-bundle": "^1.5"
+    "phobetor/rabbitmq-supervisor-bundle": "^1.5",
+    "nikic/php-parser": "3.*@stable"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

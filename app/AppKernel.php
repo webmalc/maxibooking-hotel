@@ -26,7 +26,6 @@ class AppKernel extends Kernel
             new Liip\ImagineBundle\LiipImagineBundle(),
             new JMS\DiExtraBundle\JMSDiExtraBundle($this),
             new JMS\AopBundle\JMSAopBundle(),
-            new JMS\TranslationBundle\JMSTranslationBundle(),
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
             new Ornicar\GravatarBundle\OrnicarGravatarBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
