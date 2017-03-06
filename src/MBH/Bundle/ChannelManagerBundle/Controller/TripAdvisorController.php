@@ -57,16 +57,25 @@ class TripAdvisorController extends BaseController
         ]);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            if (!$this->checkHotelDataFilling($this->hotel)) {
-
+        $unfilledData = $this->getHotelUnfilledRequiredFields($this->hotel);
+        $unfilledStringData = '';
+        if (count($unfilledData) > 0) {
+            $translator = $this->get('translator');
+            $unfilledFieldsString = '';
+            foreach ($unfilledData as $unfilledDatum) {
+                $unfilledFieldsString .= '<br>"' . $translator->trans($unfilledDatum) . '", ';
             }
+            $unfilledFieldsString = rtrim($unfilledFieldsString, ', ');
+            $unfilledStringData = $translator->trans('controller.trip_advisor_controller.unfilled_hotel_data.error',
+                ['%fields%' => $unfilledFieldsString]);
+        } elseif ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($config);
             $this->dm->flush();
             $this->addFlash('success', 'controller.tripadvisor_controller.settings_saved_success');
         }
 
         return [
+            'unfilledFieldsString' => $unfilledStringData,
             'doc' => $config,
             'form' => $form->createView(),
             'logs' => $this->logs($config)
@@ -137,16 +146,34 @@ class TripAdvisorController extends BaseController
             return $this->redirectToRoute('tripadvisor');
         }
 
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+            ->findBy(['hotel.id' => $this->hotel->getId()]);
+
         if (count($config->getRooms()) == 0) {
-            $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-                ->findBy(['hotel.id' => $this->hotel->getId()]);
             foreach ($roomTypes as $roomType) {
                 $config->addRoom((new TripAdvisorRoomType())->setRoomType($roomType));
             }
         }
 
+        $requiredFieldsErrors = [];
+        foreach ($roomTypes as $roomType) {
+            $translator = $this->get('translator');
+            $unfilledFieldsString = '';
+            $requiredUnfilledFields = $this->getRoomTypeRequiredUnfilledFields($roomType);
+            if (count($requiredUnfilledFields) > 0) {
+                foreach ($requiredUnfilledFields as $unfilledDatum) {
+                    $unfilledFieldsString .= '<br>"' . $translator->trans($unfilledDatum) . '", ';
+                }
+                $unfilledFieldsString = $translator->trans('controller.trip_advisor_controller.unfilled_room_type_data.error',
+                    ['%fields%' => rtrim($unfilledFieldsString, ', '), '%roomTypeName%' => $roomType->getName()]);
+
+            }
+            $requiredFieldsErrors[] = $unfilledFieldsString;
+        }
+
         $form = $this->createForm(TripAdvisorRoomTypesForm::class, $config, [
             'hotel' => $this->hotel,
+            'requiredFieldsErrors' => $requiredFieldsErrors
         ]);
 
         $form->handleRequest($request);
@@ -185,7 +212,6 @@ class TripAdvisorController extends BaseController
     {
         $apiVersion = $request->get('api_version');
         $language = $request->get('lang');
-        $inventoryType = $request->get('inventory_type');
 
         $responseDataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
         $configuredHotels = $responseDataFormatter->getTripAdvisorConfigs();
@@ -488,29 +514,34 @@ class TripAdvisorController extends BaseController
         return new Response();
     }
 
-    private function checkHotelDataFilling(Hotel $hotel)
+    private function getHotelUnfilledRequiredFields(Hotel $hotel)
     {
+        $requiredHotelData = [];
         $hotelContactInformation = $hotel->getContactInformation();
 
-        return !is_null($hotel->getInternationalStreetName())
-            && !is_null($hotel->getRegion())
-            && !is_null($hotel->getCountry())
-            && !is_null($hotel->getCity())
-            && !is_null($hotelContactInformation)
-            && !is_null($hotelContactInformation->getEmail())
-            && !is_null($hotelContactInformation->getFullName())
-            && !is_null($hotelContactInformation->getPhoneNumber())
-            && !is_null($hotel->getSmokingPolicy())
-            && !is_null($hotel->getCheckinoutPolicy())
+        !empty($hotel->getInternationalStreetName()) ?: $requiredHotelData[] = 'form.hotelExtendedType.international_street_name.help';
+        !empty($hotel->getRegion()) ?: $requiredHotelData[] = 'form.hotelExtendedType.region';
+        !empty($hotel->getCountry()) ?: $requiredHotelData[] = 'form.hotelExtendedType.country';
+        !empty($hotel->getCity()) ?: $requiredHotelData[] = 'form.hotelExtendedType.city';
+        if (empty($hotelContactInformation)) {
+            $requiredHotelData[] = 'form.hotel_contact_information.contact_info.group';
+        } else {
+            !empty($hotelContactInformation->getEmail()) ?: $requiredHotelData[] = 'form.contact_info_type.email.help';
+            !empty($hotelContactInformation->getFullName()) ?: $requiredHotelData[] = 'form.contact_info_type.full_name.help';
+            !empty($hotelContactInformation->getPhoneNumber()) ?: $requiredHotelData[] = 'form.contact_info_type.phone.help';
+        }
+        !empty($hotel->getSmokingPolicy()) ?: $requiredHotelData[] = 'form.hotelType.isSmoking.help';
+        !empty($hotel->getCheckinoutPolicy()) ?: $requiredHotelData[] = 'form.hotelExtendedType.check_in_out_policy.label';
 
-            ;
+        return $requiredHotelData;
     }
 
-    private function checkRoomTypeDataFilling(RoomType $roomType)
+    private function getRoomTypeRequiredUnfilledFields(RoomType $roomType)
     {
-        return !is_null($roomType->getInternationalTitle())
-            && !is_null($roomType->getDescription())
+        $requiredRoomTypeData = [];
+        !empty($roomType->getInternationalTitle()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.international_title';
+        !empty($roomType->getDescription()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.description';
 
-            ;
+        return $requiredRoomTypeData;
     }
 }

@@ -1,4 +1,6 @@
 form.hotelExtendedType.city: Город
+form.hotelExtendedType.region: Регион
+form.hotelExtendedType.country: Страна
 form.hotelExtendedType.settlement: Населенный пункт
 form.hotelExtendedType.street: Улица
 form.hotelExtendedType.international_street_name.label: Международное название

@@ -17,7 +17,8 @@ class TripAdvisorRoomTypesForm extends AbstractType
                 'entry_type' => TripAdvisorRoomTypeForm::class,
                 'entry_options' => [
                     'hotel' => $options['hotel'],
-                    'roomTypes' => $builder->getData()->getRooms()
+                    'roomTypes' => $builder->getData()->getRooms(),
+                    'requiredFieldsErrors' => $options['requiredFieldsErrors']
                 ],
                 'group' => false
             ]);
@@ -28,7 +29,8 @@ class TripAdvisorRoomTypesForm extends AbstractType
         $resolver
             ->setDefaults([
                 'data_class' => TripAdvisorConfig::class,
-                'hotel' => null
+                'hotel' => null,
+                'requiredFieldsErrors' => null
             ]);
     }
 

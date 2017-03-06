@@ -714,6 +714,11 @@ class TripAdvisorResponseFormatter
         return false;
     }
 
+    private function getDividedAdultsChildrenCombinations($adultsAndChildrensCounts, $roomTypeSize)
+    {
+
+    }
+
     private function getAdultsChildrenCount($adultsChildrenCombinations, Tariff $tariff)
     {
         $adultAndChildrenCounts = [];
@@ -722,10 +727,10 @@ class TripAdvisorResponseFormatter
             $childrenAges = isset($combination['children']) ? $combination['children'] : [];
             $childrenCount = 0;
             foreach ($childrenAges as $childrenAge) {
-                if ($childrenAge <= $tariff->getInfantAge()) {
+                if ($childrenAge < $tariff->getInfantAge()) {
                     continue;
                 }
-                if ($childrenAge <= $tariff->getChildAge()) {
+                if ($childrenAge < $tariff->getChildAge()) {
                     $childrenCount++;
                 } else {
                     $adultsCount++;
