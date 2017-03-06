@@ -48,7 +48,7 @@ class SearchQuery
      * @Assert\NotNull(message="form.searchType.adults_amount_not_filled")
      * @Assert\Range(
      *     min = 0,
-     *     max = 10,
+     *     max = 12,
      *     minMessage = "form.searchType.adults_amount_less_zero"
      * )
      */

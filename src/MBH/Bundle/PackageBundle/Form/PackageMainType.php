@@ -87,7 +87,7 @@ class PackageMainType extends AbstractType
                 'required' => true,
                 'group' => 'Номер',
                 'multiple' => false,
-                'choices' => range(0, 10),
+                'choices' => range(0, 12),
                 'attr' => array('class' => 'input-xxs plain-html'),
             ])
             ->add('children',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
