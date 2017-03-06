@@ -238,3 +238,10 @@ ornicar_gravatar:
 parameters:
     knp_menu.renderer.twig.options:
         currentClass: active
+
+# Lexik translation bundle
+lexik_translation:
+    fallback_locale: [ru]         # (required) default locale(s) to use
+    managed_locales: [ru, en]
+    storage:
+        type: mongodb
