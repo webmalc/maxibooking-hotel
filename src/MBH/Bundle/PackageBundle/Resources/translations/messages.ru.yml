@@ -80,11 +80,15 @@ form.packageServiceType.guests_amount: Количество гостей
 form.packageServiceType.amount: Количество
 form.packageServiceType.comment: Комментарий
 form.packageServiceType.time: Время
-form.packageSourceType.name: Назавание
+form.packageSourceType.name: Название
 form.packageSourceType.add_source: Добавить источник
 form.packageSourceType.adds: Реклама
 form.packageSourceType.inner_name: Внутреннее название
 form.packageSourceType.inner_maxibooking_name:  Название для использования внутри MaxiBooking
+form.deleteReasonsType.add_source: Добавить причину удаления
+form.deleteReasonsType.name: Название
+form.deleteReasonsType.default: Основная
+form.deleteReasonsType.adds: Отказ
 form.searchType.all_rooms: Все номера
 form.searchType.room_type: Тип номера
 form.searchType.tariff: Тариф
@@ -353,8 +357,15 @@ report.windows.modal.title: 'Информация'
 manager.offline: Оффлайн
 manager.online: Онлайн
 manager.channel_manager: Channel manager
+manager.channel_manager.vashotel: Ваш отель
+manager.channel_manager.booking: Booking
+manager.channel_manager.myallocator: Myalllocator
+manager.channel_manager.ostrovok: Островок
+manager.channel_manager.101Hotels: 101 Отель
+manager.channel_manager.oktogo: Oktogo
 
 csv.type.package: Тип брони
+csv.type.order.type: Тип заказа
 csv.type.begin: С
 csv.type.end: По
 csv.type.tariffType: Тип номера
@@ -363,6 +374,8 @@ csv.type.guests: Плательщик
 csv.type.adults: Взрослых
 csv.type.children: Детей
 csv.type.price: Стоимость
+csv.type.paids: Оплачено
+csv.type.rest: Долг
 csv.type.tariff: Тариф
 csv.type.createdAt: Дата создания
 csv.type.createdBy: Создал
@@ -378,6 +391,8 @@ csv.form.guests: Плательщик
 csv.form.adults: Взрослые
 csv.form.children: Дети
 csv.form.price: Стоимость
+csv.form.paids: Оплачено
+csv.form.rest: Долг
 csv.form.tariff: Тариф
 csv.form.createdAt: Дата создания
 csv.form.createdBy: Создал
@@ -386,3 +401,7 @@ csv.form.modal_close: Закрыть
 csv.form.modal_generate: Сгенерировать
 csv.form.countNight: Кол-во Ночей
 csv.form.countPersons: Кол-во Людей
+
+report.porter.note: 'Комментарий:'
+modal.form.delete.reasons.reason: Причина удаления
+modal.form.delete.delete_reason_package: Причина удаления брони

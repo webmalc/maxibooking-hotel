@@ -33,6 +33,7 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
      * @var Hotel
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="roomTypeCategory")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $hotel;
 
@@ -47,6 +48,7 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
      *      max=100,
      *      maxMessage="validator.document.roomType.max_name"
      * )
+     * @ODM\Index()
      */
     protected $fullTitle;
 
@@ -60,6 +62,7 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
      *      max=100,
      *      maxMessage="validator.document.roomType.max_name"
      * )
+     * @ODM\Index()
      */
     protected $title;
 
@@ -73,6 +76,7 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
      *      max=1000,
      *      maxMessage="validator.document.roomType.max_description"
      * )
+     * @ODM\Index()
      */
     protected $description;
 

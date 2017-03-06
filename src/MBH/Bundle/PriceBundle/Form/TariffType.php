@@ -112,6 +112,13 @@ class TariffType extends AbstractType
                 'attr' => [
                     'class' => 'spinner',
                 ],
+            ])
+            ->add('minPerPrepay', TextType::class, [
+                'label' => 'form.tariffType.minPrepay',
+                'group' => 'form.tariffType.conditions_and_restructions',
+                'required' => false,
+                'attr' => ['placeholder' => 'form.tariffType.minPerPrepay'],
+                'help' => 'form.tariffType.help'
             ]);
         $builder
             ->add('isOnline', CheckboxType::class, [

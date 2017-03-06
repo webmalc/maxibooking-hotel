@@ -51,6 +51,7 @@ class Special extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="specials")
      * @Assert\NotNull(message="validator.hotel.empty")
+     * @ODM\Index()
      */
     protected $hotel;
     
@@ -65,6 +66,7 @@ class Special extends Base
      *      max=100,
      *      maxMessage="validator.field.long"
      * )
+     * @ODM\Index()
      */
     protected $fullTitle;
 
@@ -78,6 +80,7 @@ class Special extends Base
      *      max=100,
      *      maxMessage="validator.field.long"
      * )
+     * @ODM\Index()
      */
     protected $title;
     
@@ -91,6 +94,7 @@ class Special extends Base
      *      max=300,
      *      maxMessage="validator.field.long"
      * )
+     * @ODM\Index()
      */
     protected $description;
 
@@ -102,6 +106,7 @@ class Special extends Base
      * @Assert\Range(min=0.1)
      * @Assert\Type(type="numeric")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $discount;
 
@@ -111,6 +116,7 @@ class Special extends Base
      * @ODM\Boolean(name="isPercent")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isPercent = true;
 
@@ -121,6 +127,7 @@ class Special extends Base
      * @Assert\Range(min=1)
      * @Assert\Type(type="numeric")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $limit;
 
@@ -139,6 +146,7 @@ class Special extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="int", name="remain")
      * @Assert\Type(type="numeric")
+     * @ODM\Index()
      */
     protected $remain;
 
@@ -160,6 +168,7 @@ class Special extends Base
      * @ODM\Date(name="begin")
      * @Assert\Date()
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $begin;
 
@@ -169,6 +178,7 @@ class Special extends Base
      * @ODM\Date(name="displayFrom")
      * @Assert\Date()
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $displayFrom;
 
@@ -178,6 +188,7 @@ class Special extends Base
      * @ODM\Date(name="end")
      * @Assert\Date()
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $end;
 
@@ -187,6 +198,7 @@ class Special extends Base
      * @ODM\Date(name="displayTo")
      * @Assert\Date()
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $displayTo;
 
@@ -540,5 +552,34 @@ class Special extends Base
     public function getPackages()
     {
         return $this->packages;
+    }
+
+
+    /**
+     * @param $object
+     * @return bool
+     */
+    public function check($object): bool
+    {
+        if ($object instanceof RoomType) {
+            $entries = $this->getRoomTypes();
+        }
+        if ($object instanceof Tariff) {
+            $entries = $this->getTariffs();
+        }
+        if (!isset($entries)) {
+            throw new \InvalidArgumentException('Unsupported object');
+        }
+
+        if (count($entries)) {
+            foreach ($entries as $entry) {
+                if ($entry->getId() == $object->getId()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        return true;
     }
 }

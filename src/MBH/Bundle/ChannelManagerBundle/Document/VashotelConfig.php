@@ -67,6 +67,7 @@ class VashotelConfig extends Base implements BaseInterface
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="vashotelConfig")
      * @Assert\NotNull(message="validator.document.vashotelConfig.no_hotel_selected")
+     * @ODM\Index()
      */
     protected $hotel;
 
@@ -75,6 +76,7 @@ class VashotelConfig extends Base implements BaseInterface
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="hotelId")
      * @Assert\NotNull(message="validator.document.vashotelConfig.no_hotel_id_specified")
+     * @ODM\Index()
      */
     protected $hotelId;
 

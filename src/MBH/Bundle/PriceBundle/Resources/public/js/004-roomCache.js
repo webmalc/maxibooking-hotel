@@ -2,6 +2,7 @@
 
 $(document).ready(function () {
     'use strict';
+
     //Show table
     var roomProcessing = false,
         showTable = function () {

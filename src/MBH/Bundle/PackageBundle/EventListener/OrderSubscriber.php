@@ -42,6 +42,18 @@ class OrderSubscriber implements EventSubscriber
         );
     }
 
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     */
+    private function _removeCache(\DateTime $begin = null, \DateTime $end = null)
+    {
+        $cache = $this->container->get('mbh.cache');
+        $cache->clear('accommodation_rooms', $begin, $end);
+        $cache->clear('room_cache', $begin, $end);
+        $cache->clear('packages', $begin, $end);
+    }
+
     public function preRemove(LifecycleEventArgs $args)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
@@ -65,8 +77,6 @@ class OrderSubscriber implements EventSubscriber
                 $this->container->get('mbh.room.cache')->recalculate(
                     $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff(), false
                 );
-                $this->container->get('mbh.cache')->clear('accommodation_rooms');
-                $this->container->get('mbh.cache')->clear('room_cache_fetch');
             }
             $entity->setPrice(0);
             $dm->persist($entity);
@@ -78,6 +88,8 @@ class OrderSubscriber implements EventSubscriber
                     $dm->getRepository('MBHPriceBundle:Special')->recalculate($package->getSpecial(), $package);
                 }
             }
+
+            $this->_removeCache();
 
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
         }
@@ -179,7 +191,7 @@ class OrderSubscriber implements EventSubscriber
                 if (isset($uow->getDocumentChangeSet($entity)['accommodation'])) {
                     $this->container->get('mbh.cache')->clear('accommodation_rooms');
                 }
-                $this->container->get('mbh.cache')->clear('room_cache_fetch');
+                $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
             }
 
         }

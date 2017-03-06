@@ -38,7 +38,7 @@ class Tariff extends Base implements ConditionsInterface
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -46,14 +46,15 @@ class Tariff extends Base implements ConditionsInterface
     use BlameableDocument;
 
     use ConditionsTrait;
-    
-    /** 
+
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="tariffs")
      * @Assert\NotNull(message="Не выбран отель")
+     * @ODM\Index()
      */
     protected $hotel;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -65,8 +66,16 @@ class Tariff extends Base implements ConditionsInterface
      *      max=100,
      *      maxMessage="Слишком длинное имя"
      * )
+     * @ODM\Index()
      */
     protected $fullTitle;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int", name="minPerPrepay")
+     */
+    protected $minPerPrepay;
 
     /**
      * @var string
@@ -78,9 +87,10 @@ class Tariff extends Base implements ConditionsInterface
      *      max=100,
      *      maxMessage="Слишком длинное имя"
      * )
+     * @ODM\Index()
      */
     protected $title;
-    
+
     /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="description")
@@ -90,24 +100,27 @@ class Tariff extends Base implements ConditionsInterface
      *      max=300,
      *      maxMessage="Слишком длинное описание"
      * )
+     * @ODM\Index()
      */
     protected $description;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean(name="isDefault")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isDefault = false;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean(name="isOnline")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
+     * @ODM\Index()
      */
     protected $isOnline = true;
 
@@ -116,6 +129,7 @@ class Tariff extends Base implements ConditionsInterface
      * @Gedmo\Versioned
      * @ODM\Date(name="begin")
      * @Assert\Date()
+     * @ODM\Index()
      */
     protected $begin;
 
@@ -124,6 +138,7 @@ class Tariff extends Base implements ConditionsInterface
      * @Gedmo\Versioned
      * @ODM\Date(name="end")
      * @Assert\Date()
+     * @ODM\Index()
      */
     protected $end;
 
@@ -150,6 +165,7 @@ class Tariff extends Base implements ConditionsInterface
      * @Gedmo\Versioned
      * @ODM\Integer()
      * @Assert\Type(type="numeric")
+     * @ODM\Index()
      */
     private $position = 0;
 
@@ -212,6 +228,14 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\ReferenceOne(targetDocument="Tariff", inversedBy="children")
      */
     protected $parent;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int", name="minPerPrepay")
+     * @Assert\Range(min=0, max=100)
+     */
+    protected $minPerPrepay = 0;
 
     /**
      * @var boolean
@@ -284,6 +308,23 @@ class Tariff extends Base implements ConditionsInterface
     {
         return $this->fullTitle;
     }
+
+    /**
+     * @return int
+     */
+    public function getMinPerPrepay()
+    {
+        return $this->minPerPrepay;
+    }
+
+    /**
+     * @param int $minPrepay
+     */
+    public function setMinPerPrepay(int $minPerPrepay)
+    {
+        $this->minPerPrepay = $minPerPrepay;
+    }
+
 
     /**
      * Set title
@@ -697,6 +738,25 @@ class Tariff extends Base implements ConditionsInterface
     public function setPosition(int $position): Tariff
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMinPerPrepay(): int
+    {
+        return $this->minPerPrepay ?? 0;
+    }
+
+    /**
+     * @param int $minPerPrepay
+     * @return $this
+     */
+    public function setMinPerPrepay(int $minPerPrepay)
+    {
+        $this->minPerPrepay = $minPerPrepay;
 
         return $this;
     }

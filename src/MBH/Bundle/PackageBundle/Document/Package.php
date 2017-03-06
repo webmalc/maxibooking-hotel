@@ -11,7 +11,10 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -32,6 +35,7 @@ class Package extends Base implements \JsonSerializable
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
+    use DeleteReasonTrait;
 
     const ROOM_STATUS_OPEN = 'open';
     const ROOM_STATUS_WAIT = 'wait'; //Не заехал
@@ -47,6 +51,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Order", inversedBy="packages")
      * @Assert\NotNull(message= "validator.document.package.order_not_selected")
+     * @ODM\Index()
      */
     protected $order;
 
@@ -57,6 +62,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      * @Assert\NotNull(message= "validator.document.package.tariff_not_selected")
+     * @ODM\Index()
      */
     protected $tariff;
     
@@ -64,6 +70,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull(message= "validator.document.package.room_type_not_selected")
+     * @ODM\Index()
      */
     protected $roomType;
     
@@ -95,6 +102,7 @@ class Package extends Base implements \JsonSerializable
      * @var int
      * @Gedmo\Versioned
      * @ODM\Integer()
+     * @ODM\Index()
      */
     protected $number;
     
@@ -118,6 +126,7 @@ class Package extends Base implements \JsonSerializable
      *      min=0,
      *      minMessage= "validator.document.package.adults_amount_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $adults;
     
@@ -132,6 +141,7 @@ class Package extends Base implements \JsonSerializable
      *      min=0,
      *      minMessage= "validator.document.package.children_amount_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $children;
     
@@ -141,6 +151,7 @@ class Package extends Base implements \JsonSerializable
      * @ODM\Date(name="begin")
      * @Assert\NotNull(message= "validator.document.package.begin_not_specified")
      * @Assert\Date()
+     * @ODM\Index()
      */
     protected $begin;
     
@@ -150,6 +161,7 @@ class Package extends Base implements \JsonSerializable
      * @ODM\Date(name="end")
      * @Assert\NotNull(message= "validator.document.package.end_not_specified")
      * @Assert\Date()
+     * @ODM\Index()
      */
     protected $end;
 
@@ -185,6 +197,7 @@ class Package extends Base implements \JsonSerializable
      *      min=0,
      *      minMessage= "validator.document.package.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $price;
 
@@ -197,6 +210,7 @@ class Package extends Base implements \JsonSerializable
      *      min=0,
      *      minMessage= "validator.document.order.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $originalPrice;
 
@@ -209,6 +223,7 @@ class Package extends Base implements \JsonSerializable
      *      min=0,
      *      minMessage= "validator.document.package.price_less_zero"
      * )
+     * @ODM\Index()
      */
     protected $totalOverwrite;
 
@@ -243,6 +258,7 @@ class Package extends Base implements \JsonSerializable
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="note")
+     * @ODM\Index()
      */
     protected $note;
 
@@ -262,9 +278,10 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "ostrovok", "oktogo", "myallocator" },
+     *      choices = {"vashotel", "booking", "ostrovok", "oktogo", "myallocator", "101Hotels"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
+     * @ODM\Index()
      */
     protected $channelManagerType;
 
@@ -381,6 +398,13 @@ class Package extends Base implements \JsonSerializable
         public function getTariff()
     {
         return $this->tariff;
+    }
+
+    public function allowPercentagePrice($price)
+    {
+        $minPerPay = $this->getTariff()->getMinPerPrepay();
+
+        return $price * $minPerPay / 100;
     }
 
     /**
@@ -951,6 +975,7 @@ class Package extends Base implements \JsonSerializable
     public function setIsPercentDiscount($isPercentDiscount)
     {
         $this->isPercentDiscount = $isPercentDiscount;
+        return $this;
     }
 
     /**
@@ -1296,6 +1321,7 @@ class Package extends Base implements \JsonSerializable
     public function setIsCheckOut($isCheckOut)
     {
         $this->isCheckOut = $isCheckOut;
+        return $this;
     }
 
     /**
@@ -1554,5 +1580,12 @@ class Package extends Base implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return AddressInterface|null
+     */
+    public function getAddress(): AddressInterface
+    {
+        return $this->getHotel()->getOrganization() ?? $this->getHotel();
+    }
 
 }

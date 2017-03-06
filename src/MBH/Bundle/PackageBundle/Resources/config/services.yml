@@ -33,6 +33,11 @@ services:
             class: MBH\Bundle\PackageBundle\Services\Permissions
             arguments: ['@service_container']
 
+    mbh.package.delete_reason.subscriber:
+            class: MBH\Bundle\PackageBundle\EventListener\DeleteReasonSubscriber
+            tags:
+                - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
     mbh.package.subscriber:
             class: MBH\Bundle\PackageBundle\EventListener\PackageSubscriber
             arguments: ['@service_container']
@@ -118,3 +123,7 @@ services:
     mbh.acl_document_owner_maker:
         class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
         arguments: ['@security.acl.provider', '@doctrine.odm.mongodb.document_manager']
+
+    task_notice_unpaid_order:
+      class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder
+      arguments:  ["@mbh.notice.unpaid"]

@@ -146,7 +146,43 @@ class ClientConfig extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isInstantSearch = true;
-    
+
+    /**
+     * @var \DateTime
+     * @ODM\Date
+     * @Gedmo\Versioned
+     * @Assert\Type(type="DateTime")
+     */
+    protected $beginDate;
+
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0, max=365)
+     */
+     protected $noticeUnpaid = 0;
+
+    /**
+     * @return integer
+     */
+    public function getNoticeUnpaid(): int
+    {
+        return $this->noticeUnpaid ?? 0;
+    }
+
+    /**
+     * @return ClientConfig
+     */
+    public function setNoticeUnpaid(int $noticeUnpaid)
+    {
+        $this->noticeUnpaid = $noticeUnpaid;
+        return $this;
+    }
+
     /**
      * Set sendSms
      *
@@ -183,6 +219,7 @@ class ClientConfig extends Base
     public function setUseRoomTypeCategory($useRoomTypeCategory)
     {
         $this->useRoomTypeCategory = $useRoomTypeCategory;
+        return $this;
     }
 
     /**
@@ -455,5 +492,21 @@ class ClientConfig extends Base
 
         return $this;
     }
-    
+
+    /**
+     * @return mixed
+     */
+    public function getBeginDate(): ?\DateTime
+    {
+        return $this->beginDate;
+    }
+
+    /**
+     * @param mixed $beginDate
+     */
+    public function setBeginDate(?\DateTime $beginDate)
+    {
+        $this->beginDate = $beginDate;
+    }
+
 }

@@ -509,7 +509,7 @@ var docReadyForms = function () {
     }());
 
     //order select
-    (function (){
+    (function () {
         var orderSelect = $('.order-select');
 
         if (orderSelect.length !== 1) {
@@ -541,8 +541,8 @@ var docReadyForms = function () {
                                 id: id
                             }), {dataType: "json"})
                             .done(function (data) {
-                            callback(data);
-                        });
+                                callback(data);
+                            });
                     }
                 },
                 dropdownCssClass: "bigdrop"
@@ -622,7 +622,7 @@ var select2TemplateResult = {
         }
         var rawIcons = state.element.getAttribute('data-icon'),
             result = '';
-        if(rawIcons) {
+        if (rawIcons) {
             var icons = rawIcons.split(';');
 
             $.each(icons, function (key, icon) {
@@ -637,7 +637,7 @@ var select2TemplateResult = {
     appendIcon: function (state) {
         var iconHtml = select2TemplateResult._iconHtml(state);
         var html = iconHtml ?
-        state.text + ' ' + iconHtml :
+            state.text + ' ' + iconHtml :
             state.text;
 
         return $('<div>' + html + '</div>');
@@ -645,7 +645,7 @@ var select2TemplateResult = {
     prependIcon: function (state) {
         var iconHtml = select2TemplateResult._iconHtml(state);
         var html = iconHtml ?
-        iconHtml + ' ' + state.text :
+            iconHtml + ' ' + state.text :
             state.text;
 
         return $('<div>' + html + '</div>');
@@ -910,8 +910,23 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     return this;
 };
 
+var mbhStartDate = function (e) {
+    if ($('form').is('.mbh-start-date')) {
+        if (!($('.begin-datepicker').val()) && !($('.end-datepicker').val())) {
+            console.log('loaded');
+            $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+            $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
+            $('.begin-datepicker').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
+            $('.end-datepicker').val($('.daterangepicker-input').data('daterangepicker').endDate.format('DD.MM.YYYY'));
+        }
+    }
+};
+
+
 $(document).ready(function () {
     'use strict';
 
     docReadyForms();
+
+    mbhStartDate();
 });

@@ -50,6 +50,7 @@ class HotelinnConfig extends Base implements BaseInterface
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="hotelinnConfig")
      * @Assert\NotNull(message="document.hotelinnConfig.no_hotel_selected")
+     * @ODM\Index()
      */
     protected $hotel;
 

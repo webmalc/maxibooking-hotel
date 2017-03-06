@@ -8,6 +8,7 @@ use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -54,10 +55,25 @@ class PackageRepository extends DocumentRepository
      * @param RoomType|null $roomType
      * @param bool $group
      * @param Package|null $exclude
+     * @param Cache $cache
      * @return array|mixed
      */
-    public function fetchWithVirtualRooms(\DateTime $begin, \DateTime $end, RoomType $roomType = null, bool $group = false, Package $exclude = null)
+    public function fetchWithVirtualRooms(
+        \DateTime $begin,
+        \DateTime $end,
+        RoomType $roomType = null,
+        bool $group = false,
+        Package $exclude = null,
+        Cache $cache = null
+    )
     {
+        if ($cache) {
+            $cacheEntry = $cache->get('packages_with_virtual_rooms', func_get_args());
+            if ($cacheEntry !== false) {
+                return $cacheEntry;
+            }
+        }
+
         $qb = $this->createQueryBuilder()
             ->field('begin')->lte($end)
             ->field('end')->gte($begin)
@@ -65,7 +81,7 @@ class PackageRepository extends DocumentRepository
             ->field('deletedAt')->equals(null);
 
         if ($roomType) {
-            $qb->field('roomType')->references($roomType);
+            $qb->field('roomType.id')->equals($roomType->getId());
         }
 
         if ($exclude) {
@@ -82,7 +98,15 @@ class PackageRepository extends DocumentRepository
 
             }
 
+            if ($cache) {
+                $cache->set($result, 'packages_with_virtual_rooms', func_get_args());
+            }
+
             return $result;
+        }
+
+        if ($cache) {
+            $cache->set(iterator_to_array($packages), 'packages_with_virtual_rooms', func_get_args());
         }
 
         return $packages;
@@ -870,7 +894,8 @@ class PackageRepository extends DocumentRepository
      * @param \DateTime $end
      * @return mixed
      */
-    public function getNotVirtualRoom(\DateTime $begin, \DateTime $end){
+    public function getNotVirtualRoom(\DateTime $begin, \DateTime $end)
+    {
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder
             ->addOr($queryBuilder->expr()->field('virtualRoom')->exists(false)->equals(null))

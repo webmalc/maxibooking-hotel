@@ -37,12 +37,18 @@ class Calculation
      */
     private $manager;
 
+    /**
+     * @var \MBH\Bundle\BaseBundle\Service\Helper
+     */
+    private $helper;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->manager = $container->get('mbh.hotel.room_type_manager');
         $this->mergingTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->getMergingTariffs();
+        $this->helper = $container->get('mbh.helper');
     }
 
     /**
@@ -352,7 +358,7 @@ class Calculation
                     $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
                 }
 
-                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $special);
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $roomType, $special);
                 $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
 
@@ -387,13 +393,18 @@ class Calculation
      * @param $price
      * @param \DateTime $date
      * @param Tariff $tariff
+     * @param RoomType $roomType
      * @param Special|null $special
      * @return PackagePrice
      */
-    public function getPackagePrice($price, \DateTime $date, Tariff $tariff, Special $special = null): PackagePrice
+    public function getPackagePrice($price, \DateTime $date, Tariff $tariff, RoomType $roomType, Special $special = null): PackagePrice
     {
         $packagePrice = new PackagePrice($date, $price > 0 ? $price : 0, $tariff);
-        if ($special && $date >= $special->getBegin() && $date <= $special->getEnd()) {
+        if (
+            $special &&
+            $date >= $special->getBegin() && $date <= $special->getEnd() &&
+            $special->check($roomType) && $special->check($tariff)
+        ) {
             $price = $special->isIsPercent() ? $price - $price * $special->getDiscount() / 100 : $price - $special->getDiscount();
             $packagePrice->setPrice($price)->setSpecial($special);
         }
