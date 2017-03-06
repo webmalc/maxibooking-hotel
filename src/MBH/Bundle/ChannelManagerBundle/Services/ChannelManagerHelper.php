@@ -4,6 +4,8 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class ChannelManagerHelper
 {
@@ -88,4 +90,44 @@ class ChannelManagerHelper
         return $this->tariffsSyncData;
     }
 
+    /**
+     * Проверяет отель на заполнение данных и возвращает названия незаполненных полей
+     * @param Hotel $hotel
+     * @return array
+     */
+    public function getHotelUnfilledRequiredFields(Hotel $hotel)
+    {
+        $requiredHotelData = [];
+        $hotelContactInformation = $hotel->getContactInformation();
+
+        !empty($hotel->getInternationalStreetName()) ?: $requiredHotelData[] = 'form.hotelExtendedType.international_street_name.help';
+        !empty($hotel->getRegion()) ?: $requiredHotelData[] = 'form.hotelExtendedType.region';
+        !empty($hotel->getCountry()) ?: $requiredHotelData[] = 'form.hotelExtendedType.country';
+        !empty($hotel->getCity()) ?: $requiredHotelData[] = 'form.hotelExtendedType.city';
+        if (empty($hotelContactInformation)) {
+            $requiredHotelData[] = 'form.hotel_contact_information.contact_info.group';
+        } else {
+            !empty($hotelContactInformation->getEmail()) ?: $requiredHotelData[] = 'form.contact_info_type.email.help';
+            !empty($hotelContactInformation->getFullName()) ?: $requiredHotelData[] = 'form.contact_info_type.full_name.help';
+            !empty($hotelContactInformation->getPhoneNumber()) ?: $requiredHotelData[] = 'form.contact_info_type.phone.help';
+        }
+        !empty($hotel->getSmokingPolicy()) ?: $requiredHotelData[] = 'form.hotelType.isSmoking.help';
+        !empty($hotel->getCheckinoutPolicy()) ?: $requiredHotelData[] = 'form.hotelExtendedType.check_in_out_policy.label';
+
+        return $requiredHotelData;
+    }
+
+    /**
+     * Проверяет тип комнат на заполнение данных и возвращает названия незаполненных полей
+     * @param RoomType $roomType
+     * @return array
+     */
+    public function getRoomTypeRequiredUnfilledFields(RoomType $roomType)
+    {
+        $requiredRoomTypeData = [];
+        !empty($roomType->getInternationalTitle()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.international_title';
+        !empty($roomType->getDescription()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.description';
+
+        return $requiredRoomTypeData;
+    }
 }

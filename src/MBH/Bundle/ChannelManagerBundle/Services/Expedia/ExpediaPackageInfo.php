@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
 class ExpediaPackageInfo extends AbstractPackageInfo
@@ -71,7 +72,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         return $this->prices;
     }
 
-    public function getRoomType()
+    public function getRoomType() : RoomType
     {
         $roomTypeId = $this->getPackageCommonData('roomTypeID');
         if (isset($this->roomTypes[$roomTypeId])) {

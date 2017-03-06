@@ -186,3 +186,8 @@ form.trip_advisor_tariff_type.is_penalty_exists.help: Есть ли штраф �
 form.trip_advisor_tariff_type.policy_info.label: Правила закрытия
 form.trip_advisor_tariff_type.policy_info.help: Описание правил отмены брони
 form.trip_advisor_tariff_type.fees.label: Комиссии
+
+order_handler.order_room_not_available: Нет свободных номеров на эти даты.
+order_handler.price_mismatch.error: Цена заказа не совпадает с реальной стоимостью заказа.
+order_handler.missing_email.error: Данные об email клиента отсутствуют.
+order_handler.missing_first_name.error: Данные о фамилии клиента отсутствуют

@@ -5,11 +5,13 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
+use MBH\Bundle\ChannelManagerBundle\Services\OrderHandler;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class TripAdvisorOrderInfo extends AbstractOrderInfo
 {
@@ -24,6 +26,15 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
     private $finalPriceAtCheckout;
     private $bookingMainData;
     private $bookingSession;
+    private $currency;
+    /** @var  OrderHandler $orderHandler */
+    private $orderHandler;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct($container);
+        $this->orderHandler = $this->container->get('mbh.channel_manager.order_handler');
+    }
 
     public function setInitData(
         $checkInDate,
@@ -36,7 +47,8 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
         $finalPriceAtBooking,
         $finalPriceAtCheckout,
         $bookingMainData,
-        $bookingSession
+        $bookingSession,
+        $currency
     ) {
         $this->checkInDate = $checkInDate;
         $this->checkOutDate = $checkOutDate;
@@ -49,6 +61,7 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
         $this->finalPriceAtCheckout = $finalPriceAtCheckout;
         $this->bookingMainData = $bookingMainData;
         $this->bookingSession = $bookingSession;
+        $this->currency = $currency;
 
         return $this;
     }
@@ -81,7 +94,9 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
 
     public function getPrice()
     {
-        return (float)$this->finalPriceAtCheckout['amount'];
+        $priceInCurrency = (float)$this->finalPriceAtBooking['amount'];
+
+        return $this->container->get('mbh.currency')->convertToRub($priceInCurrency, $this->currency);
     }
 
     public function getCashDocuments(Order $order)
@@ -113,6 +128,7 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
     {
         $packagesData = [];
         foreach ($this->roomsData as $roomData) {
+            $this->orderHandler->getAdultsChildrenCount($roomData['party'], $this->)
             $packagesData[] = $this->container->get('mbh.channel_manager.trip_advisor_package_info')
                 ->setInitData($roomData, $this->checkInDate, $this->checkOutDate, $this->bookingMainData,
                     $this->bookingSession, $this->getPayer());

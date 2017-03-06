@@ -10,8 +10,6 @@ use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorType;
 use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorRoomTypesForm;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -57,7 +55,7 @@ class TripAdvisorController extends BaseController
         ]);
 
         $form->handleRequest($request);
-        $unfilledData = $this->getHotelUnfilledRequiredFields($this->hotel);
+        $unfilledData = $this->get('mbh.channelmanager.helper')->getHotelUnfilledRequiredFields($this->hotel);
         $unfilledStringData = '';
         if (count($unfilledData) > 0) {
             $translator = $this->get('translator');
@@ -159,7 +157,7 @@ class TripAdvisorController extends BaseController
         foreach ($roomTypes as $roomType) {
             $translator = $this->get('translator');
             $unfilledFieldsString = '';
-            $requiredUnfilledFields = $this->getRoomTypeRequiredUnfilledFields($roomType);
+            $requiredUnfilledFields = $this->get('mbh.channelmanager.helper')->getRoomTypeRequiredUnfilledFields($roomType);
             if (count($requiredUnfilledFields) > 0) {
                 foreach ($requiredUnfilledFields as $unfilledDatum) {
                     $unfilledFieldsString .= '<br>"' . $translator->trans($unfilledDatum) . '", ';
@@ -255,8 +253,13 @@ class TripAdvisorController extends BaseController
         $deviceType = 'd';
         //TODO: Учесть возможность того, что не будет актуален отель
         //TODO: Разобраться, если несколько комнат
-        $availabilityData = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
-            ->getAvailabilityData($startDate, $endDate, $requestedHotels);
+        $dataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
+        $availabilityData = $dataFormatter->getAvailabilityData($startDate, $endDate, $requestedHotels);
+        $taHotelIds = [];
+        foreach ($requestedHotels as $requestedHotelData) {
+            $taHotelIds[] = $requestedHotelData['ta_id'];
+        }
+        $requestedHotelConfigs = $dataFormatter->getTripAdvisorConfigs($taHotelIds);
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatHotelAvailability($availabilityData, $apiVersion, $requestedHotels, $startDate, $endDate,
                 $requestedAdultsChildrenCombination, $language, $queryKey, $currency, $userCountry, $deviceType);
@@ -288,9 +291,9 @@ class TripAdvisorController extends BaseController
 
         $apiVersion = 7;
         $requestedHotel = ["ta_id" => 123, "partner_hotel_code" => "58b937c5a84718004a438a52"];
-        $startDate = '2017-03-06';
-        $endDate = '2017-03-07';
-        $requestedAdultsChildrenCombination = [["adults" => 2], ["adults" => 1]];
+        $startDate = '2017-03-12';
+        $endDate = '2017-03-18';
+        $requestedAdultsChildrenCombination = [["adults" => 1], ["adults" => 1]];
         $language = 'en_US';
         $queryKey = 'sadfafasdf';
         $currency = 'USD';
@@ -330,8 +333,8 @@ class TripAdvisorController extends BaseController
 //        $finalPriceAtCheckout = $request->get('final_price_at_checkout');
 //        $bookingMainData = $request->get('partner_data');
 
-        $checkInDate = '2017-01-12';
-        $checkOutDate = '2017-01-18';
+        $checkInDate = '2017-03-12';
+        $checkOutDate = '2017-03-18';
         $hotelId = '5864e3da2f77d9004b580232';
         $bookingSession = '12345';
         $customerData = [
@@ -346,11 +349,6 @@ class TripAdvisorController extends BaseController
                 "party" => ["adults" => 1, "children" => []],
                 "traveler_first_name" => "Paul",
                 "traveler_last_name" => "Revere"
-            ],
-            [
-                "party" => ["adults" => 1, "children" => []],
-                "traveler_first_name" => "Valera",
-                "traveler_last_name" => "Dualist"
             ]
         ];
         $specialRequests = 'A pre-made pillow fort and Vanilla coke on arrival please.';
@@ -370,22 +368,22 @@ class TripAdvisorController extends BaseController
             ]
         ];
         $finalPriceAtBooking = [
-            "amount" => 100,
+            "amount" => 255.14,
             "currency" => "USD"
         ];
         $finalPriceAtCheckout = [
-            "amount" => 100,
+            "amount" => 0,
             "currency" => "USD"
         ];
         $bookingMainData = [
             "pricesByDate" => [
                 '1_0' => [
-                    "12_01_2017" => 555,
-                    "13_01_2017" => 555,
-                    "14_01_2017" => 555,
-                    "15_01_2017" => 555,
-                    "16_01_2017" => 555,
-                    "17_01_2017" => 555
+                    "12_01_2017" => 1234,
+                    "13_01_2017" => 1234,
+                    "14_01_2017" => 1234,
+                    "15_01_2017" => 1234,
+                    "16_01_2017" => 1234,
+                    "17_01_2017" => 1234
                 ]
             ],
             "roomTypeId" => "58b93c03a8471801ee458562",
@@ -401,22 +399,32 @@ class TripAdvisorController extends BaseController
         /** @var TripAdvisorOrderInfo $orderInfo */
         $orderInfo = $this->get('mbh.channel_manager.trip_advisor_order_info')
             ->setInitData($checkInDate, $checkOutDate, $hotelId, $customerData, $roomsData, $specialRequests,
-                $paymentData, $finalPriceAtBooking, $finalPriceAtCheckout, $bookingMainData, $bookingSession);
+                $paymentData, $finalPriceAtBooking, $finalPriceAtCheckout, $bookingMainData, $bookingSession,
+                $currency);
 
-        $bookingCreationResult = $this->get('mbh.channel_manager.order_handler')->createOrder($orderInfo);
-        if ($bookingCreationResult instanceof Order) {
-            $bookingCreationResult->addAdditionalData('language', $language);
-            $bookingCreationResult->addAdditionalData('currency', $currency);
-            $bookingCreationResult->addAdditionalData('countryCode', $countryCode);
-            $this->dm->flush();
-        }
+        $orderHandler = $this->get('mbh.channel_manager.order_handler');
+        $orderCreationErrorsData = $orderHandler->getOrderAvailability($orderInfo, substr($language, 0, 2));
 
+        $responseFormatter = $this->get('mbh.channel_manager.trip_advisor_response_formatter');
         $hotel = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')
             ->getHotelById($bookingMainData['hotelId']);
 
-        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatSubmitBookingResponse($bookingSession, $bookingCreationResult,
-                $orderInfo->getPackageAndOrderMessages(), $hotel);
+        if ($orderCreationErrorsData['isCorrupted']) {
+            $response = $responseFormatter->formatSubmitBookingResponse($bookingSession, null,
+                $orderCreationErrorsData['errors'], $hotel);
+        } else {
+            $bookingCreationResult = $orderHandler->createOrder($orderInfo);
+            if ($bookingCreationResult instanceof Order) {
+                $bookingCreationResult->addAdditionalData('language', $language);
+                $bookingCreationResult->addAdditionalData('currency', $currency);
+                $bookingCreationResult->addAdditionalData('countryCode', $countryCode);
+                $this->dm->flush();
+            }
+
+            $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+                ->formatSubmitBookingResponse($bookingSession, $bookingCreationResult,
+                    $orderInfo->getPackageAndOrderMessages(), $hotel);
+        }
 
         return new JsonResponse($response);
     }
@@ -512,36 +520,5 @@ class TripAdvisorController extends BaseController
     public function testAction()
     {
         return new Response();
-    }
-
-    private function getHotelUnfilledRequiredFields(Hotel $hotel)
-    {
-        $requiredHotelData = [];
-        $hotelContactInformation = $hotel->getContactInformation();
-
-        !empty($hotel->getInternationalStreetName()) ?: $requiredHotelData[] = 'form.hotelExtendedType.international_street_name.help';
-        !empty($hotel->getRegion()) ?: $requiredHotelData[] = 'form.hotelExtendedType.region';
-        !empty($hotel->getCountry()) ?: $requiredHotelData[] = 'form.hotelExtendedType.country';
-        !empty($hotel->getCity()) ?: $requiredHotelData[] = 'form.hotelExtendedType.city';
-        if (empty($hotelContactInformation)) {
-            $requiredHotelData[] = 'form.hotel_contact_information.contact_info.group';
-        } else {
-            !empty($hotelContactInformation->getEmail()) ?: $requiredHotelData[] = 'form.contact_info_type.email.help';
-            !empty($hotelContactInformation->getFullName()) ?: $requiredHotelData[] = 'form.contact_info_type.full_name.help';
-            !empty($hotelContactInformation->getPhoneNumber()) ?: $requiredHotelData[] = 'form.contact_info_type.phone.help';
-        }
-        !empty($hotel->getSmokingPolicy()) ?: $requiredHotelData[] = 'form.hotelType.isSmoking.help';
-        !empty($hotel->getCheckinoutPolicy()) ?: $requiredHotelData[] = 'form.hotelExtendedType.check_in_out_policy.label';
-
-        return $requiredHotelData;
-    }
-
-    private function getRoomTypeRequiredUnfilledFields(RoomType $roomType)
-    {
-        $requiredRoomTypeData = [];
-        !empty($roomType->getInternationalTitle()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.international_title';
-        !empty($roomType->getDescription()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.description';
-
-        return $requiredRoomTypeData;
     }
 }

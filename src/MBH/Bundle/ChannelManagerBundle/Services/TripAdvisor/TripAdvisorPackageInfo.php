@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerException;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -18,17 +19,9 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
     private $bookingSessionId;
     /** @var  Tourist $payer */
     private $payer;
-    /** @var Helper $helper */
-    private $helper;
 
     private $isPricesInit = false;
     private $prices = [];
-
-    public function __construct($container)
-    {
-        parent::__construct($container);
-        $this->helper = $this->container->get('mbh.helper');
-    }
 
     public function setInitData($roomData, $checkInDate, $checkOutDate, $bookingMainData, $bookingSessionId, $payer)
     {
@@ -44,15 +37,15 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     public function getBeginDate()
     {
-        return $this->helper->getDateFromString($this->checkInDate, 'Y-m-d');
+        return Helper::getDateFromString($this->checkInDate, 'Y-m-d');
     }
 
     public function getEndDate()
     {
-        return $this->helper->getDateFromString($this->checkOutDate, 'Y-m-d');
+        return Helper::getDateFromString($this->checkOutDate, 'Y-m-d');
     }
 
-    public function getRoomType()
+    public function getRoomType() : RoomType
     {
         $roomTypeId = $this->bookingMainData['roomTypeId'];
         $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);

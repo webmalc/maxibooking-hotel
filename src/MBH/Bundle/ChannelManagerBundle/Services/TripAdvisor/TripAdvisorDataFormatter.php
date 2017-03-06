@@ -55,12 +55,21 @@ class TripAdvisorDataFormatter
     public function getTripAdvisorConfigs($tripAdvisorHotelIds = null)
     {
         $tripAdvisorConfigRepository = $this->dm->getRepository('MBHChannelManagerBundle:TripAdvisorConfig');
+
         if (is_null($tripAdvisorHotelIds)) {
-            return $tripAdvisorConfigRepository->findAll();
+            $configs = $tripAdvisorConfigRepository->findAll();
+        } else {
+            $configs = $tripAdvisorConfigRepository->createQueryBuilder()
+                ->field('hotel.id')->in($tripAdvisorHotelIds)->getQuery()->execute();
         }
 
-        return $tripAdvisorConfigRepository->createQueryBuilder()
-            ->field('hotel.id')->in($tripAdvisorHotelIds)->getQuery()->execute();
+        $result = [];
+        foreach ($configs as $config) {
+            /** @var TripAdvisorConfig $config */
+            $result[$config->getHotelId()] = $config;
+        }
+
+        return $result;
     }
 
     public function getBookingOptionsByHotel($startDate, $endDate, Hotel $hotel)
