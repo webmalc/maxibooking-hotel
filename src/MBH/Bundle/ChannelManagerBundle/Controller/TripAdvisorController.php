@@ -97,9 +97,8 @@ class TripAdvisorController extends BaseController
             return $this->redirectToRoute('tripadvisor');
         }
 
+        $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->findBy(['hotel.id' => $this->hotel->getId()]);
         if (count($config->getTariffs()) == 0) {
-            $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
-                ->findBy(['hotel.id' => $this->hotel->getId()]);
             $mainTariffId = $config->getMainTariff()->getId();
             foreach ($tariffs as $tariff) {
                 $tripAdvisorTariff = (new TripAdvisorTariff())->setTariff($tariff);
@@ -110,8 +109,25 @@ class TripAdvisorController extends BaseController
             }
         }
 
+        $requiredFieldsErrors = [];
+        $translator = $this->get('translator');
+        foreach ($tariffs as $tariff) {
+            $unfilledFieldsString = '';
+            $requiredUnfilledFields = $this->get('mbh.channelmanager.helper')->getTariffRequiredUnfilledFields($tariff);
+            if (count($requiredUnfilledFields) > 0) {
+                foreach ($requiredUnfilledFields as $unfilledDatum) {
+                    $unfilledFieldsString .= '<br>"' . $translator->trans($unfilledDatum) . '", ';
+                }
+                $unfilledFieldsString = $translator->trans('controller.trip_advisor_controller.unfilled_tariff_data.error',
+                    ['%fields%' => rtrim($unfilledFieldsString, ', '), '%tariffName%' => $tariff->getName()]);
+
+            }
+            $requiredFieldsErrors[] = $unfilledFieldsString;
+        }
+
         $form = $this->createForm(TripAdvisorTariffsType::class, $config, [
             'hotel' => $this->hotel,
+            'unfilledFieldErrors' => $requiredFieldsErrors
         ]);
 
         $form->handleRequest($request);
@@ -214,14 +230,13 @@ class TripAdvisorController extends BaseController
         $responseDataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
         $configuredHotels = $responseDataFormatter->getTripAdvisorConfigs();
 
-        //TODO: Уточнить нужно ли реализовывать
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatHotelInventoryData($apiVersion, $language, $configuredHotels);
 
         return new JsonResponse($response);
     }
 
-    //TODO: Поставить POST после тестов
+    //TODO: Вернуть POST
     /**
      * @Method("GET")
      * @Route("/hotel_availability")
@@ -251,15 +266,12 @@ class TripAdvisorController extends BaseController
         $currency = 'USD';
         $userCountry = 'US';
         $deviceType = 'd';
-        //TODO: Учесть возможность того, что не будет актуален отель
-        //TODO: Разобраться, если несколько комнат
         $dataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
         $availabilityData = $dataFormatter->getAvailabilityData($startDate, $endDate, $requestedHotels);
         $taHotelIds = [];
         foreach ($requestedHotels as $requestedHotelData) {
             $taHotelIds[] = $requestedHotelData['ta_id'];
         }
-        $requestedHotelConfigs = $dataFormatter->getTripAdvisorConfigs($taHotelIds);
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatHotelAvailability($availabilityData, $apiVersion, $requestedHotels, $startDate, $endDate,
                 $requestedAdultsChildrenCombination, $language, $queryKey, $currency, $userCountry, $deviceType);
@@ -293,7 +305,7 @@ class TripAdvisorController extends BaseController
         $requestedHotel = ["ta_id" => 123, "partner_hotel_code" => "58b937c5a84718004a438a52"];
         $startDate = '2017-03-12';
         $endDate = '2017-03-18';
-        $requestedAdultsChildrenCombination = [["adults" => 1], ["adults" => 1]];
+        $requestedAdultsChildrenCombination = [["adults" => 7, "children" => [3, 4, 5]]];
         $language = 'en_US';
         $queryKey = 'sadfafasdf';
         $currency = 'USD';
@@ -346,9 +358,14 @@ class TripAdvisorController extends BaseController
         ];
         $roomsData = [
             [
-                "party" => ["adults" => 1, "children" => []],
+                "party" => ["adults" => 4, "children" => [3, 4, 5,4,3,2,3,5]],
                 "traveler_first_name" => "Paul",
                 "traveler_last_name" => "Revere"
+            ],
+            [
+                "party" => ["adults" => 4, "children" => [3, 4, 5]],
+                "traveler_first_name" => "Valera",
+                "traveler_last_name" => "Valakas"
             ]
         ];
         $specialRequests = 'A pre-made pillow fort and Vanilla coke on arrival please.';
@@ -377,14 +394,31 @@ class TripAdvisorController extends BaseController
         ];
         $bookingMainData = [
             "pricesByDate" => [
-                '1_0' => [
-                    "12_01_2017" => 1234,
-                    "13_01_2017" => 1234,
-                    "14_01_2017" => 1234,
-                    "15_01_2017" => 1234,
-                    "16_01_2017" => 1234,
-                    "17_01_2017" => 1234
+                "2_1" => [
+                    "12_03_2017" => 1239,
+                    "13_03_2017" => 1239,
+                    "14_03_2017" => 1239,
+                    "15_03_2017" => 1239,
+                    "16_03_2017" => 1239,
+                    "17_03_2017" => 1239
+                ],
+                "2_0" => [
+                    "12_03_2017" => 1234,
+                    "13_03_2017" => 1234,
+                    "14_03_2017" => 1234,
+                    "15_03_2017" => 1234,
+                    "16_03_2017" => 1234,
+                    "17_03_2017" => 1234
+                ],
+                '1_1' => [
+                    "12_03_2017" => 1234,
+                    "13_03_2017" => 1234,
+                    "14_03_2017" => 1234,
+                    "15_03_2017" => 1234,
+                    "16_03_2017" => 1234,
+                    "17_03_2017" => 1234
                 ]
+
             ],
             "roomTypeId" => "58b93c03a8471801ee458562",
             "tariffId" => "58b93bd4a8471801dc3eb862",

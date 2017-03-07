@@ -25,6 +25,7 @@ use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as ChannelManagerValidator;
 
 /**
  * @ODM\Document(collection="Hotels", repositoryClass="MBH\Bundle\HotelBundle\Document\HotelRepository")
@@ -32,6 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
  * @ODM\HasLifecycleCallbacks
+ * @ChannelManagerValidator\TripAdvisor
  */
 class Hotel extends Base implements \JsonSerializable, AddressInterface
 {

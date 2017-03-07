@@ -6,31 +6,52 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerException;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class TripAdvisorPackageInfo extends AbstractPackageInfo
 {
     private $isCorrupted;
-    private $roomData;
     private $checkInDate;
     private $checkOutDate;
     private $bookingMainData;
     private $bookingSessionId;
     /** @var  Tourist $payer */
     private $payer;
+    private $tariff;
+    private $roomType;
+    private $childAges;
+    private $childrenCount;
+    private $adultsCount;
+    private $travellerData;
 
     private $isPricesInit = false;
     private $prices = [];
 
-    public function setInitData($roomData, $checkInDate, $checkOutDate, $bookingMainData, $bookingSessionId, $payer)
-    {
-        $this->roomData = $roomData;
+    public function setInitData(
+        $checkInDate,
+        $checkOutDate,
+        $bookingMainData,
+        $bookingSessionId,
+        $payer,
+        Tariff $tariff,
+        RoomType $roomType,
+        $childAges,
+        $childrenCount,
+        $adultsCount,
+        $travellerData
+    ) {
         $this->checkOutDate = $checkOutDate;
         $this->checkInDate = $checkInDate;
         $this->bookingMainData = $bookingMainData;
         $this->bookingSessionId = $bookingSessionId;
         $this->payer = $payer;
+        $this->tariff = $tariff;
+        $this->roomType = $roomType;
+        $this->childAges = $childAges;
+        $this->childrenCount = $childrenCount;
+        $this->adultsCount = $adultsCount;
+        $this->travellerData = $travellerData;
 
         return $this;
     }
@@ -45,48 +66,32 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
         return Helper::getDateFromString($this->checkOutDate, 'Y-m-d');
     }
 
-    public function getRoomType() : RoomType
+    public function getRoomType(): RoomType
     {
-        $roomTypeId = $this->bookingMainData['roomTypeId'];
-        $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
-        if (!$roomType) {
-            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
-                [
-                    'hotel.id' => $this->bookingMainData['hotelId'],
-                    'isEnabled' => true,
-                    'deletedAt' => null
-                ]
-            );
-            $this->addProblemMessage('services.expedia.invalid_room_type_id');
-            $this->isCorrupted = true;
-        }
-
-        if (!$roomType) {
-            throw new ChannelManagerException($this->translator->trans('services.expedia.nor_one_room_type'));
-        }
-
-        return $roomType;
+        return $this->roomType;
     }
 
     public function getTariff()
     {
-        return $this->dm->find('MBHPriceBundle:Tariff', $this->bookingMainData['tariffId']);
+        return $this->tariff;
     }
 
     public function getAdultsCount()
     {
-        return $this->roomData['party']['adults'];
+        return $this->adultsCount;
     }
 
     public function getChildrenCount()
     {
-        return count($this->getChildrenData());
+        return $this->childrenCount;
     }
 
     public function getPrices()
     {
         if (!$this->isPricesInit) {
-            $childrenAdultsString = $this->getAdultsCount() . '_' . $this->getChildrenCount();
+            $estimatedAdultsChildrenCounts = $this->getRoomType()->getAdultsChildrenCombination($this->getAdultsCount(),
+                $this->getChildrenCount());
+            $childrenAdultsString = $estimatedAdultsChildrenCounts['adults'] . '_' . $estimatedAdultsChildrenCounts['children'];
             $pricesByDate = $this->bookingMainData['pricesByDate'][$childrenAdultsString];
             foreach ($pricesByDate as $dateString => $priceByDate) {
                 $currentDate = \DateTime::createFromFormat('d_m_Y', $dateString);
@@ -115,17 +120,6 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
         return $this->note;
     }
 
-    private function getChildrenData()
-    {
-        $childrenData = $this->roomData['party']['children'];
-        if (count($childrenData) > 0) {
-            $childrenAgesString = join(', ', $childrenData);
-            $this->addNotifyMessage( 'package_info.tripadvisor.children_age', $childrenAgesString);
-        }
-
-        return $this->roomData['party']['children'];
-    }
-
     public function getIsCorrupted()
     {
         return $this->isCorrupted;
@@ -133,21 +127,26 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     public function getTourists()
     {
-        $firstName = trim($this->roomData['traveler_first_name']);
-        $lastName = trim($this->roomData['traveler_last_name']);
-        if ($this->payer->getFirstName() == $firstName && $this->payer->getLastName() == $lastName) {
-            $tourist = $this->payer;
-        } else {
-            $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-                $lastName,
-                $firstName
-            );
+        $tourists = [];
+        if (count($this->travellerData) > 0) {
+            $firstName = trim($this->travellerData['traveler_first_name']);
+            $lastName = trim($this->travellerData['traveler_last_name']);
+            if ($this->payer->getFirstName() == $firstName && $this->payer->getLastName() == $lastName) {
+                $tourist = $this->payer;
+            } else {
+                $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                    $lastName,
+                    $firstName
+                );
+            }
+
+            $this->dm->persist($tourist);
+            $this->dm->flush();
+
+            $tourists[] = $tourist;
         }
 
-        $this->dm->persist($tourist);
-        $this->dm->flush();
-
-        return [$tourist];
+        return $tourists;
     }
 
     public function getIsSmoking()
@@ -162,6 +161,6 @@ class TripAdvisorPackageInfo extends AbstractPackageInfo
 
     public function getChildAges()
     {
-        return $this->getChildrenData();
+        return $this->childAges;
     }
 }

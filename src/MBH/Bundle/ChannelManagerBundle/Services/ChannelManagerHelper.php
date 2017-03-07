@@ -6,6 +6,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class ChannelManagerHelper
 {
@@ -95,7 +96,7 @@ class ChannelManagerHelper
      * @param Hotel $hotel
      * @return array
      */
-    public function getHotelUnfilledRequiredFields(Hotel $hotel)
+    public static function getHotelUnfilledRequiredFields(Hotel $hotel)
     {
         $requiredHotelData = [];
         $hotelContactInformation = $hotel->getContactInformation();
@@ -122,12 +123,25 @@ class ChannelManagerHelper
      * @param RoomType $roomType
      * @return array
      */
-    public function getRoomTypeRequiredUnfilledFields(RoomType $roomType)
+    public static function getRoomTypeRequiredUnfilledFields(RoomType $roomType)
     {
         $requiredRoomTypeData = [];
         !empty($roomType->getInternationalTitle()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.international_title';
         !empty($roomType->getDescription()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.description';
 
         return $requiredRoomTypeData;
+    }
+
+    /**
+     * Проверяет тариф на заполненность данных, необходимых для синхронизации с TripAdvisor и возвращает данные о незаполненных полях
+     * @param Tariff $tariff
+     * @return array
+     */
+    public static function getTariffRequiredUnfilledFields(Tariff $tariff)
+    {
+        $requiredTariffData = [];
+        !empty($tariff->getDescription()) ?: $requiredTariffData[] = 'mbhpricebundle.form.tarifftype.opisaniye';
+
+        return $requiredTariffData;
     }
 }

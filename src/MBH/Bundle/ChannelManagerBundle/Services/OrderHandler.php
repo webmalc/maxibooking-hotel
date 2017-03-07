@@ -3,6 +3,8 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Liip\FunctionalTestBundle\Validator\DataCollectingValidator;
+use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
@@ -13,18 +15,26 @@ use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\ConstraintViolation;
 
 class OrderHandler
 {
     private $dm;
     private $search;
     private $translator;
+    /** @var  DataCollectingValidator $validator */
+    private $validator;
 
-    public function __construct(DocumentManager $dm, SearchFactory $searchFactory, TranslatorInterface $translator)
-    {
+    public function __construct(
+        DocumentManager $dm,
+        SearchFactory $searchFactory,
+        TranslatorInterface $translator,
+        DataCollectingValidator $validator
+    ) {
         $this->dm = $dm;
         $this->search = $searchFactory;
         $this->translator = $translator;
+        $this->validator = $validator;
     }
 
     public function createOrder(AbstractOrderInfo $orderInfo, ?Order $order = null): Order
@@ -176,29 +186,38 @@ class OrderHandler
 
         $isRoomAvailable = true;
         $totalPrice = 0;
-        foreach ($orderInfo->getPackagesData() as $packageInfo) {
-            $searchQuery = new SearchQuery();
-            $searchQuery->adults = $packageInfo->getAdultsCount();
-            $searchQuery->children = $packageInfo->getChildrenCount();
-            $searchQuery->begin = $packageInfo->getBeginDate();
-            $searchQuery->end = $packageInfo->getEndDate();
-            $searchQuery->tariff = $packageInfo->getTariff();
-            $searchQuery->addRoomType($packageInfo->getRoomType()->getId());
+        $packages = $orderInfo->getPackagesData();
 
-            $searchResults = $this->search->search($searchQuery);
-            if (count($searchResults) == 0) {
-                $isRoomAvailable = false;
-            } else {
-                $totalPrice += current($searchResults)->getPrice($packageInfo->getAdultsCount(),
-                    $packageInfo->getChildrenCount());
+        $firstPackageInfo = current($packages);
+        $searchQuery = new SearchQuery();
+        $searchQuery->adults = $firstPackageInfo->getAdultsCount();
+        $searchQuery->children = $firstPackageInfo->getChildrenCount();
+        $searchQuery->begin = $firstPackageInfo->getBeginDate();
+        $searchQuery->end = $firstPackageInfo->getEndDate();
+        $searchQuery->tariff = $firstPackageInfo->getTariff();
+        $searchQuery->addRoomType($firstPackageInfo->getRoomType()->getId());
+
+        $searchResults = $this->search->search($searchQuery);
+        if (count($searchResults) == 0) {
+            $isRoomAvailable = false;
+        } else {
+            $searchResult = current($searchResults);
+            foreach ($packages as $packageInfo) {
+                if (count($searchResults) == 0) {
+                    $isRoomAvailable = false;
+                } else {
+                    $totalPrice += $searchResult->getPrice($packageInfo->getAdultsCount(),
+                        $packageInfo->getChildrenCount());
+                }
             }
         }
 
-        if(!$isRoomAvailable) {
+        if (!$isRoomAvailable || $searchResult->getRoomsCount() < count($packages)) {
             $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::ROOM_NOT_AVAILABLE_ERROR,
                 'order_handler.order_room_not_available', $locale);
             $isOrderCorrupted = true;
         }
+        //После операций конвертации суммы не совпадают
 //        if ($totalPrice != $orderInfo->getPrice()) {
 //            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::PRICE_MISMATCH,
 //                'order_handler.price_mismatch.error', $locale);
@@ -212,8 +231,27 @@ class OrderHandler
             $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::MISSING_PAYER_FIRST_NAME,
                 'order_handler.missing_first_name.error', $locale);
         }
-        //TODO: Добавить валидацию карт. Уточнить у Сергея.
 
+        $orderPaymentCard = $orderInfo->getCreditCard();
+        $creditCardValidationErrors = $this->validator->validate($orderPaymentCard);
+        if (is_array($creditCardValidationErrors)) {
+            foreach ($creditCardValidationErrors as $cardError) {
+                /** @var ConstraintViolation $cardError */
+                $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::CREDIT_CARD_DECLINED,
+                    $cardError->getMessage(), $locale);
+            }
+        }
+
+        $acceptedCardTypes = $firstPackageInfo->getRoomType()->getHotel()->getAcceptedCardTypes();
+        $acceptedCardCodes = [];
+        /** @var CardType $acceptedCardType */
+        foreach ($acceptedCardTypes as $acceptedCardType) {
+            $acceptedCardCodes[] = $acceptedCardType->getCardCode();
+        }
+        if (!in_array(strtoupper($orderPaymentCard->type), $acceptedCardCodes)) {
+            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::CREDIT_CARD_NOT_SUPPORTED,
+                'order_handler.card_type_not_supported.error', $locale);
+        }
 
         return [
             'isCorrupted' => $isOrderCorrupted,
@@ -260,31 +298,36 @@ class OrderHandler
      * @param Tariff $tariff
      * @return array
      */
-    public function getAdultsChildrenCount($adultsChildrenCombinations, Tariff $tariff)
+    public function getAdultsChildrenCountByCombinations($adultsChildrenCombinations, Tariff $tariff)
     {
         $adultAndChildrenCounts = [];
         foreach ($adultsChildrenCombinations as $combination) {
-            $adultsCount = $combination['adults'];
-            $childrenAges = isset($combination['children']) ? $combination['children'] : [];
-            $childrenCount = 0;
-            foreach ($childrenAges as $childrenAge) {
-                if ($childrenAge < $tariff->getInfantAge()) {
-                    continue;
-                }
-                if ($childrenAge < $tariff->getChildAge()) {
-                    $childrenCount++;
-                } else {
-                    $adultsCount++;
-                }
-            }
-
-            $adultAndChildrenCounts[] = [
-                'childrenCount' => $childrenCount,
-                'adultsCount' => $adultsCount
-            ];
+            $adultAndChildrenCounts[] = $this->getAdultsChildrenCounts($combination, $tariff);
         }
 
         return $adultAndChildrenCounts;
+    }
+
+    public function getAdultsChildrenCounts($combination, Tariff $tariff)
+    {
+        $adultsCount = $combination['adults'];
+        $childrenAges = isset($combination['children']) ? $combination['children'] : [];
+        $childrenCount = 0;
+        foreach ($childrenAges as $childrenAge) {
+            if ($childrenAge < $tariff->getInfantAge()) {
+                continue;
+            }
+            if ($childrenAge < $tariff->getChildAge()) {
+                $childrenCount++;
+            } else {
+                $adultsCount++;
+            }
+        }
+
+        return [
+            'childrenCount' => $childrenCount,
+            'adultsCount' => $adultsCount
+        ];
     }
 
     private function getErrorData($problemType, $descriptionId, $locale)

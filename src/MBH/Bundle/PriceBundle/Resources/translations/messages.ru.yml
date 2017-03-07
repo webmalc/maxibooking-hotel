@@ -15,7 +15,7 @@ mbhpricebundle.form.tarifftype.osnovnoy: Основной
 mbhpricebundle.form.tarifftype.vnutrenneyenazvaniye: Внутреннее название
 mbhpricebundle.form.tarifftype.nazvaniyedlyaispolʹzovaniyavnutri: Название для использования внутри 
 mbhpricebundle.form.tarifftype.opisaniye: Описание
-mbhpricebundle.form.tarifftype.opisaniyetarifadlyaonlaynbronirovaniya: Описание тарифа для онлайн бронирования
+mbhpricebundle.form.tarifftype.opisanie.help: Описание тарифа для онлайн бронирования
 mbhpricebundle.form.tarifftype.nachalo: Начало
 mbhpricebundle.form.tarifftype.skakogochislaispolʹzuyetsyatarif?: С какого числа используется тариф?
 mbhpricebundle.form.tarifftype.neogranichen: Не ограничен

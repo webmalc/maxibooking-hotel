@@ -17,7 +17,8 @@ class TripAdvisorTariffsType extends AbstractType
                 'entry_type' => TripAdvisorTariffType::class,
                 'entry_options' => [
                     'hotel' => $options['hotel'],
-                    'tariffs' => $builder->getData()->getTariffs()
+                    'tariffs' => $builder->getData()->getTariffs(),
+                    'unfilledFieldErrors' => $options['unfilledFieldErrors']
                 ],
                 'group' => false
             ]);
@@ -29,7 +30,8 @@ class TripAdvisorTariffsType extends AbstractType
             ->setDefaults([
                 'data_class' => TripAdvisorConfig::class,
                 'hotel' => null,
-                'group' => null
+                'group' => null,
+                'unfilledFieldErrors' => null
             ]);
     }
 

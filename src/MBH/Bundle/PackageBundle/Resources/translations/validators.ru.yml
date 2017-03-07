@@ -60,3 +60,7 @@ validator.document.OrderDocument.type: Тип должен быть выбран
 validator.document.OrderDocument.file_type: Тип файла не поддерживается. Поддерживаемые форматы png, jpeg, jpg, gif, pdf, xls, doc.
 form.searchType.range_validator: Некорректно заполнено поле "Дополнительные дни поиска"
 validator.package.special_message: Некорректное спецпредложение
+validator.document.card.cardholder: Значение имени держателя карта не может быть пустым
+validator.document.card.date: Значение даты, отображающей срок действия платежной карты, не может быть пустым
+validator.document.card.number.not_null: Значение номера платежной карты не может быть пустым
+validator.document.card.number.un_valid: Значение номера платежной карты невалидно

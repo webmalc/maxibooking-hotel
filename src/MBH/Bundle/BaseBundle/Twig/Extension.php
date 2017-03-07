@@ -88,6 +88,16 @@ class Extension extends \Twig_Extension
         return $this->container->get('mbh.helper')->translateToLat($value);
     }
 
+    public function convertToRub($amount, $currency)
+    {
+        return $this->container->get('mbh.currency')->convertToRub($amount, $currency);
+    }
+
+    public function convertFromRub($amount, $currency)
+    {
+        return $this->container->get('mbh.currency')->convertFromRub($amount, $currency);
+    }
+
     /**
      * @param \MongoDate $mongoDate
      * @return \DateTime
@@ -134,6 +144,8 @@ class Extension extends \Twig_Extension
             'convertMongoDate' => new \Twig_SimpleFilter('convertMongoDate', [$this, 'convertMongoDate']),
             'friendly_interval' => new \Twig_SimpleFilter('friendly_interval', [$this, 'friendlyInterval']),
             'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
+            'convert_to_rub' => new \Twig_SimpleFilter('convert_to_rub', [$this, 'convertToRub']),
+            'convert_from_rub' => new \Twig_SimpleFilter('convert_from_rub', [$this, 'convertFromRub']),
         ];
     }
 

@@ -164,6 +164,7 @@ controller.tripadvisor_controller.settings_saved_success: 'Настройки у
 controller.tripadvisor_controller.config_not_found: Основные настройки не сохранены
 controller.trip_advisor_controller.unfilled_hotel_data.error: 'Для настройки синхронизации с TripAdvisor необходимо заполнить следующие поля в настройках отеля: %fields%'
 controller.trip_advisor_controller.unfilled_room_type_data.error: 'Для настройки синхронизации типа комнат "%roomTypeName%" с TripAdvisor необходимо заполнить следующие поля в настройках: %fields%'
+controller.trip_advisor_controller.unfilled_tariff_data.error: 'Для настройки синхронизации тарифа "%tariffName%" с TripAdvisor необходимо заполнить следующие поля в настройках: %fields%'
 form.trip_advisor_tariff_type.refundable_type.none: Без возврата
 form.trip_advisor_tariff_type.refundable_type.partial: Частично
 form.trip_advisor_tariff_type.refundable_type.full: Полностью
@@ -191,3 +192,4 @@ order_handler.order_room_not_available: Нет свободных номеров
 order_handler.price_mismatch.error: Цена заказа не совпадает с реальной стоимостью заказа.
 order_handler.missing_email.error: Данные об email клиента отсутствуют.
 order_handler.missing_first_name.error: Данные о фамилии клиента отсутствуют
+order_handler.card_type_not_supported.error: Тип платежной карты не поддерживается

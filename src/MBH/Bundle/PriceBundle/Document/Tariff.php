@@ -14,19 +14,20 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Traits\ConditionsTrait;
 use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
+use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as ChannelManagerValidator;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ODM\Document(collection="Tariffs", repositoryClass="MBH\Bundle\PriceBundle\Document\TariffRepository")
  * @Gedmo\Loggable
  * @MBHValidator\Tariff
+ * @ChannelManagerValidator\TripAdvisor
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тариф уже существует")
+ * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="tariff.tariff_already_exists")
  * @ODM\HasLifecycleCallbacks
  */
 class Tariff extends Base implements ConditionsInterface
 {
-
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -50,7 +51,7 @@ class Tariff extends Base implements ConditionsInterface
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="tariffs")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="tariff.hotel_not_choosen")
      * @ODM\Index()
      */
     protected $hotel;
@@ -62,9 +63,9 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="tariff.to_short_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="tariff.to_long_name"
      * )
      * @ODM\Index()
      */
@@ -83,9 +84,9 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="tariff.to_short_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="tariff.to_long_name"
      * )
      * @ODM\Index()
      */
@@ -96,9 +97,9 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое описание",
+     *      minMessage="tariff.to_short_description",
      *      max=300,
-     *      maxMessage="Слишком длинное описание"
+     *      maxMessage="tariff.to_long_description"
      * )
      * @ODM\Index()
      */

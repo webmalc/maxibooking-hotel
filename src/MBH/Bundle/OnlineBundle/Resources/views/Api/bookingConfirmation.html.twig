@@ -1,8 +1,8 @@
-{% stylesheets filter='cssrewrite, uglifycss'
-'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
-'@MBHOnlineBundle/Resources/public/css/bookingConfirmation.css' %}
-<link rel="stylesheet" href="{{ asset_url }}"/>
-{% endstylesheets %}
+    {% stylesheets filter='cssrewrite, uglifycss'
+    'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
+    '@MBHOnlineBundle/Resources/public/css/bookingConfirmation.css' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
 
 <div id="confirmation-window">
     <div class="result-box">
@@ -30,7 +30,7 @@
                 </tr>
                 <tr>
                     <td>{{ 'booking_confirmation.order_price'|trans }}</td>
-                    <td>{{ order.price ~ ' ' ~ currency }}</td>
+                    <td>{{ order.price|convert_from_rub(currency) ~ ' ' ~ currency }}</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -59,7 +59,7 @@
                     </tr>
                     <tr>
                         <td>{{ 'booking_confirmation.package_price'|trans }}</td>
-                        <td>{{ package.price ~ ' ' ~ currency }}</td>
+                        <td>{{ package.price|convert_from_rub(currency) ~ ' ' ~ currency }}</td>
                     </tr>
                     <tr>
                         <td></td>

@@ -32,6 +32,8 @@ class TripAdvisorResponseFormatter
     const PRICE_MISMATCH = 'PriceMismatch';
     const MISSING_EMAIL = 'MissingEmail';
     const MISSING_PAYER_FIRST_NAME = 'MissingTravelerFirstName';
+    const CREDIT_CARD_DECLINED = 'CreditCardDeclined';
+    const CREDIT_CARD_NOT_SUPPORTED = 'CreditCardTypeNotSupported';
 
     const RATE_MEAL_TYPES = [
         'All Inclusive' => 1,
@@ -277,7 +279,7 @@ class TripAdvisorResponseFormatter
                         $begin = \DateTime::createFromFormat(self::TRIP_ADVISOR_DATE_FORMAT, $startDate);
                         $end = \DateTime::createFromFormat(self::TRIP_ADVISOR_DATE_FORMAT, $endDate);
                         $firstAdultsChildrenCombination = current($adultsChildrenCombinations);
-                        $firstAdultsChildrenCounts = current($this->orderHandler->getAdultsChildrenCount(
+                        $firstAdultsChildrenCounts = current($this->orderHandler->getAdultsChildrenCountByCombinations(
                             [$firstAdultsChildrenCombination], $roomTypeAvailabilityData->getTariff()));
                         $locale = substr($language, 0, 2);
                         $url = $this->getSearchUrl($roomTypeAvailabilityData->getRoomType()->getId(), $begin, $end,
@@ -289,8 +291,7 @@ class TripAdvisorResponseFormatter
                         $roomTypeResponseData = [
                             'url' => $url,
                             'price' => $price,
-                            //TODO: Мб и не так
-                            'num_rooms' => count($adultsChildrenCombinations),
+                            'num_rooms' => $priceData['roomCount'],
                             'fees' => 0,
                             'fees_at_checkout' => 0,
                             'taxes' => 0,
@@ -556,6 +557,7 @@ class TripAdvisorResponseFormatter
         $language = $orderAdditionalData['language'];
 
         $cashDocumentsData = [];
+        $this->dm->refresh($order);
         foreach ($order->getCashDocuments() as $cashDocument) {
             /** @var CashDocument $cashDocument */
             if ($cashDocument->getOperation() == 'in') {
@@ -566,7 +568,6 @@ class TripAdvisorResponseFormatter
             $cashDocumentsData[] = [
                 'price' => $this->getPriceObject(
                     $this->currencyHandler->convertFromRub($cashDocument->getTotal(), $currency), $currency),
-                //TODO: Мб потом появятся еще данные о налогах
                 'type' => $cashDocType
             ];
         }
@@ -575,7 +576,6 @@ class TripAdvisorResponseFormatter
         $reservationData = [
             'reservation_id' => $order->getId(),
             'status' => 'Booked',
-            //TODO: Правильно ли?
             'confirmation_url' => $this->confirmationPage . '?'
                 . http_build_query(['sessionId' => $order->getChannelManagerId(), 'order' => $order->getId()]),
             'checkin_date' => $orderFirstPackage->getBegin(),
@@ -589,7 +589,7 @@ class TripAdvisorResponseFormatter
                 'email' => $payer->getEmail(),
                 'country' => $countryCode
             ],
-            'rooms' => $this->getRoomStayData($order->getPackages()),
+            'rooms' => $this->getRoomStayData($order->getPackages()->toArray()),
             'receipt' => [
                 'line_items' => $cashDocumentsData,
                 'final_price_at_booking' => $this->getPriceObject($convertedOrderPrice, $currency),
@@ -608,21 +608,49 @@ class TripAdvisorResponseFormatter
     private function getRoomStayData($packages)
     {
         $roomStayData = [];
-        foreach ($packages as $package) {
-            /** @var Package $package */
-            /** @var Tourist $mainTraveller */
-            $mainTraveller = $package->getTourists()[0];
-            $roomStayData[] = [
-                'party' => [
-                    'adults' => $package->getAdults(),
-                    'children' => $package->getChildAges()
-                ],
-                'traveler_first_name' => $mainTraveller->getFirstName(),
-                'traveler_last_name' => $mainTraveller->getLastName()
-            ];
+        usort($packages, function ($packageOne, $packageTwo) {
+            /** @var Package $packageOne */
+            /** @var Package $packageTwo */
+            return ($packageOne->getId() < $packageTwo->getId()) ? -1 : 1;
+        });
+
+        $groupedPackages = [];
+        $currentPackageGroup = [];
+        for ($i = (count($packages) - 1); $i >= 0; $i--) {
+            $package = $packages[$i];
+            $currentPackageGroup[] = $package;
+            if ($package->getTourists()->count() > 0) {
+                $groupedPackages[] = $currentPackageGroup;
+                $currentPackageGroup = [];
+            }
+        }
+
+        foreach ($groupedPackages as $groupedByPartyPackages) {
+            $adultsCount = 0;
+            foreach ($groupedByPartyPackages as $package) {
+                /** @var Package $package */
+                $adultsCount += $package->getAdults();
+            }
+            /** @var Package $mainDataPackage */
+            $mainDataPackage = end($groupedByPartyPackages);
+            $mainTourist = $mainDataPackage->getTourists()[0];
+            $roomStayData[] = $this->getRoomsData($adultsCount, $mainDataPackage->getChildAges(),
+                $mainTourist->getFirstName(), $mainTourist->getLastName());
         }
 
         return $roomStayData;
+    }
+
+    private function getRoomsData($adultsCount, $childrenAges, $firstName, $lastName)
+    {
+        return [
+            'party' => [
+                'adults' => $adultsCount,
+                'children' => $childrenAges
+            ],
+            'traveler_first_name' => $firstName,
+            'traveler_last_name' => $lastName
+        ];
     }
 
     private function getPriceObject($priceValue, $currency)
@@ -714,7 +742,8 @@ class TripAdvisorResponseFormatter
     {
         $roomType = $result->getRoomType();
         $tariff = $result->getTariff();
-        $adultsChildrenCounts = $this->orderHandler->getAdultsChildrenCount($adultsChildrenCombinations, $tariff);
+        $adultsChildrenCounts = $this->orderHandler->getAdultsChildrenCountByCombinations($adultsChildrenCombinations,
+            $tariff);
         //Все ли кобминации количеств детей и взрослых имеют цену?
         $isAllHavenPrice = true;
         $resultPriceData = ['price' => 0, 'roomCount' => 0];
