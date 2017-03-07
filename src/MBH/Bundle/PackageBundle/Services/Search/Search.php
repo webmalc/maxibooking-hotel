@@ -527,7 +527,7 @@ class Search implements SearchInterface
         if ($collection->count()) {
             $collection->rewind();
             $room = $collection->current();
-            $this->dm->merge($room);
+
             $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($room->getId());
             $result->setVirtualRoom($room);
 
