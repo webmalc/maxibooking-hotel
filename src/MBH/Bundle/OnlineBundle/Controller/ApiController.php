@@ -288,9 +288,17 @@ class ApiController extends Controller
         $query->adults = (int)$request->get('adults');
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
+        $isViewTariff = false;
 
-        foreach ($formConfig->getHotels() as $h) {
-            foreach ($h->getRoomTypes() as $roomType) {
+        foreach ($formConfig->getHotels() as $hotel) {
+            if (is_null($query->tariff) && !$isViewTariff) {
+                $defaultTariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['hotel.id' => $hotel->getId(), 'isDefault' => true, 'isOnline' => true, 'isEnabled' => true]);
+                if (empty($defaultTariff)) {
+                    $query->tariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['hotel.id' => $hotel->getId(), 'isOnline' => true, 'isEnabled' => true]);
+                }
+                $isViewTariff = true;
+            }
+            foreach ($hotel->getRoomTypes() as $roomType) {
                 $query->addAvailableRoomType($roomType->getId());
             }
         }
@@ -352,6 +360,7 @@ class ApiController extends Controller
         }
 
         return [
+            'defaultTariff' => $defaultTariff,
             'facilityArray' => $facilityArray,
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
