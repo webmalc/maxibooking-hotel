@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class Cache
 {
-    const LIFETIME = 60 * 60 * 24;
+    const LIFETIME = 60 * 60 * 24 * 3;
 
     /**
      * @var string
@@ -24,7 +24,7 @@ class Cache
     private $isEnabled;
 
     /**
-     * @var \RedisAdapter
+     * @var RedisAdapter
      */
     private $cache;
 
@@ -42,7 +42,7 @@ class Cache
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
-        $redis = RedisAdapter::createConnection('redis://mbh-redis');
+        $redis = RedisAdapter::createConnection('redis://az-mongo');
         $this->cache = new RedisAdapter($redis);
         $this->dm = $dm->getManager();
         $this->validator = $validator;
