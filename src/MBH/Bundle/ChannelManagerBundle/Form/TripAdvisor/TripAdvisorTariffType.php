@@ -2,22 +2,12 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor;
 
-use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -43,7 +33,8 @@ class TripAdvisorTariffType extends AbstractType
                 'label' => 'form.trip_advisor_tariff_type.isSynchronized.label',
                 'help' => 'form.trip_advisor_tariff_type.isSynchronized.help',
                 'required' => false,
-                'group' => $tariff->getName()
+                'group' => $tariff->getName(),
+                'disabled' => !empty($options['unfilledFieldErrors'][$builder->getName()])
             ])
             ->add('refundableType', ChoiceType::class, [
                 'choices' => TripAdvisorTariff::getRefundableTypes(),

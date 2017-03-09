@@ -96,7 +96,19 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
 
     public function getPrice()
     {
+        return $this->getPriceAtBooking() + $this->getPriceAtCheckOut();
+    }
+
+    private function getPriceAtBooking()
+    {
         $priceInCurrency = (float)$this->finalPriceAtBooking['amount'];
+
+        return $this->container->get('mbh.currency')->convertToRub($priceInCurrency, $this->currency);
+    }
+
+    private function getPriceAtCheckOut()
+    {
+        $priceInCurrency = (float)$this->finalPriceAtCheckout['amount'];
 
         return $this->container->get('mbh.currency')->convertToRub($priceInCurrency, $this->currency);
     }
@@ -104,14 +116,27 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
     public function getCashDocuments(Order $order)
     {
         $cashDocuments = [];
-        $cashDocument = new CashDocument();
-        $cashDocuments[] = $cashDocument->setIsConfirmed(false)
-            ->setIsPaid(true)
-            ->setMethod('electronic')
-            ->setOperation('in')
-            ->setOrder($order)
-            ->setTouristPayer($this->getPayer())
-            ->setTotal($this->getPrice());
+        if ($this->getPriceAtBooking() > 0) {
+            $cashDocuments[] = (new CashDocument())
+                ->setIsConfirmed(false)
+                ->setIsPaid(true)
+                ->setMethod('electronic')
+                ->setOperation('in')
+                ->setOrder($order)
+                ->setTouristPayer($this->getPayer())
+                ->setTotal($this->getPriceAtBooking());
+        }
+
+        if ($this->getPriceAtCheckOut() > 0) {
+            $cashDocuments[] = (new CashDocument())
+                ->setIsConfirmed(false)
+                ->setIsPaid(false)
+                ->setMethod('cash')
+                ->setOperation('in')
+                ->setOrder($order)
+                ->setTouristPayer($this->getPayer())
+                ->setTotal($this->getPriceAtCheckOut());
+        }
 
         return $cashDocuments;
     }

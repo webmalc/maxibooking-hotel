@@ -30,14 +30,8 @@ class TripAdvisorDataFormatter
         $this->dm = $dm;
     }
 
-    public function getAvailabilityData($startDate, $endDate, $hotelsSyncData)
+    public function getAvailabilityData($startDate, $endDate, $tripAdvisorConfigs)
     {
-        $requestedHotelIds = [];
-        foreach ($hotelsSyncData as $syncData) {
-            $requestedHotelIds[] = $syncData['partner_id'];
-        }
-        $tripAdvisorConfigs = $this->getTripAdvisorConfigs($requestedHotelIds);
-
         $availabilityData = [];
         /** @var TripAdvisorConfig $tripAdvisorConfig */
         foreach ($tripAdvisorConfigs as $tripAdvisorConfig) {
@@ -52,13 +46,17 @@ class TripAdvisorDataFormatter
         return $availabilityData;
     }
 
-    public function getTripAdvisorConfigs($tripAdvisorHotelIds = null)
+    public function getTripAdvisorConfigs($hotelsSyncData = null)
     {
         $tripAdvisorConfigRepository = $this->dm->getRepository('MBHChannelManagerBundle:TripAdvisorConfig');
 
-        if (is_null($tripAdvisorHotelIds)) {
+        if (is_null($hotelsSyncData)) {
             $configs = $tripAdvisorConfigRepository->findAll();
         } else {
+            $tripAdvisorHotelIds = [];
+            foreach ($hotelsSyncData as $syncData) {
+                $tripAdvisorHotelIds[] = $syncData['partner_id'];
+            }
             $configs = $tripAdvisorConfigRepository->createQueryBuilder()
                 ->field('hotel.id')->in($tripAdvisorHotelIds)->getQuery()->execute();
         }

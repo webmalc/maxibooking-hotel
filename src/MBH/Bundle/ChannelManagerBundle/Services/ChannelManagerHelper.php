@@ -2,11 +2,16 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class ChannelManagerHelper
 {
@@ -14,6 +19,16 @@ class ChannelManagerHelper
     private $roomTypes;
     private $isTariffsSyncDataInit = false;
     private $tariffsSyncData;
+    private $notifier;
+    private $translator;
+    private $dm;
+
+    public function __construct(Notifier $notifier, TranslatorInterface $translator, DocumentManager $dm)
+    {
+        $this->notifier = $notifier;
+        $this->translator = $translator;
+        $this->dm = $dm;
+    }
 
     /**
      * Ленивая загрузка массива, содержащего данные о синхронизации типов комнат сервиса и отеля
@@ -118,6 +133,57 @@ class ChannelManagerHelper
         return $requiredHotelData;
     }
 
+    public function notify(Order $order, $service, $type = 'new')
+    {
+        try {
+            $message = $this->notifier->createMessage();
+
+            $text = 'channelManager.' . $service . '.notification.' . $type;
+            $subject = 'channelManager.' . $service . '.notification.subject.' . $type;
+
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+
+            $packages = [];
+            $hotel = null;
+
+            foreach ($order->getPackages() as $package) {
+                /** @var Package $package */
+                if ($package->getDeletedAt()) {
+                    continue;
+                }
+                $packages[] = $package->getNumberWithPrefix();
+                if (!$hotel) {
+                    $hotel = $package->getRoomType()->getHotel();
+                }
+            }
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+            }
+
+            $message
+                ->setText($this->translator->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ', $packages)],
+                    'MBHChannelManagerBundle'))
+                ->setFrom('channelmanager')
+                ->setSubject($this->translator->trans($subject, [], 'MBHChannelManagerBundle'))
+                ->setType($type == 'delete' ? 'danger' : 'info')
+                ->setCategory('notification')
+                ->setAutohide(false)
+                ->setHotel($hotel)
+                ->setOrder($order)
+                ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
+                ->setEnd(new \DateTime('+10 minute'));
+
+            $notifier->setMessage($message)->notify();
+
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Проверяет тип комнат на заполнение данных и возвращает названия незаполненных полей
      * @param RoomType $roomType
@@ -128,6 +194,8 @@ class ChannelManagerHelper
         $requiredRoomTypeData = [];
         !empty($roomType->getInternationalTitle()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.international_title';
         !empty($roomType->getDescription()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.description';
+        (in_array('bed', $roomType->getFacilities()) || in_array('double-bed', $roomType->getFacilities()))
+            ?: $requiredRoomTypeData[] = 'channel_manager_helper.bed_configuration_not_exists';
 
         return $requiredRoomTypeData;
     }

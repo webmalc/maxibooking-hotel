@@ -412,7 +412,7 @@ class TripAdvisorResponseFormatter
 
         if ($isSuccessfully) {
             $response['reservation'] =
-                $this->getReservationData($bookingCreationResult);
+                $this->getReservationData($bookingCreationResult, $hotel, $hotel->getTripAdvisorConfig());
         } else {
             $response['problems'] = $messages;
         }
@@ -420,18 +420,18 @@ class TripAdvisorResponseFormatter
         return $response;
     }
 
-    public function formatBookingVerificationResponse(?Order $order, $channelManagerOrderId)
+    public function formatBookingVerificationResponse(?Order $order, $channelManagerOrderId, Hotel $hotel)
     {
         $isCreated = !is_null($order);
         $response = [
             'problems' => [],
             'reference_id' => $channelManagerOrderId,
             'status' => $isCreated ? 'Success' : 'Failure',
-            'customer_support' => $this->getCustomerSupportData($order->getFirstHotel()->getContactInformation())
+            'customer_support' => $this->getCustomerSupportData($hotel->getContactInformation())
         ];
 
         if ($isCreated) {
-            $response['reservation'] = $this->getReservationData($order);
+            $response['reservation'] = $this->getReservationData($order, $hotel, $hotel->getTripAdvisorConfig());
         }
 
         return $response;
@@ -545,7 +545,7 @@ class TripAdvisorResponseFormatter
         return $tariffData;
     }
 
-    private function getReservationData(Order $order)
+    private function getReservationData(Order $order, Hotel $hotel, TripAdvisorConfig $config)
     {
         /** @var Package $orderFirstPackage */
         $orderFirstPackage = $order->getFirstPackage();
@@ -573,11 +573,16 @@ class TripAdvisorResponseFormatter
         }
 
         $convertedOrderPrice = $this->currencyHandler->convertFromRub($order->getPrice(), $currency);
+        $finalPrice = $this->getFinalPriceData($config->getPaymentType(), $convertedOrderPrice, $currency);
         $reservationData = [
             'reservation_id' => $order->getId(),
-            'status' => 'Booked',
+            'status' => $this->getOrderStatus($order),
             'confirmation_url' => $this->confirmationPage . '?'
-                . http_build_query(['sessionId' => $order->getChannelManagerId(), 'order' => $order->getId()]),
+                . http_build_query([
+                    'sessionId' => $order->getChannelManagerId(),
+                    'order' => $order->getId(),
+                    'hotelId' => $hotel->getId()
+                ]),
             'checkin_date' => $orderFirstPackage->getBegin(),
             'checkout_date' => $orderFirstPackage->getEnd(),
             'partner_hotel_code' => $orderFirstPackage->getHotel()->getId(),
@@ -592,13 +597,50 @@ class TripAdvisorResponseFormatter
             'rooms' => $this->getRoomStayData($order->getPackages()->toArray()),
             'receipt' => [
                 'line_items' => $cashDocumentsData,
-                'final_price_at_booking' => $this->getPriceObject($convertedOrderPrice, $currency),
-                //TODO: Пока что вроде как только при бронировании берется, но мб потом добавим
-                'final_price_at_checkout' => $this->getPriceObject(0, $currency)
+                'final_price_at_booking' => $finalPrice['atCheckOut'],
+                'final_price_at_checkout' => $finalPrice['atBooking']
             ]
         ];
 
         return $reservationData;
+    }
+
+    private function getFinalPriceData($paymentType, $price, $currency)
+    {
+        $finalPriceAtBooking = 0;
+        $finalPriceAtCheckOut = 0;
+        switch ($paymentType) {
+            case 'in_hotel':
+                $finalPriceAtCheckOut = $price;
+                break;
+            case 'online_full':
+                $finalPriceAtBooking = $price;
+                break;
+            case 'online_half':
+                $finalPriceAtBooking = $price / 2;
+                $finalPriceAtCheckOut = $price / 2;
+                break;
+        }
+
+        return [
+            'atCheckOut' => $this->getPriceObject($finalPriceAtCheckOut, $currency),
+            'atBooking' => $this->getPriceObject($finalPriceAtBooking, $currency)
+        ];
+    }
+
+    private function getOrderStatus(Order $order)
+    {
+        if ($order->isDeleted()) {
+            return 'Cancelled';
+        }
+        if ($order->getFirstPackage()->getIsCheckOut()) {
+            return 'CheckedOut';
+        }
+        if ($order->getFirstPackage()->getIsCheckIn()) {
+            return 'CheckedIn';
+        }
+
+        return 'Booked';
     }
 
     /**
@@ -716,13 +758,12 @@ class TripAdvisorResponseFormatter
             return false;
         }
         $resultPrice = $this->currencyHandler->convertFromRub($priceData['price'], $currency);
-
+        $finalPriceData = $this->getFinalPriceData($config->getPaymentType(), $resultPrice, $currency);
         $hotelRoomRates = [
             'hotel_room_type_code' => $result->getRoomType()->getId(),
             'hotel_rate_plan_code' => $result->getTariff()->getId(),
-            'final_price_at_booking' => $this->getPriceObject($resultPrice, $currency),
-            //TODO: Пока что 0, может быть впоследствии другим значением
-            'final_price_at_checkout' => $this->getPriceObject(0, $currency),
+            'final_price_at_booking' => $finalPriceData['atBooking'],
+            'final_price_at_checkout' => $finalPriceData['atCheckOut'],
             'line_items' => $this->getLineItems($resultPrice, $currency, $config->getPaymentType()),
             'payment_policy' => $config->getPaymentPolicy(),
             'rooms_remaining' => $result->getRoomsCount(),
@@ -797,7 +838,7 @@ class TripAdvisorResponseFormatter
             ],
             'bed_configurations' => $this->getBedConfiguration($roomType),
             'extra_bed_configurations' => [],
-            'room_smoking_policy' => $roomType->getIsSmoking(),
+            'room_smoking_policy' => $roomType->getIsSmoking() ? 'smoking' : 'non_smoking',
             'room_view_type' => $this->getRoomViewTypes($roomType)
         ];
 
@@ -905,14 +946,14 @@ class TripAdvisorResponseFormatter
     private function getBedConfiguration(RoomType $roomType)
     {
         $bedConfiguration = [];
-        if (isset($roomType->getFacilities()['bed'])) {
+        if (in_array('bed', $roomType->getFacilities())) {
             $bedConfiguration[] = [
                 'type' => 'standard',
                 'code' => 9,
                 'count' => 1
             ];
         }
-        if (isset($roomType->getFacilities()['double-bed'])) {
+        if (in_array('double-bed', $roomType->getFacilities())) {
             $bedConfiguration[] = [
                 'type' => 'standard',
                 'code' => 1,
@@ -986,13 +1027,13 @@ class TripAdvisorResponseFormatter
                 ];
                 break;
             case 'online_half':
-                $lineItems[] = $lineItems[] = [
+                $lineItems[] = [
                     "price" => $this->getPriceObject($price / 2, $currency),
                     'type' => 'rate',
                     'paid_at_checkout' => true,
                     'description' => 'Base rate'
                 ];
-                $lineItems[] = $lineItems[] = [
+                $lineItems[] = [
                     "price" => $this->getPriceObject($price / 2, $currency),
                     'type' => 'rate',
                     'paid_at_checkout' => false,

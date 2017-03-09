@@ -257,7 +257,7 @@ class TripAdvisorController extends BaseController
 //        $deviceType = $request->get('device_type');
 
         $apiVersion = 7;
-        $requestedHotels = [["ta_id" => 123, "partner_id" => "58b937c5a84718004a438a52"]];
+        $requestedHotels = [["ta_id" => 'asdfasdfadsf', "partner_id" => "58b937c5a84718004a438a52"]];
         $startDate = '2017-03-05';
         $endDate = '2017-03-06';
         $requestedAdultsChildrenCombination = [["adults" => 2, 'children' => [7]], ["adults" => 2]];
@@ -267,14 +267,15 @@ class TripAdvisorController extends BaseController
         $userCountry = 'US';
         $deviceType = 'd';
         $dataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
-        $availabilityData = $dataFormatter->getAvailabilityData($startDate, $endDate, $requestedHotels);
+        $configs = $dataFormatter->getTripAdvisorConfigs($requestedHotels);
+        $availabilityData = $dataFormatter->getAvailabilityData($startDate, $endDate, $configs);
         $taHotelIds = [];
         foreach ($requestedHotels as $requestedHotelData) {
             $taHotelIds[] = $requestedHotelData['ta_id'];
         }
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatHotelAvailability($availabilityData, $apiVersion, $requestedHotels, $startDate, $endDate,
-                $requestedAdultsChildrenCombination, $language, $queryKey, $currency, $userCountry, $deviceType);
+                $requestedAdultsChildrenCombination, $language, $queryKey, $currency, $userCountry, $deviceType, $configs);
 
         return new JsonResponse($response);
     }
@@ -302,7 +303,7 @@ class TripAdvisorController extends BaseController
 //        $bookingRequestId = $request->get('booking_request_id');
 
         $apiVersion = 7;
-        $requestedHotel = ["ta_id" => 123, "partner_hotel_code" => "58b937c5a84718004a438a52"];
+        $requestedHotel = ["ta_id" => 'asdfasdfadsf', "partner_hotel_code" => "58b937c5a84718004a438a52"];
         $startDate = '2017-03-12';
         $endDate = '2017-03-18';
         $requestedAdultsChildrenCombination = [["adults" => 7, "children" => [3, 4, 5]]];
@@ -358,7 +359,7 @@ class TripAdvisorController extends BaseController
         ];
         $roomsData = [
             [
-                "party" => ["adults" => 4, "children" => [3, 4, 5,4,3,2,3,5]],
+                "party" => ["adults" => 4, "children" => [3, 4, 5, 4, 3, 2, 3, 5]],
                 "traveler_first_name" => "Paul",
                 "traveler_last_name" => "Revere"
             ],
@@ -389,7 +390,7 @@ class TripAdvisorController extends BaseController
             "currency" => "USD"
         ];
         $finalPriceAtCheckout = [
-            "amount" => 0,
+            "amount" => 255.14,
             "currency" => "USD"
         ];
         $bookingMainData = [
@@ -453,6 +454,7 @@ class TripAdvisorController extends BaseController
                 $bookingCreationResult->addAdditionalData('currency', $currency);
                 $bookingCreationResult->addAdditionalData('countryCode', $countryCode);
                 $this->dm->flush();
+                $this->get('mbh.channelmanager.helper')->notify($bookingCreationResult, 'tripadvisor');
             }
 
             $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
@@ -474,12 +476,13 @@ class TripAdvisorController extends BaseController
 //        $hotelId = $request->get('partner_hotel_code');
         $orderId = $request->get('reservation_id');
         $channelManagerOrderId = $request->get('reference_id');
+        $hotelId = $request->get('hotelId');
 
         $dataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
         $order = $dataFormatter->getOrderById($orderId);
-        //TODO: Проверку на наличие брони
+        $hotel = $dataFormatter->getHotelById($hotelId);
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatBookingVerificationResponse($order, $channelManagerOrderId);
+            ->formatBookingVerificationResponse($order, $channelManagerOrderId, $hotel);
 
         return new JsonResponse($response);
     }
@@ -506,6 +509,7 @@ class TripAdvisorController extends BaseController
         } else {
             try {
                 $this->get('mbh.channel_manager.order_handler')->deleteOrder($order);
+                $this->get('mbh.channelmanager.helper')->notify($order, 'tripadvisor', 'delete');
                 $removalStatus = 'Success';
             } catch (DeleteException $e) {
                 $removalStatus = 'CannotBeCancelled';
