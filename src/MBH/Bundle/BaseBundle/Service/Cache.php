@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class Cache
 {
-    const LIFETIME = 60 * 60 * 24;
+    const LIFETIME = 60 * 60 * 24 * 7;
 
     /**
      * @var string

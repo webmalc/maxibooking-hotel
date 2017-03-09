@@ -247,6 +247,10 @@ form.promotionType.choice_label.condition.max_children: Максимальное
 form.promotionType.choice_label.condition.min_children: Минимальное количество детей
 roomCacheSubscriber.delete_exception_message.can_not_delete_room: 'Невозможно удалить «Номер в продаже» с забронированными номерами.'
 tariffSubscriber.delete_exception_message.can_not_delete_main_tariff: 'Невозможно удалить основной тариф.'
+form.tariffType.minPrepay: Минимальная предоплата
+form.tariffType.conditions_and_restrictions: Условия и ограничения
+form.tariffType.minPerPrepay: Минимальный процент предоплаты
+form.tariffType.help: Процент от суммы заказа от 0 до 100%
 mbh.grid.copy: Скопировать в соседние колонки
 mbh.grid.generator: Скопировать в генератор
 state.on: Включен
