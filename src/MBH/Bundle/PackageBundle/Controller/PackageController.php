@@ -1015,8 +1015,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $this->dm->remove($entity);
             $this->dm->flush($entity);
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+            $this->addFlash('success', 'controller.packageController.record_deleted_success');
 
             if (!empty($form->get('order')->getData())) {
                 return $this->redirect($this->generateUrl('package_order_edit',
@@ -1024,6 +1023,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             }
 
             return $this->redirectToRoute('package');
+        } elseif ($request->isMethod('POST') && !$form->isValid()) {
+            foreach ($form->getErrors() as $error) {
+                $this->addFlash('error', $error->getMessage());
+            }
+
+            return $this->redirectToRoute('package_edit', ['id' => $entity->getId()]);
         }
 
         return [
