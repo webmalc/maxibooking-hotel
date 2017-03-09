@@ -403,9 +403,9 @@ class Search implements SearchInterface
                 //prices
                 //TODO: Убирать отседа
                 //Achtung!!Achtung!! Меня заставили!
-                $hardCodeTariffId= '58bd38499c117d78e71a9222';
+                $hardCodeTariffId= ['5717836174eb539c308b456d', '571760bd74eb536f1b8b4605'];
                 /** @var Tariff $tariff */
-                if ($tariff->getId() == $hardCodeTariffId) {
+                if (in_array($tariff->getId(),$hardCodeTariffId)) {
                     /*Не выдаем цену если один ребенок старше 7 лет в запросе*/
                     $isOneChild = $query->children == 1 && count($query->childrenAges) == 1 && 6 < $query->childrenAges[0];
                     $isNoChildren = (bool)!count($query->childrenAges);
@@ -553,7 +553,6 @@ class Search implements SearchInterface
         if ($collection->count()) {
             $collection->rewind();
             $room = $collection->current();
-            $this->dm->merge($room);
             $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($room->getId());
             $result->setVirtualRoom($room);
 
