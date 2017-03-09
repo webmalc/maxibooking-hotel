@@ -109,7 +109,7 @@ class OrderHandler
     {
         //Получаем сохраненные электронные кассовые документы
         $electronicCashDocuments = [];
-        if (is_array($order->getCashDocuments())) {
+        if (!is_null($order->getCashDocuments())) {
             foreach ($order->getCashDocuments() as $cashDocument) {
                 /** @var CashDocument $cashDocument */
                 if ($cashDocument->getMethod() == 'electronic') {
@@ -117,27 +117,31 @@ class OrderHandler
                 }
             }
         }
+        $newCashDocuments = $orderInfo->getCashDocuments($order);
 
         //Удаляем одинаковые электронные кассовые документы из списка сохраненных и полученных с сервиса
-        foreach ($orderInfo->getCashDocuments($order) as $newCashDocument) {
-            /** @var CashDocument $newCashDocument */
-            foreach ($electronicCashDocuments as $oldCashDocument) {
-                if ($oldCashDocument->getTotal() == $newCashDocument->getTotal()
-                    && $oldCashDocument->getMethod() == $newCashDocument->getMethod()
-                    && $oldCashDocument->getTouristPayer() == $newCashDocument->getTouristPayer()
-                    && $oldCashDocument->getOperation() == $newCashDocument->getOperation()
-                ) {
-                    unset($newCashDocument);
-                    unset($oldCashDocument);
+        foreach ($newCashDocuments as $newCashDocumentIndex => $newCashDocument) {
+            /** @var CashDocument $newCashDocument*/
+            if (isset($newCashDocument)) {
+                foreach ($electronicCashDocuments as $oldCashDocumentIndex => $oldCashDocument) {
+                    if ($oldCashDocument->getTotal() == $newCashDocument->getTotal()
+                        && $oldCashDocument->getMethod() == $newCashDocument->getMethod()
+                        && $oldCashDocument->getTouristPayer() == $newCashDocument->getTouristPayer()
+                        && $oldCashDocument->getOperation() == $newCashDocument->getOperation()
+                    ) {
+                        unset($newCashDocuments[$newCashDocumentIndex]);
+                        unset($electronicCashDocuments[$oldCashDocumentIndex]);
+                        break;
+                    }
                 }
             }
         }
 
-        //Удаляем сохраненные кассовые документы, которых нет в полученных с сервиса
+        //Удаляем сохраненные электронные кассовые документы, которых нет в полученных с сервиса
         foreach ($electronicCashDocuments as $electronicCashDocument) {
             $this->dm->remove($electronicCashDocument);
         }
-        foreach ($orderInfo->getCashDocuments($order) as $cashDocument) {
+        foreach ($newCashDocuments as $cashDocument) {
             /** @var CashDocument $cashDocument */
             $this->dm->persist($cashDocument);
         }
