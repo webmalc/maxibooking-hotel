@@ -1,80 +1,87 @@
 <?php
-/**
- * Created by Zavalyuk Alexandr (Zalex).
- * email: zalex@zalex.com.ua
- * Date: 8/10/16
- * Time: 1:53 PM
- */
 
 namespace MBH\Bundle\BaseBundle\Command;
 
 
 use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
-use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\TranslateConverterContainer;
-use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\DocumentTranslateConverter;
-use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\FormTranslateConverter;
-use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\TwigTranslateConverter;
+use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\AbstractTranslateConverter;
+use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\TranslateInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 class TranslatorCommand extends ContainerAwareCommand
 {
 
-    const ACTIONS = ['show', 'convert'];
+    private $converters;
+
+    public function __construct($name = null)
+    {
+        $this->converters = new \SplObjectStorage();
+        parent::__construct($name);
+    }
+
+    public function addConverter(AbstractTranslateConverter $converter)
+    {
+        $this->converters->attach($converter);
+    }
 
     protected function configure()
     {
         $this
             ->setName('mbh:translation')
-            ->setDefinition(array(
-                new InputArgument('action', InputArgument::OPTIONAL, 'show or convert', 'show'),
-                new InputOption('type', null, InputOption::VALUE_OPTIONAL, 'twig/form/doc/all', 'all'),
-                new InputOption('bundle', null, InputOption::VALUE_OPTIONAL, 'The bundle name '),
-
-            ))
-            ->setDescription('Show/convert no translated twig or forms')
-            ->setHelp(<<<EOF
-The <info>%command.name%</info> command guess russian not translate symbols in twig files
+            ->setDefinition(
+                [
+                    new InputArgument('action', InputArgument::OPTIONAL, 'show or convert', 'show'),
+                    new InputOption('type', null, InputOption::VALUE_OPTIONAL, 'twig/form/doc/all', 'all'),
+                    new InputOption('bundle', null, InputOption::VALUE_OPTIONAL, 'The bundle\'s name'),
+                    new InputOption('force', null, InputOption::VALUE_NONE, 'Not emulate if --force'),
+                ]
+            )
+            ->
+            setDescription('Show/convert no translated twig or forms')
+            ->setHelp(
+                <<<EOF
+                The <info>%command.name%</info> command guess russian not translate symbols in twig files
 EOF
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var Kernel $kernel */
+//        /** @var Kernel $kernel */
         $kernel = $this->getContainer()->get('kernel');
-        $bundle = null;
+        $bundles = null;
         if (null !== $input->getOption('bundle')) {
             try {
                 /** @var Bundle $foundBundle */
-                $bundle = $kernel->getBundle($input->getOption('bundle'));
+                $bundles = [$kernel->getBundle($input->getOption('bundle'))];
             } catch (\InvalidArgumentException $e) {
                 $output->writeln($e->getMessage());
-                throw new InvalidArgumentException('Невозможно найти бандл с именем '. $input->getArgument('bundle'));
+                throw new InvalidArgumentException('Невозможно найти бандл с именем '.$input->getArgument('bundle'));
+            }
+        } else {
+            $bundles = $this->getContainer()->get('mbh.helper')->getMBHBundles();
+        }
+
+        $action = $input->getArgument('action');
+        $type = $input->getOption('type');
+        $dryRun = 'show' === $action;
+        /** @var TranslateInterface $converter */
+        foreach ($this->converters as $converter) {
+            if ('all' == $type || $converter->canHandle($type)) /** @var AbstractTranslateConverter $converter */ {
+                foreach ($bundles as $bundle) {
+                    /** @var BundleInterface $bundle */
+                    $converter->interactiveConvert($bundle, $input, $output, $this->getHelper('question'), $dryRun);
+                }
             }
         }
 
-        $converter = new TranslateConverterContainer($input, $output, $this->getContainer(), $bundle);
-
-        $helper = $this->getHelper('question');
-        $action = $input->getArgument('action');
-
-        if (in_array($action, self::ACTIONS)) {
-
-        }
-        if ($action == 'show') {
-            $converter->findEntry();
-        } elseif ($action == 'convert') {
-            $converter->convert($helper);
-        } else {
-            throw new InvalidArgumentException('Wrong action, (show/convert) only ');
-        }
+        $output->writeln('Было обнаружено всего '.AbstractTranslateConverter::$counter.' записей');
     }
 
 }

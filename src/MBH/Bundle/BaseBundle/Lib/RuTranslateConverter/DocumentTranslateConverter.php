@@ -11,19 +11,23 @@ namespace MBH\Bundle\BaseBundle\Lib\RuTranslateConverter;
 
 class DocumentTranslateConverter extends AbstractTranslateConverter
 {
-    const SUFFIX = '.php';
+    const FILE_SUFFIX = '.php';
 
     const FOLDER = '/Document';
 
     const TYPE = "DocParser";
 
+    const TRANSLATE_TYPE = '';
+
+    const HANDLE_TYPE = 'doc';
+
     /**
-     * @param string $string
+     * @param string $transliteratedString
      * @return mixed
      */
-    protected function getConvertPattern(string $string)
+    protected function getConvertPattern(string $transliteratedString)
     {
-        return sprintf('%s', $string);
+        return sprintf('%s', $transliteratedString);
     }
 
     protected function transIdPattert(): string
@@ -31,11 +35,9 @@ class DocumentTranslateConverter extends AbstractTranslateConverter
         return '%s.document.%s.%s';
     }
 
-    protected function checkAdvanceConditions($line): bool
+    protected function checkAdvanceConditions(string $line): bool
     {
-        $words = [
-            'message'
-        ];
+        $words = ['message'];
         $pattern = '/' . implode('|', $words) . '/';
         if (preg_match($pattern, $line)) {
             return true;
@@ -46,10 +48,9 @@ class DocumentTranslateConverter extends AbstractTranslateConverter
     /**
      * @return string
      */
-    protected function domainChecker()
+    protected function getTranslationDomain()
     {
         return 'validators';
     }
-
 
 }
