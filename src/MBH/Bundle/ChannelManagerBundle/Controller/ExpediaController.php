@@ -2,11 +2,10 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Form\ExpediaType;
-use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaPackageInfo;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaResponseHandler;
 use MBH\Bundle\PackageBundle\Document\Order;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -68,21 +67,17 @@ class ExpediaController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
-
+//            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
+            $errorMessage = '';
             if ($errorMessage === '') {
+                $this->dm->persist($config);
+                $this->dm->flush();
 
-                /* @var $dm DocumentManager; */
-                $dm = $this->get('doctrine_mongodb')->getManager();
-                $dm->persist($config);
-                $dm->flush();
+//                $this->get('mbh.channelmanager')->updateInBackground();
 
-                $this->get('mbh.channelmanager')->updateInBackground();
-
-                $this->addFlash('success',
-                    $this->get('translator')->trans('controller.expediaController.settings_saved_success'));
+                $this->addFlash('success', 'controller.expediaController.settings_saved_success');
             } else {
-                $this->addFlash('danger', $this->get('translator')->trans($errorMessage));
+                $this->addFlash('danger', $errorMessage);
             }
         }
 
@@ -125,8 +120,7 @@ class ExpediaController extends Controller
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.expediaController.settings_saved_success'));
+            $this->addFlash('success', 'controller.expediaController.settings_saved_success');
 
             return $this->redirectToRoute('expedia_tariff');
         }
@@ -181,8 +175,7 @@ class ExpediaController extends Controller
 
             $this->get('mbh.channelmanager')->updateInBackground();
 
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.expediaController.settings_saved_success'));
+            $this->addFlash('success', 'controller.expediaController.settings_saved_success');
 
             return $this->redirectToRoute('expedia_room');
         }
@@ -211,21 +204,10 @@ class ExpediaController extends Controller
     {
 //        /** @var ExpediaConfig $config */
         $config = $this->hotel->getExpediaConfig();
-//
-//        $date = new \DateTime('midnight');
-//
-//
-//        $beginDate = (clone $date);
-//        $endDate = (clone $beginDate)->add(new \DateInterval('P5D'));
-//        $roomTypeData = $this->get('mbh.channelmanager.expedia')->pullOrders();
-////        $roomTypeData = $this->get('mbh.channelmanager.expedia')->m();
-//
-//        return ['result' => $roomTypeData];
-
 
         $text = '<BookingRetrievalRS xmlns="http://www.expediaconnect.com/EQC/BR/2014/01">
     <Bookings>
-        <Booking id="764560252" type="Modify" createDateTime="2016-12-12T08:07:00Z" source="A-Expedia" status="pending"
+        <Booking id="764560252" type="Modify" createDateTime="2016-12-12T08:07:00Z" source="Expedia" status="pending"
                  confirmNumber="2202199119TZ">
             <Hotel id="4112474"/>
             <RoomStay roomTypeID="200797200" ratePlanID="205724966A">
@@ -256,19 +238,18 @@ class ExpediaController extends Controller
     </Bookings>
 </BookingRetrievalRS>';
 
-//        $xml = new \SimpleXMLElement($text);
-//        /** @var ExpediaResponseHandler $responseHandler */
-//        $responseHandler = $this->get('mbh.channelmanager.expedia_response_handler')->setInitData($text, $config);
-//        $orderInfo = $responseHandler->getOrderInfos()[0];
-//        $order = new Order();
-//        dump($orderInfo->getCashDocuments($order));
-//        /** @var ExpediaPackageInfo $packageInfo */
-//        $packageInfo = $orderInfo->getPackagesData()[0];
-//        dump($packageInfo->getNote());
-//        exit();
-        $start = new \DateTime('midnight');
-        $end = (clone $start)->add(new \DateInterval('P6D'));
-        $expedia = $this->get('mbh.channelmanager.expedia')->updateRooms($start, $end);
+        /** @var ExpediaResponseHandler $responseHandler */
+        $responseHandler = $this->get('mbh.channelmanager.expedia_response_handler')->setInitData($text, $config);
+        $orderInfo = $responseHandler->getOrderInfos()[0];
+        $order = new Order();
+        $oldOrder = $this->dm->find('MBHPackageBundle:Order', 51);
+        $cashDoc = (new CashDocument())->setIsConfirmed(false)->setIsPaid(false)->setTotal(213)
+            ->setOrder($oldOrder)->setMethod('cashless');
+        $this->dm->persist($cashDoc);
+        $this->dm->flush();
+        $this->dm->refresh($oldOrder);
+        $order = $this->get('mbh.channelmanager.order_handler')->createOrder($orderInfo, $oldOrder);
+
         return ['result' => 123];
     }
 

@@ -79,7 +79,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         } else {
             $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
                 [
-                    'hotel.id' => $this->config->getHotelId(),
+                    'hotel.id' => $this->config->getHotel()->getId(),
                     'isEnabled' => true,
                     'deletedAt' => null
                 ]
@@ -102,7 +102,7 @@ class ExpediaPackageInfo extends AbstractPackageInfo
         } else {
             $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
                 [
-                    'hotel.id' => $this->config->getHotelId(),
+                    'hotel.id' => $this->config->getHotel()->getId(),
                     'isEnabled' => true,
                     'deletedAt' => null
                 ]

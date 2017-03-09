@@ -5,7 +5,6 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerException;
-use MBH\Bundle\ChannelManagerBundle\Lib\Pa;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
