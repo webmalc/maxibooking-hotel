@@ -361,4 +361,10 @@ parameters:
         in: "Приход"
         out: "Расход"
 
+    #Указаны идентификаторы для переводов. Переводы хранятся в HotelBundle
+    mbh.smoking_policy:
+        47:	form.hotelExtendedType.all_rooms_non_smoking
+        198: form.hotelExtendedType.non_smoking_room
+        268: form.hotelExtendedType.all_public_areas_non_smoking
+        900201:	form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms
 

@@ -80,5 +80,7 @@ controller.myallocatorController.invalid_credentials: Неверные логи�
 
 
 form.roomTypeTasks.checkIn: При заселении
+form.roomTypeTasks.checkIn.help: Задачи, создаваемые при заезде гостя
 form.roomTypeTasks.checkOut: При выезде
+form.roomTypeTasks.checkOut.help: При выезде гостя
 form.roomTypeTasks.daily: Каждые n дней проживания
