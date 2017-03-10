@@ -1,3 +1,8 @@
+mbh_site:
+    resource: "@MBHSiteBundle/Controller/"
+    type:     annotation
+    prefix:   /site
+
 mbh_warehouse:
     resource: "@MBHWarehouseBundle/Controller/"
     type:     annotation
