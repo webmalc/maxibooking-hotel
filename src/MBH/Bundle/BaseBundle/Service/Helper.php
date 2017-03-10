@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Helper service
@@ -24,6 +25,194 @@ class Helper
     {
         $this->container = $container;
         $this->tr = $this->container->get('translator');
+    }
+
+    /**
+     * @param mixed $date
+     * @param string $format
+     * @param string $timezone
+     * @return \DateTime|null
+     */
+    public static function getDateFromString($date, $format = "d.m.Y", string $timezone = null)
+    {
+        if (empty($date)) {
+            return null;
+        }
+        if ($date instanceof \DateTime) {
+            return $date;
+        }
+
+        $timezone = $timezone ?? date_default_timezone_get();
+
+        return \DateTime::createFromFormat($format.' H:i:s', $date.' 00:00:00', new \DateTimeZone($timezone));
+    }
+
+    /**
+     * @param $collection
+     * @param string $method
+     * @return array
+     */
+    public static function toIds($collection, $method = 'getId')
+    {
+        $result = [];
+
+        foreach ($collection as $object) {
+            $result[] = (is_object($object) && method_exists($object, $method)) ? $object->$method() : (string)$object;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    public static function translateToLat($text)
+    {
+        $rus = [
+            'А',
+            'Б',
+            'В',
+            'Г',
+            'Д',
+            'Е',
+            'Ё',
+            'Ж',
+            'З',
+            'И',
+            'Й',
+            'К',
+            'Л',
+            'М',
+            'Н',
+            'О',
+            'П',
+            'Р',
+            'С',
+            'Т',
+            'У',
+            'Ф',
+            'Х',
+            'Ц',
+            'Ч',
+            'Ш',
+            'Щ',
+            'Ъ',
+            'Ы',
+            'Ь',
+            'Э',
+            'Ю',
+            'Я',
+            'а',
+            'б',
+            'в',
+            'г',
+            'д',
+            'е',
+            'ё',
+            'ж',
+            'з',
+            'и',
+            'й',
+            'к',
+            'л',
+            'м',
+            'н',
+            'о',
+            'п',
+            'р',
+            'с',
+            'т',
+            'у',
+            'ф',
+            'х',
+            'ц',
+            'ч',
+            'ш',
+            'щ',
+            'ъ',
+            'ы',
+            'ь',
+            'э',
+            'ю',
+            'я',
+            ' ',
+            '/',
+            '\\',
+        ];
+        $lat = [
+            'A',
+            'B',
+            'V',
+            'G',
+            'D',
+            'E',
+            'E',
+            'Gh',
+            'Z',
+            'I',
+            'Y',
+            'K',
+            'L',
+            'M',
+            'N',
+            'O',
+            'P',
+            'R',
+            'S',
+            'T',
+            'U',
+            'F',
+            'H',
+            'C',
+            'Ch',
+            'Sh',
+            'Sch',
+            'Y',
+            'Y',
+            'Y',
+            'E',
+            'Yu',
+            'Ya',
+            'a',
+            'b',
+            'v',
+            'g',
+            'd',
+            'e',
+            'e',
+            'gh',
+            'z',
+            'i',
+            'y',
+            'k',
+            'l',
+            'm',
+            'n',
+            'o',
+            'p',
+            'r',
+            's',
+            't',
+            'u',
+            'f',
+            'h',
+            'c',
+            'ch',
+            'sh',
+            'sch',
+            'y',
+            'y',
+            'y',
+            'e',
+            'yu',
+            'ya',
+            ' ',
+            '_',
+            '_',
+        ];
+
+        return str_replace($rus, $lat, $text);
     }
 
     /**
@@ -58,26 +247,6 @@ class Helper
         }
 
         return $randomString;
-    }
-
-    /**
-     * @param mixed $date
-     * @param string $format
-     * @param string $timezone
-     * @return \DateTime|null
-     */
-    public static function getDateFromString($date, $format = "d.m.Y", string $timezone = null)
-    {
-        if (empty($date)) {
-            return null;
-        }
-        if ($date instanceof \DateTime) {
-            return $date;
-        }
-
-        $timezone = $timezone ?? date_default_timezone_get();
-
-        return \DateTime::createFromFormat($format . ' H:i:s', $date . ' 00:00:00', new \DateTimeZone($timezone));
     }
 
     /**
@@ -166,6 +335,26 @@ class Helper
         return trim(preg_replace('/ {2,}/', ' ', join(' ', $out)));
     }
 
+    /**
+     * Склоняем словоформу
+     * @ author runcore
+     */
+    public function morph($n, $f1, $f2, $f5)
+    {
+        $n = abs(intval($n)) % 100;
+        if ($n > 10 && $n < 20) {
+            return $f5;
+        }
+        $n = $n % 10;
+        if ($n > 1 && $n < 5) {
+            return $f2;
+        }
+        if ($n == 1) {
+            return $f1;
+        }
+
+        return $f5;
+    }
 
     public function convertNumberToWords($number)
     {
@@ -280,63 +469,17 @@ class Helper
         return $string;
     }
 
-
-    /**
-     * Склоняем словоформу
-     * @ author runcore
-     */
-    public function morph($n, $f1, $f2, $f5)
+    public function getMBHBundles()
     {
-        $n = abs(intval($n)) % 100;
-        if ($n > 10 && $n < 20) {
-            return $f5;
-        }
-        $n = $n % 10;
-        if ($n > 1 && $n < 5) {
-            return $f2;
-        }
-        if ($n == 1) {
-            return $f1;
+        $bundles = new \SplObjectStorage();
+        $kernelDir = $this->container->get('kernel')->getRootDir();
+        $finder = Finder::create()->directories()->name('*')->in($kernelDir.'/../src/MBH/Bundle')->depth(0);
+        $kernel = $this->container->get('kernel');
+        foreach ($finder as $dir) {
+            /** @var \SplFileInfo $dir */
+            $dir->isDir() ? $bundles->attach($kernel->getBundle('MBH'.$dir->getBasename())) : null;
         }
 
-        return $f5;
-    }
-
-    /**
-     * @param $collection
-     * @param string $method
-     * @return array
-     */
-    public static function toIds($collection, $method = 'getId')
-    {
-        $result = [];
-
-        foreach ($collection as $object) {
-            $result[] = (is_object($object) && method_exists($object, $method)) ? $object->$method() : (string)$object;
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param string $text
-     * @return string
-     */
-    public static function translateToLat($text)
-    {
-        $rus = [
-            'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т',
-            'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я', 'а', 'б', 'в', 'г', 'д', 'е', 'ё',
-            'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ',
-            'ъ', 'ы', 'ь', 'э', 'ю', 'я', ' ', '/', '\\'
-        ];
-        $lat = [
-            'A', 'B', 'V', 'G', 'D', 'E', 'E', 'Gh', 'Z', 'I', 'Y', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T',
-            'U', 'F', 'H', 'C', 'Ch', 'Sh', 'Sch', 'Y', 'Y', 'Y', 'E', 'Yu', 'Ya', 'a', 'b', 'v', 'g', 'd', 'e',
-            'e', 'gh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'h', 'c', 'ch', 'sh',
-            'sch', 'y', 'y', 'y', 'e', 'yu', 'ya', ' ', '_', '_'
-        ];
-
-        return str_replace($rus, $lat, $text);
+        return $bundles;
     }
 }
