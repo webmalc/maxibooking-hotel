@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
@@ -376,24 +377,30 @@ class ChessBoardController extends BaseController
 
     private function getFilterData(Request $request)
     {
-        $helper = $this->container->get('mbh.helper');
-        $beginDate = $helper->getDateFromString($request->get('filter_begin'));
-        if (!$beginDate) {
-            $beginDate = new \DateTime('00:00');
-            $beginDate->modify('-5 days');
+        if ($request->isMethod('GET')) {
+            $data = $request->query->all();
+        } else {
+            $data = $request->request->all();
         }
-        $endDate = $helper->getDateFromString($request->get('filter_end'));
-        if (!$endDate || $endDate->diff($beginDate)->format("%a") > 160 || $endDate <= $beginDate) {
-            $endDate = (clone $beginDate)->add(new \DateInterval('P25D'));
+
+        if (isset($data['filter_begin'])) {
+            $beginDate = Helper::getDateFromString($data['filter_begin']);
+        } else {
+            $beginDate = (new \DateTime('midnight'))->modify('-5 days');
+        }
+        if (isset($data['filter_end'])) {
+            $endDate = Helper::getDateFromString($data['filter_end']);
+        } else {
+            $endDate = (new \DateTime('midnight'))->modify('+25 days');
         }
 
         return [
             'begin' => $beginDate,
             'end' => $endDate,
-            'roomTypeIds' => $this->getDataFromMultipleSelectField($request->get('filter_roomType')),
-            'housing' => $this->getDataFromMultipleSelectField($request->get('housing')),
-            'floor' => $this->getDataFromMultipleSelectField($request->get('floor')),
-            'pageNumber' => $request->get('page') ? $request->get('page') : 1
+            'roomTypeIds' => $this->getDataFromMultipleSelectField(isset($data['filter_roomType']) ? $data['filter_roomType'] : null),
+            'housing' => $this->getDataFromMultipleSelectField(isset($data['housing']) ? $data['housing'] : null),
+            'floor' => $this->getDataFromMultipleSelectField(isset($data['floor']) ? $data['floor'] : null),
+            'pageNumber' => isset($data['page']) ? $data['page'] : 1
         ];
     }
 
