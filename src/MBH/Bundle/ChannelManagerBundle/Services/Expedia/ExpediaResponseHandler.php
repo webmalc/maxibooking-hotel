@@ -72,7 +72,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         }
         $jsonResponse = json_decode($this->response, true);
 
-        return $jsonResponse['errors']['message'];
+        return $jsonResponse['errors'][0]['message'];
     }
 
     public function getTariffsData(array $roomTypes)
