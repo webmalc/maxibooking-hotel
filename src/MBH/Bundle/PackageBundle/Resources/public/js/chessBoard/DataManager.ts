@@ -1,9 +1,9 @@
 ///<reference path="ActionManager.ts"/>
 ///<reference path="ChessBoardManager.ts"/>
 
-declare var $:any;
-declare var Routing:any;
-declare var packages;
+declare let $:any;
+declare let Routing:any;
+declare let packages;
 
 class DataManager {
 
@@ -24,7 +24,7 @@ class DataManager {
     }
 
     private handleResponse(jsonResponse) {
-        var response = JSON.parse(jsonResponse);
+        let response = JSON.parse(jsonResponse);
         ActionManager.showResultMessages(response);
         this.updatePackagesData();
 
@@ -270,7 +270,7 @@ class DataManager {
 
     private updatePackagesData() {
         let self = this;
-        var filterData = $('#accommodation-report-filter').serialize();
+        let filterData = $('#accommodation-report-filter').serialize();
         $.ajax({
             url: Routing.generate('chessboard_packages'),
             data: filterData,
@@ -292,7 +292,7 @@ class DataManager {
     }
 
     private updateTableData(data) {
-        var tableData = JSON.parse(data);
+        let tableData = JSON.parse(data);
         this._accommodations = tableData.accommodations;
         this.noAccommodationIntervals = tableData.noAccommodationIntervals;
         this._leftRoomCounts = tableData.leftRoomCounts;

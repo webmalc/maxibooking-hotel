@@ -221,9 +221,7 @@ class ChessBoardManager {
     public addAccommodationElements() {
         let wrapper = $('#calendarWrapper');
         let templatePackageElement = ChessBoardManager.getTemplateElement();
-        // console.time('elements creating');
         let packages = document.createElement('div');
-        // for (let i = 0; i < 100; i++) {
 
         //iterate packages
         let accommodationsData = this.dataManager.getAccommodations();
@@ -239,12 +237,8 @@ class ChessBoardManager {
                 }
             }
         }
-        // }
         wrapper.append(packages);
-        // console.timeEnd('elements creating');
-        // console.time('handlers');
         this.addListeners('.package');
-        // console.timeEnd('handlers');
     }
 
 
@@ -796,13 +790,22 @@ class ChessBoardManager {
 
         let endDateLeftOffset = packageOffset.left + parseInt($packageElement.get(0).style.width, 10) - this.PACKAGE_TO_MIDDAY_OFFSET;
         let endDate = this.getDateStringByLeftOffset(dateElements, endDateLeftOffset);
+        let paidStatus;
+        if ($packageElement.hasClass('warning')) {
+            paidStatus = 'warning';
+        } else if ($packageElement.hasClass('success')) {
+            paidStatus = 'success';
+        } else {
+            paidStatus = 'danger';
+        }
         return {
             id: $packageElement.get(0).id,
             accommodation: accommodationId,
             roomType: roomTypeId,
             begin: startDate,
             end: endDate,
-            payer: description
+            payer: description,
+            paidStatus: paidStatus
         };
     }
 

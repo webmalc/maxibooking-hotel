@@ -170,9 +170,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.prototype.addAccommodationElements = function () {
         var wrapper = $('#calendarWrapper');
         var templatePackageElement = ChessBoardManager.getTemplateElement();
-        // console.time('elements creating');
         var packages = document.createElement('div');
-        // for (let i = 0; i < 100; i++) {
         //iterate packages
         var accommodationsData = this.dataManager.getAccommodations();
         var lastAddedElement = null;
@@ -186,12 +184,8 @@ var ChessBoardManager = (function () {
                 }
             }
         }
-        // }
         wrapper.append(packages);
-        // console.timeEnd('elements creating');
-        // console.time('handlers');
         this.addListeners('.package');
-        // console.timeEnd('handlers');
     };
     ChessBoardManager.getTemplateElement = function () {
         var templateDiv = document.createElement('div');
@@ -699,13 +693,24 @@ var ChessBoardManager = (function () {
         var startDate = this.getDateStringByLeftOffset(dateElements, startDateLeftOffset);
         var endDateLeftOffset = packageOffset.left + parseInt($packageElement.get(0).style.width, 10) - this.PACKAGE_TO_MIDDAY_OFFSET;
         var endDate = this.getDateStringByLeftOffset(dateElements, endDateLeftOffset);
+        var paidStatus;
+        if ($packageElement.hasClass('warning')) {
+            paidStatus = 'warning';
+        }
+        else if ($packageElement.hasClass('success')) {
+            paidStatus = 'success';
+        }
+        else {
+            paidStatus = 'danger';
+        }
         return {
             id: $packageElement.get(0).id,
             accommodation: accommodationId,
             roomType: roomTypeId,
             begin: startDate,
             end: endDate,
-            payer: description
+            payer: description,
+            paidStatus: paidStatus
         };
     };
     ChessBoardManager.saveOffsetCompare = function (firstOffset, secondOffset) {

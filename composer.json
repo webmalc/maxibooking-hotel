@@ -52,6 +52,7 @@
     "guzzlehttp/guzzle": "^6.2",
     "php-amqplib/rabbitmq-bundle": "^1.12",
     "phobetor/rabbitmq-supervisor-bundle": "^1.5",
+    "willdurand/js-translation-bundle": "^2.6",
     "vich/uploader-bundle": "^1.4"
   },
   "require-dev": {

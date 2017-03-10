@@ -1,8 +1,8 @@
 ///<reference path="DataManager.ts"/>
 ///<reference path="ChessBoardManager.ts"/>
-declare var $;
-declare var roomTypes;
-declare var rooms;
+declare let $;
+declare let roomTypes;
+declare let rooms;
 
 class ActionManager {
 
@@ -14,7 +14,7 @@ class ActionManager {
 
     public callRemoveConfirmationModal(packageId) {
         let self = this;
-        var $deleteConfirmationModal = $('#entity-delete-confirmation');
+        let $deleteConfirmationModal = $('#entity-delete-confirmation');
         $deleteConfirmationModal.find('.modal-title').text(Translator.trans('action_manager.modal.remove_confirmation.title'));
         $deleteConfirmationModal.find('#entity-delete-modal-text').text(Translator.trans('action_manager.modal.remove_confirmation.text') + '?');
         $deleteConfirmationModal.find('#entity-delete-button').click(function () {
@@ -50,7 +50,7 @@ class ActionManager {
     public handleSearchOptionsModal(packageData, searchData) {
         let self = this;
 
-        var editBody = $('#package-edit-body');
+        let editBody = $('#package-edit-body');
         editBody.html(searchData);
         editBody.find('.search-room-select').val(packageData.accommodation);
         editBody.find('td:nth-child(4)').remove();
@@ -91,7 +91,7 @@ class ActionManager {
         let isNullAmount = parseInt($("#s_adults").val() || $("#s_children").val());
 
         if (!isNullAmount) {
-            var oldHref = $packageSearchBook.attr('data-url')
+            let oldHref = $packageSearchBook.attr('data-url')
                     .replace(/&adults=.*?(?=(&|$))/, '')
                     .replace(/&children=.*?(?=(&|$))/, '')
                 ;
@@ -105,7 +105,7 @@ class ActionManager {
     private modifyBookButton(packageData, element, editModal) {
         'use strict';
         let self = this;
-        var newPackageCreateUrl = element.href;
+        let newPackageCreateUrl = element.href;
         element.removeAttribute('href');
         if (packageData.accommodation) {
             newPackageCreateUrl += '&accommodation=' + packageData.accommodation;
@@ -164,7 +164,7 @@ class ActionManager {
 
     public showPackageInfoModal(packageId, data) {
         let self = this;
-        var packageInfoModal = $('#package-info-modal');
+        let packageInfoModal = $('#package-info-modal');
         let intervalData = this.dataManager.getPackageDataById(packageId);
         if (intervalData) {
             let $deleteButton = packageInfoModal.find('#package-info-modal-delete');
@@ -201,7 +201,7 @@ class ActionManager {
     }
 
     private static showMessage(isSuccess, message, messageBlockId = 'messages') {
-        var messageDiv = document.createElement('div');
+        let messageDiv = document.createElement('div');
         messageDiv.className = 'alert alert-dismissable autohide';
         messageDiv.classList.add(isSuccess ? 'alert-success' : 'alert-danger');
         messageDiv.innerHTML = '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
@@ -219,7 +219,7 @@ class ActionManager {
         $updateForm.show();
         let modalAlertDiv = document.getElementById('package-modal-change-alert');
         modalAlertDiv.innerHTML = '';
-        var newIntervalData = ChessBoardManager.getPackageData(packageElement);
+        let newIntervalData = ChessBoardManager.getPackageData(packageElement);
         if (intervalData && changedSide) {
             let alertMessageData = ActionManager.getAlertData(changedSide, intervalData, newIntervalData);
             if (alertMessageData) {
@@ -357,7 +357,7 @@ class ActionManager {
             intervalEnd = intervalData.end;
         }
 
-        var modal = $('#packageModal');
+        let modal = $('#packageModal');
         let packageId = intervalData.packageId;
         let intervalId = intervalData.accommodation ? intervalData.id : '';
         let payerText = intervalData.payer ? intervalData.payer : Translator.trans('action_manager.update_modal.not_specified');
@@ -379,7 +379,7 @@ class ActionManager {
     }
 
     public static getDataFromUpdateModal() {
-        var modal = $('#packageModal');
+        let modal = $('#packageModal');
         let payerText;
         let payerName = modal.find('#modal-package-payer').text();
         if (payerName != 'Не указан') {

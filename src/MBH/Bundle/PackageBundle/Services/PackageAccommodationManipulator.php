@@ -2,9 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
-
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -184,7 +182,6 @@ class PackageAccommodationManipulator
         usort($packageAccommodations, function ($a, $b) {
             /** @var PackageAccommodation $a */
             /** @var PackageAccommodation $b */
-            $c = 'd';
             return ($a->getBegin() < $b->getBegin()) ? -1 : 1;
         });
 

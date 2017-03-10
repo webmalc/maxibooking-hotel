@@ -266,7 +266,7 @@ class ChessBoardController extends BaseController
             }
         } else {
             foreach ($packageValidateErrors as $error) {
-                $messageFormatter->addErrorMessage($error);
+                $messageFormatter->addErrorMessage($error->getMessage());
             }
         }
     }
