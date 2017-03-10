@@ -6,7 +6,7 @@
 {% block content %}
 
         {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'restriction-overview-filter-widget' } %}
-           <form id="restriction-overview-filter" class="form-inline filter-form remember" role="form">
+           <form id="restriction-overview-filter" class="form-inline filter-form remember mbh-start-date" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='{{ 'price.views.restruction.index.date'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'></i>&nbsp
                 <input type="text" id="restriction-overview-filter-begin" class="datepicker restriction-overview-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">

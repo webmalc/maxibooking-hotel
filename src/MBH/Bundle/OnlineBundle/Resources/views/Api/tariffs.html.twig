@@ -1,15 +1,14 @@
 <div id="mbh-results-tariffs">
     <h4>{{ 'views.api.tariffs.tariffs_and_special_offers'|trans({}, 'MBHOnlineBundle') }}</h4>
     <ul>
+        {% set counter = 1 %}
         {% for tariff in tariffResults %}
             <li>
-
                 <p class="mbh-results-tariffs-label">
-                    {% if (tariff.id == app.request.query.get('tariff')) or (app.request.query.get('tariff') is null and tariff.isDefault) %}
-                        <input type="radio" disabled checked><span id="mbh-results-tariffs-selected"
-                              data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>
+                    {% if (app.request.query.get('tariff') is null and tariff.isDefault and defaultTariff.id is not empty) or (tariff.id == app.request.query.get('tariff')) or (counter == tariffResults|length and not app.request.query.get('tariff') and defaultTariff.id is empty) %}
+                        <input type="radio" disabled checked><span id="mbh-results-tariffs-selected" data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>
                     {% else %}
-                        {% set href = app.request.query.all|merge({'tariff': tariff.isDefault ? null : tariff.id })|url_encode %}
+                        {% set href = app.request.query.all|merge({'tariff': tariff.id })|url_encode %}
                         <input type="radio" disabled><a href="?{{ href }}">{{ tariff.fullTitle }}</a>
                     {% endif %}
                     {% if tariff.isDefault %}&nbsp;
@@ -19,6 +18,7 @@
                 {% if tariff.description|nl2br %}
                     <p class="mbh-results-tariffs-description">{{ tariff.description|raw }}</p>
                 {% endif %}
+                {% set counter = counter + 1 %}
             </li>
         {% endfor %}
     </ul>

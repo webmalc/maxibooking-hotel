@@ -6,6 +6,7 @@ parameters:
   mailer_user: robot@example.com
   mailer_password: password
   from_email: robot@example.com
+  mailer_encryption: ssl
 
   #MongoBD
   mongodb_url: 'mongodb://mbh-mongo:27017/mbh'
@@ -58,7 +59,7 @@ parameters:
 
   #Cache
   mbh_cache:
-    is_enabled: true
+    is_enabled: false
     prefix: mbh
     search:
       months: 6

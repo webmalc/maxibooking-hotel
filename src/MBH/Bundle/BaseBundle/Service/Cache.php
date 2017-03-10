@@ -3,7 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use MBH\Bundle\BaseBundle\Document\CacheItem;
-use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class Cache
 {
-    const LIFETIME = 60 * 60 * 24;
+    const LIFETIME = 60 * 60 * 24 * 7;
 
     /**
      * @var string
@@ -24,7 +24,7 @@ class Cache
     private $isEnabled;
 
     /**
-     * @var \ApcuAdapter
+     * @var \RedisAdapter
      */
     private $cache;
 
@@ -42,7 +42,8 @@ class Cache
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
-        $this->cache = new ApcuAdapter();
+        $redis = RedisAdapter::createConnection('redis://mbh-redis');
+        $this->cache = new RedisAdapter($redis);
         $this->dm = $dm->getManager();
         $this->validator = $validator;
     }
@@ -57,11 +58,11 @@ class Cache
     public function clear(string $prefix = null, \DateTime $begin = null, \DateTime $end = null, bool $all = false): int
     {
         if (!$this->isEnabled) {
-            return $this;
+            return 0;
         }
         if ($all) {
             $this->cache->clear();
-            return $this;
+            return 0;
         }
 
         $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
@@ -70,7 +71,7 @@ class Cache
             $this->dm->getRepository('MBHBaseBundle:CacheItem')->getKeysByPrefix($prefix, $begin, $end)
         );
 
-        return $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix);;
+        return $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix, $begin, $end);
     }
 
     /**

@@ -6,7 +6,7 @@
 {% block content %}
 
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'windows-report-filter-widget'} %}
-    <form id="windows-report-filter" class="form-inline filter-form remember" role="form">
+    <form id="windows-report-filter" class="form-inline filter-form remember mbh-start-date" role="form">
         <div class="input">
             <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
             <input type="text" name="begin" id="windows-report-filter-begin" class="datepicker windows-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">

@@ -63,6 +63,11 @@ class OrderInfo
         return (string)$this->orderData['last_action'];
     }
 
+    public function getOrderState()
+    {
+        return (string)$this->orderData['state'];
+    }
+
     public function getModifiedDate()
     {
         return $this->orderData['modified'];
