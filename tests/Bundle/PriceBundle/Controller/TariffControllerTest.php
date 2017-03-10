@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Bundle\TariffBundle\Controller;
+namespace Tests\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\Traits\CrudWebTestCaseTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
@@ -28,6 +28,7 @@ class TariffControllerTest extends WebTestCase
             ->setEditTitle('Test tariff edited')
             ->setNewUrl('/price/management/tariff/new')
             ->setListUrl('/price/management/tariff/')
+            ->setAjaxList()
             ->setNewFormValues(['fullTitle' => $this->getNewTitle()])
             ->setNewFormErrors(['data.fullTitle'])
             ->setEditFormValues(['fullTitle' => $this->getEditTitle()])

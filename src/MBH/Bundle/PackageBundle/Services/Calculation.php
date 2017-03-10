@@ -11,6 +11,7 @@ use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -36,12 +37,18 @@ class Calculation
      */
     private $manager;
 
+    /**
+     * @var \MBH\Bundle\BaseBundle\Service\Helper
+     */
+    private $helper;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->manager = $container->get('mbh.hotel.room_type_manager');
         $this->mergingTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->getMergingTariffs();
+        $this->helper = $container->get('mbh.helper');
     }
 
     /**
@@ -123,9 +130,22 @@ class Calculation
      * @param int $children
      * @param Promotion|null $promotion
      * @param bool $useCategories
-     * @return array
+     * @param bool $useDuration
+     * @param Special|null $special
+     * @return array|bool
      */
-    public function calcPrices(RoomType $roomType, Tariff $tariff, \DateTime $begin, \DateTime $end, $adults = 0, $children = 0, Promotion $promotion = null, $useCategories = false)
+    public function calcPrices(
+        RoomType $roomType,
+        Tariff $tariff,
+        \DateTime $begin,
+        \DateTime $end,
+        $adults = 0,
+        $children = 0,
+        Promotion $promotion = null,
+        $useCategories = false,
+        Special $special = null,
+        $useDuration = true
+    )
     {
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
@@ -209,7 +229,7 @@ class Calculation
             }
         }
 
-        if (count($caches) != $duration) {
+        if ($useDuration && (count($caches) != $duration)) {
             return false;
         }
 
@@ -301,11 +321,11 @@ class Calculation
 
                 if ($isIndividualAdditionalPrices and ($addsChildren + $addsAdults) > 1) {
                     $addsPrice = 0;
-                    $additionalCalc = function ($num, $prices, $price, $start = 0) {
+                    $additionalCalc = function ($num, $prices, $price, $offset = 0) {
                         $result = 0;
-                        for ($i = $start; $i < $num; $i++) {
-                            if (isset($prices[$i]) && $prices[$i] !== null) {
-                                $result += $prices[$i];
+                        for ($i = 0; $i < $num; $i++) {
+                            if (isset($prices[$i + $offset]) && $prices[$i + $offset] !== null) {
+                                $result += $prices[$i + $offset];
                             } else {
                                 $result += $price;
                             }
@@ -315,7 +335,7 @@ class Calculation
                     };
 
                     $addsPrice += $additionalCalc($addsAdults, $cache->getAdditionalPrices(), $cache->getAdditionalPrice());
-                    $addsChildrenPrice = $additionalCalc($addsChildren, $cache->getAdditionalChildrenPrices(), $cache->getAdditionalChildrenPrice());
+                    $addsChildrenPrice = $additionalCalc($addsChildren, $cache->getAdditionalChildrenPrices(), $cache->getAdditionalChildrenPrice(), $addsAdults);
 
                     if ($promoConditions && $childrenDiscount) {
                         $addsChildrenPrice = $addsChildrenPrice * (100 - $childrenDiscount) / 100;
@@ -338,10 +358,14 @@ class Calculation
                     $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
                 }
 
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $roomType, $special);
+                $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
-                $packagePrices[] = new PackagePrice(
-                    $cache->getDate(), $dayPrice, $tariff, $promoConditions ? $promotion : null
-                );
+
+                if ($promoConditions) {
+                    $packagePrice->setPromotion($promotion);
+                }
+                $packagePrices[] = $packagePrice;
                 $total += $dayPrice;
             }
 
@@ -363,6 +387,28 @@ class Calculation
         }
 
         return $prices;
+    }
+
+    /**
+     * @param $price
+     * @param \DateTime $date
+     * @param Tariff $tariff
+     * @param RoomType $roomType
+     * @param Special|null $special
+     * @return PackagePrice
+     */
+    public function getPackagePrice($price, \DateTime $date, Tariff $tariff, RoomType $roomType, Special $special = null): PackagePrice
+    {
+        $packagePrice = new PackagePrice($date, $price > 0 ? $price : 0, $tariff);
+        if (
+            $special &&
+            $date >= $special->getBegin() && $date <= $special->getEnd() &&
+            $special->check($roomType) && $special->check($tariff)
+        ) {
+            $price = $special->isIsPercent() ? $price - $price * $special->getDiscount() / 100 : $price - $special->getDiscount();
+            $packagePrice->setPrice($price)->setSpecial($special);
+        }
+        return $packagePrice;
     }
 
 }

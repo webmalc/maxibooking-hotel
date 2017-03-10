@@ -1,0 +1,55 @@
+{% extends 'MBHPriceBundle:Special:layout.html.twig' %}
+
+{% set small_title = "entity.list.title" %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'special-filter-widget'} %}
+        {% block content %}
+            {{ form_start(form, {attr: {class: 'form-inline remember filter-form icon-label-form', id: 'special-filter-form'}}) }}
+            <div class="form-group">
+                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
+                {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
+            </div>
+            <div class="form-group">
+                <label><i class="fa fa-sliders" title="Тариф" data-toggle="tooltip"></i></label>
+                {{ form_widget(form.tariff) }}
+            </div>
+            <div class="form-group">
+                <label><i class="fa fa-bed" title="Тип номера" data-toggle="tooltip"></i></label>
+                {{ form_widget(form.roomType) }}
+            </div>
+            <div class="form-group">
+                <label><i class="fa fa-check" title="Показывать выключенные?" data-toggle="tooltip"></i></label>
+                {{ form_widget(form.isEnabled) }}
+            </div>
+            {{ form_widget(form._token) }}
+            {{ form_end(form, {render_rest: false}) }}
+        {% endblock %}
+    {% endembed %}
+
+
+    <table id="special-table"
+           class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xxs"></th>
+            <th>{{ "specials.title"|trans }}</th>
+            <th class="td-md">{{ "specials.dates"|trans }}</th>
+            <th class="td-md">{{ "specials.roomTypes"|trans }}</th>
+            <th class="td-md">{{ "specials.tariff"|trans }}</th>
+            <th class="td-sm">{{ "specials.discount"|trans }}</th>
+            <th class="td-sm text-center">{{ "specials.sold"|trans }}</th>
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'special_new', 'role': 'SPECIAL'} %}
+
+{% endblock %} 
+

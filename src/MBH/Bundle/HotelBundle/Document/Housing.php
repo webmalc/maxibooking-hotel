@@ -28,6 +28,7 @@ class Housing extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Hotel")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $hotel;
 
@@ -36,26 +37,30 @@ class Housing extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string") 
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $name;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $internalName;
 
     /**
      * @var City
      * @ODM\ReferenceOne(targetDocument="City")
+     * @ODM\Index()
      */
     protected $city;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $settlement;
 

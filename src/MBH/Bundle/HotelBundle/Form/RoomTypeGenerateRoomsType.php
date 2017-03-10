@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,7 +18,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class RoomTypeGenerateRoomsType extends AbstractType
 {
 
-    public static function rangeValidation($data, ExecutionContextInterface $context)
+    public function rangeValidation($data, ExecutionContextInterface $context)
     {
         if ($data['from'] >= $data['to']) {
             $context->addViolation('form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number');
@@ -58,8 +59,8 @@ class RoomTypeGenerateRoomsType extends AbstractType
             'class' => 'MBH\Bundle\HotelBundle\Document\Housing'
         ];
         $hotel = $options['hotel'];
-        if ($hotel) {
-            $housingOptions['query_builder'] = function (DocumentRepository $dr) use ($hotel) {
+        if($hotel) {
+            $housingOptions['query_builder'] = function(DocumentRepository $dr) use ($hotel) {
                 return $dr->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
             };
         }
@@ -80,7 +81,13 @@ class RoomTypeGenerateRoomsType extends AbstractType
                 'attr' => ['placeholder' => 'HTL'],
                 'help' => 'form.roomTypeGenerateRoomsType.prefix_example',
                 'constraints' => new Length(['max' => 20])
-            ]);
+            ])
+            ->add('isSmoking', CheckboxType::class, [
+                'label' => 'form.roomType_generator.is_smoking.label',
+                'help' => 'form.roomType.is_smoking.help',
+                'required' => false
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -88,7 +95,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
         $resolver->setDefaults(
             [
                 'constraints' => [
-                    new Callback(['callback' => [$this, 'rangeValidation'],]),
+                    new Callback([$this, 'rangeValidation'])
                 ],
                 'entity' => null,
                 'hotel' => null

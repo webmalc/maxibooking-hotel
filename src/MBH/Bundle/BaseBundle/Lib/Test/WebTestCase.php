@@ -2,10 +2,12 @@
 namespace MBH\Bundle\BaseBundle\Lib\Test;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase as Base;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Form;
 
 abstract class WebTestCase extends Base
@@ -19,6 +21,16 @@ abstract class WebTestCase extends Base
      * @var string
      */
     private $listUrl;
+
+    /**
+     * @var string
+     */
+    private $listContainer = 'table ';
+
+    /**
+     * @var array
+     */
+    private $listHeaders = [];
 
     /**
      * @var string
@@ -66,11 +78,57 @@ abstract class WebTestCase extends Base
     private $listItemsCount;
 
     /**
+     * @return string
+     */
+    public function getListContainer(): string
+    {
+        return $this->listContainer;
+    }
+
+    /**
+     * @param string $listContainer
+     * @return WebTestCase
+     */
+    public function setListContainer(string $listContainer): WebTestCase
+    {
+        $this->listContainer = $listContainer;
+        return $this;
+    }
+    
+    
+    /**
+     * @return array
+     */
+    public function getListHeaders(): array
+    {
+        return $this->listHeaders;
+    }
+
+    /**
+     * @param array $listHeaders
+     * @return WebTestCase
+     */
+    public function setListHeaders(array $listHeaders): WebTestCase
+    {
+        $this->listHeaders = $listHeaders;
+        return $this;
+    }
+
+    public function setAjaxList(): self
+    {
+        $this->listHeaders = array_merge($this->listHeaders, [
+            'HTTP_X-Requested-With' => 'XMLHttpRequest'
+        ]);
+        $this->listContainer = '';
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getListItemsCount(): int
     {
-        if (!$this->listItemsCount) {
+        if (!is_numeric($this->listItemsCount)) {
             throw new \InvalidArgumentException('not valid listItemsCount');
         }
         return $this->listItemsCount;
@@ -277,7 +335,8 @@ abstract class WebTestCase extends Base
      * Run console command
      * @param string $name
      */
-    public static function command(string $name) {
+    public static function command(string $name)
+    {
         self::bootKernel();
         $application = new Application(self::$kernel);
         $application->setAutoExit(false);
@@ -314,6 +373,17 @@ abstract class WebTestCase extends Base
     }
 
     /**
+     * @param string $method
+     * @param string $url
+     * @return \Symfony\Component\DomCrawler\Crawler
+     */
+    public function getListCrawler($url = null, $method = 'GET'): Crawler
+    {
+        $url = $url ?? $this->getListUrl();
+        return $this->client->request($method, $url, [], [], $this->getListHeaders());
+    }
+
+    /**
      * @param string $formName
      * @param array $values
      * @return array
@@ -321,8 +391,18 @@ abstract class WebTestCase extends Base
     public static function prepareFormValues(string $formName, array $values): array
     {
         return array_combine(
-            array_map(function ($v) use ($formName) { return $formName . '[' .$v . ']'; }, array_keys($values)),
-            $values
+            array_map(function ($v) use ($formName) {
+                return $formName . '[' . $v . ']';
+            }, array_keys($values)),
+            array_map(function ($v) {
+                if ($v instanceof \DateTime) {
+                    $v = $v->format('d.m.Y');
+                }
+                if ($v instanceof \MBH\Bundle\BaseBundle\Document\Base) {
+                    $v = $v->getId();
+                }
+                return $v;
+            }, $values)
         );
     }
 
@@ -333,13 +413,12 @@ abstract class WebTestCase extends Base
      */
     protected function listBaseTest(string $url = null, string $title = null, int $count = null)
     {
-        $url = $url ?? $this->getListUrl();
         $title = $title ?? $this->getNewTitle();
         $count = $count ?? $this->getListItemsCount();
 
-        $crawler = $this->fetchCrawler($url, 'GET', true);
-        $this->assertSame(1, $crawler->filter('table a:contains("' . $title . '")')->count());
-        $this->assertSame($count + 1, $crawler->filter('table a[rel="main"]')->count());
+        $crawler = $this->getListCrawler($url);
+        $this->assertSame(1, $crawler->filter($this->getListContainer() . 'a:contains("' . $title . '")')->count());
+        $this->assertSame($count + 1, $crawler->filter($this->getListContainer() . 'a[rel="main"]')->count());
     }
 
     /**
@@ -352,8 +431,8 @@ abstract class WebTestCase extends Base
         $url = $url ?? $this->getListUrl();
         $title = $title ?? $this->getEditTitle();
         $count = $count ?? $this->getListItemsCount();
-        $crawler = $this->clickLinkInList($url, 'table a[data-text="Вы действительно хотите удалить запись «' . $title . '»?"]', true);
-        $this->assertSame($count, $crawler->filter('table a[rel="main"]')->count());
+        $this->clickLinkInList($url, ' a[data-text="Вы действительно хотите удалить запись «' . $title . '»?"]', true);
+        $this->assertSame($count, $this->getListCrawler()->filter($this->getListContainer() . 'a[rel="main"]')->count());
     }
 
     /**
@@ -385,10 +464,10 @@ abstract class WebTestCase extends Base
         $form = $crawler->filter($formClass)->form();
         $form->setValues(self::prepareFormValues($formName, $values));
         $this->client->submit($form);
-        $crawler = $this->client->followRedirect();
+        $this->client->followRedirect();
 
         //check saved object
-        $this->assertSame(1, $crawler->filter('table a:contains("' . $title . '")')->count());
+        $this->assertSame(1, $this->getListCrawler()->filter($this->getListContainer() . 'a:contains("' . $title . '")')->count());
     }
 
     /**
@@ -400,23 +479,22 @@ abstract class WebTestCase extends Base
      */
     protected function editFormBaseTest(array $values = null, string $url = null, string $title = null, string $titleEdited = null, string $formName = null)
     {
-        $url = $url ?? $this->getListUrl();
         $title = $title ?? $this->getNewTitle();
         $titleEdited = $titleEdited ?? $this->getEditTitle();
         $formName = $formName ?? $this->getFormName();
         $values = $values ?? $this->getEditFormValues();
 
-        $crawler = $this->clickLinkInList($url, 'table a:contains("' . $title . '")');
+        $crawler = $this->clickLinkInList($url, 'a:contains("' . $title . '")');
 
         $form = $crawler->filter('form[name="' . $formName . '"]')->form();
 
         $form->setValues(self::prepareFormValues($formName, $values));
 
         $this->client->submit($form);
-        $crawler = $this->client->followRedirect();
+        $this->client->followRedirect();
 
         //check saved object
-        $this->assertSame(1, $crawler->filter('table a:contains("' . $titleEdited . '")')->count());
+        $this->assertSame(1, $this->getListCrawler()->filter($this->getListContainer() . 'a:contains("' . $titleEdited . '")')->count());
     }
 
     /**
@@ -425,14 +503,14 @@ abstract class WebTestCase extends Base
      * @param bool $redirect
      * @return \Symfony\Component\DomCrawler\Crawler
      */
-    protected function clickLinkInList(string $url, string $filter, bool $redirect = false)
+    protected function clickLinkInList(string $url = null, string $filter, bool $redirect = false)
     {
-        $crawler = $this->fetchCrawler($url, 'GET', true);
-        $link = $crawler->filter($filter)->link();
+        $crawler = $this->getListCrawler($url);
+        $link = $crawler->filter($this->getListContainer() . $filter)->link();
 
         $crawler = $this->client->click($link);
         if ($redirect) {
-            $crawler =  $this->client->followRedirect();
+            $crawler = $this->client->followRedirect();
         }
 
         return $crawler;

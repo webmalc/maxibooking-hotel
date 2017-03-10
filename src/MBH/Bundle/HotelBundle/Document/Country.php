@@ -53,6 +53,7 @@ class Country extends Base implements Translatable
      *      maxMessage="validator.document.country.max_name"
      * )
      * @Gedmo\Translatable
+     * @ODM\Index()
      */
     protected $title;
 

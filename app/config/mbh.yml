@@ -180,7 +180,7 @@ parameters:
     #параметры онлайн формы
     mbh.online.form:
           sites: "%online_form_sites%"
-          packages_max: 5
+          packages_max: "%mbh_online_form_max_packages%"
           messages: true
           form:
             width: '300px'
@@ -210,6 +210,7 @@ parameters:
         vashotel:
           title: 'ВашОтель'
           service: 'mbh.channelmanager.vashotel'
+          password: jguuE26t684Fl
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
@@ -227,6 +228,9 @@ parameters:
           api_password: VCuMhanjdxiC
           vendor_password: 0Rp0XJGubJ9rfoUy4niNGcBPErf20VJZ
           url: http://mbhs.maxibooking.ru/client/channelmanager/push/myallocator
+        hundred_one_hotels:
+          title: '101 Отель'
+          service: 'mbh.channelmanager.hundred_one_hotels'
         oktogo:
           title: 'Oktogo'
           service: 'mbh.channelmanager.oktogo'
@@ -357,4 +361,10 @@ parameters:
         in: "Приход"
         out: "Расход"
 
+    #Указаны идентификаторы для переводов. Переводы хранятся в HotelBundle
+    mbh.smoking_policy:
+        47:	form.hotelExtendedType.all_rooms_non_smoking
+        198: form.hotelExtendedType.non_smoking_room
+        268: form.hotelExtendedType.all_public_areas_non_smoking
+        900201:	form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms
 

@@ -149,12 +149,10 @@ $(document).ready(function () {
         '<div>'
     );
     $('#select-all-rooms').on('click', function () {
-        console.log('all');
         $roomsSelect.find("option").prop("selected", "selected");
         $roomsSelect.trigger("change");
     });
     $('#clear-rooms').on('click', function () {
-        console.log('clear');
         $roomsSelect.select2('val', null);
     });
 

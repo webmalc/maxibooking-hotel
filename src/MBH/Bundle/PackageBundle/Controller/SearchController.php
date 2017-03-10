@@ -56,7 +56,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'hotel' => $this->hotel,
             'orderId' => $request->get('order'),
             'roomManager' => $this->manager,
-            'startDate' => \DateTime::createFromFormat('d.m.Y', '23.04.2017')
         ]);
 
         $tourist = new Tourist();
@@ -90,6 +89,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
     {
         $query = new SearchQuery();
         $query->accommodations = true;
+        $specials = null;
         $form = $this->createForm(SearchType::class, $query, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
@@ -124,10 +124,12 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                     }
                 }
 
-                $groupedResult = $this->get('mbh.package.search')
+                $search = $this->get('mbh.package.search')
                     ->setAdditionalDates($query->range)
-                    ->setWithTariffs()
-                    ->search($query);
+                    ->setWithTariffs();
+                $specials = $search->searchSpecials($query)->toArray();
+                $groupedResult = $search->search($query);
+
             } else {
                 $errors = $form->getErrors();
             }
@@ -135,6 +137,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
 
         return [
             'results' => $groupedResult,
+            'specials' => $specials,
             'query' => $query,
             'errors' => isset($errors) ? $errors : null,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),

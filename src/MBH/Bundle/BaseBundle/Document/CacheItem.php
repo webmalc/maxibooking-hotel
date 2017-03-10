@@ -23,8 +23,25 @@ class CacheItem extends Base
      * @var string
      * @ODM\Field(type="string")
      * @Assert\NotNull()
+     * @ODM\Index()
      */
     protected $key;
+
+    /**
+     * @var \DateTime
+     * @ODM\Date(name="begin")
+     * @Assert\Date()
+     * @ODM\Index()
+     */
+    protected $begin;
+
+    /**
+     * @var \DateTime
+     * @ODM\Date(name="end")
+     * @Assert\Date()
+     * @ODM\Index()
+     */
+    protected $end;
 
     /**
      * @return string
@@ -51,5 +68,41 @@ class CacheItem extends Base
     public function __construct(string $key)
     {
         $this->setKey($key);
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getBegin(): \DateTime
+    {
+        return $this->begin;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @return CacheItem
+     */
+    public function setBegin(\DateTime $begin): CacheItem
+    {
+        $this->begin = $begin;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEnd(): \DateTime
+    {
+        return $this->end;
+    }
+
+    /**
+     * @param \DateTime $end
+     * @return CacheItem
+     */
+    public function setEnd(\DateTime $end): CacheItem
+    {
+        $this->end = $end;
+        return $this;
     }
 }

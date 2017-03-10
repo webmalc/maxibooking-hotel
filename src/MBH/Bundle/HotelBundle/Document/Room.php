@@ -43,12 +43,14 @@ class Room extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="rooms")
      * @Assert\NotNull(message="validator.document.room.hotel_not_selected")
+     * @ODM\Index()
      */
     protected $hotel;
     
     /**
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull(message="validator.document.room.room_type_not_selected")
+     * @ODM\Index()
      */
     protected $roomType;
 
@@ -63,6 +65,7 @@ class Room extends Base
      *      max=100,
      *      maxMessage="validator.document.room.max_name"
      * )
+     * @ODM\Index()
      */
     protected $fullTitle;
 
@@ -76,12 +79,14 @@ class Room extends Base
      *      max=100,
      *      maxMessage="validator.document.room.max_name"
      * )
+     * @ODM\Index()
      */
     protected $title;
 
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Housing")
+     * @ODM\Index()
      */
     protected $housing;
 
@@ -95,6 +100,7 @@ class Room extends Base
      *      max=10,
      *      maxMessage="validator.document.room.max_floor"
      * )
+     * @ODM\Index()
      */
     protected $floor;
 
@@ -111,13 +117,24 @@ class Room extends Base
     protected $facilities;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isSmoking = false;
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomViewType")
+     */
+    protected $roomViewsTypes;
+
+    /**
      * Room constructor.
      */
     public function __construct()
     {
         $this->status = new ArrayCollection();
+        $this->roomViewsTypes = new ArrayCollection();
     }
-
 
     /**
      * Set hotel
@@ -327,5 +344,51 @@ class Room extends Base
     public function setFacilities($facilities)
     {
         $this->facilities = $facilities;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsSmoking(): ?bool
+    {
+        return $this->isSmoking;
+    }
+
+    /**
+     * @param bool $isSmoking
+     * @return Room
+     */
+    public function setIsSmoking(bool $isSmoking): Room
+    {
+        $this->isSmoking = $isSmoking;
+
+        return $this;
+    }
+
+    public function getRoomViewsTypes()
+    {
+        return $this->roomViewsTypes;
+    }
+
+    /**
+     * @param RoomViewType $roomViewType
+     * @return Room
+     */
+    public function removeRoomViewType(RoomViewType $roomViewType): Room
+    {
+        $this->roomViewsTypes->remove($roomViewType);
+
+        return $this;
+    }
+
+    /**
+     * @param RoomViewType $roomViewType
+     * @return Room
+     */
+    public function addRoomViewType(RoomViewType $roomViewType): Room
+    {
+        $this->roomViewsTypes->add($roomViewType);
+
+        return $this;
     }
 }

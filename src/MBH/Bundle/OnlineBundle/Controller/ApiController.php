@@ -72,7 +72,7 @@ class ApiController extends Controller
                 ->field($type)->gte($begin)
                 ->field($type)->lte($end);
         }
-        
+
         return [
             'packages' => $qb->getQuery()->execute()
         ];
@@ -288,9 +288,17 @@ class ApiController extends Controller
         $query->adults = (int)$request->get('adults');
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
+        $isViewTariff = false;
 
-        foreach ($formConfig->getHotels() as $h) {
-            foreach ($h->getRoomTypes() as $roomType) {
+        foreach ($formConfig->getHotels() as $hotel) {
+            if (is_null($query->tariff) && !$isViewTariff) {
+                $defaultTariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['hotel.id' => $hotel->getId(), 'isDefault' => true, 'isOnline' => true, 'isEnabled' => true]);
+                if (empty($defaultTariff)) {
+                    $query->tariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['hotel.id' => $hotel->getId(), 'isOnline' => true, 'isEnabled' => true]);
+                }
+                $isViewTariff = true;
+            }
+            foreach ($hotel->getRoomTypes() as $roomType) {
                 $query->addAvailableRoomType($roomType->getId());
             }
         }
@@ -343,7 +351,17 @@ class ApiController extends Controller
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
+        $facilityArray = array();
+
+        foreach ($this->getParameter('mbh.hotel')['facilities'] as $facilityVal) {
+            foreach ($facilityVal as $key => $val) {
+                $facilityArray[$key] = $val;
+            }
+        }
+
         return [
+            'defaultTariff' => $defaultTariff,
+            'facilityArray' => $facilityArray,
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
             'hotels' => $hotels,
@@ -451,6 +469,7 @@ class ApiController extends Controller
         if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
         } else {
+
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
                     'data' => array_merge(['test' => false,
@@ -469,8 +488,8 @@ class ApiController extends Controller
 
     /**
      * @param Order $order
-     * @param null $arrival
-     * @param null $departure
+     * @param string $arrival
+     * @param string $departure
      * @return bool
      */
     private function sendNotifications(Order $order, $arrival = null, $departure = null)

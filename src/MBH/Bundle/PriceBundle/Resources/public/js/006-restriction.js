@@ -2,6 +2,7 @@
 
 $(document).ready(function () {
     'use strict';
+
     //Show table
     var pricesProcessing = false,
         showTable = function () {

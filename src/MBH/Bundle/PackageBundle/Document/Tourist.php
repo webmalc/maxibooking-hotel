@@ -66,6 +66,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      *      max=100,
      *      maxMessage= "validator.document.Tourist.max_name"
      * )
+     * @ODM\Index()
      */
     protected $firstName;
     /**
@@ -79,6 +80,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      *      max=100,
      *      maxMessage= "validator.document.Tourist.max_surname"
      * )
+     * @ODM\Index()
      */
     protected $lastName;
     /**
@@ -91,6 +93,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      *      max=100,
      *      maxMessage= "validator.document.Tourist.max_second_name"
      * )
+     * @ODM\Index()
      */
     protected $patronymic;
     /**
@@ -128,6 +131,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      *      max=100,
      *      maxMessage= "validator.document.Tourist.max_phone"
      * )
+     * @ODM\Index()
      */
     protected $phone;
     /**
@@ -140,12 +144,14 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      *      max=100,
      *      maxMessage= "validator.document.Tourist.max_phone"
      * )
+     * @ODM\Index()
      */
     protected $mobilePhone;
     /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $messenger;
     /**
@@ -153,6 +159,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="email")
      * @Assert\Email()
+     * @ODM\Index()
      */
     protected $email;
     /**
@@ -165,6 +172,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
      *      max=1000,
      *      maxMessage= "validator.document.Tourist.max_note"
      * )
+     * @ODM\Index()
      */
     protected $note;
     /**
@@ -206,12 +214,14 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $communicationLanguage;
 
     /**
      * @var bool
      * @ODM\Boolean()
+     * @ODM\Index()
      */
     protected $isUnwelcome = false;
 
@@ -617,13 +627,13 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
     }
 
     /**
-     * Get age
-     * @return int
+     * @param \DateTime|null $date
+     * @return int|null
      */
-    public function getAge()
+    public function getAge(\DateTime $date = null)
     {
         if ($this->getBirthday()) {
-            $now = new \DateTime();
+            $now = $date ?? new \DateTime();
             $diff = $now->diff($this->getBirthday());
 
             return $diff->y;
@@ -878,6 +888,7 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
     public function setCommunicationLanguage($communicationLanguage)
     {
         $this->communicationLanguage = $communicationLanguage;
+        return $this;
     }
 
     /**

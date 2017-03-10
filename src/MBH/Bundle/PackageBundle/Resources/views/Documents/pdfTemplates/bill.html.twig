@@ -43,7 +43,7 @@
         </div>
         {% if hotel and hotel.logoUrl %}
             <div class="logo">
-                <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
+                <img src="{{ absolute_url(asset(hotel.logoUrl)) }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>
@@ -56,16 +56,18 @@
             <tr>
                 <td width="15%">{{ "package.pdf.executor"|trans({}, "MBHPackageBundle") }}</td>
                 <td width="85%">
-                    Отель {% if hotel and hotel.fullTitle %}<strong>"{{ hotel.fullTitle }}"</strong>{% else %}____________________{% endif %},
-                    адрес: {% if hotel and hotel.country and hotel.city and hotel.street %}
-                    {{ hotel.country.title }}, {% if hotel.region %}{{ hotel.region.title }},{% endif %} г. {{ hotel.city.title }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
-                    {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
-                    ИНН {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}
+                    <strong>{{ entity.address.name }}</strong>
+                    {{ "package.pdf.address"|trans({}, "MBHPackageBundle") }}: {% if entity.address and entity.address.country and entity.address.city and entity.address.street %}
+                    {{ entity.address.country.title }}, {% if entity.address.region %}{{ entity.address.region.title }},{% endif %} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.city.title }}{% if entity.address.settlement is defined %}, {{ entity.address.settlement }}{% endif %}, {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.street }},
+                    {% if entity.address.house %} {{ "package.pdf.short_home_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.house }}{% endif %}{% if entity.address.corpus %}, {{ "package.pdf.short_housing_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.corpus }}{% endif %}{% if entity.address.flat %}, {{ "package.pdf.short_apartment_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.flat }}{% endif %}{% else %}_________________________________________{% endif %},
+                    {{ "package.pdf.inn"|trans({}, "MBHPackageBundle") }} {% if entity.address.inn is defined %}{{ entity.address.inn }}{% else %}________________________{% endif %}
                 </td>
             </tr>
             <tr>
                 <td>{{ "package.pdf.customer"|trans({}, "MBHPackageBundle") }} </td>
-                <td><strong>{{ entity.order.mainTourist.fullName|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong></td>
+                <td>
+                    <strong>{{ entity.order.payer.name|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong>
+                </td>
             </tr>
         </table>
 
@@ -173,7 +175,7 @@
         </table>
 
         {% if paidTotal > 0 %}
-            <p>Всего оплечено услуг на сумму {{ paidTotal|number_format(2) }} {{ currency().text }}<br>
+            <p>{{ "package.pdf.count_paid_total"|trans({}, "MBHPackageBundle") }} {{ paidTotal|number_format(2) }} {{ currency().text }}<br>
                 <strong>{{ paidTotal|num2str|capitalize }}</strong></p>
         {% endif %}
 

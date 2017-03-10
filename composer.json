@@ -13,9 +13,13 @@
     "alcaeus/mongo-php-adapter": "^1.0.0",
     "ext-mongo": "*",
     "symfony/symfony": "3.1.*@stable",
+    "twig/twig": "^1",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
+    "symfony/cache": "3.*@stable",
+    "predis/predis": "*@stable",
     "symfony/swiftmailer-bundle": "^2.3@stable",
+    "swiftmailer/swiftmailer": "^5.0@stable",
     "symfony/monolog-bundle": "^2.8@stable",
     "sensio/distribution-bundle": "^5.0@stable",
     "symfony/polyfill-apcu": "^1.0",
@@ -48,8 +52,7 @@
     "guzzlehttp/guzzle": "^6.2",
     "php-amqplib/rabbitmq-bundle": "^1.12",
     "phobetor/rabbitmq-supervisor-bundle": "^1.5",
-    "willdurand/js-translation-bundle": "^2.6",
-    "twig/twig": "~1.30.0"
+    "vich/uploader-bundle": "^1.4"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

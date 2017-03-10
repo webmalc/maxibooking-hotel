@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -23,6 +24,12 @@ class ClientConfigType extends AbstractType
                 'required' => false,
                 'help' => 'form.clientConfigType.is_sms_notification_turned_on'
             ])
+            ->add('NoticeUnpaid', TextType::class, [
+                'label' => 'form.clientConfigType.notice_unpaid',
+                'group' => 'form.clientConfigType.main_group',
+                'help' => 'form.clientConfigType.is_notice_unpaid',
+                'required' => true
+            ])
             ->add('is_instant_search', CheckboxType::class, [
                 'label' => 'form.clientConfigType.instant_search',
                 'group' => 'form.clientConfigType.main_group',
@@ -40,11 +47,25 @@ class ClientConfigType extends AbstractType
                 'group' => 'form.clientConfigType.search_group',
                 'required' => true,
             ])
+            ->add('searchTariffs', TextType::class, [
+                'label' => 'form.clientConfigType.search_tariffs',
+                'help' => 'form.clientConfigType.search_tariffs_desc',
+                'group' => 'form.clientConfigType.search_group',
+                'required' => true,
+            ])
             ->add('searchWindows', CheckboxType::class, [
                 'label' => 'form.clientConfigType.search_windows',
                 'help' => 'form.clientConfigType.search_windows_desc',
                 'group' => 'form.clientConfigType.search_group',
                 'required' => false,
+            ])
+            ->add('beginDate', DateType::class, [
+                'required' => false,
+                'label' => 'form.clientConfigType.add_start_date',
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'group' => 'form.clientConfigType.main_group',
+                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm begin-datepicker'],
             ])
         ;
     }

@@ -86,7 +86,6 @@ class SearchType extends AbstractType
                 'label' => 'form.searchType.check_in',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'data' => $options['startDate'],
                 'required' => true,
                 'error_bubbling' => true,
                 'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
@@ -95,7 +94,6 @@ class SearchType extends AbstractType
                 'label' => 'Отъезд',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'data' => (clone $options['startDate'])->modify("+1 day"),
                 'required' => true,
                 'error_bubbling' => true,
                 'attr' => array('class' => 'datepicker end-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
@@ -112,7 +110,7 @@ class SearchType extends AbstractType
                 'required' => true,
                 'error_bubbling' => true,
                 'data' => 1,
-                'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 10],
+                'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 12],
             ])
             ->add('children', IntegerType::class, [
                 'label' => 'form.searchType.children',
@@ -121,11 +119,22 @@ class SearchType extends AbstractType
                 'data' => 0,
                 'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 6],
             ])
+            ->add('special', DocumentType::class, [
+                'label' => 'form.searchType.special',
+                'required' => false,
+                'multiple' => false,
+                'error_bubbling' => true,
+                'class' => 'MBHPriceBundle:Special',
+                'attr' => ['class' => 'plain-html']
+            ])
             ->add('forceBooking', CheckboxType::class, [
                 'label' => 'form.searchType.forceBooking',
                 'required' => false,
             ])
             ->add('room', HiddenType::class, [
+                'required' => false
+            ])
+            ->add('limit', HiddenType::class, [
                 'required' => false
             ])
         ;
@@ -134,7 +143,7 @@ class SearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'csrf_protection' => false,
+            'csrf_protection' => true,
             'allow_extra_fields' => true,
             'dm' => null,
             'security' => null,
@@ -144,7 +153,6 @@ class SearchType extends AbstractType
             'startDate' => new \DateTime(),
             'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery',
             'method' => 'GET'
-
         ]);
     }
 

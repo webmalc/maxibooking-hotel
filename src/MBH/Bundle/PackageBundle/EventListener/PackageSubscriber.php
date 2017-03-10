@@ -10,6 +10,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PackageSubscriber implements EventSubscriber
@@ -38,6 +39,18 @@ class PackageSubscriber implements EventSubscriber
         );
     }
 
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     */
+    private function _removeCache(\DateTime $begin = null, \DateTime $end = null)
+    {
+        $cache = $this->container->get('mbh.cache');
+        $cache->clear('accommodation_rooms', $begin, $end);
+        $cache->clear('room_cache', $begin, $end);
+        $cache->clear('packages', $begin, $end);
+    }
+
     public function preRemove(LifecycleEventArgs $args)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
@@ -45,7 +58,7 @@ class PackageSubscriber implements EventSubscriber
         $entity = $args->getDocument();
 
         //Calc services price
-        if($entity instanceof PackageService) {
+        if ($entity instanceof PackageService) {
             try {
                 $package = $entity->getPackage();
                 $this->container->get('mbh.calculation')->setServicesPrice($package, null, $entity);
@@ -57,7 +70,7 @@ class PackageSubscriber implements EventSubscriber
         }
 
         //Calc package
-        if($entity instanceof Package) {
+        if ($entity instanceof Package) {
             foreach ($entity->getServices() as $packageService) {
                 $packageService->setDeletedAt(new \DateTime());
                 $dm->persist($packageService);
@@ -69,17 +82,28 @@ class PackageSubscriber implements EventSubscriber
             $dm->persist($entity);
             $dm->flush();
 
-            $this->container->get('mbh.cache')->clear('accommodation_rooms');
-            $this->container->get('mbh.cache')->clear('room_cache_fetch');
+            $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
         }
+
         return;
     }
 
     public function postPersist(LifecycleEventArgs $args)
     {
         $package = $args->getDocument();
+        $dm = $args->getDocumentManager();
 
         if ($package instanceof Package) {
+
+            $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($package);
+            if (isset($changeSet['special'])) {
+                foreach ($changeSet['special'] as $special) {
+                    if ($special instanceof Special) {
+                        $dm->getRepository('MBHPriceBundle:Special')->recalculate($special);
+                    }
+                }
+            }
+
             $end = clone $package->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
                 $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff()
@@ -99,12 +123,11 @@ class PackageSubscriber implements EventSubscriber
                     ->setHotel($package->getRoomType()->getHotel())
                     ->setEnd(new \DateTime('+10 minute'))
                     ->setLinkText('mailer.to_package')
-                    ->setLink($this->container->get('router')->generate('package_edit', ['id' => $package->getId()], true))
-                ;
+                    ->setLink($this->container->get('router')->generate('package_edit', ['id' => $package->getId()], true));
                 $notifier->setMessage($message)->notify();
             }
 
-            $request =  $this->container->get('request_stack')->getCurrentRequest();
+            $request = $this->container->get('request_stack')->getCurrentRequest();
             $this->container->get('mbh.mbhs')->sendPackageInfo($package, $request ? $request->getClientIp() : null);
         }
     }
@@ -130,8 +153,7 @@ class PackageSubscriber implements EventSubscriber
                         ->setPrice($changes['price'][1])
                         ->setNights($changes['nights'][1])
                         ->setPersons($changes['persons'][1])
-                        ->setService(!empty($changes['service'][1]) ? $changes['service'][1] : $doc->getService())
-                    ;
+                        ->setService(!empty($changes['service'][1]) ? $changes['service'][1] : $doc->getService());
 
                     $this->container->get('mbh.calculation')->setServicesPrice($package, $new, $doc);
                     $order = $package->getOrder()->calcPrice();
@@ -149,11 +171,18 @@ class PackageSubscriber implements EventSubscriber
         $doc = $args->getEntity();
 
         if ($doc instanceof Package) {
+
+            if ($doc->getSpecial()) {
+                $dm = $args->getDocumentManager();
+                $dm->getRepository('MBHPriceBundle:Special')->recalculate($doc->getSpecial(), $doc);
+            }
+
             $end = clone $doc->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff(), false
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
+            $this->_removeCache(clone $doc->getBegin(), clone $doc->getEnd());
         }
     }
 
@@ -162,7 +191,7 @@ class PackageSubscriber implements EventSubscriber
         $entity = $args->getDocument();
 
         //Calc services price
-        if($entity instanceof PackageService) {
+        if ($entity instanceof PackageService) {
             $package = $entity->getPackage();
             $this->container->get('mbh.calculation')->setServicesPrice($package, $entity);
         }
@@ -184,8 +213,7 @@ class PackageSubscriber implements EventSubscriber
                 ->field('order.id')->equals($package->getOrder()->getId())
                 ->sort('number', 'desc')
                 ->getQuery()
-                ->getSingleResult()
-            ;
+                ->getSingleResult();
 
             $dm->getFilterCollection()->enable('softdeleteable');
 
@@ -196,13 +224,14 @@ class PackageSubscriber implements EventSubscriber
             }
 
             if ($package->getTariff() && empty($package->getNumberWithPrefix())) {
-                $package->setNumberWithPrefix($package->getTariff()->getHotel()->getPrefix() . $package->getOrder()->getId(). '/' . $number);
+                $package->setNumberWithPrefix($package->getTariff()->getHotel()->getPrefix() . $package->getOrder()->getId() . '/' . $number);
             }
         }
 
-        if($package->getTariff() && $package->getTariff()->getDefaultPromotion()) {
+        if ($package->getTariff() && $package->getTariff()->getDefaultPromotion()) {
             $package->setPromotion($package->getTariff()->getDefaultPromotion());
         }
+        $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
     }
 
     public function preUpdate(LifecycleEventArgs $args)
@@ -215,19 +244,29 @@ class PackageSubscriber implements EventSubscriber
 
         $dm = $args->getDocumentManager();
         $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($package);
-        if(isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
+        if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
             $package->setIsLocked(true);
             $meta = $dm->getClassMetadata(get_class($package));
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $package);
         }
+        $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
     }
 
     public function postUpdate(LifecycleEventArgs $args)
     {
         $document = $args->getDocument();
         $dm = $args->getDocumentManager();
-        if($document instanceof Package) {
+        if ($document instanceof Package) {
+
             $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($document);
+            if (isset($changeSet['special'])) {
+                foreach ($changeSet['special'] as $special) {
+                    if ($special instanceof Special) {
+                        $dm->getRepository('MBHPriceBundle:Special')->recalculate($special);
+                    }
+                }
+            }
+
             $creator = $this->container->get('mbh.hotel.console_auto_task_creator');
             if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
                 $creator->createCheckOutTasks($document);

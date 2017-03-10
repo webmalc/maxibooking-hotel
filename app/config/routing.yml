@@ -1,4 +1,3 @@
-
 mbh_warehouse:
     resource: "@MBHWarehouseBundle/Controller/"
     type:     annotation

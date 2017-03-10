@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Command;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -31,6 +32,7 @@ class FixturesCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $start = new \DateTime();
+        $this->runCommand('doctrine:mongodb:schema:drop');
         $this->runCommand('doctrine:mongodb:fixtures:load --append');
 
         if ($input->getOption('cities')) {

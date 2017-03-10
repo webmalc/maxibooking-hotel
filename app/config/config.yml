@@ -92,7 +92,7 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: file }
-    encryption: ssl
+    encryption: "%mailer_encryption%"
     
 # DoctrineMongoDBBundle Configuration
 doctrine_mongodb:
@@ -180,7 +180,7 @@ knp_menu:
 knp_snappy:
     pdf:
         enabled:    true
-        binary:     /usr/local/bin/wkhtmltopdf
+        binary:     "%wkhtmltopdf_path%"
         options:    []
     image:
         enabled:    true
@@ -246,3 +246,10 @@ ornicar_gravatar:
 parameters:
     knp_menu.renderer.twig.options:
         currentClass: active
+
+vich_uploader:
+    db_driver: mongodb
+    mappings:
+        upload_image:
+            uri_prefix:         /upload/hotels
+            upload_destination: '%kernel.root_dir%/../web/upload/hotels'

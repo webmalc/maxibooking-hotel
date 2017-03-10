@@ -139,4 +139,13 @@ class SearchWithTariffs implements SearchInterface
     {
         return $this->search->searchTariffs($query);
     }
+
+    /**
+     * @param SearchQuery $query
+     * @return array
+     */
+    public function searchSpecials(SearchQuery $query)
+    {
+        return $this->search->searchSpecials($query);
+    }
 }

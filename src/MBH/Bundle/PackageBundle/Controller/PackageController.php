@@ -9,11 +9,13 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
+use MBH\Bundle\PackageBundle\Document\DeleteReason;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Form\PackageDeleteReasonType;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\PackageAccommodationType;
 use MBH\Bundle\PackageBundle\Form\PackageCsvType;
@@ -388,6 +390,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'discount' => $authorizationChecker->isGranted('ROLE_DISCOUNT_ADD'),
             'promotion' => $authorizationChecker->isGranted('ROLE_PROMOTION_ADD'),
             'price' => $authorizationChecker->isGranted('ROLE_PACKAGE_PRICE_EDIT'),
+            'special' => $authorizationChecker->isGranted('ROLE_SPECIAL_ADD'),
             'promotions' => $promotions,
             'package' => $package,
             'hotel' => $package->getRoomType()->getHotel(),
@@ -457,6 +460,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'discount' => $authorizationChecker->isGranted('ROLE_DISCOUNT_ADD'),
             'promotion' => $authorizationChecker->isGranted('ROLE_PROMOTION_ADD'),
             'price' => $authorizationChecker->isGranted('ROLE_PACKAGE_PRICE_EDIT'),
+            'special' => $authorizationChecker->isGranted('ROLE_SPECIAL_ADD'),
             'promotions' => $promotions,
             'package' => $package,
             'hotel' => $package->getRoomType()->getHotel(),
@@ -517,6 +521,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'children' => $request->get('children'),
             'roomType' => $request->get('roomType'),
             'tariff' => $request->get('tariff'),
+            'special' => $request->get('special'),
             'accommodation' => $request->get('accommodation'),
             'forceBooking' => $request->get('forceBooking'),
             'infants' => $request->get('infants'),
@@ -1102,31 +1107,49 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     }
 
     /**
-     * Delete entity.
+     * Package_delete_modal
      *
-     * @Route("/{id}/delete", name="package_delete")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @param Request $request
+     * @param Package $entity
+     *
+     * @Route("/{id}/modal/package_delete_modal", name="package_delete", options={"expose"=true})
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', id) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
+     * @Template("@MBHPackage/Package/deleteModalContent.html.twig")
+     * @return array|RedirectResponse
      */
-    public function deleteAction(Request $request, Package $entity)
+    public function deleteModalAction(Request $request, Package $entity)
     {
+        $form = $this->createForm(PackageDeleteReasonType::class, $entity);
+        $form->handleRequest($request);
+
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
-        $orderId = $entity->getOrder()->getId();
-        $this->dm->remove($entity);
-        $this->dm->flush($entity);
 
-        $request->getSession()->getFlashBag()
-            ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+        if ($form->isValid()) {
 
-        if (!empty($request->get('order'))) {
-            return $this->redirect($this->generateUrl('package_order_edit',
-                ['id' => $orderId, 'packageId' => $entity->getId()]));
+            $orderId = $entity->getOrder()->getId();
+            $this->dm->persist($entity);
+            $this->dm->remove($entity);
+            $this->dm->flush($entity);
+
+            $request->getSession()->getFlashBag()
+                ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+
+            if (!empty($form->get('order')->getData())) {
+                return $this->redirect($this->generateUrl('package_order_edit',
+                    ['id' => $orderId, 'packageId' => $entity->getId()]));
+            }
+
+            return $this->redirectToRoute('package');
         }
 
-        return $this->redirectToRoute('package');
+        return [
+            'entity' => $entity,
+            'controllerName' => 'package_delete',
+            'form' => $form->createView(),
+        ];
     }
 
     /**
@@ -1208,24 +1231,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'text' => $item->getTitle(true,true)
             ];
         }
+
         return new JsonResponse(['results' => $data]);
-    }
-
-
-    /**
-     * @return array
-     * @Route("/test")
-     * @Template()
-     */
-    public function testAction()
-    {
-        $accManipulator = $this->get('mbh_bundle_package.services.package_accommodation_manipulator');
-        $data = [];
-//        $creator = $this->get('mbh.hotel.auto_task_creator');
-//        $creator->createDailyTasks();
-//        exit;
-
-        return ['data' => $data];
     }
 
 }
