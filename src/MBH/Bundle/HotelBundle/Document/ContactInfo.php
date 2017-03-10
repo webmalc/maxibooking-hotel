@@ -55,7 +55,7 @@ class ContactInfo
      * @param string $fullName
      * @return ContactInfo
      */
-    public function setFullName(?string $fullName): ContactInfo
+    public function setFullName(string $fullName = null): ContactInfo
     {
         $this->fullName = $fullName;
 
@@ -74,7 +74,7 @@ class ContactInfo
      * @param string $email
      * @return ContactInfo
      */
-    public function setEmail(?string $email): ContactInfo
+    public function setEmail(string $email = null): ContactInfo
     {
         $this->email = $email;
 
@@ -94,10 +94,12 @@ class ContactInfo
      * @param string $phoneNumber
      * @return ContactInfo
      */
-    public function setPhoneNumber(?string $phoneNumber): ContactInfo
+    public function setPhoneNumber(string $phoneNumber = null): ContactInfo
     {
         if (!is_null($phoneNumber)) {
             $this->phoneNumber = Tourist::cleanPhone($phoneNumber);
+        } else {
+            $this->phoneNumber = null;
         }
 
         return $this;
