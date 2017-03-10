@@ -4,10 +4,12 @@
         <td>#</td>
         <td>{{ package.numberWithPrefix }}</td>
     </tr>
-    <tr>
-        <td>{{ 'modal.chessBoard.package_source'|trans }}</td>
-        <td>{{ package.source.name }}{% if package.source.name == 'modal.chessBoard.manager'|trans %}{{ ' ' ~ package.createdBy }}{% endif %}</td>
-    </tr>
+    {% if package.source %}
+        <tr>
+            <td>{{ 'modal.chessBoard.package_source'|trans }}</td>
+            <td>{{ package.source.name }}{% if package.source.name == 'modal.chessBoard.manager'|trans %}{{ ' ' ~ package.createdBy }}{% endif %}</td>
+        </tr>
+    {% endif %}
     <tr>
         <td>{{ 'modal.chessBoard.booked' |trans }}</td>
         <td>{{ package.createdAt|mbh_format }}</td>

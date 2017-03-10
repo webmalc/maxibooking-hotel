@@ -1,6 +1,7 @@
 ///<reference path="DataManager.ts"/>
 ///<reference path="ChessBoardManager.ts"/>
-declare let $;
+/*global $ */
+// declare let $;
 declare let roomTypes;
 declare let rooms;
 

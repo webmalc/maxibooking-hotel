@@ -57,6 +57,12 @@ class ChessBoardManager {
             }
         });
 
+        $('.pagination-sm').find('a').each(function () {
+            let filterData = $('#accommodation-report-filter').serialize() + '&page=' + $(this).text();
+            let route = Routing.generate('chess_board_home') + '?' + filterData;
+            this.setAttribute('href', route);
+        });
+
         $('#package-search-form').find('#s_adults').val(0);
 
         $('#packageModal, #package-edit-modal').on('hidden.bs.modal', function () {
@@ -184,8 +190,14 @@ class ChessBoardManager {
         $searchPackageForm.find('#s_end').val(packageData.end);
         $searchPackageForm.find('#s_range').val('0');
 
+        this.dataManager.getPackageOptionsRequest(ChessBoardManager.getFilterData($searchPackageForm), packageData);
+    }
+
+    public static getFilterData($searchPackageForm) {
         let searchData = $searchPackageForm.serialize();
-        this.dataManager.getPackageOptionsRequest(searchData, packageData);
+        let pageNumber = document.getElementById('pageNumber').value;
+
+        return searchData + '&page=' + pageNumber;
     }
 
     private static getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction) {

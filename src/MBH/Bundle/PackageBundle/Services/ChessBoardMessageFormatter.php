@@ -80,7 +80,7 @@ class ChessBoardMessageFormatter
     {
         $payerInfo = '';
         if ($package->getPayer()) {
-            $payerInfo .= "плательщик \"{$package->getPayer()->getName()}\"";
+            $payerInfo .= $this->translator->trans('controller.chessboard.payer') . "\"{$package->getPayer()->getName()}\"";
         }
 
         return $payerInfo;

@@ -465,6 +465,7 @@ controller.chessboard.accommodation_remove.success: 'Бронь "%packageId%" %p
 controller.chessboard.accommodation_divide.error: Дата разделения размещение не может быть меньше начала размещения или больше конца размещения
 controller.chessboard.accommodation_divide.error.empty_date_string: Передана пустая строка даты разделения размещения
 controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: Ошибка! Недопустимо изменение промежуточного размещения
+controller.chessboard.payer: Плательщик
 
 #package accommodation manipulator service
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'

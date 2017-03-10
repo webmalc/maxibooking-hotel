@@ -29,6 +29,11 @@ var ChessBoardManager = (function () {
                 $(this).children('div').hide();
             }
         });
+        $('.pagination-sm').find('a').each(function () {
+            var filterData = $('#accommodation-report-filter').serialize() + '&page=' + $(this).text();
+            var route = Routing.generate('chess_board_home') + '?' + filterData;
+            this.setAttribute('href', route);
+        });
         $('#package-search-form').find('#s_adults').val(0);
         $('#packageModal, #package-edit-modal').on('hidden.bs.modal', function () {
             self.updateTable();
@@ -141,8 +146,12 @@ var ChessBoardManager = (function () {
         $searchPackageForm.find('#s_begin').val(packageData.begin);
         $searchPackageForm.find('#s_end').val(packageData.end);
         $searchPackageForm.find('#s_range').val('0');
+        this.dataManager.getPackageOptionsRequest(ChessBoardManager.getFilterData($searchPackageForm), packageData);
+    };
+    ChessBoardManager.getFilterData = function ($searchPackageForm) {
         var searchData = $searchPackageForm.serialize();
-        this.dataManager.getPackageOptionsRequest(searchData, packageData);
+        var pageNumber = document.getElementById('pageNumber').value;
+        return searchData + '&page=' + pageNumber;
     };
     ChessBoardManager.getGriddedOffset = function (mouseXOffset, scrollOffset, packageLengthRestriction) {
         'use strict';

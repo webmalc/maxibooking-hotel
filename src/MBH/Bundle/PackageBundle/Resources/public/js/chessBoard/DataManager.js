@@ -1,5 +1,6 @@
 ///<reference path="ActionManager.ts"/>
 ///<reference path="ChessBoardManager.ts"/>
+/*global $ */
 var DataManager = (function () {
     function DataManager(accommodations, leftRoomsData, noAccommodationCounts, noAccommodationIntervals, chessBoardManager) {
         this._accommodations = accommodations;
@@ -230,7 +231,7 @@ var DataManager = (function () {
     };
     DataManager.prototype.updatePackagesData = function () {
         var self = this;
-        var filterData = $('#accommodation-report-filter').serialize();
+        var filterData = ChessBoardManager.getFilterData($('#accommodation-report-filter'));
         $.ajax({
             url: Routing.generate('chessboard_packages'),
             data: filterData,

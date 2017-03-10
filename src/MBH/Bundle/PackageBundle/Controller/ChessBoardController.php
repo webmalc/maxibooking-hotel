@@ -22,7 +22,7 @@ use MBH\Bundle\PackageBundle\Form\SearchType;
 class ChessBoardController extends BaseController
 {
     /**
-     * @Route("/", name="chess_board_home")
+     * @Route("/", name="chess_board_home", options={"expose"=true})
      * @Template()
      * @param Request $request
      * @Security("is_granted('ROLE_PACKAGE_VIEW')")
@@ -34,7 +34,8 @@ class ChessBoardController extends BaseController
 
         $builder = $this->get('mbh.package.report_data_builder')
             ->init($this->hotel, $filterData['begin'], $filterData['end'],
-                $filterData['roomTypeIds'], $filterData['housing'], $filterData['floor']);
+                $filterData['roomTypeIds'], $filterData['housing'], $filterData['floor'], null,
+                $filterData['pageNumber']);
 
         $form = $this->createForm(SearchType::class, null, [
             'security' => $this->container->get('mbh.hotel.selector'),
@@ -45,9 +46,11 @@ class ChessBoardController extends BaseController
 
         $rightsChecker = $this->get('security.authorization_checker');
         $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW')
-            && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
+        && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
 
         return [
+            'pageCount' => ceil($builder->getRoomCount() / $builder::ROOM_COUNT_ON_PAGE),
+            'pageNumber' => $filterData['pageNumber'],
             'searchForm' => $form->createView(),
             'beginDate' => $filterData['begin'],
             'endDate' => $filterData['end'],
@@ -190,7 +193,8 @@ class ChessBoardController extends BaseController
             if (!($rightsChecker->isGranted('ROLE_PACKAGE_ACCOMMODATION')
                 && ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
                     || $rightsChecker->isGranted('EDIT', $accommodation))
-            )) {
+            )
+            ) {
                 throw $this->createAccessDeniedException();
             }
             $editResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
@@ -212,9 +216,10 @@ class ChessBoardController extends BaseController
     ) {
         $rightsChecker = $this->get('security.authorization_checker');
         if (!($rightsChecker->isGranted('ROLE_PACKAGE_VIEW_ALL')
-        || ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
-            && $rightsChecker->isGranted('VIEW', $package))
-        )) {
+            || ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
+                && $rightsChecker->isGranted('VIEW', $package))
+        )
+        ) {
             throw $this->createAccessDeniedException();
         }
 
@@ -240,9 +245,10 @@ class ChessBoardController extends BaseController
         ChessBoardMessageFormatter $messageFormatter
     ) {
         $rightsChecker = $this->get('security.authorization_checker');
-        if (!($rightsChecker->isGranted('ROLE_PACKAGE_EDIT')  && ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
-            || $rightsChecker->isGranted('EDIT', $oldPackage))
-        )) {
+        if (!($rightsChecker->isGranted('ROLE_PACKAGE_EDIT') && ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
+                || $rightsChecker->isGranted('EDIT', $oldPackage))
+        )
+        ) {
             throw $this->createAccessDeniedException();
         }
 
@@ -260,8 +266,6 @@ class ChessBoardController extends BaseController
                     $messageFormatter->addErrorMessage($editResult);
                 }
             } else {
-                $this->dm->persist($oldPackage);
-                $this->dm->flush();
                 $messageFormatter->addErrorMessage($result);
             }
         } else {
@@ -357,7 +361,9 @@ class ChessBoardController extends BaseController
                 $filterData['end'],
                 $filterData['roomTypeIds'],
                 $filterData['housing'],
-                $filterData['floor']
+                $filterData['floor'],
+                null,
+                $filterData['pageNumber']
             );
 
         $data['accommodations'] = $builder->getAccommodationIntervals();
@@ -386,7 +392,8 @@ class ChessBoardController extends BaseController
             'end' => $endDate,
             'roomTypeIds' => $this->getDataFromMultipleSelectField($request->get('filter_roomType')),
             'housing' => $this->getDataFromMultipleSelectField($request->get('housing')),
-            'floor' => $this->getDataFromMultipleSelectField($request->get('floor'))
+            'floor' => $this->getDataFromMultipleSelectField($request->get('floor')),
+            'pageNumber' => $request->get('page') ? $request->get('page') : 1
         ];
     }
 

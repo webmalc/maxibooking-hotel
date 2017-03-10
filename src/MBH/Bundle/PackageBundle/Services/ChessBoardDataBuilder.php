@@ -41,6 +41,7 @@ class ChessBoardDataBuilder
     private $translator;
     /** @var $accommodationManipulator PackageAccommodationManipulator */
     private $accommodationManipulator;
+    private $pageNumber;
 
     private $isRoomTypesInit = false;
     private $roomTypes;
@@ -48,6 +49,7 @@ class ChessBoardDataBuilder
     private $roomsByRoomTypeIds = [];
     private $isPackageAccommodationsInit = false;
     private $packageAccommodations = [];
+    const ROOM_COUNT_ON_PAGE = 30;
 
     /**
      * @param DocumentManager $dm
@@ -78,6 +80,7 @@ class ChessBoardDataBuilder
      * @param array $housingIds
      * @param array $floorIds
      * @param Tariff $tariff
+     * @param $pageNumber
      * @return ChessBoardDataBuilder
      */
     public function init(
@@ -87,7 +90,8 @@ class ChessBoardDataBuilder
         $roomTypeIds = [],
         array $housingIds = [],
         array $floorIds = [],
-        Tariff $tariff = null
+        Tariff $tariff = null,
+        $pageNumber
     ) {
         $this->hotel = $hotel;
         $this->roomTypeIds = $roomTypeIds;
@@ -96,6 +100,7 @@ class ChessBoardDataBuilder
         $this->housingIds = $housingIds;
         $this->tariff = $tariff;
         $this->floorIds = $floorIds;
+        $this->pageNumber = $pageNumber;
 
         return $this;
     }
@@ -352,15 +357,30 @@ class ChessBoardDataBuilder
     {
         if (!$this->isRoomsByRoomTypeIdsInit) {
 
-            $roomTypes = count($this->roomTypeIds) > 0 ? $this->roomTypeIds : null;
+            $roomTypes = $this->getRoomTypeIds();
+            $skipValue = ($this->pageNumber - 1) * self::ROOM_COUNT_ON_PAGE;
 
             $this->roomsByRoomTypeIds = $this->dm->getRepository('MBHHotelBundle:Room')
-                ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null, null, true);
+                ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, $skipValue,
+                    self::ROOM_COUNT_ON_PAGE, true);
 
             $this->isRoomsByRoomTypeIdsInit = true;
         }
 
         return $this->roomsByRoomTypeIds;
+    }
+
+    public function getRoomCount()
+    {
+        $roomTypes = $this->getRoomTypeIds();
+
+        return $this->dm->getRepository('MBHHotelBundle:Room')->fetchQuery(
+            $this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null, null, true)->getQuery()->count();
+    }
+
+    private function getRoomTypeIds()
+    {
+        return count($this->roomTypeIds) > 0 ? $this->roomTypeIds : null;
     }
 
     /**

@@ -1,7 +1,7 @@
 ///<reference path="ActionManager.ts"/>
 ///<reference path="ChessBoardManager.ts"/>
+/*global $ */
 
-declare let $:any;
 declare let Routing:any;
 declare let packages;
 
@@ -270,7 +270,7 @@ class DataManager {
 
     private updatePackagesData() {
         let self = this;
-        let filterData = $('#accommodation-report-filter').serialize();
+        let filterData = ChessBoardManager.getFilterData($('#accommodation-report-filter'));
         $.ajax({
             url: Routing.generate('chessboard_packages'),
             data: filterData,
