@@ -184,7 +184,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $flashBag = $this->container->get('session')->getFlashBag();
                     $flashBag->clear();
                     $flashBag->add('danger', $this->container->get('translator')
-                            ->trans('expedia_request_data_formatter.max_stay.error', ['%count%' => $maxLOSDefault]));
+                        ->trans('expedia_request_data_formatter.max_stay.error', ['%count%' => $maxLOSDefault]));
                     $maxStay = $maxLOSDefault;
                 } else {
                     $maxStay = $restriction->getMaxStay();

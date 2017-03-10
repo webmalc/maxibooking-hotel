@@ -36,7 +36,7 @@ class OrderHandler
             $order->setDeletedAt(null);
         }
 
-        $order->setChannelManagerType($orderInfo->getChannelManagerDisplayedName())
+        $order->setChannelManagerType($orderInfo->getChannelManagerName())
             ->setChannelManagerId($orderInfo->getChannelManagerOrderId())
             ->setMainTourist($orderInfo->getPayer())
             ->setConfirmed(false)

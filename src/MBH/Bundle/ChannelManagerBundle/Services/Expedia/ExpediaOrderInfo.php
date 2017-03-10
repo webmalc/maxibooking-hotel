@@ -35,7 +35,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $this;
     }
 
-    public function getChannelManagerOrderId() : string
+    public function getChannelManagerOrderId(): string
     {
         return (string)$this->getCommonOrderData('id');
     }
@@ -52,7 +52,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
             $this->translator->trans('order_info.expedia.required_order_data', ['%dataAttribute%' => $param]));
     }
 
-    public function getPayer() : Tourist
+    public function getPayer(): Tourist
     {
         /** @var \SimpleXMLElement $primaryGuestDataElement */
         $primaryGuestDataElement = $this->orderDataXMLElement->PrimaryGuest;
@@ -79,7 +79,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
     }
 
 
-    public function getPackagesData() : array
+    public function getPackagesData(): array
     {
         if (!$this->isPackagesDataInit) {
             $packageDataElement = $this->orderDataXMLElement->RoomStay[0];
@@ -95,7 +95,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $this->packagesData;
     }
 
-    public function getIsSmoking() : bool
+    public function getIsSmoking(): bool
     {
         $isSmokingElement = $this->orderDataXMLElement->xpath('SpecialRequest[starts-with(@code, "2")]');
         $isSmoking = false;
@@ -149,30 +149,17 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $cashDocuments;
     }
 
-    public function getChannelManagerDisplayedName() : string
-    {
-        $sourceString = (string)$this->getCommonOrderData('source');
-
-        if (strpos($sourceString, 'Hotels') !== false) {
-            return 'hotels';
-        } elseif (strpos($sourceString, 'Venere') !== false) {
-            return 'venere';
-        }
-
-        return 'expedia';
-    }
-
-    public function isOrderModified() : bool
+    public function isOrderModified(): bool
     {
         return $this->checkOrderStatusType('Modify');
     }
 
-    public function isOrderCreated() : bool
+    public function isOrderCreated(): bool
     {
         return $this->checkOrderStatusType('Book');
     }
 
-    public function isOrderCancelled() : bool
+    public function isOrderCancelled(): bool
     {
         return $this->checkOrderStatusType('Cancel');
     }
@@ -181,12 +168,12 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      * Может быть 'Book', 'Modify', 'Cancel'
      * @return string
      */
-    public function getOrderStatusType() : string
+    public function getOrderStatusType(): string
     {
         return (string)$this->getCommonOrderData('type');
     }
 
-    private function checkOrderStatusType($status) : bool
+    private function checkOrderStatusType($status): bool
     {
         return $this->getOrderStatusType() === $status;
     }
@@ -206,7 +193,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsNew(?Order $order) : bool
+    public function isHandleAsNew(?Order $order): bool
     {
         return $this->checkOrderStatusType('Book') && !$order;
     }
@@ -216,7 +203,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsModified(?Order $order) : bool
+    public function isHandleAsModified(?Order $order): bool
     {
         return $this->isOrderModified() && $order;
     }
@@ -226,7 +213,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsCancelled(?Order $order) : bool
+    public function isHandleAsCancelled(?Order $order): bool
     {
         return $this->isOrderCancelled() && $order;
     }
@@ -241,14 +228,17 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         $cardElement = $this->orderDataXMLElement->RoomStay->PaymentCard;
         $card = null;
 
-        if ($cardElement !== null) {
+        if (!empty((string)$cardElement)) {
             $cardElementAttributes = $cardElement->attributes();
             $card = new CreditCard();
 
             $card->setNumber($cardElementAttributes['cardNumber'])
                 ->setDate($cardElementAttributes['expireDate'])
-                ->setCvc($cardElementAttributes['seriesCode'])
                 ->setCardholder($cardElement->CardHolder->attributes()['name']);
+
+            if (!empty((string)$cardElementAttributes['seriesCode'])) {
+                $card->setCvc($cardElementAttributes['seriesCode']);
+            }
         }
 
         return $card;
@@ -280,7 +270,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return self::DEFAULT_CONFIRM_NUMBER;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         foreach ($this->orderDataXMLElement->SpecialRequest as $specialRequest) {
             $codeString = (string)$specialRequest->attributes()['code'][0];
@@ -299,7 +289,6 @@ class ExpediaOrderInfo extends AbstractOrderInfo
                     $this->addOrderNote($specialRequestString, 'order_info.expedia.bedding_preferences');
                     break;
                 case "3":
-                    //TODO: Поменять название
                     $this->addOrderNote($specialRequestString, 'order_info.expedia.multi_room_booking_info');
                     break;
                 case "4":
@@ -325,14 +314,22 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return [];
     }
 
-    public function getSource() : ?PackageSource
+    public function getSource(): ?PackageSource
     {
         return $this->dm->getRepository('MBHPackageBundle:PackageSource')
             ->findOneBy(['code' => $this->getChannelManagerName()]);
     }
 
-    public function getChannelManagerName() : string
+    public function getChannelManagerName(): string
     {
-        return $this->getChannelManagerDisplayedName();
+        $sourceString = (string)$this->getCommonOrderData('source');
+
+        if (strpos($sourceString, 'Hotels') !== false) {
+            return 'hotels';
+        } elseif (strpos($sourceString, 'Venere') !== false) {
+            return 'venere';
+        }
+
+        return 'expedia';
     }
 }

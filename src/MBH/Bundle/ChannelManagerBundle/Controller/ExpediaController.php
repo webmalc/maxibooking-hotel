@@ -3,11 +3,8 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Form\ExpediaType;
-use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaResponseHandler;
-use MBH\Bundle\PackageBundle\Document\Order;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -67,13 +64,12 @@ class ExpediaController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-//            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
-            $errorMessage = '';
+            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
             if ($errorMessage === '') {
                 $this->dm->persist($config);
                 $this->dm->flush();
 
-//                $this->get('mbh.channelmanager')->updateInBackground();
+                $this->get('mbh.channelmanager')->updateInBackground();
 
                 $this->addFlash('success', 'controller.expediaController.settings_saved_success');
             } else {
@@ -101,9 +97,10 @@ class ExpediaController extends Controller
             throw $this->createNotFoundException();
         }
 
+        $serviceTariffs = $this->get('mbh.channelmanager.expedia')->pullTariffs($config);
         $form = $this->createForm(TariffsType::class, $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
-            'booking' => $this->get('mbh.channelmanager.expedia')->pullTariffs($config),
+            'booking' => $serviceTariffs,
         ]);
 
         $form->handleRequest($request);
@@ -153,7 +150,6 @@ class ExpediaController extends Controller
         }
 
         $roomTypeData = $this->get('mbh.channelmanager.expedia')->pullRooms($config);
-
         $form = $this->createForm(RoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             'booking' => $roomTypeData,
@@ -186,71 +182,4 @@ class ExpediaController extends Controller
             'logs' => $this->logs($config)
         ];
     }
-
-    /**
-     * @Route("/test")
-     * @Template()
-     */
-    public function testAction()
-    {
-        return [];
-    }
-
-    /**
-     * @Route("/testCanvas")
-     * @Template()
-     */
-    public function testCanvasAction()
-    {
-//        /** @var ExpediaConfig $config */
-        $config = $this->hotel->getExpediaConfig();
-
-        $text = '<BookingRetrievalRS xmlns="http://www.expediaconnect.com/EQC/BR/2014/01">
-    <Bookings>
-        <Booking id="764560252" type="Modify" createDateTime="2016-12-12T08:07:00Z" source="Expedia" status="pending"
-                 confirmNumber="2202199119TZ">
-            <Hotel id="4112474"/>
-            <RoomStay roomTypeID="200797200" ratePlanID="205724966A">
-                <StayDate arrival="2016-12-14" departure="2016-12-16"/>
-                <GuestCount adult="1" child="1">
-                    <Child age="4"/>
-                </GuestCount>
-                <PerDayRates currency="USD">
-                    <PerDayRate stayDate="2016-12-14" baseRate="54.00" promoName="EFR"/>
-                    <PerDayRate stayDate="2016-12-15" baseRate="61.00" promoName="EFR"/>
-                </PerDayRates>
-                <Total amountAfterTaxes="115.00" currency="USD"/>
-                <PaymentCard cardCode="MC" cardNumber="5244687378206915" seriesCode="010" expireDate="0617">
-                    <CardHolder name="TINKOFF WALLET" address="Any street1 Any street2" city="Any city" stateProv="MA"
-                                country="US" postalCode="00000"/>
-                </PaymentCard>
-            </RoomStay>
-            <PrimaryGuest>
-                <Name givenName="michail" surname="vladinzev"/>
-                <Phone countryCode="7" cityAreaCode="967" number="0447992"/>
-                <Email>faainttt@gmail.com</Email>
-            </PrimaryGuest>
-            <SpecialRequest code="1.25">2 twin beds</SpecialRequest>
-            <SpecialRequest code="4">Not on russian,</SpecialRequest>
-            <SpecialRequest code="2.2">Smoking</SpecialRequest>
-            <SpecialRequest code="5">Hotel Collect Booking Collect Payment From Guest</SpecialRequest>
-        </Booking>
-    </Bookings>
-</BookingRetrievalRS>';
-
-        /** @var ExpediaResponseHandler $responseHandler */
-        $responseHandler = $this->get('mbh.channelmanager.expedia_response_handler')->setInitData($text, $config);
-        $orderInfo = $responseHandler->getOrderInfos()[0];
-        $order = new Order();
-        $oldOrder = $this->dm->find('MBHPackageBundle:Order', 51);
-        $cashDoc = (new CashDocument())->setIsConfirmed(false)->setIsPaid(false)->setTotal(213)
-            ->setOrder($oldOrder)->setMethod('cashless');
-        $this->dm->persist($cashDoc);
-        $this->dm->flush();
-        $this->dm->refresh($oldOrder);
-        $order = $this->get('mbh.channelmanager.order_handler')->createOrder($orderInfo, $oldOrder);
-
-        return ['result' => 123];
-    }
-
 }

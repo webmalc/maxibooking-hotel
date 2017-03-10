@@ -48,7 +48,7 @@ class Expedia extends ExtendedAbstractChannelManager
         $responseHandler = $this->getResponseHandler($response);
 
         if (!$responseHandler->isResponseCorrect()) {
-            $this->notifyError($orderInfo->getChannelManagerDisplayedName(),
+            $this->notifyError($orderInfo->getChannelManagerName(),
                 'Ошибка в оповещении сервиса о принятия заказа ' . '#'
                 . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName());
         }

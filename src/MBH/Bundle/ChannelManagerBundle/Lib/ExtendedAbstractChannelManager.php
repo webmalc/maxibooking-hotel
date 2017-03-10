@@ -2,13 +2,10 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
-use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\Response;
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Document\Order;
 
 /**
  * Для реализация данного интерфейса, необходимо также реализовать:
@@ -247,7 +244,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
 
     public function handlePullOrdersResponse($response, $config, &$result)
     {
-        //TODO: Добвить try catch для Exception и ChannelManagerException
         $responseHandler = $this->getResponseHandler($response, $config);
         $orderHandler = $this->container->get('mbh.channelmanager.order_handler');
         if (!$this->checkResponse($response)) {
@@ -270,7 +266,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
                     [
                         'channelManagerId' => $orderInfo->getChannelManagerOrderId(),
-                        'channelManagerType' => $orderInfo->getChannelManagerDisplayedName()
+                        'channelManagerType' => $orderInfo->getChannelManagerName()
                     ]
                 );
                 if ($orderInfo->isOrderModified()) {
@@ -281,7 +277,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 //new
                 if ($orderInfo->isHandleAsNew($order)) {
                     $result = $orderHandler->createOrder($orderInfo, $order);
-                    $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'new');
+                    $this->notify($result, $orderInfo->getChannelManagerName(), 'new');
 
                 }
 
@@ -291,14 +287,14 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                     if ($orderInfo->getModifiedDate()) {
                         $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
                     }
-                    $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'edit');
+                    $this->notify($result, $orderInfo->getChannelManagerName(), 'edit');
                 }
 
                 //delete
                 if ($orderInfo->isHandleAsCancelled($order)) {
                     $this->dm->persist($order);
                     $this->dm->flush();
-                    $this->notify($order, $orderInfo->getChannelManagerDisplayedName(), 'delete');
+                    $this->notify($order, $orderInfo->getChannelManagerName(), 'delete');
                     $this->dm->remove($order);
                     $this->dm->flush();
                     $result = true;
