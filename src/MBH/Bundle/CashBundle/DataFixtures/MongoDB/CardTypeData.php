@@ -16,20 +16,44 @@ class CardTypeData extends AbstractFixture implements OrderedFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
+        $existingCardTypes = $manager->getRepository('MBHCashBundle:CardType')->findAll();
+
         foreach (CardType::getCardCodes() as $code) {
             $cardType = new CardType();
             $cardType->setCardCode($code);
 
             foreach (CardType::getCardCategories() as $cardCategory) {
-                $cardType = new CardType();
-                $cardType->setCardCode($code);
-                $cardType->setCardCategory($cardCategory);
-                $manager->persist($cardType);
-                $this->setReference($cardCategory . '_' . $code . '_cardType', $cardType);
+                if (!$this->isCardTypeExists($existingCardTypes, $cardType)) {
+                    $cardType = new CardType();
+                    $cardType->setCardCode($code);
+                    $cardType->setCardCategory($cardCategory);
+                    $manager->persist($cardType);
+                    $this->setReference($cardCategory . '_' . $code . '_cardType', $cardType);
+                }
             }
         }
 
         $manager->flush();
+    }
+
+    /**
+     * Проверяет, существует ли в базе данных данный тип карты
+     *
+     * @param $existingCardTypes
+     * @param CardType $cardType
+     * @return bool
+     */
+    private function isCardTypeExists($existingCardTypes, CardType $cardType)
+    {
+        foreach ($existingCardTypes as $existingCardType) {
+            /** @var CardType $existingCardType */
+            if ($existingCardType->getCardCode() == $cardType->getCardCode()
+                && $existingCardType->getCardCategory() == $cardType->getCardCategory()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -241,7 +241,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     protected $city;
 
     /**
-     * @Assert\Valid()
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      * @ODM\Index()
@@ -341,6 +340,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     /**
      * @var ContactInfo
+     * @Assert\Valid()
      * @ODM\EmbedOne(targetDocument="ContactInfo")
      */
     protected $contactInformation;
@@ -374,12 +374,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @ODM\Field(type="string")
      */
     protected $smokingPolicy;
-
-    /**
-     * @var string
-     * @ODM\Field(type="string")
-     */
-    protected $cancellationPolicy;
 
     public function __construct()
     {
@@ -1514,7 +1508,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param string $internationalStreetName
      * @return Hotel
      */
-    public function setInternationalStreetName(string $internationalStreetName): Hotel
+    public function setInternationalStreetName(string $internationalStreetName = null): Hotel
     {
         $this->internationalStreetName = $internationalStreetName;
 
@@ -1533,7 +1527,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param string $checkinoutPolicy
      * @return Hotel
      */
-    public function setCheckinoutPolicy(string $checkinoutPolicy): Hotel
+    public function setCheckinoutPolicy(string $checkinoutPolicy = null): Hotel
     {
         $this->checkinoutPolicy = $checkinoutPolicy;
 
@@ -1594,28 +1588,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @param string $smokingPolicy
      * @return Hotel
      */
-    public function setSmokingPolicy(string $smokingPolicy): Hotel
+    public function setSmokingPolicy(string $smokingPolicy = null): Hotel
     {
         $this->smokingPolicy = $smokingPolicy;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCancellationPolicy(): ?string
-    {
-        return $this->cancellationPolicy;
-    }
-
-    /**
-     * @param string $cancellationPolicy
-     * @return Hotel
-     */
-    public function setCancellationPolicy(string $cancellationPolicy): Hotel
-    {
-        $this->cancellationPolicy = $cancellationPolicy;
 
         return $this;
     }
