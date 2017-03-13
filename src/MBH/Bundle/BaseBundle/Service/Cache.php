@@ -6,12 +6,17 @@ use MBH\Bundle\BaseBundle\Document\CacheItem;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bridge\Monolog\Logger;
+
 /**
  * Helper service
  */
 class Cache
 {
-    const LIFETIME = 60 * 60 * 24 * 7;
+    /**
+     * @var int
+     */
+    private $lifetime;
 
     /**
      * @var string
@@ -31,21 +36,30 @@ class Cache
     /**
      * @var \Doctrine\Common\Persistence\ObjectManager
      */
-    private $dm;
+    private $documentManager;
 
     /**
      * @var ValidatorInterface
      */
     private $validator;
 
-    public function __construct(array $params, ManagerRegistry $dm, ValidatorInterface $validator)
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    public function __construct(array $params, string $redisUrl, ManagerRegistry $documentManager, ValidatorInterface $validator, Logger $logger)
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
-        $redis = RedisAdapter::createConnection('redis://mbh-redis');
+        $this->lifetime = $params['lifetime'];
+        $redis = RedisAdapter::createConnection($redisUrl);
         $this->cache = new RedisAdapter($redis);
-        $this->dm = $dm->getManager();
+        $this->documentManager = $documentManager->getManager();
         $this->validator = $validator;
+        if (!empty($params['logs'])) {
+            $this->logger = $logger;
+        }
     }
 
     /**
@@ -67,11 +81,38 @@ class Cache
 
         $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
 
-        $this->cache->deleteItems(
-            $this->dm->getRepository('MBHBaseBundle:CacheItem')->getKeysByPrefix($prefix, $begin, $end)
-        );
+        $keys = $this->documentManager->getRepository('MBHBaseBundle:CacheItem')
+            ->getKeysByPrefix($prefix, $begin, $end);
+        $this->cache->deleteItems($keys);
+        if ($this->logger) {
+            $this->logger->info('DEL: ' . implode('', $keys));
+        }
 
-        return $this->dm->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix, $begin, $end);
+        return $this->documentManager->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix, $begin, $end);
+    }
+    /**
+     * @param array $keys
+     * @return string
+     */
+    public function generateArgsString(array $keys): string
+    {
+        $hash = '';
+
+        foreach ($keys as $key) {
+            if ($key instanceof \DateTime) {
+                $hash .= '_' . $key->format('d.m.Y');
+            } elseif (is_object($key) && method_exists($key, 'getId')) {
+                $hash .= '_' . $key->getId();
+            } elseif (is_array($key)) {
+                $hash .= '_' . implode('.', $key);
+            } elseif (is_object($key) && !method_exists($key, '__toString')) {
+                continue;
+            } else {
+                $hash .= '_' . (string) $key;
+            }
+        }
+
+        return $hash;
     }
 
     /**
@@ -82,28 +123,8 @@ class Cache
     public function generateKey(string $prefix, array $keys): string
     {
         $keyString = $this->globalPrefix . '_' . $prefix;
-        $hash = '';
 
-        foreach ($keys as $key) {
-            if ($key instanceof \DateTime) {
-                $hash .= '_' . $key->format('d.m.Y');
-            }
-            elseif (is_object($key) && method_exists($key, 'getId')) {
-                $hash .= '_' . $key->getId();
-            }
-            elseif (is_array($key)) {
-                $hash .= '_' . implode('.', $key);
-            }
-            elseif (is_object($key) && !method_exists($key, '__toString')) {
-                continue;
-            }
-            else {
-                $hash .= '_' . (string) $key;
-            }
-
-        }
-
-        return $keyString . '_' . md5($hash);
+        return $keyString . '_' . md5($this->generateArgsString($keys));
     }
 
     /**
@@ -121,7 +142,7 @@ class Cache
         $key = $this->generateKey($prefix, $keys);
 
         $item = $this->cache->getItem($this->generateKey($prefix, $keys));
-        $item->set($value)->expiresAfter(self::LIFETIME);
+        $item->set($value)->expiresAfter($this->lifetime * 24 * 60 * 60);
         $this->cache->save($item);
 
         //save key to database
@@ -139,8 +160,14 @@ class Cache
                 $cacheItem->setEnd($dates[1]);
             }
 
-            $this->dm->persist($cacheItem);
-            $this->dm->flush();
+            $this->documentManager->persist($cacheItem);
+            $this->documentManager->flush();
+            if ($this->logger) {
+                $this->logger->info(
+                    'SET: ' . $key . '__' .$this->generateArgsString($keys) .
+                    ' - LIFETIME: ' . $this->lifetime
+                );
+            }
         }
 
         return $this;
