@@ -49,7 +49,7 @@ class ChessBoardDataBuilder
     private $roomsByRoomTypeIds = [];
     private $isPackageAccommodationsInit = false;
     private $packageAccommodations = [];
-    const ROOM_COUNT_ON_PAGE = 10;
+    const ROOM_COUNT_ON_PAGE = 30;
 
     /**
      * @param DocumentManager $dm
