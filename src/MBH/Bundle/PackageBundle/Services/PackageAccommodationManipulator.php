@@ -207,7 +207,7 @@ class PackageAccommodationManipulator
         }
         $existedAccommodations = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')
             ->fetchWithAccommodation(
-                $accommodation->getBegin(),
+                (clone $accommodation->getBegin())->add(new \DateInterval('P1D')),
                 $accommodation->getEnd(),
                 $accommodation->getAccommodation()->getId(),
                 $package);
