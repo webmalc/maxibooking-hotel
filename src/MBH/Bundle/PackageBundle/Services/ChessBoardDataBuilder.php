@@ -247,7 +247,12 @@ class ChessBoardDataBuilder
                 usort($this->packageAccommodations, function ($a, $b) {
                     /** @var PackageAccommodation $a */
                     /** @var PackageAccommodation $b */
-                    return strcmp($a->getPackage()->getId(), $b->getPackage()->getId());
+                    $idComparisonResult = strcmp($a->getPackage()->getId(), $b->getPackage()->getId());
+                    if ($idComparisonResult < 1) {
+                        return $idComparisonResult;
+                    }
+
+                    return $a->getBegin() > $b->getBegin() ? -1 : 1;
                 });
             }
 
