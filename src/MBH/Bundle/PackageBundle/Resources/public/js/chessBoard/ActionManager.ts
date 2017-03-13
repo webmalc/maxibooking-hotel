@@ -108,8 +108,9 @@ class ActionManager {
         let self = this;
         let newPackageCreateUrl = element.href;
         element.removeAttribute('href');
-        if (packageData.accommodation) {
-            newPackageCreateUrl += '&accommodation=' + packageData.accommodation;
+        let accommodationValue = document.getElementsByClassName('search-room-select')[0].value;
+        if (accommodationValue) {
+            newPackageCreateUrl += '&accommodation=' + accommodationValue;
         }
         element.setAttribute('data-url', newPackageCreateUrl);
 
@@ -201,17 +202,19 @@ class ActionManager {
         ActionManager.hideLoadingIndicator();
     }
 
-    private static showMessage(isSuccess, message, messageBlockId = 'messages') {
+    private static showMessage(isSuccess, message, messageBlockId = 'chessboard-messages') {
         let messageDiv = document.createElement('div');
         messageDiv.className = 'alert alert-dismissable autohide';
         messageDiv.classList.add(isSuccess ? 'alert-success' : 'alert-danger');
         messageDiv.innerHTML = '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
         messageDiv.innerHTML += message;
+        messageDiv.style.width = getComputedStyle(document.getElementsByClassName('box')[0]).width;
         setTimeout(function () {
             if (messageDiv.parentElement) {
                 messageDiv.parentElement.removeChild(messageDiv);
             }
         }, 12000);
+
         document.getElementById(messageBlockId).appendChild(messageDiv);
     }
 

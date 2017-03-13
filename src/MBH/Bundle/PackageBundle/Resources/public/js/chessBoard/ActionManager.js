@@ -82,8 +82,9 @@ var ActionManager = (function () {
         var self = this;
         var newPackageCreateUrl = element.href;
         element.removeAttribute('href');
-        if (packageData.accommodation) {
-            newPackageCreateUrl += '&accommodation=' + packageData.accommodation;
+        var accommodationValue = document.getElementsByClassName('search-room-select')[0].value;
+        if (accommodationValue) {
+            newPackageCreateUrl += '&accommodation=' + accommodationValue;
         }
         element.setAttribute('data-url', newPackageCreateUrl);
         element.onclick = function () {
@@ -168,12 +169,13 @@ var ActionManager = (function () {
         ActionManager.hideLoadingIndicator();
     };
     ActionManager.showMessage = function (isSuccess, message, messageBlockId) {
-        if (messageBlockId === void 0) { messageBlockId = 'messages'; }
+        if (messageBlockId === void 0) { messageBlockId = 'chessboard-messages'; }
         var messageDiv = document.createElement('div');
         messageDiv.className = 'alert alert-dismissable autohide';
         messageDiv.classList.add(isSuccess ? 'alert-success' : 'alert-danger');
         messageDiv.innerHTML = '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
         messageDiv.innerHTML += message;
+        messageDiv.style.width = getComputedStyle(document.getElementsByClassName('box')[0]).width;
         setTimeout(function () {
             if (messageDiv.parentElement) {
                 messageDiv.parentElement.removeChild(messageDiv);
