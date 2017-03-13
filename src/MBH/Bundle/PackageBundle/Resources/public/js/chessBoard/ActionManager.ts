@@ -15,14 +15,24 @@ class ActionManager {
 
     public callRemoveConfirmationModal(packageId) {
         let self = this;
-        let $deleteConfirmationModal = $('#entity-delete-confirmation');
-        $deleteConfirmationModal.find('.modal-title').text(Translator.trans('action_manager.modal.remove_confirmation.title'));
-        $deleteConfirmationModal.find('#entity-delete-modal-text').text(Translator.trans('action_manager.modal.remove_confirmation.text') + '?');
-        $deleteConfirmationModal.find('#entity-delete-button').click(function () {
-            self.dataManager.deletePackageRequest(packageId);
-            $deleteConfirmationModal.modal('hide');
+        let $packageDeleteModal = $('#modal_delete_package');
+        $packageDeleteModal.modal('show');
+        $packageDeleteModal.find('.modal-body').html(mbh.loader.html);
+
+        return $.ajax({
+            url: Routing.generate('package_delete', {'id': packageId}),
+            type: "GET",
+            success: function (modalBodyHTML) {
+                $('#modal_delete_package').html(modalBodyHTML);
+                $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+                let $removeButton = $packageDeleteModal.find('button[type="submit"]');
+                $removeButton.attr('type', 'button');
+                $removeButton.click(function () {
+                    self.dataManager.deletePackageRequest(packageId);
+                    $packageDeleteModal.modal('hide');
+                })
+            }
         });
-        $deleteConfirmationModal.modal('show');
     }
 
     public static callUnblockModal(packageId) {
@@ -272,7 +282,7 @@ class ActionManager {
                 }
             } else {
                 return {
-                    message: Translator.trans('action_manager.modal.need_changepackage_begin.title') + '. ' 
+                    message: Translator.trans('action_manager.modal.need_changepackage_begin.title') + '. '
                     + Translator.trans('action_manager.modal.have_not_rights') + '.',
                     resolved: false
                 };
@@ -303,8 +313,8 @@ class ActionManager {
         }
         let packageEndDate = ChessBoardManager.getMomentDate(intervalData.packageEnd);
         return ((intervalData.position == 'full' || intervalData.position == 'right')
-            && newIntervalEndDate.isAfter(packageEndDate)
-            || (intervalEndDate.isSame(packageEndDate) && newIntervalEndDate.isBefore(packageEndDate)));
+        && newIntervalEndDate.isAfter(packageEndDate)
+        || (intervalEndDate.isSame(packageEndDate) && newIntervalEndDate.isBefore(packageEndDate)));
     }
 
     private static isPackageBeginChanged(newIntervalData, intervalData) {

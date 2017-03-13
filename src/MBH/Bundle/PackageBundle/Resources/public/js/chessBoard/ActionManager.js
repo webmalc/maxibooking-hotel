@@ -6,14 +6,23 @@ var ActionManager = (function () {
     }
     ActionManager.prototype.callRemoveConfirmationModal = function (packageId) {
         var self = this;
-        var $deleteConfirmationModal = $('#entity-delete-confirmation');
-        $deleteConfirmationModal.find('.modal-title').text(Translator.trans('action_manager.modal.remove_confirmation.title'));
-        $deleteConfirmationModal.find('#entity-delete-modal-text').text(Translator.trans('action_manager.modal.remove_confirmation.text') + '?');
-        $deleteConfirmationModal.find('#entity-delete-button').click(function () {
-            self.dataManager.deletePackageRequest(packageId);
-            $deleteConfirmationModal.modal('hide');
+        var $packageDeleteModal = $('#modal_delete_package');
+        $packageDeleteModal.modal('show');
+        $packageDeleteModal.find('.modal-body').html(mbh.loader.html);
+        return $.ajax({
+            url: Routing.generate('package_delete', { 'id': packageId }),
+            type: "GET",
+            success: function (modalBodyHTML) {
+                $('#modal_delete_package').html(modalBodyHTML);
+                $('select#mbh_bundle_packagebundle_delete_reason_type_deleteReason').select2();
+                var $removeButton = $packageDeleteModal.find('button[type="submit"]');
+                $removeButton.attr('type', 'button');
+                $removeButton.click(function () {
+                    self.dataManager.deletePackageRequest(packageId);
+                    $packageDeleteModal.modal('hide');
+                });
+            }
         });
-        $deleteConfirmationModal.modal('show');
     };
     ActionManager.callUnblockModal = function (packageId) {
         var $unblockModal = $('#entity-delete-confirmation');

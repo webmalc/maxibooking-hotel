@@ -1116,7 +1116,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', id) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
      * @Template("@MBHPackage/Package/deleteModalContent.html.twig")
-     * @return array|RedirectResponse
+     * @return array|RedirectResponse|JsonResponse
      */
     public function deleteModalAction(Request $request, Package $entity)
     {
@@ -1134,8 +1134,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $this->dm->remove($entity);
             $this->dm->flush($entity);
 
+            if ($request->isXmlHttpRequest()) {
+                $messageFormatter = $this->get('mbh.chess_board.message_formatter');
+                $messageFormatter->addSuccessfulMessage('controller.chessboard.package_remove.success');
+
+                return new JsonResponse(json_encode($messageFormatter->getMessages()));
+            }
+
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+
 
             if (!empty($form->get('order')->getData())) {
                 return $this->redirect($this->generateUrl('package_order_edit',
