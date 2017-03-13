@@ -139,6 +139,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'count' => $count
         ];
     }
+
     /**
      * Lists all entities as json.
      *
@@ -243,6 +244,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'form' => $form->createView(),
         ];
     }
+
     /**
      * Lists all entities as json.
      *
@@ -418,7 +420,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $package->setTotalOverwrite(0);
         $package->getOrder()->setTotalOverwrite(0);
         $this->dm->flush();
-        $this->addFlash('success', $this->get('translator')->trans('controller.packageController.record_edited_success'));
+        $this->addFlash('success',
+            $this->get('translator')->trans('controller.packageController.record_edited_success'));
         return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
     }
 
@@ -566,7 +569,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             return [];
         }
 
-        if($request->isXmlHttpRequest()) {
+        if ($request->isXmlHttpRequest()) {
             return new JsonResponse(json_encode([
                 'success' => [
                     $this->get('translator')->trans('controller.chessboard.package_create.success')
@@ -700,7 +703,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
 
         $form = $this->createForm(PackageServiceType::class, $packageService, [
-            'package' => $package, 'dm' => $this->dm
+            'package' => $package,
+            'dm' => $this->dm
         ]);
 
         if ($request->getMethod() == 'POST' &&
@@ -759,7 +763,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $form = $this->createForm(PackageServiceType::class, $service, [
-            'package' => $package, 'dm' => $this->dm
+            'package' => $package,
+            'dm' => $this->dm
         ]);
 
         if ($request->getMethod() == Request::METHOD_POST) {
@@ -837,14 +842,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         );
         $flash = $request->getSession()->getFlashBag();
 
-        if(!in_array($room->getId(), $this->helper->toIds($availableRooms))) {
-            $flash->set('danger', $this->get('translator')->trans('controller.packageController.record_edited_fail_accommodation'));
+        if (!in_array($room->getId(), $this->helper->toIds($availableRooms))) {
+            $flash->set('danger',
+                $this->get('translator')->trans('controller.packageController.record_edited_fail_accommodation'));
         } else {
             $package->setAccommodation($room);
             $this->dm->persist($package);
             $this->dm->flush();
 
-            $flash->set('success', $this->get('translator')->trans('controller.packageController.placement_saved_success'));
+            $flash->set('success',
+                $this->get('translator')->trans('controller.packageController.placement_saved_success'));
         }
 
         return $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);
@@ -874,8 +881,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->setRoom($room)
             ->setBegin($package->getLastEndAccommodation())
             ->setEnd($package->getEnd())
-            ->setPackage($package)
-        ;
+            ->setPackage($package);
         $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
         $form->handleRequest($request);
 
@@ -963,7 +969,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         try {
             $this->dm->remove($entity);
             $this->dm->flush();
-            $this->addFlash('success', $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
+            $this->addFlash('success',
+                $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
         } catch (DeleteException $exception) {
             $this->addFlash('error', $this->get('translator')->trans($exception->getMessage()));
         }
@@ -987,8 +994,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @return array
      * @throws PackageAccommodationException
      */
-    public function accommodationAction(Request $request, Package $package, \DateTime $begin = null, \DateTime $end = null)
-    {
+    public function accommodationAction(
+        Request $request,
+        Package $package,
+        \DateTime $begin = null,
+        \DateTime $end = null
+    ) {
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
@@ -1002,7 +1013,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $pAccManipulator = $this->get('mbh_bundle_package.services.package_accommodation_manipulator');
         $accIntervals = $pAccManipulator->getEmptyIntervals($package);
-        if (!$begin && !$end) {
+        if (!is_null($begin) && !is_null($end)) {
+            $begin->setTime(0, 0, 0);
+            $end->setTime(0, 0, 0);
+        } elseif (!$begin && !$end) {
             if ($accIntervals->first()) {
                 $begin = $accIntervals->first()['begin'];
                 $end = $accIntervals->first()['end'];
@@ -1042,9 +1056,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $hasEarlyCheckIn = false;
         $hasLateCheckOut = false;
-        foreach($package->getServices() as $service) {
+        foreach ($package->getServices() as $service) {
             $code = $service->getService()->getCode();
-            if($code == 'Early check-in') {
+            if ($code == 'Early check-in') {
                 $hasEarlyCheckIn = true;
             } elseif ($code == 'Late check-out') {
                 $hasLateCheckOut = true;
@@ -1142,7 +1156,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             }
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+                ->set('success',
+                    $this->get('translator')->trans('controller.packageController.record_deleted_success'));
 
 
             if (!empty($form->get('order')->getData())) {
@@ -1207,7 +1222,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
 
         if ($package) {
-            $result = ['id' => $package->getId(), 'text' => $package->getTitle(true,true)];
+            $result = ['id' => $package->getId(), 'text' => $package->getTitle(true, true)];
         }
 
         return new JsonResponse($result);
@@ -1226,7 +1241,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$request->get('query')) {
             return new JsonResponse([]);
         }
-        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByOrderOrRoom($request->get('query'), $this->helper);
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByOrderOrRoom($request->get('query'),
+            $this->helper);
         if (!$packages) {
             return new JsonResponse([
                 'results' => [[]]
@@ -1236,7 +1252,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             /** @var Package $item */
             $data[] = [
                 'id' => $item->getId(),
-                'text' => $item->getTitle(true,true)
+                'text' => $item->getTitle(true, true)
             ];
         }
 
