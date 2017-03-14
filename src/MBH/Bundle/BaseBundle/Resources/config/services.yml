@@ -161,7 +161,7 @@ services:
         class: MBH\Bundle\BaseBundle\EventListener\GenerateInternationalListener
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
- 
+
     mbh.cache:
         class: MBH\Bundle\BaseBundle\Service\Cache
         arguments:
@@ -180,6 +180,10 @@ services:
     mbh.task.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.task.log", 200]
+
+    mbh.yandex_translator:
+        class: MBH\Bundle\BaseBundle\Service\YandexTranslator
+        arguments: ['%yandex_api_key%']
 
     mbh.cache.logger:
         class:     Symfony\Bridge\Monolog\Logger

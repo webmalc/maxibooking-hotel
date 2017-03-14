@@ -28,3 +28,6 @@ validator.document.trip_advisor_config.main_tariff_not_specified: Не указ�
 validator.document.homeawayconfig.no_hotel_selected: Не выбран отель
 validator.document.homeawayconfig.no_hotel_id_specified: Не указан id отеля
 validator.document.homeawayconfig.main_tariff_not_specified: Не указан тариф
+
+validator.document.trip_advisor_config.hotel_url.not_specified: URL-адрес не указан
+trip_advisor_validator.violation_message_template: 'Не заполнено поле "%field%", необходимое для синхронизации с TripAdvisor'

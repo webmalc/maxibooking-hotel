@@ -3,22 +3,41 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Liip\FunctionalTestBundle\Validator\DataCollectingValidator;
+use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
+use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
+use MBH\Bundle\PriceBundle\Document\Tariff;
+use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\ConstraintViolation;
 
 class OrderHandler
 {
     private $dm;
+    private $search;
+    private $translator;
+    /** @var  DataCollectingValidator $validator */
+    private $validator;
 
-    public function __construct(DocumentManager $dm)
-    {
+    public function __construct(
+        DocumentManager $dm,
+        SearchFactory $searchFactory,
+        TranslatorInterface $translator,
+        DataCollectingValidator $validator
+    ) {
         $this->dm = $dm;
+        $this->search = $searchFactory;
+        $this->translator = $translator;
+        $this->validator = $validator;
     }
 
-    public function createOrder(AbstractOrderInfo $orderInfo, ?Order $order = null) : Order
+    public function createOrder(AbstractOrderInfo $orderInfo, ?Order $order = null): Order
     {
         if (!$order) {
             $order = new Order();
@@ -49,6 +68,7 @@ class OrderHandler
         if ($orderInfo->getSource()) {
             $order->setSource($orderInfo->getSource());
         }
+
         $this->dm->persist($order);
         $this->dm->flush();
 
@@ -58,6 +78,7 @@ class OrderHandler
             $package = $this->createPackage($packageInfo, $order);
             $order->addPackage($package);
             $this->dm->persist($package);
+            $this->dm->flush();
         }
 
         $creditCard = $orderInfo->getCreditCard();
@@ -73,7 +94,6 @@ class OrderHandler
 
     public function deleteOrder(Order $order)
     {
-        //TODO: Проверить нужно ли что еще делать
         $this->dm->remove($order);
         $this->dm->flush();
     }
@@ -100,7 +120,7 @@ class OrderHandler
 
         //Удаляем одинаковые электронные кассовые документы из списка сохраненных и полученных с сервиса
         foreach ($orderInfo->getCashDocuments($order) as $newCashDocument) {
-            /** @var CashDocument $newCashDocument*/
+            /** @var CashDocument $newCashDocument */
             foreach ($electronicCashDocuments as $oldCashDocument) {
                 if ($oldCashDocument->getTotal() == $newCashDocument->getTotal()
                     && $oldCashDocument->getMethod() == $newCashDocument->getMethod()
@@ -131,7 +151,7 @@ class OrderHandler
      * @param Order $order
      * @return Package
      */
-    protected function createPackage(AbstractPackageInfo $packageInfo, Order $order) : Package
+    protected function createPackage(AbstractPackageInfo $packageInfo, Order $order): Package
     {
         $package = new Package();
         $package
@@ -150,13 +170,172 @@ class OrderHandler
             ->setNote($packageInfo->getNote())
             ->setOrder($order)
             ->setCorrupted($packageInfo->getIsCorrupted())
-            ->setIsSmoking($packageInfo->getIsSmoking());
+            ->setIsSmoking($packageInfo->getIsSmoking())
+            ->setChildAges($packageInfo->getChildAges());
 
-        foreach ($packageInfo->getTourists() as $tourist)
-        {
+        foreach ($packageInfo->getTourists() as $tourist) {
             $package->addTourist($tourist);
         }
 
         return $package;
+    }
+
+    public function getOrderAvailability(AbstractOrderInfo $orderInfo, $locale)
+    {
+        $errors = [];
+        $isOrderCorrupted = false;
+
+        $isRoomAvailable = true;
+        $totalPrice = 0;
+        $packages = $orderInfo->getPackagesData();
+
+        $firstPackageInfo = current($packages);
+        $searchQuery = new SearchQuery();
+        $searchQuery->adults = $firstPackageInfo->getAdultsCount();
+        $searchQuery->children = $firstPackageInfo->getChildrenCount();
+        $searchQuery->begin = $firstPackageInfo->getBeginDate();
+        $searchQuery->end = $firstPackageInfo->getEndDate();
+        $searchQuery->tariff = $firstPackageInfo->getTariff();
+        $searchQuery->addRoomType($firstPackageInfo->getRoomType()->getId());
+
+        $searchResults = $this->search->search($searchQuery);
+        if (count($searchResults) == 0) {
+            $isRoomAvailable = false;
+        } else {
+            $searchResult = current($searchResults);
+            foreach ($packages as $packageInfo) {
+                if (count($searchResults) == 0) {
+                    $isRoomAvailable = false;
+                } else {
+                    $totalPrice += $searchResult->getPrice($packageInfo->getAdultsCount(),
+                        $packageInfo->getChildrenCount());
+                }
+            }
+        }
+
+        if (!$isRoomAvailable || $searchResult->getRoomsCount() < count($packages)) {
+            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::ROOM_NOT_AVAILABLE_ERROR,
+                'order_handler.order_room_not_available', $locale);
+            $isOrderCorrupted = true;
+        }
+        //После операций конвертации суммы не совпадают
+//        if ($totalPrice != $orderInfo->getPrice()) {
+//            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::PRICE_MISMATCH,
+//                'order_handler.price_mismatch.error', $locale);
+//            $isOrderCorrupted = true;
+//        }
+        if (empty($orderInfo->getPayer()->getEmail())) {
+            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::MISSING_EMAIL,
+                'order_handler.missing_email.error', $locale);
+        }
+        if (empty($orderInfo->getPayer()->getFirstName())) {
+            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::MISSING_PAYER_FIRST_NAME,
+                'order_handler.missing_first_name.error', $locale);
+        }
+
+        $orderPaymentCard = $orderInfo->getCreditCard();
+        $creditCardValidationErrors = $this->validator->validate($orderPaymentCard);
+        if (is_array($creditCardValidationErrors)) {
+            foreach ($creditCardValidationErrors as $cardError) {
+                /** @var ConstraintViolation $cardError */
+                $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::CREDIT_CARD_DECLINED,
+                    $cardError->getMessage(), $locale);
+            }
+        }
+
+        $acceptedCardTypes = $firstPackageInfo->getRoomType()->getHotel()->getAcceptedCardTypes();
+        $acceptedCardCodes = [];
+        /** @var CardType $acceptedCardType */
+        foreach ($acceptedCardTypes as $acceptedCardType) {
+            $acceptedCardCodes[] = $acceptedCardType->getCardCode();
+        }
+        if (!in_array(strtoupper($orderPaymentCard->type), $acceptedCardCodes)) {
+            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::CREDIT_CARD_NOT_SUPPORTED,
+                'order_handler.card_type_not_supported.error', $locale);
+        }
+
+        return [
+            'isCorrupted' => $isOrderCorrupted,
+            'errors' => $errors
+        ];
+    }
+
+    /**
+     * Получение массива данных о количествах взрослых и детей, разбитых в зависимости от размера номера
+     * @param $adultsCount
+     * @param $childrenCount
+     * @param $roomTypeSize
+     * @return array
+     */
+    public function getDividedAdultsChildrenCombinations($adultsCount, $childrenCount, $roomTypeSize)
+    {
+        $totalTouristsCount = $adultsCount + $childrenCount;
+        $roomCount = ceil($totalTouristsCount / $roomTypeSize);
+
+        $result = [];
+        $currentRoomNumber = 0;
+        while ($adultsCount > 0) {
+            isset($result[$currentRoomNumber]['adults'])
+                ? $result[$currentRoomNumber]['adults']++
+                : $result[$currentRoomNumber]['adults'] = 1;
+            $currentRoomNumber = ($currentRoomNumber + 1) % $roomCount;
+            $adultsCount--;
+        }
+
+        while ($childrenCount > 0) {
+            isset($result[$currentRoomNumber]['children'])
+                ? $result[$currentRoomNumber]['children']++
+                : $result[$currentRoomNumber]['children'] = 1;
+            $currentRoomNumber = ($currentRoomNumber + 1) % $roomCount;
+            $childrenCount--;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Получение расчетного количества взрослых и детей в зависимости от возрастов детей
+     * @param $adultsChildrenCombinations
+     * @param Tariff $tariff
+     * @return array
+     */
+    public function getAdultsChildrenCountByCombinations($adultsChildrenCombinations, Tariff $tariff)
+    {
+        $adultAndChildrenCounts = [];
+        foreach ($adultsChildrenCombinations as $combination) {
+            $adultAndChildrenCounts[] = $this->getAdultsChildrenCounts($combination, $tariff);
+        }
+
+        return $adultAndChildrenCounts;
+    }
+
+    public function getAdultsChildrenCounts($combination, Tariff $tariff)
+    {
+        $adultsCount = $combination['adults'];
+        $childrenAges = isset($combination['children']) ? $combination['children'] : [];
+        $childrenCount = 0;
+        foreach ($childrenAges as $childrenAge) {
+            if ($childrenAge < $tariff->getInfantAge()) {
+                continue;
+            }
+            if ($childrenAge < $tariff->getChildAge()) {
+                $childrenCount++;
+            } else {
+                $adultsCount++;
+            }
+        }
+
+        return [
+            'childrenCount' => $childrenCount,
+            'adultsCount' => $adultsCount
+        ];
+    }
+
+    private function getErrorData($problemType, $descriptionId, $locale)
+    {
+        return [
+            'problem' => $problemType,
+            'explanation' => $this->translator->trans($descriptionId, [], null, $locale)
+        ];
     }
 }

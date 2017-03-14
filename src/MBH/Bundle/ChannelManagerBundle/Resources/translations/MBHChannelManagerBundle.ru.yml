@@ -124,3 +124,8 @@ channelManager.101Hotels.notification.edit: 'Изменен заказ %order% �
 channelManager.101Hotels.notification.delete: 'Удален заказ %order% из 101hotels.ru. Номера броней: %packages%'
 channelManager.101Hotels.notification.error.subject: 'Ошибка 101hotels.ru'
 channelManager.101Hotels.notification.error: 'Ошибка при обработке заказа 101hotels.ru. Информация: %info%'
+
+channelManager.tripadvisor.notification.subject.new: 'Новый заказ TripAdvisor.com'
+channelManager.tripadvisor.notification.subject.delete: 'Удален заказ TripAdvisor.com'
+channelManager.tripadvisor.notification.new: 'Новый заказ %order% из TripAdvisor.com. Номера броней: %packages%'
+channelManager.tripadvisor.notification.delete: 'Удален заказ %order% из TripAdvisor.com. Номера броней: %packages%'

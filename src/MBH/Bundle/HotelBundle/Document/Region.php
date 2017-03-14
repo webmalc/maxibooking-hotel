@@ -8,6 +8,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Lib\TranslatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -15,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class Region extends Base
+class Region extends Base implements TranslatableInterface
 {
 
     /**
@@ -58,8 +59,15 @@ class Region extends Base
      *      maxMessage="validator.document.region.max_name"
      * )
      * @ODM\Index()
+     * @Gedmo\Translatable()
      */
     protected $title;
+
+    /**
+     * @var string
+     * @Gedmo\Locale
+     */
+    protected $locale;
 
     /**
      * Set title
@@ -143,5 +151,10 @@ class Region extends Base
     public function __toString()
     {
         return (string) $this->getTitle();
+    }
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }

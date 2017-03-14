@@ -11,17 +11,17 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as ChannelManagerValidator;
 
 /**
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тип номера уже существует")
- *
+ * @ChannelManagerValidator\TripAdvisor
  * @ODM\HasLifecycleCallbacks
  */
 class RoomType extends Base implements RoomTypeInterface
@@ -672,7 +672,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @return bool
      */
-    public function isIsSmoking(): ?bool
+    public function getIsSmoking(): ?bool
     {
         return $this->isSmoking;
     }
@@ -689,7 +689,7 @@ class RoomType extends Base implements RoomTypeInterface
     }
 
     /**
-     * @return array
+     * @return RoomViewType[]
      */
     public function getRoomViewsTypes()
     {

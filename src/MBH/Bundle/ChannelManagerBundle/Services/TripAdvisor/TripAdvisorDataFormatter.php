@@ -3,7 +3,9 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorRoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -28,14 +30,8 @@ class TripAdvisorDataFormatter
         $this->dm = $dm;
     }
 
-    public function getAvailabilityData($startDate, $endDate, $hotelsSyncData)
+    public function getAvailabilityData($startDate, $endDate, $tripAdvisorConfigs)
     {
-        $requestedHotelIds = [];
-        foreach ($hotelsSyncData as $syncData) {
-            $requestedHotelIds[] = $syncData['partner_id'];
-        }
-        $tripAdvisorConfigs = $this->getTripAdvisorConfigs($requestedHotelIds);
-
         $availabilityData = [];
         /** @var TripAdvisorConfig $tripAdvisorConfig */
         foreach ($tripAdvisorConfigs as $tripAdvisorConfig) {
@@ -50,15 +46,28 @@ class TripAdvisorDataFormatter
         return $availabilityData;
     }
 
-    public function getTripAdvisorConfigs($tripAdvisorHotelIds = null)
+    public function getTripAdvisorConfigs($hotelsSyncData = null)
     {
         $tripAdvisorConfigRepository = $this->dm->getRepository('MBHChannelManagerBundle:TripAdvisorConfig');
-        if ($tripAdvisorHotelIds) {
-            return $tripAdvisorConfigRepository->findAll();
+
+        if (is_null($hotelsSyncData)) {
+            $configs = $tripAdvisorConfigRepository->findAll();
+        } else {
+            $tripAdvisorHotelIds = [];
+            foreach ($hotelsSyncData as $syncData) {
+                $tripAdvisorHotelIds[] = $syncData['partner_id'];
+            }
+            $configs = $tripAdvisorConfigRepository->createQueryBuilder()
+                ->field('hotel.id')->in($tripAdvisorHotelIds)->getQuery()->execute();
         }
 
-        return $tripAdvisorConfigRepository->createQueryBuilder()
-            ->field('hotelId')->in($tripAdvisorHotelIds);
+        $result = [];
+        foreach ($configs as $config) {
+            /** @var TripAdvisorConfig $config */
+            $result[$config->getHotelId()] = $config;
+        }
+
+        return $result;
     }
 
     public function getBookingOptionsByHotel($startDate, $endDate, Hotel $hotel)
@@ -93,8 +102,16 @@ class TripAdvisorDataFormatter
     public function getAvailableRoomTypes(Hotel $requestedHotel)
     {
         if (!$this->isAvailableRoomTypesInit) {
+            $availableRoomTypeIds = [];
+            foreach ($requestedHotel->getTripAdvisorConfig()->getRooms() as $tripAdvisorRoomType) {
+                /** @var TripAdvisorRoomType $tripAdvisorRoomType */
+                if ($tripAdvisorRoomType->getIsEnabled()) {
+                    $availableRoomTypeIds[] = $tripAdvisorRoomType->getRoomType()->getId();
+                }
+            }
 
-            $this->availableRoomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($requestedHotel);
+            $this->availableRoomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+                ->fetch($requestedHotel, $availableRoomTypeIds);
             $this->isAvailableRoomTypesInit = true;
         }
 
@@ -105,7 +122,6 @@ class TripAdvisorDataFormatter
     public function getAvailableTariffs(Hotel $requestedHotel, \DateTime $begin, \DateTime $end)
     {
         if (!$this->isAvailableTariffsInit) {
-
             $this->availableTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
                 ->getTariffsByDates($requestedHotel, $begin, $end);
             $this->isAvailableTariffsInit = true;
@@ -148,8 +164,9 @@ class TripAdvisorDataFormatter
         $query = new SearchQuery();
 
         $query->accommodations = true;
-        $query->begin = \DateTime::createFromFormat('Y-m-d' . ' H:i:s', $startDate . ' 00:00:00');
-        $query->end = \DateTime::createFromFormat('Y-m-d' . ' H:i:s', $endDate . ' 00:00:00');
+
+        $query->begin = Helper::getDateFromString($startDate, 'Y-m-d');
+        $query->end = Helper::getDateFromString($endDate, 'Y-m-d');
         $query->addHotel($hotel);
         $query->adults = 0;
         $query->children = 0;

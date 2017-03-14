@@ -1,3 +1,9 @@
 invalid.ages: Возраст инфанта должен быть меньше возраста ребенка
 special.dates.error: Некорректно введены даты
 special.displayDates.error: Некорректно введены даты отображения спецпредложения
+tariff.hotel_not_choosen: Не выбран отель
+tariff.to_short_name: Слишком короткое имя
+tariff.to_long_name: Слишком длинное имя
+tariff.to_short_description: Слишком короткое описание
+tariff.to_long_description: Слишком длинное описание
+tariff.tariff_already_exists: Такой тариф уже существует

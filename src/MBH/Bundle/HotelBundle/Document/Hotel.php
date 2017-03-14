@@ -16,6 +16,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
@@ -24,13 +25,15 @@ use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as ChannelManagerValidator;
 
 /**
- * @ODM\Document(collection="Hotels")
+ * @ODM\Document(collection="Hotels", repositoryClass="MBH\Bundle\HotelBundle\Document\HotelRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
  * @ODM\HasLifecycleCallbacks
+ * @ChannelManagerValidator\TripAdvisor
  */
 class Hotel extends Base implements \JsonSerializable, AddressInterface
 {
@@ -971,7 +974,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @return mixed
+     * @return TripAdvisorConfig
      */
     public function getTripAdvisorConfig()
     {
@@ -985,6 +988,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     public function setTripAdvisorConfig($tripAdvisorConfig)
     {
         $this->tripAdvisorConfig = $tripAdvisorConfig;
+
         return $this;
     }
 

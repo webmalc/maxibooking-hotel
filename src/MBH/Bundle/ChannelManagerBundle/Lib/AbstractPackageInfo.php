@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class AbstractPackageInfo
@@ -23,9 +24,9 @@ abstract class AbstractPackageInfo
         $this->translator = $container->get('translator');
     }
 
-    abstract public function getBeginDate() : \DateTime;
-    abstract public function getEndDate() : \DateTime;
-    abstract public function getRoomType();
+    abstract public function getBeginDate();
+    abstract public function getEndDate();
+    abstract public function getRoomType() : RoomType;
     abstract public function getTariff();
     abstract public function getAdultsCount();
     abstract public function getChildrenCount();
@@ -78,5 +79,9 @@ abstract class AbstractPackageInfo
         }
 
         return $this->note;
+    }
+
+    public function getChildAges() {
+        return [];
     }
 }

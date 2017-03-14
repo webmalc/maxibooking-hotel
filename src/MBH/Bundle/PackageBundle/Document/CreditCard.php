@@ -27,11 +27,9 @@ class CreditCard implements \JsonSerializable
      * @ODM\Field(type="string") 
      * @Assert\NotNull(message= "validator.document.card.number")
      * @Assert\Type(type="numeric")
-     * @Assert\Length(
-     *      min=13,
-     *      minMessage= "validator.document.card.number.invalid.min",
-     *      max=19,
-     *      maxMessage= "validator.document.card.number.invalid.max"
+     * @Assert\CardScheme(
+     *     schemes={"VISA", "AMEX", "DINERS", "DISCOVER", "JCB", "LASER", "MAESTRO", "MASTERCARD"},
+     *     message="validator.document.card.number.un_valid"
      * )
      */
     public $number;

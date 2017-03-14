@@ -11,7 +11,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
@@ -278,7 +278,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "101Hotels", "expedia", "hotels", "venere", "ostrovok", "oktogo", "myallocator", "101Hotels", "homeaway"},
+     *      callback="getChannelManagerNames",
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      * @ODM\Index()
@@ -1587,6 +1587,25 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getChildAges(): array
+    {
+        return $this->childAges;
+    }
+
+    /**
+     * @param array $childAges
+     * @return Package
+     */
+    public function setChildAges(array $childAges): Package
+    {
+        $this->childAges = $childAges;
+
+        return $this;
+    }
+
+    /**
      * @return AddressInterface|null
      */
     public function getAddress(): AddressInterface
@@ -1594,4 +1613,8 @@ class Package extends Base implements \JsonSerializable
         return $this->getHotel()->getOrganization() ?? $this->getHotel();
     }
 
+    public static function getChannelManagerNames()
+    {
+        return AbstractChannelManagerService::CHANNEL_MANAGER_NAMES;
+    }
 }

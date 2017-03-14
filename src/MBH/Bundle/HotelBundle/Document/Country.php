@@ -9,6 +9,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\Translatable\Translatable;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Lib\TranslatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -16,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class Country extends Base implements Translatable
+class Country extends Base implements TranslatableInterface
 {
     /**
      * Hook timestampable behavior
@@ -64,6 +65,24 @@ class Country extends Base implements Translatable
      * this is not a mapped field of entity metadata, just a simple property
      */
     private $locale;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    private $isoAlpha2;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    private $isoAlpha3;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    private $isoDigital;
 
     /**
      * Set title
@@ -161,5 +180,62 @@ class Country extends Base implements Translatable
     public function __toString()
     {
         return (string) $this->getTitle();
+    }
+
+    /**
+     * @return string
+     */
+    public function getIsoAlpha2(): ?string
+    {
+        return $this->isoAlpha2;
+    }
+
+    /**
+     * @param string $isoAlpha2
+     * @return Country
+     */
+    public function setIsoAlpha2(string $isoAlpha2): Country
+    {
+        $this->isoAlpha2 = $isoAlpha2;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIsoAlpha3(): ?string
+    {
+        return $this->isoAlpha3;
+    }
+
+    /**
+     * @param string $isoAlpha3
+     * @return Country
+     */
+    public function setIsoAlpha3(string $isoAlpha3): Country
+    {
+        $this->isoAlpha3 = $isoAlpha3;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIsoDigital(): ?int
+    {
+        return $this->isoDigital;
+    }
+
+    /**
+     * @param int $isoDigital
+     * @return Country
+     */
+    public function setIsoDigital(int $isoDigital): Country
+    {
+        $this->isoDigital = $isoDigital;
+
+        return $this;
     }
 }

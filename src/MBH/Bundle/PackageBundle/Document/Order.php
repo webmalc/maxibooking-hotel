@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -9,6 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
@@ -177,7 +179,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "oktogo", "101Hotels", "homeaway", "tripadvisor"},
+     *      callback="getChannelManagerNames",
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      * @ODM\Index()
@@ -253,10 +255,16 @@ class Order extends Base
      */
     protected $documents = [];
 
+    /**
+     * @var array
+     * @ODM\Field(type="hash")
+     */
+    protected $additionalData = [];
+
     public function __construct()
     {
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->documents = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->packages = new ArrayCollection();
+        $this->documents = new ArrayCollection();
     }
 
     public static function getOnlinePaymentTypesList()
@@ -994,4 +1002,20 @@ class Order extends Base
         return $this;
     }
 
+    public function getAdditionalData()
+    {
+        return $this->additionalData;
+    }
+
+    public function addAdditionalData($key, $value)
+    {
+        $this->additionalData[$key] = $value;
+
+        return $this;
+    }
+
+    public static function getChannelManagerNames()
+    {
+        return AbstractChannelManagerService::CHANNEL_MANAGER_NAMES;
+    }
 }

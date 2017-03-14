@@ -1,0 +1,21 @@
+{% extends 'MBHChannelManagerBundle:TripAdvisor:layout.html.twig' %}
+
+{% set title_url = path('tripadvisor_room') %}
+
+{% block content %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 2, 'entity': doc, 'base': 'tripadvisor', 'services':false} %}
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            {% form_theme form '@MBHHotel/Hotel/embeddedFormTheme.html.twig'%}
+            {{ form_start(form, {'action': path('tripadvisor_room'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHChannelManagerBundle::actions.html.twig' %}
+            {{ form_end(form) }}
+
+            {%  if doc %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': doc, 'logs': logs} %}
+            {%  endif %}
+        </div>
+    </div>
+{% endblock %}
+

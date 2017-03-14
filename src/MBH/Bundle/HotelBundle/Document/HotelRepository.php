@@ -17,9 +17,16 @@ class HotelRepository extends DocumentRepository
      */
     public function getLastHotel()
     {
-        $qb = $this->createQueryBuilder()->sort('createdAt', 'desc')->limit(1)->getQuery()->getSingleResult()->execute();
+        $qb = $this->createQueryBuilder()->sort('createdAt',
+            'desc')->limit(1)->getQuery()->getSingleResult()->execute();
 
         return $qb ?? null;
     }
 
+    public function getHotelWithFilledContacts()
+    {
+        return $this->createQueryBuilder()
+            ->field('contactInformation')->exists(true)->notEqual(null)
+            ->getQuery()->getSingleResult();
+    }
 }

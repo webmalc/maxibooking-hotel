@@ -363,7 +363,9 @@ class Builder implements ContainerAwareInterface
             $menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
         }
-        $menu['services']->addChild('hundredOneHotel', ['route' => 'hundred_one_hotels', 'label' => 'menu.communication.label.hundred_one_hotels'])
+        $menu['services']->addChild('hundredOneHotel', ['route' => 'tripadvisor', 'label' => 'TripAdvisor.com'])
+            ->setAttributes(['icon' => 'fa fa-cloud-download']);
+        $menu['services']->addChild('tripadvisor', ['route' => 'hundred_one_hotels', 'label' => 'menu.communication.label.hundred_one_hotels'])
             ->setAttributes(['icon' => 'fa fa-cloud-download']);
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма'])
             ->setAttributes(['icon' => 'fa fa-globe']);

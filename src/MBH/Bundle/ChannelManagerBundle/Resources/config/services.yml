@@ -39,6 +39,7 @@ services:
 
     mbh.channelmanager.helper:
         class: MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper
+        arguments: ['@mbh.notifier', '@translator', '@doctrine_mongodb.odm.document_manager']
 
     mbh.channelmanager.expedia_response_handler:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaResponseHandler
@@ -75,7 +76,7 @@ services:
 
     mbh.channel_manager.order_handler:
         class: MBH\Bundle\ChannelManagerBundle\Services\OrderHandler
-        arguments: ['@doctrine.odm.mongodb.document_manager']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.package.search', '@translator', '@validator']
 
     mbh.channelmanager.hundred_one_hotels:
         class: MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels
@@ -131,7 +132,7 @@ services:
 
     mbh.channel_manager.trip_advisor_response_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter
-      arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%', '%online_form_result_url%']
+      arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%', '%online_form_result_url%', '%locale%', '@doctrine_mongodb.odm.document_manager', '@vich_uploader.templating.helper.uploader_helper', '@mbh.currency', '%locale.currency%', '@mbh.channel_manager.order_handler']
 
     mbh.channel_manager.trip_advisor_response_data_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorDataFormatter
@@ -147,9 +148,32 @@ services:
       arguments: ['@service_container']
       shared: false
 
+    mbh.channel_manager.trip_advisor.tariff_type:
+      class: MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffType
+      arguments: ['@doctrine.odm.mongodb.document_manager']
+      tags:
+          - { name: form.type }
+
+    mbh.channel_manager.trip_advisor.tariffs_type:
+      class: MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffsType
+      tags:
+          - { name: form.type }
+
     mbh.channelmanager.ostrovok.api_service:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiService
         arguments: ['%mbh.channelmanager.services%']
 
     mbh.channelmanager.ostrovok.data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator
+
+    mbh.channelmanager.trip_advisor_fee_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorFeeType
+        arguments: ['@mbh.currency']
+        tags:
+            - { name: form.type }
+
+    mbh.channel_manager.trip_advisor_validator:
+        class: MBH\Bundle\ChannelManagerBundle\Validator\Constraints\TripAdvisorValidator
+        arguments: ['@translator']
+        tags:
+            - { name: validator.constraint_validator }

@@ -56,6 +56,7 @@ parameters:
   #Online form
   online_form_sites: ['http://example.com', 'http://example.com']
   online_form_result_url: 'http://example.com/results/'
+  trip_advisor_confirmation_url: 'http://example.com'
 
   #Redis
   mbh_redis: 'redis://mbh-redis' 
@@ -75,3 +76,5 @@ parameters:
 
   mbh_modules:
     tasks: true
+
+  yandex_api_key: trnsl.1.1.20170228T135607Z.7332db5172340acc.daffb01c86f20b9e8261905b6208f1e0dda914f3
