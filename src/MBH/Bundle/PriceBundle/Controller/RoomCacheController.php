@@ -213,7 +213,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
         $request->getSession()->getFlashBag()->set('success', 'Изменения успешно сохранены.');
         $this->get('mbh.channelmanager')->updateRoomsInBackground();
-        $$this->get('mbh.cache')->clear('room_cache');
+        $this->get('mbh.cache')->clear('room_cache');
 
         return $this->redirectToRoute('room_cache_overview', [
             'begin' => $request->get('begin'),
