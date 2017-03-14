@@ -38,7 +38,7 @@ class Tariff extends Base implements ConditionsInterface
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -46,15 +46,15 @@ class Tariff extends Base implements ConditionsInterface
     use BlameableDocument;
 
     use ConditionsTrait;
-    
-    /** 
+
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="tariffs")
      * @Assert\NotNull(message="Не выбран отель")
      * @ODM\Index()
      */
     protected $hotel;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -83,7 +83,7 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Index()
      */
     protected $title;
-    
+
     /**
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="description")
@@ -96,7 +96,7 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Index()
      */
     protected $description;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -106,7 +106,7 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Index()
      */
     protected $isDefault = false;
-    
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -221,6 +221,14 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\ReferenceOne(targetDocument="Tariff", inversedBy="children")
      */
     protected $parent;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int", name="minPerPrepay")
+     * @Assert\Range(min=0, max=100)
+     */
+    protected $minPerPrepay = 0;
 
     /**
      * @var boolean
@@ -706,6 +714,25 @@ class Tariff extends Base implements ConditionsInterface
     public function setPosition(int $position): Tariff
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMinPerPrepay(): int
+    {
+        return $this->minPerPrepay ?? 0;
+    }
+
+    /**
+     * @param int $minPerPrepay
+     * @return $this
+     */
+    public function setMinPerPrepay(int $minPerPrepay)
+    {
+        $this->minPerPrepay = $minPerPrepay;
 
         return $this;
     }

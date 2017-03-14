@@ -2,9 +2,12 @@
 #                          Generated on phpdocker.io                          #
 ###############################################################################
 
+
 mbh-memcached:
   image: phpdockerio/memcached:latest
   container_name: mbh-memcached
+  ports:
+    - "11211:11211"
 
 mbh-rabbitmq:
   image: rabbitmq:latest
@@ -23,12 +26,19 @@ mbh-rabbitmq:
   volumes:
       - "./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins"
 
+mbh-redis:
+  image: redis:latest
+  container_name: mbh-redis
+  ports:
+     - "6379:6379"
+
 mbh-mongo:
   image: mongo:latest
   container_name: mbh-mongo
   command: mongod --setParameter failIndexKeyTooLong=false
   volumes:
-        - ./mongodb/mongodb.conf:/etc/mongodb.conf
+      - ./mongodb/mongodb.conf:/etc/mongodb.conf
+      - mongo_data:/data/db
   ports:
      - "27018:27017"
 
@@ -41,11 +51,13 @@ mbh-php-fpm:
     - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
     - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/cli/conf.d/99-overrides.ini
     - ./php-fpm/start.sh:/start.sh
+    - ./php-fpm/fish:/root/.config/fish/functions
     - /tmp/:/tmp/
   links:
     - mbh-memcached
     - mbh-mongo
     - mbh-rabbitmq
+    - mbh-redis
 
 mbh-webserver:
   image: phpdockerio/nginx:latest

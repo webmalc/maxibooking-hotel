@@ -6,6 +6,7 @@ parameters:
   mailer_user: robot@example.com
   mailer_password: password
   from_email: robot@example.com
+  mailer_encryption: ssl
 
   #MongoBD
   mongodb_url: 'mongodb://mbh-mongo:27017/mbh'
@@ -56,10 +57,15 @@ parameters:
   online_form_sites: ['http://example.com', 'http://example.com']
   online_form_result_url: 'http://example.com/results/'
 
+  #Redis
+  mbh_redis: 'redis://mbh-redis' 
+
   #Cache
   mbh_cache:
-    is_enabled: true
+    is_enabled: false
     prefix: mbh
+    lifetime: 7
+    logs: false
     search:
       months: 6
       max_duration: 21

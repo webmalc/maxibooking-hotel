@@ -21,10 +21,11 @@ nbproject/
 /web/js/
 /web/upload/roomTypes/*
 /web/upload/hotelLogos/*
-/web/upload/hotels/*
+/web/upload/images/*
 /web/media/cache/*
 !/web/upload/roomTypes/.gitkeep
 !/web/media/cache/.gitkeep
+!/web/media/images/.gitkeep
 /web/demo
 /web/index.html
 .idea/
@@ -38,3 +39,68 @@ web/assets
 web/online
 app/supervisor
 docker_zalex
+
+#Eclipse
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# Eclipse Core
+.project
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+.cproject
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# Java annotation processor (APT)
+.factorypath
+
+# PDT-specific (PHP Development Tools)
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# Tern plugin
+.tern-project
+
+# TeXlipse plugin
+.texlipse
+
+# STS (Spring Tool Suite)
+.springBeans
+
+# Code Recommenders
+.recommenders/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+.cache-main
+.scala_dependencies
+.worksheet
+docker_zalex/
+node_modules/
+tags
+
+GPATH
+GRTAGS
+GTAGS
+ctags
+env
+gtags

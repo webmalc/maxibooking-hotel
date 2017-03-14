@@ -110,7 +110,7 @@ class SearchType extends AbstractType
                 'required' => true,
                 'error_bubbling' => true,
                 'data' => 1,
-                'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 10],
+                'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 12],
             ])
             ->add('children', IntegerType::class, [
                 'label' => 'form.searchType.children',

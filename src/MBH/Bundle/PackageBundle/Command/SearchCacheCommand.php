@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 
-
 class SearchCacheCommand extends ContainerAwareCommand
 {
 
@@ -68,10 +67,10 @@ class SearchCacheCommand extends ContainerAwareCommand
         $start = new \DateTime();
         $this->container = $this->getContainer();
         $helper = $this->container->get('mbh.helper');
-        $this->container->get('mbh.cache')->clear();
+        $logger = $this->container->get('mbh.cache.logger');
 
         $this->params = $this->container->getParameter('mbh_cache')['search'];
-        
+
         $from = $helper->getDateFromString($input->getOption('begin')) ?? new \DateTime('midnight');
         $to = $helper->getDateFromString($input->getOption('end')) ?? new \DateTime('midnight +' . $this->params['months'] . ' months');
 
@@ -79,7 +78,6 @@ class SearchCacheCommand extends ContainerAwareCommand
             $this->cacheCreate($from, $to);
             return;
         }
-
 
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $restrictions = $dates = $caches = [];
@@ -115,12 +113,11 @@ class SearchCacheCommand extends ContainerAwareCommand
                 if ($restrictions[$date]['min'] >  (int) $restriction->getMinStay() ?? (int) $restriction->getMinStayArrival()) {
                     $restrictions[$date]['min'] = (int) $restriction->getMinStay() ?? (int) $restriction->getMinStayArrival();
                 }
-
             }
         }
 
-        foreach (new \DatePeriod($from,  \DateInterval::createFromDateString('1 day'), $to) as $begin) {
-            foreach (new \DatePeriod($from,  \DateInterval::createFromDateString('1 day'), $to) as $end) {
+        foreach (new \DatePeriod($from, \DateInterval::createFromDateString('1 day'), $to) as $begin) {
+            foreach (new \DatePeriod($from, \DateInterval::createFromDateString('1 day'), $to) as $end) {
                 $beginStr = $begin->format('d.m.Y');
                 $endStr = $end->format('d.m.Y');
                 $duration = $end->diff($begin)->format("%a");
@@ -165,18 +162,22 @@ class SearchCacheCommand extends ContainerAwareCommand
         $num = 0;
 
         $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-
         foreach ($dates as $key => $pair) {
             $num++;
+            $startSearch = new \DateTime();
             $output->writeln(sprintf('Start search #%d-%d [%s - %s]', $num, count($dates), $pair[0]->format('d.m.Y'), $pair[1]->format('d.m.Y')));
+
             //run command
             $command = 'nohup php ' . $console . 'mbh:search:cache --begin='. $pair[0]->format('d.m.Y') .' --end='. $pair[1]->format('d.m.Y') .' --force --env=prod';
             $process = new Process($command);
             $process->setTimeout(null)->setIdleTimeout(null)->run();
+            $timeSearch = $startSearch->diff(new \DateTime());
+            $logger->info('SEARCH: '. $command);
+
+            $output->writeln(sprintf('Time elapsed: %s', $timeSearch->format('%H:%I:%S')));
         }
 
         $time = $start->diff(new \DateTime());
         $output->writeln('Complete. Elapsed time: ' . $time->format('%H:%I:%S'));
     }
-
 }

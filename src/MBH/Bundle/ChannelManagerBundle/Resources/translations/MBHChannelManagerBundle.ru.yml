@@ -115,13 +115,12 @@ channelManager.ostrovok.notification.error.subject: Ошибка Ostrovok.ru
 channelManager.ostrovok.notification.error: "Ошибка при обработке заказа Ostrovok.ru. Информация: %info%"
 
 
-channelManager.hundredOneHotels.notification.subject.new: 'Новый заказ 101hotels.ru'
-channelManager.hundredOneHotels.notification.subject.edit: 'Изменен заказ 101hotels.ru'
-channelManager.hundredOneHotels.notification.subject.delete: 'Удален заказ 101hotels.ru'
-channelManager.hundredOneHotels.notification.new: 'Новый заказ %order% из 101hotels.ru. Номера броней: %packages%'
-channelManager.hundredOneHotels.notification.edit: 'Изменен заказ %order% из 101hotels.ru. Номера броней: %packages%'
-channelManager.hundredOneHotels.notification.delete: 'Удален заказ %order% из 101hotels.ru. Номера броней: %packages%'
-channelManager.hundredOneHotels.notification.error.subject: 'Ошибка 101hotels.ru'
-channelManager.hundredOneHotels.notification.error: 'Ошибка при обработке заказа 101hotels.ru. Информация: %info%'
-
 channelmanager.homeaway.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы отель, типы номеров или тариф
+channelManager.101Hotels.notification.subject.new: 'Новый заказ 101hotels.ru'
+channelManager.101Hotels.notification.subject.edit: 'Изменен заказ 101hotels.ru'
+channelManager.101Hotels.notification.subject.delete: 'Удален заказ 101hotels.ru'
+channelManager.101Hotels.notification.new: 'Новый заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.101Hotels.notification.edit: 'Изменен заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.101Hotels.notification.delete: 'Удален заказ %order% из 101hotels.ru. Номера броней: %packages%'
+channelManager.101Hotels.notification.error.subject: 'Ошибка 101hotels.ru'
+channelManager.101Hotels.notification.error: 'Ошибка при обработке заказа 101hotels.ru. Информация: %info%'
