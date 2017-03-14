@@ -20,13 +20,6 @@ class HomeAwayRoom
 
     /**
      * @var string
-     * @ODM\Field(type="string", name="roomId")
-     * @Assert\NotNull()
-     */
-    protected $roomId;
-
-    /**
-     * @var string
      * @ODM\Field(type="string", name="rental_agreement")
      * @Assert\NotNull()
      */
@@ -53,29 +46,6 @@ class HomeAwayRoom
     public function getRoomType() : RoomType
     {
         return $this->roomType;
-    }
-
-    /**
-     * Set HomeAway roomId
-     *
-     * @param string $roomId
-     * @return self
-     */
-    public function setRoomId($roomId)
-    {
-        $this->roomId = $roomId;
-
-        return $this;
-    }
-
-    /**
-     * Get HomeAway roomId
-     *
-     * @return string $roomId
-     */
-    public function getRoomId()
-    {
-        return $this->roomId;
     }
 
     /**

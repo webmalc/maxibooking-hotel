@@ -113,7 +113,7 @@ class Builder implements ContainerAwareInterface
         $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
 
         $taskAttributes = ['icon' => 'fa fa-tasks'];
-		
+
         if ($openTaskCount > 0) {
             $taskAttributes += [
                 'badge' => true,
@@ -357,6 +357,8 @@ class Builder implements ContainerAwareInterface
 
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
             $menu['services']->addChild('expedia', ['route' => 'expedia', 'label' => 'Expedia'])
+                ->setAttributes(['icon' => 'fa fa-cloud-download']);
+            $menu['services']->addChild('homeaway', ['route' => 'homeaway', 'label' => 'HomeAway'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);

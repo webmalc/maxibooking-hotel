@@ -38,6 +38,7 @@ class HomeAwayController extends BaseController
         }
 
         $paymentTypes = $this->getParameter('mbh.online.form')['payment_types'];
+        //Удаляем тип оплаты за 1 день
         array_splice($paymentTypes, 2, 1);
         $form = $this->createForm(HomeAwayType::class, $config, [
             'hotel' => $this->hotel,
@@ -80,22 +81,18 @@ class HomeAwayController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $roomTypes = [
-            '123' => 'Первая комната',
-            '124' => 'Вторая комната'
-        ];
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+            ->findBy(['hotel.id' => $this->hotel->getId()]);
 
-        //Префиксы добавляемые к Id комнат для различия различных типов передавываемых в форме данных
-        $rentalAgreementFieldPrefix = 'agreement';
-        $roomFieldPrefix = 'room';
+        if (count($config->getRooms()) == 0) {
+            foreach ($roomTypes as $roomType) {
+                $config->addRoom((new HomeAwayRoom())->setRoomType($roomType));
+            }
+        }
 
         $form = $this->createForm(HomeAwayRoomsType::class, $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
             //TODO: Вернуть когда будет реализована аутентификация
-//            'booking' => $this->get('mbh.channelmanager.homeaway')->getRoomTypes(),
-            'booking' => $roomTypes,
-            'room_field_prefix' => $roomFieldPrefix,
-            'rental_agreement_field_prefix' => $rentalAgreementFieldPrefix
         ]);
 
         $form->handleRequest($request);
