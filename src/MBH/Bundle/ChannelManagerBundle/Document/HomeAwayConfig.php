@@ -26,8 +26,6 @@ class HomeAwayConfig extends Base
         return 'homeaway';
     }
 
-    use ConfigTrait;
-
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields

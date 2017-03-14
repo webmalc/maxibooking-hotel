@@ -82,7 +82,7 @@ class HomeAwayController extends BaseController
         }
 
         $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->findBy(['hotel.id' => $this->hotel->getId()]);
+            ->findBy(['hotel.id' => $this->hotel->getId(), 'isEnabled' => true]);
 
         if (count($config->getRooms()) == 0) {
             foreach ($roomTypes as $roomType) {
@@ -90,42 +90,11 @@ class HomeAwayController extends BaseController
             }
         }
 
-        $form = $this->createForm(HomeAwayRoomsType::class, $config->getRoomsAsArray(), [
-            'hotel' => $this->hotel,
-            //TODO: Вернуть когда будет реализована аутентификация
-        ]);
+        $form = $this->createForm(HomeAwayRoomsType::class, $config);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $config->removeAllRooms();
-            $formData = $form->getData();
-            $groupedFormData = [];
-            foreach ($formData as $index => $value) {
-                if (!is_null($value)) {
-                    if ($value instanceof RoomType) {
-                        $homeAwayUnitId = substr($index, strlen($roomFieldPrefix));
-                        $groupedFormData[$homeAwayUnitId]['roomType'] = $value;
-                    } else {
-                        if (!empty(trim($value))) {
-                            $homeAwayUnitId = substr($index, strlen($rentalAgreementFieldPrefix));
-                            $groupedFormData[$homeAwayUnitId]['agreement'] = $value;
-                        }
-                    }
-                }
-            }
-            foreach ($groupedFormData as $homeAwayUnitId => $roomTypeData) {
-                if (count($roomTypeData) == 2) {
-                    $configRoom = new HomeAwayRoom();
-                    $configRoom->setRoomType($roomTypeData['roomType'])
-                        ->setRoomId($homeAwayUnitId)
-                        ->setRentalAgreement($roomTypeData['agreement']);
-
-                    $config->addRoom($configRoom);
-                }
-            }
             $this->dm->flush();
-
-            $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success',
                 $this->get('translator')->trans('controller.homeAwayController.settings_saved_success'));
@@ -160,7 +129,7 @@ class HomeAwayController extends BaseController
         $response = $this->get('mbh.channelmanager.homeaway_response_compiler')
             ->formatRatePeriodsData($begin, $end, $roomTypeId, $priceCacheData);
 
-        return new Response($response);
+        return new Response($response, 200, ['Content-Type' => 'xml']);
     }
 
     /**
@@ -245,8 +214,8 @@ class HomeAwayController extends BaseController
             <documentVersion>1.1</documentVersion>
             <bookingRequestDetails>
             <advertiserAssignedId>1931</advertiserAssignedId>
-            <listingExternalId>58a55fa205fe9808e80b2384</listingExternalId>
-            <unitExternalId>58a55fa205fe9808e80b2384</unitExternalId>
+            <listingExternalId>58b93c03a8471801ee458562</listingExternalId>
+            <unitExternalId>58b93c03a8471801ee458562</unitExternalId>
             <propertyUrl>http://stage.homeaway.com/vacation-rental/p3173184</propertyUrl>
             <listingChannel>HOMEAWAY_US</listingChannel>
             <masterListingChannel>HOMEAWAY_US</masterListingChannel>
@@ -321,5 +290,27 @@ class HomeAwayController extends BaseController
             ->getBookingResponse($documentVersion, $resultOfCreation, $orderInfo->getMessages());
 
         return new Response($bookingCreationResponse, 200, ['Content-Type' => 'xml']);
+    }
+
+    /**
+     * Проверяет тип комнат на заполнение данных и возвращает названия незаполненных полей
+     * @param RoomType $roomType
+     * @return array
+     */
+    public static function getRoomTypeRequiredUnfilledFields(RoomType $roomType)
+    {
+        $requiredRoomTypeData = [];
+//        Headlines with length > 20 characters.
+        strlen($roomType->getTitle()) > 20 ?: $requiredRoomTypeData[] = '';
+        strlen($roomType->getDescription() > 400) ?: $requiredRoomTypeData[] = '';
+        count($roomType->getImages()) > 5 ?: $requiredRoomTypeData[] = '';
+
+        //TODO: Обязательны данные о номере дома и улице
+        !empty($roomType->getInternationalTitle()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.international_title';
+        !empty($roomType->getDescription()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.description';
+        (in_array('bed', $roomType->getFacilities()) || in_array('double-bed', $roomType->getFacilities()))
+            ?: $requiredRoomTypeData[] = 'channel_manager_helper.bed_configuration_not_exists';
+
+        return $requiredRoomTypeData;
     }
 }

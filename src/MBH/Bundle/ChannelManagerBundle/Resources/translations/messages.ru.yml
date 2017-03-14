@@ -126,8 +126,10 @@ form.home_away_type.main_tariff.help: Тариф, данные по которо
 form.home_away_type.cancellation_policy.label: Правила закрытия брони
 form.home_away_type.payment_type.label: Тип оплаты
 form.home_away_rooms_type.sync_room_type.label: Тип комнаты
-form.home_away_rooms_type.rental_agreement.label: Договор аренды
-form.home_away_rooms_type.rental_agreement.help: Текстовое описание договора аренды или ссылка на него.
+form.home_away_room_type.rental_agreement.label: Договор аренды
+form.home_away_room_type.rental_agreement.help: Текстовое описание договора аренды или ссылка на него.
+form.home_away_room_type.is_enabled.label: Включен?
+form.home_away_room_type.is_enabled.help: Синхронизируется ли тип комнаты с HomeAway?
 services.home_away.invalid_room_type_id: Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking
 services.home_away.nor_one_room_type: Не найдено ни одного типа комнат для данного отеля
 language.da_DK: Датский(Дания)

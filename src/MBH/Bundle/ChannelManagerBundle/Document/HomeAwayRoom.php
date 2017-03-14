@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\HotelBundle\Document\City;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 
@@ -11,6 +12,12 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
  */
 class HomeAwayRoom
 {
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isEnabled = false;
+
     /**
      * @var RoomType
      * @ODM\ReferenceOne(targetDocument="\MBH\Bundle\HotelBundle\Document\RoomType")
@@ -24,6 +31,15 @@ class HomeAwayRoom
      * @Assert\NotNull()
      */
     protected $rentalAgreement;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Range(min="20")
+     * @Assert\NotNull()
+     * @Assert\NotBlank()
+     */
+    protected $headLine;
 
     /**
      * Set roomType
@@ -43,7 +59,7 @@ class HomeAwayRoom
      *
      * @return RoomType $roomType
      */
-    public function getRoomType() : RoomType
+    public function getRoomType() : ?RoomType
     {
         return $this->roomType;
     }
@@ -51,7 +67,7 @@ class HomeAwayRoom
     /**
      * @return string
      */
-    public function getRentalAgreement(): string
+    public function getRentalAgreement(): ?string
     {
         return $this->rentalAgreement;
     }
@@ -67,4 +83,41 @@ class HomeAwayRoom
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function getIsEnabled(): ?bool
+    {
+        return $this->isEnabled;
+    }
+
+    /**
+     * @param bool $isEnabled
+     * @return HomeAwayRoom
+     */
+    public function setIsEnabled(bool $isEnabled): HomeAwayRoom
+    {
+        $this->isEnabled = $isEnabled;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeadLine(): ?string
+    {
+        return $this->headLine;
+    }
+
+    /**
+     * @param string $headLine
+     * @return HomeAwayRoom
+     */
+    public function setHeadLine(string $headLine): HomeAwayRoom
+    {
+        $this->headLine = $headLine;
+
+        return $this;
+    }
 }

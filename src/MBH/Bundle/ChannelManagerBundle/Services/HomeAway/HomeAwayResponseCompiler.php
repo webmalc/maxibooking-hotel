@@ -9,6 +9,7 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayRoom;
 use MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -31,6 +32,7 @@ class HomeAwayResponseCompiler
     /** @var  Router $router */
     private $router;
     private $assignedId;
+    private $domainName;
 
     public function __construct(
         HomeAwayDataFormatter $dataFormatter,
@@ -38,7 +40,8 @@ class HomeAwayResponseCompiler
         Currency $currencyHandler,
         ChannelManagerHelper $channelManagerHelper,
         Router $router,
-        $assignedId
+        $assignedId,
+        $domainName
     ) {
         $this->dataFormatter = $dataFormatter;
         $this->localCurrency = $localCurrency;
@@ -46,6 +49,7 @@ class HomeAwayResponseCompiler
         $this->channelManagerHelper = $channelManagerHelper;
         $this->router = $router;
         $this->assignedId = $assignedId;
+        $this->domainName = $domainName;
     }
 
     public function formatListingContentIndex(HomeAwayConfig $config, $dataType)
@@ -66,7 +70,7 @@ class HomeAwayResponseCompiler
             $roomType = $channelManagerRoomType->getRoomType();
             $listingEntry = $advertiserElement->addChild('listingContentIndexEntry');
             $listingEntry->addChild('listingExternalId', $roomType->getId());
-            $listingEntry->addChild('listingHomeAwayId', $channelManagerRoomType->getRoomId());
+//            $listingEntry->addChild('listingHomeAwayId', $channelManagerRoomType->getRoomId());
             $listingEntry->addChild('unitExternalId', $roomType->getId());
             $listingEntry->addChild('active', $roomType->getIsEnabled());
             $listingEntry->addChild('lastUpdatedDate',
@@ -78,6 +82,40 @@ class HomeAwayResponseCompiler
         return $rootElement->asXML();
     }
 
+    public function formatListingData(RoomType $roomType, HomeAwayConfig $config)
+    {
+        $rootElement = new \SimpleXMLElement('<listing/>');
+        $rootElement->addChild('externalId', $roomType->getId());
+        $rootElement->addAttribute('active', $roomType->getIsEnabled() ? 'true' : 'false');
+
+        $haRoomType = $this->getHARoomByRoomType($config, $roomType);
+        $hotel = $roomType->getHotel();
+        $adContentNode = $rootElement->addChild('adContent');
+        $adContentNode->addChild('description', $roomType->getDescription());
+        $adContentNode->addChild('propertyName', $roomType->getName());
+        $adContentNode->addChild('headline', $haRoomType->getHeadLine());
+
+        $locationNode = $rootElement->addChild('location');
+        $addressNode = $locationNode->addChild('address');
+        $addressNode->addChild('address1', $hotel->getHouse() . ' ' . $hotel->getInternationalStreetName());
+        $city = $hotel->getCity();
+        $city->
+        $addressNode->addChild('city', )
+
+        $geoCodeNode = $locationNode->addChild('geoCode');
+        $geoCodeNode->addChild('latitude', $hotel->getLatitude());
+        $geoCodeNode->addChild('longitude', $hotel->getLongitude());;
+        $locationNode->addChild('showExactLocation', 'true');
+
+        $imagesNode = $rootElement->addChild('images');
+        foreach ($roomType->getImages() as $image) {
+            $imageNode = $imagesNode->addChild('image');
+            $imageNode->addChild('externalId', $image->getId());
+            $imageNode->addChild('uri', $this->domainName . '/' . $image->getPath());
+        }
+
+    }
+    
     public function formatRatePeriodsData(
         \DateTime $begin,
         \DateTime $end,
@@ -397,6 +435,18 @@ class HomeAwayResponseCompiler
     private function getBeginDate()
     {
         return new \DateTime();
+    }
+
+    private function getHARoomByRoomType(HomeAwayConfig $config, RoomType $roomType)
+    {
+        foreach ($config->getRooms() as $room) {
+            /** @var HomeAwayRoom $room */
+            if ($room->getRoomType() == $roomType) {
+                return $room;
+            }
+        }
+
+        return null;
     }
 
     private function getEndDate()

@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
-use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayRoom;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -14,10 +13,10 @@ class HomeAwayRoomsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('rooms', CollectionType::class, [
-            'entry_type' => HomeAwayRoom::class,
+            'entry_type' => HomeAwayRoomTypeForm::class,
             'group' => false,
             'entry_options' => [
-                'rooms' => $builder->getData()->getRooms()
+                'roomTypes' => $builder->getData()->getRooms()
             ]
         ]);
     }
@@ -26,8 +25,7 @@ class HomeAwayRoomsType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => HomeAwayConfig::class,
-                'roomTypes' => null
+                'data_class' => HomeAwayConfig::class
             ]
         );
     }

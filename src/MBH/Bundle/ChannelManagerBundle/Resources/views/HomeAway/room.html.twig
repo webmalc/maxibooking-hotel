@@ -5,6 +5,7 @@
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
+            {% form_theme form '@MBHHotel/Hotel/embeddedFormTheme.html.twig' %}
             {{ form_start(form, {'action': path('homeaway_room'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             {% include 'MBHChannelManagerBundle::actions.html.twig'%}

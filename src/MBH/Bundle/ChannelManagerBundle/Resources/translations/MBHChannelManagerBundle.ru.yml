@@ -115,7 +115,7 @@ channelManager.ostrovok.notification.error.subject: Ошибка Ostrovok.ru
 channelManager.ostrovok.notification.error: "Ошибка при обработке заказа Ostrovok.ru. Информация: %info%"
 
 
-channelmanager.homeaway.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы отель, типы номеров или тариф
+channelmanager.homeaway.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы отель или типы номеров
 channelManager.101Hotels.notification.subject.new: 'Новый заказ 101hotels.ru'
 channelManager.101Hotels.notification.subject.edit: 'Изменен заказ 101hotels.ru'
 channelManager.101Hotels.notification.subject.delete: 'Удален заказ 101hotels.ru'

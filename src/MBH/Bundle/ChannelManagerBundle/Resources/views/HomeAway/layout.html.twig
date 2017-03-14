@@ -5,6 +5,7 @@
 
 {% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle') %}
 {% set layout = 'tabs' %}
+{% set isRoomSynchronized = false %}
 
 {% set menu = [
 {'route': 'homeaway', 'title': '<i class="fa fa-info-circle"></i>'~'views.tabs.main_settings'|trans({}, 'MBHChannelManagerBundle')},
@@ -12,8 +13,13 @@
 ] %}
 
 {% block content %}
+    {% for room in config.rooms %}
+        {% if room.isEnabled == true and room.rentalAgreement is not empty %}
+            {% set isRoomSynchronized = true %}
+        {% endif %}
+    {% endfor %}
 
-    {% if config and (config.rooms.count == 0 or config.hotelId is empty or config.mainTariff is empty) %}
+    {% if config and isRoomSynchronized == false %}
         <div class="alert alert-danger">
             <i class="fa fa-exclamation-circle"></i>&nbsp;
             {{ 'channelmanager.homeaway.empty.config'|trans({}, 'MBHChannelManagerBundle') }}
