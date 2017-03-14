@@ -170,6 +170,7 @@ services:
           - '@doctrine_mongodb'
           - '@validator'
           - '@mbh.cache.logger'
+          - '@mbh.mongo'
 
     mbh.task.logger:
         class:     Symfony\Bridge\Monolog\Logger

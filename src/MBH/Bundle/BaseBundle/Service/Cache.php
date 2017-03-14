@@ -7,6 +7,7 @@ use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bridge\Monolog\Logger;
+use MBH\Bundle\BaseBundle\Service\Mongo;
 
 /**
  * Helper service
@@ -44,15 +45,21 @@ class Cache
     private $validator;
 
     /**
+     * @var Mongo
+     */
+    private $mongo;
+
+    /**
      * @var Logger
      */
     private $logger;
 
-    public function __construct(array $params, string $redisUrl, ManagerRegistry $documentManager, ValidatorInterface $validator, Logger $logger)
+    public function __construct(array $params, string $redisUrl, ManagerRegistry $documentManager, ValidatorInterface $validator, Logger $logger, Mongo $mongo)
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
         $this->lifetime = $params['lifetime'];
+        $this->mongo = $mongo;
         $redis = RedisAdapter::createConnection($redisUrl);
         $this->cache = new RedisAdapter($redis);
         $this->documentManager = $documentManager->getManager();
@@ -145,30 +152,26 @@ class Cache
         $item->set($value)->expiresAfter($this->lifetime * 24 * 60 * 60);
         $this->cache->save($item);
 
-        //save key to database
-        $cacheItem = new CacheItem($key);
-
-        if (!count($this->validator->validate($cacheItem))) {
-            $dates = array_values(array_filter($keys, function ($entry) {
-                return $entry instanceof \DateTime;
-            }));
-
-            if (isset($dates[0])) {
-                $cacheItem->setBegin($dates[0]);
-            }
-            if (isset($dates[1])) {
-                $cacheItem->setEnd($dates[1]);
-            }
-
-            $this->documentManager->persist($cacheItem);
-            $this->documentManager->flush();
-            if ($this->logger) {
-                $this->logger->info(
-                    'SET: ' . $key . '__' .$this->generateArgsString($keys) .
-                    ' - LIFETIME: ' . $this->lifetime
-                );
-            }
+        if ($this->logger) {
+            $this->logger->info(
+                'SET: ' . $key . '__' .$this->generateArgsString($keys) .
+                ' - LIFETIME: ' . $this->lifetime
+            );
         }
+        $dates = array_values(array_filter($keys, function ($entry) {
+            return $entry instanceof \DateTime;
+        }));
+
+        $data = ['key' => $key];
+
+        if (isset($dates[0])) {
+            $data['begin'] = new \MongoDate($dates[0]->getTimestamp());
+        }
+        if (isset($dates[1])) {
+            $data['end'] = new \MongoDate($dates[1]->getTimestamp());
+        }
+
+        $this->mongo->insert('CacheItem', $data);
 
         return $this;
     }
