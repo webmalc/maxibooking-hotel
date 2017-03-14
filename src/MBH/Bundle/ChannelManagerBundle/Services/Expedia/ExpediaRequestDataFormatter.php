@@ -99,9 +99,11 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                         strtoupper($this->container->getParameter('locale.currency')));
                     if ($hasPriceList) {
                         foreach ($tariffPricesInfo['prices'] as $price) {
-                            $perOccupancyElement = $rateElement->addChild('PerOccupancy');
-                            $perOccupancyElement->addAttribute('rate', $price['total']);
-                            $perOccupancyElement->addAttribute('occupancy', $price['adults']);
+                            if (!isset($price['children']) ||$price['children'] == 0) {
+                                $perOccupancyElement = $rateElement->addChild('PerOccupancy');
+                                $perOccupancyElement->addAttribute('rate', $price['total']);
+                                $perOccupancyElement->addAttribute('occupancy', $price['adults']);
+                            }
                         }
                     }
                 }
