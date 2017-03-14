@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -80,7 +81,13 @@ class RoomTypeGenerateRoomsType extends AbstractType
                 'attr' => ['placeholder' => 'HTL'],
                 'help' => 'form.roomTypeGenerateRoomsType.prefix_example',
                 'constraints' => new Length(['max' => 20])
-            ]);
+            ])
+            ->add('isSmoking', CheckboxType::class, [
+                'label' => 'form.roomType_generator.is_smoking.label',
+                'help' => 'form.roomType.is_smoking.help',
+                'required' => false
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

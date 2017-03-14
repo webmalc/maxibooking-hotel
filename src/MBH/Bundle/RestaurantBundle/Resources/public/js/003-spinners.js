@@ -5,9 +5,10 @@ $(function () {
             max: 9007199254740992,
             //boostat: 50,
             stepinterval: 50,
-            decimals: 2,
+            decimals: 3,
             step: 0.1,
-            maxboostedstep: 10000000
+            maxboostedstep: 10000000,
+            forcestepdivisibility: 'none'
             // postfix: '<i class="' + mbh.currency.icon + '"></i>'
         });
     },

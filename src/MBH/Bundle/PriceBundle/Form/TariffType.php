@@ -47,7 +47,7 @@ class TariffType extends AbstractType
                 DateType::class,
                 array(
                     'label' => 'Начало',
-                    'group' => 'Условия и ограничения',
+                    'group' => 'form.tariffType.conditions_and_restrictions',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'help' => 'С какого числа используется тариф?',
@@ -64,7 +64,7 @@ class TariffType extends AbstractType
                 DateType::class,
                 array(
                     'label' => 'Конец',
-                    'group' => 'Условия и ограничения',
+                    'group' => 'form.tariffType.conditions_and_restrictions',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'help' => 'По какое число используется тариф?',
@@ -81,7 +81,7 @@ class TariffType extends AbstractType
             ->add('condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.condition',
                 'required' => false,
-                'group' => 'Условия и ограничения',
+                'group' => 'form.tariffType.conditions_and_restrictions',
                 'choices' => array_combine($conditions, $conditions),
                 'choice_label' => function ($value, $label) {
                     return 'form.promotionType.choice_label.condition.' . $value;
@@ -89,7 +89,7 @@ class TariffType extends AbstractType
             ])
             ->add('condition_quantity', NumberType::class, [
                 'label' => 'form.promotionType.label.condition_quantity',
-                'group' => 'Условия и ограничения',
+                'group' => 'form.tariffType.conditions_and_restrictions',
                 'required' => false,
                 'error_bubbling' => false,
                 'attr' => [
@@ -99,7 +99,7 @@ class TariffType extends AbstractType
             ->add('additional_condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.add_condition',
                 'required' => false,
-                'group' => 'Условия и ограничения',
+                'group' => 'form.tariffType.conditions_and_restrictions',
                 'choices' => array_combine($conditions, $conditions),
                 'choice_label' => function ($value, $label) {
                     return 'form.promotionType.choice_label.condition.' . $value;
@@ -107,7 +107,7 @@ class TariffType extends AbstractType
             ])
             ->add('additional_condition_quantity', NumberType::class, [
                 'label' => 'form.promotionType.label.condition_quantity',
-                'group' => 'Условия и ограничения',
+                'group' => 'form.tariffType.conditions_and_restrictions',
                 'required' => false,
                 'error_bubbling' => false,
                 'attr' => [
@@ -115,11 +115,11 @@ class TariffType extends AbstractType
                 ],
             ])
             ->add('minPerPrepay', TextType::class, [
-                'label' => 'Минимальная предоплата',
-                'group' => 'Условия и ограничения',
+                'label' => 'form.tariffType.minPrepay',
+                'group' => 'form.tariffType.conditions_and_restrictions',
                 'required' => false,
-                'attr' => ['placeholder' => 'Минимальный процент предоплаты'],
-                'help' => 'Процент от суммы заказа от 0 до 100%'
+                'attr' => ['placeholder' => 'form.tariffType.minPerPrepay'],
+                'help' => 'form.tariffType.help'
             ]);
         $builder
             ->add('isOnline', CheckboxType::class, [

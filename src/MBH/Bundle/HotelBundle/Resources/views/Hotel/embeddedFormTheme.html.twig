@@ -1,0 +1,25 @@
+{% extends '@MBHBase/Form/fields.html.twig' %}
+
+{% block form_row %}
+    {% spaceless %}
+        {% if form.children|length  == 0%}
+        <div class="form-group {% if errors|length > 0 %} has-error{% endif %}">
+            {{ form_label(form) }}
+
+            <div class="col-sm-6">
+                {{ form_widget(form) }}
+                {% if help is not null %}
+                    <span class="help-block"><small>{{ help|trans|raw }}</small></span>
+                {% endif %}
+            </div>
+            <div class="col-sm-4">
+                {% if errors|length > 0 %}
+                    <span class="text-danger text-left input-errors">{{ form_errors(form) }}</span>
+                {% endif %}
+            </div>
+        </div>
+            {% else %}
+                {{ form_widget(form) }}
+            {% endif %}
+    {% endspaceless %}
+{% endblock form_row %}

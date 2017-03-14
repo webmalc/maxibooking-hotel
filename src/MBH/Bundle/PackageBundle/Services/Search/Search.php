@@ -64,7 +64,6 @@ class Search implements SearchInterface
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $this->hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         $this->memcached = $this->container->get('mbh.cache');
-//        $this->memcached = null;
     }
 
     /**
@@ -553,6 +552,7 @@ class Search implements SearchInterface
         if ($collection->count()) {
             $collection->rewind();
             $room = $collection->current();
+
             $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($room->getId());
             $result->setVirtualRoom($room);
 

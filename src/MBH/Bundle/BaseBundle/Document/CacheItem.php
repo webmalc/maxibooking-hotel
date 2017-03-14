@@ -9,7 +9,6 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 
 /**
  * @ODM\Document(collection="CacheItem", repositoryClass="MBH\Bundle\BaseBundle\Document\CacheItemRepository")
- * @MongoDBUnique(fields={"key"})
  */
 class CacheItem extends Base
 {

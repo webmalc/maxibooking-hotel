@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -188,9 +189,22 @@ class RoomType extends Base implements RoomTypeInterface
      */
     protected $category;
 
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isSmoking = false;
+
+    /**
+     * @var array
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomViewType")
+     */
+    protected $roomViewsTypes;
+
     public function __construct()
     {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rooms = new ArrayCollection();
+        $this->roomViewsTypes = new ArrayCollection();
     }
 
     /**
@@ -651,6 +665,44 @@ class RoomType extends Base implements RoomTypeInterface
     public function setCategory(RoomTypeCategory $category = null)
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsSmoking(): ?bool
+    {
+        return $this->isSmoking;
+    }
+
+    /**
+     * @param bool $isSmoking
+     * @return RoomType
+     */
+    public function setIsSmoking(bool $isSmoking): RoomType
+    {
+        $this->isSmoking = $isSmoking;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoomViewsTypes()
+    {
+        return $this->roomViewsTypes;
+    }
+
+    /**
+     * @param array $roomViewsTypes
+     * @return RoomType
+     */
+    public function setRoomViewsTypes(array $roomViewsTypes): RoomType
+    {
+        $this->roomViewsTypes = $roomViewsTypes;
 
         return $this;
     }

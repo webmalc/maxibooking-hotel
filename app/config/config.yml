@@ -258,3 +258,10 @@ ornicar_gravatar:
 parameters:
     knp_menu.renderer.twig.options:
         currentClass: active
+
+vich_uploader:
+    db_driver: mongodb
+    mappings:
+        upload_image:
+            uri_prefix:         /upload/images
+            upload_destination: '%kernel.root_dir%/../web/upload/images'

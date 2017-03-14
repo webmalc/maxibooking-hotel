@@ -161,10 +161,16 @@ services:
         class: MBH\Bundle\BaseBundle\EventListener\GenerateInternationalListener
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
-
+ 
     mbh.cache:
-            class: MBH\Bundle\BaseBundle\Service\Cache
-            arguments: ['%mbh_cache%', '@doctrine_mongodb', '@validator']
+        class: MBH\Bundle\BaseBundle\Service\Cache
+        arguments:
+          - '%mbh_cache%'
+          - '%mbh_redis%'
+          - '@doctrine_mongodb'
+          - '@validator'
+          - '@mbh.cache.logger'
+          - '@mbh.mongo'
 
     mbh.task.logger:
         class:     Symfony\Bridge\Monolog\Logger
@@ -175,3 +181,13 @@ services:
     mbh.task.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.task.log", 200]
+
+    mbh.cache.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.cache.logger_handler']]
+
+    mbh.cache.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]

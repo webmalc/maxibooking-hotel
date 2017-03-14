@@ -1,9 +1,12 @@
 form.hotelExtendedType.city: Город
 form.hotelExtendedType.settlement: Населенный пункт
 form.hotelExtendedType.street: Улица
+form.hotelExtendedType.international_street_name.label: Международное название
+form.hotelExtendedType.international_street_name.help: Международное название улицы
 form.hotelExtendedType.house: Дом
 form.hotelExtendedType.corpus: Корпус
 form.hotelExtendedType.flat: Квартира
+form.hotelExtendedType.zip_code: Почтовый индекс
 form.hotelExtendedType.location: Местоположение
 form.hotelExtendedType.address: Адрес
 form.hotelExtendedType.placeholder_location: Москва, Московская обл., Щелково
@@ -20,8 +23,33 @@ form.hotelExtendedType.integration: Интеграция
 form.hotelExtendedType.hotel_type: Тип отеля
 form.hotelExtendedType.hotel_theme: Тема отеля
 form.hotelExtendedType.hotel_amenities: Удобства отеля
+form.hotelExtendedType.all_rooms_non_smoking: Все номера для некурящих
+form.hotelExtendedType.non_smoking_room: Общие комнаты для некурящих
+form.hotelExtendedType.all_public_areas_non_smoking: Во всех общественных местах запрещено курение
+form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms: Курение разрешено в специально отведенных местах и номерах
 form.hotelExtendedType.vega_address_id: ID адреса для ПК "Вега"
 form.hotelExtendedType.vega_address_id_help: ID адреса для ПК "Вега"
+form.hotelExtendedType.accepted_payment_types: Способы платежа
+form.hotelExtendedType.accepted_card_type.label: Типы карт
+form.hotelExtendedType.accepted_card_type.help: Принимаемые типы платежных карт
+form.hotelExtendedType.is_invoice_accepted.label: Накладные
+form.hotelExtendedType.is_invoice_accepted.help: Принимаются ли для оплаты накладные
+form.hotelExtendedType.check_in_out_policy.label: Правила въезда/выезда
+form.hotelExtendedType.check_in_out_policy.help: Правила въезда/выезда, включая предметы необходимые при въезде
+form.hotelExtendedType.smoking_policy.label: Правила курения
+form.hotelExtendedType.check_in_out_policy.placeholder: При въезде необходимо предоставить валидную кредитную или дебетовую карту
+form.contact_info_type.available_languages.label: Языки общения
+form.contact_info_type.phone.label: Телефон
+form.contact_info_type.phone.help: Номер контактного телефона
+form.contact_info_type.full_name.label: Имя
+form.contact_info_type.full_name.help: Полное имя контакта
+form.contact_info_type.email.label: E-mail
+form.contact_info_type.email.help: Электронная почта контактного лица
+form.hotel_contact_information.contact_info.group: Данные контактов поддержки клиента
+form.hotel_images.image_file.label: Изображение
+form.hotel_images.image_file.help: Изображение отеля для онлайн бронирования
+form.hotel_images.image_is_default.label: Основное?
+form.hotel_images.image_is_default.help: Является ли изображение основным для отеля?
 form.hotelType.name: Название
 form.hotelType.general_info: Общая информация
 form.taskType.general_info: Добавление типа
@@ -38,6 +66,8 @@ form.hotelType.sale_days_amount: Количество дней продажи
 form.hotelType.settings: Настройки
 form.hotelType.how_long_sale_opened_since_today: На сколько дней открыта продажа от текущего числа
 form.hotelType.hostel: Хостел?
+form.hotelType.isSmoking.label: Разрешено курение?
+form.hotelType.isSmoking.help: Разрешено ли курение в номере?
 form.hotelType.hostel_hotel_or_not: Хостел или нет?
 form.hotelType.is_default: Выбран по умолчанию?
 form.hotelType.logo: Логотип
@@ -55,6 +85,10 @@ form.roomType.status: Статус
 form.roomType.facilities: Удобства
 form.roomType.housing: Корпус
 form.roomType.floor: Этаж
+form.roomType.is_smoking.label: Разрешено курение?
+form.roomType_generator.is_smoking.label: Курящий?
+form.roomType.is_smoking.help: Разрешено ли в комнате курение?
+form.roomType.room_view_types.label: Вид из окна
 
 form:
     roomTypeCategory:
@@ -86,6 +120,7 @@ form.roomTypeType.name: Название
 form.roomTypeType.general_info: Общая информация
 form.roomTypeType.comfort_plus: Комфорт плюс
 form.roomTypeType.inner_name: Внутреннее название
+form.roomTypeType.inner_name.help: Название для использования внутри MaxiBooking
 form.roomTypeType.international_title: Международное название
 form.roomTypeType.comport_plus_rooms_in_new_housing: Комфорт плюс - номера в новом корпусе
 form.roomTypeType.description: Описание
@@ -93,6 +128,7 @@ form.roomTypeType.color: Цвет
 form.roomTypeType.online_reservation_room_description: Описание типа номера для онлайн бронирования
 form.roomTypeType.chess_room_type_color: Цвет типа номера на шахматке
 form.roomTypeType.image: Изображение
+form.roomTypeType.image.help: Изображение типа номера для онлайн бронирования
 form.roomTypeType.main_places: Основные места
 form.roomTypeType.settings: Настройки
 form.roomTypeType.places: Места
@@ -114,10 +150,20 @@ form.roomTypeType.help.empty_facilities: Используются удобств
 controller.hotelController.record_created_success: 'Запись успешно создана.'
 
 controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
+controller.hotelController.success_delete_photo: Изображение успешно удалено.
+controller.hotelController.success_main_image_set: Изображение установлено как основное для данного отеля
+hotel_images.set_image_main: Cделать изображение основным для данного отеля
+hotel_images.main_image: Главная фотография
+hotel_images.remove_image: Удалить картинку
 controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
+controller.roomController.success_room_creation: Комната успешно добавлена.
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
 controller.TaskTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
 controller.TaskTypeController.record_edited_success: 'Запись успешно отредактирована.'
+controller.roomTypeController.success_set_main_photo: Фотография успешно была сделана главной.
+controller.roomTypeController.success_set_photo: Фотография успешно создана.
+controller.roomTypeController.success_delete_photo: Изображение успешно удалено.
+controller.roomTypeController.success_room_type_creation: Новый тип номера успешно создан
 
 controller.hotelController.task_created_notall: 'Не все задачи созданы/отредактированы, сначала закройте открытые задачи для данного типа'
 controller.hotelController.task_created_failed: 'Не удалось создать ни одной задачи'
@@ -195,5 +241,6 @@ technical: Техника
 
 mailer.new_task.subject: 'Вам назначена новая задача'
 mailer.new_task.text: 'Вам назначили задачу "%taskType%"'
+
 
 
