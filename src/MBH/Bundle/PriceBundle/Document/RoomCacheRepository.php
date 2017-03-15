@@ -13,10 +13,18 @@ class RoomCacheRepository extends DocumentRepository
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param RoomType $roomType
+     * @param Cache $memcached
      * @return int
      */
-    public function getMinTotal(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff = null): int
+    public function getMinTotal(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff = null, Cache $memcached = null): int
     {
+        if ($memcached) {
+            $cache = $memcached->get('room_cache_min_total', func_get_args());
+            if ($cache !== false) {
+                return $cache;
+            }
+        }
+
         $qb = $this->createQueryBuilder()
             ->field('date')->gte($begin)->lte($end)
             ->field('roomType.id')->equals($roomType->getId())
@@ -29,8 +37,12 @@ class RoomCacheRepository extends DocumentRepository
         }
 
         $roomCache = $qb->getQuery()->getSingleResult();
+        $result = $roomCache ? $roomCache->getTotalRooms() : 0;
+        if ($memcached) {
+            $memcached->set($result, 'room_cache_min_total', func_get_args());
+        }
 
-        return $roomCache ? $roomCache->getTotalRooms() : 0;
+        return $result;
     }
 
     /**
