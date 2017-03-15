@@ -136,9 +136,43 @@ class HomeAwayController extends BaseController
         ];
     }
 
+    /**
+     * @Route("/listing_content_index", name="listing_content_index")
+     * @return Response
+     */
     public function getListingContentIndex()
     {
-        
+        $configs = $this->get('mbh.channelmanager.homeaway_data_formatter')->getConfigs();
+        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')
+            ->formatListingContentIndex($configs, 'listing_data');
+
+        return new Response($response, 200, ['Content-Type' => 'text/xml']);
+    }
+
+    /**
+     * @Route("/availability_content_index", name="availability_content_index")
+     * @return Response
+     */
+    public function getAvailabilityContentIndex()
+    {
+        $configs = $this->get('mbh.channelmanager.homeaway_data_formatter')->getConfigs();
+        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')
+            ->formatListingContentIndex($configs, 'availability');
+
+        return new Response($response, 200, ['Content-Type' => 'text/xml']);
+    }
+
+    /**
+     * @Route("/rates_content_index", name="rates_content_index")
+     * @return Response
+     */
+    public function getRatesContentIndex()
+    {
+        $configs = $this->get('mbh.channelmanager.homeaway_data_formatter')->getConfigs();
+        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')
+            ->formatListingContentIndex($configs, 'rates');
+
+        return new Response($response, 200, ['Content-Type' => 'text/xml']);
     }
 
     /**
@@ -228,8 +262,9 @@ class HomeAwayController extends BaseController
         $endString = (string)$requestDetailsNode->reservation->reservationDates->endDate;
         $documentVersion = (string)$requestXML->documentVersion;
 
+        $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
         /** @var HomeAwayConfig $config */
-        $config = $this->hotel->getHomeAwayConfig();
+        $config = $roomType->getHotel()->getHomeAwayConfig();
         $currentRoomType = null;
         foreach ($config->getRooms() as $homeAwayRoomType) {
             /** @var HomeAwayRoom $homeAwayRoomType */
@@ -345,8 +380,7 @@ class HomeAwayController extends BaseController
         $bookingRequestXML = new \SimpleXMLElement($bookingRequest);
         $documentVersion = (string)$bookingRequestXML->documentVersion;
         $bookingRequestDetails = $bookingRequestXML->bookingRequestDetails[0];
-        $config = $this->hotel->getHomeAwayConfig();
-        $orderInfo = $this->get('mbh.channelmanager.homeaway_order_info')->setInitData($bookingRequestDetails, $config);
+        $orderInfo = $this->get('mbh.channelmanager.homeaway_order_info')->setInitData($bookingRequestDetails);
         $resultOfCreation = $this->get('mbh.channel_manager.order_handler')->createOrder($orderInfo);
         $bookingCreationResponse = $this->get('mbh.channelmanager.homeaway_response_compiler')
             ->getBookingResponse($documentVersion, $resultOfCreation, $orderInfo->getMessages());

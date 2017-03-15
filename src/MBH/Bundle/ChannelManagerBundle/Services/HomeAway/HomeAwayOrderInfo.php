@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
@@ -16,21 +15,17 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
 {
     /** @var  \SimpleXMLElement $bookingData */
     private $bookingData;
-    /** @var  HomeAwayConfig $config */
-    private $config;
 
     private $isCashDocumentsInit = false;
     private $cashDocuments;
 
     /**
      * @param \SimpleXMLElement $bookingData
-     * @param HomeAwayConfig $config
      * @return HomeAwayOrderInfo
      */
-    public function setInitData(\SimpleXMLElement $bookingData, HomeAwayConfig $config) : HomeAwayOrderInfo
+    public function setInitData(\SimpleXMLElement $bookingData) : HomeAwayOrderInfo
     {
         $this->bookingData = $bookingData;
-        $this->config = $config;
 
         return $this;
     }
@@ -117,7 +112,8 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
 
     public function getSource() : ?PackageSource
     {
-        return $this->dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(['code' => $this->getChannelManagerName()]);
+        return $this->dm->getRepository('MBHPackageBundle:PackageSource')
+            ->findOneBy(['code' => $this->getChannelManagerName()]);
     }
 
     /**
@@ -128,7 +124,7 @@ class HomeAwayOrderInfo extends AbstractOrderInfo
     {
         return [
             $this->container->get('mbh.channelmanager.homeaway_package_info')
-                ->setInitData($this->bookingData, $this->config)
+                ->setInitData($this->bookingData)
                 ->setPrice($this->getPrice())
                 ->setTourists([$this->getPayer()])
                 ->setChannelManagerId($this->getChannelManagerOrderId())

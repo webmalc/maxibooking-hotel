@@ -58,7 +58,12 @@ class HomeAwayResponseCompiler
         $this->dm = $dm;
     }
 
-    public function formatListingContentIndex(HomeAwayConfig $config, $dataType)
+    /**
+     * @param HomeAwayConfig[] $configs
+     * @param string $dataType
+     * @return string
+     */
+    public function formatListingContentIndex($configs, $dataType)
     {
         $rootElement = new \SimpleXMLElement('<listingContentIndex/>');
         $advertisersElement = $rootElement->addChild('advertisers');
@@ -74,25 +79,28 @@ class HomeAwayResponseCompiler
             $nodeName = 'listingUrl';
         }
         $advertiserElement->addChild('assignedId', $this->assignedId);
-        foreach ($config->getRooms() as $channelManagerRoomType) {
-            /** @var HomeAwayRoom $channelManagerRoomType */
-            if ($channelManagerRoomType->getIsEnabled()) {
-                $roomType = $channelManagerRoomType->getRoomType();
-                $listingEntry = $advertiserElement->addChild('listingContentIndexEntry');
-                $listingEntry->addChild('listingExternalId', $roomType->getId());
-                $listingEntry->addChild('unitExternalId', $roomType->getId());
-                $listingEntry->addChild('active', $roomType->getIsEnabled());
-                $listingEntry->addChild(
-                    'lastUpdatedDate',
-                    $roomType->getUpdatedAt()->format(self::HOME_AWAY_DATE_TIME_FORMAT)
-                );
-                $listingEntry->addChild(
-                    $nodeName,
-                    $this->router->generate(
-                        $urlName,
-                        ['roomTypeId' => $roomType->getId(), 'hotelId' => $config->getHotel()]
-                    )
-                );
+        foreach ($configs as $config) {
+            foreach ($config->getRooms() as $channelManagerRoomType) {
+                /** @var HomeAwayRoom $channelManagerRoomType */
+                if ($channelManagerRoomType->getIsEnabled()) {
+                    $roomType = $channelManagerRoomType->getRoomType();
+                    $listingEntry = $advertiserElement->addChild('listingContentIndexEntry');
+                    $listingEntry->addChild('listingExternalId', $roomType->getId());
+                    $listingEntry->addChild('unitExternalId', $roomType->getId());
+                    $listingEntry->addChild('active', $roomType->getIsEnabled());
+                    $listingEntry->addChild(
+                        'lastUpdatedDate',
+                        $roomType->getUpdatedAt()->format(self::HOME_AWAY_DATE_TIME_FORMAT)
+                    );
+                    //TODO: Возможно нужно добавить домен к URL
+                    $listingEntry->addChild(
+                        $nodeName,
+                        $this->router->generate(
+                            $urlName,
+                            ['roomTypeId' => $roomType->getId(), 'hotelId' => $config->getHotel()->getId()]
+                        )
+                    );
+                }
             }
         }
 
@@ -270,7 +278,6 @@ class HomeAwayResponseCompiler
             $this->addPaymentScheduleNode($orderItemListElement, $searchResult->getBegin(), $config, $price, $currency);
 
             $cancellationPolicyElement = $orderItemListElement->addChild('reservationCancellationPolicy');
-            //Возможно заполнение URL, PDF или текстом описания
             $cancellationPolicyElement->addChild('description', $config->getCancellationPolicy());
         }
 

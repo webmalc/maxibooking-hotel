@@ -19,13 +19,12 @@ class HomeAwayPackageInfo extends AbstractPackageInfo
 
     /**
      * @param \SimpleXMLElement $bookingRequest
-     * @param HomeAwayConfig $config
      * @return HomeAwayPackageInfo
      */
-    public function setInitData(\SimpleXMLElement $bookingRequest, HomeAwayConfig $config) : HomeAwayPackageInfo
+    public function setInitData(\SimpleXMLElement $bookingRequest) : HomeAwayPackageInfo
     {
         $this->bookingRequest = $bookingRequest;
-        $this->config = $config;
+        $this->config = $this->getRoomType()->getHotel()->getHomeAwayConfig();
 
         return $this;
     }
@@ -54,7 +53,6 @@ class HomeAwayPackageInfo extends AbstractPackageInfo
         if (is_null($roomType)) {
             $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
                 [
-                    'hotel.id' => $this->config->getHotelId(),
                     'isEnabled' => true,
                     'deletedAt' => null
                 ]

@@ -51,22 +51,22 @@ class HomeAway
     public function getHotelRequiredDataMessage(Hotel $hotel)
     {
         $config = $hotel->getHomeAwayConfig();
-        $availableListingCount = 0;
+//        $availableListingCount = 0;
         $requestedData = [];
 
-        if (!is_null($config)) {
-            foreach ($config->getRooms() as $room) {
-                if ($room->getIsEnabled()) {
-                    $availableListingCount++;
-                }
-            }
-        } else {
-            $requestedData[] = 'home_away.data_to_sync.not_less_than';
-        }
+//        if (!is_null($config)) {
+//            foreach ($config->getRooms() as $room) {
+//                if ($room->getIsEnabled()) {
+//                    $availableListingCount++;
+//                }
+//            }
+//        } else {
+//            $requestedData[] = 'home_away.data_to_sync.not_less_than';
+//        }
 
-        if ($availableListingCount < 5) {
-            $requestedData[] = 'home_away.data_to_sync.not_less_than';
-        }
+//        if ($availableListingCount < 5) {
+//            $requestedData[] = 'home_away.data_to_sync.not_less_than';
+//        }
         if (empty($hotel->getLatitude()) || empty($hotel->getLongitude())) {
             $requestedData[] = 'home_away.data_to_sync.fill_longitude_and_latitude';
         }
