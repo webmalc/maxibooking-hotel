@@ -22,6 +22,7 @@ class ChannelManagerHelper
     private $notifier;
     private $translator;
     private $dm;
+    const TRIP_ADVISOR_CONFIRMATION_URL = 'http://example.com';
 
     public function __construct(Notifier $notifier, TranslatorInterface $translator, DocumentManager $dm)
     {
@@ -111,7 +112,7 @@ class ChannelManagerHelper
      * @param Hotel $hotel
      * @return array
      */
-    public static function getHotelUnfilledRequiredFields(Hotel $hotel)
+    public static function getHotelUnfilledRequiredFields(Hotel $hotel, $confirmationUrl)
     {
         $requiredHotelData = [];
         $hotelContactInformation = $hotel->getContactInformation();
@@ -129,6 +130,7 @@ class ChannelManagerHelper
         }
         !empty($hotel->getSmokingPolicy()) ?: $requiredHotelData[] = 'form.hotelType.isSmoking.help';
         !empty($hotel->getCheckinoutPolicy()) ?: $requiredHotelData[] = 'form.hotelExtendedType.check_in_out_policy.label';
+        $confirmationUrl == self::TRIP_ADVISOR_CONFIRMATION_URL ?: $requiredHotelData[] = 'channel_manager_helper.confirmation_url';
 
         return $requiredHotelData;
     }
@@ -175,7 +177,7 @@ class ChannelManagerHelper
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'));
 
-            $notifier->setMessage($message)->notify();
+            $this->notifier->setMessage($message)->notify();
 
         } catch (\Exception $e) {
             return false;

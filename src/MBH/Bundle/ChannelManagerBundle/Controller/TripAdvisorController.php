@@ -55,7 +55,8 @@ class TripAdvisorController extends BaseController
         ]);
 
         $form->handleRequest($request);
-        $unfilledData = $this->get('mbh.channelmanager.helper')->getHotelUnfilledRequiredFields($this->hotel);
+        $confirmationUrl = $this->getParameter('trip_advisor_confirmation_url');
+        $unfilledData = $this->get('mbh.channelmanager.helper')->getHotelUnfilledRequiredFields($this->hotel, $confirmationUrl);
         $unfilledStringData = '';
         if (count($unfilledData) > 0) {
             $translator = $this->get('translator');

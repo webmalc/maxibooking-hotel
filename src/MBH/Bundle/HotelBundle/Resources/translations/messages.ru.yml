@@ -130,6 +130,7 @@ form.roomTypeType.international_title: Международное названи
 form.roomTypeType.comport_plus_rooms_in_new_housing: Комфорт плюс - номера в новом корпусе
 form.roomTypeType.description: Описание
 channel_manager_helper.bed_configuration_not_exists: Данные о кроватях(в поле "Удобства")
+channel_manager_helper.confirmation_url: Адрес страницы подтверждения брони
 form.roomTypeType.color: Цвет
 form.roomTypeType.online_reservation_room_description: Описание типа номера для онлайн бронирования
 form.roomTypeType.chess_room_type_color: Цвет типа номера на шахматке
