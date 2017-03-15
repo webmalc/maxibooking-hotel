@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\Currency;
 use MBH\Bundle\CashBundle\Document\CardType;
@@ -33,6 +34,8 @@ class HomeAwayResponseCompiler
     private $router;
     private $assignedId;
     private $domainName;
+    /** @var  DocumentManager $dm */
+    private $dm;
 
     public function __construct(
         HomeAwayDataFormatter $dataFormatter,
@@ -41,7 +44,8 @@ class HomeAwayResponseCompiler
         ChannelManagerHelper $channelManagerHelper,
         Router $router,
         $assignedId,
-        $domainName
+        $domainName,
+        DocumentManager $dm
     ) {
         $this->dataFormatter = $dataFormatter;
         $this->localCurrency = $localCurrency;
@@ -50,6 +54,7 @@ class HomeAwayResponseCompiler
         $this->router = $router;
         $this->assignedId = $assignedId;
         $this->domainName = $domainName;
+        $this->dm = $dm;
     }
 
     public function formatListingContentIndex(HomeAwayConfig $config, $dataType)
@@ -98,9 +103,16 @@ class HomeAwayResponseCompiler
         $locationNode = $rootElement->addChild('location');
         $addressNode = $locationNode->addChild('address');
         $addressNode->addChild('address1', $hotel->getHouse() . ' ' . $hotel->getInternationalStreetName());
+
         $city = $hotel->getCity();
-        $city->
-        $addressNode->addChild('city', )
+        $city->setTranslatableLocale('en_EN');
+        $this->dm->refresh($city);
+        $addressNode->addChild('city', $city->getTitle());
+
+        $country = $hotel->getCountry();
+        $country->setTranslatableLocale('en_EN');
+        $this->dm->refresh($country);
+        $addressNode->addChild('country', $country->getTitle());
 
         $geoCodeNode = $locationNode->addChild('geoCode');
         $geoCodeNode->addChild('latitude', $hotel->getLatitude());
@@ -114,8 +126,33 @@ class HomeAwayResponseCompiler
             $imageNode->addChild('uri', $this->domainName . '/' . $image->getPath());
         }
 
+        $unitsNode = $rootElement->addChild('units');
+        $unitNode = $unitsNode->addChild('unit');
+        $unitNode->addChild('externalId', $roomType->getId());
+        if ($roomType->getRoomSpace()) {
+            $unitNode->addChild('area', $roomType->getRoomSpace());
+            $unitNode->addChild('areaUnit', 'METERS_SQUARED');
+        }
+
+        $bathRoomsNode = $unitNode->addChild('bathrooms');
+        $bathRoomNode = $bathRoomsNode->addChild('bathroom');
+        $bathRoomNode->addChild('roomSubType', $haRoomType->getBathSubType());
+
+        $bedroomsNode = $unitNode->addChild('bedrooms');
+        $bedroomNode = $bedroomsNode->addChild('bedroom');
+        $bedroomNode->addChild('roomSubType', $haRoomType->getBedRoomSubType());
+
+        $unitNode->addChild('maxSleep', $roomType->getTotalPlaces());
+        $unitNode->addChild('propertyType', $haRoomType->getListingType());
+
+        $monetaryInfoNode = $unitNode->addChild('unitMonetaryInformation');
+        $upperLocalCurrency = strtoupper($this->localCurrency);
+        $currency = $this->getAvailableCurrency($upperLocalCurrency);
+        $monetaryInfoNode->addChild('currency', $currency);
+
+        return $rootElement;
     }
-    
+
     public function formatRatePeriodsData(
         \DateTime $begin,
         \DateTime $end,

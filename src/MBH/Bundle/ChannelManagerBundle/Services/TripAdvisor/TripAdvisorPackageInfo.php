@@ -11,7 +11,6 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class TripAdvisorPackageInfo extends AbstractPackageInfo
 {
-    private $isCorrupted;
     private $checkInDate;
     private $checkOutDate;
     private $bookingMainData;

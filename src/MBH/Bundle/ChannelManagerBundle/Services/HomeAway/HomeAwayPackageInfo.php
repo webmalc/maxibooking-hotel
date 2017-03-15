@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class HomeAwayPackageInfo extends AbstractPackageInfo
 {
@@ -45,7 +46,7 @@ class HomeAwayPackageInfo extends AbstractPackageInfo
         return Helper::getDateFromString($endDateString, 'Y-m-d');
     }
 
-    public function getRoomType()
+    public function getRoomType() : RoomType
     {
         $roomTypeId = trim((string)$this->bookingRequest->listingExternalId);
         $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);

@@ -62,7 +62,15 @@ services:
 
     mbh.channelmanager.homeaway_response_compiler:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayResponseCompiler
-        arguments: ['@mbh.channelmanager.homeaway_data_formatter', '%locale.currency%', '@mbh.currency', '@mbh.channelmanager.helper', '@router', '%home_away_assigned_id%']
+        arguments:
+          - '@mbh.channelmanager.homeaway_data_formatter'
+          - '%locale.currency%'
+          - '@mbh.currency'
+          - '@mbh.channelmanager.helper'
+          - '@router'
+          - '%home_away_assigned_id%'
+          - '%router.request_context.host%'
+          - '@doctrine_mongodb.odm.document_manager'
 
     mbh.channelmanager.homeaway_order_info:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayOrderInfo

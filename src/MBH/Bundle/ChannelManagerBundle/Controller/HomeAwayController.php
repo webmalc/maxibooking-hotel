@@ -195,7 +195,8 @@ class HomeAwayController extends BaseController
         $searchResults = $this->get('mbh.channelmanager.homeaway_data_formatter')->getSearchResults($roomTypeId,
             $adultsCount, $childrenCount, $beginString, $endString, $config->getMainTariff());
 
-        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')->getQuoteResponse($currentRoomType, $adultsCount,
+        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')->getQuoteResponse($currentRoomType,
+            $adultsCount,
             $childrenCount, $documentVersion, $config, $searchResults);
 
         return new Response($response, 200, ['Content-Type' => 'xml']);

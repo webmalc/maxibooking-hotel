@@ -130,6 +130,10 @@ form.home_away_room_type.rental_agreement.label: Договор аренды
 form.home_away_room_type.rental_agreement.help: Текстовое описание договора аренды или ссылка на него.
 form.home_away_room_type.is_enabled.label: Включен?
 form.home_away_room_type.is_enabled.help: Синхронизируется ли тип комнаты с HomeAway?
+form.home_away_room_type.headline.label: Заголовок
+form.home_away_room_type.listing_type.label: Тип
+form.home_away_room_type.bath_room_sub_type.label: Тип ванной
+form.home_away_room_type.bed_room_sub_type.label: Тип спальни
 services.home_away.invalid_room_type_id: Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking
 services.home_away.nor_one_room_type: Не найдено ни одного типа комнат для данного отеля
 language.da_DK: Датский(Дания)
@@ -159,6 +163,29 @@ language.no_NO: Норвежский(Норвегия)
 language.pt_PT: Португальский(Португалия)
 language.sv_SE: Шведский(Швеция)
 language.pl_PL: Польский(Польша)
+
+PROPERTY_TYPE_APARTMENT.translation: Апартаменты
+PROPERTY_TYPE_BUNGALOW.translation: Бунгало
+PROPERTY_TYPE_CABIN.translation: Хижина
+PROPERTY_TYPE_CASTLE.translation: Замок
+PROPERTY_TYPE_CHALET.translation: Шале
+PROPERTY_TYPE_COTTAGE.translation: Коттедж
+PROPERTY_TYPE_FARMHOUSE.translation: Дом на ферме
+PROPERTY_TYPE_HOUSE.translation: Дом
+PROPERTY_TYPE_HOUSE_BOAT.translation: Плавучий дом
+PROPERTY_TYPE_MOBILE_HOME.translation: Мобильный дом
+PROPERTY_TYPE_VILLA.translation: Вилла
+PROPERTY_TYPE_YACHT.translation: Яхта
+PROPERTY_TYPE_BARN.translation: Сарай
+PROPERTY_TYPE_BOAT.translation: Лодка
+
+FULL_BATH.translation: Полная ванная
+SHOWER_INDOOR_OR_OUTDOOR.translation: Душ в помещении или снаружи
+HALF_BATH.translation: Нет душа или ванны
+
+BEDROOM.translation: Cпальная комната
+OTHER_SLEEPING_AREA.translation: Другая спальная зона
+LIVING_SLEEPING_COMBO.translation: Студия
 
 #tripadvisor
 package_info.tripadvisor.children_age: 'Возраст детей: %ages%'

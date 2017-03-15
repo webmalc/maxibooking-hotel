@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\HotelBundle\Document\City;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 
@@ -42,12 +41,33 @@ class HomeAwayRoom
     protected $headLine;
 
     /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Choice(callback="getListingTypes")
+     */
+    protected $listingType;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Choice(callback="getRoomBathSubTypes")
+     */
+    protected $bathSubType;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Choice(callback="getBedRoomSubTypes")
+     */
+    protected $bedRoomSubType;
+
+    /**
      * Set roomType
      *
      * @param RoomType $roomType
      * @return HomeAwayRoom
      */
-    public function setRoomType(RoomType $roomType) : HomeAwayRoom
+    public function setRoomType(RoomType $roomType): HomeAwayRoom
     {
         $this->roomType = $roomType;
 
@@ -59,7 +79,7 @@ class HomeAwayRoom
      *
      * @return RoomType $roomType
      */
-    public function getRoomType() : ?RoomType
+    public function getRoomType(): ?RoomType
     {
         return $this->roomType;
     }
@@ -119,5 +139,99 @@ class HomeAwayRoom
         $this->headLine = $headLine;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getListingType(): ?string
+    {
+        return $this->listingType;
+    }
+
+    /**
+     * @param string $listingType
+     * @return HomeAwayRoom
+     */
+    public function setListingType(string $listingType): HomeAwayRoom
+    {
+        $this->listingType = $listingType;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBathSubType(): ?string
+    {
+        return $this->bathSubType;
+    }
+
+    /**
+     * @param string $bathSubType
+     * @return HomeAwayRoom
+     */
+    public function setBathSubType(string $bathSubType): HomeAwayRoom
+    {
+        $this->bathSubType = $bathSubType;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBedRoomSubType(): ?string
+    {
+        return $this->bedRoomSubType;
+    }
+
+    /**
+     * @param string $bedRoomSubType
+     * @return HomeAwayRoom
+     */
+    public function setBedRoomSubType(string $bedRoomSubType): HomeAwayRoom
+    {
+        $this->bedRoomSubType = $bedRoomSubType;
+        return $this;
+    }
+
+
+    public static function getRoomBathSubTypes()
+    {
+        return [
+            'FULL_BATH',
+            'SHOWER_INDOOR_OR_OUTDOOR',
+            'HALF_BATH'
+        ];
+    }
+
+    public static function getListingTypes()
+    {
+        return [
+            'PROPERTY_TYPE_APARTMENT',
+            'PROPERTY_TYPE_BARN',
+            'PROPERTY_TYPE_BOAT',
+            'PROPERTY_TYPE_BUNGALOW',
+            'PROPERTY_TYPE_CABIN',
+            'PROPERTY_TYPE_CASTLE',
+            'PROPERTY_TYPE_CHALET',
+            'PROPERTY_TYPE_COTTAGE',
+            'PROPERTY_TYPE_FARMHOUSE',
+            'PROPERTY_TYPE_HOUSE',
+            'PROPERTY_TYPE_HOUSE_BOAT',
+            'PROPERTY_TYPE_MOBILE_HOME',
+            'PROPERTY_TYPE_VILLA',
+            'PROPERTY_TYPE_YACHT'
+        ];
+    }
+
+    public static function getBedRoomSubTypes()
+    {
+        return [
+            'BEDROOM',
+            'LIVING_SLEEPING_COMBO',
+            'OTHER_SLEEPING_AREA'
+        ];
     }
 }

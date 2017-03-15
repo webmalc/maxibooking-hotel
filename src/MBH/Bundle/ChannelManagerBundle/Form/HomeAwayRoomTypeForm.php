@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Form;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayRoom;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -32,7 +33,36 @@ class HomeAwayRoomTypeForm extends AbstractType
                 'required' => false
             ])
             ->add('headLine', TextType::class, [
-                'group' => $roomType->getName()
+                'group' => $roomType->getName(),
+                'label' => 'form.home_away_room_type.headline.label',
+                'required' => false
+            ])
+            ->add('listingType', ChoiceType::class, [
+                'choices' => HomeAwayRoom::getListingTypes(),
+                'group' => $roomType->getName(),
+                'choice_label' => function($value) {
+                    return $value . '.translation';
+                },
+                'required' => false,
+                'label' => 'form.home_away_room_type.listing_type.label'
+            ])
+            ->add('bedRoomSubType', ChoiceType::class, [
+                'choices' => HomeAwayRoom::getBedRoomSubTypes(),
+                'group' => $roomType->getName(),
+                'choice_label' => function($value) {
+                    return $value . '.translation';
+                },
+                'required' => false,
+                'label' => 'form.home_away_room_type.bed_room_sub_type.label'
+            ])
+            ->add('bathSubType', ChoiceType::class, [
+                'choices' => HomeAwayRoom::getRoomBathSubTypes(),
+                'group' => $roomType->getName(),
+                'choice_label' => function($value) {
+                    return $value . '.translation';
+                },
+                'required' => false,
+                'label' =>'form.home_away_room_type.bath_room_sub_type.label'
             ])
             ;
     }
