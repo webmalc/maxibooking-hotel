@@ -45,8 +45,7 @@ class RestrictionRepository extends DocumentRepository
                     ->field('closedOnDeparture')->equals(true)
             );
 
-        foreach ($qb->getQuery()->execute() as $restriction)
-        {
+        foreach ($qb->getQuery()->execute() as $restriction) {
             if ($restriction->getTariff()->getIsDefault()) {
                 $dateStr = $restriction->getDate()->format('d.m.Y');
                 $hotel = $restriction->getRoomType()->getHotel();
@@ -81,8 +80,8 @@ class RestrictionRepository extends DocumentRepository
         Hotel $hotel = null,
         array $roomTypes = [],
         array $tariffs = []
-    )
-    {
+    ) {
+    
         $qb = $this->createQueryBuilder('q');
 
         // hotel
@@ -130,7 +129,7 @@ class RestrictionRepository extends DocumentRepository
         $qb
             ->field('date')->equals($date)
             ->field('tariff.id')->equals($tariff->getId())
-            ->field('roomType.id')->equals($roomType->getId());;
+            ->field('roomType.id')->equals($roomType->getId());
 
         $result = $qb->getQuery()->getSingleResult();
 
@@ -159,8 +158,8 @@ class RestrictionRepository extends DocumentRepository
         array $tariffs = [],
         $grouped = false,
         Cache $memcached = null
-    )
-    {
+    ) {
+    
         if ($memcached) {
             $cache = $memcached->get('restrictions_fetch', func_get_args());
             if ($cache !== false) {

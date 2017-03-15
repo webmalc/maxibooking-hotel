@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\PriceBundle\Lib\TariffFilter;
+use MBH\Bundle\BaseBundle\Service\Cache;
 
 class TariffRepository extends DocumentRepository
 {
@@ -87,21 +88,35 @@ class TariffRepository extends DocumentRepository
     /**
      * @param Hotel $hotel
      * @param mixed $online
+     * @param Cache $memcached
      * @return array|null|object
      */
-    public function fetchBaseTariff(Hotel $hotel, $online = null)
+    public function fetchBaseTariff(Hotel $hotel, $online = null, Cache $memcached = null)
     {
-        $qb = $this->createQueryBuilder('q');
+        if ($memcached) {
+            $cache = $memcached->get('tariffs_fetch_base', func_get_args());
+            if ($cache !== false) {
+                return $cache;
+            }
+        }
 
-        $qb->field('isDefault')->equals(true)
+        $queryBuilder = $this->createQueryBuilder('q');
+
+        $queryBuilder->field('isDefault')->equals(true)
             ->field('hotel.id')->equals($hotel->getId())
             ->limit(1);
 
         if ($online !== null) {
-            $qb->field('isOnline')->equals(boolval($online));
+            $queryBuilder->field('isOnline')->equals(boolval($online));
         }
 
-        return $qb->getQuery()->getSingleResult();
+        $result = $queryBuilder->getQuery()->getSingleResult();
+
+        if ($memcached) {
+            $memcached->set($result, 'tariffs_fetch_base', func_get_args());
+        }
+
+        return $result;
     }
 
     /**
@@ -132,7 +147,8 @@ class TariffRepository extends DocumentRepository
         if ($online) {
             $qb->field('isOnline')->equals(true);
         }
-        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');;
+        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
+        ;
 
         return $qb;
     }
