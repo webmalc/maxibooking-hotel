@@ -123,3 +123,8 @@ services:
     task_notice_unpaid_order:
       class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder
       arguments:  ["@mbh.notice.unpaid"]
+
+    mbh.package.dynamic.sales.schedule:
+          class: MBH\Bundle\PackageBundle\Services\DynamicSalesScheduleGenerator
+          calls:
+          arguments: ['@service_container']

@@ -446,3 +446,15 @@ modal.form.delete.reasons.order: Причина удаления заказа
 modal.form.delete.reasons.reason_default: Не указана
 modal.form.delete.reasons.close: Отмена
 modal.form.delete.reasons.delete: Удалить
+
+dynamic.sales.schedule.layout.report: Динамика продаж графики
+dynamic.sales.schedule.sales.day: Стоимость проданных броней в день
+dynamic.sales.schedule.sales.amount: Кол-во проданных броней за день
+dynamic.sales.schedule.sales.count.people: Человекодней
+dynamic.sales.schedule.sales.count.numbers: Номеровдней
+
+package.dynamic.sale.schedule.search: Найти
+dynamic.sales.schedule.sales.day.Yaxis: Сумма руб.
+dynamic.sales.schedule.sales.amount.Yaxis: Кол-во проданных броней
+dynamic.sales.schedule.sales.count.people.Yaxis: Человекодней
+dynamic.sales.schedule.sales.count.numbers.Yaxis: Номеровдней

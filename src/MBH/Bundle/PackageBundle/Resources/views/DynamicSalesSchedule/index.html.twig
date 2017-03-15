@@ -1,0 +1,80 @@
+{% extends 'MBHPackageBundle:DynamicSalesSchedule:layout.html.twig' %}
+
+{% set small_title = 'analytics.layout.analytics'|trans({}, 'MBHPackageBundle') %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'analytics-filter-widget'} %}
+    <form id="dynamic-sales-schedule-filter" class="form-inline filter-form remember" role="form">
+        <div class="input">
+            <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+            <input type="text" name="begin" id="dynamic-schedule-filter-begin"
+                   class="dynamic-schedule-filter not-set-date form-control input-sm" data-date-format="dd.mm.yyyy"
+                   value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
+        </div>
+
+        <div class="input">
+            <i class="fa fa-calendar" title='Даты'
+               data-toggle='tooltip'></i>&nbsp
+            <input type="text" name="begin2" id="dynamic-schedule-filter-begin2"
+                   class="dynamic-schedule-filter not-set-date form-control input-sm" data-date-format="dd.mm.yyyy"
+                   value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
+        </div>
+
+        <div class="input">
+            <i class="fa fa-calendar" title='Даты'
+               data-toggle='tooltip'></i>&nbsp
+            <input type="text" name="begin2" id="dynamic-schedule-filter-begin3"
+                   class="dynamic-schedule-filter not-set-date form-control input-sm" data-date-format="dd.mm.yyyy"
+                   value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
+        </div>
+        <div class="input">
+            <i class="fa fa-bar-chart-o" title="{{ 'analytics.index.report_type'|trans({}, 'MBHPackageBundle') }}"
+               data-toggle='tooltip'></i>&nbsp <select
+                    data-placeholder="{{ 'analytics.index.report_type'|trans({}, 'MBHPackageBundle') }}"
+                    id="dynamic-schedule-show-filter-roomType"
+                    name="type"
+                    class="analytics-filter form-control input-sm">
+                {% for optionShowDynamicSales, value in optionsShowDynamicSales %}
+                    <option value="{{ value }}"{% if loop.index == 1 %} selected {% endif %}>{{ optionShowDynamicSales|trans({},'MBHPackageBundle') }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input">
+            <i class="fa fa-bed" title="{{ 'analytics.index.room_type'|trans({}, 'MBHPackageBundle') }}"
+               data-toggle='tooltip'></i>&nbsp <select
+                    data-placeholder="{{ 'analytics.index.room_type'|trans({}, 'MBHPackageBundle') }}"
+                    id="dynamic-schedule-filter-roomType" multiple="multiple"
+                    name="roomType[]"
+                    class="analytics-filter form-control input-sm">
+                <option></option>
+                {% for roomType in roomTypes %}
+
+                    {% if hotel is not defined or hotel.id != roomType.hotel.id %}
+                        <optgroup label="{{ roomType.hotel }}">
+                        {% set hotel = roomType.hotel %}
+                    {% endif %}
+                    <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+                    {% if hotel is not defined or hotel.id != roomType.hotel.id %}</optgroup>{% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="input" id="schedule-filter-cumulative-wrapper">
+            <i class="fa fa-signal" title="{{ 'analytics.index.cumulative'|trans({}, 'MBHPackageBundle') }}"
+               data-toggle='tooltip'></i>&nbsp <input
+                    type="checkbox" name="cumulative" id="schedule-filter-cumulative" class="analytics-filter"
+            />
+        </div>
+        <div class="input">
+            <button class="btn btn-primary" id="dynamic-sales-schedule-submit-button"><i
+                        class="fa fa-search"></i> {{ 'package.dynamic.sale.schedule.search'|trans({},'MBHPackageBundle') }}
+            </button>
+        </div>
+    </form>
+    </div></div>
+
+    <div id="dynamic-sales-schedule_filter_content"></div>
+
+{% endblock %}
