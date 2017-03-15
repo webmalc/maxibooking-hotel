@@ -136,6 +136,16 @@ form.home_away_room_type.bath_room_sub_type.label: Тип ванной
 form.home_away_room_type.bed_room_sub_type.label: Тип спальни
 services.home_away.invalid_room_type_id: Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking
 services.home_away.nor_one_room_type: Не найдено ни одного типа комнат для данного отеля
+home_away.data_to_sinc.hotel_message: 'Для настройки синхронизация отеля с HomeAway необходимо %requested_data%'
+
+home_away.data_to_sync.fill_hotel_main: заполнить данные об основных настройках
+home_away.data_to_sync.not_less_than: заполнить данные о не менее 5 синхронизируемых типах номеров
+home_away.data_to_sync.assigned_id: указать id клиента в параметрах maxibooking
+home_away.data_to_sync.fill_longitude_and_latitude: заполнить данные о широте и долготе отеля
+home_away.data_to_sinc.room_type_message: 'Для настройки синхронизация типа комнат с HomeAway необходимо %requested_data%'
+home_away.data_to_sync.room_type.description_to_less: заполнить описание типа номера, содержащее не менее 400 символов
+home_away.data_to_sync.room_type.to_few_images: не менее 6 изображений
+
 language.da_DK: Датский(Дания)
 language.de_DE: Немецкий(Германия)
 language.en_CA: Английский(Канада)

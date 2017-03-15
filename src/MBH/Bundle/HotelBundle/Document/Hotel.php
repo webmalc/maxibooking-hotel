@@ -14,6 +14,7 @@ use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\CashBundle\Document\CardType;
+use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
@@ -31,9 +32,10 @@ use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as ChannelManagerValid
  * @ODM\Document(collection="Hotels", repositoryClass="MBH\Bundle\HotelBundle\Document\HotelRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
+ * @MongoDBUnique(fields="fullTitle", message="validator.document.hotel.unique")
  * @ODM\HasLifecycleCallbacks
  * @ChannelManagerValidator\TripAdvisor
+ * @ChannelManagerValidator\HomeAway
  */
 class Hotel extends Base implements \JsonSerializable, AddressInterface
 {
@@ -1340,7 +1342,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @return mixed
+     * @return HomeAwayConfig|null
      */
     public function getHomeAwayConfig()
     {

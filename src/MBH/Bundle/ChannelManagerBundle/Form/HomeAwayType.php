@@ -22,15 +22,7 @@ class HomeAwayType extends AbstractType
             ->add('isEnabled', CheckboxType::class, [
                     'label' => 'form.homeAwayType.is_included',
                     'value' => true,
-                    'required' => false,
                     'help' => 'form.homeAwayType.should_we_use_in_channel_manager'
-                ]
-            )
-            ->add('hotelId', TextType::class, [
-                    'label' => 'form.homeAwayType.hotel_id',
-                    'required' => true,
-                    'attr' => ['placeholder' => 'hotel id'],
-                    'help' => 'form.homeAwayType.hotel_id_in_home_away'
                 ]
             )
             ->add('main_tariff', DocumentType::class, [

@@ -37,6 +37,13 @@
             {% set groups = form.vars.groups %}
         {% endif %}
 
+        {% if form.vars.unfilledFields is defined and form.vars.unfilledFields is not empty %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i>&nbsp;
+                {{ form.vars.unfilledFields|raw }}
+            </div>
+        {% endif %}
+
         {% for group, items in groups %}
             {% if group and (group != 'form.main.group') %}
                 <div class="box box-default box-solid">

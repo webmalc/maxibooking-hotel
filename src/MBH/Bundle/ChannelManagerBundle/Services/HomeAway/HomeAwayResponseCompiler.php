@@ -23,6 +23,7 @@ class HomeAwayResponseCompiler
 {
     const HOME_AWAY_DATE_FORMAT = 'Y-m-d';
     const HOME_AWAY_DATE_TIME_FORMAT = 'Y-m-d\TH:i:s\Z';
+
     /** @var  ChannelManagerHelper $channelManagerHelper */
     private $channelManagerHelper;
     /** @var  HomeAwayDataFormatter $dataFormatter */
@@ -65,23 +66,34 @@ class HomeAwayResponseCompiler
         if ($dataType == 'availability') {
             $urlName = 'homeaway_availability';
             $nodeName = 'unitAvailabilityUrl';
-        } else {
+        } elseif ($dataType == 'rates') {
             $urlName = 'homeaway_rates';
             $nodeName = 'unitRatesUrl';
+        } else {
+            $urlName = 'homeaway_listing';
+            $nodeName = 'listingUrl';
         }
         $advertiserElement->addChild('assignedId', $this->assignedId);
         foreach ($config->getRooms() as $channelManagerRoomType) {
             /** @var HomeAwayRoom $channelManagerRoomType */
-            $roomType = $channelManagerRoomType->getRoomType();
-            $listingEntry = $advertiserElement->addChild('listingContentIndexEntry');
-            $listingEntry->addChild('listingExternalId', $roomType->getId());
-//            $listingEntry->addChild('listingHomeAwayId', $channelManagerRoomType->getRoomId());
-            $listingEntry->addChild('unitExternalId', $roomType->getId());
-            $listingEntry->addChild('active', $roomType->getIsEnabled());
-            $listingEntry->addChild('lastUpdatedDate',
-                $roomType->getUpdatedAt()->format(self::HOME_AWAY_DATE_TIME_FORMAT));
-            $listingEntry->addChild($nodeName,
-                $this->router->generate($urlName, ['listingId' => $roomType->getId()]));
+            if ($channelManagerRoomType->getIsEnabled()) {
+                $roomType = $channelManagerRoomType->getRoomType();
+                $listingEntry = $advertiserElement->addChild('listingContentIndexEntry');
+                $listingEntry->addChild('listingExternalId', $roomType->getId());
+                $listingEntry->addChild('unitExternalId', $roomType->getId());
+                $listingEntry->addChild('active', $roomType->getIsEnabled());
+                $listingEntry->addChild(
+                    'lastUpdatedDate',
+                    $roomType->getUpdatedAt()->format(self::HOME_AWAY_DATE_TIME_FORMAT)
+                );
+                $listingEntry->addChild(
+                    $nodeName,
+                    $this->router->generate(
+                        $urlName,
+                        ['roomTypeId' => $roomType->getId(), 'hotelId' => $config->getHotel()]
+                    )
+                );
+            }
         }
 
         return $rootElement->asXML();
@@ -102,7 +114,7 @@ class HomeAwayResponseCompiler
 
         $locationNode = $rootElement->addChild('location');
         $addressNode = $locationNode->addChild('address');
-        $addressNode->addChild('address1', $hotel->getHouse() . ' ' . $hotel->getInternationalStreetName());
+        $addressNode->addChild('address1', $hotel->getHouse().' '.$hotel->getInternationalStreetName());
 
         $city = $hotel->getCity();
         $city->setTranslatableLocale('en_EN');
@@ -123,7 +135,7 @@ class HomeAwayResponseCompiler
         foreach ($roomType->getImages() as $image) {
             $imageNode = $imagesNode->addChild('image');
             $imageNode->addChild('externalId', $image->getId());
-            $imageNode->addChild('uri', $this->domainName . '/' . $image->getPath());
+            $imageNode->addChild('uri', $this->domainName.'/'.$image->getPath());
         }
 
         $unitsNode = $rootElement->addChild('units');
@@ -150,7 +162,7 @@ class HomeAwayResponseCompiler
         $currency = $this->getAvailableCurrency($upperLocalCurrency);
         $monetaryInfoNode->addChild('currency', $currency);
 
-        return $rootElement;
+        return $rootElement->asXML();
     }
 
     public function formatRatePeriodsData(
@@ -307,6 +319,7 @@ class HomeAwayResponseCompiler
                     ? $cashDocument->getTotal()
                     //TODO: Сменить на конвертирование из локальной валюты
                     : $this->currencyHandler->convertFromRub($cashDocument->getTotal(), $currency);
+
                 //Если кешдокумент содержит информацию о расходе, то значение суммы должно быть отрицательным
                 if ($feeType == 'DISCOUNT') {
                     $price = $price * (-1);
@@ -318,8 +331,13 @@ class HomeAwayResponseCompiler
                 $totalAmountNode->addAttribute('currency', $currency);
             }
 
-            $this->addPaymentScheduleNode($orderNode, $reservationData->getBegin(), $config, $bookingResult->getPrice(),
-                $currency);
+            $this->addPaymentScheduleNode(
+                $orderNode,
+                $reservationData->getBegin(),
+                $config,
+                $bookingResult->getPrice(),
+                $currency
+            );
             $orderNode->addChild('reservationCancellationPolicy', $config->getCancellationPolicy());
 
             $currentHomeAwayRoom = null;
@@ -341,12 +359,16 @@ class HomeAwayResponseCompiler
             $reservationNode->addChild('numberOfAdults', $reservationData->getAdults());
             $reservationNode->addChild('numberOfChildren', $reservationData->getChildren());
             $reservationDatesNode = $reservationNode->addChild('reservationDates');
-            $reservationDatesNode->addChild('beginDate',
-                $reservationData->getBegin()->format(self::HOME_AWAY_DATE_FORMAT));
+            $reservationDatesNode->addChild(
+                'beginDate',
+                $reservationData->getBegin()->format(self::HOME_AWAY_DATE_FORMAT)
+            );
             $reservationDatesNode->addChild('endDate', $reservationData->getEnd()->format(self::HOME_AWAY_DATE_FORMAT));
 
-            $responseDetailsNode->addChild('reservationStatus',
-                $bookingResult->getConfirmed() ? 'CONFIRMED' : 'UNCONFIRMED');
+            $responseDetailsNode->addChild(
+                'reservationStatus',
+                $bookingResult->getConfirmed() ? 'CONFIRMED' : 'UNCONFIRMED'
+            );
         } else {
             $errorListNode = $bookingResponse->addChild('errorList');
             foreach ($messages as $message) {
@@ -397,8 +419,10 @@ class HomeAwayResponseCompiler
                 && (!$restrictionData || !$restrictionData->getClosed())
                 && isset($priceCaches[$dayString]);
             $availabilityString .= $isAvailable ? 'Y' : 'N';
-            $maxStayData[] = is_null($restrictionData) || !$restrictionData->getMaxStay() ? 0 : $restrictionData->getMaxStay();
-            $minStayData[] = is_null($restrictionData) || !$restrictionData->getMinStay() ? 0 : $restrictionData->getMinStay();
+            $maxStayData[] = is_null($restrictionData) || !$restrictionData->getMaxStay(
+            ) ? 0 : $restrictionData->getMaxStay();
+            $minStayData[] = is_null($restrictionData) || !$restrictionData->getMinStay(
+            ) ? 0 : $restrictionData->getMinStay();
         }
         $maxStayString = join(',', $maxStayData);
         $minStayString = join(',', $minStayData);
@@ -406,7 +430,7 @@ class HomeAwayResponseCompiler
         return [
             'availability' => $availabilityString,
             'minStay' => $minStayString,
-            'maxStay' => $maxStayString
+            'maxStay' => $maxStayString,
         ];
     }
 
@@ -434,8 +458,10 @@ class HomeAwayResponseCompiler
         $paymentScheduleData = $this->getPaymentScheduleData($config->getPaymentType(), $price, $beginDate);
         foreach ($paymentScheduleData as $paymentScheduleItemData) {
             $paymentItemElement = $paymentItemListElement->addChild('paymentScheduleItem');
-            $amountElement = $paymentItemElement->addChild('amount',
-                $this->currencyHandler->convertFromRub($paymentScheduleItemData['amount'], $currency));
+            $amountElement = $paymentItemElement->addChild(
+                'amount',
+                $this->currencyHandler->convertFromRub($paymentScheduleItemData['amount'], $currency)
+            );
             $amountElement->addAttribute('currency', $currency);
         }
     }

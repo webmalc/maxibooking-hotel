@@ -185,3 +185,13 @@ services:
         arguments: ['@translator']
         tags:
             - { name: validator.constraint_validator }
+
+    mbh.channel_manager.home_away_validator:
+        class: MBH\Bundle\ChannelManagerBundle\Validator\Constraints\HomeAwayValidator
+        arguments: ['@mbh.channel_manager.home_away']
+        tags:
+            - {name: validator.constraint_validator}
+
+    mbh.channel_manager.home_away:
+        class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway
+        arguments: ['@translator']

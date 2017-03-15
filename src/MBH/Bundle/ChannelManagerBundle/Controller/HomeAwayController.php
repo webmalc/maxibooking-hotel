@@ -6,7 +6,6 @@ use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayRoom;
 use MBH\Bundle\ChannelManagerBundle\Form\HomeAwayRoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\HomeAwayType;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -15,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 
+//TODO: Уточнить насчето местоположение назначенного id
 /**
  * @Route("/homeaway")
  */
@@ -40,11 +40,15 @@ class HomeAwayController extends BaseController
         $paymentTypes = $this->getParameter('mbh.online.form')['payment_types'];
         //Удаляем тип оплаты за 1 день
         array_splice($paymentTypes, 2, 1);
-        $form = $this->createForm(HomeAwayType::class, $config, [
-            'hotel' => $this->hotel,
-            'payment_types' => $paymentTypes,
-            'languages' => $this->getParameter('full_locales')
-        ]);
+        $form = $this->createForm(
+            HomeAwayType::class,
+            $config,
+            [
+                'hotel' => $this->hotel,
+                'payment_types' => $paymentTypes,
+                'languages' => $this->getParameter('full_locales'),
+            ]
+        );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -59,7 +63,8 @@ class HomeAwayController extends BaseController
         return [
             'config' => $this->hotel->getHomeAwayConfig(),
             'form' => $form->createView(),
-            'logs' => $this->logs($config)
+            'logs' => $this->logs($config),
+            'warningMessage' => $this->get('mbh.channel_manager.home_away')->getHotelRequiredDataMessage($this->hotel),
         ];
     }
 
@@ -89,15 +94,36 @@ class HomeAwayController extends BaseController
                 $config->addRoom((new HomeAwayRoom())->setRoomType($roomType));
             }
         }
+        $warningMessages = [];
+        foreach ($roomTypes as $roomType) {
+            $warningMessages[] =
+                $this->get('mbh.channel_manager.home_away')->getRoomTypeRequiredDataMessage($roomType);
+        }
 
-        $form = $this->createForm(HomeAwayRoomsType::class, $config);
+        $form = $this->createForm(HomeAwayRoomsType::class, $config, [
+            'warnings' => $warningMessages
+        ]);
+
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            // Если не заполнены необходимые поля, то тип комнат не синхронизируется
+            foreach ($config->getRooms() as $room) {
+                /** @var HomeAwayRoom $room */
+                if ($room->getIsEnabled()
+                    && (empty($room->getBathSubType())
+                        || empty($room->getBedRoomSubType())
+                        || empty($room->getHeadLine())
+                        || empty($room->getListingType())
+                        || empty($room->getRentalAgreement()))
+                ) {
+                    $room->setIsEnabled(false);
+                }
+            }
             $this->dm->flush();
-
             $this->addFlash('success',
-                $this->get('translator')->trans('controller.homeAwayController.settings_saved_success'));
+                $this->get('translator')->trans('controller.homeAwayController.settings_saved_success')
+            );
 
             return $this->redirect($this->generateUrl('homeaway_room'));
         }
@@ -105,8 +131,32 @@ class HomeAwayController extends BaseController
         return [
             'config' => $config,
             'form' => $form->createView(),
-            'logs' => $this->logs($config)
+            'logs' => $this->logs($config),
+            'warningMessage' => $this->get('mbh.channel_manager.home_away')->getHotelRequiredDataMessage($this->hotel),
         ];
+    }
+
+    public function getListingContentIndex()
+    {
+        
+    }
+
+    /**
+     * @Route("/listing/{hotelId}/{roomTypeId}")
+     * @param $roomTypeId
+     * @param $hotelId
+     * @return Response
+     */
+    public function listingDataAction($roomTypeId, $hotelId)
+    {
+        $hotel = $this->dm->find('MBHHotelBundle:Hotel', $hotelId);
+        $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
+        $config = $hotel->getHomeAwayConfig();
+
+        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')
+            ->formatListingData($roomType, $config);
+
+        return new Response($response, 200, ['Content-Type' => 'text/xml']);
     }
 
     /**
@@ -129,7 +179,7 @@ class HomeAwayController extends BaseController
         $response = $this->get('mbh.channelmanager.homeaway_response_compiler')
             ->formatRatePeriodsData($begin, $end, $roomTypeId, $priceCacheData);
 
-        return new Response($response, 200, ['Content-Type' => 'xml']);
+        return new Response($response, 200, ['Content-Type' => 'text/xml']);
     }
 
     /**
@@ -149,14 +199,14 @@ class HomeAwayController extends BaseController
         $dataFormatter = $this->get('mbh.channelmanager.homeaway_data_formatter');
         $tariffId = $config->getMainTariff()->getId();
 
-        $priceCacheData = $dataFormatter->getPriceCaches($begin, $end, $this->hotel, $roomTypeId, $tariffId);
+        $priceCacheData = $dataFormatter->getPriceCaches($begin, $end, $hotel, $roomTypeId, $tariffId);
         $restrictionData = $dataFormatter->getRestrictions($begin, $end, $hotel, $roomTypeId, $tariffId);
         $roomCacheData = $dataFormatter->getRoomCaches($begin, $end, $hotel, $roomTypeId, $tariffId);
 
         $response = $this->get('mbh.channelmanager.homeaway_response_compiler')
             ->formatAvailabilityData($roomTypeId, $priceCacheData, $restrictionData, $roomCacheData);
 
-        return new Response($response, 200, ['Content-Type' => 'xml']);
+        return new Response($response, 200, ['Content-Type' => 'text/xml']);
     }
 
     /**
@@ -192,14 +242,25 @@ class HomeAwayController extends BaseController
             throw new \Exception();
         }
 
-        $searchResults = $this->get('mbh.channelmanager.homeaway_data_formatter')->getSearchResults($roomTypeId,
-            $adultsCount, $childrenCount, $beginString, $endString, $config->getMainTariff());
-
-        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')->getQuoteResponse($currentRoomType,
+        $searchResults = $this->get('mbh.channelmanager.homeaway_data_formatter')->getSearchResults(
+            $roomTypeId,
             $adultsCount,
-            $childrenCount, $documentVersion, $config, $searchResults);
+            $childrenCount,
+            $beginString,
+            $endString,
+            $config->getMainTariff()
+        );
 
-        return new Response($response, 200, ['Content-Type' => 'xml']);
+        $response = $this->get('mbh.channelmanager.homeaway_response_compiler')->getQuoteResponse(
+            $currentRoomType,
+            $adultsCount,
+            $childrenCount,
+            $documentVersion,
+            $config,
+            $searchResults
+        );
+
+        return new Response($response, 200, ['Content-Type' => 'text/xml']);
     }
 
     /**
@@ -290,28 +351,6 @@ class HomeAwayController extends BaseController
         $bookingCreationResponse = $this->get('mbh.channelmanager.homeaway_response_compiler')
             ->getBookingResponse($documentVersion, $resultOfCreation, $orderInfo->getMessages());
 
-        return new Response($bookingCreationResponse, 200, ['Content-Type' => 'xml']);
-    }
-
-    /**
-     * Проверяет тип комнат на заполнение данных и возвращает названия незаполненных полей
-     * @param RoomType $roomType
-     * @return array
-     */
-    public static function getRoomTypeRequiredUnfilledFields(RoomType $roomType)
-    {
-        $requiredRoomTypeData = [];
-//        Headlines with length > 20 characters.
-        strlen($roomType->getTitle()) > 20 ?: $requiredRoomTypeData[] = '';
-        strlen($roomType->getDescription() > 400) ?: $requiredRoomTypeData[] = '';
-        count($roomType->getImages()) > 5 ?: $requiredRoomTypeData[] = '';
-
-        //TODO: Обязательны данные о номере дома и улице
-        !empty($roomType->getInternationalTitle()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.international_title';
-        !empty($roomType->getDescription()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.description';
-        (in_array('bed', $roomType->getFacilities()) || in_array('double-bed', $roomType->getFacilities()))
-            ?: $requiredRoomTypeData[] = 'channel_manager_helper.bed_configuration_not_exists';
-
-        return $requiredRoomTypeData;
+        return new Response($bookingCreationResponse, 200, ['Content-Type' => 'text/xml']);
     }
 }

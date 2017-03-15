@@ -7,7 +7,6 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -50,14 +49,6 @@ class HomeAwayConfig extends Base
      * @Assert\NotNull(message="validator.document.homeawayconfig.no_hotel_selected")
      */
     protected $hotel;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     * @Assert\NotNull(message="validator.document.homeawayconfig.no_hotel_id_specified")
-     */
-    protected $hotelId;
 
     /**
      * @var array
@@ -109,25 +100,6 @@ class HomeAwayConfig extends Base
     public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getHotelId()
-    {
-        return $this->hotelId;
-    }
-
-    /**
-     * @param string $hotelId
-     * @return HomeAwayConfig
-     */
-    public function setHotelId($hotelId): HomeAwayConfig
-    {
-        $this->hotelId = $hotelId;
 
         return $this;
     }

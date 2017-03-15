@@ -97,4 +97,9 @@ class HomeAwayDataFormatter
 
         return isset($roomCaches[$roomTypeId]) ? current($roomCaches[$roomTypeId]) : [];
     }
+
+    public function getConfigs()
+    {
+        return $this->dm->getRepository('MBHChannelManagerBundle:HomeAwayConfig')->findBy(['isEnabled' => true]);
+    }
 }

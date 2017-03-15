@@ -15,6 +15,8 @@ validator.document.hotel.min_stars: Минимальное количество 
 validator.document.hotel.max_stars: Максимальое количество звезд отеля не может быть больше 5
 validator.document.hotel.min_phone: Слишком короткий номер телефона
 validator.document.hotel.max_phone: Слишком длинный номер телефона
+validator.document.hotel.unique: Такой отель уже существует
+validator.document.room_type.unique: Такой тип номера уже существует
 
 validator.document.region.country_not_selected: Не выбрана страна
 validator.document.region.min_name: Слишком короткое имя

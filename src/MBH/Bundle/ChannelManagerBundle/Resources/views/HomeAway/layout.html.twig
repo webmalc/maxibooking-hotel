@@ -19,10 +19,10 @@
         {% endif %}
     {% endfor %}
 
-    {% if config and isRoomSynchronized == false %}
+    {% if warningMessage %}
         <div class="alert alert-danger">
             <i class="fa fa-exclamation-circle"></i>&nbsp;
-            {{ 'channelmanager.homeaway.empty.config'|trans({}, 'MBHChannelManagerBundle') }}
+            {{ warningMessage }}
         </div>
     {% endif %}
     <ul class="nav nav-tabs" role="tablist">

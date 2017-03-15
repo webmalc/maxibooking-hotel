@@ -20,8 +20,9 @@ use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as ChannelManagerValid
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тип номера уже существует")
+ * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="validator.document.room_type.unique")
  * @ChannelManagerValidator\TripAdvisor
+ * @ChannelManagerValidator\HomeAway
  * @ODM\HasLifecycleCallbacks
  */
 class RoomType extends Base implements RoomTypeInterface

@@ -37,7 +37,6 @@ class TripAdvisorValidator extends ConstraintValidator
             foreach ($unfilledFields as $unfilledFieldName) {
                 $this->context->buildViolation('trip_advisor_validator.violation_message_template')
                     ->setParameter('%field%', $this->translator->trans($unfilledFieldName))
-                    ->atPath('currencyDefaultRatio')
                     ->addViolation();
             }
         }

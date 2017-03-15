@@ -9,6 +9,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HomeAwayRoomTypeForm extends AbstractType
@@ -24,7 +26,7 @@ class HomeAwayRoomTypeForm extends AbstractType
                 'group' => $roomType->getName(),
                 'label' => 'form.home_away_room_type.is_enabled.label',
                 'help' => 'form.home_away_room_type.is_enabled.help',
-                'required' => false
+                'required' => false,
             ])
             ->add('rentalAgreement', TextareaType::class, [
                 'group' => $roomType->getName(),
@@ -72,8 +74,14 @@ class HomeAwayRoomTypeForm extends AbstractType
         $resolver
             ->setDefaults([
                 'roomTypes' => null,
+                'warnings' => null,
                 'data_class' => HomeAwayRoom::class
             ]);
+    }
+
+    public function buildView(FormView $view, FormInterface $form, array $options)
+    {
+        $view->vars['unfilledFields'] = $options['warnings'][$view->vars['name']];
     }
 
     public function getBlockPrefix()

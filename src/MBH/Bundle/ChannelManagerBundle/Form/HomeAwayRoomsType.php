@@ -16,7 +16,8 @@ class HomeAwayRoomsType extends AbstractType
             'entry_type' => HomeAwayRoomTypeForm::class,
             'group' => false,
             'entry_options' => [
-                'roomTypes' => $builder->getData()->getRooms()
+                'roomTypes' => $builder->getData()->getRooms(),
+                'warnings' => $options['warnings']
             ]
         ]);
     }
@@ -25,7 +26,8 @@ class HomeAwayRoomsType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => HomeAwayConfig::class
+                'data_class' => HomeAwayConfig::class,
+                'warnings' => null
             ]
         );
     }
