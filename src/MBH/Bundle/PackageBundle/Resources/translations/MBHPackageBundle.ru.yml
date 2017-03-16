@@ -458,7 +458,7 @@ dynamic.sales.error.day: дней
 dynamic.sales.day.periods: Периоды
 dynamic.sales.day.summary: Итого
 dynamic.sales.day.sales.volume: Дневной объем продаж
-dynamic.sales.period.sales.volume: Объем продаж за месяц нарастающим итогом
+dynamic.sales.period.sales.volume: Объем продаж за нарастающим итогом
 dynamic.sales.day.packages: Кол-во броней
 dynamic.sales.day.packages.growth: Продано броней нарастающим итогом
 dynamic.sales.day.sales.comparison: Сравнение

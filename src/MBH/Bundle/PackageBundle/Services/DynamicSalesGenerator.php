@@ -156,8 +156,8 @@ class DynamicSalesGenerator
                     unset($day);
                 }
 
-                $summary->setAvaregeVolume($summary->getTotalSales() / $countDay);
-                $summary->setAmountPackages(round($summary->getTotalAmountPackages() / $countDay));
+                $summary->setAvaregeVolume($countDay != 0 ? $summary->getTotalSales() / $countDay : 1);
+                $summary->setAmountPackages(round($summary->getTotalAmountPackages() / $countDay != 0 ? $countDay : 1));
                 $resultPeriod['summ'] = $summary;
 
                 $dynamicSale->addPeriods($resultPeriod);

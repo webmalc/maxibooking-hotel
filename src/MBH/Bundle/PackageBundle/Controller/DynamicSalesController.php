@@ -22,7 +22,7 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
      *
      * @Route("/", name="dynamic_sales")
      * @Method("GET")
-     * @Security("is_granted('ROLE_WINDOWS_REPORT')")
+     * @Security("is_granted('ROLE_DYNAMIC_SALES')")
      * @Template()
      */
     public function indexAction()
@@ -30,17 +30,17 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
         $permissions = $this->container->get('mbh.package.permissions');
 
         $optionShowDynamicSales = [
-            'dynamic.sales.day.sales.volume'=>'sales-volume',
-            'dynamic.sales.period.sales.volume'=>'period-volume',
-            'dynamic.sales.day.packages'=>'packages-sales',
-            'dynamic.sales.day.packages.growth'=>'packages-growth',
-            'dynamic.sales.day.sales.count.people'=>'count-people',
-            'dynamic.sales.day.sales.count.room'=>'count-room'
+            'dynamic.sales.day.sales.volume' => 'sales-volume',
+            'dynamic.sales.period.sales.volume' => 'period-volume',
+            'dynamic.sales.day.packages' => 'packages-sales',
+            'dynamic.sales.day.packages.growth' => 'packages-growth',
+            'dynamic.sales.day.sales.count.people' => 'count-people',
+            'dynamic.sales.day.sales.count.room' => 'count-room'
         ];
 
         return [
             'roomTypes' => $this->hotel->getRoomTypes(),
-            'optionsShowDynamicSales' =>$optionShowDynamicSales
+            'optionsShowDynamicSales' => $optionShowDynamicSales
         ];
     }
 
@@ -49,7 +49,7 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
      *
      * @Route("/table", name="dynamic_sales_table", options={"expose"=true})
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_WINDOWS_REPORT')")
+     * @Security("is_granted('ROLE_DYNAMIC_SALES')")
      * @Template()
      * @param $request Request
      * @return array

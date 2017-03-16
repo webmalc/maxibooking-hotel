@@ -13,8 +13,8 @@ $(document).ready(function ($) {
             $.each( $('.dynamic-sales-filter'),function (i, val) {
 
                 if($(this).val().length){
-                    begin[i] = $(this).data('daterangepicker').startDate._d;
-                    end[i] = $(this).data('daterangepicker').endDate._d;
+                    begin[i] = $(this).data('daterangepicker').startDate.format('DD.MM.YYYY');
+                    end[i] = $(this).data('daterangepicker').endDate.add(1, 'day').format('DD.MM.YYYY');
                 }
 
             });
@@ -47,8 +47,8 @@ $(document).ready(function ($) {
         };
 
     $('#dynamic-sales-filter-begin').daterangepicker({
-        startDate: moment(),
-        endDate: moment().add(45,'days'),
+        startDate: moment().add(-45,'days'),
+        endDate: moment(),
         "autoApply": true
     });
 
