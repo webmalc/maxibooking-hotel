@@ -236,36 +236,35 @@ class TripAdvisorController extends BaseController
         return new JsonResponse($response);
     }
 
-    //TODO: Вернуть POST
     /**
-     * @Method("GET")
+     * @Method("POST")
      * @Route("/hotel_availability")
      * @param Request $request
      * @return Response
      */
     public function getHotelAvailabilityAction(Request $request)
     {
-//        $apiVersion = $request->get('api_version');
-//        $requestedHotels = $request->get('hotels');
-//        $startDate = $request->get('start_date');
-//        $endDate = $request->get('end_date');
-//        $requestedAdultsChildrenCombination = $request->get('party');
-//        $language = $request->get('lang');
-//        $queryKey = $request->get('query_key');
-//        $currency = $request->get('currency');
-//        $userCountry = $request->get('user_country');
-//        $deviceType = $request->get('device_type');
+        $apiVersion = $request->get('api_version');
+        $requestedHotels = $request->get('hotels');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        $requestedAdultsChildrenCombination = $request->get('party');
+        $language = $request->get('lang');
+        $queryKey = $request->get('query_key');
+        $currency = $request->get('currency');
+        $userCountry = $request->get('user_country');
+        $deviceType = $request->get('device_type');
 
-        $apiVersion = 7;
-        $requestedHotels = [["ta_id" => 'asdfasdfadsf', "partner_id" => "58b937c5a84718004a438a52"]];
-        $startDate = '2017-03-05';
-        $endDate = '2017-03-06';
-        $requestedAdultsChildrenCombination = [["adults" => 2, 'children' => [7]], ["adults" => 2]];
-        $language = 'en_US';
-        $queryKey = 'sadfafasdf';
-        $currency = 'USD';
-        $userCountry = 'US';
-        $deviceType = 'd';
+//        $apiVersion = 7;
+//        $requestedHotels = [["ta_id" => 'asdfasdfadsf', "partner_id" => "58b937c5a84718004a438a52"]];
+//        $startDate = '2017-03-05';
+//        $endDate = '2017-03-06';
+//        $requestedAdultsChildrenCombination = [["adults" => 2, 'children' => [7]], ["adults" => 2]];
+//        $language = 'en_US';
+//        $queryKey = 'sadfafasdf';
+//        $currency = 'USD';
+//        $userCountry = 'US';
+//        $deviceType = 'd';
         $dataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
         $configs = $dataFormatter->getTripAdvisorConfigs($requestedHotels);
         $availabilityData = $dataFormatter->getAvailabilityData($startDate, $endDate, $configs);
@@ -280,38 +279,37 @@ class TripAdvisorController extends BaseController
         return new JsonResponse($response);
     }
 
-    //TODO: Вернуть POST
     /**
-     * @Method("GET")
+     * @Method("POST")
      * @Route("/booking_availability")
      * @param Request $request
      * @return string
      */
     public function getBookingAvailabilityAction(Request $request)
     {
-//        $apiVersion = $request->get('api_version');
-//        $requestedHotel = $request->get('hotel');
-//        $startDate = $request->get('start_date');
-//        $endDate = $request->get('end_date');
-//        $requestedAdultsChildrenCombination = $request->get('party');
-//        $language = $request->get('lang');
-//        $queryKey = $request->get('query_key');
-//        $currency = $request->get('currency');
-//        $userCountry = $request->get('user_country');
-//        $deviceType = $request->get('device_type');
+        $apiVersion = $request->get('api_version');
+        $requestedHotel = $request->get('hotel');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        $requestedAdultsChildrenCombination = $request->get('party');
+        $language = $request->get('lang');
+        $queryKey = $request->get('query_key');
+        $currency = $request->get('currency');
+        $userCountry = $request->get('user_country');
+        $deviceType = $request->get('device_type');
 //        $bookingSessionId = $request->get('booking_session_id');
 //        $bookingRequestId = $request->get('booking_request_id');
 
-        $apiVersion = 7;
-        $requestedHotel = ["ta_id" => 'asdfasdfadsf', "partner_hotel_code" => "58b937c5a84718004a438a52"];
-        $startDate = '2017-03-12';
-        $endDate = '2017-03-18';
-        $requestedAdultsChildrenCombination = [["adults" => 7, "children" => [3, 4, 5]]];
-        $language = 'en_US';
-        $queryKey = 'sadfafasdf';
-        $currency = 'USD';
-        $userCountry = 'US';
-        $deviceType = 'd';
+//        $apiVersion = 7;
+//        $requestedHotel = ["ta_id" => 'asdfasdfadsf', "partner_hotel_code" => "58b937c5a84718004a438a52"];
+//        $startDate = '2017-03-12';
+//        $endDate = '2017-03-18';
+//        $requestedAdultsChildrenCombination = [["adults" => 7, "children" => [3, 4, 5]]];
+//        $language = 'en_US';
+//        $queryKey = 'sadfafasdf';
+//        $currency = 'USD';
+//        $userCountry = 'US';
+//        $deviceType = 'd';
 
         $responseDataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
         $hotel = $responseDataFormatter->getHotelById($requestedHotel['partner_hotel_code']);
@@ -325,107 +323,106 @@ class TripAdvisorController extends BaseController
     }
 
     /**
-     * //TODO: Вернуть POST
-     * @Method("GET")
+     * @Method("POST")
      * @Route("/booking_submit")
      * @param Request $request
      * @return JsonResponse
      */
     public function bookingSubmitAction(Request $request)
     {
-//        $checkInDate = $request->get('checkin_date');
-//        $checkOutDate = $request->get('checkout_date');
-//        $hotelId = $request->get('partner_hotel_code');
-//        $bookingSession = $request->get('reference_id');
+        $checkInDate = $request->get('checkin_date');
+        $checkOutDate = $request->get('checkout_date');
+        $hotelId = $request->get('partner_hotel_code');
+        $bookingSession = $request->get('reference_id');
 //        $ipAddress = $request->get('ip_address');
-//        $customerData = $request->get('customer');
-//        $roomsData = $request->get('rooms');
-//        $specialRequests = $request->get('special_requests');
-//        $paymentData = $request->get('payment_method');
-//        $finalPriceAtBooking = $request->get('final_price_at_booking');
-//        $finalPriceAtCheckout = $request->get('final_price_at_checkout');
-//        $bookingMainData = $request->get('partner_data');
+        $customerData = $request->get('customer');
+        $roomsData = $request->get('rooms');
+        $specialRequests = $request->get('special_requests');
+        $paymentData = $request->get('payment_method');
+        $finalPriceAtBooking = $request->get('final_price_at_booking');
+        $finalPriceAtCheckout = $request->get('final_price_at_checkout');
+        $bookingMainData = $request->get('partner_data');
 
-        $checkInDate = '2017-03-12';
-        $checkOutDate = '2017-03-18';
-        $hotelId = '5864e3da2f77d9004b580232';
-        $bookingSession = '12345';
-        $customerData = [
-            "first_name" => "Paul",
-            "last_name" => "Revere",
-            "phone_number" => "5555555555",
-            "email" => "paul.revere@tripadvisor.com",
-            "country" => "US"
-        ];
-        $roomsData = [
-            [
-                "party" => ["adults" => 4, "children" => [3, 4, 5, 4, 3, 2, 3, 5]],
-                "traveler_first_name" => "Paul",
-                "traveler_last_name" => "Revere"
-            ],
-            [
-                "party" => ["adults" => 4, "children" => [3, 4, 5]],
-                "traveler_first_name" => "Valera",
-                "traveler_last_name" => "Valakas"
-            ]
-        ];
-        $specialRequests = 'A pre-made pillow fort and Vanilla coke on arrival please.';
-        $paymentData = [
-            "card_type" => "Visa",
-            "card_number" => "5454545454545454",
-            "cardholder_name" => "Paul Revere",
-            "expiration_month" => "01",
-            "expiration_year" => "2015",
-            "cvv" => "999",
-            "billing_address" => [
-                "address1" => "141 Needham Street",
-                "city" => "newton",
-                "state" => "MA",
-                "postal_code" => "77777",
-                "country" => "US"
-            ]
-        ];
-        $finalPriceAtBooking = [
-            "amount" => 255.14,
-            "currency" => "USD"
-        ];
-        $finalPriceAtCheckout = [
-            "amount" => 255.14,
-            "currency" => "USD"
-        ];
-        $bookingMainData = [
-            "pricesByDate" => [
-                "2_1" => [
-                    "12_03_2017" => 1239,
-                    "13_03_2017" => 1239,
-                    "14_03_2017" => 1239,
-                    "15_03_2017" => 1239,
-                    "16_03_2017" => 1239,
-                    "17_03_2017" => 1239
-                ],
-                "2_0" => [
-                    "12_03_2017" => 1234,
-                    "13_03_2017" => 1234,
-                    "14_03_2017" => 1234,
-                    "15_03_2017" => 1234,
-                    "16_03_2017" => 1234,
-                    "17_03_2017" => 1234
-                ],
-                '1_1' => [
-                    "12_03_2017" => 1234,
-                    "13_03_2017" => 1234,
-                    "14_03_2017" => 1234,
-                    "15_03_2017" => 1234,
-                    "16_03_2017" => 1234,
-                    "17_03_2017" => 1234
-                ]
-
-            ],
-            "roomTypeId" => "58b93c03a8471801ee458562",
-            "tariffId" => "58b93bd4a8471801dc3eb862",
-            "hotelId" => "58b937c5a84718004a438a52",
-            'language' => 'en_US'
-        ];
+//        $checkInDate = '2017-03-12';
+//        $checkOutDate = '2017-03-18';
+//        $hotelId = '5864e3da2f77d9004b580232';
+//        $bookingSession = '12345';
+//        $customerData = [
+//            "first_name" => "Paul",
+//            "last_name" => "Revere",
+//            "phone_number" => "5555555555",
+//            "email" => "paul.revere@tripadvisor.com",
+//            "country" => "US"
+//        ];
+//        $roomsData = [
+//            [
+//                "party" => ["adults" => 4, "children" => [3, 4, 5, 4, 3, 2, 3, 5]],
+//                "traveler_first_name" => "Paul",
+//                "traveler_last_name" => "Revere"
+//            ],
+//            [
+//                "party" => ["adults" => 4, "children" => [3, 4, 5]],
+//                "traveler_first_name" => "Valera",
+//                "traveler_last_name" => "Valakas"
+//            ]
+//        ];
+//        $specialRequests = 'A pre-made pillow fort and Vanilla coke on arrival please.';
+//        $paymentData = [
+//            "card_type" => "Visa",
+//            "card_number" => "5454545454545454",
+//            "cardholder_name" => "Paul Revere",
+//            "expiration_month" => "01",
+//            "expiration_year" => "2015",
+//            "cvv" => "999",
+//            "billing_address" => [
+//                "address1" => "141 Needham Street",
+//                "city" => "newton",
+//                "state" => "MA",
+//                "postal_code" => "77777",
+//                "country" => "US"
+//            ]
+//        ];
+//        $finalPriceAtBooking = [
+//            "amount" => 255.14,
+//            "currency" => "USD"
+//        ];
+//        $finalPriceAtCheckout = [
+//            "amount" => 255.14,
+//            "currency" => "USD"
+//        ];
+//        $bookingMainData = [
+//            "pricesByDate" => [
+//                "2_1" => [
+//                    "12_03_2017" => 1239,
+//                    "13_03_2017" => 1239,
+//                    "14_03_2017" => 1239,
+//                    "15_03_2017" => 1239,
+//                    "16_03_2017" => 1239,
+//                    "17_03_2017" => 1239
+//                ],
+//                "2_0" => [
+//                    "12_03_2017" => 1234,
+//                    "13_03_2017" => 1234,
+//                    "14_03_2017" => 1234,
+//                    "15_03_2017" => 1234,
+//                    "16_03_2017" => 1234,
+//                    "17_03_2017" => 1234
+//                ],
+//                '1_1' => [
+//                    "12_03_2017" => 1234,
+//                    "13_03_2017" => 1234,
+//                    "14_03_2017" => 1234,
+//                    "15_03_2017" => 1234,
+//                    "16_03_2017" => 1234,
+//                    "17_03_2017" => 1234
+//                ]
+//
+//            ],
+//            "roomTypeId" => "58b93c03a8471801ee458562",
+//            "tariffId" => "58b93bd4a8471801dc3eb862",
+//            "hotelId" => "58b937c5a84718004a438a52",
+//            'language' => 'en_US'
+//        ];
 
         $language = $bookingMainData['language'];
         $currency = $finalPriceAtCheckout['currency'];
@@ -487,9 +484,8 @@ class TripAdvisorController extends BaseController
         return new JsonResponse($response);
     }
 
-    //TODO: Вернуть POST
     /**
-     * @Method("GET")
+     * @Method("POST")
      * @Route("/booking_cancel")
      * @param Request $request
      * @return string
