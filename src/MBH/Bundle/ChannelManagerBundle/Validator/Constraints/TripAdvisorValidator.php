@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Validator\Constraints;
 
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorRoomType;
 use MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -9,6 +10,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
 
 class TripAdvisorValidator extends ConstraintValidator
 {
@@ -24,12 +26,26 @@ class TripAdvisorValidator extends ConstraintValidator
     public function validate($document, Constraint $constraint)
     {
         if ($document instanceof Tariff) {
-            if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
-                $unfilledFields = ChannelManagerHelper::getTariffRequiredUnfilledFields($document);
+            foreach ($document->getHotel()->getTripAdvisorConfig()->getTariffs() as $tariff) {
+                /** @var TripAdvisorTariff $tariff */
+                if ($tariff->getTariff() == $document && $tariff->getIsEnabled()) {
+                    if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
+                        $unfilledFields = ChannelManagerHelper::getTariffRequiredUnfilledFields($document);
+                    }
+                }
             }
         } elseif ($document instanceof RoomType) {
-            if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
-                $unfilledFields = ChannelManagerHelper::getRoomTypeRequiredUnfilledFields($document);
+            $isRoomSync = false;
+            foreach ($document->getHotel()->getTripAdvisorConfig()->getRooms() as $room) {
+                /** @var TripAdvisorRoomType $room */
+                if ($room->getRoomType() == $document && $room->getIsEnabled()) {
+                    $isRoomSync = true;
+                }
+            }
+            if ($isRoomSync) {
+                if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
+                    $unfilledFields = ChannelManagerHelper::getRoomTypeRequiredUnfilledFields($document);
+                }
             }
         } elseif ($document instanceof Hotel) {
             if ($this->isTripAdvisorConfigEnabled($document)) {
@@ -51,6 +67,6 @@ class TripAdvisorValidator extends ConstraintValidator
     {
         $config = $hotel->getTripAdvisorConfig();
 
-        return is_null($config) || $config->getIsEnabled();
+        return !is_null($config) && $config->getIsEnabled();
     }
 }
