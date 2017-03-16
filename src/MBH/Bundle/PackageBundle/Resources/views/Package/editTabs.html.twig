@@ -1,6 +1,6 @@
 {% set accommodation = {
     'val': entity.accommodation ? entity.accommodation : 'нет',
-    'class': entity.accommodation ? 'label-success' : 'label-default',
+    'class': pAccClass(entity),
     'checkIn': entity.accommodation and entity.isCheckIn and entity.isCheckOut is empty ? ' check-in-label' : '',
     'checkOut': entity.accommodation and entity.isCheckOut ? ' check-out-label' : '',
     'append': 'not.stopped'

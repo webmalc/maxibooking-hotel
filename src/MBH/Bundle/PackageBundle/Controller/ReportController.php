@@ -2,12 +2,10 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
-use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
@@ -19,15 +17,15 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Document\WorkShift;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("/report")
@@ -75,7 +73,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * Windows package info.
      *
      * @Route("/windows/package/{id}", name="report_windows_package", options={"expose"=true})
-     * @Method({"GET", "POST"})
+     * @Method({"GET", "PUT"})
      * @ParamConverter("package", class="MBHPackageBundle:Package")
      * @Security("is_granted('ROLE_PACKAGE_EDIT') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template()
@@ -92,11 +90,11 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $response = ['package' => $package];
 
         if ($this->clientConfig->getSearchWindows()) {
-            $form = $this->createForm(PackageVirtualRoomType::class, $package, [
+            $form = $this->createForm(new PackageVirtualRoomType(), $package, [
                 'package' => $package
             ]);
 
-            if ($request->isMethod('POST')) {
+            if ($request->isMethod('PUT')) {
                 $form->submit($request->request->get($form->getName()));
 
                 if ($form->isValid()) {
@@ -408,7 +406,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         );
 
         //packages
-        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation(
+        $packages = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')->fetchWithAccommodation(
             $begin, $end, $helper->toIds($rooms), null, false
         );
 
@@ -829,25 +827,25 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         return $this->createFormBuilder(null, [
             'method' => Request::METHOD_GET
         ])
-            ->add('user', DocumentType::class, [
-                'placeholder' => '',
+            ->add('user', 'document', [
+                'empty_value' => '',
                 'class' => 'MBH\Bundle\UserBundle\Document\User',
                 'query_builder' => function(DocumentRepository $repository) {
                     $repository->createQueryBuilder()->field('isEnabledWorkShift')->equals(true);
                 }
             ])
-            ->add('begin', DateTimeType::class, [
+            ->add('begin', 'date', [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy'],
             ])
-            ->add('end', DateTimeType::class, [
+            ->add('end', 'date', [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy'],
             ])
-            ->add('status',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'placeholder' => '',
+            ->add('status', 'choice', [
+                'empty_value' => '',
                 'choices' => array_combine(WorkShift::getAvailableStatuses(), WorkShift::getAvailableStatuses()),
                 'choice_label' => function($label) {
                     return 'workShift.statuses.'.$label;
