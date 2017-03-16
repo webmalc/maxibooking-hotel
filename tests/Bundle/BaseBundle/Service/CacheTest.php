@@ -5,7 +5,9 @@ namespace Tests\Bundle\BaseBundle\Service;
 use MBH\Bundle\BaseBundle\Document\CacheItemRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use MBH\Bundle\BaseBundle\Service\Cache;
+use MBH\Bundle\BaseBundle\Document\CacheItem;
 use Symfony\Component\Validator\Constraints\DateTime;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class CacheTest extends KernelTestCase
 {
@@ -23,19 +25,45 @@ class CacheTest extends KernelTestCase
      */
     private $repo;
 
+    
+    /**
+     * @var array
+     */
+    private $params;
+
+    /**
+     * @var DocumentManager
+     */
+    private $documentManager;
+
     public function setUp()
     {
         self::bootKernel();
         $container = self::$kernel->getContainer();
         $this->cache = $container->get('mbh.cache');
         $this->cache->clear();
-        $this->repo = $container->get('doctrine_mongodb')->getRepository('MBHBaseBundle:CacheItem');
+        $this->params = $container->getParameter('mbh_cache');
+        $this->documentManager = $container->get('doctrine_mongodb')->getManager();
+        $this->repo = $this->documentManager->getRepository('MBHBaseBundle:CacheItem');
+    }
+
+    /**
+     * tear down
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        $this->cache->clear(null, null, null, true);
     }
 
     public function testSetAndGet()
     {
         $this->cache->set(self::BASIC_VALUE, self::PREFIX, self::BASIC_KEYS);
         $this->assertEquals(self::BASIC_VALUE, $this->cache->get(self::PREFIX, self::BASIC_KEYS));
+        $cacheItem = $this->repo->findOneBy([])->getLifetime();
+        $date = new \DateTime('+' . $this->params['lifetime'] . ' days');
+        $this->assertLessThan(10, $date->getTimestamp() - $cacheItem->getTimestamp());
     }
 
     public function testCacheItemSave()
@@ -76,6 +104,28 @@ class CacheTest extends KernelTestCase
         $this->assertEquals(false, $this->cache->get(self::PREFIX, self::BASIC_KEYS));
         $this->assertEquals($anotherValue, $this->cache->get($anotherPrefix, self::BASIC_KEYS));
         $this->testClear($anotherPrefix);
+    }
+
+    /**
+     * test CacheItem lifetime
+     */
+    public function testCacheItemLifetime(): void
+    {
+        $key1 = 'test key1';
+        $item1 = new CacheItem($key1);
+        $item1->setLifetime(new \DateTime('-1 hour'));
+        $this->documentManager->persist($item1);
+
+        $key2 = 'test key2';
+        $item2 = new CacheItem($key2);
+        $item2->setLifetime(new \DateTime('+1 hour'));
+        $this->documentManager->persist($item2);
+
+        $this->documentManager->flush();
+        $this->cache->clearExpiredItems();
+
+        $this->assertEquals(null, $this->repo->findOneBy(['key' => $key1]));
+        $this->assertEquals($key2, $this->repo->findOneBy(['key' => $key2])->getKey());
     }
 
     public function testDates()
