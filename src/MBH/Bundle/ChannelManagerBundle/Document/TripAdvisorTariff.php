@@ -32,7 +32,6 @@ class TripAdvisorTariff
      * @var string
      * @ODM\Field(type="string")
      * @Assert\Choice(callback="getRefundableTypes")
-     * @Assert\NotNull()
      */
     protected $refundableType;
     

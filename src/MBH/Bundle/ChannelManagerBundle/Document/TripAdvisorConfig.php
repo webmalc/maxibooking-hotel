@@ -105,12 +105,14 @@ class TripAdvisorConfig extends Base
     /**
      * @var ArrayCollection
      * @ODM\EmbedMany(targetDocument="TripAdvisorTariff")
+     * @Assert\Valid()
      */
     protected $tariffs;
 
     /**
      * @var ArrayCollection
      * @ODM\EmbedMany(targetDocument="TripAdvisorRoomType")
+     * @Assert\Valid()
      */
     protected $rooms;
 
