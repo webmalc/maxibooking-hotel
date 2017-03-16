@@ -156,6 +156,6 @@ services:
 
     mbh.channel_manager.trip_advisor_validator:
         class: MBH\Bundle\ChannelManagerBundle\Validator\Constraints\TripAdvisorValidator
-        arguments: ['@translator']
+        arguments: ['@translator', '%trip_advisor_confirmation_url%']
         tags:
             - { name: validator.constraint_validator }

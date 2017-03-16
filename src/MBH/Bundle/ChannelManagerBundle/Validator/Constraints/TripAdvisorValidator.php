@@ -13,9 +13,12 @@ use Symfony\Component\Validator\ConstraintValidator;
 class TripAdvisorValidator extends ConstraintValidator
 {
     private $translator;
-    public function __construct(TranslatorInterface $translator)
+    private $confirmationUrl;
+
+    public function __construct(TranslatorInterface $translator, $confirmationUrl)
     {
         $this->translator = $translator;
+        $this->confirmationUrl = $confirmationUrl;
     }
 
     public function validate($document, Constraint $constraint)
@@ -30,14 +33,13 @@ class TripAdvisorValidator extends ConstraintValidator
             }
         } elseif ($document instanceof Hotel) {
             if ($this->isTripAdvisorConfigEnabled($document)) {
-                $unfilledFields = ChannelManagerHelper::getHotelUnfilledRequiredFields($document);
+                $unfilledFields = ChannelManagerHelper::getHotelUnfilledRequiredFields($document, $this->confirmationUrl);
             }
         }
         if (isset($unfilledFields) && count($unfilledFields)) {
             foreach ($unfilledFields as $unfilledFieldName) {
                 $this->context->buildViolation('trip_advisor_validator.violation_message_template')
                     ->setParameter('%field%', $this->translator->trans($unfilledFieldName))
-                    ->atPath('currencyDefaultRatio')
                     ->addViolation();
             }
         }
