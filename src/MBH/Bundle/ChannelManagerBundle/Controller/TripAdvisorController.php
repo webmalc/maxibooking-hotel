@@ -9,6 +9,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
 use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorType;
 use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorTariffsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor\TripAdvisorRoomTypesForm;
+use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorHelper;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorOrderInfo;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
@@ -56,7 +57,8 @@ class TripAdvisorController extends BaseController
 
         $form->handleRequest($request);
         $confirmationUrl = $this->getParameter('trip_advisor_confirmation_url');
-        $unfilledData = $this->get('mbh.channelmanager.helper')->getHotelUnfilledRequiredFields($this->hotel, $confirmationUrl);
+        $unfilledData = $this->get('mbh.channel_manager.tripadvisor')
+            ->getHotelUnfilledRequiredFields($this->hotel, $confirmationUrl);
         $unfilledStringData = '';
         if (count($unfilledData) > 0) {
             $translator = $this->get('translator');
@@ -114,7 +116,7 @@ class TripAdvisorController extends BaseController
         $translator = $this->get('translator');
         foreach ($tariffs as $tariff) {
             $unfilledFieldsString = '';
-            $requiredUnfilledFields = $this->get('mbh.channelmanager.helper')->getTariffRequiredUnfilledFields($tariff);
+            $requiredUnfilledFields = TripAdvisorHelper::getTariffRequiredUnfilledFields($tariff);
             if (count($requiredUnfilledFields) > 0) {
                 foreach ($requiredUnfilledFields as $unfilledDatum) {
                     $unfilledFieldsString .= '<br>"' . $translator->trans($unfilledDatum) . '", ';
@@ -174,7 +176,7 @@ class TripAdvisorController extends BaseController
         foreach ($roomTypes as $roomType) {
             $translator = $this->get('translator');
             $unfilledFieldsString = '';
-            $requiredUnfilledFields = $this->get('mbh.channelmanager.helper')->getRoomTypeRequiredUnfilledFields($roomType);
+            $requiredUnfilledFields = TripAdvisorHelper::getRoomTypeRequiredUnfilledFields($roomType);
             if (count($requiredUnfilledFields) > 0) {
                 foreach ($requiredUnfilledFields as $unfilledDatum) {
                     $unfilledFieldsString .= '<br>"' . $translator->trans($unfilledDatum) . '", ';
@@ -436,7 +438,8 @@ class TripAdvisorController extends BaseController
                 $currency);
 
         $orderHandler = $this->get('mbh.channel_manager.order_handler');
-        $orderCreationErrorsData = $orderHandler->getOrderAvailability($orderInfo, substr($language, 0, 2));
+        $orderCreationErrorsData = $this->get('mbh.channel_manager.tripadvisor')
+            ->getOrderAvailability($orderInfo, substr($language, 0, 2));
 
         $responseFormatter = $this->get('mbh.channel_manager.trip_advisor_response_formatter');
         $hotel = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter')

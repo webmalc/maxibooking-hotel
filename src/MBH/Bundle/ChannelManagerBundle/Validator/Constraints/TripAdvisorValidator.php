@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Validator\Constraints;
 
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorRoomType;
 use MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper;
+use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorHelper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -30,7 +31,7 @@ class TripAdvisorValidator extends ConstraintValidator
                 /** @var TripAdvisorTariff $tariff */
                 if ($tariff->getTariff() == $document && $tariff->getIsEnabled()) {
                     if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
-                        $unfilledFields = ChannelManagerHelper::getTariffRequiredUnfilledFields($document);
+                        $unfilledFields = TripAdvisorHelper::getTariffRequiredUnfilledFields($document);
                     }
                 }
             }
@@ -44,12 +45,12 @@ class TripAdvisorValidator extends ConstraintValidator
             }
             if ($isRoomSync) {
                 if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
-                    $unfilledFields = ChannelManagerHelper::getRoomTypeRequiredUnfilledFields($document);
+                    $unfilledFields = TripAdvisorHelper::getRoomTypeRequiredUnfilledFields($document);
                 }
             }
         } elseif ($document instanceof Hotel) {
             if ($this->isTripAdvisorConfigEnabled($document)) {
-                $unfilledFields = ChannelManagerHelper::getHotelUnfilledRequiredFields($document, $this->confirmationUrl);
+                $unfilledFields = TripAdvisorHelper::getHotelUnfilledRequiredFields($document, $this->confirmationUrl);
             }
         }
         if (isset($unfilledFields) && count($unfilledFields)) {

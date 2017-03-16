@@ -6,11 +6,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class ChannelManagerHelper
@@ -22,7 +19,6 @@ class ChannelManagerHelper
     private $notifier;
     private $translator;
     private $dm;
-    const TRIP_ADVISOR_CONFIRMATION_URL = 'http://example.com';
 
     public function __construct(Notifier $notifier, TranslatorInterface $translator, DocumentManager $dm)
     {
@@ -107,34 +103,6 @@ class ChannelManagerHelper
         return $this->tariffsSyncData;
     }
 
-    /**
-     * Проверяет отель на заполнение данных и возвращает названия незаполненных полей
-     * @param Hotel $hotel
-     * @return array
-     */
-    public static function getHotelUnfilledRequiredFields(Hotel $hotel, $confirmationUrl)
-    {
-        $requiredHotelData = [];
-        $hotelContactInformation = $hotel->getContactInformation();
-
-        !empty($hotel->getInternationalStreetName()) ?: $requiredHotelData[] = 'form.hotelExtendedType.international_street_name.help';
-        !empty($hotel->getRegion()) ?: $requiredHotelData[] = 'form.hotelExtendedType.region';
-        !empty($hotel->getCountry()) ?: $requiredHotelData[] = 'form.hotelExtendedType.country';
-        !empty($hotel->getCity()) ?: $requiredHotelData[] = 'form.hotelExtendedType.city';
-        if (empty($hotelContactInformation)) {
-            $requiredHotelData[] = 'form.hotel_contact_information.contact_info.group';
-        } else {
-            !empty($hotelContactInformation->getEmail()) ?: $requiredHotelData[] = 'form.contact_info_type.email.help';
-            !empty($hotelContactInformation->getFullName()) ?: $requiredHotelData[] = 'form.contact_info_type.full_name.help';
-            !empty($hotelContactInformation->getPhoneNumber()) ?: $requiredHotelData[] = 'form.contact_info_type.phone.help';
-        }
-        !empty($hotel->getSmokingPolicy()) ?: $requiredHotelData[] = 'form.hotelType.isSmoking.help';
-        !empty($hotel->getCheckinoutPolicy()) ?: $requiredHotelData[] = 'form.hotelExtendedType.check_in_out_policy.label';
-        $confirmationUrl == self::TRIP_ADVISOR_CONFIRMATION_URL ?: $requiredHotelData[] = 'channel_manager_helper.confirmation_url';
-
-        return $requiredHotelData;
-    }
-
     public function notify(Order $order, $service, $type = 'new')
     {
         try {
@@ -184,34 +152,5 @@ class ChannelManagerHelper
         }
 
         return true;
-    }
-
-    /**
-     * Проверяет тип комнат на заполнение данных и возвращает названия незаполненных полей
-     * @param RoomType $roomType
-     * @return array
-     */
-    public static function getRoomTypeRequiredUnfilledFields(RoomType $roomType)
-    {
-        $requiredRoomTypeData = [];
-        !empty($roomType->getInternationalTitle()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.international_title';
-        !empty($roomType->getDescription()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.description';
-        (in_array('bed', $roomType->getFacilities()) || in_array('double-bed', $roomType->getFacilities()))
-            ?: $requiredRoomTypeData[] = 'channel_manager_helper.bed_configuration_not_exists';
-
-        return $requiredRoomTypeData;
-    }
-
-    /**
-     * Проверяет тариф на заполненность данных, необходимых для синхронизации с TripAdvisor и возвращает данные о незаполненных полях
-     * @param Tariff $tariff
-     * @return array
-     */
-    public static function getTariffRequiredUnfilledFields(Tariff $tariff)
-    {
-        $requiredTariffData = [];
-        !empty($tariff->getDescription()) ?: $requiredTariffData[] = 'mbhpricebundle.form.tarifftype.opisaniye';
-
-        return $requiredTariffData;
     }
 }

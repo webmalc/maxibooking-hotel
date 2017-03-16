@@ -4,18 +4,14 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Liip\FunctionalTestBundle\Validator\DataCollectingValidator;
-use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
-use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Component\Validator\ConstraintViolation;
 
 class OrderHandler
 {
@@ -183,86 +179,6 @@ class OrderHandler
         return $package;
     }
 
-    public function getOrderAvailability(AbstractOrderInfo $orderInfo, $locale)
-    {
-        $errors = [];
-        $isOrderCorrupted = false;
-
-        $isRoomAvailable = true;
-        $totalPrice = 0;
-        $packages = $orderInfo->getPackagesData();
-
-        $firstPackageInfo = current($packages);
-        $searchQuery = new SearchQuery();
-        $searchQuery->adults = $firstPackageInfo->getAdultsCount();
-        $searchQuery->children = $firstPackageInfo->getChildrenCount();
-        $searchQuery->begin = $firstPackageInfo->getBeginDate();
-        $searchQuery->end = $firstPackageInfo->getEndDate();
-        $searchQuery->tariff = $firstPackageInfo->getTariff();
-        $searchQuery->addRoomType($firstPackageInfo->getRoomType()->getId());
-
-        $searchResults = $this->search->search($searchQuery);
-        if (count($searchResults) == 0) {
-            $isRoomAvailable = false;
-        } else {
-            $searchResult = current($searchResults);
-            foreach ($packages as $packageInfo) {
-                if (count($searchResults) == 0) {
-                    $isRoomAvailable = false;
-                } else {
-                    $totalPrice += $searchResult->getPrice($packageInfo->getAdultsCount(),
-                        $packageInfo->getChildrenCount());
-                }
-            }
-        }
-
-        if (!$isRoomAvailable || $searchResult->getRoomsCount() < count($packages)) {
-            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::ROOM_NOT_AVAILABLE_ERROR,
-                'order_handler.order_room_not_available', $locale);
-            $isOrderCorrupted = true;
-        }
-        //После операций конвертации суммы не совпадают
-//        if ($totalPrice != $orderInfo->getPrice()) {
-//            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::PRICE_MISMATCH,
-//                'order_handler.price_mismatch.error', $locale);
-//            $isOrderCorrupted = true;
-//        }
-        if (empty($orderInfo->getPayer()->getEmail())) {
-            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::MISSING_EMAIL,
-                'order_handler.missing_email.error', $locale);
-        }
-        if (empty($orderInfo->getPayer()->getFirstName())) {
-            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::MISSING_PAYER_FIRST_NAME,
-                'order_handler.missing_first_name.error', $locale);
-        }
-
-        $orderPaymentCard = $orderInfo->getCreditCard();
-        $creditCardValidationErrors = $this->validator->validate($orderPaymentCard);
-        if (is_array($creditCardValidationErrors)) {
-            foreach ($creditCardValidationErrors as $cardError) {
-                /** @var ConstraintViolation $cardError */
-                $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::CREDIT_CARD_DECLINED,
-                    $cardError->getMessage(), $locale);
-            }
-        }
-
-        $acceptedCardTypes = $firstPackageInfo->getRoomType()->getHotel()->getAcceptedCardTypes();
-        $acceptedCardCodes = [];
-        /** @var CardType $acceptedCardType */
-        foreach ($acceptedCardTypes as $acceptedCardType) {
-            $acceptedCardCodes[] = $acceptedCardType->getCardCode();
-        }
-        if (!in_array(strtoupper($orderPaymentCard->type), $acceptedCardCodes)) {
-            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::CREDIT_CARD_NOT_SUPPORTED,
-                'order_handler.card_type_not_supported.error', $locale);
-        }
-
-        return [
-            'isCorrupted' => $isOrderCorrupted,
-            'errors' => $errors
-        ];
-    }
-
     /**
      * Получение массива данных о количествах взрослых и детей, разбитых в зависимости от размера номера
      * @param $adultsCount
@@ -331,14 +247,6 @@ class OrderHandler
         return [
             'childrenCount' => $childrenCount,
             'adultsCount' => $adultsCount
-        ];
-    }
-
-    private function getErrorData($problemType, $descriptionId, $locale)
-    {
-        return [
-            'problem' => $problemType,
-            'explanation' => $this->translator->trans($descriptionId, [], null, $locale)
         ];
     }
 }

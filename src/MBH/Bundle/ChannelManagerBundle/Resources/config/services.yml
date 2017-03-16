@@ -112,6 +112,13 @@ services:
     mbh_bundle_channel_manager.lib_ostrovok.ostrovok_data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator
 
+    mbh.channel_manager.tripadvisor:
+        class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorHelper
+        arguments:
+              - '@mbh.package.search'
+              - '@translator'
+              - '@validator'
+
     mbh.channel_manager.trip_advisor_response_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter
       arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%', '%online_form_result_url%', '%locale%', '@doctrine_mongodb.odm.document_manager', '@vich_uploader.templating.helper.uploader_helper', '@mbh.currency', '%locale.currency%', '@mbh.channel_manager.order_handler']
