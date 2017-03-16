@@ -25,7 +25,7 @@ class DynamicSalesScheduleController extends Controller implements CheckHotelCon
      * Index template
      * @Route("/", name="dynamicSalesSchedule")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ANALYTICS')")
+     * @Security("is_granted('ROLE_DYNAMIC_SALES_SCHEDULE')")
      * @Template()
      */
     public function indexAction()
@@ -49,7 +49,7 @@ class DynamicSalesScheduleController extends Controller implements CheckHotelCon
      *
      * @Route("/response", name="dynamic_sales_schedule", options={"expose"=true})
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_WINDOWS_REPORT')")
+     * @Security("is_granted('ROLE_DYNAMIC_SALES_SCHEDULE')")
      * @Template()
      * @param $request Request
      * @return array
