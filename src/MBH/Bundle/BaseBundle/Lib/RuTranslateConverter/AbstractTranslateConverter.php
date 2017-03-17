@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Lib\RuTranslateConverter;
 
 
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -68,15 +69,21 @@ abstract class AbstractTranslateConverter implements TranslateInterface
     private $loader;
     private $writer;
 
+    protected $logger;
+
     public function __construct(
         TranslationLoader $loader,
         TranslationWriter $writer,
+        LoggerInterface $logger,
         string $pattern = null,
         $locale = 'ru'
+
+
     ) {
         $this->loader = $loader;
         $this->writer = $writer;
         $this->catalogue = new MessageCatalogue($locale);
+        $this->logger = $logger;
         if ($pattern) {
             $this->pattern = $pattern;
         }
@@ -164,12 +171,14 @@ abstract class AbstractTranslateConverter implements TranslateInterface
             try {
                 $messagesPath = $this->bundle->getPath().'/Resources/translations';
                 $this->loader->loadMessages($messagesPath, $this->catalogue);
-                $messages = $this->catalogue->all('messages');
-                $newMessages = array_map(function ($item) {
-                    return preg_replace('/\'|\`|\?|\.$/', '', $item);
-                }, array_flip($messages));
+                foreach ($this->catalogue->all() as $key => $messages) {
+                    $newMessages = array_map(function ($item) {
+                        $this->logger->warning($this->bundle->getName().'|'.$item);
+                        return preg_replace('/\'|\`|\?|\.$/', '', $item);
+                    }, array_flip($messages));
 
-                $this->catalogue->replace(array_flip($newMessages), 'messages');
+                    $this->catalogue->replace(array_flip($newMessages), $key);
+                }
                 $this->writer->writeTranslations($this->catalogue, 'yml', ['path' => $messagesPath]);
             } catch (RuTranslateException $e) {
                 $this->addMessage($e->getMessage());

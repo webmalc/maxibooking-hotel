@@ -191,7 +191,7 @@ services:
     mbh.base.lib.abstract_translator:
         class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\AbstractTranslateConverter
         abstract: true
-        arguments: ['@translation.loader','@translation.writer']
+        arguments: ['@translation.loader','@translation.writer', '@mbh.task.logger']
 
     mbh.base.lib.document_translator:
         class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\DocumentTranslateConverter
