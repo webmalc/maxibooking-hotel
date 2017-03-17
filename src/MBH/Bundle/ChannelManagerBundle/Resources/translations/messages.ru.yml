@@ -85,6 +85,7 @@ services.expedia.nor_one_tariff: Не найдено ни одного тари�
 services.expedia.invalid_room_type_id: Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking
 services.expedia.nor_one_room_type: Не найдено ни одного типа комнат для данного отеля
 services.expedia.invalid_authorization_data: Введены некорректные имя пользователя или пароль
+services.expedia.booking_notification.error: Ошибка в оповещении сервиса о принятия заказа
 form.expedia.isEnabled: Включен?
 form.expedia.should_we_use_in_channel_manager: Использовать ли в Channel manager?
 form.expedia.hotel_id: ID отеля

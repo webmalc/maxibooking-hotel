@@ -32,7 +32,7 @@ class Expedia extends ExtendedAbstractChannelManager
         return $responseHandler->getErrorMessage();
     }
 
-    protected function getResponseHandler($response, $config = null) : AbstractResponseHandler
+    protected function getResponseHandler($response, $config = null): AbstractResponseHandler
     {
         return $this->container->get('mbh.channelmanager.expedia_response_handler')->setInitData($response, $config);
     }
@@ -49,7 +49,7 @@ class Expedia extends ExtendedAbstractChannelManager
 
         if (!$responseHandler->isResponseCorrect()) {
             $this->notifyError($orderInfo->getChannelManagerName(),
-                'Ошибка в оповещении сервиса о принятия заказа ' . '#'
+                $this->container->get('translator')->trans('services.expedia.booking_notification.error') . ' #'
                 . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName());
         }
     }

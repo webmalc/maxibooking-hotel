@@ -63,9 +63,8 @@ class ExpediaController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-
             $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
-            if ($errorMessage === '') {
+            if ($errorMessage === '' || !$config->getIsEnabled()) {
                 $this->dm->persist($config);
                 $this->dm->flush();
 

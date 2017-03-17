@@ -130,7 +130,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
             if ($amountOfTaxes) {
                 $feeCashDocument = new CashDocument();
                 $cashDocuments[] = $feeCashDocument->setIsConfirmed(false)
-                    ->setIsPaid(false)
+                    ->setIsPaid(true)
                     ->setMethod('electronic')
                     ->setOperation('fee')
                     ->setOrder($order)

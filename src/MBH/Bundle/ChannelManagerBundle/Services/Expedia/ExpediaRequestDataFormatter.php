@@ -201,12 +201,12 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $flashBag->clear();
                     $flashBag->add('danger', $this->container->get('translator')
                         ->trans('expedia_request_data_formatter.min_stay.error', ['%count%' => $minLOSDefault]));
-                    $minStay = $maxLOSDefault;
+                    $minStay = $minLOSDefault;
                 } else {
                     $minStay = $restriction->getMinStay();
                 }
             } else {
-                $minStay = $maxLOSDefault;
+                $minStay = $minLOSDefault;
             }
 
             $restrictionData = [
