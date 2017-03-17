@@ -27,25 +27,21 @@ class TripAdvisorValidator extends ConstraintValidator
     public function validate($document, Constraint $constraint)
     {
         if ($document instanceof Tariff) {
-            foreach ($document->getHotel()->getTripAdvisorConfig()->getTariffs() as $tariff) {
-                /** @var TripAdvisorTariff $tariff */
-                if ($tariff->getTariff() == $document && $tariff->getIsEnabled()) {
-                    if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
+            if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
+                foreach ($document->getHotel()->getTripAdvisorConfig()->getTariffs() as $tariff) {
+                    /** @var TripAdvisorTariff $tariff */
+                    if ($tariff->getTariff() == $document && $tariff->getIsEnabled()) {
                         $unfilledFields = TripAdvisorHelper::getTariffRequiredUnfilledFields($document);
                     }
                 }
             }
         } elseif ($document instanceof RoomType) {
-            $isRoomSync = false;
-            foreach ($document->getHotel()->getTripAdvisorConfig()->getRooms() as $room) {
-                /** @var TripAdvisorRoomType $room */
-                if ($room->getRoomType() == $document && $room->getIsEnabled()) {
-                    $isRoomSync = true;
-                }
-            }
-            if ($isRoomSync) {
-                if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
-                    $unfilledFields = TripAdvisorHelper::getRoomTypeRequiredUnfilledFields($document);
+            if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
+                foreach ($document->getHotel()->getTripAdvisorConfig()->getRooms() as $room) {
+                    /** @var TripAdvisorRoomType $room */
+                    if ($room->getRoomType() == $document && $room->getIsEnabled()) {
+                        $unfilledFields = TripAdvisorHelper::getRoomTypeRequiredUnfilledFields($document);
+                    }
                 }
             }
         } elseif ($document instanceof Hotel) {
