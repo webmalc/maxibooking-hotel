@@ -65,8 +65,7 @@ class PackageRepository extends DocumentRepository
         bool $group = false,
         Package $exclude = null,
         Cache $cache = null
-    )
-    {
+    ) {
         if ($cache) {
             $cacheEntry = $cache->get('packages_with_virtual_rooms', func_get_args());
             if ($cacheEntry !== false) {
@@ -552,11 +551,8 @@ class PackageRepository extends DocumentRepository
 
         if (isset($data['createdBy']) && $data['createdBy'] != null) {
 //            $qb->field('createdBy')->equals($data['createdBy']);
-            $qb->addOr(
-                $qb->expr()
-                    ->field('createdBy')->equals($data['createdBy'])
-                    ->field('createdBy')->equals(null)
-            );
+            $qb->addOr($qb->expr()->field('createdBy')->equals($data['createdBy']));
+            $qb->addOr($qb->expr()->field('createdBy')->equals(null));
         }
 
         //query
