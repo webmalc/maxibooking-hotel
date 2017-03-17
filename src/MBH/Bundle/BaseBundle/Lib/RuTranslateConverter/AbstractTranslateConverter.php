@@ -71,6 +71,8 @@ abstract class AbstractTranslateConverter implements TranslateInterface
 
     protected $logger;
 
+    protected $key;
+
     public function __construct(
         TranslationLoader $loader,
         TranslationWriter $writer,
@@ -172,8 +174,13 @@ abstract class AbstractTranslateConverter implements TranslateInterface
                 $messagesPath = $this->bundle->getPath().'/Resources/translations';
                 $this->loader->loadMessages($messagesPath, $this->catalogue);
                 foreach ($this->catalogue->all() as $key => $messages) {
+                    $this->key = $key;
+
                     $newMessages = array_map(function ($item) {
-                        $this->logger->warning($this->bundle->getName().'|'.$item);
+                        if (preg_match('/\'|\`|\?|\.$/', $item)) {
+                            $this->logger->warning($this->bundle->getName().' | '.$this->key.' | '.$item);
+                        }
+
                         return preg_replace('/\'|\`|\?|\.$/', '', $item);
                     }, array_flip($messages));
 
