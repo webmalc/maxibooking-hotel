@@ -110,6 +110,7 @@ expedia_request_data_formatter.min_stay.error: 'В сервисе Expedia.com п
 package_info.expedia.child_age: Возраст ребенка
 
 form.roomTypeTasks.checkIn: При заселении
+form.roomTypeTasks.checkIn.help: Задачи, создаваемые при заезде гостя
 form.roomTypeTasks.checkOut: При выезде
+form.roomTypeTasks.checkOut.help: При выезде гостя
 form.roomTypeTasks.daily: Каждые n дней проживания
-

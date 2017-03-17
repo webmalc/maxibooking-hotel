@@ -21,9 +21,11 @@ nbproject/
 /web/js/
 /web/upload/roomTypes/*
 /web/upload/hotelLogos/*
+/web/upload/images/*
 /web/media/cache/*
 !/web/upload/roomTypes/.gitkeep
 !/web/media/cache/.gitkeep
+!/web/media/images/.gitkeep
 /web/demo
 /web/index.html
 .idea/

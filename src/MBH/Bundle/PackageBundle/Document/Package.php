@@ -2,25 +2,26 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\PriceBundle\Document\Promotion;
+use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
-use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
-use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -36,6 +37,7 @@ class Package extends Base implements \JsonSerializable
     use SoftDeleteableDocument;
     use BlameableDocument;
     use DeleteReasonTrait;
+
 
     const ROOM_STATUS_OPEN = 'open';
     const ROOM_STATUS_WAIT = 'wait'; //Не заехал
@@ -73,12 +75,19 @@ class Package extends Base implements \JsonSerializable
      * @ODM\Index()
      */
     protected $roomType;
-    
-    /** 
+
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
+     * @deprecated
      */
     protected $accommodation;
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="PackageAccommodation", inversedBy="package", cascade={"persist"})
+     *
+     */
+    protected $accommodations;
 
     /**
      * @Gedmo\Versioned
@@ -253,7 +262,8 @@ class Package extends Base implements \JsonSerializable
      * )
      */
     protected $servicesPrice;
-    
+
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -379,6 +389,12 @@ class Package extends Base implements \JsonSerializable
     protected $isForceBooking = false;
 
     /**
+     * @var array
+     * @ODM\Collection()
+     */
+    protected $childAges = [];
+
+    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
@@ -438,37 +454,15 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
-     * Set accommodation
-     *
-     * @param $accommodation
-     * @return self
+     * @param bool $old
+     * @return mixed|null
      */
-    public function setAccommodation($accommodation)
+    public function getAccommodation(bool $old = false)
     {
-        $this->accommodation = $accommodation;
-        return $this;
-    }
-
-    /**
-     * Get accommodation
-     *
-     * @return \MBH\Bundle\HotelBundle\Document\Room $accommodation
-     */
-    public function getAccommodation()
-    {
-        return $this->accommodation;
-    }
-
-    /**
-     * Remove accommodation
-     * @return $this
-     */
-    public function removeAccommodation()
-    {
-        $this->accommodation = null;
-        $this->setIsCheckIn(false);
-
-        return $this;
+        if ($old) {
+            return $this->accommodation;
+        }
+        return $this->accommodations->last() ?? null;
     }
 
     /**
@@ -760,8 +754,9 @@ class Package extends Base implements \JsonSerializable
    
     public function __construct()
     {
-        $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tourists = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->restarauntSeat = new ArrayCollection();
+        $this->tourists = new ArrayCollection();
+        $this->accommodations = new ArrayCollection();
     }
 
 
@@ -1562,6 +1557,13 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @return Collection
+     */
+    public function getAccommodations(): Collection
+    {
+        return $this->getSortedAccommodations();
+    }
+    /**
      * @return Special|null
      */
     public function getSpecial(): ?Special
@@ -1588,4 +1590,114 @@ class Package extends Base implements \JsonSerializable
         return $this->getHotel()->getOrganization() ?? $this->getHotel();
     }
 
+    public function getSortedAccommodations()
+    {
+        $data = $this->accommodations->toArray();
+        usort($data, function ($a, $b) {
+            /** @var PackageAccommodation $a*/
+            /** @var PackageAccommodation $b*/
+            $c = 'd';
+            return ($a->getBegin() < $b->getBegin())? -1 : 1;
+        });
+
+        return new ArrayCollection($data);
+    }
+
+    /**
+     * @param Collection $accommodations
+     * @return Package
+     */
+    public function setAccommodations(Collection $accommodations): self
+    {
+        $this->accommodations = $accommodations;
+        return $this;
+    }
+
+    /**
+     * Add accommodation
+     *
+     * @param PackageAccommodation $accommodation
+     * @return Package
+     */
+    public function addAccommodation(PackageAccommodation $accommodation): self
+    {
+        $this->accommodations[] = $accommodation;
+
+        return $this;
+    }
+
+    /**
+     * Remove accommodation
+     *
+     * @param PackageAccommodation $accommodation
+     * @return Package
+     */
+    public function removeAccommodations(PackageAccommodation $accommodation)
+    {
+        $this->accommodations->removeElement($accommodation);
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     * @deprecated
+     */
+    public function getLastEndAccommodation(): \DateTime
+    {
+        $begin = $this->getBegin();
+        if ($this->accommodations->count()) {
+            $begin = max(array_map(function ($acc) {
+                /** @var PackageAccommodation $acc */
+                return $acc->getEnd();
+            }, $this->accommodations->toArray()));
+        }
+
+        return $begin;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastAccommodation()
+    {
+        return $this->getAccommodations()->last();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFirstAccommodation()
+    {
+        return $this->getAccommodations()->first();
+    }
+
+    /** Для совместимости в автозадачах */
+    public function getAccommodationCheckIn()
+    {
+        return $this->getFirstAccommodation();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccommodationCheckOut()
+    {
+        return $this->getLastAccommodation();
+    }
+
+    /**
+     * @param \DateTime $dateTime
+     * @return mixed
+     */
+    public function getAccommodationByDate(\DateTime $dateTime)
+    {
+        $accommodation = $this->accommodations->filter(function ($accommodation) use ($dateTime) {
+            /** @var PackageAccommodation $accommodation */
+            return $accommodation->getBegin() <= $dateTime && $dateTime <= $accommodation->getEnd();
+        });
+
+        return $accommodation->first();
+
+    }
 }

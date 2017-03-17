@@ -13,12 +13,10 @@ class RoomTypeImageType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $fileText = 'Изображние типа номера для онлайн бронирования';
-
-        $builder->
-            add('imageFile', FileType::class, ['label' => 'form.roomTypeType.image',
+        $builder
+            ->add('imageFile', FileType::class, ['label' => 'form.roomTypeType.image',
                 'required' => false,
-                'help' => $fileText,
+                'help' => 'form.roomTypeType.image.help',
                 'constraints' => [new Image(), new NotBlank()],
                 'attr' => ['multiple' => 'multiple']
             ]);
