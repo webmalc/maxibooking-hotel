@@ -3,8 +3,6 @@
 @color1: #2196f3; // Appears 3 times
 @color2: #8a8a8a; // Appears 3 times
 
-
-
 #online-booking-search {
   .rublesize {
     font-size: 19px;
@@ -56,12 +54,19 @@
       color: @color0;
     }
   }
-  .table-row tr.tariff-row:hover {
-    background-color: #f3dfaf;
-  }
+
 
   .alerting {
     background-color: #f3dfaf;
+    &:hover {
+      background-color: #f3dfaf;
+    }
+  }
+
+  .table-row tr.tariff-row{
+    &:hover {
+      .alerting;
+    }
   }
 
   .alerting-tr {
@@ -116,6 +121,10 @@
       }
     }
   }
+  #online-booking-search .right-info .table tbody tr {
+    cursor: pointer;
+  }
+
   .infocontainer {
     overflow: hidden;
   }

@@ -20,6 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 
 /**
@@ -30,7 +31,7 @@ class DefaultController extends BaseController
     /*const RECAPCHA_SECRET = '6Lcj9gcUAAAAAH_zLNfIhoNHvbMRibwDl3d3Thx9';*/
 
     /**
-     * @Route("/", name="online_booking")
+     * @Route("/", name="online_booking", options = { "expose" = true })
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -86,7 +87,7 @@ class DefaultController extends BaseController
 
         if ($form->isValid()) {
             $formData = $form->getData();
-            if ($formData['roomType']) {
+            if ($formData['roomType']??null) {
                 $searchQuery->addRoomType($formData['roomType']);
             } elseif ($formData['hotel']) {
                 if ($this->get('mbh.hotel.room_type_manager')->useCategories) {
@@ -118,8 +119,6 @@ class DefaultController extends BaseController
                 /*->setAdditionalDates()*/
                 ->setWithTariffs()
                 ->search($searchQuery);
-            ///////TODO: Убирать тут
-//            $searchResults = [];
 
             $specials = $searchService->searchSpecials($searchQuery);
 
@@ -141,10 +140,32 @@ class DefaultController extends BaseController
                     }
                 }
                 $searchResults[$k]['results'] = $filterSearchResults;
+                $searchResults[$k]['query'] = $searchQuery;
             }
         }
 
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
+
+        if ($request->get('getalltariff')) {
+            $html = '';
+            if ($results = $searchResults[0]['results']??null) {
+                foreach ($results as $result) {
+                    $html .= $this->renderView(
+                        '@MBHOnlineBooking/Default/tariff.html.twig',
+                        [
+                            'searchResult' => $result,
+                            'requestSearchUrl' => $requestSearchUrl
+                        ]
+                    );
+                }
+            }
+
+            $response = new Response();
+            $response->setContent($html);
+            $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+
+            return $response;
+        }
 
         return $this->render(
             'MBHOnlineBookingBundle:Default:search.html.twig',

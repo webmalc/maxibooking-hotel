@@ -1,14 +1,184 @@
-<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/search.css')) }}">
+<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/ssearch.css')) }}">
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="{{ absolute_url(asset('assets/vendor/admin-lte/plugins/iCheck/icheck.min.js')) }}"></script>
+<link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/iCheck/skins/square/_all.css')) }}">
 
 <div id="online-booking-search">
     <p class="restitle">Курортная сеть "Азовский": варианты размещения в выбранные объекты</p>
-    <div class="infoIncludeN">Что входит в стоимость путевки: <a href="http://azovsky.ru/putevka-v-Crimea/" style=""
-                                                                 target="_blank">Азовский</a>, <a
-                href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a></div>
-    {% for result in searchResults %}
-        <div class="row oneblock room-type-row">
-            <!--<div class="sale"></div>-->
+    <div class="infoIncludeN">
+        Что входит в стоимость путевки:
+        <a href="http://azovsky.ru/putevka-v-Crimea/" target="_blank">Азовский</a>,
+        <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a>
+    </div>
+
+    {#<section>
+        <div class="oneblockinrdm specgrblock">
+            <div class="leftrdm">
+                <div class="imghotel"
+                     style="background:url(http://az.maxibooking.ru/media/cache/thumb_275x210/upload/roomTypes/1480070422675.jpeg)no-repeat;background-size:cover;">
+                    <div class="inghotelline">
+                        <img src="http://az.maxibooking.ru/media/cache/thumb_40x40/upload/roomTypes/1480070428565.jpeg"
+                             alt="">
+                        <img src="http://az.maxibooking.ru/media/cache/thumb_40x40/upload/roomTypes/1480070435451.jpeg"
+                             alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="rightrdm">
+                <div class="leftinrdm">
+                    <p class="titlerdm">Пансионат Азовский</p>
+                    <p class="numtype"><b>Тип номера:</b><br>Домики с верандой (МАХ 3)</p>
+                    <p class="gueststype"><b>Гости:</b> 2 взр. + 1 реб.</p>
+                    <p class="eattype">
+                        <img src="images/vl.png" alt="">
+
+                        3-разовое питание<br>шведский стол</p>
+                    <div class="iconstype"><!--<img src="/images/icns.png" alt="">-->
+                        <i class="mbf-clock"></i>
+                        <i class="mbf-sofa"></i>
+                        <i class="mbf-shower"></i>
+                        <i class="mbf-stake"></i>
+                    </div>
+                </div>
+                <div class="rightinrdm">
+                    <p class="titlerdm">Цена за 25 ночей</p>
+                    <div class="clear"></div>
+                    <p class="pricerdm"><span class="noneprice">127 640&#8381;</span>
+                        <span class="newprice">156 140&#8381;</span>
+                    </p>
+                    <p class="datesrdm">18.07.17 - 28.07.17</p>
+                    <p class="daysrdm">26 дней / 25 ночей</p>
+                    <p class="lastrdm">осталось 3 номера</p>
+                    <p class="bronsrdm">забронировано сегодня 9 раз</p>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="clear"></div>
+            <div class="lefttblrdm">
+                <table class="pricetbl">
+                    <tr class="flinetbl">
+                        <td>Тариф</td>
+                        <td>Скидка</td>
+                        <td>Цена</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Раннее бронирование 2017 при 100% оплате</td>
+                        <td class="redtd">-25%</td>
+                        <td>15670&#8381;</td>
+                        <td><input name="var" type="radio" value=""></td>
+                    </tr>
+                    <tr>
+                        <td>Раннее бронирование 2017 при 100% оплате</td>
+                        <td class="redtd">-25%</td>
+                        <td>15670&#8381;</td>
+                        <td><input name="var" type="radio" value=""></td>
+                    </tr>
+                    <tr>
+                        <td>Раннее бронирование 2017 при 100% оплате</td>
+                        <td class="redtd">-25%</td>
+                        <td>15670&#8381;</td>
+                        <td><input name="var" type="radio" value=""></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="righttblrdm">
+                <div class="spros">Пользуется спросом!</div>
+                <p class="btmone">Отправить заявку</p>
+                <p class="btmtwo">Купить онлайн</p>
+                <p class="btmthree">Смотреть другие спецпредложения</p>
+
+            </div>
+            <div class="clear"></div>
+        </div>
+    </section>#}
+
+
+    {% for offerByRoomType in searchResults %}
+        {% set roomType, tariffResults, query, children = offerByRoomType.roomType, offerByRoomType.results, offerByRoomType.query, offerByRoomType.query.children %}
+        {{ dump(roomType, tariffResults, query) }}
+    <section>
+        <div class="oneblockinrdm room-type-row" data-roomtype="{{ roomType.id }}">
+            <div class="leftrdm">
+                <div class="imghotel"
+                     style="background:url(http://az.maxibooking.ru/media/cache/thumb_275x210/upload/roomTypes/1480070422675.jpeg)no-repeat;background-size:cover;">
+                    <div class="inghotelline">
+                        <img src="http://az.maxibooking.ru/media/cache/thumb_40x40/upload/roomTypes/1476108079636.jpeg"
+                             alt="">
+                        <img src="http://az.maxibooking.ru/media/cache/thumb_40x40/upload/roomTypes/1481200742213.jpeg"
+                             alt="">
+                        <img src="http://az.maxibooking.ru/media/cache/thumb_40x40/upload/roomTypes/1481200753688.jpeg"
+                             alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="rightrdm">
+                <div class="leftinrdm">
+                    <p class="titlerdm">{{ roomType.hotel.fullTitle }}&nbsp;</p>
+                    <p class="numtype"><b>Тип номера:</b><br>roomType.fullTitle</p>
+                    <p class="gueststype">
+                        <b>Гости:</b>
+                        {{ query.adults }} взр. +
+                        {% transchoice children %}
+                        {0}{2} %children% реб |]5,Inf[ %children% дет.
+                        {% endtranschoice %}
+                    </p>
+                    <p class="eattype"><img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
+                    <div class="iconstype"><img src="/images/icns.png" alt=""></div>
+                </div>
+                <div class="rightinrdm">
+                    <p class="titlerdm">Цена за 25 ночей</p>
+                    <div class="clear"></div>
+                    <p class="pricerdm"><span>127 640&#8381;</span> 156 140&#8381;</p>
+                    <p class="datesrdm">18.07.17 - 28.07.17</p>
+                    <p class="daysrdm">26 дней / 25 ночей</p>
+                    <p class="lastrdm">осталось 3 номера</p>
+                    <p class="bronsrdm">забронировано сегодня 9 раз</p>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="clear"></div>
+            <div class="lefttblrdm">
+                <table class="pricetbl">
+                    <tr class="flinetbl">
+                        <td>Тариф</td>
+                        <td>Скидка</td>
+                        <td>Цена</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Раннее бронирование 2017 при 100% оплате</td>
+                        <td class="redtd">-25%</td>
+                        <td>15670&#8381;</td>
+                        <td><input name="var" type="radio" value=""></td>
+                    </tr>
+                    <tr>
+                        <td>Раннее бронирование 2017 при 100% оплате</td>
+                        <td class="redtd">-25%</td>
+                        <td>15670&#8381;</td>
+                        <td><input name="var" type="radio" value=""></td>
+                    </tr>
+                    <tr>
+                        <td>Раннее бронирование 2017 при 100% оплате</td>
+                        <td class="redtd">-25%</td>
+                        <td>15670&#8381;</td>
+                        <td><input name="var" type="radio" value=""></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="righttblrdm">
+                <div class="spros">Пользуется спросом!</div>
+                <p class="btmone btmonenotspec">Отправить заявку</p>
+                <p class="btmtwo">Купить онлайн</p>
+
+            </div>
+            <div class="clear"></div>
+        </div>
+    </section>
+    {% endfor %}
+
+        {% for result in searchResults %}
+        <div class="row oneblock room-type-row" data-roomtype="{{ result.roomType.id }}">
             <div class="col-md-4 logo">
                 {% set renderedImage = false %}
                 {% for searchResult in result.results if not renderedImage %}
@@ -22,7 +192,7 @@
                     {% endif %}
                 {% endfor %}
                 {% if not renderedImage %}
-                    {#<div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>#}
+                    <div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>
                     <img src="{{ absolute_url(asset('bundles/mbhonlinebooking/images/no-image.jpg')) }}">
                 {% endif %}
                 <div class="row">
@@ -55,7 +225,7 @@
                         </div>
                         <div class="subtitle infocontainer">
                             <div class="pull-left">
-                                {#<i class="fa fa-h-square numicon"></i>#}
+                                <i class="fa fa-h-square numicon"></i>
                                 <div class="pull-right roomcon">
                                     <div class="roomtype">тип номера</div>
                                     <div class="roomname">
@@ -119,63 +289,19 @@
                         <th></th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="tariff-container">
                     {% for searchResult in result.results %}
-                        <tr
-                                class="tariff-row"
-                                data-tariff="{{ searchResult.tariff.id }}"
-                                data-roomtype="{{ searchResult.roomType.id }}"
-                                data-adults="{{ searchResult.adults }}"
-                                data-children="{{ searchResult.children }}"
-                                data-begin="{{ searchResult.begin|date('d.m.Y') }}"
-                                data-end="{{ searchResult.end|date('d.m.Y') }}"
-                                data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}&form[infants]={{ searchResult.infants }}&form[paymentType]={{ searchResult.tariff.paymentType }}"
-                                data-payment_type="{{ searchResult.tariff.paymentType }}"
-
-
-                        >
-                            <td>{{ searchResult.tariff.fullTitle }}
-                                {% if searchResult.tariff.description is not empty %}
-                                    <i class="fa fa-question-circle" data-toggle="tooltip"
-                                       title="{{ searchResult.tariff.description }}"></i>
-                                {% endif %}
-                            </td>
-
-                            <td>
-                                {% if searchResult.begin|date('Y') == 'now'|date('Y') %}
-                                    {% set format = 'd MMM' %}
-                                {% else %}
-                                    {% set format = 'd MMM y' %}
-                                {% endif %}
-                                <span style="white-space: nowrap;">
-                    {{ searchResult.begin|localizeddate('medium', 'none', 'ru', null, format) }}
-                    </span><br>
-                                {% if searchResult.end|date('Y') == 'now'|date('Y') %}
-                                    {% set format = 'd MMM' %}
-                                {% else %}
-                                    {% set format = 'd MMM y' %}
-                                {% endif %}
-                                <span style="white-space: nowrap;">
-                    {{ searchResult.end|localizeddate('medium', 'none', 'ru', null, format) }}
-                    </span>
-                            </td>
-                            <td class="text-center">
-                                {{ searchResult.nights }}
-                            </td>
-                            <td nowrap>
-                                {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}
-                            </td>
-                            <td>
-                                <input type="radio" name="booking-{{ searchResult.roomType.id }}">
-                            </td>
-                        </tr>
+                        {{ include('@MBHOnlineBooking/Default/tariff.html.twig') }}
                     {% endfor %}
+
                     </tbody>
                 </table>
                 <div class="btmactions">
-                    <a href="javascript:void(0)" tabindex="0" class="btn btn-default btn-booking-reservation"
+                    <a href="javascript:void(0)" tabindex="0" class="btn btn-default btn-booking-all"
+                       title="Отправить заявку">ВСЕ ПРЕДЛОЖЕНИЯ</a>
+                    <a href="javascript:void(0)" tabindex="1" class="btn btn-default btn-booking-reservation"
                        title="Отправить заявку">ОТПРАВИТЬ ЗАЯВКУ</a>
-                    <a href="javascript:void(0)" tabindex="0" class="btn btn-warning btn-booking" title="Купить онлайн">КУПИТЬ
+                    <a href="javascript:void(0)" tabindex="2" class="btn btn-warning btn-booking" title="Купить онлайн">КУПИТЬ
                         ОНЛАЙН</a>
                 </div>
             </div>
@@ -184,12 +310,12 @@
         </div>
 
     {% endfor %}
-    {% if searchResults|length != 0 %}
-        <div class="infoIncludeN">Что входит в стоимость путевки: <a href="http://azovsky.ru/putevka-v-Crimea/" style=""
-                                                                     target="_blank">Азовский</a>, <a
-                    href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a></div>
-    {% endif %}
 
+    {% if searchResults|length != 0 %}
+        <div class="infoIncludeN">Что входит в стоимость путевки:
+            <a href="http://azovsky.ru/putevka-v-Crimea/" target="_blank">Азовский</a>,
+            <a href="http://azovsky.ru/azovland/azovland-putevka/" target="_blank">АзовЛенд</a></div>
+    {% endif %}
 </div>
 
 {% if searchResults|length == 0 %}
@@ -204,44 +330,6 @@
     </div>
 {% endif %}
 
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Внимание!</h4>
-            </div>
-            <div class="modal-body">
-                Для того, чтобы <span id="action"></span> выберите, пожалуйста, интересующий Вас тариф.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Readmore.js/2.2.0/readmore.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
-
-<script>
-    $(function () {
-        $('.descr').readmore({
-            moreLink: '<div class="more-link"><a href="#">... <i class="fa fa-caret-right"></i></a></div>',
-            lessLink: '<div class="less-link"><a href="#">... <i class="fa fa-caret-up"></i></a></div>',
-            collapsedHeight: 45
-        });
-
-//        $('.table').readmore({
-//            moreLink: '<div class="more-link"><a href="#">еще предложения <i class="fa fa-caret-right"></i></a></div>',
-//            lessLink: '<div class="less-link"><a href="#">... <i class="fa fa-caret-up"></i></a></div>',
-//            collapsedHeight: 120
-//        });
-
-    });
-</script>
 <script>
     var mychart, myprices, myrows = [];
 
@@ -250,143 +338,106 @@
         this.$row = $row;
         this.$bookingButton = $row.find('.btn-booking');
         this.$bookingButtonReservation = $row.find('.btn-booking-reservation');
+        this.$bookingButtonAll = $row.find('.btn-booking-all');
         this.tariffRows = [];
         this.selectedTariffRow = null;
         this.chartContainer = this.$row.find("div[id^=chart]").attr('id');
-    };
-
-    /*RoomTypeRow.prototype.isSelected = function()
-     {
-     return this.selectedTariffRow;
-     }*/
-
-    RoomTypeRow.prototype.update = function () {
-        this.notAlreadyBooking();
-        this.tariffRows.forEach(function (t) {
-            t.update();
-        })
+        this.roomTypeId = this.$row.data('roomtype');
     };
 
     RoomTypeRow.prototype.init = function () {
+        this.initTariffs();
         this.bindEventHandlers();
-        this.initTariff();
-        this.update();
+    };
+
+    RoomTypeRow.prototype.initTariffs = function () {
+        var that = this;
+        this.$row.find('.tariff-row').each(function () {
+            var tariffRow = new TariffRow($(this));
+            tariffRow.init(that);
+            that.tariffRows.push(tariffRow);
+        });
+        if (!this.selectedTariffRow) {
+            this.tariffRows[0].setCheck();
+        }
     };
 
     RoomTypeRow.prototype.bindEventHandlers = function () {
+        var that = this;
+        this.$bookingButtonAll.on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            that.allTariffAction();
+        });
 
     };
 
-    RoomTypeRow.prototype.initTariff = function () {
-        var that = this;
-
-        var checked = false;
-        this.$row.find('.tariff-row').each(function () {
-            var tariffRow = new TariffRow($(this), that);
-            tariffRow.init();
-            if (tariffRow.isSelected()) {
-                checked = true;
-            }
-            that.tariffRows.push(tariffRow);
-        });
-        if (!checked) {
-            this.tariffRows[0].$radiobutton.iCheck('check');
-        }
-
-    }
-
-    RoomTypeRow.prototype.notAlreadyBooking = function () {
-        /*this.$bookingButton.addClass('disabled').attr('href', '');
-         this.$bookingButtonReservation.addClass('disabled').attr('href', '');*/
-        /*this.tariffRows.forEach(function(index, t) {
-         tariffRow.notSelected();
-         })*/
-    }
-
-    RoomTypeRow.prototype.alreadyBooking = function (tariffRow) {
-        this.tariffRows.forEach(function (t) {
-            if (t != tariffRow) {
-                t.notSelected()
-            }
-        })
+    RoomTypeRow.prototype.selectActiveTariff = function (tariffRow) {
+        this.selectedTariffRow = tariffRow;
         this.reBuildHref();
-    }
+    };
+
+    RoomTypeRow.prototype.allTariffAction = function () {
+        //TODO: Сделать затемнение
+        var that = this;
+        var formData = $("form#search-form").serialize();
+        formData = formData +
+            '&' + encodeURIComponent('search_form[roomType]') + '=' + this.roomTypeId +
+            '&getalltariff=true';
+        var ajax = $.get({
+                url: Routing.generate('online_booking', {}, true),
+                data: formData
+            }
+        );
+
+        ajax.done(function (data) {
+            that.removeTariffs();
+            that.addTariffs(data);
+        });
+    };
+
+    RoomTypeRow.prototype.addTariffs = function (html) {
+        this.$row.find('.tariff-container').append(html);
+        this.initTariffs();
+    };
+
+    RoomTypeRow.prototype.removeTariffs = function () {
+        while (this.tariffRows.length) {
+            var tariffRow = this.tariffRows.pop();
+            tariffRow.selfRemove();
+        }
+        if (this.selectedTariffRow) {
+            this.selectedTariffRow = null;
+        }
+    };
 
     RoomTypeRow.prototype.reBuildHref = function () {
+        console.log('rebuild href');
         var href = this.selectedTariffRow.bookingHref;
-        if (this.selectedTariffRow.$promotionSelect.val()) {
-            href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val();
-        }
+        /*if (this.selectedTariffRow.$promotionSelect.val()) {
+         href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val();
+         }*/
         var form_href = '&' + $("form#search-form").serialize();
         href = href + form_href;
 
         this.$bookingButton.attr('href', href);
         this.$bookingButtonReservation.attr('href', href + '&reservation=true');
-    }
+    };
 
-    RoomTypeRow.prototype.handleChartData = function(data) {
+    RoomTypeRow.prototype.handleChartData = function (data) {
         var chartData = data;
         $.each(this.tariffRows, function (index) {
             this.chartData = chartData[index];
         });
 
     };
-
-
-    var TariffRow = function ($row, roomTypeRow) {
-        this.$row = $row;
-        this.$radiobutton = this.$row.find('input[type=radio]');
-        this.bookingHref = this.$row.data('url');
-        this.$promotionSelect = $row.find('select');
-        this.roomTypeRow = roomTypeRow;
-        this.chartData = {};
-    }
-
-
-    TariffRow.prototype.init = function () {
-        this.bindEventHandlers();
-    }
-
-    TariffRow.prototype.isSelected = function () {
-        return this.$radiobutton.is(':checked');
-    }
-
-    TariffRow.prototype.update = function () {
-        if (this.isSelected()) {
-            this.selected();
-        }
-    }
-
-    TariffRow.prototype.bindEventHandlers = function () {
-        var that = this;
-        this.$radiobutton.on('ifChanged', function () {
-            that.selected();
-        })
-        this.$promotionSelect.on('change', function () {
-            that.roomTypeRow.selectedTariffRow = that;
-            that.roomTypeRow.reBuildHref();
-        })
-    }
-
-    TariffRow.prototype.selected = function () {
-        this.roomTypeRow.selectedTariffRow = this;
-        //this.$promotionSelect.removeClass('hide');
-        this.$radiobutton.iCheck('check');
-        this.roomTypeRow.alreadyBooking(this);
-    }
-
-    TariffRow.prototype.notSelected = function () {
-        this.$promotionSelect.addClass('hide');
-        //this.$radiobutton.attr('checked', false);
-    }
-
     RoomTypeRow.prototype.getChartOptions = function () {
         return {
             chart: {
                 type: 'column',
                 plotBorderWith: 1,
                 height: 250,
-                zoomType : false
+                zoomType: false
             },
             title: {
                 text: 'Календарь цен',
@@ -465,6 +516,45 @@
         };
     };
 
+
+    var TariffRow = function ($row) {
+        this.$row = $row;
+        this.$radiobutton = this.$row.find('input[type=radio]');
+        this.bookingHref = this.$row.data('url');
+        this.roomTypeRow = null;
+        this.chartData = {};
+    };
+
+    TariffRow.prototype.init = function (roomTypeRow) {
+        var that = this;
+        this.roomTypeRow = roomTypeRow;
+        this.$radiobutton.iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+            increaseArea: '20%' // optional
+        });
+        this.$radiobutton.on('ifChecked', function (e) {
+            that.roomTypeRow.selectActiveTariff(that);
+            that.$row.addClass('alerting').siblings().removeClass("alerting");
+        });
+        if (this.isSelected()) {
+            this.setCheck();
+        }
+
+    };
+
+    TariffRow.prototype.setCheck = function () {
+        this.$radiobutton.iCheck('check');
+    };
+
+    TariffRow.prototype.selfRemove = function () {
+        this.$row.remove();
+    };
+
+    TariffRow.prototype.isSelected = function () {
+        return this.$radiobutton.is(':checked');
+    };
+
     TariffRow.prototype.showChart = function () {
         if (!this.roomTypeRow.chart) {
             var options = this.roomTypeRow.getChartOptions();
@@ -508,28 +598,8 @@
 
     };
 
-    var getChartUrl = function (tariffRow) {
-        var urlDecoded = tariffRow.$row.data('url').split('?')[1].split('&'),
-            rawArr = [];
 
-        for (var i = 0; i < urlDecoded.length; i++) {
-            var el = urlDecoded[i].split('=');
-            rawArr[el[0]] = el[1];
-        }
-
-        var url = Routing.generate('online_booking_calculation', {
-            tariffId: rawArr['form[tariff]'],
-            roomTypeId: rawArr['form[roomType]'],
-            adults: rawArr['form[adults]'],
-            children: rawArr['form[children]'],
-            packageBegin: rawArr['form[begin]'],
-            packageEnd: rawArr['form[end]']
-        }, true);
-
-        return url;
-    };
-
-    var getChartRoomUrl = function(tariffRow) {
+    var getChartRoomUrl = function (tariffRow) {
         var data = [];
         var RoomTypeRow = tariffRow.roomTypeRow;
         RoomTypeRow.tariffRows.forEach(function (tariffRow) {
@@ -560,54 +630,19 @@
         $roomTypeRows.each(function () {
             var roomTypeRow = new RoomTypeRow($(this));
             roomTypeRow.init();
-            roomTypeRow.tariffRows.forEach(function (tariffRow) {
-                myrows.push(tariffRow);
-                tariffRow.$row.on('click', function () {
-                    if({{ useCharts?'true':'false' }}) {
-                        tariffRow.drawChart();
-                    }
-                    tariffRow.selected();
-                    start_bron(this);
-                });
-            })
+            //Графики - нужно будет перенести в методы
+//            roomTypeRow.tariffRows.forEach(function (tariffRow) {
+            {#tariffRow.$row.on('click', function () {#}
+            {#if ({{ useCharts?'true':'false' }}) {#}
+            {#tariffRow.drawChart();#}
+            {#}#}
+//                    tariffRow.selected();
+//                    start_bron(this);
+            {#});#}
+//            })
         });
 
-        isReturned();
     });
-
-    var start_bron = function (row) {
-        $(row).siblings().removeClass("alerting");
-        $(row).addClass("alerting");
-
-    };
-
-    $("#myModal").on('hide.bs.modal', function (e) {
-        $("table").removeClass('alerting-tr');
-    });
-
-    $(".btmactions a").on('click', function (e) {
-        if ($(e.target).attr('href') === 'javascript:void(0)') {
-            e.preventDefault();
-            var $action = $("#action");
-            $(this).parent().siblings('table').addClass("alerting-tr");
-            $action.text(($(this).text()));
-            $("#myModal").modal("show");
-        }
-
-    })
-
-    var isReturned = function () {
-        var $checked = $("input[type=radio]:checked");
-        if ($checked.length) {
-            $checked.trigger('click');
-        }
-    };
 
 
 </script>
-
-<style>
-    #online-booking-search .right-info .table tbody tr {
-        cursor: pointer;
-    }
-</style>
