@@ -164,6 +164,12 @@ abstract class AbstractTranslateConverter implements TranslateInterface
             try {
                 $messagesPath = $this->bundle->getPath().'/Resources/translations';
                 $this->loader->loadMessages($messagesPath, $this->catalogue);
+                $messages = $this->catalogue->all('messages');
+                $newMessages = array_map(function ($item) {
+                    return preg_replace('/\'|\`|\?|\.$/', '', $item);
+                }, array_flip($messages));
+
+                $this->catalogue->replace(array_flip($newMessages), 'messages');
                 $this->writer->writeTranslations($this->catalogue, 'yml', ['path' => $messagesPath]);
             } catch (RuTranslateException $e) {
                 $this->addMessage($e->getMessage());
