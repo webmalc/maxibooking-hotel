@@ -273,6 +273,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         ];
 
         foreach ($packages as $package) {
+            /** @var Package $package */
             $day = $package->getCreatedAt()->format('d.m.Y');
             $user = $package->getCreatedBy();
             $dates[$day] = $package->getCreatedAt();
@@ -293,17 +294,16 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             if (empty($dayTotal[$day])) {
                 $dayTotal[$day] = $default;
             }
-            foreach ($package->getServices() as $packageService) {
-                $data[$user][$day]['services'] += $packageService->getTotalAmount();
-                $total[$user]['services'] += $packageService->getTotalAmount();
-            }
 
-            $add = function($entry, $package) {
+            $add = function($entry, Package $package) {
                 $entry['sold']++;
                 $entry['packagePrice'] += $package->getPackagePrice();
                 $entry['price'] += $package->getPrice();
                 $entry['servicesPrice'] += $package->getServicesPrice();
                 $entry['paid'] += $package->getPaid();
+                foreach ($package->getServices() as $packageService) {
+                    $entry['services'] += $packageService->getTotalAmount();
+                }
 
                 return $entry;
             };
@@ -316,7 +316,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $allTotal = $default;
         foreach ($total as $i => $tData) {
             foreach ($tData as $k => $val) {
-                if ($k != 'date') {
+                if (!in_array($k, ['date','user'])) {
                     $allTotal[$k] += $val;
                 }
             }
