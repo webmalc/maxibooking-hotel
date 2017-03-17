@@ -337,7 +337,7 @@ class MagicCalculation extends Calculation
         $groups = [];
         array_map(
             function ($age) use (&$groups) {
-                if (0 < $age && $age < 7) {
+                if (0 <= $age && $age < 7) {
                     $groups['j'][] = $age;
                 } elseif (7 <= $age && $age <= 15) {
                     $groups['t'][] = $age;
