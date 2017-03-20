@@ -27,7 +27,7 @@ class PackageMainType extends AbstractType
 
         $builder
             ->add('begin', DateType::class, [
-                'label' => 'Заезд',
+                'label' => 'mbhpackagebundle.form.packagemaintype.zayezd',
                 'group' => 'Заезд/отъезд',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
@@ -57,7 +57,7 @@ class PackageMainType extends AbstractType
                 'help' => 'Игнорировать условия и ограничения при поиске доступного номера?'
             ])
             ->add('roomType', DocumentType::class, [
-                'label' => 'Тип номера',
+                'label' => 'mbhpackagebundle.form.packagemaintype.tip.nomera',
                 'class' => 'MBHHotelBundle:RoomType',
                 'group' => 'Номер',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
@@ -82,7 +82,7 @@ class PackageMainType extends AbstractType
             }
             $builder
             ->add('adults',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Взрослых',
+                'label' => 'mbhpackagebundle.form.packagemaintype.vzroslykh',
                 'group' => 'Номер',
                 'required' => true,
                 'group' => 'Номер',
@@ -91,7 +91,7 @@ class PackageMainType extends AbstractType
                 'attr' => array('class' => 'input-xxs plain-html'),
             ])
             ->add('children',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Детей',
+                'label' => 'mbhpackagebundle.form.packagemaintype.detey',
                 'group' => 'Номер',
                 'required' => true,
                 'group' => 'Номер',
@@ -167,7 +167,7 @@ class PackageMainType extends AbstractType
         }
         $builder
             ->add('numberWithPrefix', TextType::class, [
-                'label' => 'Номер брони',
+                'label' => 'mbhpackagebundle.form.packagemaintype.nomer.broni',
                 'group' => 'Информация',
                 'required' => true,
             ])

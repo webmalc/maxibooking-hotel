@@ -64,7 +64,7 @@ class UnwelcomeType extends AbstractType
             'label' => 'form.unwelcomeType.comment',
             'group' => 'form.unwelcomeType.group.common',
             'attr' => ['style' => 'height:150px'],
-            'help' => 'Доступен только для вас и не передается в сервис нежелательных гостей'
+            'help' => 'mbhpackagebundle.form.unwelcometype.dostupen.tolʹko.dlya.vas.i.ne.peredayetsya.v.servis.nezhelatelʹnykh.gostey'
         ]);
     }
 

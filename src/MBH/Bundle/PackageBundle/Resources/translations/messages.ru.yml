@@ -1,24 +1,38 @@
-form.orderTouristType.fio: ФИО
-form.orderTouristType.find_guest: Найти гостя
-form.orderTouristType.placeholder_fio: Иванов Иван Иванович
-form.orderTouristType.placeholder_surname: Иванов
-form.orderTouristType.surname: Фамилия
-form.orderTouristType.add_guest: Добавить гостя
-form.orderTouristType.min_name: Слишком короткое имя
-form.orderTouristType.max_name: Слишком длинное имя
-form.orderTouristType.name: Имя
-form.orderTouristType.placeholder_name: Иван
-form.orderTouristType.min_surname: Слишком короткая фамилия
-form.orderTouristType.max_surname: Слишком длинная фамилия
-form.orderTouristType.second_name: Отчество
-form.orderTouristType.placeholder_second_name: Иванович
-form.orderTouristType.min_second_name: Слишком короткое отчество
-form.orderTouristType.max_second_name: Слишком длинное отчество
-form.orderTouristType.birth_date: Дата рождения
-form.orderTouristType.add_to_package: Добавить как гостя?
-form.orderTouristType.phone: Телефон
-form.orderTouristType.phone: Телефон
-form.orderTouristType.email: E-mail
+mbhpackagebundle.form.packageservicetype.data: Дата
+mbhpackagebundle.form.unwelcometype.dostupen.tolʹko.dlya.vas.i.ne.peredayetsya.v.servis.nezhelatelʹnykh.gostey: 'Доступен только для вас и не передается в сервис нежелательных гостей'
+tourist.visa.type_type: Тип
+mbhpackagebundle.form.orderdocumenttype.tip.skana: 'Тип скана'
+controller.documentsController.table_row_tourist: Клиент
+mbhpackagebundle.form.orderdocumenttype.zamenitʹ.fayl: 'Заменить файл'
+form.unwelcomeType.comment: Комментарий
+mbhpackagebundle.form.packagecsvtype.kol.vo.nochey: 'Кол-во ночей'
+mbhpackagebundle.form.packagecsvtype.kol.vo.chelovek: 'Кол-во человек'
+form.searchType.check_in: Заезд
+csv.form.tariffType: 'Тип номера'
+csv.type.adults: Взрослых
+csv.type.children: Детей
+mbhpackagebundle.form.packagemaintype.nomer.broni: 'Номер брони'
+tourist.visa.type_number: Номер
+form.packageGuestType.fio: ФИО
+form.packageGuestType.find_guest: 'Найти гостя'
+form.packageGuestType.placeholder_fio: 'Иванов Иван Иванович'
+form.touristType.placeholder_surname: Иванов
+form.touristType.surname: Фамилия
+form.packageGuestType.add_guest: 'Добавить гостя'
+form.packageGuestType.min_name: 'Слишком короткое имя'
+form.packageGuestType.max_name: 'Слишком длинное имя'
+controller.documentsController.table_row_name: Имя
+form.touristType.placeholder_name: Иван
+form.packageGuestType.min_surname: 'Слишком короткая фамилия'
+form.packageGuestType.max_surname: 'Слишком длинная фамилия'
+form.touristType.second_name: Отчество
+form.touristType.placeholder_second_name: Иванович
+form.packageGuestType.min_second_name: 'Слишком короткое отчество'
+form.packageGuestType.max_second_name: 'Слишком длинное отчество'
+form.touristType.birth_date: 'Дата рождения'
+form.orderTouristType.add_to_package: 'Добавить как гостя?'
+form.organizationType.phone: Телефон
+form.organizationType.email: E-mail
 form.orderType.source: Источник
 form.orderType.comment: Комментарий
 form.orderType.is_confirmed: Подтвержден?
