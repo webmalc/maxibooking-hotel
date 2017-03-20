@@ -35,7 +35,7 @@ class RecordFilterType extends AbstractType
                 'attr' => [
                     'class' => 'datepicker begin-datepicker input-small',
                     'data-date-format' => 'dd.mm.yyyy',
-					'placeholder' => 'по',
+					'placeholder' => 'mbhwarehousebundle.form.recordfiltertype.po',
                 ],
             ])
 			->add('operation',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
