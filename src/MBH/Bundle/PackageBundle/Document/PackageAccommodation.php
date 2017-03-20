@@ -6,7 +6,9 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\NoteTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\PackageTrait;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -75,7 +77,63 @@ class PackageAccommodation extends Base implements \JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        $this->toArray();
+        return $this->toArray();
+    }
+
+    /**
+     * @return RoomType
+     */
+    public function getRoomType()
+    {
+        return $this->accommodation->getRoomType();
+    }
+
+    /**
+     * @return Hotel
+     */
+    public function getHotel()
+    {
+        return $this->accommodation->getHotel();
+    }
+
+    public function getFloor()
+    {
+        return $this->accommodation->getFloor();
+    }
+
+    public function getHousing()
+    {
+        return $this->accommodation->getHousing();
+    }
+
+    public function getStatus()
+    {
+        return $this->accommodation->getStatus();
+    }
+
+    public function getFacilities()
+    {
+        return $this->accommodation->getFacilities();
+    }
+
+    public function getTitle()
+    {
+        return $this->accommodation->getTitle();
+    }
+
+    public function getFullTitle()
+    {
+        return $this->accommodation->getFullTitle();
+    }
+
+    public function getIsSmoking()
+    {
+        return $this->accommodation->getIsSmoking();
+    }
+
+    public function getRoomViewTypes()
+    {
+        return $this->accommodation->getRoomViewsTypes();
     }
 
     /**
