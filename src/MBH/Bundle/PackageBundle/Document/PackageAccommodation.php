@@ -83,7 +83,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
     /**
      * @return RoomType
      */
-    public function getRoomType() : RoomType
+    public function getRoomType()
     {
         return $this->accommodation->getRoomType();
     }
@@ -91,7 +91,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
     /**
      * @return Hotel
      */
-    public function getHotel() : Hotel
+    public function getHotel()
     {
         return $this->accommodation->getHotel();
     }
