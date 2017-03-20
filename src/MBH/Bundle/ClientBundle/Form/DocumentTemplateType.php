@@ -22,13 +22,13 @@ class DocumentTemplateType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title', TextType::class, ['label' => 'Название'])
+            ->add('title', TextType::class, ['label' => 'mbhclientbundle.form.documenttemplatetype.nazvaniye'])
             ->add('content', TextareaType::class, [
-                'label' => 'Шаблон',
+                'label' => 'mbhclientbundle.form.documenttemplatetype.shablon',
                 'attr' => ['rows' => 30]
             ])
             ->add('orientation',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Ориентация', 'choices' => DocumentTemplate::getOrientations()
+                'label' => 'mbhclientbundle.form.documenttemplatetype.oriyentatsiya', 'choices' => DocumentTemplate::getOrientations()
             ])
             ->add('hotel', DocumentType::class, [
                 'label' => 'Отель',
@@ -36,7 +36,7 @@ class DocumentTemplateType extends AbstractType
                 'required' => false
             ])
             ->add('organization', DocumentType::class, [
-                'label' => 'Организация',
+                'label' => 'mbhclientbundle.form.documenttemplatetype.organizatsiya',
                 'class' => Organization::class,
                 'required' => false
             ]);
