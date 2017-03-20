@@ -23,29 +23,29 @@ class TariffType extends AbstractType
 
         $builder
             ->add('fullTitle', TextType::class, [
-                'label' => 'Название',
+                'label' => 'mbhpricebundle.form.tarifftype.nazvaniye',
                 'group' => 'Общая информация',
                 'required' => true,
-                'attr' => ['placeholder' => 'Основной']
+                'attr' => ['placeholder' => 'mbhpricebundle.form.tarifftype.osnovnoy']
             ])
             ->add('title', TextType::class, [
-                'label' => 'Внутреннее название',
+                'label' => 'mbhpricebundle.form.tarifftype.vnutrenneye.nazvaniye',
                 'group' => 'Общая информация',
                 'required' => false,
                 'attr' => ['placeholder' => 'Основной - лето ' . date('Y')],
                 'help' => 'Название для использования внутри MaxiBooking'
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'Описание',
+                'label' => 'mbhpricebundle.form.tarifftype.opisaniye',
                 'group' => 'Общая информация',
                 'required' => false,
-                'help' => 'Описание тарифа для онлайн бронирования'
+                'help' => 'mbhpricebundle.form.tarifftype.opisaniye.tarifa.dlya.onlayn.bronirovaniya'
             ])
             ->add(
                 'begin',
                 DateType::class,
                 array(
-                    'label' => 'Начало',
+                    'label' => 'mbhpricebundle.form.tarifftype.nachalo',
                     'group' => 'form.tariffType.conditions_and_restrictions',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
@@ -54,7 +54,7 @@ class TariffType extends AbstractType
                     'attr' => array(
                         'class' => 'datepicker begin-datepicker input-small',
                         'data-date-format' => 'dd.mm.yyyy',
-                        'placeholder' => 'Не ограничен'
+                        'placeholder' => 'mbhpricebundle.form.tarifftype.ne.ogranichen'
                     ),
                 )
             )
@@ -62,7 +62,7 @@ class TariffType extends AbstractType
                 'end',
                 DateType::class,
                 array(
-                    'label' => 'Конец',
+                    'label' => 'mbhpricebundle.form.tarifftype.konets',
                     'group' => 'form.tariffType.conditions_and_restrictions',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
@@ -71,7 +71,7 @@ class TariffType extends AbstractType
                     'attr' => array(
                         'class' => 'datepicker end-datepicker input-small',
                         'data-date-format' => 'dd.mm.yyyy',
-                        'placeholder' => 'Не ограничен'
+                        'placeholder' => 'mbhpricebundle.form.tarifftype.ne.ogranichen'
                     ),
                 )
             );
@@ -131,7 +131,7 @@ class TariffType extends AbstractType
             ->add(
                 'childAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
-                    'label' => 'Ребенок до',
+                    'label' => 'mbhpricebundle.form.tarifftype.rebenok.do',
                     'group' => 'configuration',
                     'required' => false,
                     'multiple' => false,
@@ -143,7 +143,7 @@ class TariffType extends AbstractType
             ->add(
                 'infantAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
-                    'label' => 'Инфант до',
+                    'label' => 'mbhpricebundle.form.tarifftype.infant.do',
                     'group' => 'configuration',
                     'required' => false,
                     'multiple' => false,

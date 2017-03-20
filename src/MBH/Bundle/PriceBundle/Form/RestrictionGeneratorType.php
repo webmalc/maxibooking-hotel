@@ -23,7 +23,7 @@ class RestrictionGeneratorType extends AbstractType
     {
         $builder
             ->add('begin', DateType::class, array(
-                'label' => 'Начало периода',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.nachalo.perioda',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'group' => 'Настройки',
@@ -33,7 +33,7 @@ class RestrictionGeneratorType extends AbstractType
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('end', DateType::class, array(
-                'label' => 'Конец периода',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.konets.perioda',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'group' => 'Настройки',
@@ -42,16 +42,16 @@ class RestrictionGeneratorType extends AbstractType
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('weekdays',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Дни недели',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.dni.nedeli',
                 'required' => false,
                 'group' => 'Настройки',
                 'multiple' => true,
                 'choices' => $options['weekdays'],
-                'help' => 'Дни недели для которых будет произведена генерация наличия мест',
-                'attr' => array('placeholder' => 'все дни недели'),
+                'help' => 'mbhpricebundle.form.restrictiongeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.nalichiya.mest',
+                'attr' => array('placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.vse.dni.nedeli'),
             ])
             ->add('roomTypes', DocumentType::class, [
-                'label' => 'Типы номеров',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov',
                 'required' => false,
                 'group' => 'Настройки',
                 'multiple' => true,
@@ -59,11 +59,11 @@ class RestrictionGeneratorType extends AbstractType
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->fetchQueryBuilder($options['hotel']);
                 },
-                'help' => 'Типы номеров для которых будет произведена генерация цен',
-                'attr' => array('placeholder' => $options['hotel'].': все типы номеров', 'class' => 'select-all'),
+                'help' => 'mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov.dlya.kotorykh.budet.proizvedena.generatsiya.tsen',
+                'attr' => array('placeholder' => $options['hotel'].': mbhpricebundle.form.restrictiongeneratortype.vse.tipy.nomerov', 'class' => 'select-all'),
             ])
             ->add('tariffs', DocumentType::class, [
-                'label' => 'Тарифы',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.tarify',
                 'required' => true,
                 'group' => 'Настройки',
                 'multiple' => true,
@@ -71,15 +71,15 @@ class RestrictionGeneratorType extends AbstractType
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->fetchChildTariffsQuery($options['hotel'], 'restrictions');
                 },
-                'help' => 'Тарифы для которых будет произведена генерация цен',
-                'attr' => array('placeholder' => $options['hotel'].': все тарифы', 'class' => 'select-all'),
+                'help' => 'mbhpricebundle.form.restrictiongeneratortype.tarify.dlya.kotorykh.budet.proizvedena.generatsiya.tsen',
+                'attr' => array('placeholder' => $options['hotel'].': mbhpricebundle.form.restrictiongeneratortype.vse.tarify', 'class' => 'select-all'),
             ])
             ->add('minStayArrival', TextType::class, [
                 'label' => 'Мин. длина',
                 'group' => 'Длина брони (заезд)',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
                     new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
                 ],
@@ -89,7 +89,7 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'Длина брони (заезд)',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
                     new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
                 ],
@@ -99,7 +99,7 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'Длина брони (сквозное)',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
                     new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
                 ],
@@ -109,7 +109,7 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'Длина брони (сквозное)',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
                     new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
                 ],
@@ -119,7 +119,7 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'Раннее/позднее бронирование',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
                     new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
                 ],
@@ -129,7 +129,7 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'Раннее/позднее бронирование',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
                     new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
                 ],
@@ -139,28 +139,28 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'Ограничение заезда/выезда',
                 'value' => true,
                 'required' => false,
-                'attr' => ['placeholder' => 'данные будут удалены']
+                'attr' => ['placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny']
             ])
             ->add('closedOnDeparture', CheckboxType::class, [
                 'label' => 'Нет выезда?',
                 'group' => 'Ограничение заезда/выезда',
                 'value' => true,
                 'required' => false,
-                'attr' => ['placeholder' => 'данные будут удалены'],
+                'attr' => ['placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
             ])
             ->add('closed', CheckboxType::class, [
                 'label' => 'Закрыто?',
                 'group' => 'Ограничение заезда/выезда',
                 'value' => true,
                 'required' => false,
-                'attr' => ['placeholder' => 'данные будут удалены'],
+                'attr' => ['placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
             ])
             ->add('maxGuest', TextType::class, [
                 'label' => 'Макс. количество гостей',
                 'group' => 'Ограничение по количеству гостей',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
                     new Range(['min' => 1, 'minMessage' => 'Количество гостей не может быть меньше нуля'])
                 ],
@@ -170,7 +170,7 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'Ограничение по количеству гостей',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
                     new Range(['min' => 1, 'minMessage' => 'Количество гостей не может быть меньше нуля'])
                 ],

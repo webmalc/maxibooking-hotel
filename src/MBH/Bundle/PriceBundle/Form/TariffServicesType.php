@@ -21,16 +21,16 @@ class TariffServicesType extends AbstractType
 
         $builder
             ->add('services', DocumentType::class, [
-                'label' => 'Доступные услуги',
+                'label' => 'mbhpricebundle.form.tariffservicestype.dostupnyye.uslugi',
                 'group' => 'Общая информация',
                 'required' => false,
-                'attr' => ['data-placeholder' => 'Все услуги'],
+                'attr' => ['data-placeholder' => 'mbhpricebundle.form.tariffservicestype.vse.uslugi'],
                 'class' => 'MBH\Bundle\PriceBundle\Document\Service',
                 'choices' => $options['services_all'],
                 'multiple' => true
             ])
             ->add('defaultServices', CollectionType::class, [
-                'label' => 'Услуги по умолчанию',
+                'label' => 'mbhpricebundle.form.tariffservicestype.uslugi.po.umolchaniyu',
                 'group' => 'Общая информация',
                 'required' => false,
                 'entry_type' => TariffServiceType::class,

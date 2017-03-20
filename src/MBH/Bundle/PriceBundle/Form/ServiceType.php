@@ -18,13 +18,13 @@ class ServiceType extends AbstractType
     {
         $builder
             ->add('fullTitle', TextType::class, [
-                'label' => 'Название',
+                'label' => 'mbhpricebundle.form.servicetype.nazvaniye',
                 'required' => true,
                 'group' => 'Общая информация',
-                'attr' => ['placeholder' => 'Сейф']
+                'attr' => ['placeholder' => 'mbhpricebundle.form.servicetype.seyf']
             ])
             ->add('title', TextType::class, [
-                'label' => 'Внутреннее название',
+                'label' => 'mbhpricebundle.form.servicetype.vnutrenneye.nazvaniye',
                 'group' => 'Общая информация',
                 'required' => false,
                 'attr' => ['placeholder' => 'Сейф - лето ' . date('Y')],
@@ -34,16 +34,16 @@ class ServiceType extends AbstractType
                 'label' => 'form.roomTypeType.international_title',
                 'required' => false,
                 'group' => 'Общая информация',
-                //'help' => 'Международное название'
+                //'help' => 'mbhpricebundle.form.servicetype.mezhdunarodnoye.nazvaniye'
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'Описание',
+                'label' => 'mbhpricebundle.form.servicetype.opisaniye',
                 'required' => false,
                 'group' => 'Общая информация',
-                'help' => 'Описание услуги для онлайн бронирования'
+                'help' => 'mbhpricebundle.form.servicetype.opisaniye.uslugi.dlya.onlayn.bronirovaniya'
             ])
             ->add('calcType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Тип расчета',
+                'label' => 'mbhpricebundle.form.servicetype.tip.rascheta',
                 'group' => 'Общая информация',
                 'required' => true,
                 'placeholder' => '',
@@ -51,7 +51,7 @@ class ServiceType extends AbstractType
                 'choices' => $options['calcTypes'],
             ])
             ->add('price', TextType::class, [
-                'label' => 'Цена',
+                'label' => 'mbhpricebundle.form.servicetype.tsena',
                 'group' => 'Общая информация',
                 'required' => false,
                 'attr' => ['placeholder' => 'Услуга не используется', 'class' => 'spinner price-spinner'],

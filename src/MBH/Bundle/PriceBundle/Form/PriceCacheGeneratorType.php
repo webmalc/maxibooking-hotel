@@ -48,7 +48,7 @@ class PriceCacheGeneratorType extends AbstractType
 
         $builder
             ->add('begin', DateType::class, array(
-                'label' => 'Начало периода',
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.nachalo.perioda',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'group' => 'Настройки',
@@ -61,7 +61,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('end', DateType::class, array(
-                'label' => 'Конец периода',
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.konets.perioda',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'group' => 'Настройки',
@@ -73,16 +73,16 @@ class PriceCacheGeneratorType extends AbstractType
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('weekdays',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Дни недели',
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.dni.nedeli',
                 'required' => false,
                 'group' => 'Настройки',
                 'multiple' => true,
                 'choices' => $options['weekdays'],
-                'help' => 'Дни недели для которых будет произведена генерация наличия мест',
-                'attr' => array('placeholder' => 'все дни недели'),
+                'help' => 'mbhpricebundle.form.pricecachegeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.nalichiya.mest',
+                'attr' => array('placeholder' => 'mbhpricebundle.form.pricecachegeneratortype.vse.dni.nedeli'),
             ])
             ->add('roomTypes', DocumentType::class, [
-                'label' => 'Типы номеров',
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.tipy.nomerov',
                 'required' => true,
                 'group' => 'Настройки',
                 'multiple' => true,
@@ -90,11 +90,11 @@ class PriceCacheGeneratorType extends AbstractType
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->fetchQueryBuilder($options['hotel']);
                 },
-                'help' => 'Типы номеров для которых будет произведена генерация цен',
-                'attr' => array('placeholder' => $options['hotel'] . ': все типы номеров', 'class' => 'select-all'),
+                'help' => 'mbhpricebundle.form.pricecachegeneratortype.tipy.nomerov.dlya.kotorykh.budet.proizvedena.generatsiya.tsen',
+                'attr' => array('placeholder' => $options['hotel'] . ': mbhpricebundle.form.pricecachegeneratortype.vse.tipy.nomerov', 'class' => 'select-all'),
             ])
             ->add('tariffs', DocumentType::class, [
-                'label' => 'Тарифы',
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.tarify',
                 'required' => true,
                 'group' => 'Настройки',
                 'multiple' => true,
@@ -102,11 +102,11 @@ class PriceCacheGeneratorType extends AbstractType
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->fetchChildTariffsQuery($options['hotel'], 'prices');
                 },
-                'help' => 'Тарифы для которых будет произведена генерация цен',
-                'attr' => array('placeholder' => $options['hotel'] . ': все тарифы', 'class' => 'select-all'),
+                'help' => 'mbhpricebundle.form.pricecachegeneratortype.tarify.dlya.kotorykh.budet.proizvedena.generatsiya.tsen',
+                'attr' => array('placeholder' => $options['hotel'] . ': mbhpricebundle.form.pricecachegeneratortype.vse.tarify', 'class' => 'select-all'),
             ])
             ->add('price', TextType::class, [
-                'label' => 'Цена',
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.tsena',
                 'group' => 'Цены',
                 'required' => true,
                 'attr' => [

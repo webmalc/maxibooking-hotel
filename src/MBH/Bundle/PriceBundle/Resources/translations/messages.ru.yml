@@ -1,6 +1,53 @@
-specials.dates: Даты
-specials.roomTypes: 'Тип номера'
-mbhpricebundle.view.roomcache.index.kvotypotarifam: 'Квоты по тарифам'
+form.promotionType.label.fullTitle: Название
+mbhpricebundle.view.tariff.index.osnovnoy: Основной
+form.promotionType.label.title: 'Внутреннее название'
+mbhpricebundle.form.servicetype.opisaniye: Описание
+mbhpricebundle.form.tarifftype.opisaniyetarifadlyaonlaynbronirovaniya: 'Описание тарифа для онлайн бронирования'
+mbhpricebundle.form.tarifftype.nachalo: Начало
+mbhpricebundle.form.tarifftype.neogranichen: 'Не ограничен'
+mbhpricebundle.form.tarifftype.konets: Конец
+mbhpricebundle.form.tarifftype.rebenokdo: 'Ребенок до'
+mbhpricebundle.form.tarifftype.infantdo: 'Инфант до'
+mbhpricebundle.form.tariffservicetype.vyberiteuslugu: 'Выберите услугу'
+mbhpricebundle.form.tariffservicetype.navsekh: 'На всех'
+mbhpricebundle.form.tariffservicetype.kol-vo: Кол-во
+mbhpricebundle.form.roomcachegeneratortype.nachaloperioda: 'Начало периода'
+mbhpricebundle.form.roomcachegeneratortype.konetsperioda: 'Конец периода'
+mbhpricebundle.form.roomcachegeneratortype.dninedeli: 'Дни недели'
+mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: 'Дни недели для которых будет произведена генерация наличия мест'
+mbhpricebundle.form.pricecachegeneratortype.vsedninedeli: 'все дни недели'
+special.roomTypes: 'Типы номеров'
+mbhpricebundle.form.pricecachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: 'Типы номеров для которых будет произведена генерация цен'
+mbhpricebundle.form.restrictiongeneratortype.vse.tipy.nomerov: 'все типы номеров'
+special.tariffs: Тарифы
+mbhpricebundle.form.pricecachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen: 'Тарифы для которых будет произведена генерация цен'
+mbhpricebundle.form.restrictiongeneratortype.vse.tarify: 'все тарифы'
+mbhpricebundle.view.service.index.tsena: Цена
+mbhpricebundle.view.pricecache.layout.tseny: Цены
+form.tariffType.conditions_and_restrictions: 'Условия и ограничения'
+mbhpricebundle.form.tariffinheritancetype.nasledovatʹliusloviyaiogranicheniyaotroditelʹskogotarifa: 'Наследовать ли условия и ограничения от родительского тарифа'
+mbhpricebundle.form.tariffinheritancetype.kvoty: Квоты
+mbhpricebundle.form.tariffinheritancetype.nasledovatʹlikvotynomerovotroditelʹskogotarif: 'Наследовать ли квоты номеров от родительского тариф'
+mbhpricebundle.form.tariffservicestype.dostupnyyeuslugi: 'Доступные услуги'
+mbhpricebundle.form.tariffservicestype.vseuslugi: 'Все услуги'
+mbhpricebundle.form.tariffservicestype.uslugipoumolchaniyu: 'Услуги по умолчанию'
+mbhpricebundle.form.tariffpromotionstype.dostupnyyeaktsii: 'Доступные акции'
+mbhpricebundle.form.tariffpromotionstype.aktsiipoumolchaniyu: 'Акции по умолчанию'
+mbhpricebundle.form.roomcachegeneratortype.vsedninedeli: 'Все дни недели'
+mbhpricebundle.form.roomcachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyanalichiyamest: 'Типы номеров для которых будет произведена генерация наличия мест'
+mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot: 'Тарифы для которых будет произведена генерация квот'
+mbhpricebundle.form.roomcachegeneratortype.kvotynebudutsgenerirovany: 'Квоты не будут сгенерированы'
+mbhpricebundle.form.roomcachegeneratortype.kolichestvo.mest: 'Количество мест'
+mbhpricebundle.form.restrictiongeneratortype.dannyyebudutudaleny: 'данные будут удалены'
+mbhpricebundle.form.servicecategorytype.osnovnyyeuslugi: 'Основные услуги'
+mbhpricebundle.form.servicecategorytype.opisaniyekategoriiuslugdlyaonlaynbronirovaniya: 'Описание категории услуг для онлайн бронирования'
+mbhpricebundle.form.servicetype.seyf: Сейф
+mbhpricebundle.form.servicetype.mezhdunarodnoyenazvaniye: 'Международное название'
+mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya: 'Описание услуги для онлайн бронирования'
+mbhpricebundle.form.servicetype.tiprascheta: 'Тип расчета'
+special.group.dates: Даты
+mbhpricebundle.view.roomcache.index.tipnomera: 'Тип номера'
+mbhpricebundle.view.roomcache.index.kvotypotarifam: 'Квоты по тарифам.'
 mbhpricebundle.view.roomcache.index.generatornalichiyamest: 'Генератор наличия мест'
 mbhpricebundle.view.pricecache.index.otmena: Отмена
 mbhpricebundle.view.roomcache.graph.zabronirovano: забронировано
