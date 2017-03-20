@@ -1,3 +1,7 @@
+mbhhotelbundle.form.dailytasktype.dney: Дней
+mbhhotelbundle.form.dailytasktype.vyberite.uslugu: 'Выберите услугу'
+mbhhotelbundle.form.roomtypetaskstype.zadachi.sozdavayemyye.pri.zayezde.gostya: 'Задачи, создаваемые при заезде гостя'
+mbhhotelbundle.form.roomtypetaskstype.pri.vyyezde.gostya: 'При выезде гостя'
 mbhhotelbundle.view.roomtypecategory.index.da: Да
 mbhhotelbundle.view.roomtype.editimages.glavnaya.fotografiya: 'Главная фотография'
 form.roomTypeCategory.name: Название
