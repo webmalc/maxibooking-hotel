@@ -251,7 +251,7 @@ display: none;
 {% endblock %}
 {% block right %}
 <li>
-    <a href="{{ path('cash') }}"> Остаток по кассе: <strong>{{ total|number_format(2) }}</strong>&nbsp;<i class="{{ currency().icon }}"></i></a>
+    <a href="{{ path('cash') }}"> {{ 'mbhcashbundle.view.cash.index.ostatok.po.kasse'|trans }} : <strong>{{ total|number_format(2) }}</strong>&nbsp;<i class="{{ currency().icon }}"></i></a>
 </li>
 {% endblock %}
 {% endembed %}

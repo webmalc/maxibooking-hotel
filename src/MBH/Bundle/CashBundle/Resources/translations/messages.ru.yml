@@ -1,3 +1,5 @@
+mbhcashbundle.view.cash.jsonbuttons.data: Дата
+mbhcashbundle.view.cash.index.ostatok.po.kasse: 'Остаток по кассе'
 form.cashDocumentType.payer: Плательщик
 form.cashDocumentType.organization: Организация
 form.cashDocumentType.tourist: Клиент
