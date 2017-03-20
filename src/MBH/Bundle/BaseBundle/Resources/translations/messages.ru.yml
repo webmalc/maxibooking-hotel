@@ -1,3 +1,17 @@
+mbhbasebundle.view.partials.datepickerperiodselect.period: Период
+mbhbasebundle.view.pdftemplates.individual.izveshcheniye: Извещение
+mbhbasebundle.view.pdftemplates.individual.kassir: Кассир
+mbhbasebundle.view.pdftemplates.individual.vidplatezha: 'Вид платежа'
+mailer.order.date: Дата
+mbhbasebundle.view.pdftemplates.organization.summa: Сумма
+mbhbasebundle.view.pdftemplates.individual.penya: Пеня
+mbhbasebundle.view.pdftemplates.individual.vsego: Всего
+mbhbasebundle.view.pdftemplates.organization.bankpoluchatelya: 'Банк получателя'
+mbhbasebundle.view.pdftemplates.organization.kol.vo: Кол-во
+mbhbasebundle.view.pdftemplates.organization.tsena: Цена
+mbhbasebundle.view.pdftemplates.organization.bukhgalter: Бухгалтер
+mbhbasebundle.view.navbar.pereytivkassu: 'Перейти в кассу'
+mbhbasebundle.view.navbar.spisokoteley: 'Список отелей'
 mbhbasebundle.view.pdftemplates.organization.uslugi: услуги
 mbhbasebundle.view.pdftemplates.organization.ot: 'от '
 mbhbasebundle.view.pdftemplates.individual.ot: 'от '

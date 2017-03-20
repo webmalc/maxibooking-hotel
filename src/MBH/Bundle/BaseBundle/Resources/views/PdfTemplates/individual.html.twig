@@ -12,7 +12,7 @@
     <table class="document" border="1" style="text-align: center" cellpadding="1" cellspacing="0">
         {% for i in 1..2 %}
         <tr>
-            <td rowspan="6" class="type">Извещение</td>
+            <td rowspan="6" class="type">{{ 'mbhbasebundle.view.pdftemplates.individual.izveshcheniye'|trans }} </td>
         </tr>
 
         <tr>
@@ -40,12 +40,12 @@
         <tr>
 
         <tr>
-            <td rowspan="5">Кассир</td>
+            <td rowspan="5">{{ 'mbhbasebundle.view.pdftemplates.individual.kassir'|trans }} </td>
         </tr>
         <tr>
-            <td class="info">Вид платежа</td>
-            <td>Дата</td>
-            <td>Сумма</td>
+            <td class="info">{{ 'mbhbasebundle.view.pdftemplates.individual.vid.platezha'|trans }} </td>
+            <td>{{ 'mbhbasebundle.view.pdftemplates.individual.data'|trans }} </td>
+            <td>{{ 'mbhbasebundle.view.pdftemplates.individual.summa'|trans }} </td>
         </tr>
         <tr>
             <td class="info">
@@ -60,11 +60,11 @@
             <td rowspan="2" class="info">
                 <span style="float: left">Плательщик:</span>
             </td>
-            <td>Пеня</td>
+            <td>{{ 'mbhbasebundle.view.pdftemplates.individual.penya'|trans }} </td>
             <td>0</td>
         </tr>
         <tr>
-            <td>Всего</td>
+            <td>{{ 'mbhbasebundle.view.pdftemplates.individual.vsego'|trans }} </td>
             <td>{{ cashDocument.total }}</td>
         </tr>
         {% endfor %}

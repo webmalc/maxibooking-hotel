@@ -34,7 +34,7 @@
                     </li>
                     {% if is_granted('ROLE_CASH_VIEW') %}
                     <li class="footer">
-                        <a href="{{ path('cash') }}?user={{ app.user.username }}">Перейти в кассу</a>
+                        <a href="{{ path('cash') }}?user={{ app.user.username }}">{{ 'mbhbasebundle.view.navbar.pereyti.v.kassu'|trans }} </a>
                     </li>
                     {% endif %}
                 </ul>
@@ -82,7 +82,7 @@
                         </li>
                         {% if is_granted('ROLE_ADMIN') %}
                             <li class="footer">
-                                <a href="{{ path('hotel') }}"><i class="fa fa-home"></i>Список отелей</a>
+                                <a href="{{ path('hotel') }}"><i class="fa fa-home"></i>{{ 'mbhbasebundle.view.navbar.spisok.oteley'|trans }} </a>
                             </li>
                         {% endif %}
                     </ul>

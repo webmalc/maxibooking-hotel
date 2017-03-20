@@ -15,7 +15,7 @@
         <tr>
             <td rowspan="2" colspan="2">
                 <div>{{ myOrganization.bank }}</div>
-                <div style="font-size: 14px">Банк получателя</div>
+                <div style="font-size: 14px">{{ 'mbhbasebundle.view.pdftemplates.organization.bank.poluchatelya'|trans }} </div>
             </td>
             <td>
                 Бик
@@ -81,10 +81,10 @@
         <tr>
             <th>№</th>
             <th>Товары (работы, услуги)</th>
-            <th>Кол-во</th>
+            <th>{{ 'mbhbasebundle.view.pdftemplates.organization.kol.vo'|trans }} </th>
             <th>Ед.</th>
-            <th>Цена</th>
-            <th>Сумма</th>
+            <th>{{ 'mbhbasebundle.view.pdftemplates.organization.tsena'|trans }} </th>
+            <th>{{ 'mbhbasebundle.view.pdftemplates.organization.summa'|trans }} </th>
         </tr>
         </thead>
         <tbody>
@@ -144,7 +144,7 @@
             <div class="inline-block sign-field right">{{ myOrganization.directorFio }}</div>
         </div>
         <div style="width: 395px;" class="inline-block">
-            <strong>Бухгалтер</strong>
+            <strong>{{ 'mbhbasebundle.view.pdftemplates.organization.bukhgalter'|trans }} </strong>
             <div class="inline-block sign-field" style="width: 300px; position: absolute"><span style="visibility: hidden">%</span></div>
             <div class="inline-block sign-field right">{{ myOrganization.accountantFio }}</div>
         </div>
