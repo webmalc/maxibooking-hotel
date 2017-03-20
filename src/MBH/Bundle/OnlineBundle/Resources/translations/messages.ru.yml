@@ -1,4 +1,14 @@
-form.formType.is_turned_on: Включена?
+mbhonlinebundle.form.triproutetype.gostinitsa: Гостиница
+mbhonlinebundle.form.triproutetype.gorod: Город
+mbhonlinebundle.form.invitedtouristtype.imya: Имя
+mbhonlinebundle.form.invitedtouristtype.familiya: Фамилия
+mbhonlinebundle.form.invitedtouristtype.obrashcheniye: Обращение
+mbhonlinebundle.form.invitedtouristtype.data.rozhdeniya: 'Дата рождения'
+mbhonlinebundle.form.invitedtouristtype.mesto.rozhdeniya: 'Место рождения'
+mbhonlinebundle.form.invitedtouristtype.grazhdanstvo: Гражданство
+mbhonlinebundle.form.invitedtouristtype.pasport: Паспорт
+mbhonlinebundle.form.invitedtouristtype.deystvuyet.do: 'Действует до'
+form.formType.is_turned_on: 'Включена?'
 form.formType.hotels: Отели
 form.formType.hotels_desc: Отели используемые в онлайн форме
 form.formType.hotels_placeholder: Все отели
