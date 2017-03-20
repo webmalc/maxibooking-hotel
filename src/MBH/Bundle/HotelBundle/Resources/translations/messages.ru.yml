@@ -1,3 +1,9 @@
+mbhhotelbundle.view.roomtypecategory.index.da: Да
+mbhhotelbundle.view.roomtype.editimages.glavnaya.fotografiya: 'Главная фотография'
+form.roomTypeCategory.name: Название
+mbhhotelbundle.view.roomtypecategory.index.vklyuchena: Включена
+mbhhotelbundle.view.roomtypecategory.index.tipy.nomerov: 'Типы номеров'
+mbhhotelbundle.view.roomtypecategory.index.net: нет
 form.hotelExtendedType.city: Город
 form.hotelExtendedType.settlement: Населенный пункт
 form.hotelExtendedType.street: Улица
