@@ -4,9 +4,9 @@
     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
 {% else %}
     <ul class="mbh-graph-help">
-        <li><div class="bg-green disabled color-palette">3</div> - забронировано</li>
+        <li><div class="bg-green disabled color-palette">3</div> - {{ 'mbhpricebundle.view.roomcache.graph.zabronirovano'|trans }} </li>
         <li><div class="bg-gray disabled color-palette">5</div> - осталось</li>
-        <li><div class="mbh-graph-cell-danger"><i class="fa text-red fa-times"></i></div> - нет данных</li>
+        <li><div class="mbh-graph-cell-danger"><i class="fa text-red fa-times"></i></div> - {{ 'mbhpricebundle.view.roomcache.graph.net.dannykh'|trans }} </li>
     </ul>
 
     {% for roomType in data.roomTypes %}

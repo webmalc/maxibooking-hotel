@@ -1,4 +1,3 @@
-#restruction/table html
 price.views.restriction.table.minstayArrival: 'Мин. длина брони (заезд)'
 price.views.restriction.table.maxStayArrival: 'Макс. длина брони (заезд)'
 price.views.restriction.table.minStay: 'Мин. длина брони (сквозное)'

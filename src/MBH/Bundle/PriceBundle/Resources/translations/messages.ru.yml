@@ -1,6 +1,23 @@
-mbhpricebundle.form.tariffservicetype.vyberiteuslugu: Выберите услугу
-mbhpricebundle.form.tariffservicetype.vesʹsrok: Весь срок
-mbhpricebundle.form.tariffservicetype.navsekh: На всех
+specials.dates: Даты
+specials.roomTypes: 'Тип номера'
+mbhpricebundle.view.roomcache.index.kvotypotarifam: 'Квоты по тарифам'
+mbhpricebundle.view.roomcache.index.generatornalichiyamest: 'Генератор наличия мест'
+mbhpricebundle.view.pricecache.index.otmena: Отмена
+mbhpricebundle.view.roomcache.graph.zabronirovano: забронировано
+mbhpricebundle.view.roomcache.graph.netdannykh: 'нет данных'
+mbhpricebundle.view.service.index.novayakategoriyauslug: 'Новая категория услуг'
+mbhpricebundle.view.service.index.redaktirovatʹ.kategoriyu.uslug: 'Редактировать категорию услуг '
+specials.title: Название
+mbhpricebundle.view.pricecache.table.tsena: Цена
+mbhpricebundle.view.service.index.tiprascheta: 'Тип расчета'
+mbhpricebundle.view.service.index.data: Дата
+mbhpricebundle.view.service.index.vklyuchena: Включена
+mbhpricebundle.view.promotion.index.redaktirovaniyezapisi: 'Редактирование записи'
+mbhpricebundle.view.promotion.index.udaleniyezapisi: 'Удаление записи'
+specials.tariff: Тариф
+mbhpricebundle.form.tariffservicetype.vyberiteuslugu: 'Выберите услугу'
+mbhpricebundle.form.tariffservicetype.vesʹsrok: 'Весь срок'
+mbhpricebundle.form.tariffservicetype.navsekh: 'На всех'
 mbhpricebundle.form.tariffservicetype.kol-vo: Кол-во
 mbhpricebundle.form.tariffpromotionstype.dostupnyyeaktsii: Доступные акции
 mbhpricebundle.form.tariffpromotionstype.osnovnoy: Основной
@@ -13,7 +30,7 @@ mbhpricebundle.form.servicecategorytype.opisaniyekategoriiuslugdlyaonlaynbroniro
 mbhpricebundle.form.tarifftype.nazvaniye: Название
 mbhpricebundle.form.tarifftype.osnovnoy: Основной
 mbhpricebundle.form.tarifftype.vnutrenneyenazvaniye: Внутреннее название
-mbhpricebundle.form.tarifftype.nazvaniyedlyaispolʹzovaniyavnutri: Название для использования внутри 
+mbhpricebundle.form.tarifftype.nazvaniyedlyaispolʹzovaniyavnutri: Название для использования внутри
 mbhpricebundle.form.tarifftype.opisaniye: Описание
 mbhpricebundle.form.tarifftype.opisaniyetarifadlyaonlaynbronirovaniya: Описание тарифа для онлайн бронирования
 mbhpricebundle.form.tarifftype.nachalo: Начало
@@ -111,7 +128,7 @@ mbhpricebundle.view.pricecache.table.tsenazadetskoyedop: Цена за детс�
 mbhpricebundle.view.service.index.redaktirovatʹ: Редактировать
 mbhpricebundle.view.service.index.dobavitʹuslugu: Добавить услугу
 mbhpricebundle.view.service.index.udalitʹ: Удалить
-mbhpricebundle.view.roomcache.table.kvotypotarifam: Квоты по тарифам 
+mbhpricebundle.view.roomcache.table.kvotypotarifam: Квоты по тарифам
 mbhpricebundle.view.roomcache.table.zabronirovano: Забронировано в
 mbhpricebundle.view.overview.index.obzor: обзор
 mbhpricebundle.view.overview.index.daty: Даты
@@ -154,9 +171,9 @@ mbhpricebundle.view.pricecache.table.tsenazadetskoyeosn: Цена за детс�
 mbhpricebundle.view.pricecache.table.tsenazavzrosloyedop: Цена за взрослое доп. место
 mbhpricebundle.view.service.index.spisok: список
 mbhpricebundle.view.service.index.novayakategoriyauslug: Новая категория услуг
-mbhpricebundle.view.service.index.redaktirovatʹkategoriyuuslug: Редактировать категорию услуг 
-mbhpricebundle.view.service.index.sozdatʹusluguvkategorii: Создать услугу в категории 
-mbhpricebundle.view.service.index.udalitʹkategoriyuuslug: Удалить категорию услуг 
+mbhpricebundle.view.service.index.redaktirovatʹkategoriyuuslug: Редактировать категорию услуг
+mbhpricebundle.view.service.index.sozdatʹusluguvkategorii: Создать услугу в категории
+mbhpricebundle.view.service.index.udalitʹkategoriyuuslug: Удалить категорию услуг
 mbhpricebundle.view.service.index.nazvaniye: Название
 mbhpricebundle.view.service.index.tsena: Цена
 mbhpricebundle.view.service.index.tiprascheta: Тип расчета
@@ -169,13 +186,13 @@ mbhpricebundle.view.service.index.udaleniyezapisi: Удаление записи
 mbhpricebundle.view.service.index.vetoykategoriinetniodnoyuslugi: В этой категории нет ни одной услуги
 mbhpricebundle.view.service.index.sokhranitʹizmeneniya: Сохранить изменения
 mbhpricebundle.view.service.index.dobavitʹnovuyukategoriyu: Добавить новую категорию
-mbhpricebundle.view.service.newentry.sozdaniyeuslugivkategorii: создание услуги в категории 
-mbhpricebundle.view.service.editentry.redaktirovaniyeuslugivkategorii: редактирование услуги в категории 
+mbhpricebundle.view.service.newentry.sozdaniyeuslugivkategorii: создание услуги в категории
+mbhpricebundle.view.service.editentry.redaktirovaniyeuslugivkategorii: редактирование услуги в категории
 mbhpricebundle.view.service.layout.uslugi: Услуги
 mbhpricebundle.view.service.new.sozdaniyekategoriiuslug: создание категории услуг
-mbhpricebundle.view.service.edit.redaktirovaniyekategoriiuslug: редактирование категории услуг 
-mbhpricebundle.view.tariff.editinheritance.redaktirovaniye: редактирование 
-mbhpricebundle.view.tariff.editpromotions.redaktirovaniye: редактирование 
+mbhpricebundle.view.service.edit.redaktirovaniyekategoriiuslug: редактирование категории услуг
+mbhpricebundle.view.tariff.editinheritance.redaktirovaniye: редактирование
+mbhpricebundle.view.tariff.editpromotions.redaktirovaniye: редактирование
 mbhpricebundle.view.tariff.index.spisok: список
 mbhpricebundle.view.tariff.index.nazvaniye: Название
 mbhpricebundle.view.tariff.index.baza: База
@@ -188,10 +205,10 @@ mbhpricebundle.view.tariff.index.da: Да
 mbhpricebundle.view.tariff.index.net: Нет
 mbhpricebundle.view.tariff.index.sozdatʹdocherniytarif: Создать дочерний тариф
 mbhpricebundle.view.tariff.layout.tarify: Тарифы
-mbhpricebundle.view.tariff.editservices.redaktirovaniye: редактирование 
+mbhpricebundle.view.tariff.editservices.redaktirovaniye: редактирование
 mbhpricebundle.view.tariff.editservices.dobavitʹ: Добавить
 mbhpricebundle.view.tariff.new.sozdaniye: Создание
-mbhpricebundle.view.tariff.edit.redaktirovaniye: редактирование 
+mbhpricebundle.view.tariff.edit.redaktirovaniye: редактирование
 mbhpricebundle.view.tariff.edittabs.obshchayainformatsiya: Общая информация
 mbhpricebundle.view.tariff.edittabs.aktsii: Акции
 mbhpricebundle.view.tariff.edittabs.uslugi: Услуги
