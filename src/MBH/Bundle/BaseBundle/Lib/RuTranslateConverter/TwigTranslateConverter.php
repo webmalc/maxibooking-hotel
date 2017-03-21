@@ -31,7 +31,7 @@ class TwigTranslateConverter extends AbstractTranslateConverter
      */
     protected function getConvertPattern(string $transliteratedString)
     {
-        return sprintf('{{ \'%s\'|trans }} ', $transliteratedString);
+        return sprintf('{{ \'%s\'|trans }}', $transliteratedString);
     }
 
 
