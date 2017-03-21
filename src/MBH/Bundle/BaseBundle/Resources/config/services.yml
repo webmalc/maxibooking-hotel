@@ -185,6 +185,7 @@ services:
             - [ addConverter, ['@mbh.base.lib.document_translator' ]]
             - [ addConverter, ['@mbh.base.lib.twig_translator' ]]
             - [ addConverter, ['@mbh.base.lib.form_translator' ]]
+            - [ addConverter, ['@mbh.base.lib.service_translator' ]]
         tags:
             - { name: console.command }
 
@@ -203,4 +204,8 @@ services:
 
     mbh.base.lib.form_translator:
         class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\FormTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+
+    mbh.base.lib.service_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\ServiceTranslateConverter
         parent: mbh.base.lib.abstract_translator
