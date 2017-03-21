@@ -87,7 +87,7 @@ class OrderDocumentType extends AbstractType
             FileType::class,
             [
                 'group' => $groupTitle,
-                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'mbhpackagebundle.form.orderdocumenttype.zamenitʹ.fayl' : 'Файл',
+                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'mbhpackagebundle.form.orderdocumenttype.zamenit.fayl' : 'Файл',
                 'required' => $options['scenario'] == self::SCENARIO_ADD,
             ] + ($options['scenario'] == self::SCENARIO_EDIT ? ['help' => '<i class="fa '.(isset($typeIcons[strtolower($document->getExtension())]) ? $typeIcons[strtolower($document->getExtension())] : null).'"></i> '.$document->getOriginalName()] : [])
         );

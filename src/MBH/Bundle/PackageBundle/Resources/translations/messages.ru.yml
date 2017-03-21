@@ -119,7 +119,7 @@ mbhpackagebundle.form.unwelcometype.dostupen.tolʹko.dlya.vas.i.ne.peredayetsya.
 tourist.visa.type_type: Тип
 mbhpackagebundle.form.orderdocumenttype.tip.skana: 'Тип скана'
 controller.documentsController.table_row_tourist: Клиент
-mbhpackagebundle.form.orderdocumenttype.zamenitʹ.fayl: 'Заменить файл'
+mbhpackagebundle.form.orderdocumenttype.zamenit.fayl: 'Заменить файл'
 form.unwelcomeType.comment: Комментарий
 mbhpackagebundle.form.packagecsvtype.kol.vo.nochey: 'Кол-во ночей'
 mbhpackagebundle.form.packagecsvtype.kol.vo.chelovek: 'Кол-во человек'
