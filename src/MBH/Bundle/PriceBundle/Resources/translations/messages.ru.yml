@@ -103,14 +103,14 @@ mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya: Опис
 mbhpricebundle.form.servicetype.tiprascheta: Тип расчета
 mbhpricebundle.form.servicetype.tsena: Цена
 mbhpricebundle.form.servicetype.usluganeispolzuyetsya: Услуга не используется
-mbhpricebundle.form.servicetype.data?: Дата?
+mbhpricebundle.form.servicetype.data: Дата?
 mbhpricebundle.form.servicetype.ispolzovatlidatupridobavleniiuslugikbroni: Использовать ли дату при добавлении услуги к брони?
 mbhpricebundle.form.servicetype.vremya: Время?
 mbhpricebundle.form.servicetype.ispolzovatlivremyapridobavleniiuslugikbroni: Использовать ли время при добавлении услуги к брони?
 mbhpricebundle.form.servicetype.onlayn: Онлайн?
 mbhpricebundle.form.servicetype.ispolzovatliusluguvonlaynbronirovanii: Использовать ли услугу в онлайн бронировании?
 mbhpricebundle.form.servicetype.vklyuchena: Включена?
-mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi?: Доступна ли услуга для продажи?
+mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi: Доступна ли услуга для продажи?
 mbhpricebundle.form.restrictiongeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.restrictiongeneratortype.konetsperioda: Конец периода
 mbhpricebundle.form.restrictiongeneratortype.dninedeli: Дни недели
