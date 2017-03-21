@@ -31,7 +31,7 @@
                 <!-- Tab actions -->
                 <div class="btn-list spacer-bottom text-right">
                     {% if not entity.system and is_granted('ROLE_SERVICE_CATEGORY_EDIT') %}
-                        <a href="{{ path('price_service_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'mbhpricebundle.view.service.index.redaktirovatʹ.kategoriyu.uslug.'|trans }} <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
+                        <a href="{{ path('price_service_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'mbhpricebundle.view.service.index.redaktirovat.kategoriyu.uslug.'|trans }} <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
                     {% endif %}
                     {% if is_granted('ROLE_SERVICE_CATEGORY_NEW') %}
                         <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Создать услугу в категории <{{entity.name}}>"><i class="fa fa-plus"></i> Добавить услугу</a>
