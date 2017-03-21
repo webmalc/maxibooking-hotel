@@ -1,6 +1,6 @@
 <table class="table not-auto-datatable table-striped">
     <tbody>
-    <tr><td><strong>#</strong></td><td>{{ package.numberWithPrefix }}</td></tr>
+    <tr><td><strong>#</strong></td><td><a href="{{ path('package_edit', {'id': package.id}) }}"  target="_blank">{{ package.numberWithPrefix }}</a></td></tr>
     <tr><td><strong>Даты</strong></td><td>{{ package.begin|mbh_format }} - {{ package.end|mbh_format }}</td></tr>
     <tr><td><strong>Тариф</strong></td><td>{{ package.tariff }}</td></tr>
     <tr><td><strong>Номер</strong></td><td>{{ package.roomType }} - <small>{{ package.roomType.hotel }}</small></td></tr>
