@@ -267,8 +267,11 @@ class Booking extends Base
                     foreach ($tariffs as $tariffId => $tariff) {
                         /** @var Tariff $tariffDocument */
                         $tariffDocument = $tariff['doc'];
+                        $tariffChildOptions = $tariffDocument->getChildOptions();
                         //Если тариф дочерний, берем данные о ценах по id родительского тарифа.
-                        $syncedTariffId = $tariffDocument->getParent() ? $tariffDocument->getParent()->getId() : $tariffId;
+                        $syncPricesTariffId = ($tariffDocument->getParent() && $tariffChildOptions->isInheritPrices())
+                            ? $tariffDocument->getParent()->getId()
+                            : $tariffId;
 
                         if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
                             continue;
@@ -278,8 +281,8 @@ class Booking extends Base
                             continue;
                         }
 
-                        if (isset($priceCaches[$roomTypeId][$syncedTariffId][$day->format('d.m.Y')])) {
-                            $info = $priceCaches[$roomTypeId][$syncedTariffId][$day->format('d.m.Y')];
+                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
+                            $info = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $this->currencyConvertFromRub($config, $info->getPrice()),
                                 'price1' => $info->getSinglePrice() ? $this->currencyConvertFromRub(
@@ -363,8 +366,14 @@ class Booking extends Base
                     foreach ($tariffs as $tariffId => $tariff) {
                         /** @var Tariff $tariffDocument */
                         $tariffDocument = $tariff['doc'];
+                        $tariffChildOptions = $tariffDocument->getChildOptions();
                         //Если тариф дочерний, берем данные о ценах по id родительского тарифа.
-                        $syncedTariffId = $tariffDocument->getParent() ? $tariffDocument->getParent()->getId() : $tariffId;
+                        $syncPricesTariffId = ($tariffDocument->getParent() && $tariffChildOptions->isInheritPrices())
+                            ? $tariffDocument->getParent()->getId()
+                            : $tariffId;
+                        $syncRestrictionsTariffId = ($tariffDocument->getParent() && $tariffChildOptions->isInheritRestrictions())
+                            ? $tariffDocument->getParent()->getId()
+                            : $tariffId;
 
                         if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
                             continue;
@@ -375,12 +384,12 @@ class Booking extends Base
                         }
 
                         $price = false;
-                        if (isset($priceCaches[$roomTypeId][$syncedTariffId][$day->format('d.m.Y')])) {
+                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
                             $price = true;
                         }
 
-                        if (isset($restrictions[$roomTypeId][$syncedTariffId][$day->format('d.m.Y')])) {
-                            $info = $restrictions[$roomTypeId][$syncedTariffId][$day->format('d.m.Y')];
+                        if (isset($restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')])) {
+                            $info = $restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')];
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'minimumstay_arrival' => (int)$info->getMinStayArrival(),
                                 'maximumstay_arrival' => (int)$info->getMaxStayArrival(),
