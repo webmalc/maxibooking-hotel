@@ -13,6 +13,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -264,6 +265,10 @@ class Booking extends Base
 
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
+                        /** @var Tariff $tariffDocument */
+                        $tariffDocument = $tariff['doc'];
+                        //Если тариф дочерний, берем данные о ценах по id родительского тарифа.
+                        $syncedTariffId = $tariffDocument->getParent() ? $tariffDocument->getParent()->getId() : $tariffId;
 
                         if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
                             continue;
@@ -273,8 +278,8 @@ class Booking extends Base
                             continue;
                         }
 
-                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
-                            $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
+                        if (isset($priceCaches[$roomTypeId][$syncedTariffId][$day->format('d.m.Y')])) {
+                            $info = $priceCaches[$roomTypeId][$syncedTariffId][$day->format('d.m.Y')];
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $this->currencyConvertFromRub($config, $info->getPrice()),
                                 'price1' => $info->getSinglePrice() ? $this->currencyConvertFromRub(
