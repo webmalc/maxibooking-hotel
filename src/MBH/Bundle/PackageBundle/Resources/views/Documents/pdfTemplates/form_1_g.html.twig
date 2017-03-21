@@ -76,7 +76,7 @@
                         г.
                     </div>
                     <div>
-                        <div class="ib left ">5.Место рождения</div>
+                        <div class="ib left ">5.{{ 'mbhpackagebundle.view.documents.pdftemplates.form_1_g.mesto.rozhdeniya'|trans }} </div>
                         <div style="width: 310px" class="area ib">
                             &nbsp{% if tourist and tourist.birthplace %} {{ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.district ~ ' ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
                     </div>
@@ -94,7 +94,7 @@
                                     &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.number }} {% endif %}
                                 </div>
                             </div>
-                            <div class="ib">выдан</div>
+                            <div class="ib">{{ 'mbhpackagebundle.view.documents.pdftemplates.form_1_g.vydan'|trans }} </div>
                         </div>
                         <div class="ib">
                             <div class="lb">
@@ -117,7 +117,7 @@
                         <div style="clear:both;"></div>
                     </div>
                     <div>
-                        <div style="width: 150px" class="ib left">Индекс поселения</div>
+                        <div style="width: 150px" class="ib left">{{ 'mbhpackagebundle.view.documents.pdftemplates.form_1_g.indeks.poseleniya'|trans }} </div>
                         <div style="width: 200px" class="area ib">&nbsp</div>
                         <div style="clear:both;"></div>
                     </div>

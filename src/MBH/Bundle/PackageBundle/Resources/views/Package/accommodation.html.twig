@@ -38,7 +38,7 @@
                                     <div class="modal-body">
                                         <p></p>
                                             <div class="form-group">
-                                                <label class="control-label" >Дата переезда</label>
+                                                <label class="control-label" >{{ 'mbhpackagebundle.view.package.accommodation.data.pereyezda'|trans }} </label>
                                                 <input class="form-control datepicker margin-left-sm"
                                                        required="required" name="date" data-begin="{{ package.begin|date_modify("+1 day")|date('d.m.Y') }}"
                                                        data-end="{{ package.end|date_modify("-1 day")|date('d.m.Y') }}"
@@ -48,8 +48,8 @@
 
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i> Отмена</button>
-                                        <button type="submit" id="package-relocation-go" class="btn btn-primary">Да</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i> {{ 'mbhpackagebundle.view.package.accommodation.otmena'|trans }} </button>
+                                        <button type="submit" id="package-relocation-go" class="btn btn-primary">{{ 'mbhpackagebundle.view.package.accommodation.da'|trans }} </button>
                                     </div>
                                     </form>
                                 </div>
@@ -61,7 +61,7 @@
                     {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                         <div class="pull-right">
                             <a href="{{ path('package_accommodation_delete', { 'id': package.id }) }}"
-                               class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                               class="btn btn-danger btn-xs delete-link " title="{{ 'mbhpackagebundle.view.package.accommodation.udaleniye.zapisi'|trans }} " data-toggle="tooltip">
                                 <i class="fa fa-trash-o"></i>
                             </a>
                         </div>
@@ -75,7 +75,7 @@
 
             {% if optGroupRooms|length %}
             <div class="box box-default box-solid">
-                <div class="box-header with-border"><h3 class="box-title">Выбор размещения</h3>
+                <div class="box-header with-border"><h3 class="box-title">{{ 'mbhpackagebundle.view.package.accommodation.vybor.razmeshcheniya'|trans }} </h3>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
                                 id="mbh_bundle_packagebundle_package_accommodation_table"><i class="fa fa-minus"></i>
@@ -89,11 +89,11 @@
                         <tr>
                             <th class="td-xs"></th>
                             <th>#</th>
-                            <th>Тип номера</th>
-                            <th class="td-md">Корпус</th>
-                            <th class="td-sm">Этаж</th>
-                            <th class="td-sm">Статус</th>
-                            <th>Удобства</th>
+                            <th>{{ 'mbhpackagebundle.view.package.accommodation.tip.nomera'|trans }} </th>
+                            <th class="td-md">{{ 'mbhpackagebundle.view.package.accommodation.korpus'|trans }} </th>
+                            <th class="td-sm">{{ 'mbhpackagebundle.view.package.accommodation.etazh'|trans }} </th>
+                            <th class="td-sm">{{ 'mbhpackagebundle.view.package.accommodation.status'|trans }} </th>
+                            <th>{{ 'mbhpackagebundle.view.package.accommodation.udobstva'|trans }} </th>
                             <th class="td-xs"></th>
                         </tr>
                         </thead>
@@ -126,7 +126,7 @@
                                     <td class="text-center">
                                         {% if  package.accommodation and room.id == package.accommodation.id %}
                                             <a href="{{ path('package_accommodation_delete', { 'id': package.id }) }}"
-                                               class="btn btn-danger btn-xs delete-link " title="Удаление записи"
+                                               class="btn btn-danger btn-xs delete-link " title="{{ 'mbhpackagebundle.view.package.accommodation.udaleniye.zapisi'|trans }} "
                                                data-toggle="tooltip">
                                                 <i class="fa fa-trash-o"></i>
                                             </a>

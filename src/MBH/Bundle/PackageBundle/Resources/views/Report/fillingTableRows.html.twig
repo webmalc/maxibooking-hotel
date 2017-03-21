@@ -1,6 +1,6 @@
 <tr>
     <td>
-        <small>Номеров в продаже</small>
+        <small>{{ 'mbhpackagebundle.view.report.fillingtablerows.nomerov.v.prodazhe'|trans }} </small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -16,7 +16,7 @@
 </tr>
 <tr>
     <td>
-        <small>Номерной фонд</small>
+        <small>{{ 'mbhpackagebundle.view.report.fillingtablerows.nomernoy.fond'|trans }} </small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -32,7 +32,7 @@
 </tr>
 <tr>
     <td>
-        <small>Забронировано номеров</small>
+        <small>{{ 'mbhpackagebundle.view.report.fillingtablerows.zabronirovano.nomerov'|trans }} </small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -114,7 +114,7 @@
 
 <tr>
     <td>
-        <small>Гостей всего</small>
+        <small>{{ 'mbhpackagebundle.view.report.fillingtablerows.gostey.vsego'|trans }} </small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -195,7 +195,7 @@
 </tr>
 <tr class="success">
     <td>
-        <small>Получено фактически</small>
+        <small>{{ 'mbhpackagebundle.view.report.fillingtablerows.polucheno.fakticheski'|trans }} </small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -227,7 +227,7 @@
 </tr>
 <tr class="danger">
     <td>
-        <small>Долг</small>
+        <small>{{ 'mbhpackagebundle.view.report.fillingtablerows.dolg'|trans }} </small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}

@@ -31,7 +31,7 @@
             {% for date in dates %}
                 <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
             {% endfor %}
-            <td>Итого</td>
+            <td>{{ 'mbhpackagebundle.view.report.usertable.itogo'|trans }} </td>
         </tr>
 
         {% for categoryId, category in cats %}
@@ -71,7 +71,7 @@
         </tr>
 
         <tr class="mbh-grid-header1 warning">
-        <td colspan="{{ dates|length + 2 }}"><strong>Все пользователи</strong></td>
+        <td colspan="{{ dates|length + 2 }}"><strong>{{ 'mbhpackagebundle.view.report.usertable.vse.polʹzovateli'|trans }} </strong></td>
         </tr>
 
         <tr class="header">
@@ -79,7 +79,7 @@
             {% for date in dates %}
                 <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
             {% endfor %}
-            <td>Итого</td>
+            <td>{{ 'mbhpackagebundle.view.report.usertable.itogo'|trans }} </td>
         </tr>
 
         {% for categoryId, category in cats %}

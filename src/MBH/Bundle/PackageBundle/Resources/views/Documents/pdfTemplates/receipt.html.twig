@@ -7,7 +7,7 @@
     </style>
 {% for tourist in tourists %}
     {% for i in 1..2 %}
-        <h3 class="center">Расписка</h3>
+        <h3 class="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.raspiska'|trans }} </h3>
         <div>
             <p>Я, <strong>{% if tourist %}{{ tourist.generateFullName }}{% endif %}</strong></p>
             <p>

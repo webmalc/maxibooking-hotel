@@ -75,7 +75,7 @@
 
     <div>
         <div class="ib" style="float: left;width: 210px">
-            <div style="float: left;width: 100px">дата выдачи</div>
+            <div style="float: left;width: 100px">{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.data.vydachi'|trans }} </div>
             <div class="area ib" style="width: 100px;">
                 &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}
             </div>

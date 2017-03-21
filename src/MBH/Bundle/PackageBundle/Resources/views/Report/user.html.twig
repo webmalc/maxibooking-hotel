@@ -10,7 +10,7 @@
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'users-report-filter-widget'} %}
         <form id="users-report-filter" class="form-inline filter-form remember" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+                <i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.report.user.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp
                 <input type="text" name="begin" id="users-report-filter-begin" class="datepicker users-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-14 days")|date('d.m.Y') : app.request.get('begin')}}">
             </div>
             <div class="input">
@@ -30,7 +30,7 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Тип номера" id="users-report-filter-roomType" class="users-report-filter form-control input-sm">
+                <i class="fa fa-bed" title='{{ 'mbhpackagebundle.view.report.user.tip.nomera'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpackagebundle.view.report.user.tip.nomera'|trans }} " id="users-report-filter-roomType" class="users-report-filter form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}">{{ roomType.name }}</option>
@@ -39,7 +39,7 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-sliders" title='Тариф' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Тариф" id="users-report-filter-tariff" class="users-report-filter form-control input-sm">
+                <i class="fa fa-sliders" title='{{ 'mbhpackagebundle.view.report.user.tarif'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpackagebundle.view.report.user.tarif'|trans }} " id="users-report-filter-tariff" class="users-report-filter form-control input-sm">
                     <option></option>
                     {% for tariff in tariffs %}
                         <option value="{{ tariff.id }}">{{ tariff.name }}</option>
