@@ -137,6 +137,12 @@ class HundredOneHotels extends Base
                         /** @var Tariff $tariff */
                         $tariff = $tariffInfo['doc'];
                         $tariffId = $tariff->getId();
+                        $tariffChildOptions = $tariff->getChildOptions();
+                        //Если тариф дочерний, берем данные о ценах по id родительского тарифа.
+                        $syncPricesTariffId = ($tariff->getParent() && $tariffChildOptions->isInheritPrices())
+                            ? $tariff->getParent()->getId()
+                            : $tariffId;
+
                         if (!isset($serviceTariffs[$serviceTariffId])) {
                             continue;
                         }
@@ -147,11 +153,12 @@ class HundredOneHotels extends Base
                             continue;
                         }
 
-                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
                             /** @var PriceCache $currentDatePriceCache */
                             $occupantCount = $serviceTariffs[$serviceTariffId]['occupantCount'];
-                            $currentDatePriceCache = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
-                            $priceFinal = $calc->calcPrices($currentDatePriceCache->getRoomType(), $tariff, $day, $day, $occupantCount);
+                            $currentDatePriceCache = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
+                            $priceFinal = $calc->calcPrices($currentDatePriceCache->getRoomType(), $tariff, $day, $day,
+                                $occupantCount);
                             $currentDatePrice = isset($priceFinal[$occupantCount . '_0']) ? $priceFinal[$occupantCount . '_0']['total'] : 0;
                         } else {
                             $currentDatePrice = 0;
@@ -227,6 +234,14 @@ class HundredOneHotels extends Base
                         /** @var Tariff $tariff */
                         $tariff = $tariffInfo['doc'];
                         $tariffId = $tariff->getId();
+                        $tariffChildOptions = $tariff->getChildOptions();
+                        //Если тариф дочерний, берем данные о ценах по id родительского тарифа.
+                        $syncPricesTariffId = ($tariff->getParent() && $tariffChildOptions->isInheritPrices())
+                            ? $tariff->getParent()->getId()
+                            : $tariffId;
+                        $syncRestrictionsTariffId = ($tariff->getParent() && $tariffChildOptions->isInheritRestrictions())
+                            ? $tariff->getParent()->getId()
+                            : $tariffId;
 
                         if (!isset($serviceTariffs[$serviceTariffId])) {
                             continue;
@@ -239,14 +254,14 @@ class HundredOneHotels extends Base
                         }
 
                         $price = false;
-                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
                             $price = true;
                         }
 
-                        if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                        if (isset($restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')])) {
 
                             /** @var Restriction $maxiBookingRestrictionObject */
-                            $maxiBookingRestrictionObject = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
+                            $maxiBookingRestrictionObject = $restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')];
 
                             $requestFormatter->addSingleParamCondition($day,
                                 $requestFormatter::CLOSED,
@@ -375,16 +390,17 @@ class HundredOneHotels extends Base
                 //new
                 /**
                  * Status of the booking:
-                    1 – new
-                    2 – cancelled
-                    3 – accepted
-                    4 – client arrived
-                    5 – archived
-                    7 – no-show reported by hotel
+                 * 1 – new
+                 * 2 – cancelled
+                 * 3 – accepted
+                 * 4 – client arrived
+                 * 5 – archived
+                 * 7 – no-show reported by hotel
                  */
                 if (($orderInfo->getLastAction() == 'created' && !$order)
                     || ($orderInfo->getLastAction() == 'modified'
-                        && ($orderInfo->getOrderState() == 1 || $orderInfo->getOrderState() == 3) && !$order)) {
+                        && ($orderInfo->getOrderState() == 1 || $orderInfo->getOrderState() == 3) && !$order)
+                ) {
                     $result = $this->createOrder($orderInfo, null);
                     $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'new');
                 }
@@ -500,7 +516,7 @@ class HundredOneHotels extends Base
                     ->setTotal($orderInfo->getOrderPrice());
                 if ($payType == 'cashless') {
                     $cashDoc->setIsPaid(false)->setMethod('cashless');
-                    $order->setNote($order->getNote() . "\n" .$this->container->get('translator')
+                    $order->setNote($order->getNote() . "\n" . $this->container->get('translator')
                             ->trans('services.hundredOneHotels.cash_document_not_paid'));
                 }
                 $this->dm->persist($cashDoc);
