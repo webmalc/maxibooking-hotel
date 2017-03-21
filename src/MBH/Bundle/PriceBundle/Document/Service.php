@@ -42,7 +42,7 @@ class Service extends Base
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="ServiceCategory", inversedBy="services")
-     * @Assert\NotNull(message="Не выбрана категория")
+     * @Assert\NotNull(message="mbhpricebundle.document.service.ne.vybrana.kategoriya")
      */
     protected $category;
 

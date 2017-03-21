@@ -1,3 +1,5 @@
+mbhpricebundle.document.service.ne.vybrana.kategoriya: 'Не выбрана категория'
+mbhpricebundle.document.tariff.takoy.tarif.uzhe.sushchestvuyet: 'Такой тариф уже существует'
 invalid.ages: Возраст инфанта должен быть меньше возраста ребенка
 special.dates.error: Некорректно введены даты
 special.displayDates.error: Некорректно введены даты отображения спецпредложения
