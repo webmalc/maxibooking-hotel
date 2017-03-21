@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
- * @MongoDBUnique(fields={"title", "fullTitle", "code"}, message="Такой источник уже существует")
+ * @MongoDBUnique(fields={"title", "fullTitle", "code"}, message="mbhpackagebundle.document.packagesource.takoy.istochnik.uzhe.sushchestvuyet")
  */
 class PackageSource extends Base
 {
