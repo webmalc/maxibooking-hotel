@@ -1,6 +1,6 @@
 mbhuserbundle.view.twofactor.email.vam.na.pochtu.vyslan.kod.dlya.vkhoda: 'Вам на почту выслан код для входа'
 mbhuserbundle.view.workshift.index.vyyti: Выйти
-mbhuserbundle.view.workshift.index.nachatʹ.novuyu.smenu: 'Начать новую смену'
+mbhuserbundle.view.workshift.index.nachat.novuyu.smenu: 'Начать новую смену'
 form.profileType.enter_new_password: 'Введите новый пароль'
 form.userType.authentication_data: 'Данные аутентификации'
 form.userType.new_password: 'Новый пароль'
