@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тип номера уже существует")
+ * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="mbhhotelbundle.document.roomtype.takoy.tip.nomera.uzhe.sushchestvuyet")
  *
  * @ODM\HasLifecycleCallbacks
  */
