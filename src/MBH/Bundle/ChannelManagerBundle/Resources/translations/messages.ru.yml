@@ -1,10 +1,11 @@
-form.bookingType.is_included: Включен?
-form.bookingType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
-form.bookingType.login: Логин
-form.bookingType.booking_api_com_access_login: Логин (username) для доступа к API Booking.com
-form.bookingType.password: Пароль
-form.bookingType.booking_api_com_password_access: Пароль (password) для доступа к API Booking.com
-form.bookingType.hotel_id: ID отеля
+mbhchannelmanagerbundle.services.ostrovok.net.ogranicheniy.dlya.sinkhronizatsii: 'Нет ограничений для синхронизации'
+form.myallocatorType.isEnabled: 'Включен?'
+form.myallocatorType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
+form.myallocatorType.username: Логин
+form.bookingType.booking_api_com_access_login: 'Логин (username) для доступа к API Booking.com'
+form.myallocatorType.password: Пароль
+form.bookingType.booking_api_com_password_access: 'Пароль (password) для доступа к API Booking.com'
+form.hundredOneHotels.hotel_id: 'ID отеля'
 form.bookingType.currency: Валюта
 form.bookingType.currency_help: Валюта конвертации цен
 form.bookingType.currencyDefaultRatio: Курс по умолчанию

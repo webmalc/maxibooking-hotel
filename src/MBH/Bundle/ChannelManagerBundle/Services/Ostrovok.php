@@ -446,7 +446,7 @@ class Ostrovok extends Base
             }
         }
         if (!$rna_request_data) {
-            $this->log('Нет ограничений для синхронизации');
+            $this->log($this->container->get('translator')->trans('mbhchannelmanagerbundle.services.ostrovok.net.ogranicheniy.dlya.sinkhronizatsii'));
 
             return $result;
         }
