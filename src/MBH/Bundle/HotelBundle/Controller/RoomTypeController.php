@@ -34,6 +34,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     {
         $entities = $this->dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder('s')
             ->field('hotel.id')->equals($this->hotel->getId())
+//            ->field('isEnabled')->equals(true)
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();

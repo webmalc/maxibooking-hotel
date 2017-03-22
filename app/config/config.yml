@@ -118,6 +118,9 @@ doctrine_mongodb:
                     hotelable:
                         class: MBH\Bundle\BaseBundle\Filter\HotelableFilter
                         enabled: false
+                    disableable:
+                        class: MBH\Bundle\BaseBundle\Lib\Gedmo\Disableable\Filter\ODM\DisableableFilter
+                        enabled: true
             mappings:
                 gedmo_loggable:
                     type: annotation
@@ -160,7 +163,7 @@ stof_doctrine_extensions:
             uploadable:     false
             tree:           false
             sortable:       false
-            
+
 # FOSUserBundle Configuration
 fos_user:
     db_driver: mongodb
