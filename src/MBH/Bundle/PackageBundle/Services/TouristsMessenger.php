@@ -60,7 +60,7 @@ class TouristsMessenger
         $isSend = false;
 
         if (!$tourist) {
-            throw new Exception('Гость не найден.');
+            throw new Exception('mbhpackagebundle.services.touristsmessenger.gostʹ.ne.nayden.');
         }
 
         // send email

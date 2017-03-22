@@ -430,7 +430,7 @@ class OrderManager
                 ->setNights($nights)
                 ->setPrice(0)
                 ->setPackage($package)
-                ->setNote('Услуга по умолчанию');
+                ->setNote('mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu');
 
             $package->addService($packageService);
             $this->dm->persist($packageService);
