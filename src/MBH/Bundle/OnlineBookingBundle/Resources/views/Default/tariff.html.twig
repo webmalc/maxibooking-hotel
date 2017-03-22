@@ -1,46 +1,17 @@
+{% set discount = tariffResult.tariff.defaultPromotion.discount??'' %}
 <tr
         class="tariff-row"
-        data-tariff="{{ searchResult.tariff.id }}"
-        data-roomtype="{{ searchResult.roomType.id }}"
-        data-adults="{{ searchResult.adults }}"
-        data-children="{{ searchResult.children }}"
-        data-begin="{{ searchResult.begin|date('d.m.Y') }}"
-        data-end="{{ searchResult.end|date('d.m.Y') }}"
-        data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}&form[infants]={{ searchResult.infants }}&form[paymentType]={{ searchResult.tariff.paymentType }}"
-        data-payment_type="{{ searchResult.tariff.paymentType }}"
+        data-tariff="{{ tariffResult.tariff.id }}"
+        data-roomtype="{{ tariffResult.roomType.id }}"
+        data-adults="{{ tariffResult.adults }}"
+        data-children="{{ tariffResult.children }}"
+        data-begin="{{ tariffResult.begin|date('d.m.Y') }}"
+        data-end="{{ tariffResult.end|date('d.m.Y') }}"
+        data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ tariffResult.adults }}&form[children]={{ tariffResult.children }}&form[begin]={{ tariffResult.begin|date('d.m.Y') }}&form[end]={{ tariffResult.end|date('d.m.Y') }}&form[roomType]={{ tariffResult.roomType.id }}&form[tariff]={{ tariffResult.tariff.id }}&form[total]={{ tariffResult.getPrice(tariffResult.adults, tariffResult.children) }}&form[infants]={{ tariffResult.infants }}&form[paymentType]={{ tariffResult.tariff.paymentType }}"
+        data-payment_type="{{ tariffResult.tariff.paymentType }}"
 >
-    <td>{{ searchResult.tariff.fullTitle }}
-        {% if searchResult.tariff.description is not empty %}
-            <i class="fa fa-question-circle" data-toggle="tooltip"
-               title="{{ searchResult.tariff.description }}"></i>
-        {% endif %}
-    </td>
-
-    <td>
-        {% if searchResult.begin|date('Y') == 'now'|date('Y') %}
-            {% set format = 'd MMM' %}
-        {% else %}
-            {% set format = 'd MMM y' %}
-        {% endif %}
-        <span style="white-space: nowrap;">
-                                        {{ searchResult.begin|localizeddate('medium', 'none', 'ru', null, format) }}
-                                    </span><br>
-        {% if searchResult.end|date('Y') == 'now'|date('Y') %}
-            {% set format = 'd MMM' %}
-        {% else %}
-            {% set format = 'd MMM y' %}
-        {% endif %}
-        <span style="white-space: nowrap;">
-                                        {{ searchResult.end|localizeddate('medium', 'none', 'ru', null, format) }}
-                                    </span>
-    </td>
-    <td class="text-center">
-        {{ searchResult.nights }}
-    </td>
-    <td nowrap>
-        {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}
-    </td>
-    <td>
-        <input type="radio" name="booking-{{ searchResult.roomType.id }}">
-    </td>
+    <td>{{ tariffResult.tariff.fullTitle }}</td>
+    <td class="redtd">{{ discount?" - #{discount}%":'' }}</td>
+    <td>{{ tariffResult.getPrice(tariffResult.adults, tariffResult.children)|round }}&#8381;</td>
+    <td><input name="booking-{{ tariffResult.roomType.id }}" type="radio" {% if loop.first %}checked="checked"{% endif %}></td>
 </tr>

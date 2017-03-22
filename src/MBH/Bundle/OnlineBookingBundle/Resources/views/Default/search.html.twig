@@ -1,6 +1,8 @@
+<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhbase/css/mbsuperfont/styles.css')) }}">
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/ssearch.css')) }}">
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
-<script src="{{ absolute_url(asset('assets/vendor/admin-lte/plugins/iCheck/icheck.min.js')) }}"></script>
+
+<script src="{{ absolute_url(asset('assets/vendor/iCheck/icheck.js')) }}"></script>
 <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/iCheck/skins/square/_all.css')) }}">
 
 <div id="online-booking-search">
@@ -11,304 +13,95 @@
         <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a>
     </div>
 
-    {#<section>
-        <div class="oneblockinrdm specgrblock">
-            <div class="leftrdm">
-                <div class="imghotel"
-                     style="background:url(http://az.maxibooking.ru/media/cache/thumb_275x210/upload/roomTypes/1480070422675.jpeg)no-repeat;background-size:cover;">
-                    <div class="inghotelline">
-                        <img src="http://az.maxibooking.ru/media/cache/thumb_40x40/upload/roomTypes/1480070428565.jpeg"
-                             alt="">
-                        <img src="http://az.maxibooking.ru/media/cache/thumb_40x40/upload/roomTypes/1480070435451.jpeg"
-                             alt="">
-                    </div>
-                </div>
-            </div>
-            <div class="rightrdm">
-                <div class="leftinrdm">
-                    <p class="titlerdm">Пансионат Азовский</p>
-                    <p class="numtype"><b>Тип номера:</b><br>Домики с верандой (МАХ 3)</p>
-                    <p class="gueststype"><b>Гости:</b> 2 взр. + 1 реб.</p>
-                    <p class="eattype">
-                        <img src="images/vl.png" alt="">
-
-                        3-разовое питание<br>шведский стол</p>
-                    <div class="iconstype"><!--<img src="/images/icns.png" alt="">-->
-                        <i class="mbf-clock"></i>
-                        <i class="mbf-sofa"></i>
-                        <i class="mbf-shower"></i>
-                        <i class="mbf-stake"></i>
-                    </div>
-                </div>
-                <div class="rightinrdm">
-                    <p class="titlerdm">Цена за 25 ночей</p>
-                    <div class="clear"></div>
-                    <p class="pricerdm"><span class="noneprice">127 640&#8381;</span>
-                        <span class="newprice">156 140&#8381;</span>
-                    </p>
-                    <p class="datesrdm">18.07.17 - 28.07.17</p>
-                    <p class="daysrdm">26 дней / 25 ночей</p>
-                    <p class="lastrdm">осталось 3 номера</p>
-                    <p class="bronsrdm">забронировано сегодня 9 раз</p>
-                </div>
-                <div class="clear"></div>
-            </div>
-            <div class="clear"></div>
-            <div class="lefttblrdm">
-                <table class="pricetbl">
-                    <tr class="flinetbl">
-                        <td>Тариф</td>
-                        <td>Скидка</td>
-                        <td>Цена</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Раннее бронирование 2017 при 100% оплате</td>
-                        <td class="redtd">-25%</td>
-                        <td>15670&#8381;</td>
-                        <td><input name="var" type="radio" value=""></td>
-                    </tr>
-                    <tr>
-                        <td>Раннее бронирование 2017 при 100% оплате</td>
-                        <td class="redtd">-25%</td>
-                        <td>15670&#8381;</td>
-                        <td><input name="var" type="radio" value=""></td>
-                    </tr>
-                    <tr>
-                        <td>Раннее бронирование 2017 при 100% оплате</td>
-                        <td class="redtd">-25%</td>
-                        <td>15670&#8381;</td>
-                        <td><input name="var" type="radio" value=""></td>
-                    </tr>
-                </table>
-            </div>
-            <div class="righttblrdm">
-                <div class="spros">Пользуется спросом!</div>
-                <p class="btmone">Отправить заявку</p>
-                <p class="btmtwo">Купить онлайн</p>
-                <p class="btmthree">Смотреть другие спецпредложения</p>
-
-            </div>
-            <div class="clear"></div>
-        </div>
-    </section>#}
-
-
     {% for offerByRoomType in searchResults %}
-        {% set roomType, tariffResults, query, children = offerByRoomType.roomType, offerByRoomType.results, offerByRoomType.query, offerByRoomType.query.children %}
-        {{ dump(roomType, tariffResults, query) }}
-    <section>
+        {% set roomType, tariffResults, query, images, children = offerByRoomType.roomType, offerByRoomType.results, offerByRoomType.query, offerByRoomType.images, offerByRoomType.query.children %}
+        {% set firstTariffResult, lastTariffResult = tariffResults|first, tariffResults|last %}
+        {% set leftRoomKey = offerByRoomType.leftRoomKey %}
+        <section>
         <div class="oneblockinrdm room-type-row" data-roomtype="{{ roomType.id }}">
             <div class="leftrdm">
                 <div class="imghotel"
-                     style="background:url(http://az.maxibooking.ru/media/cache/thumb_275x210/upload/roomTypes/1480070422675.jpeg)no-repeat;background-size:cover;">
+                     style="background:url('{{ offerByRoomType.mainimage.path }}')no-repeat;background-size:cover;">
                     <div class="inghotelline">
-                        <img src="http://az.maxibooking.ru/media/cache/thumb_40x40/upload/roomTypes/1476108079636.jpeg"
-                             alt="">
-                        <img src="http://az.maxibooking.ru/media/cache/thumb_40x40/upload/roomTypes/1481200742213.jpeg"
-                             alt="">
-                        <img src="http://az.maxibooking.ru/media/cache/thumb_40x40/upload/roomTypes/1481200753688.jpeg"
-                             alt="">
+                        {% for image in images %}
+                                <a style="{{ (loop.index > 3) ? 'display: none;':'' }}" class="fancybox" href="{{ absolute_url(asset(image.path)) }}"
+                                   rel="cat{{ loop.parent.loop.index }}">
+                                    <img src="{{ absolute_url(image.path|imagine_filter('thumb_275x210')) }}" alt="">
+                                </a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
             <div class="rightrdm">
                 <div class="leftinrdm">
                     <p class="titlerdm">{{ roomType.hotel.fullTitle }}&nbsp;</p>
-                    <p class="numtype"><b>Тип номера:</b><br>roomType.fullTitle</p>
+                    <p class="numtype"><b>Тип номера:</b><br>{{ roomType.fullTitle }}</p>
                     <p class="gueststype">
                         <b>Гости:</b>
-                        {{ query.adults }} взр. +
+                        {{ query.adults }} взр.
                         {% transchoice children %}
-                        {0}{2} %children% реб |]5,Inf[ %children% дет.
+                        {0} | [1,4] + %children% реб |[5,Inf[ + %children% дет.
                         {% endtranschoice %}
                     </p>
                     <p class="eattype"><img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
-                    <div class="iconstype"><img src="/images/icns.png" alt=""></div>
+                    <div class="iconstype">
+                        {% for facility in (roomType.types|first).facilities %}
+                            <i class="fa fa-2x mbf-{{ facility }}" title="{{ facility|trans }}"></i>
+                        {% endfor %}
+                    </div>
                 </div>
                 <div class="rightinrdm">
-                    <p class="titlerdm">Цена за 25 ночей</p>
+                    <p class="titlerdm">Цена за {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
                     <div class="clear"></div>
-                    <p class="pricerdm"><span>127 640&#8381;</span> 156 140&#8381;</p>
-                    <p class="datesrdm">18.07.17 - 28.07.17</p>
-                    <p class="daysrdm">26 дней / 25 ночей</p>
-                    <p class="lastrdm">осталось 3 номера</p>
-                    <p class="bronsrdm">забронировано сегодня 9 раз</p>
+                    <p class="pricerdm">
+                        <span class="noneprice">{{ lastTariffResult.price(lastTariffResult.adults, lastTariffResult.children)|number_format(0, thousandSep=' ') }}&#8381;</span>
+                        <span class="newprice">{{ firstTariffResult.price(firstTariffResult.adults, firstTariffResult.children)|number_format(0, thousandSep=' ') }}&#8381;</span></p>
+                    <p class="datesrdm">{{ query.begin|date("d.m.Y") }} - {{ query.end|date("d.m.Y") }}</p>
+                    <p class="daysrdm">{{ firstTariffResult.days }} {{ 'days'|transchoice(firstTariffResult.days) }} / {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
+                    {% set left_rooms = left_sale(firstTariffResult.roomsCount, leftRoomKey) %}
+                    <p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>{#TODO:Add twig function#}
+                    <p class="bronsrdm">{#забронировано сегодня 9 раз#}</p>{#TODO:Уточнить#}
                 </div>
                 <div class="clear"></div>
             </div>
             <div class="clear"></div>
             <div class="lefttblrdm">
                 <table class="pricetbl">
+                    <thead>
                     <tr class="flinetbl">
                         <td>Тариф</td>
                         <td>Скидка</td>
                         <td>Цена</td>
                         <td></td>
                     </tr>
-                    <tr>
-                        <td>Раннее бронирование 2017 при 100% оплате</td>
-                        <td class="redtd">-25%</td>
-                        <td>15670&#8381;</td>
-                        <td><input name="var" type="radio" value=""></td>
-                    </tr>
-                    <tr>
-                        <td>Раннее бронирование 2017 при 100% оплате</td>
-                        <td class="redtd">-25%</td>
-                        <td>15670&#8381;</td>
-                        <td><input name="var" type="radio" value=""></td>
-                    </tr>
-                    <tr>
-                        <td>Раннее бронирование 2017 при 100% оплате</td>
-                        <td class="redtd">-25%</td>
-                        <td>15670&#8381;</td>
-                        <td><input name="var" type="radio" value=""></td>
-                    </tr>
+                    </thead>
+                    <tbody class="tariff-container">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw tariff-spinner"></i>
+                    <span class="sr-only">Loading...</span>
+                    {% for tariffResult in tariffResults %}
+                        {{ include('@MBHOnlineBooking/Default/tariff.html.twig') }}
+                    {% endfor %}
+                    </tbody>
                 </table>
             </div>
             <div class="righttblrdm">
                 <div class="spros">Пользуется спросом!</div>
-                <p class="btmone btmonenotspec">Отправить заявку</p>
-                <p class="btmtwo">Купить онлайн</p>
+                {#<div class="btmactions">#}
+                {#<a href="javascript:void(0)" tabindex="0" class="btn btn-default btn-booking-all"#}
+                {#title="Отправить заявку">ВСЕ ПРЕДЛОЖЕНИЯ</a>#}
+                {#<a href="javascript:void(0)" tabindex="1" class="btn btn-default btn-booking-reservation"#}
+                {#title="Отправить заявку">ОТПРАВИТЬ ЗАЯВКУ</a>#}
+                {#<a href="javascript:void(0)" tabindex="2" class="btn btn-warning btn-booking" title="Купить онлайн">КУПИТЬ#}
+                {#ОНЛАЙН</a>#}
+                {#</div>#}
+                <a href="javascript:void(0)" class="btn-booking-reservation"><p class="btmone btmonenotspec">Отправить заявку</p></a>
+                <a href="javascript:void(0)" class="btn-booking"><p class="btmtwo">Купить онлайн</p></a>
+                <a href="javascript:void(0)" class="btn-booking-all"><p class="btmthree">Показать всё</p></a>
 
             </div>
             <div class="clear"></div>
         </div>
     </section>
-    {% endfor %}
-
-        {% for result in searchResults %}
-        <div class="row oneblock room-type-row" data-roomtype="{{ result.roomType.id }}">
-            <div class="col-md-4 logo">
-                {% set renderedImage = false %}
-                {% for searchResult in result.results if not renderedImage %}
-                    {% if searchResult.roomType.mainImage %}
-                        <a class="fancybox" href="{{ absolute_url(asset(searchResult.roomType.mainImage.path)) }}"
-                           rel="cat{{ loop.parent.loop.index }}">
-                            <img class="oblimg"
-                                 src="{{ absolute_url(asset(searchResult.roomType.mainImage.path|imagine_filter('thumb_275x210'))) }}">
-                        </a>
-                        {% set renderedImage = true %}
-                    {% endif %}
-                {% endfor %}
-                {% if not renderedImage %}
-                    <div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>
-                    <img src="{{ absolute_url(asset('bundles/mbhonlinebooking/images/no-image.jpg')) }}">
-                {% endif %}
-                <div class="row">
-                    {% if result.results|first.roomType.images is not empty %}
-                        <div class="col-md-12 miniimages">
-                            {% for image in result.results|first.roomType.images %}
-
-                                {% if not image.ismain %}
-                                    <a href="{{ absolute_url(asset(image.path)) }}" class="fancybox"
-                                       rel="cat{{ loop.parent.loop.index }}">
-                                        <img src="{{ absolute_url(asset(image.path|imagine_filter('thumb_40x40'))) }}"
-                                             alt="{{ result.results|first.roomType.name }}">
-                                    </a>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-
-                </div>
-            </div>
-            <div class="col-md-8 right-info">
-                <div class="row">
-                    <div class="col-md-5 col-sm-6 col-xs-12" style="padding:0px;">
-                        <div class="title">
-                            {{ result.roomType.hotel.fullTitle }}&nbsp;
-                        </div>
-                        <div class="hotellogo">
-                            <img src="{{ absolute_url(asset(result.roomType.hotel.logoUrl)) }}"
-                                 alt="{{ result.roomType.hotel.name }}">
-                        </div>
-                        <div class="subtitle infocontainer">
-                            <div class="pull-left">
-                                <i class="fa fa-h-square numicon"></i>
-                                <div class="pull-right roomcon">
-                                    <div class="roomtype">тип номера</div>
-                                    <div class="roomname">
-
-                                        {% if result.roomType.descriptionurl is defined and result.roomType.descriptionurl is not empty %}
-                                            <a href="{{ result.roomType.descriptionUrl }}"
-                                               target="_blank">{{ result.roomType.fullTitle }}</a>
-                                        {% else %}
-                                            {{ result.roomType.fullTitle }}
-                                        {% endif %}
-
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col-md-7 col-sm-6 col-xs-12 prices">
-                        <div class="guests pull-left">
-                            <i class="fa fa-users"></i> Гости <br/>
-                            {% if result.results|first.adults is defined %}
-                                <span class="guestslist">{{ result.results|first.adults }}{{ result.results|first.children?'+'~result.results|first.children }}{{ result.results|first.infants?'+'~result.results|first.infants }}</span>
-                            {% endif %}
-                        </div>
-
-                        {% set searchResult = result.results|first %}
-                        <div class=" pull-right">
-                            <div style="text-align: center;">СТОИМОСТЬ</div>
-                            <span class="newprice">{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(0, thousandSep=' ') }}
-                                &nbsp;<i class="fa fa-ruble rublesize"></i></span>
-                            {% if result.results|length > 1 %}&nbsp;
-                                <span class="oldprice">{{ result.results|last.getPrice(result.results|last.adults, result.results|last.children)|number_format(0, thousandSep=' ') }}
-                                    &nbsp;<i class="fa fa-ruble rublesize"></i></span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="descr col-xs-12">
-                            {{ searchResult.roomTypeInterfaceObject.description|raw }}
-                        </div>
-
-                    </div>
-                </div>
-
-                <table class="table table-hover table-row">
-                    <thead>
-                    <tr>
-                        <th style="width:220px;">
-                            <i class="fa fa-tag"></i>&nbsp;Тариф
-                        </th>
-                        <th>
-                            <i class="fa fa-calendar"></i>&nbsp;Дата
-                        </th>
-                        <th>
-                            <i class="fa fa-clock-o"></i>&nbsp;Ночи
-                        </th>
-                        <th>
-                            <i class="fa fa-ruble"></i>&nbsp;Цена
-                        </th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody class="tariff-container">
-                    {% for searchResult in result.results %}
-                        {{ include('@MBHOnlineBooking/Default/tariff.html.twig') }}
-                    {% endfor %}
-
-                    </tbody>
-                </table>
-                <div class="btmactions">
-                    <a href="javascript:void(0)" tabindex="0" class="btn btn-default btn-booking-all"
-                       title="Отправить заявку">ВСЕ ПРЕДЛОЖЕНИЯ</a>
-                    <a href="javascript:void(0)" tabindex="1" class="btn btn-default btn-booking-reservation"
-                       title="Отправить заявку">ОТПРАВИТЬ ЗАЯВКУ</a>
-                    <a href="javascript:void(0)" tabindex="2" class="btn btn-warning btn-booking" title="Купить онлайн">КУПИТЬ
-                        ОНЛАЙН</a>
-                </div>
-            </div>
-
-            <div id="chart{{ loop.index }}" class="col-md-12"></div>
-        </div>
-
     {% endfor %}
 
     {% if searchResults|length != 0 %}
@@ -348,6 +141,7 @@
     RoomTypeRow.prototype.init = function () {
         this.initTariffs();
         this.bindEventHandlers();
+        this.fancyInit()
     };
 
     RoomTypeRow.prototype.initTariffs = function () {
@@ -357,9 +151,6 @@
             tariffRow.init(that);
             that.tariffRows.push(tariffRow);
         });
-        if (!this.selectedTariffRow) {
-            this.tariffRows[0].setCheck();
-        }
     };
 
     RoomTypeRow.prototype.bindEventHandlers = function () {
@@ -368,6 +159,7 @@
             e.preventDefault();
             e.stopPropagation();
             that.allTariffAction();
+            $(this).off('click').find('.btmthree').removeClass('btmthree').addClass('btmthreeoff');
         });
 
     };
@@ -378,19 +170,24 @@
     };
 
     RoomTypeRow.prototype.allTariffAction = function () {
-        //TODO: Сделать затемнение
-        var that = this;
-        var formData = $("form#search-form").serialize();
+        //TODO: Сделать затемнение?
+        var that = this,
+            $spinner = this.$row.find('.tariff-spinner'),
+            formData = $("form#search-form").serialize();
+
         formData = formData +
             '&' + encodeURIComponent('search_form[roomType]') + '=' + this.roomTypeId +
             '&getalltariff=true';
+        $spinner.toggle();
         var ajax = $.get({
+
                 url: Routing.generate('online_booking', {}, true),
                 data: formData
             }
         );
 
         ajax.done(function (data) {
+            $spinner.toggle();
             that.removeTariffs();
             that.addTariffs(data);
         });
@@ -410,7 +207,6 @@
             this.selectedTariffRow = null;
         }
     };
-
     RoomTypeRow.prototype.reBuildHref = function () {
         console.log('rebuild href');
         var href = this.selectedTariffRow.bookingHref;
@@ -423,7 +219,6 @@
         this.$bookingButton.attr('href', href);
         this.$bookingButtonReservation.attr('href', href + '&reservation=true');
     };
-
     RoomTypeRow.prototype.handleChartData = function (data) {
         var chartData = data;
         $.each(this.tariffRows, function (index) {
@@ -431,6 +226,23 @@
         });
 
     };
+
+    RoomTypeRow.prototype.fancyInit = function () {
+        this.$row
+            .find('.fancybox')
+            .fancybox()
+            .on('click', function (e) {
+            e.stopPropagation();
+        });
+
+        this.$row
+            .find(".imghotel")
+            .on('click', function (e) {
+            $.fancybox.open($('.fancybox', $(this)));
+
+        });
+    };
+
     RoomTypeRow.prototype.getChartOptions = function () {
         return {
             chart: {
@@ -516,7 +328,6 @@
         };
     };
 
-
     var TariffRow = function ($row) {
         this.$row = $row;
         this.$radiobutton = this.$row.find('input[type=radio]');
@@ -528,31 +339,29 @@
     TariffRow.prototype.init = function (roomTypeRow) {
         var that = this;
         this.roomTypeRow = roomTypeRow;
+        this.$radiobutton.on('ifChecked', function (e) {
+            that.roomTypeRow.selectActiveTariff(that);
+            that.$row.addClass('alerting').siblings().removeClass("alerting");
+        });
+        //Проблема в том что при инициализации (если checked) не генерится событие ifChecked, т.к.формально статус не изменяется
+        //костыль в проверке и генерации события "руками"
+        this.$radiobutton.on('ifCreated', function (e) {
+            if ($(this).is(':checked')) {
+                $(this).trigger('ifChecked');
+            }
+        });
         this.$radiobutton.iCheck({
             checkboxClass: 'icheckbox_square-green',
             radioClass: 'iradio_square-green',
             increaseArea: '20%' // optional
         });
-        this.$radiobutton.on('ifChecked', function (e) {
-            that.roomTypeRow.selectActiveTariff(that);
-            that.$row.addClass('alerting').siblings().removeClass("alerting");
+        this.$row.on('click', function (e) {
+            that.$radiobutton.iCheck('check');
         });
-        if (this.isSelected()) {
-            this.setCheck();
-        }
-
-    };
-
-    TariffRow.prototype.setCheck = function () {
-        this.$radiobutton.iCheck('check');
     };
 
     TariffRow.prototype.selfRemove = function () {
         this.$row.remove();
-    };
-
-    TariffRow.prototype.isSelected = function () {
-        return this.$radiobutton.is(':checked');
     };
 
     TariffRow.prototype.showChart = function () {
@@ -598,7 +407,6 @@
 
     };
 
-
     var getChartRoomUrl = function (tariffRow) {
         var data = [];
         var RoomTypeRow = tariffRow.roomTypeRow;
@@ -622,27 +430,26 @@
             , true);
     };
 
-    var $onlineBookingSearch = $('#online-booking-search');
-    $onlineBookingSearch.ready(function () {
-        $onlineBookingSearch.find('.fancybox').fancybox();
 
-        var $roomTypeRows = $onlineBookingSearch.find('.room-type-row');
-        $roomTypeRows.each(function () {
-            var roomTypeRow = new RoomTypeRow($(this));
-            roomTypeRow.init();
-            //Графики - нужно будет перенести в методы
-//            roomTypeRow.tariffRows.forEach(function (tariffRow) {
-            {#tariffRow.$row.on('click', function () {#}
-            {#if ({{ useCharts?'true':'false' }}) {#}
-            {#tariffRow.drawChart();#}
-            {#}#}
-//                    tariffRow.selected();
-//                    start_bron(this);
-            {#});#}
-//            })
-        });
+    var init = function() {
+            $.each($('.room-type-row'),function () {
+                var roomTypeRow = new RoomTypeRow($(this));
+                roomTypeRow.init();
+                //Графики - нужно будет перенести в методы
+                //roomTypeRow.tariffRows.forEach(function (tariffRow) {
+                {#tariffRow.$row.on('click', function () {#}
+                {#if ({{ useCharts?'true':'false' }}) {#}
+                {#tariffRow.drawChart();#}
+                {#}#}
+                //tariffRow.selected();
+                //start_bron(this);
+                {#});#}
+                //})
+            });
+    };
 
+    $(function () {
+        init();
     });
-
 
 </script>

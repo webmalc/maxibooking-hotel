@@ -5,6 +5,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\OnlineBookingBundle\Form\ReservationType;
 use MBH\Bundle\OnlineBookingBundle\Form\SearchFormType;
 use MBH\Bundle\OnlineBookingBundle\Form\SignType;
@@ -40,10 +41,10 @@ class DefaultController extends BaseController
         $step = $request->get('step');
 
         if ($step && $step == 2) {
-            return $this->signAction($request);//$this->forward('MBHOnlineBookingBundle:Default:sign');
+            return $this->signAction($request);
         }
 
-        return $this->searchAction($request);//$this->forward('MBHOnlineBookingBundle:Default:search');
+        return $this->searchAction($request);
     }
 
     /**
@@ -79,7 +80,6 @@ class DefaultController extends BaseController
     public function searchAction(Request $request)
     {
         $searchQuery = new SearchQuery();
-
         $form = $this->createForm(SearchFormType::class);
         $form->handleRequest($request);
 
@@ -103,13 +103,10 @@ class DefaultController extends BaseController
             $searchQuery->end = $formData['end'];
             $searchQuery->adults = (int)$formData['adults'];
             $searchQuery->children = (int)$formData['children'];
-
             $searchQuery->isOnline = true;
-
             $searchQuery->accommodations = true;
             $searchQuery->forceRoomTypes = false;
             //$searchQuery->range = 2;
-
             if ($formData['children_age']) {
                 $searchQuery->setChildrenAges($formData['children_age']);
             };
@@ -120,44 +117,20 @@ class DefaultController extends BaseController
                 ->setWithTariffs()
                 ->search($searchQuery);
 
-            $specials = $searchService->searchSpecials($searchQuery);
-
-
-            foreach ($searchResults as $k => $item) {
-                $filterSearchResults = [];
-                /** @var SearchResult[] $results */
-                $results = $item['results'];
-                foreach ($results as $i => $searchResult) {
-                    if ($searchResult->getRoomType()->getCategory()) {
-                        $uniqid = $searchResult->getRoomType()->getCategory()->getId().$searchResult->getTariff(
-                            )->getId();
-                        $uniqid .= $searchResult->getBegin()->format('dmY').$searchResult->getEnd()->format('dmY');
-                        if (!array_key_exists($uniqid, $filterSearchResults) || $searchResult->getRoomType(
-                            )->getTotalPlaces() < $filterSearchResults[$uniqid]->getRoomType()->getTotalPlaces()
-                        ) {
-                            $filterSearchResults[$uniqid] = $searchResult;
-                        }
-                    }
-                }
-                $searchResults[$k]['results'] = $filterSearchResults;
-                $searchResults[$k]['query'] = $searchQuery;
-            }
+            $searchResults = $this->resultFilter($searchResults, $searchQuery);
         }
 
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
-
         if ($request->get('getalltariff')) {
             $html = '';
             if ($results = $searchResults[0]['results']??null) {
-                foreach ($results as $result) {
-                    $html .= $this->renderView(
-                        '@MBHOnlineBooking/Default/tariff.html.twig',
+                    $html = $this->renderView(
+                        '@MBHOnlineBooking/Default/allTariffRoomType.html.twig',
                         [
-                            'searchResult' => $result,
+                            'results' => $results,
                             'requestSearchUrl' => $requestSearchUrl
                         ]
                     );
-                }
             }
 
             $response = new Response();
@@ -177,6 +150,82 @@ class DefaultController extends BaseController
         );
     }
 
+    private function addImages(array $searchResults)
+    {
+        foreach ($searchResults as $index => $result) {
+            $roomTypeCategory = $result['roomType']??false;
+            if($roomTypeCategory && $roomTypeCategory instanceof RoomTypeCategory) {
+                /** @var RoomTypeCategory $roomTypeCategory */
+                $roomTypes = $roomTypeCategory->getTypes();
+                $images = []; $mainImage = null;
+                foreach ($roomTypes as $roomType) {
+                    if (!$mainImage && $roomType->getMainImage()) {
+                        $mainImage = $roomType->getMainImage();
+                    }
+                    $images = $roomType->getImages()->toArray();
+                }
+                $searchResults[$index] += [
+                    'images' => array_merge($images),
+                    'mainimage' => $mainImage,
+                ];
+
+
+                unset($images);
+            }
+        }
+
+        return $searchResults;
+    }
+
+    private function resultFilter(array $searchResults, SearchQuery $searchQuery)
+    {
+        foreach ($searchResults as $sResultKey => $sResultItem) {
+            $filterSearchResults = [];
+            /** @var SearchResult[] $results */
+            $results = $sResultItem['results'];
+            foreach ($results as $i => $searchResult) {
+                if ($searchResult->getRoomType()->getCategory()) {
+                    $uniqueId = $searchResult
+                            ->getRoomType()
+                            ->getCategory()
+                            ->getId().$searchResult
+                            ->getTariff()
+                            ->getId();
+
+                    $uniqueId .= $searchResult
+                            ->getBegin()
+                            ->format('dmY').$searchResult
+                            ->getEnd()
+                            ->format('dmY');
+                    if (!array_key_exists($uniqueId, $filterSearchResults) ||
+                        $searchResult->getRoomType()->getTotalPlaces() < $filterSearchResults[$uniqueId]->getRoomType()->getTotalPlaces()
+                    ) {
+                        $filterSearchResults[$uniqueId] = $searchResult;
+                    }
+                }
+            }
+
+            $searchResults[$sResultKey]['results'] = $filterSearchResults;
+            $searchResults[$sResultKey]['query'] = $searchQuery;
+        }
+        $searchResults = $this->addImages($searchResults);
+        $searchResults = $this->leftRoomsKeyGenerate($searchResults);
+
+        return $searchResults;
+    }
+
+    private function leftRoomsKeyGenerate(array $searchResults)
+    {
+        foreach ($searchResults as $key => $searchResult) {
+            $roomTypeCategoryId = $searchResult['roomType']->getId();
+            $begin = $searchResult['query']->begin;
+            $end = $searchResult['query']->end;
+            $leftRoomKey = $roomTypeCategoryId.$begin->format('dmY').$end->format('dmY');
+            $searchResults[$key]['leftRoomKey'] = $leftRoomKey;
+        }
+
+        return $searchResults;
+    }
 
     /**
      * @Route("/success", name="online_booking_success")
@@ -184,10 +233,10 @@ class DefaultController extends BaseController
      */
     public function lastStepAction(Request $request)
     {
-        $type = '';
         $payButtonHtml = '';
         $orderId = $request->get('order');
         $cash = $request->get('cash');
+
         if (!$orderId || !$cash) {
             $type = 'reservation';
         } else {
@@ -210,8 +259,7 @@ class DefaultController extends BaseController
                                 ],
                                 $clientConfig->getFormData(
                                     $order->getCashDocuments()[0],
-                                    $this->container->getParameter('online_form_result_url'),
-                                    $this->generateUrl('online_form_check_order', [], true)
+                                    $this->container->getParameter('online_form_result_url')
                                 )
                             ),
                         ]
@@ -296,7 +344,7 @@ class DefaultController extends BaseController
             try {
                 $order = $orderManger->createPackages($data, null, null, $cash);
             } catch (Exception $e) {
-                $text = 'Произошла ошибка при бронировании, пожалуйста, позвоните нам.';
+                $text = 'Произошла ошибка при бронировании. Пожалуйста, позвоните нам.';
 
                 return $this->render(
                     'MBHOnlineBookingBundle:Default:sign-false.html.twig',
@@ -306,7 +354,6 @@ class DefaultController extends BaseController
                 );
             }
 
-//            $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
             $arrival = $this->getParameter('mbh.package.arrival.time');
             $departure = $this->getParameter('mbh.package.departure.time');
             $this->sendNotifications($order, $arrival, $departure);
@@ -576,8 +623,6 @@ class DefaultController extends BaseController
     {
         $json = $request->query->get('data');
         $data = json_decode($json, true);
-
-
         $former = $this->get('mbh.online.chart.data.former');
         $results = [];
         foreach ($data as $rowData) {
@@ -596,15 +641,9 @@ class DefaultController extends BaseController
                 $packageEnd->modify("-1 day")
             );
         }
-
         //Search For Max value
-
         $maxY = null;
         $minY = null;
-        /*        foreach ($results as $result) {
-                    $maxY = max($maxY, max(array_column($result['prices'], 'y')));
-
-                }*/
         foreach ($results as $result) {
             $maxY = max(
                 $maxY,
@@ -615,18 +654,11 @@ class DefaultController extends BaseController
                 )
 
             );
-
-
-
         }
-
         foreach ($results as &$result) {
             $result['yMax'] = $maxY;
             $result['yMin'] = $maxY/2;
         }
-
-
-
         $response = new JsonResponse($results);
         $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
 

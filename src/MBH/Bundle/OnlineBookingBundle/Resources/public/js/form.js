@@ -1,5 +1,3 @@
-
-
 <!--Заполняем форму-->
 function formFill() {
     var search_form_name = 'search_form';
