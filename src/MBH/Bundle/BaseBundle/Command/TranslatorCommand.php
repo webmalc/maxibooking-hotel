@@ -37,7 +37,7 @@ class TranslatorCommand extends ContainerAwareCommand
             ->setDefinition(
                 [
                     new InputArgument('action', InputArgument::OPTIONAL, 'show or convert', 'show'),
-                    new InputOption('type', null, InputOption::VALUE_OPTIONAL, 'service/twig/form/doc/all', 'all'),
+                    new InputOption('type', null, InputOption::VALUE_OPTIONAL, 'service/services/twig/form/doc/all', 'all'),
                     new InputOption('bundle', null, InputOption::VALUE_OPTIONAL, 'The bundle\'s name'),
                     new InputOption('force', null, InputOption::VALUE_NONE, 'Not emulate if --force'),
                 ]
