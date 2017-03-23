@@ -28,4 +28,21 @@ class ClientConfigRepository extends DocumentRepository
         return $config;
     }
 
+    /**
+     * Check is disableable filter on
+     *
+     * @return bool
+     */
+    public function isDisableableOn()
+    {
+        return $this->fetchConfig()->isIsDisableableOn();
+    }
+
+    public function changeDisableableMode()
+    {
+        $clientConfig = $this->fetchConfig();
+        $newDisableableMode = $clientConfig->isIsDisableableOn() ? false : true;
+        $clientConfig->setIsDisableableOn($newDisableableMode);
+        $this->dm->flush();
+    }
 }

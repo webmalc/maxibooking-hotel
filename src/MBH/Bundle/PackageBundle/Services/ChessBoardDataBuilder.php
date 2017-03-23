@@ -429,9 +429,22 @@ class ChessBoardDataBuilder
     private function getRoomTypes()
     {
         if (!$this->isRoomTypesInit) {
+            $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+
+            if ($isDisableableOn) {
+                if (!$this->dm->getFilterCollection()->isEnabled('disableable')) {
+                    $this->dm->getFilterCollection()->enable('disableable');
+                }
+            }
 
             $this->roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
                 ->fetch($this->hotel, $this->roomTypeIds)->toArray();
+
+            if ($isDisableableOn) {
+                if ($this->dm->getFilterCollection()->isEnabled('disableable')) {
+                    $this->dm->getFilterCollection()->disable('disableable');
+                }
+            }
 
             $this->isRoomTypesInit = true;
         }

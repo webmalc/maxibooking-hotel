@@ -170,7 +170,7 @@ class ClientConfig extends Base
      * @var bool
      * @ODM\Field(type="bool")
      */
-     protected $isDisableableOn = true;
+     protected $isDisableableOn = false;
 
     /**
      * @return bool

@@ -7,6 +7,7 @@
 {% set headerHeight = 81 %}
 {% set dayTableWidth = days|length * 47 %}
 
+
 {% block scripts %}
     {{ parent() }}
     {% javascripts filter='uglifyjs2'
@@ -115,6 +116,7 @@
         <div class="input">
             <button type="button" class="btn btn-primary navbar-btn" id="filter-button">Выбрать</button>
         </div>
+        {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : isDisabledRoomTypeDisplay} %}
     </form>
     <input type="hidden" id="pageNumber" value="{{ pageNumber }}">
     {% include 'MBHBaseBundle:Partials:pager.html.twig' with {'page': pageNumber, 'pages': pageCount, class : 'accommodation-report-pagination'} %}

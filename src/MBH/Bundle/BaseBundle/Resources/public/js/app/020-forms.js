@@ -612,6 +612,24 @@ var docReadyForms = function () {
 
     //payer select2
     $('.findGuest').mbhGuestSelectPlugin();
+
+    var disableCheckBox = document.getElementById('mbh-disable');
+    console.log(disableCheckBox);
+    disableCheckBox.onchange = function () {
+        console.log('change');
+        $.ajax({
+            url: Routing.generate('change_room_type_enableable_mode'),
+            data: data,
+            type: "GET",
+            success: function () {
+                location.reload();
+            },
+            error: function () {
+                location.reload();
+            },
+            dataType: 'json'
+        });
+    }
 };
 
 

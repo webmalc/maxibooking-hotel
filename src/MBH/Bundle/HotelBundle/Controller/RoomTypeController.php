@@ -16,6 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/roomtype")
@@ -34,7 +35,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     {
         $entities = $this->dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder('s')
             ->field('hotel.id')->equals($this->hotel->getId())
-//            ->field('isEnabled')->equals(true)
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
@@ -313,4 +313,15 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             'images' => $entity->getImages(),
         );
     }
+     /**
+      * @Route("/test")
+      * @return Response
+      */
+      public function testAction()
+      {
+         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findAll();
+         $firstPackage = $packages[0];
+
+         return new Response($firstPackage->getRoomType()->getTitle());
+      }
 }
