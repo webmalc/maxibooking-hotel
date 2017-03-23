@@ -33,7 +33,6 @@ $(document).ready(function ($) {
                 data: data,
                 success: function (response) {
                     table.html(response);
-                    processLinks();
                     $('tr').hover(function () {
                         $(this).children('td').each(function (index, elem) {
 
@@ -53,17 +52,23 @@ $(document).ready(function ($) {
                             }
 
                         });
+
+                        $(this).find('a').tooltip();
+                        processLinks();
+
                     }, function () {
                         $(this).children('td').each(function () {
                             var linkOld = $(this).find('a').clone();
+                            $(this).find('a').tooltip('hide');
                             $(this).find('.pos').remove();
                             $(this).append(linkOld);
                         });
+                        processLinks();
                     });
 
                     $('.descr').readmore({
-                        moreLink: '<div class="more-link"><a href="#">'+$('#expand-window').text() +' <i class="fa fa-caret-right"></i></a></div>',
-                        lessLink: '<div class="less-link"><a href="#">'+$('#turn-window').text() +' <i class="fa fa-caret-up"></i></a></div>',
+                        moreLink: '<div class="more-link"><a href="#">' + $('#expand-window').text() + ' <i class="fa fa-caret-right"></i></a></div>',
+                        lessLink: '<div class="less-link"><a href="#">' + $('#turn-window').text() + ' <i class="fa fa-caret-up"></i></a></div>',
                         collapsedHeight: 35
                     });
                 }

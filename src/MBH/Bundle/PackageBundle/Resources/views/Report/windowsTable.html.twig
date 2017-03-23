@@ -3,13 +3,15 @@
 {% else %}
     {% if notVirtualRooms is defined and notVirtualRooms is not empty %}
         <div class="text-left margin-bottom descr">
-            <small>{{ 'package.window.not.virtual.room'|trans({}, "MBHPackageBundle")  }}:
+            <small>{{ 'package.window.not.virtual.room'|trans({}, "MBHPackageBundle") }}:
                 {% for notVirtualRoom in notVirtualRooms %}
                     <a href="{{ path('package_edit',{'id': notVirtualRoom.id }) }}">{{ notVirtualRoom.numberWithPrefix }}</a> &nbsp;
                 {% endfor %}
             </small>
-            <div id="expand-window" class="hidden">{{ 'package.window.not.virtual.room.expand'|trans({}, "MBHPackageBundle") }}</div>
-            <div id="turn-window" class="hidden">{{ 'package.window.not.virtual.room.turn'|trans({}, "MBHPackageBundle")  }}</div>
+            <div id="expand-window"
+                 class="hidden">{{ 'package.window.not.virtual.room.expand'|trans({}, "MBHPackageBundle") }}</div>
+            <div id="turn-window"
+                 class="hidden">{{ 'package.window.not.virtual.room.turn'|trans({}, "MBHPackageBundle") }}</div>
         </div>
     {% endif %}
     {% for roomType in data.roomTypes %}
@@ -21,7 +23,7 @@
             <table class="table-hover">
                 <thead>
                 <tr>
-                    <th class="mbh-graph-date-th">#</th>
+                    <th class="mbh-graph-date-th" style="width: 180px !important;">#</th>
                     {% for date in data.dates %}
                         <th class="mbh-graph-date-th">
                             <span class="{{ date|date('N') in [6,7] ? 'text-red' }} {{ date|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-yellow' }} ">{{ date|date('d.m') }}</span>
@@ -34,6 +36,9 @@
                 </thead>
                 <tbody>
                 {% set rooms = data.rooms(roomType) %}
+                {% set countNum = 0 %}
+                {% set countNumTwo = 0 %}
+                {% set countRowNum = 0 %}
                 {% for room in rooms %}
                     <tr>
                         <td class="text-center text-muted mbh-graph-cell">
@@ -41,17 +46,17 @@
                         </td>
                         {% for date in data.dates %}
                             {% set info = data.getInfo(date, room) %}
-                            <td style="width:45px ;height:33px;" data-date="{{ date|date('d.m') }}"
+                            <td style="width:100% ;height:26px;" data-date="{{ date|date('d.m') }}"
                                 data-class="{{ date|date('N') in [6,7] ? 'text-red' }} {{ date|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-yellow' }} "
                                 data-room="{{ room }}"
-                                class="mbh-graph-cell mbh-graph-cell-padding {% if data.max(date, roomType) and rooms|length - data.max(date, roomType) >= loop.parent.loop.index %}mbh-graph-cell-danger{% endif %}">
+                                class="mbh-graph-cell mbh-graph-cell-padding {% if data.max(date, roomType) and rooms|length - data.max(date, roomType) >= loop.parent.loop.index %} {% set countNum = countNum + 1 %}mbh-graph-cell-danger{% endif %}">
                                 {% if info %}
+                                    {% set countNumTwo = countNumTwo + 1 %}
                                     {% for entry in info %}
                                         <a style="display: block; height: 100%; z-index:5;"
                                            href="{{ path('package_edit', {'id': entry.package.id}) }}"
-                                           target="_blank"
                                            class="windows-package-info-link bg-green {{ entry.begin ? 'pull-right' }} {{ entry.end ? 'pull-left' }} {{ not entry.regular ? 'mbh-graph-div' }}"
-                                           data-toggle="tooltip" data-placement="top" data-html="true"
+                                            data-placement="top" data-html="true"
                                            data-id="{{ entry.package.id }}" title="{{ entry.tooltip }}">
                                         </a>
                                     {% endfor %}
@@ -59,7 +64,126 @@
                             </td>
                         {% endfor %}
                     </tr>
+                    {% if countNum > 0 and countNumTwo > 0 %}
+                        {% set countNum = 0 %}
+                        {% set countRowNum = countRowNum + 1 %}
+                    {% endif %}
                 {% endfor %}
+                {% set countNumbers = data.countNumbers[roomType.id] %}
+                <tr class="info">
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ 'package.window.amount.rooms'|trans({}, "MBHPackageBundle") }}</small>
+                    </td>
+                    {% for countNumber in countNumbers %}
+                        <td class="text-center text-muted mbh-graph-cell"><small>{{ rooms|length }}</small></td>
+                    {% endfor %}
+
+                </tr>
+                <tr class="success">
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ 'package.window.amount.rooms.virtual'|trans({}, "MBHPackageBundle") }}</small>
+                    </td>
+                    {% for countNumber,value in countNumbers %}
+                        {% if value.totalRooms is defined %}
+                            <td class="text-center text-muted mbh-graph-cell"><small>{{ value.totalRooms + countRowNum }}</small></td>
+                        {% else %}
+                            <td class="text-center text-muted mbh-graph-cell"><small>{{ countRowNum }}</small></td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                <tr class="warning">
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ 'package.window.amount.rooms.in.sale'|trans({}, "MBHPackageBundle") }}</small>
+                    </td>
+                    {% for countNumber,value in countNumbers %}
+                        {% if value.totalRooms is defined %}
+                            <td class="text-center text-muted mbh-graph-cell"><small>{{ value.totalRooms }}</small></td>
+                        {% else %}
+                            <td class="text-center text-muted mbh-graph-cell"><small>0</small></td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                <tr class="info">
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ 'package.window.count.rooms.virtual'|trans({}, "MBHPackageBundle") }}</small>
+                    </td>
+                    {% for countNumber,value in data.countVirtualNumbers[roomType.id] %}
+                        <td class="text-center text-muted mbh-graph-cell"><small>{{ value }}</small></td>
+                    {% endfor %}
+                </tr>
+                <tr class="success">
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ 'package.window.rooms.packages'|trans({}, "MBHPackageBundle") }}</small>
+                    </td>
+                    {% for countNumber,value in countNumbers %}
+                        {% if value.packagesCount is defined %}
+                            <td class="text-center text-muted mbh-graph-cell"><small>{{ value.packagesCount }}</small></td>
+                        {% else %}
+                            <td class="text-center text-muted mbh-graph-cell"><small>0</small></td>
+                        {% endif %}
+
+                    {% endfor %}
+                </tr>
+                <tr class="warning">
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ 'package.window.difference.packages.virtual'|trans({}, "MBHPackageBundle") }}</small>
+                    </td>
+                    {% for countNumber,value in countNumbers %}
+                        {% for countNumberVirtual,valueVirtual in data.countVirtualNumbers[roomType.id] %}
+                            {% if loop.index == loop.parent.loop.index %}
+                                {% if value.totalRooms is defined %}
+                                    <td class="text-center text-muted mbh-graph-cell"><small>{{ (value.totalRooms + countRowNum) - valueVirtual }}</small></td>
+                                {% else %}
+                                    <td class="text-center text-muted mbh-graph-cell"><small>{{ countRowNum - valueVirtual }}</small></td>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
+                <tr class="info">
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ 'package.window.difference.room.in.packages.sales'|trans({}, "MBHPackageBundle") }}</small>
+                    </td>
+                    {% for countNumber,value in countNumbers %}
+                        <td class="text-center text-muted mbh-graph-cell {% if (value.totalRooms|default(0) - value.packagesCount|default(0)) != 0 %}text-red {% endif %}">
+                            <small>{{ value.totalRooms|default(0) - value.packagesCount|default(0) }}</small>
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr class="success">
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ 'package.window.difference.room.sale.package'|trans({}, "MBHPackageBundle") }}</small>
+                    </td>
+                    {% for countNumber,value in countNumbers %}
+                        <td class="text-center text-muted mbh-graph-cell {% if ((value.totalRooms|default(0) + countRowNum) - value.totalRooms|default(0)) != 0 %}text-red {% endif %}">
+                           <small>{{ (value.totalRooms|default(0) + countRowNum) - value.totalRooms|default(0) }}</small>
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr class="warning">
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ 'package.window.difference.room.placed'|trans({}, "MBHPackageBundle") }}</small>
+                    </td>
+                    {% for countNumber,value in countNumbers %}
+                        {% for countNumberVirtual,valueVirtual in data.countVirtualNumbers[roomType.id] %}
+                            {% if loop.index == loop.parent.loop.index %}
+                                <td class="text-center text-muted mbh-graph-cell {% if (valueVirtual - value.packagesCount|default(0)) != 0 %}text-red {% endif %}"><small>{{ valueVirtual - value.packagesCount|default(0) }}</small></td>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
+                <tr class="info">
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ 'package.window.difference.room.rest'|trans({}, "MBHPackageBundle") }}</small>
+                    </td>
+                    {% for countNumber,value in countNumbers %}
+                        {% for countNumberVirtual,valueVirtual in data.countVirtualNumbers[roomType.id] %}
+                            {% if loop.index == loop.parent.loop.index %}
+                                <td class="text-center text-muted mbh-graph-cell {% if (((value.totalRooms|default(0) + countRowNum) - valueVirtual) - (value.totalRooms|default(0) - value.packagesCount|default(0))) != 0 %}text-red {% endif %}"><small>{{ ((value.totalRooms|default(0) + countRowNum) - valueVirtual) - (value.totalRooms|default(0) - value.packagesCount|default(0)) }}</small></td>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
                 </tbody>
             </table>
         </div>
