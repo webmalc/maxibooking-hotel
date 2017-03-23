@@ -23,6 +23,14 @@ $(document).ready(function () {
                 return requestData;
             }
         },
+        "drawCallback": function (settings, json) {
+
+        // //summary
+        $('#restaraunt-summary-all').html(settings.json.summary_total || '-');
+        $('#restaraunt-summary-paid').html(settings.json.summary_paid || '-');
+
+        },
+
         columns: [
             {"orderable": false},
             {"name": 'id'},

@@ -57,6 +57,14 @@
 
             </tbody>
         </table>
+
+        <div class="text-center bg-gray color-palette alert" id="restaraunt-summary">
+        <span class="package-summary-row"><b> {{ 'restaurant.dishmenu.all.summ'|trans({}) }}
+                : </b> <span id="restaraunt-summary-all">-</span></span>
+
+            <span class="package-summary-row"><b> {{ 'restaurant.dishmenu.paid'|trans({}) }}
+                    : </b> <span id="restaraunt-summary-paid">-</span></span>
+        </div>
     </div> <!-- /.box-body -->
     {% if isDishes %}
         {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'restaurant_dishorder_new', 'role': 'RESTAURANT_DISHORDER'} %}

@@ -271,3 +271,5 @@ restaurant:
 
 restaurant.dishorder.noingredients: Нет ингредиентов для составления блюд.
 restaurant.dishmenu.item.action.new.action.new: Добавить новые ингрeдиенты
+restaurant.dishmenu.all.summ: Сумма
+restaurant.dishmenu.paid: Оплачено

@@ -234,7 +234,13 @@ class DishOrderController extends BaseController implements CheckHotelController
             $this->hotel
         );
 
+        $summary = $this->dm->getRepository('MBHRestaurantBundle:DishOrderItem')->fetchSummary(
+            $criteria,
+            $tableParams->getFirstSort(),
+            $this->hotel);
+
         return [
+            'summary' => $summary->toArray()[0],
             'dishorders' => $dishorders,
             'draw' => $request->get('draw'),
             'total' => count($dishorders->toArray()),
