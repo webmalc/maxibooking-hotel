@@ -405,3 +405,5 @@ csv.form.countPersons: Кол-во Людей
 report.porter.note: 'Комментарий:'
 modal.form.delete.reasons.reason: Причина удаления
 modal.form.delete.delete_reason_package: Причина удаления брони
+
+virtual_room_handler.package_virtual_room_changed: 'Брони %package_number% установлена виртуальная комната "%room_name%"'

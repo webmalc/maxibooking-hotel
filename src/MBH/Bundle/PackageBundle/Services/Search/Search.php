@@ -520,19 +520,18 @@ class Search implements SearchInterface
                 ['roomType.id' => 'asc', 'fullTitle' => 'desc'], $this->memcached
             );
 
-        $min = 0;
         $preferredRooms = new \SplObjectStorage();
         $emptyRooms =  new \SplObjectStorage();
 
         foreach ($rooms as $room) {
             if (isset($groupedPackages[$room->getId()])) {
                 foreach ($groupedPackages[$room->getId()] as $package) {
-
-                    if ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
-                        $min += 1;
+                    if ($package->getBegin() == $result->getEnd() && $package->getEnd() == $result->getBegin()) {
+                        $preferredRooms->attach($room);
+                        break 2;
+                    } elseif ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
                         $preferredRooms->attach($room);
                     } elseif ($package->getBegin() == $end || $package->getEnd() == $begin) {
-                        $min += 1;
                         $preferredRooms->attach($room);
                     } else {
                         $preferredRooms->detach($room);
@@ -542,7 +541,6 @@ class Search implements SearchInterface
 
             } else {
                 $emptyRooms->attach($room);
-                $min += 1;
             }
         }
         $result->setRoomsCount($emptyRooms->count() + $preferredRooms->count());

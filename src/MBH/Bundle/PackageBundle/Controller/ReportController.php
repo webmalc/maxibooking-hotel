@@ -28,6 +28,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/report")
@@ -996,4 +997,15 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
     }
+
+     /**
+      * @Route("/test")
+      * @return Response
+      */
+      public function testAction()
+      {
+         $this->get('mbh.package.virtual_room_handler')
+             ->setVirtualRooms(new \DateTime('midnight'), new \DateTime('midnight + 50 days'));
+         return new Response();
+      }
 }

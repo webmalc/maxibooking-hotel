@@ -127,3 +127,21 @@ services:
     task_notice_unpaid_order:
       class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder
       arguments:  ["@mbh.notice.unpaid"]
+
+    mbh.package.virtual_room_handler:
+        class: MBH\Bundle\PackageBundle\Services\VirtualRoomHandler
+        arguments:
+            - '@doctrine_mongodb.odm.document_manager'
+            - '@mbh.package.search_simple'
+            - '@mbh.virtual_room_handler.logger'
+            - '@translator.default'
+
+    mbh.virtual_room_handler.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [virtual_room_moving]
+        calls:
+            - [pushHandler, ['@mbh.virtual_room_handler.logger_handler']]
+
+    mbh.virtual_room_handler.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ['%kernel.logs_dir%/%kernel.environment%.virtualRoom.log', 200]
