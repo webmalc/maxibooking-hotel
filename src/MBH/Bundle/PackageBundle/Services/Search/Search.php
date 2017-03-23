@@ -75,6 +75,8 @@ class Search implements SearchInterface
     {
         $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
         $token = $this->container->get('security.token_storage')->getToken();
+        $session = $this->container->get('session');
+        $trans = $this->container->get('translator');
 
         if (!$query->memcached) {
             $this->memcached = null;
@@ -89,7 +91,8 @@ class Search implements SearchInterface
 
         $calc = $this->container->get('mbh.calculation');
         if (!empty($query->tariff) && !$query->tariff instanceof Tariff) {
-            $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($query->tariff);
+             $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                 ->fetchById($query->tariff, $this->memcached);
         }
 
         // dates
@@ -302,7 +305,8 @@ class Search implements SearchInterface
             if (!empty($query->tariff)) {
                 $tariff = $query->tariff;
             } else {
-                $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
+                $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                    ->fetchBaseTariff($hotel, null, $this->memcached);
             }
             if (!$tariff || !$tariff->getIsEnabled()) {
                 continue;
@@ -324,7 +328,6 @@ class Search implements SearchInterface
                     continue;
                 }
             }
-
 
             $adults = $query->adults;
             $children = $query->children;
@@ -396,6 +399,9 @@ class Search implements SearchInterface
                     ->setInfants($infants)
                 ;
 
+                $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                    ->fetchBaseTariff($result->getRoomType()->getHotel(), null, $this->memcached);
+
                 //promotion
                 $promotion = $query->getPromotion();
                 if ($promotion === null && $tariff->getDefaultPromotion()) {
@@ -431,9 +437,6 @@ class Search implements SearchInterface
                     continue;
                 }
 
-                $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
-                    ->fetchBaseTariff($result->getRoomType()->getHotel(), null, $this->memcached);
-
                 //check windows
                 $virtualResult = $this->setVirtualRoom(
                     $result,
@@ -442,6 +445,13 @@ class Search implements SearchInterface
                 );
 
                 if (!$virtualResult) {
+                    $session->getFlashBag()->add(
+                        'search',
+                        $trans->trans(
+                            'windows.search.error',
+                            ['%room_type%' => $result->getRoomType()]
+                        )
+                    );
                     continue;
                 }
 
@@ -560,7 +570,6 @@ class Search implements SearchInterface
 
             return $result;
         }
-
         return false;
     }
 
@@ -602,7 +611,10 @@ class Search implements SearchInterface
         }
 
         foreach ($hotels as $hotel) {
-            foreach ($this->dm->getRepository('MBHPriceBundle:Tariff')->fetch($hotel) as $tariff) {
+            $hotelTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                ->fetch($hotel, null, null, false, $this->memcached);
+
+            foreach ($hotelTariffs as $tariff) {
                 if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
                     continue;
                 }

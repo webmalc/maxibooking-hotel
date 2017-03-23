@@ -1,25 +1,26 @@
 /*global window, $, Routing, document, mbh */
 
-var setSearchDatepickers = function (date) {
+var setSearchDatepickers = function(date) {
     'use strict';
 
-    (date === 'undefined') ? date = new Date() : date = new Date(date);
+    (date === 'undefined') ? date = new Date(): date = new Date(date);
     $('#s_begin').datepicker('setStartDate', date);
 };
 
-$(document).ready(function () {
+$(document).ready(function() {
     'use strict';
 
-    (function () {
+
+    (function() {
 
         $.ajax(Routing.generate('restriction_in_out_json'), {})
-            .done(function (response) {
+            .done(function(response) {
 
                 if ($.isEmptyObject(response)) {
                     return false;
                 }
                 var options = mbh.datarangepicker.options;
-                options.isInvalidDate = function (day) {
+                options.isInvalidDate = function(day) {
                     var roomType = $('#s_roomType').val();
                     if (!roomType || roomType.length !== 1) {
                         return false;
@@ -29,15 +30,13 @@ $(document).ready(function () {
                     }
                     return false;
                 };
-                $('.daterangepicker-input').daterangepicker(options).on('apply.daterangepicker', function (ev, picker) {
+                $('.daterangepicker-input').daterangepicker(options).on('apply.daterangepicker', function(ev, picker) {
                     mbh.datarangepicker.on($('.begin-datepicker.mbh-daterangepicker'), $('.end-datepicker.mbh-daterangepicker'), picker);
                 });
             });
-
-
     }());
 
-    $('#add-guest').on('click', function (e) {
+    $('#add-guest').on('click', function(e) {
         var guestModal = $('#add-guest-modal'),
             form = guestModal.find('form'),
             button = $('#add-guest-modal-submit'),
@@ -45,9 +44,9 @@ $(document).ready(function () {
 
         e.preventDefault();
         guestModal.modal('show');
-        button.click(function () {
+        button.click(function() {
             errors.hide();
-            $.post(form.prop('action'), form.serialize(), function (data) {
+            $.post(form.prop('action'), form.serialize(), function(data) {
                 if (data.error) {
                     errors.html(data.text).show();
                 } else {
@@ -72,7 +71,7 @@ $(document).ready(function () {
 
     //ajax request
 
-    var Row = function ($row) {
+    var Row = function($row) {
         this.$row = $row;
         this.$quantitySelect = this.$row.find('.quantity-select');
         this.$searchRoomsSelect = this.$row.find('.search-room-select');
@@ -86,37 +85,37 @@ $(document).ready(function () {
         this.updateViewBookCount();
     }
 
-    Row.prototype.init = function () {
+    Row.prototype.init = function() {
         var that = this;
         this.showResultPrices();
-        this.$searchTouristsSelect.on('change', function () {
+        this.$searchTouristsSelect.on('change', function() {
             that.showResultPrices();
         });
 
-        this.$packageSearchBook.on('click', function (e) {
+        this.$packageSearchBook.on('click', function(e) {
             e.preventDefault();
             that.packageSearchBookClickHandler()
         });
 
         that.showAccommodation();
-        this.$searchRoomsSelect.on('change', function () {
+        this.$searchRoomsSelect.on('change', function() {
             that.showAccommodation();
         });
 
         this.showAccommodationAlert();
-        this.$searchRoomsSelect.on('change', function () {
+        this.$searchRoomsSelect.on('change', function() {
             that.showAccommodationAlert()
         });
 
-        this.$quantitySelect.on('change', function () {
+        this.$quantitySelect.on('change', function() {
             that.showQuality()
         });
     }
 
-    Row.prototype.updateViewBookCount = function () {
+    Row.prototype.updateViewBookCount = function() {
         this.$bookCount.text(this.bookCount);
         var that = this;
-        this.$quantitySelect.mbhSelect2OptionsFilter(function () {
+        this.$quantitySelect.mbhSelect2OptionsFilter(function() {
             return this.value <= that.bookCount;
         });
         if (this.bookCount == 0) {
@@ -124,7 +123,7 @@ $(document).ready(function () {
         }
     }
 
-    Row.prototype.showResultPrices = function () {
+    Row.prototype.showResultPrices = function() {
         var touristVal = this.$searchTouristsSelect.val(),
             touristArr = touristVal.split('_');
 
@@ -136,9 +135,8 @@ $(document).ready(function () {
 
         if (!isNotNullAmount()) {
             var oldHref = this.$packageSearchBook.prop('href')
-                    .replace(/&adults=.*?(?=(&|$))/, '')
-                    .replace(/&children=.*?(?=(&|$))/, '')
-                ;
+                .replace(/&adults=.*?(?=(&|$))/, '')
+                .replace(/&children=.*?(?=(&|$))/, '');
 
             this.$packageSearchBook.prop('href', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
         } else {
@@ -147,7 +145,7 @@ $(document).ready(function () {
 
     };
 
-    Row.prototype.showQuality = function () {
+    Row.prototype.showQuality = function() {
         var value = this.$quantitySelect.val();
         var isMoreOne = value > 1;
         if (isMoreOne) {
@@ -162,12 +160,12 @@ $(document).ready(function () {
         }
     };
 
-    Row.prototype.packageSearchBookClickHandler = function () {
+    Row.prototype.packageSearchBookClickHandler = function() {
         var touristSelect = $('.findGuest'),
             oldHref = this.$packageSearchBook.prop('href').replace(/&tourist=.*?(?=(&|$))/, '');
 
         var href = touristSelect.val() ?
-        oldHref + '&tourist=' + touristSelect.val() :
+            oldHref + '&tourist=' + touristSelect.val() :
             oldHref;
         this.$packageSearchBook.prop('href', href);
 
@@ -194,7 +192,7 @@ $(document).ready(function () {
         this.$searchRoomsSelect.val(null).trigger('change');
     }
 
-    Row.prototype.showAccommodationAlert = function () {
+    Row.prototype.showAccommodationAlert = function() {
         var date = new Date();
 
         date.setHours(0, 0, 0, 0);
@@ -209,7 +207,7 @@ $(document).ready(function () {
         }
     }
 
-    Row.prototype.showAccommodation = function () {
+    Row.prototype.showAccommodation = function() {
         var bookText = this.$row.find('.package-search-book-reservation-text'),
             accText = this.$row.find('.package-search-book-accommodation-text'),
             oldHref = this.$packageSearchBook.prop('href').replace(/&accommodation=.*?(?=(&|$))/, '');
@@ -231,11 +229,11 @@ $(document).ready(function () {
 
     var $tariffSelect = $('#s_tariff');
     var $packageSearchForm = $('form[name="s"]'); //#package-search-form //.search-form
-    var successCallback = function (data) {
+    var successCallback = function(data) {
         searchProcess = false;
         $wrapper.html(data);
 
-        $(function () {
+        $(function() {
             $('[data-toggle="popover"]').popover()
         })
 
@@ -262,7 +260,7 @@ $(document).ready(function () {
         });
         $wrapper.find('[data-toggle="tooltip"]').tooltip();
 
-        $wrapper.find('.package-search-table tbody tr:not(.mbh-grid-header1)').each(function () {
+        $wrapper.find('.package-search-table tbody tr:not(.mbh-grid-header1)').each(function() {
             var row = new Row($(this));
             row.init();
         });
@@ -272,19 +270,24 @@ $(document).ready(function () {
             sendForm();
         }
 
-        $('.search-special-apply').click(function (e) {
+        $('.search-special-apply').click(function(e) {
             e.preventDefault();
             var special = $(this).hasClass('cancel') ? '' : $(this).attr('data-id');
             $('#s_special').val(special);
             sendForm();
         });
 
-        $('.search-all-tariffs-link').click(function (e) {
+        $('.search-all-tariffs-link').click(function(e) {
             e.preventDefault();
             $('#s_roomType').select2("val", [$(this).attr('data-roomType')]);
             sendForm();
         });
 
+        $('#search-flashbag').readmore({
+            moreLink: '<div class="more-link"><a href="#">'+$('#search-flashbag').attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
+            lessLink: '<div class="less-link"><a href="#">'+$('#search-flashbag').attr('data-less') +' <i class="fa fa-caret-up"></i></a></div>',
+            collapsedHeight: 35
+        });
         /*var $links = $('#package-search-tariffs li a');
          $links.on('click', function (e) {
          e.preventDefault();
@@ -298,7 +301,7 @@ $(document).ready(function () {
         return parseInt($("#s_adults").val() || $("#s_children").val());
     };
 
-    var send = function (query) {
+    var send = function(query) {
         if (searchProcess) {
             return;
         }
@@ -306,7 +309,7 @@ $(document).ready(function () {
         $.ajax({
             url: Routing.generate('package_search_results'),
             data: query,
-            beforeSend: function () {
+            beforeSend: function() {
                 searchProcess = true;
             },
             success: successCallback
@@ -322,11 +325,10 @@ $(document).ready(function () {
         placement: 'top',
         content: ''
     });
-    var changePopover = function () {
+    var changePopover = function() {
         var num = parseInt(childrenInput.val(), 10),
             popoverContent = icon.next('div.popover').children('div.popover-content'),
-            content = ''
-            ;
+            content = '';
         if (num < 1) {
             icon.hide();
         } else {
@@ -348,10 +350,10 @@ $(document).ready(function () {
         }
     };
 
-    var sendForm = function () {
+    var sendForm = function() {
 
         setTimeout(
-            function () {
+            function() {
                 if (!$('#s_begin').val() || !$('#s_end').val() || createDate($('#s_begin')) >= createDate($('#s_end'))) {
                     return;
                 }
@@ -388,7 +390,7 @@ $(document).ready(function () {
         changePopover();
     }
 
-    childrenInput.bind('keyup mouseup', function () {
+    childrenInput.bind('keyup mouseup', function() {
         changePopover();
         $('.children_age').change(sendForm);
     });
@@ -396,16 +398,15 @@ $(document).ready(function () {
     if (!$('#search-submit-button').length) {
         sendForm();
         $packageSearchForm.find('input, select').not('.daterangepicker-input').on('change switchChange.bootstrapSwitch', sendForm);
-        icon.on('shown.bs.popover', function () {
+        icon.on('shown.bs.popover', function() {
             $('.children_age').change(sendForm);
         });
-        icon.on('hidden.bs.popover', function () {
+        icon.on('hidden.bs.popover', function() {
             sendForm();
         });
     }
-    $packageSearchForm.on('submit', function (e) {
+    $packageSearchForm.on('submit', function(e) {
         e.preventDefault();
         sendForm()
     });
 });
-
