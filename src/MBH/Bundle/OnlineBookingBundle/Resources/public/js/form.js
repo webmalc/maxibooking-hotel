@@ -15,11 +15,11 @@ function formFill() {
             }
         }
     }
-    $('.booking-form').find('input, select').styler({
+    /*$('.booking-form').find('input, select').styler({
         selectSearch: true
     });
     $("#search_form_hotel").trigger("change");
-    $("#search_form_children").trigger('change');
+    $("#search_form_children").trigger('change');*/
 }
 
 
