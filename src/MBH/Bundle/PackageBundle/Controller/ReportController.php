@@ -60,8 +60,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     public function windowsTableAction(Request $request)
     {
         $generator = $this->get('mbh.package.windows.report.generator');
-        $notVirtualRooms = $this->dm->getRepository('MBHPackageBundle:Package')->getNotVirtualRoom(new \DateTime($request->get('begin')),
-            new \DateTime($request->get('end')));
+        $notVirtualRooms = $this->dm->getRepository('MBHPackageBundle:Package')->getNotVirtualRoom(
+            new \DateTime($request->get('begin')),
+            new \DateTime($request->get('end'))
+        );
 
         return [
             'data' => $generator->generate($request, $this->hotel),
@@ -74,7 +76,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * Windows package info.
      *
      * @Route("/windows/package/{id}", name="report_windows_package", options={"expose"=true})
-     * @Method({"GET", "PUT"})
+     * @Method({"GET", "POST"})
      * @ParamConverter("package", class="MBHPackageBundle:Package")
      * @Security("is_granted('ROLE_PACKAGE_EDIT') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template()
@@ -91,11 +93,11 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $response = ['package' => $package];
 
         if ($this->clientConfig->getSearchWindows()) {
-            $form = $this->createForm(new PackageVirtualRoomType(), $package, [
+            $form = $this->createForm(PackageVirtualRoomType::class, $package, [
                 'package' => $package
             ]);
 
-            if ($request->isMethod('PUT')) {
+            if ($request->isMethod('POST')) {
                 $form->submit($request->request->get($form->getName()));
 
                 if ($form->isValid()) {
@@ -413,7 +415,11 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         //packages
         $packages = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')->fetchWithAccommodation(
-            $begin, $end, $helper->toIds($rooms), null, false
+            $begin,
+            $end,
+            $helper->toIds($rooms),
+            null,
+            false
         );
 
         //data
@@ -455,7 +461,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                     $packageInfo = $packageCells = [];
                     foreach ($packages as $package) {
                         if ($package->getAccommodation()->getId() == $roomId && $package->getBegin() <= $day && $package->getEnd() >= $day) {
-
                             $packageCells[] = [
                                 'package' => $package,
                                 'begin' => $package->getBegin()->format('d.m.Y') == $day->format('d.m.Y'),
@@ -470,7 +475,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
                         //package info
                         if ($package->getAccommodation()->getId() == $roomId) {
-
                             $package->getBegin() >= $begin ? $packageBegin = $package->getBegin() : $packageBegin = $begin;
                             $package->getEnd() <= $end ? $packageEnd = $package->getEnd() : $packageEnd = $end;
                             $nights = $packageBegin->diff($packageEnd)->format('%a');
