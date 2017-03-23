@@ -85,6 +85,35 @@ class TariffRepository extends DocumentRepository
     }
 
     /**
+     * @param string $tariffId
+     * @param Cache $memcached
+     * @return Tariff|null
+     */
+    public function fetchById(string $tariffId, Cache $memcached = null)
+    {
+        if ($memcached) {
+            $cache = $memcached->get('tariffs_fetch_by_id', func_get_args());
+            if ($cache !== false) {
+                return $cache;
+            }
+        }
+
+        $queryBuilder = $this->createQueryBuilder('q');
+
+        $queryBuilder
+            ->field('id')->equals($tariffId)
+            ->limit(1);
+
+        $result = $queryBuilder->getQuery()->getSingleResult();
+
+        if ($memcached) {
+            $memcached->set($result, 'tariffs_fetch_by_id', func_get_args());
+        }
+
+        return $result;
+    }
+
+    /**
      * @param Hotel $hotel
      * @param mixed $online
      * @return array|null|object
@@ -141,12 +170,26 @@ class TariffRepository extends DocumentRepository
      * @param Hotel $hotel
      * @param array $tariffs
      * @param boolean $enabled
+     * @param Cache $memcached
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetch(Hotel $hotel = null, $tariffs = null, $enabled = false, $online = false)
+    public function fetch(Hotel $hotel = null, $tariffs = null, $enabled = false, $online = false, Cache $memcached = null)
     {
-        return $this->fetchQueryBuilder($hotel, $tariffs, $enabled, $online)->getQuery()->execute();
+        if ($memcached) {
+            $cache = $memcached->get('tariffs_fetch_method', func_get_args());
+            if ($cache !== false) {
+                return $cache;
+            }
+        }
+        $result = $this->fetchQueryBuilder($hotel, $tariffs, $enabled, $online)
+            ->getQuery()->execute();
+
+        if ($memcached) {
+            $memcached->set(iterator_to_array($result), 'tariffs_fetch_method', func_get_args());
+        }
+
+        return $result;
     }
 
     /**

@@ -10,6 +10,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class VirtualRoomMovingCommand extends ContainerAwareCommand
 {
+
+    const MONTH_COUNT = 5;
     /**
      * {@inheritdoc}
      */
@@ -29,7 +31,7 @@ class VirtualRoomMovingCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $beginDate = Helper::getDateFromString($input->getOption('begin')) ?? new \DateTime('midnight');
-        $endDate = Helper::getDateFromString($input->getOption('end')) ?? new \DateTime('+50 days');
+        $endDate = Helper::getDateFromString($input->getOption('end')) ?? new \DateTime('+'.self::MONTH_COUNT.' month');
         $this->getContainer()->get('mbh.package.virtual_room_handler')->setVirtualRooms($beginDate, $endDate);
         $output->writeln('Completed');
     }
