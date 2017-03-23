@@ -43,6 +43,37 @@ class CacheItem extends Base
     protected $end;
 
     /**
+     * @var \DateTime|null
+     * @ODM\Date(name="lifetime")
+     * @Assert\Date()
+     * @ODM\Index()
+     */
+    private $lifetime;
+
+    /**
+     * lifetime set
+     *
+     * @param \DateTime $lifetime
+     * @return self
+     */
+    public function setLifetime(\DateTime $lifetime = null): self
+    {
+        $this->lifetime = $lifetime;
+
+        return $this;
+    }
+
+    /**
+     * lifetime get
+     *
+     * @return \DateTime|null
+     */
+    public function getLifetime(): ?\DateTime
+    {
+        return $this->lifetime;
+    }
+
+    /**
      * @return string
      */
     public function getKey(): string

@@ -59,6 +59,10 @@ class Cache
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
         $this->lifetime = $params['lifetime'];
+
+        if (!$this->lifetime) {
+            throw new \InvalidArgumentException('lifetime == 0');
+        }
         $this->mongo = $mongo;
         $redis = RedisAdapter::createConnection($redisUrl);
         $this->cache = new RedisAdapter($redis);
@@ -67,6 +71,17 @@ class Cache
         if (!empty($params['logs'])) {
             $this->logger = $logger;
         }
+    }
+
+    /**
+     * clear expired CacheItems from database
+     *
+     * @return int
+     */
+    public function clearExpiredItems(): int
+    {
+        return $this->documentManager
+            ->getRepository('MBHBaseBundle:CacheItem')->clearExpiredItems();
     }
 
     /**
@@ -81,11 +96,12 @@ class Cache
         if (!$this->isEnabled) {
             return 0;
         }
+        $repo = $this->documentManager->getRepository('MBHBaseBundle:CacheItem');
         if ($all) {
             $this->cache->clear();
+            $repo->deleteByPrefix('');
             return 0;
         }
-
         $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
 
         $keys = $this->documentManager->getRepository('MBHBaseBundle:CacheItem')
@@ -95,8 +111,9 @@ class Cache
             $this->logger->info('DEL: ' . implode('', $keys));
         }
 
-        return $this->documentManager->getRepository('MBHBaseBundle:CacheItem')->deleteByPrefix($prefix, $begin, $end);
+        return $repo->deleteByPrefix($prefix, $begin, $end);
     }
+
     /**
      * @param array $keys
      * @return string
@@ -147,7 +164,6 @@ class Cache
         }
 
         $key = $this->generateKey($prefix, $keys);
-
         $item = $this->cache->getItem($this->generateKey($prefix, $keys));
         $item->set($value)->expiresAfter($this->lifetime * 24 * 60 * 60);
         $this->cache->save($item);
@@ -170,6 +186,8 @@ class Cache
         if (isset($dates[1])) {
             $data['end'] = new \MongoDate($dates[1]->getTimestamp());
         }
+        $expiresAt = new \DateTime('+' . $this->lifetime . ' days');
+        $data['lifetime'] = new \MongoDate($expiresAt->getTimestamp());
 
         $this->mongo->insert('CacheItem', $data);
 
