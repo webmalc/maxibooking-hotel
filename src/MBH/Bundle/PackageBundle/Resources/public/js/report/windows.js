@@ -50,8 +50,12 @@ $(document).ready(function ($) {
                                     $(this).find('a').length ? $(this).find('a').append(str) : $(this).find('.pos').append(str);
                                 }
                             }
-                            processLinks();
+
                         });
+
+                        $(this).find('a').tooltip();
+                        processLinks();
+
                     }, function () {
                         $(this).children('td').each(function () {
                             var linkOld = $(this).find('a').clone();

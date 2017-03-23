@@ -150,7 +150,12 @@ class WindowsReportGenerator
     public function addCountNumbers($room, $day)
     {
         $roomCaches = $this->roomCaches;
-        $roomCache = isset($roomCaches[$room->getroomType()->getId()]) ? $roomCaches[$room->getroomType()->getId()][0][$day->format('d.m.Y')] : null;
+        
+        if (isset($roomCaches[$room->getroomType()->getId()])) {
+            $roomCache = isset($roomCaches[$room->getroomType()->getId()][0][$day->format('d.m.Y')]) ? $roomCaches[$room->getroomType()->getId()][0][$day->format('d.m.Y')] : null;
+        }else{
+            $roomCache = null;
+        }
 
         (is_null($roomCache)) ? 0 : $roomCache->getTotalRooms();
 

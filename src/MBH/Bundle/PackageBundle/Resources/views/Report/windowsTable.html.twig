@@ -23,7 +23,7 @@
             <table class="table-hover">
                 <thead>
                 <tr>
-                    <th class="mbh-graph-date-th">#</th>
+                    <th class="mbh-graph-date-th" style="width: 180px !important;">#</th>
                     {% for date in data.dates %}
                         <th class="mbh-graph-date-th">
                             <span class="{{ date|date('N') in [6,7] ? 'text-red' }} {{ date|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-yellow' }} ">{{ date|date('d.m') }}</span>
@@ -56,7 +56,7 @@
                                         <a style="display: block; height: 100%; z-index:5;"
                                            href="{{ path('package_edit', {'id': entry.package.id}) }}"
                                            class="windows-package-info-link bg-green {{ entry.begin ? 'pull-right' }} {{ entry.end ? 'pull-left' }} {{ not entry.regular ? 'mbh-graph-div' }}"
-                                           data-toggle="tooltip" data-placement="top" data-html="true"
+                                            data-placement="top" data-html="true"
                                            data-id="{{ entry.package.id }}" title="{{ entry.tooltip }}">
                                         </a>
                                     {% endfor %}
@@ -75,7 +75,7 @@
                         <small>{{ 'package.window.amount.rooms'|trans({}, "MBHPackageBundle") }}</small>
                     </td>
                     {% for countNumber in countNumbers %}
-                        <td class="text-center text-muted mbh-graph-cell">{{ rooms|length }}</td>
+                        <td class="text-center text-muted mbh-graph-cell"><small>{{ rooms|length }}</small></td>
                     {% endfor %}
 
                 </tr>
@@ -85,9 +85,9 @@
                     </td>
                     {% for countNumber,value in countNumbers %}
                         {% if value.totalRooms is defined %}
-                            <td class="text-center text-muted mbh-graph-cell">{{ value.totalRooms + countRowNum }}</td>
+                            <td class="text-center text-muted mbh-graph-cell"><small>{{ value.totalRooms + countRowNum }}</small></td>
                         {% else %}
-                            <td class="text-center text-muted mbh-graph-cell">{{ countRowNum }}</td>
+                            <td class="text-center text-muted mbh-graph-cell"><small>{{ countRowNum }}</small></td>
                         {% endif %}
                     {% endfor %}
                 </tr>
@@ -97,9 +97,9 @@
                     </td>
                     {% for countNumber,value in countNumbers %}
                         {% if value.totalRooms is defined %}
-                            <td class="text-center text-muted mbh-graph-cell">{{ value.totalRooms }}</td>
+                            <td class="text-center text-muted mbh-graph-cell"><small>{{ value.totalRooms }}</small></td>
                         {% else %}
-                            <td class="text-center text-muted mbh-graph-cell">0</td>
+                            <td class="text-center text-muted mbh-graph-cell"><small>0</small></td>
                         {% endif %}
                     {% endfor %}
                 </tr>
@@ -108,7 +108,7 @@
                         <small>{{ 'package.window.count.rooms.virtual'|trans({}, "MBHPackageBundle") }}</small>
                     </td>
                     {% for countNumber,value in data.countVirtualNumbers[roomType.id] %}
-                        <td class="text-center text-muted mbh-graph-cell">{{ value }}</td>
+                        <td class="text-center text-muted mbh-graph-cell"><small>{{ value }}</small></td>
                     {% endfor %}
                 </tr>
                 <tr class="success">
@@ -117,9 +117,9 @@
                     </td>
                     {% for countNumber,value in countNumbers %}
                         {% if value.packagesCount is defined %}
-                            <td class="text-center text-muted mbh-graph-cell">{{ value.packagesCount }}</td>
+                            <td class="text-center text-muted mbh-graph-cell"><small>{{ value.packagesCount }}</small></td>
                         {% else %}
-                            <td class="text-center text-muted mbh-graph-cell">0</td>
+                            <td class="text-center text-muted mbh-graph-cell"><small>0</small></td>
                         {% endif %}
 
                     {% endfor %}
@@ -132,9 +132,9 @@
                         {% for countNumberVirtual,valueVirtual in data.countVirtualNumbers[roomType.id] %}
                             {% if loop.index == loop.parent.loop.index %}
                                 {% if value.totalRooms is defined %}
-                                    <td class="text-center text-muted mbh-graph-cell">{{ (value.totalRooms + countRowNum) - valueVirtual }}</td>
+                                    <td class="text-center text-muted mbh-graph-cell"><small>{{ (value.totalRooms + countRowNum) - valueVirtual }}</small></td>
                                 {% else %}
-                                    <td class="text-center text-muted mbh-graph-cell">{{ countRowNum - valueVirtual }}</td>
+                                    <td class="text-center text-muted mbh-graph-cell"><small>{{ countRowNum - valueVirtual }}</small></td>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
@@ -146,7 +146,7 @@
                     </td>
                     {% for countNumber,value in countNumbers %}
                         <td class="text-center text-muted mbh-graph-cell {% if (value.totalRooms|default(0) - value.packagesCount|default(0)) != 0 %}text-red {% endif %}">
-                            {{ value.totalRooms|default(0) - value.packagesCount|default(0) }}
+                            <small>{{ value.totalRooms|default(0) - value.packagesCount|default(0) }}</small>
                         </td>
                     {% endfor %}
                 </tr>
@@ -156,7 +156,7 @@
                     </td>
                     {% for countNumber,value in countNumbers %}
                         <td class="text-center text-muted mbh-graph-cell {% if ((value.totalRooms|default(0) + countRowNum) - value.totalRooms|default(0)) != 0 %}text-red {% endif %}">
-                            {{ (value.totalRooms|default(0) + countRowNum) - value.totalRooms|default(0) }}
+                           <small>{{ (value.totalRooms|default(0) + countRowNum) - value.totalRooms|default(0) }}</small>
                         </td>
                     {% endfor %}
                 </tr>
@@ -167,7 +167,7 @@
                     {% for countNumber,value in countNumbers %}
                         {% for countNumberVirtual,valueVirtual in data.countVirtualNumbers[roomType.id] %}
                             {% if loop.index == loop.parent.loop.index %}
-                                <td class="text-center text-muted mbh-graph-cell {% if (valueVirtual - value.packagesCount|default(0)) != 0 %}text-red {% endif %}">{{ valueVirtual - value.packagesCount|default(0) }}</td>
+                                <td class="text-center text-muted mbh-graph-cell {% if (valueVirtual - value.packagesCount|default(0)) != 0 %}text-red {% endif %}"><small>{{ valueVirtual - value.packagesCount|default(0) }}</small></td>
                             {% endif %}
                         {% endfor %}
                     {% endfor %}
@@ -179,8 +179,7 @@
                     {% for countNumber,value in countNumbers %}
                         {% for countNumberVirtual,valueVirtual in data.countVirtualNumbers[roomType.id] %}
                             {% if loop.index == loop.parent.loop.index %}
-
-                                <td class="text-center text-muted mbh-graph-cell {% if (((value.totalRooms|default(0) + countRowNum) - valueVirtual) - (value.totalRooms|default(0) - value.packagesCount|default(0))) != 0 %}text-red {% endif %}">{{ ((value.totalRooms|default(0) + countRowNum) - valueVirtual) - (value.totalRooms|default(0) - value.packagesCount|default(0)) }}</td>
+                                <td class="text-center text-muted mbh-graph-cell {% if (((value.totalRooms|default(0) + countRowNum) - valueVirtual) - (value.totalRooms|default(0) - value.packagesCount|default(0))) != 0 %}text-red {% endif %}"><small>{{ ((value.totalRooms|default(0) + countRowNum) - valueVirtual) - (value.totalRooms|default(0) - value.packagesCount|default(0)) }}</small></td>
                             {% endif %}
                         {% endfor %}
                     {% endfor %}
