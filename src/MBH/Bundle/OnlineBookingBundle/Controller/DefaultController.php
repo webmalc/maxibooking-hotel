@@ -150,82 +150,6 @@ class DefaultController extends BaseController
         );
     }
 
-    private function addImages(array $searchResults)
-    {
-        foreach ($searchResults as $index => $result) {
-            $roomTypeCategory = $result['roomType']??false;
-            if($roomTypeCategory && $roomTypeCategory instanceof RoomTypeCategory) {
-                /** @var RoomTypeCategory $roomTypeCategory */
-                $roomTypes = $roomTypeCategory->getTypes();
-                $images = []; $mainImage = null;
-                foreach ($roomTypes as $roomType) {
-                    if (!$mainImage && $roomType->getMainImage()) {
-                        $mainImage = $roomType->getMainImage();
-                    }
-                    $images = $roomType->getImages()->toArray();
-                }
-                $searchResults[$index] += [
-                    'images' => array_merge($images),
-                    'mainimage' => $mainImage,
-                ];
-
-
-                unset($images);
-            }
-        }
-
-        return $searchResults;
-    }
-
-    private function resultFilter(array $searchResults, SearchQuery $searchQuery)
-    {
-        foreach ($searchResults as $sResultKey => $sResultItem) {
-            $filterSearchResults = [];
-            /** @var SearchResult[] $results */
-            $results = $sResultItem['results'];
-            foreach ($results as $i => $searchResult) {
-                if ($searchResult->getRoomType()->getCategory()) {
-                    $uniqueId = $searchResult
-                            ->getRoomType()
-                            ->getCategory()
-                            ->getId().$searchResult
-                            ->getTariff()
-                            ->getId();
-
-                    $uniqueId .= $searchResult
-                            ->getBegin()
-                            ->format('dmY').$searchResult
-                            ->getEnd()
-                            ->format('dmY');
-                    if (!array_key_exists($uniqueId, $filterSearchResults) ||
-                        $searchResult->getRoomType()->getTotalPlaces() < $filterSearchResults[$uniqueId]->getRoomType()->getTotalPlaces()
-                    ) {
-                        $filterSearchResults[$uniqueId] = $searchResult;
-                    }
-                }
-            }
-
-            $searchResults[$sResultKey]['results'] = $filterSearchResults;
-            $searchResults[$sResultKey]['query'] = $searchQuery;
-        }
-        $searchResults = $this->addImages($searchResults);
-        $searchResults = $this->leftRoomsKeyGenerate($searchResults);
-
-        return $searchResults;
-    }
-
-    private function leftRoomsKeyGenerate(array $searchResults)
-    {
-        foreach ($searchResults as $key => $searchResult) {
-            $roomTypeCategoryId = $searchResult['roomType']->getId();
-            $begin = $searchResult['query']->begin;
-            $end = $searchResult['query']->end;
-            $leftRoomKey = $roomTypeCategoryId.$begin->format('dmY').$end->format('dmY');
-            $searchResults[$key]['leftRoomKey'] = $leftRoomKey;
-        }
-
-        return $searchResults;
-    }
 
     /**
      * @Route("/success", name="online_booking_success")
@@ -413,6 +337,210 @@ class DefaultController extends BaseController
     }
 
 
+
+
+    /**
+     * @Route("/minstay/{timestamp}", name="online_booking_min_stay", options={"expose" = true})
+     * @Cache(expires="tomorrow", public=true)
+     */
+    public function getMinStayAjax(Request $request, $timestamp)
+    {
+
+        $date = new \DateTime();
+        $date->setTimestamp($timestamp);
+
+        $minStays = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetchMinStay($date);
+        $data = [
+            'success' => true,
+            'minstay' => $minStays,
+        ];
+
+        $response = new JsonResponse(json_encode($data));
+        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+
+        return $response;
+    }
+
+    /**
+     * @Route(
+     *     "/calculation/{tariffId}/{roomTypeId}/{adults}/{children}/{packageBegin}/{packageEnd}",
+     *      name="online_booking_calculation",
+     *      options={"expose" = true}
+     *     )
+     * @ParamConverter("tariff", class="MBHPriceBundle:Tariff", options={"id" = "tariffId"})
+     * @ParamConverter("roomType", class="MBHHotelBundle:RoomType", options={"id" = "roomTypeId"})
+     * @param Request $request
+     * @param Tariff $tariff
+     * @param RoomType $roomType
+     * @param int $adults
+     * @param int $children
+     * @param \DateTime $packageBegin
+     * @param \DateTime $packageEnd
+     * @return JsonResponse
+     */
+    public function getCalculate(
+        Request $request,
+        Tariff $tariff,
+        RoomType $roomType,
+        int $adults,
+        int $children,
+        \DateTime $packageBegin = null,
+        \DateTime $packageEnd = null
+    ) {
+
+        $former = $this->get('mbh.online.chart.data.former');
+        $result = $former->getPriceCalendarData($roomType, $tariff, $adults, $children, $packageBegin, $packageEnd);
+
+        $response = new JsonResponse($result);
+        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+
+        return $response;
+    }
+
+    /**
+     * @Route(
+     *     "/calculationRoom",
+     *      name="online_booking_calculationRoom",
+     *      options={"expose" = true}
+     *     )
+     **/
+    public function getMultiCalculate(Request $request)
+    {
+        $json = $request->query->get('data');
+        $data = json_decode($json, true);
+        $former = $this->get('mbh.online.chart.data.former');
+        $results = [];
+        foreach ($data as $rowData) {
+            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($rowData['roomType']);
+            $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($rowData['tariff']);
+            $adults = $rowData['adults'];
+            $children = $rowData['children'];
+            $packageBegin = (new \DateTime($rowData['begin']))->modify('midnight');
+            $packageEnd = (new \DateTime($rowData['end']))->modify('midnight');
+            $results[] = $former->getPriceCalendarData(
+                $roomType,
+                $tariff,
+                $adults,
+                $children,
+                $packageBegin,
+                $packageEnd->modify("-1 day")
+            );
+        }
+        //Search For Max value
+        $maxY = null;
+        $minY = null;
+        foreach ($results as $result) {
+            $maxY = max(
+                $maxY,
+                array_reduce( $result['prices'],
+                    function ($max, $detail) {
+                        return max($max, $detail['y']);
+                    }
+                )
+
+            );
+        }
+        foreach ($results as &$result) {
+            $result['yMax'] = $maxY;
+            $result['yMin'] = $maxY/2;
+        }
+        $response = new JsonResponse($results);
+        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+
+        return $response;
+    }
+
+    /**
+     * @param array $searchResults
+     * @return array
+     */
+    private function addImages(array $searchResults)
+    {
+        foreach ($searchResults as $index => $result) {
+            $roomTypeCategory = $result['roomType']??false;
+            if($roomTypeCategory && $roomTypeCategory instanceof RoomTypeCategory) {
+                /** @var RoomTypeCategory $roomTypeCategory */
+                $roomTypes = $roomTypeCategory->getTypes();
+                $images = []; $mainImage = null;
+                foreach ($roomTypes as $roomType) {
+                    if (!$mainImage && $roomType->getMainImage()) {
+                        $mainImage = $roomType->getMainImage();
+                    }
+                    $images = $roomType->getImages()->toArray();
+                }
+                $searchResults[$index] += [
+                    'images' => array_merge($images),
+                    'mainimage' => $mainImage,
+                ];
+
+
+                unset($images);
+            }
+        }
+
+        return $searchResults;
+    }
+
+    /**
+     * @param array $searchResults
+     * @param SearchQuery $searchQuery
+     * @return array
+     */
+    private function resultFilter(array $searchResults, SearchQuery $searchQuery)
+    {
+        foreach ($searchResults as $sResultKey => $sResultItem) {
+            $filterSearchResults = [];
+            /** @var SearchResult[] $results */
+            $results = $sResultItem['results'];
+            foreach ($results as $i => $searchResult) {
+                if ($searchResult->getRoomType()->getCategory()) {
+                    $uniqueId = $searchResult
+                            ->getRoomType()
+                            ->getCategory()
+                            ->getId().$searchResult
+                            ->getTariff()
+                            ->getId();
+
+                    $uniqueId .= $searchResult
+                            ->getBegin()
+                            ->format('dmY').$searchResult
+                            ->getEnd()
+                            ->format('dmY');
+                    if (!array_key_exists($uniqueId, $filterSearchResults) ||
+                        $searchResult->getRoomType()->getTotalPlaces() < $filterSearchResults[$uniqueId]->getRoomType()->getTotalPlaces()
+                    ) {
+                        $filterSearchResults[$uniqueId] = $searchResult;
+                    }
+                }
+            }
+
+            $searchResults[$sResultKey]['results'] = $filterSearchResults;
+            $searchResults[$sResultKey]['query'] = $searchQuery;
+        }
+        $searchResults = $this->addImages($searchResults);
+        $searchResults = $this->leftRoomsKeyGenerate($searchResults);
+
+        return $searchResults;
+    }
+
+    /**
+     * @param array $searchResults
+     * @return array
+     */
+    private function leftRoomsKeyGenerate(array $searchResults)
+    {
+        foreach ($searchResults as $key => $searchResult) {
+            $roomTypeCategoryId = $searchResult['roomType']->getId();
+            $begin = $searchResult['query']->begin;
+            $end = $searchResult['query']->end;
+            $leftRoomKey = $roomTypeCategoryId.$begin->format('dmY').$end->format('dmY');
+            $searchResults[$key]['leftRoomKey'] = $leftRoomKey;
+        }
+
+        return $searchResults;
+    }
+
+
     /**
      * @param Order $order
      * @param string $arrival
@@ -552,117 +680,6 @@ class DefaultController extends BaseController
                 ->setMessage($message)
                 ->notify();
         }
-    }
-
-    /**
-     * @Route("/minstay/{timestamp}", name="online_booking_min_stay", options={"expose" = true})
-     * @Cache(expires="tomorrow", public=true)
-     */
-    public function getMinStayAjax(Request $request, $timestamp)
-    {
-
-        $date = new \DateTime();
-        $date->setTimestamp($timestamp);
-
-        $minStays = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetchMinStay($date);
-        $data = [
-            'success' => true,
-            'minstay' => $minStays,
-        ];
-
-        $response = new JsonResponse(json_encode($data));
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
-
-        return $response;
-    }
-
-    /**
-     * @Route(
-     *     "/calculation/{tariffId}/{roomTypeId}/{adults}/{children}/{packageBegin}/{packageEnd}",
-     *      name="online_booking_calculation",
-     *      options={"expose" = true}
-     *     )
-     * @ParamConverter("tariff", class="MBHPriceBundle:Tariff", options={"id" = "tariffId"})
-     * @ParamConverter("roomType", class="MBHHotelBundle:RoomType", options={"id" = "roomTypeId"})
-     * @param Request $request
-     * @param Tariff $tariff
-     * @param RoomType $roomType
-     * @param int $adults
-     * @param int $children
-     * @param \DateTime $packageBegin
-     * @param \DateTime $packageEnd
-     * @return JsonResponse
-     */
-    public function getCalculate(
-        Request $request,
-        Tariff $tariff,
-        RoomType $roomType,
-        int $adults,
-        int $children,
-        \DateTime $packageBegin = null,
-        \DateTime $packageEnd = null
-    ) {
-
-        $former = $this->get('mbh.online.chart.data.former');
-        $result = $former->getPriceCalendarData($roomType, $tariff, $adults, $children, $packageBegin, $packageEnd);
-
-        $response = new JsonResponse($result);
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
-
-        return $response;
-    }
-
-    /**
-     * @Route(
-     *     "/calculationRoom",
-     *      name="online_booking_calculationRoom",
-     *      options={"expose" = true}
-     *     )
-     **/
-    public function getMultiCalculate(Request $request)
-    {
-        $json = $request->query->get('data');
-        $data = json_decode($json, true);
-        $former = $this->get('mbh.online.chart.data.former');
-        $results = [];
-        foreach ($data as $rowData) {
-            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($rowData['roomType']);
-            $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($rowData['tariff']);
-            $adults = $rowData['adults'];
-            $children = $rowData['children'];
-            $packageBegin = (new \DateTime($rowData['begin']))->modify('midnight');
-            $packageEnd = (new \DateTime($rowData['end']))->modify('midnight');
-            $results[] = $former->getPriceCalendarData(
-                $roomType,
-                $tariff,
-                $adults,
-                $children,
-                $packageBegin,
-                $packageEnd->modify("-1 day")
-            );
-        }
-        //Search For Max value
-        $maxY = null;
-        $minY = null;
-        foreach ($results as $result) {
-            $maxY = max(
-                $maxY,
-                array_reduce( $result['prices'],
-                    function ($max, $detail) {
-                        return max($max, $detail['y']);
-                    }
-                )
-
-            );
-        }
-        foreach ($results as &$result) {
-            $result['yMax'] = $maxY;
-            $result['yMin'] = $maxY/2;
-        }
-        $response = new JsonResponse($results);
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
-
-        return $response;
     }
 
 }
