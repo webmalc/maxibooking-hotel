@@ -206,3 +206,10 @@ mbhhotelbundle.hotelData.hotelTwo: 'Мой отель #2'
 
 mbhhotelbundle.roomTypeData.two.place: Двухместный
 mbhhotelbundle.roomTypeData.three.place: Трехместный
+
+mbhhotelbundle.taskData.repair: Ремонт
+mbhhotelbundle.taskData.cleaning: Уборка
+mbhhotelbundle.taskData.reserve: Резерв
+mbhhotelbundle.taskData.other: Другое
+mbhhotelbundle.taskData.place_cleaning: 'Уборка помещений'
+mbhhotelbundle.taskData.clean_room: 'Убрать комнату'

@@ -25,19 +25,19 @@ class TaskData extends AbstractFixture implements OrderedFixtureInterface, Conta
         return [
             [
                 'code' => 'repair',
-                'title' => 'Ремонт',
+                'title' => $this->container->get('translator')->trans('mbhhotelbundle.taskData.repair'),
             ],
             [
                 'code' => 'cleaning',
-                'title' => 'Уборка',
+                'title' => $this->container->get('translator')->trans('mbhhotelbundle.taskData.cleaning'),
             ],
             [
                 'code' => 'reserve',
-                'title' => 'Резерв',
+                'title' => $this->container->get('translator')->trans('mbhhotelbundle.taskData.reserve'),
             ],
             [
                 'code' => 'other',
-                'title' => 'Другое',
+                'title' => $this->container->get('translator')->trans('mbhhotelbundle.taskData.other'),
             ]
         ];
     }
@@ -79,15 +79,15 @@ class TaskData extends AbstractFixture implements OrderedFixtureInterface, Conta
 
         $category->setIsSystem(true)
             ->setCode('clean')
-            ->setTitle('Уборка')
-            ->setFullTitle('Уборка помещений')
+            ->setTitle($this->container->get('translator')->trans('mbhhotelbundle.taskData.cleaning'))
+            ->setFullTitle($this->container->get('translator')->trans('mbhhotelbundle.taskData.place_cleaning'))
             ->setHotel($hotel);
 
         $taskType = new TaskType();
         $staff = $manager->getRepository('MBHUserBundle:Group')->findOneBy(['code' => 'staff']);
         $taskType->setIsSystem(true)
             ->setCode('clean_room')
-            ->setTitle('Убрать комнату')
+            ->setTitle($this->container->get('translator')->trans('mbhhotelbundle.taskData.clean_room'))
             ->setCategory($category)
             ->setDefaultUserGroup($staff)
             ->setHotel($hotel);
