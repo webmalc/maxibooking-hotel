@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\HotelBundle\Document\Room;
 use Symfony\Bridge\Monolog\Logger;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -40,15 +41,23 @@ class VirtualRoomHandler
 
         $sortedPackages = $this->sortPackagesByRoomTypeAndVirtualRoom($packages);
         $emptyIntervals = $this->getEmptyIntervals($sortedPackages);
+        $this->logEmptyIntervalsData($emptyIntervals);
 
         /** @var Package $package */
         foreach ($packages as $package) {
             $packageDatesString = $this->getPackageIntervalString($package->getBegin(), $package->getEnd());
             if (isset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString])) {
+                /** @var Room $virtualRoomWithWindow */
                 $virtualRoomWithWindow = $emptyIntervals[$package->getRoomType()->getId()][$packageDatesString];
                 $package->setVirtualRoom($virtualRoomWithWindow);
                 $this->dm->flush();
                 unset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString]);
+
+                $this->logger->info(
+                    $this->translator->trans('virtual_room_handler.package_virtual_room_changed', [
+                        '%package_number%' => $package->getTitle(),
+                        '%room_name%' => $virtualRoomWithWindow->getName()
+                    ]));
             }
         }
 
@@ -60,6 +69,21 @@ class VirtualRoomHandler
         foreach ($packages as $package) {
             if (!$this->hasNeighboringPackages($package, $sortedPackages)) {
                 $this->setVirtualRoom($package);
+            }
+        }
+    }
+
+    private function logEmptyIntervalsData($emptyIntervals)
+    {
+        foreach ($emptyIntervals as $roomTypeId => $emptyIntervalsByRoomType) {
+            /** @var Room $emptyRoom */
+            foreach ($emptyIntervalsByRoomType as $emptyIntervalDatesString => $emptyRoom) {
+                $this->logger->info($this->translator
+                    ->trans('virtual_room_handler.empty_interval_data', [
+                        '%roomTypeId%' => $roomTypeId,
+                        '%roomName%' => $emptyRoom->getName(),
+                        '%emptyIntervalDates%' => $emptyIntervalDatesString
+                    ]));
             }
         }
     }
@@ -88,7 +112,7 @@ class VirtualRoomHandler
         $sortedPackages = [];
         /** @var Package $package */
         foreach ($packages as $package) {
-            $sortedPackages[$package->getRoomType()->getId()][$package->getVirtualRoom()->getId()] = $package;
+            $sortedPackages[$package->getRoomType()->getId()][$package->getVirtualRoom()->getId()][] = $package;
         }
 
         return $sortedPackages;
@@ -128,9 +152,12 @@ class VirtualRoomHandler
                     $previous = $packagesByVirtualRoom[$i - 1];
                     /** @var Package $current */
                     $current = $packagesByVirtualRoom[$i];
-
-                    $intervalString = $this->getPackageIntervalString($previous->getEnd(), $current->getBegin());
-                    $emptyIntervals[$roomTypeId][$intervalString] = $current->getVirtualRoom();
+                    $previousPackageEndDate = $previous->getEnd();
+                    $currentPackageBeginDate = $current->getBegin();
+                    if ($previousPackageEndDate != $currentPackageBeginDate) {
+                        $intervalString = $this->getPackageIntervalString($previous->getEnd(), $current->getBegin());
+                        $emptyIntervals[$roomTypeId][$intervalString] = $current->getVirtualRoom();
+                    }
                 }
             }
         }
