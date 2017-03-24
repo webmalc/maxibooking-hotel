@@ -6,9 +6,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\OnlineBundle\Document\Invite;
@@ -17,7 +15,6 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
-use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -28,7 +25,6 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/report")
@@ -997,15 +993,4 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
     }
-
-     /**
-      * @Route("/test")
-      * @return Response
-      */
-      public function testAction()
-      {
-         $this->get('mbh.package.virtual_room_handler')
-             ->setVirtualRooms(new \DateTime('midnight'), new \DateTime('midnight + 50 days'));
-         return new Response();
-      }
 }
