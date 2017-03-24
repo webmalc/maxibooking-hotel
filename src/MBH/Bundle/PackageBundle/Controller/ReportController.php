@@ -81,7 +81,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Template()
      * @param $request Request
      * @param $package Package
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function windowPackageAction(Request $request, Package $package)
     {
@@ -89,11 +89,16 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
+        $isChain = !is_null($request->query->get('isChain'))
+            ? $request->query->get('isChain')
+            : $request->request->get('isChainMoved');
+
         $response = ['package' => $package];
 
         if ($this->clientConfig->getSearchWindows()) {
             $form = $this->createForm(PackageVirtualRoomType::class, $package, [
-                'package' => $package
+                'package' => $package,
+                'isChain' => $isChain == 'true'
             ]);
 
             if ($request->isMethod('POST')) {

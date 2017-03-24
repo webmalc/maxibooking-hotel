@@ -405,3 +405,6 @@ csv.form.countPersons: Кол-во Людей
 report.porter.note: 'Комментарий:'
 modal.form.delete.reasons.reason: Причина удаления
 modal.form.delete.delete_reason_package: Причина удаления брони
+
+modal.form.virtual_room.virtual_room.group: Виртуальный номер
+modal.form.virtual_room.is_chain_moved.label: Переносится цепочка?
