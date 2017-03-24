@@ -20,7 +20,7 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface, Cont
      *
      * @return array
      */
-    public function Hotels()
+    public function hotels()
     {
         return [
             'hotel-one' => [
@@ -44,7 +44,7 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface, Cont
         $repo = $manager->getRepository('MBHHotelBundle:Hotel');
 
         if (!count($repo->findAll())) {
-            foreach ($this->Hotels() as $key => $hotelData) {
+            foreach ($this->hotels() as $key => $hotelData) {
                 $hotel = new Hotel();
                 $hotel
                     ->setFullTitle($hotelData['title'])
