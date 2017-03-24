@@ -635,7 +635,7 @@ class Search implements SearchInterface
 
         foreach ($hotels as $hotel) {
             $hotelTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
-                ->fetch($hotel, null, null, false, $this->memcached);
+                ->fetch($hotel, null, null, false);
 
             foreach ($hotelTariffs as $tariff) {
                 if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
