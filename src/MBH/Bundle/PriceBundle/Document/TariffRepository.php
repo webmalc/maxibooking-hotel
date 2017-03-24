@@ -6,6 +6,7 @@ use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Query\Builder;
+use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\PriceBundle\Lib\TariffFilter;
 
 class TariffRepository extends DocumentRepository
@@ -161,7 +162,8 @@ class TariffRepository extends DocumentRepository
         if ($online) {
             $qb->field('isOnline')->equals(true);
         }
-        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');;
+        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
+        ;
 
         return $qb;
     }
