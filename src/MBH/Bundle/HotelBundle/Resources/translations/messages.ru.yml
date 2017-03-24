@@ -234,3 +234,5 @@ views.task.index.before_two: до
 views.hotel.notFound.error: ошибка
 views.hotel.new.creating: создание
 views.hotel.index.list: список
+
+views.hotel.roomType.editAutoTasks.add: Добавить
