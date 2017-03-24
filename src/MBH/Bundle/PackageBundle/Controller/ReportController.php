@@ -99,12 +99,19 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             ]);
 
             if ($request->isMethod('POST')) {
+                $oldVirtualRoom = $package->getVirtualRoom();
                 $form->submit($request->request->get($form->getName()));
 
                 if ($form->isValid()) {
-                    $this->dm->persist($package);
-                    $this->dm->flush();
-                    $this->addFlash('success', 'controller.packageController.record_edited_success');
+                    if ($isChain) {
+                        $this->get('mbh.package.virtual_room_handler')
+                            ->replaceVirtualRoomChains($package->getBegin(), $oldVirtualRoom, $package->getVirtualRoom());
+                        $this->addFlash('success', 'controller.report_controller.chains_replaced.success');
+                    } else {
+                        $this->dm->persist($package);
+                        $this->dm->flush();
+                        $this->addFlash('success', 'controller.packageController.record_edited_success');
+                    }
 
                     return $this->redirectToRoute('report_windows');
                 }

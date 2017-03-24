@@ -29,15 +29,16 @@ class VirtualRoomHandler
         $this->translator = $translator;
     }
 
+    /**
+     * Set virtual rooms for packages between specified begin and end dates
+     *
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     */
     public function setVirtualRooms(\DateTime $begin, \DateTime $end)
     {
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
-        $packages =  $packageRepository->fetchWithVirtualRooms($begin, $end)->toArray();
-        usort($packages, function ($a, $b) {
-            /** @var Package $a */
-            /** @var Package $b */
-            return ($a->getBegin() < $b->getBegin()) ? -1 : 1;
-        });
+        $packages = $packageRepository->extendedFetchWithVirtualRooms($begin, $end, true)->toArray();
 
         $sortedPackages = $this->sortPackagesByRoomTypeAndVirtualRoom($packages);
         $emptyIntervals = $this->getEmptyIntervals($sortedPackages);
@@ -73,6 +74,11 @@ class VirtualRoomHandler
         }
     }
 
+    /**
+     * Log data about empty intervals between virtual rooms of neighboring packages
+     *
+     * @param $emptyIntervals
+     */
     private function logEmptyIntervalsData($emptyIntervals)
     {
         foreach ($emptyIntervals as $roomTypeId => $emptyIntervalsByRoomType) {
@@ -88,6 +94,11 @@ class VirtualRoomHandler
         }
     }
 
+    /**
+     * Set virtual room for a single package
+     *
+     * @param Package $package
+     */
     private function setVirtualRoom(Package $package)
     {
         $searchResult = (new SearchResult())
@@ -107,6 +118,12 @@ class VirtualRoomHandler
         }
     }
 
+    /**
+     * Get sorted packages by room type and virtual room
+     *
+     * @param $packages
+     * @return array
+     */
     private function sortPackagesByRoomTypeAndVirtualRoom($packages)
     {
         $sortedPackages = [];
@@ -118,6 +135,13 @@ class VirtualRoomHandler
         return $sortedPackages;
     }
 
+    /**
+     * Check whether has package a nearby package
+     *
+     * @param Package $package
+     * @param $sortedPackages
+     * @return bool
+     */
     public function hasNeighboringPackages(Package $package, $sortedPackages)
     {
         if (isset($sortedPackages[$package->getRoomType()->getId()][$package->getVirtualRoom()->getId()])) {
@@ -136,7 +160,7 @@ class VirtualRoomHandler
     }
 
     /**
-     * Get empty intervals between middle packages, having same virtual room
+     * Get empty intervals between nearby packages, having same virtual room
      *
      * @param Package[] $packages
      * @return array
@@ -165,6 +189,27 @@ class VirtualRoomHandler
         return $emptyIntervals;
     }
 
+    public function replaceVirtualRoomChains(\DateTime $begin, Room $firstVirtualRoom, Room $secondVirtualRoom)
+    {
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+        $packages = $packageRepository->extendedFetchWithVirtualRooms($begin,
+            (clone $begin)->add(new \DateInterval('P1D')),
+            false, null, [$firstVirtualRoom->getId(), $secondVirtualRoom->getId()]);
+        /** @var Package $package */
+        foreach ($packages as $package) {
+            if ($package->getVirtualRoom() == $firstVirtualRoom) {
+                $package->setVirtualRoom($secondVirtualRoom);
+            } else {
+                $package->setVirtualRoom($firstVirtualRoom);
+            }
+        }
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return string
+     */
     private function getPackageIntervalString(\DateTime $begin, \DateTime $end)
     {
         return $begin->format('d.m.Y') . '-' . $end->format('d.m.Y');

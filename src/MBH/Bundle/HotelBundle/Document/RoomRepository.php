@@ -19,7 +19,7 @@ class RoomRepository extends AbstractBaseRepository
         return;
     }
 
-    public function getVirtualRoomsForPackageQB(Package $package = null)
+    public function getVirtualRoomsForPackageQB(Package $package = null, $isForChain = false)
     {
         $qb = $this->createQueryBuilder();
         if ($package) {
@@ -32,14 +32,17 @@ class RoomRepository extends AbstractBaseRepository
                 ->fetchWithVirtualRooms($begin, $end, $package->getRoomType())
             ;
 
-            $rooms = array_map(function ($p) use ($virtualRoom, $begin, $end) {
+            $rooms = array_map(function ($p) use ($virtualRoom, $begin, $end, $isForChain) {
+                /** @var Package $p */
                 $id = $p->getVirtualRoom()->getId();
 
                 if ($p->getBegin() == $end || $p->getEnd() == $begin) {
                     return null;
                 }
 
-                if (!$virtualRoom || $id != $virtualRoom->getId()) {
+                if (!$virtualRoom || $id != $virtualRoom->getId()
+                    && (!$isForChain || $p->getBegin() < $begin)
+                ) {
                     return $id;
                 }
 
@@ -314,7 +317,7 @@ class RoomRepository extends AbstractBaseRepository
             is_array($floor) ? $floor : $floor = [$floor];
             $qb->field('floor')->in($floor);
         }
-        
+
         //Is enabled
         if ($isEnabled !== null) {
             $qb->field('isEnabled')->equals($isEnabled);
