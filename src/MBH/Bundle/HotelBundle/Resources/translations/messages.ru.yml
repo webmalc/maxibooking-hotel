@@ -224,3 +224,4 @@ views.task.index.ne_zadano: Не задано
 views.task.index.entity_was_deleted: Запись удалена
 views.task.index.vse: все
 views.task.index.in_work: В работе
+views.task.index.before: до
