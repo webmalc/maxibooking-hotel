@@ -255,3 +255,6 @@ views.hotel.roomType.index.group_not_change: группа не указана
 views.hotel.TaskType.index.edit_category_types_task: Редактировать категорию типов задач
 views.hotel.TaskType.index.delete_category_types_task: Удалить категорию типов задач
 
+views.hotel.form.hotelType.upload_file: Загрузите файл
+views.hotel.form.hotelType.see_image: Просмотреть изображение
+views.hotel.form.hotelType.delete: Удалить
