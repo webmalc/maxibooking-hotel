@@ -93,7 +93,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('mbhhotelbundle.roomTypeController.entity_was_created_successfully'));
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -123,7 +123,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $this->dm->persist($entity);
         $this->dm->flush();
 
-        $this->getRequest()->getSession()->getFlashBag()->set('success', 'Изображение успешно удалено.');
+        $this->getRequest()->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('mbhhotelbundle.roomTypeController.image_was_deleded_successfully'));
 
         return $this->redirectToRoute('room_type_image_edit', ['id' => $id, 'imageTab' => 'active']);
 
@@ -268,7 +268,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $this->dm->flush();
 
         $request->getSession()->getFlashBag()
-            ->set('success', 'Фотография успешно была сделана главной.');
+            ->set('success', $this->container->get('translator')->trans('mbhhotelbundle.roomTypeController.photo_was_change_default_successfully'));
 
         return $this->redirectToRoute('room_type_image_edit', ['id' => $entity->getId()]);
     }
@@ -299,7 +299,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Фотография успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('mbhhotelbundle.roomTypeController.photo_was_created_successfully'));
 
             return $this->redirectToRoute('room_type_image_edit', [
                 'id' => $entity->getId()
