@@ -612,24 +612,6 @@ var docReadyForms = function () {
 
     //payer select2
     $('.findGuest').mbhGuestSelectPlugin();
-
-    var disableCheckBox = document.getElementById('mbh-disable');
-    console.log(disableCheckBox);
-    disableCheckBox.onchange = function () {
-        console.log('change');
-        $.ajax({
-            url: Routing.generate('change_room_type_enableable_mode'),
-            data: data,
-            type: "GET",
-            success: function () {
-                location.reload();
-            },
-            error: function () {
-                location.reload();
-            },
-            dataType: 'json'
-        });
-    }
 };
 
 
@@ -940,6 +922,25 @@ var mbhStartDate = function (e) {
     }
 };
 
+var disableCheckboxListen = function () {
+    var disableCheckBox = document.getElementById('mbh-disable');
+    console.log(disableCheckBox);
+    disableCheckBox.onchange = function () {
+        console.log('change');
+        $.ajax({
+            url: Routing.generate('change_room_type_enableable_mode'),
+            type: "GET",
+            success: function () {
+                location.reload();
+            },
+            error: function () {
+                location.reload();
+            },
+            dataType: 'json'
+        });
+    }
+};
+
 
 $(document).ready(function () {
     'use strict';
@@ -947,4 +948,5 @@ $(document).ready(function () {
     docReadyForms();
 
     mbhStartDate();
+    disableCheckboxListen();
 });
