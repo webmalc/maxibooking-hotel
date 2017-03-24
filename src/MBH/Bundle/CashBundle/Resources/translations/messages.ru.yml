@@ -73,6 +73,7 @@ form.cashDocumentType.organization: Организация
 form.cashDocumentType.tourist: Клиент
 form.cashDocumentType.article: Статья
 form.cashDocumentType.placeholder_fio: Иванов Иван Иванович
+form.cashDocumentType.inn: ИНН
 form.cashDocumentType.sum: Сумма
 form.cashDocumentType.payment_way: Способ оплаты
 form.cashDocumentType.document_date: Дата документа
