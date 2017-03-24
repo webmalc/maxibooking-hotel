@@ -115,6 +115,8 @@ form.roomTypeType.facilities: Удобства
 form.roomTypeType.is_room_included_in_search: Используется ли тип номера в поиске?
 form.roomTypeType.room_space: Площадь номера (м2)
 form.roomTypeType.help.empty_facilities: Используются удобства из отеля
+views.hotel.form.RoomTypeType.name_form_using_within: Название для использования внутри
+views.hotel.form.RoomTypeType.image_type_number_for_online_booking: Изображние типа номера для онлайн бронирования
 
 controller.hotelController.record_created_success: 'Запись успешно создана.'
 
@@ -252,3 +254,4 @@ views.hotel.roomType.index.group_not_change: группа не указана
 
 views.hotel.TaskType.index.edit_category_types_task: Редактировать категорию типов задач
 views.hotel.TaskType.index.delete_category_types_task: Удалить категорию типов задач
+
