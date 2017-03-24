@@ -249,3 +249,6 @@ views.hotel.roomType.new.photo: Фотографии
 
 views.hotel.roomType.index.list: список
 views.hotel.roomType.index.group_not_change: группа не указана
+
+views.hotel.TaskType.index.edit_category_types_task: Редактировать категорию типов задач
+views.hotel.TaskType.index.delete_category_types_task: Удалить категорию типов задач
