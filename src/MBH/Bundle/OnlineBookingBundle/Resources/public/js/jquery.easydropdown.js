@@ -7,8 +7,7 @@
 * Author: Patrick Kunka
 * Copyright 2013 Patrick Kunka, All Rights Reserved
 */
-
- $('form.booking-form select').addClass('dropdown');
+// $('form.booking-form select').addClass('dropdown');
 (function($){
 	
 	function EasyDropDown(){

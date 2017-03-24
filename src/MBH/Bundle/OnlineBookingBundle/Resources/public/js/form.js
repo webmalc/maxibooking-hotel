@@ -15,11 +15,6 @@ function formFill() {
             }
         }
     }
-    /*$('.booking-form').find('input, select').styler({
-        selectSearch: true
-    });
-    $("#search_form_hotel").trigger("change");
-    $("#search_form_children").trigger('change');*/
 }
 
 
@@ -328,8 +323,10 @@ $(function () {
     $ageHolder.data('index', index);
     var drawChildrenAge = function (index) {
             var prototype = $ageHolder.data("prototype"),
-                newAge = prototype.replace(/__name__/g, index);
-            $ageHolder.append($(newAge).hide().fadeIn(300));
+                $newAge = $(prototype.replace(/__name__/g, index));
+            $ageHolder.append($newAge.hide().fadeIn(300));
+            $newAge.easyDropDown();
+
         },
         deleteChildrenAge = function (index) {
             var prototype = $ageHolder.data("prototype"),
