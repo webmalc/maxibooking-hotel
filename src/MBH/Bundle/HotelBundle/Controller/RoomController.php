@@ -109,7 +109,7 @@ class RoomController extends BaseController
             $this->dm->persist($room);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('mbhhotelbundle.taskData.entity_was_cleaned'));
 
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('room_edit', ['id' => $room->getId()]));

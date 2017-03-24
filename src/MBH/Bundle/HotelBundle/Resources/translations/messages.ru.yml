@@ -213,3 +213,4 @@ mbhhotelbundle.taskData.reserve: Резерв
 mbhhotelbundle.taskData.other: Другое
 mbhhotelbundle.taskData.place_cleaning: 'Уборка помещений'
 mbhhotelbundle.taskData.clean_room: 'Убрать комнату'
+mbhhotelbundle.taskData.entity_was_cleaned: 'Запись успешно создана.'
