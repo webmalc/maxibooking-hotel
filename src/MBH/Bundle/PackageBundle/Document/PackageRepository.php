@@ -924,7 +924,8 @@ class PackageRepository extends DocumentRepository
     {
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder
-            ->addOr($queryBuilder->expr()->field('virtualRoom')->exists(false)->equals(null))
+            ->addOr($queryBuilder->expr()->field('virtualRoom')->exists(false))
+            ->addOr($queryBuilder->expr()->field('virtualRoom')->equals(null))
             ->field('begin')->gte($begin)
             ->field('end')->lte($end);
 
