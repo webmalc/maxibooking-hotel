@@ -201,4 +201,5 @@ technical: Техника
 mailer.new_task.subject: 'Вам назначена новая задача'
 mailer.new_task.text: 'Вам назначили задачу "%taskType%"'
 
-
+mbhhotelbundle.hotelData.hotelOne: 'Мой отель #1'
+mbhhotelbundle.hotelData.hotelTwo: 'Мой отель #2'

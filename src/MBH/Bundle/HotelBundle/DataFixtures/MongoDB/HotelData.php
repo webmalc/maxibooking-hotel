@@ -14,17 +14,26 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  */
 class HotelData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
-    const HOTELS = [
-        'hotel-one' => [
-            'title' => 'Мой отель #1',
+
+    /**
+     * Get hotel data
+     *
+     * @return array
+     */
+    public function Hotels()
+    {
+        return [
+            'hotel-one' => [
+                'title' => $this->container->get('translator')->trans('mbhhotelbundle.hotelData.hotelOne'),
             'default' => true
         ],
-        'hotel-two' => [
-            'title' => 'Мой отель #2',
-            'default' => false
-        ]
-    ];
-    
+            'hotel-two' => [
+                'title' => $this->container->get('translator')->trans('mbhhotelbundle.hotelData.hotelTwo'),
+                'default' => false
+            ]
+        ];
+    }
+
     use ContainerAwareTrait;
 
     /**
@@ -35,7 +44,7 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface, Cont
         $repo = $manager->getRepository('MBHHotelBundle:Hotel');
 
         if (!count($repo->findAll())) {
-            foreach (self::HOTELS as $key => $hotelData) {
+            foreach ($this->Hotels() as $key => $hotelData) {
                 $hotel = new Hotel();
                 $hotel
                     ->setFullTitle($hotelData['title'])
