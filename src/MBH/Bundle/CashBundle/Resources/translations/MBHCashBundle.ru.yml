@@ -1,5 +1,6 @@
 views.cash.edit.new_document: 'создание документа #'
 views.cash.edit.edit_document: 'редактирование документа #'
+views.cash.edit.order_document: Документ заказа
 views.cash.index.period: 'Период'
 views.cash.index.filter.byPaidDate: 'По поступлению'
 views.cash.index.filter.byDocumentDate: 'По выставлению'
