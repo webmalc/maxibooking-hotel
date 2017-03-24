@@ -66,6 +66,8 @@ mbhcashbundle.form.searchtype.sortirova: Сортирова
 mbhcashbundle.form.searchtype.vid.platezha: 'Вид платежа'
 mbhcashbundle.view.cash.jsonbuttons.data: Дата
 mbhcashbundle.view.cash.index.ostatok.po.kasse: 'Остаток по кассе'
+mbhcashbundle.view.cash.index.1c_export: Экспорт в 1C
+mbhcashbundle.view.cash.index.upload_clearing: Выгрузить безнал
 form.cashDocumentType.payer: Плательщик
 form.cashDocumentType.organization: Организация
 form.cashDocumentType.tourist: Клиент

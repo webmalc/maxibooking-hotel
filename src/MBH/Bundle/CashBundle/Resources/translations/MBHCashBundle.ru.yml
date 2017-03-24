@@ -26,6 +26,10 @@ views.cash.jsonButtons.confirm: Подтвердить
 views.cash.jsonButtons.edit_record: 'Редактирование записи'
 views.cash.jsonButtons.delete_record: 'Удаление записи'
 views.cash.layout.cash: Касса
+views.cash.index.cash_balance: Остаток по кассе
+views.cash.index.create: Создать
+views.cash.index.upload_all: Выгрузить все
+
 
 views.cash.index.show_no_paid: Показать неоплаченные
 views.cash.index.show_not_confirmed: Показать только неподтвержденные
