@@ -219,3 +219,6 @@ mbhhotelbundle.roomTypeController.entity_was_created_successfully: 'Запись
 mbhhotelbundle.roomTypeController.image_was_deleded_successfully: 'Изображение успешно удалено.'
 mbhhotelbundle.roomTypeController.photo_was_change_default_successfully: 'Фотография успешно была сделана главной.'
 mbhhotelbundle.roomTypeController.photo_was_created_successfully: 'Фотография успешно создана.'
+
+views.task.index.ne_zadano: Не задано
+views.task.index.entity_was_deleted: Запись удалена
