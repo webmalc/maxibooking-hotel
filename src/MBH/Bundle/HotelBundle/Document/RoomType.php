@@ -49,7 +49,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="validator.document.roomType.hotel_in_not_select")
      * @ODM\Index()
      */
     protected $hotel;
