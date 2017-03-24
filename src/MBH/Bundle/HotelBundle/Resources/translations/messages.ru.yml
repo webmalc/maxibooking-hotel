@@ -242,4 +242,4 @@ views.hotel.roomType.editTabs.photo: Фотографии
 views.hotel.roomType.editTabs.tasks: Задачи
 
 views.hotel.roomType.editImages.do_default: Задачи
-views.hotel.roomType.editImages.defele_picture: Удалить картинку
+views.hotel.roomType.editImages.delete_picture: Удалить картинку
