@@ -461,3 +461,5 @@ document.saved: Запись успешно сохранена.
 position: Позиция
 position.help: Позиция записи для сортировки
 configuration: Настройки
+
+app.resources.twigBundle.translations.error: Ошибка
