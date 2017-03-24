@@ -240,3 +240,6 @@ views.hotel.roomType.editAutoTasks.add: Добавить
 views.hotel.roomType.editTabs.public_information_and_setting: Общая информация и настройки
 views.hotel.roomType.editTabs.photo: Фотографии
 views.hotel.roomType.editTabs.tasks: Задачи
+
+views.hotel.roomType.editImages.do_default: Задачи
+views.hotel.roomType.editImages.defele_picture: Удалить картинку
