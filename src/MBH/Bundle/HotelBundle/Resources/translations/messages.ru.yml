@@ -232,5 +232,5 @@ views.task.index.record_was_delete: Запись удалена
 views.task.index.before_two: до
 
 views.hotel.notFound.error: ошибка
-views.hotel.notFound.creating: создание
-views.hotel.notFound.list: список
+views.hotel.new.creating: создание
+views.hotel.index.list: список
