@@ -81,6 +81,19 @@ form.cashDocumentType.comment: Комментарий
 form.cashDocumentType.is_paid: Оплачен?
 controller.cashController.edit_record_success: 'Запись успешно отредактирована.'
 controller.cashController.payment_confirmed_success: 'Платеж успешно подтвержден'
+controller.cashController.beznal.v.tom.chisle.electronnie: 'Безнал (в т.ч. электронные)'
 
 cashDocumentCriteria.type.order: По заказам
 cashDocumentCriteria.type.other: Без заказов
+cashDocumentSubscriber.document.dlia.pechati.ne.sozdan : 'Документ для печати не создан.'
+cashDocumentSubscriber.ne.naidena.organizacia.dlia.etogo.otela: 'Не найдена организация для этого отеля из раздела "Мои организации".'
+cashDocumentSubscriber.ne.ustanovlen.bank.polichatela: 'Не установлен "Банк получателя".'
+cashDocumentSubscriber.ne.ustanovlen.bik.polichatela: 'Не установлен "Бик банка".'
+cashDocumentSubscriber.ne.ustanovlen.kor.shet: 'Не установлен "Корр. счёт".'
+cashDocumentSubscriber.ne.ustanovlen.inn: 'Не установлен "ИНН".'
+cashDocumentSubscriber.ne.ustanovlen.kpp: 'Не установлен "КПП".'
+cashDocumentSubscriber.ne.ustanovlen.raschetnii.shet: 'Не установлен "Расчётный счёт".'
+cashDocumentSubscriber.ne.ustanovleno.nazvanie.organizacii: 'Не установлено "Название организации".'
+cashDocumentSubscriber.schet.na.oplatu: Счёт на оплату
+cashDocumentSubscriber.schet: Счёт
+cashDocumentSubscriber.ot: от
