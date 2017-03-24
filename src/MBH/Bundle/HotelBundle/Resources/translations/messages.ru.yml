@@ -225,3 +225,8 @@ views.task.index.entity_was_deleted: Запись удалена
 views.task.index.vse: все
 views.task.index.in_work: В работе
 views.task.index.before: до
+
+views.task.index.delete_recording: Запись удалена
+views.task.index.before: до
+views.task.index.record_was_delete: Запись удалена
+views.task.index.before_two: до
