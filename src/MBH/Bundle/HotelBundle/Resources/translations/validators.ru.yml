@@ -8,6 +8,7 @@ validator.document.city.max_name: Слишком длинное имя
 validator.document.country.min_name: Слишком короткое имя
 validator.document.country.max_name: Слишком длинное имя
 validator.document.hotel.min_name: Слишком короткое имя
+validator.document.hotel.hotel_is_exist: Такой отель уже существует
 validator.document.hotel.max_name: Слишком длинное имя
 validator.document.hotel.min_prefix: Слишком короткий префикс
 validator.document.hotel.max_prefix: Слишком длинный префикс
