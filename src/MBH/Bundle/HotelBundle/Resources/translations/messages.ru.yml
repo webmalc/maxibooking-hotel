@@ -236,3 +236,7 @@ views.hotel.new.creating: создание
 views.hotel.index.list: список
 
 views.hotel.roomType.editAutoTasks.add: Добавить
+
+views.hotel.roomType.editTabs.public_information_and_setting: Общая информация и настройки
+views.hotel.roomType.editTabs.photo: Фотографии
+views.hotel.roomType.editTabs.tasks: Задачи
