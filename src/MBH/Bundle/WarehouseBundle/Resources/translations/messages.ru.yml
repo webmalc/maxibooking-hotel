@@ -56,3 +56,6 @@ warehouse.record.inventory: остатки
 warehouse.record.tabs.list: Записи
 warehouse.record.tabs.inventory: Остатки
 warehouse.record.th.quantity: Кол-во
+warehouse.fixtures.mongodb.warehousedata.household_chemical: 'Бытовая химия'
+warehouse.fixtures.mongodb.warehousedata.food: 'Питание'
+warehouse.fixtures.mongodb.warehousedata.underwear: 'Белье'
