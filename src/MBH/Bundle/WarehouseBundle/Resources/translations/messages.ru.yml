@@ -63,3 +63,5 @@ warehouse.eventlistener.warehousesubscriber.can_not_delete_product_category: Н�
 warehouse.controller.invoicecontroller.new_consignment_note_has_been_created_successfully: 'Новая накладная успешно создана'
 warehouse.controller.invoicecontroller.consignment_saved: 'Накладная сохранена'
 warehouse.resources.view.record.dates: Даты
+warehouse.resources.view.invoice.add: Добавить
+warehouse.resources.view.inwoice.edit_consignment: редактирование накладной
