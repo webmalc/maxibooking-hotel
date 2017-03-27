@@ -2,7 +2,7 @@ services:
 #roomCache generator
   mbh.room.cache.graph.generator:
     class: MBH\Bundle\PriceBundle\Services\RoomCacheGraphGenerator
-    arguments: ['@mbh.helper', '@doctrine_mongodb']
+    arguments: ['@mbh.helper', '@doctrine_mongodb', '@service_container']
 
   mbh.tariff.subscriber:
     class: MBH\Bundle\PriceBundle\EventListener\TariffSubscriber
