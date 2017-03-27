@@ -86,7 +86,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         //get roomTypes
         $roomTypes = $this->manager->getRooms($this->hotel, $request->get('roomTypes'));
         if (!count($roomTypes)) {
-            return array_merge($response, ['error' => 'Типы номеров не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.services.roomcachegraphgenerator.room_type_is_not_found')]);
         }
         //get tariffs
         $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
