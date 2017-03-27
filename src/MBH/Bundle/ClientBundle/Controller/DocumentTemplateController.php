@@ -59,7 +59,7 @@ class DocumentTemplateController extends BaseController
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('clientbundle.controller.documentTemplateController'));
             return $this->afterSaveRedirect('document_templates', $entity->getId());
         }
 
