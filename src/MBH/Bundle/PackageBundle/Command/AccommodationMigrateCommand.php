@@ -22,7 +22,7 @@ class AccommodationMigrateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('bin/console')
+            ->setName('mbh:package:accommodation_migrate')
             ->setDescription('Accommodation migrate')
         ;
     }
