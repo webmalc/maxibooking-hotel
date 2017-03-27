@@ -440,3 +440,7 @@ price.overviewcontroller.tariffs_is_not_found: 'Тарифы не найдены
 price.controller.restrictioncontroller.room_types_not_found: 'Типы номеров не найдены'
 price.controller.restrictioncontroller.tariffs_not_found: 'Тарифы не найдены'
 price.controller.restrictioncontroller.data_successful_generate: 'Данные успешно сгенерированы.'
+
+price.controller.servicecontroller.price_successful_saved: 'Цены успешно сохранены.'
+price.controller.servicecontroller.entry_successful_saved: 'Запись успешно создана.'
+price.controller.servicecontroller.entry_successfully_updated: 'Запись успешно отредактирована.'
