@@ -139,6 +139,23 @@ mbhpricebundle.form.pricecachegeneratortype.vsedninedeli: все дни неде
 mbhpricebundle.form.pricecachegeneratortype.tipynomerov: Типы номеров
 mbhpricebundle.form.pricecachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: Типы номеров для которых будет произведена генерация цен
 mbhpricebundle.form.pricecachegeneratortype.tarify: Тарифы
+mbhpricebundle.form.pricecachegeneratortype.price_cant_be_less_minus_one: 'Цена не может быть меньше минус одного'
+mbhpricebundle.form.pricecachegeneratortype.price_for_people_or_number: 'Цена за человека или за номер?'
+mbhpricebundle.form.pricecachegeneratortype.price_for_people: 'Цена за человека?'
+mbhpricebundle.form.pricecachegeneratortype.price_for_children_defaulp_place: 'Цена за детское осн. место'
+mbhpricebundle.form.pricecachegeneratortype.settings: Настройки
+mbhpricebundle.form.pricecachegeneratortype.price: Цены
+mbhpricebundle.form.pricecachegeneratortype.change_sum_or_percent: 'Укажите сумму или процент (15%) от цены'
+mbhpricebundle.form.pricecachegeneratortype.price_for_single_accommodation: 'Цена 1-местного размещения'
+mbhpricebundle.form.pricecachegeneratortype.price_for_single_room_bookings: 'Цена при бронировании номера на одного человека.'
+mbhpricebundle.form.pricecachegeneratortype.price_can_not_be_less_than_zero: 'Цена не может быть меньше нуля'
+mbhpricebundle.form.pricecachegeneratortype.tcena_detskogo_dop_mesta: 'Цена детского доп. места'
+mbhpricebundle.form.pricecachegeneratortype.price_one_place_accomodation: 'Цена 1-местного размещения'
+mbhpricebundle.form.pricecachegeneratortype.remember: 'Запомнить?'
+mbhpricebundle.form.pricecachegeneratortype.remember_to_reuse: 'Запомнить для повторного использования'
+mbhpricebundle.form.pricecachegeneratortype.beginning_period_should_be_less_than_end_period: 'Начало периода должно быть меньше конца периода.'
+mbhpricebundle.form.pricecachegeneratortype.period_can_not_be_more_than_year: 'Период не может быть больше года.'
+mbhpricebundle.form.pricecachegeneratortype.price_adult_extra_places: 'Цена взрослого доп. места'
 mbhpricebundle.form.pricecachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen: Тарифы для которых будет произведена генерация цен
 mbhpricebundle.form.pricecachegeneratortype.tsena: Цена
 mbhpricebundle.form.pricecachegeneratortype.tsenazacheloveka: Цена за человека?
