@@ -215,7 +215,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $this->get('mbh.cache')->clear('restriction');
 
         $request->getSession()->getFlashBag()
-            ->set('success', 'Изменения успешно сохранены.')
+            ->set('success', $this->container->get('translator')->trans('price.controller.restrictioncontroller.change_successful_saved'))
         ;
 
         return $this->redirect($this->generateUrl('restriction_overview', [
