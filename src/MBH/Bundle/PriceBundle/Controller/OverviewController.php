@@ -76,14 +76,14 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         ;
 
         if (!count($roomTypes)) {
-            return array_merge($response, ['error' => 'Типы номеров не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.overviewcontroller.room_type_is_not_found')]);
         }
         //get tariffs
         $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
             ->fetch($hotel, $request->get('tariffs'))
         ;
         if (!count($tariffs)) {
-            return array_merge($response, ['error' => 'Тарифы не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.overviewcontroller.tariffs_is_not_found')]);
         }
 
         //get roomCaches

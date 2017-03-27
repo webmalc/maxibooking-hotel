@@ -414,6 +414,8 @@ price.tariffcontroller.tariff_successfully_copied: 'Тариф успешно с
 price.tariffcontroller.tariff_successfully_created: 'Тариф успешно создан. Теперь необходимо заполнить цены.'
 price.tariffcontroller.entry_successfully_updated: 'Запись успешно отредактирована.'
 price.tariffcontroller.room_type_is_not_found: 'Типы номеров не найдены'
-
 price.tariffcontroller.update_successfully_saved: 'Изменения успешно сохранены.'
 price.tariffcontroller.data_successfully_generated: 'Данные успешно сгенерированы.'
+
+price.overviewcontroller.room_type_is_not_found: 'Типы номеров не найдены'
+price.overviewcontroller.tariffs_is_not_found: 'Тарифы не найдены'
