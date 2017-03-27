@@ -12,39 +12,39 @@ use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
 class PromotionConditionFactory
 {
     /**
-     * Минимальная длинна брони
+     * Minimum booking length
      */
     const CONDITION_MIN_ACCOMMODATION = 'min_accommodation';
     /**
-     * Максимальная блинна брони
+     * Maximum booking lenght
      */
     const CONDITION_MAX_ACCOMMODATION = 'max_accommodation';
     /**
-     * Минимальное еоличество гостей
+     * Minimum count guests
      */
     const CONDITION_MAX_TOURISTS = 'max_tourists';
     /**
-     * Максимальное количество гостей
+     * Maximum count guests
      */
     const CONDITION_MIN_TOURISTS = 'min_tourists';
 
     /**
-     * Максимальное количество взрослых
+     * Maximum count adults
      */
     const CONDITION_MIN_ADULTS = 'min_adults';
 
     /**
-     * Минимальное количество взрослых
+     * Maximum count adults
      */
     const CONDITION_MAX_ADULTS = 'max_adults';
 
     /**
-     * Максимальное количество детей
+     * Minimum count children
      */
     const CONDITION_MIN_CHILDREN = 'min_children';
 
     /**
-     * Минимальное количество детей
+     * Maximum count children
      */
     const CONDITION_MAX_CHILDREN = 'max_children';
 
