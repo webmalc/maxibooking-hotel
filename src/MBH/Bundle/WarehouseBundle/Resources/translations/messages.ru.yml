@@ -68,3 +68,9 @@ warehouse.resources.view.inwoice.edit_consignment: редактирование 
 warehouse.resources.view.invoice.new.add: Добавить
 warehouse.resources.view.creation_of_new_commodity_waybill: создание новой товарной накладной
 warehouse.resources.view.error_the_number_can_not_be_zero: 'Ошибка. Количество не может быть нулевым!'
+warehouse.resources.view.operation: Операция
+warehouse.resources.view.date: Дата
+warehouse.resources.view.nubmer: Номер
+warehouse.resources.view.organization: Организация
+warehouse.resources.view.hotel: Отель
+warehouse.resources.view.lists: 'Список товарных накладных'
