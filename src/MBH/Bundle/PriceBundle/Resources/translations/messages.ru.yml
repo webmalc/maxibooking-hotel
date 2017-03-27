@@ -403,7 +403,13 @@ price.datafixtures.mongodb.servicedata.transfer: Трансфер
 price.datafixtures.mongodb.servicedata.default_tariff: 'Основной тариф'
 
 price.services.roomcachegraphgenerator.room_type_is_not_found: Типы номеров не найдены
-price.services.roomcachecontroller.room_type_is_not_found: Типы номеров не найдены
-price.services.roomcachecontroller.tariffs_is_not_found: 'Тарифы не найдены'
-price.services.roomcachecontroller.сhange_successfully_saved: 'Изменения успешно сохранены.'
-price.services.roomcachecontroller.data_successfully_generate: 'Данные успешно сгенерированы.'
+price.roomcachecontroller.room_type_is_not_found: Типы номеров не найдены
+price.roomcachecontroller.tariffs_is_not_found: 'Тарифы не найдены'
+price.roomcachecontroller.сhange_successfully_saved: 'Изменения успешно сохранены.'
+price.roomcachecontroller.data_successfully_generate: 'Данные успешно сгенерированы.'
+
+price.tariffcontroller.children_tariff: дочерний тариф
+price.tariffcontroller.children_tariff_successfully_created: 'Дочерний тариф успешно создан.'
+price.tariffcontroller.tariff_successfully_copied: 'Тариф успешно скопирован.'
+price.tariffcontroller.tariff_successfully_created: 'Тариф успешно создан. Теперь необходимо заполнить цены.'
+price.tariffcontroller.entry_successfully_updated: 'Запись успешно отредактирована.'
