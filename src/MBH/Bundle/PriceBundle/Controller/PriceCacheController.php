@@ -86,13 +86,13 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         //get roomTypes
         $roomTypes = $this->manager->getRooms($this->hotel, $request->get('roomTypes'));
         if (!count($roomTypes)) {
-            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.services.roomcachegraphgenerator.room_type_is_not_found')]);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.services.roomcachecontroller.room_type_is_not_found')]);
         }
         //get tariffs
         $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
             ->fetchChildTariffs($this->hotel, 'prices', $request->get('tariffs'));
         if (!count($tariffs)) {
-            return array_merge($response, ['error' => 'Тарифы не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.services.roomcachecontroller.tariffs_is_not_found')]);
         }
 
         //get priceCaches
@@ -201,7 +201,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $this->dm->flush();
 
         $request->getSession()->getFlashBag()
-            ->set('success', 'Изменения успешно сохранены.');
+            ->set('success', $this->container->get('translator')->trans('price.services.roomcachecontroller.сhange_successfully_saved'));
 
         $this->get('mbh.channelmanager')->updatePricesInBackground();
         $this->get('mbh.cache')->clear('price_cache');
@@ -328,7 +328,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             $this->get('mbh.channelmanager')->updatePricesInBackground();
             $this->get('mbh.cache')->clear('price_cache');
 
-            $session->getFlashBag()->set('success', 'Данные успешно сгенерированы.');
+            $session->getFlashBag()->set('success', $this->container->get('translator')->trans('price.services.roomcachecontroller.data_successfully_generate'));
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('price_cache_generator') :
