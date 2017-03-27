@@ -40,6 +40,9 @@ class PackageVirtualRoomType extends AbstractType
                 'group' => 'modal.form.virtual_room.virtual_room.group',
                 'mapped' => false,
                 'required' => false,
+                'attr' => [
+                    'checked' => $isChain
+                ]
             ])
         ;
 

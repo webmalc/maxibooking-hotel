@@ -99,7 +99,6 @@ function listenToCheckbox($modal, packageElem, $checkbox, isChainCarried) {
         'offText': 'нет',
         'onColor': 'success'
     });
-    $checkbox.bootstrapSwitch('state', isChainCarried);
     $checkbox.on('switchChange.bootstrapSwitch', function() {
         var isChainCarried = $checkbox.bootstrapSwitch('state');
         $modal.find('.modal-body').html(mbh.loader.html);

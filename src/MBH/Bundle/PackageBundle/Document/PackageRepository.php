@@ -118,7 +118,7 @@ class PackageRepository extends DocumentRepository
     ) {
         $qb = $this->getFetchWithVirtualRoomQB($begin, $end, $roomType, $exclude);
         if (!is_null($inRooms)) {
-            $qb->field('virtualRoom')->in($inRooms);
+            $qb->field('virtualRoom.id')->in($inRooms);
         }
         if ($sortByBegin) {
             $qb->sort('begin', 'asc');
