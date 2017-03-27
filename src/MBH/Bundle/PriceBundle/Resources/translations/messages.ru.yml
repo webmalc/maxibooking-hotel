@@ -400,3 +400,4 @@ price.datafixtures.mongodb.servicedata.transfer: Трансфер
 price.datafixtures.mongodb.servicedata.accomodation: Размещение
 price.datafixtures.mongodb.servicedata.options: Опции
 price.datafixtures.mongodb.servicedata.transfer: Трансфер
+price.datafixtures.mongodb.servicedata.default_tariff: 'Основной тариф'
