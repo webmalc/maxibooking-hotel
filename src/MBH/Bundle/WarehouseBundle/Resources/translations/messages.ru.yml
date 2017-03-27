@@ -67,3 +67,4 @@ warehouse.resources.view.invoice.add: Добавить
 warehouse.resources.view.inwoice.edit_consignment: редактирование накладной
 warehouse.resources.view.invoice.new.add: Добавить
 warehouse.resources.view.creation_of_new_commodity_waybill: создание новой товарной накладной
+warehouse.resources.view.error_the_number_can_not_be_zero: 'Ошибка. Количество не может быть нулевым!'
