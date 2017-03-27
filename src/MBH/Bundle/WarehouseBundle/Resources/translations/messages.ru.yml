@@ -60,3 +60,5 @@ warehouse.fixtures.mongodb.warehousedata.household_chemical: 'Бытовая х�
 warehouse.fixtures.mongodb.warehousedata.food: 'Питание'
 warehouse.fixtures.mongodb.warehousedata.underwear: 'Белье'
 warehouse.eventlistener.warehousesubscriber.can_not_delete_product_category: Невозможно удалить категорию с товарами
+warehouse.eventlistener.invoicecontroller.new_consignment_note_has_been_created_successfully: 'Новая накладная успешно создана'
+warehouse.eventlistener.invoicecontroller.consignment_saved: 'Накладная сохранена'
