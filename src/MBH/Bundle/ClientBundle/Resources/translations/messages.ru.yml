@@ -54,4 +54,6 @@ form.clientConfigType.search_tariffs_desc: Количество тарифов �
 form.clientConfigType.add_start_date: Начальная дата
 
 form.documentTemplateType.hotel: Отель
-clientbundle.controller.documentTemplateController: 'Запись успешно создана.'
+clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
+
+clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
