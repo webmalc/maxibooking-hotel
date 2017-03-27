@@ -91,14 +91,14 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             ->fetch($hotel, $request->get('roomTypes'))
         ;
         if (!count($roomTypes)) {
-            return array_merge($response, ['error' => 'Типы номеров не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.controller.restrictioncontroller.room_types_not_found')]);
         }
         //get tariffs
         $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
             ->fetchChildTariffs($hotel, 'restrictions', $request->get('tariffs'))
         ;
         if (!count($tariffs)) {
-            return array_merge($response, ['error' => 'Тарифы не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.controller.restrictioncontroller.tariffs_not_found')]);
         }
 
         //get restrictions
@@ -269,7 +269,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 
         if ($form->isValid()) {
             $request->getSession()->getFlashBag()
-                ->set('success', 'Данные успешно сгенерированы.')
+                ->set('success', $this->container->get('translator')->trans('price.controller.restrictioncontroller.data_successful_generate'))
             ;
 
             $data = $form->getData();
