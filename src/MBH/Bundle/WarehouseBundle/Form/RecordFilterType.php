@@ -25,7 +25,7 @@ class RecordFilterType extends AbstractType
                 'attr' => [
                     'class' => 'datepicker begin-datepicker input-small',
                     'data-date-format' => 'dd.mm.yyyy',
-					'placeholder' => 'с',
+					'placeholder' => 'warehouse.resources.form.recordfiltertype.with',
                 ],
             ])
             ->add('recordDateTo', DateType::class, [
