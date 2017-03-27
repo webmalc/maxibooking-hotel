@@ -397,3 +397,6 @@ price.datafixtures.mongodb.servicedata.internet: Интернет
 price.datafixtures.mongodb.servicedata.parking: Парковка
 price.datafixtures.mongodb.servicedata.children_bed: Детская кровать
 price.datafixtures.mongodb.servicedata.transfer: Трансфер
+price.datafixtures.mongodb.servicedata.accomodation: Размещение
+price.datafixtures.mongodb.servicedata.options: Опции
+price.datafixtures.mongodb.servicedata.transfer: Трансфер

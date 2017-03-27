@@ -40,20 +40,20 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
             'Full board for Children' => ['name' => 'price.datafixtures.mongodb.servicedata.children_full_pansion', 'calcType' => 'per_night', 'enabled' => false],
             'All Inclusive' => ['name' => 'price.datafixtures.mongodb.servicedata.all_inclusive', 'calcType' => 'per_night', 'enabled' => false],
         ],
-        'Размещение' => [
+        'price.datafixtures.mongodb.servicedata.accomodation' => [
             'Extrabed' => ['name' => 'price.datafixtures.mongodb.servicedata.extra_bed', 'calcType' => 'per_night', 'enabled' => true],
             'Infant' => ['name' => 'price.datafixtures.mongodb.servicedata.infant', 'calcType' => 'per_night', 'enabled' => true],
             'Early check-in'  => ['name' => 'price.datafixtures.mongodb.servicedata.early_check-in', 'calcType' => 'day_percent', 'enabled' => true],
             'Late check-out'  => ['name' => 'price.datafixtures.mongodb.servicedata.late_check-out', 'calcType' => 'day_percent', 'enabled' => true],
         ],
-        'Опции' => [
+        'price.datafixtures.mongodb.servicedata.options' => [
             'WiFi' => ['name' => 'WiFi', 'calcType' => 'per_night', 'enabled' => false],
             'Internet' => ['name' => 'price.datafixtures.mongodb.servicedata.internet', 'calcType' => 'per_night', 'enabled' => false],
             'Parking space' => ['name' => 'price.datafixtures.mongodb.servicedata.parking', 'calcType' => 'per_night', 'enabled' => false],
             'Babycot' => ['name' => 'price.datafixtures.mongodb.servicedata.children_bed', 'calcType' => 'per_night', 'enabled' => false],
 
         ],
-        'Трансфер' => [
+        'price.datafixtures.mongodb.servicedata.transfer' => [
             'Transfer' => ['name' => 'price.datafixtures.mongodb.servicedata.transfer', 'calcType' => 'not_applicable', 'date' => true, 'time' => true, 'enabled' => false]
         ]
     ];
