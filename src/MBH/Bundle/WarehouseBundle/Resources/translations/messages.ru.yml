@@ -59,3 +59,4 @@ warehouse.record.th.quantity: Кол-во
 warehouse.fixtures.mongodb.warehousedata.household_chemical: 'Бытовая химия'
 warehouse.fixtures.mongodb.warehousedata.food: 'Питание'
 warehouse.fixtures.mongodb.warehousedata.underwear: 'Белье'
+warehouse.eventlistener.warehousesubscriber.can_not_delete_product_category: Невозможно удалить категорию с товарами
