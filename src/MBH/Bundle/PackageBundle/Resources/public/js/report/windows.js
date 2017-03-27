@@ -77,6 +77,13 @@ function setModalContent($modal, packageElem, isChain) {
         $modal.find('.modal-body').html(html);
         var $checkbox = $modal.find("#mbh_bundle_packagebundle_package_virtual_room_type_isChainMoved");
         listenToCheckbox($modal, packageElem, $checkbox, isChainCarried);
+        if (isChainCarried) {
+            $('#mbh_bundle_packagebundle_package_virtual_room_type_virtualRoom').find('option').each(function (index, elem) {
+                if (!elem.value) {
+                    elem.parentNode.removeChild(elem);
+                }
+            });
+        }
 
         $('#modal-submit').click(function () {
             var change_form = $modal.find('.modal-body > form');
