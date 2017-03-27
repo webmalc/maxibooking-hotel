@@ -445,3 +445,11 @@ price.controller.restrictioncontroller.change_successful_saved: 'Изменен�
 price.controller.servicecontroller.price_successful_saved: 'Цены успешно сохранены.'
 price.controller.servicecontroller.entry_successful_saved: 'Запись успешно создана.'
 price.controller.servicecontroller.entry_successfully_updated: 'Запись успешно отредактирована.'
+
+price.resources.views.roomcache.number_on_sales: Номера в продаже
+price.resources.views.quotas_for_tariffs: Квоты по тарифам
+price.resources.views.roomcache.in_sales: В продаже
+price.resources.views.booking: Забронировано
+price.resources.views.booking_in_percents: Забронировано в %
+price.resources.views.left: Осталось
+price.resources.views.closet: Закрыто
