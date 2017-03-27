@@ -20,16 +20,16 @@ class PromotionConditionFactory
      */
     const CONDITION_MAX_ACCOMMODATION = 'max_accommodation';
     /**
-     * Minimum count guests
+     * Maximum count guests
      */
     const CONDITION_MAX_TOURISTS = 'max_tourists';
     /**
-     * Maximum count guests
+     * Minimum count guests
      */
     const CONDITION_MIN_TOURISTS = 'min_tourists';
 
     /**
-     * Maximum count adults
+     * Minimum count adults
      */
     const CONDITION_MIN_ADULTS = 'min_adults';
 
