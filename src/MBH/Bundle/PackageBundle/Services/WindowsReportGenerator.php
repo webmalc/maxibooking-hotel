@@ -72,6 +72,15 @@ class WindowsReportGenerator
      */
     private $error = '';
 
+    /**
+     * @var array
+     */
+    private $countNumbers = [];
+
+    /**
+     * @var array
+     */
+    private $countVirtualNumbers = [];
 
     public function __construct(Helper $helper, ManagerRegistry $dm)
     {
@@ -112,17 +121,93 @@ class WindowsReportGenerator
             ->fetchWithVirtualRooms($this->begin, $this->end, null, true);
 
         $this->roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
-            ->fetch($this->begin, $this->end, $this->hotel,  $request->get('roomType') ? [$request->get('roomType')]: [], null, true);
+            ->fetch($this->begin, $this->end, $this->hotel, $request->get('roomType') ? [$request->get('roomType')] : [], null, true);
 
         foreach ($rooms as $room) {
             $this->addRoomType($room->getRoomType());
             $this->addRoom($room);
             foreach (new \DatePeriod($this->begin, \DateInterval::createFromDateString('1 day'), $to) as $day) {
                 $this->addDate($day)->addInfo($day, $room);
+                $this->addCountNumbers($room, $day);
             }
         }
+        $this->countVirtualNumbers = self::countVirtualNumbers($to);
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCountNumbers(): array
+    {
+        return $this->countNumbers;
+    }
+
+    /**
+     * @param array $countNumbers
+     */
+    public function addCountNumbers($room, $day)
+    {
+        $roomCaches = $this->roomCaches;
+        
+        if (isset($roomCaches[$room->getroomType()->getId()])) {
+            $roomCache = isset($roomCaches[$room->getroomType()->getId()][0][$day->format('d.m.Y')]) ? $roomCaches[$room->getroomType()->getId()][0][$day->format('d.m.Y')] : null;
+        }else{
+            $roomCache = null;
+        }
+
+        (is_null($roomCache)) ? 0 : $roomCache->getTotalRooms();
+
+        if (is_null($roomCache)) {
+            (is_null($roomCache)) ? 0 : $roomCache->getTotalRooms();
+        }
+
+        $this->countNumbers[$room->getroomType()->getId()][$day->format('d.m.Y')] = $roomCache;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCountVirtualNumbers(): array
+    {
+        return $this->countVirtualNumbers;
+    }
+
+    /**
+     * @param array $countVirtualNumbers
+     */
+
+    private function countVirtualNumbers($to)
+    {
+        $packagesRoomTypes = $this->packages;
+        $arr = [];
+        foreach ($this->roomTypes as $roomType) {
+
+            foreach (new \DatePeriod($this->begin, \DateInterval::createFromDateString('1 day'), $to) as $day) {
+                $count = 0;
+                foreach ($packagesRoomTypes as $packagesRoomType) {
+                    foreach ($packagesRoomType as $packageRoom) {
+
+                        foreach ($packageRoom as $package) {
+
+                            if ($day >= $package->getBegin() && $day < $package->getEnd()) {
+                                if ($package->getRoomType() == $roomType) {
+                                    $package->getVirtualRoom() ? $count++ : null;
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+                $arr[$roomType->getId()][$day->format('d.m.Y')] = $count;
+            }
+
+        }
+        return $arr;
     }
 
 
@@ -202,7 +287,7 @@ class WindowsReportGenerator
      */
     private function addInfo(\DateTime $date, Room $room): self
     {
-        $roomTypeId =$room->getRoomType()->getId();
+        $roomTypeId = $room->getRoomType()->getId();
 
         if (isset($this->packages[$roomTypeId][$room->getId()])) {
             $packages = $this->packages[$roomTypeId][$room->getId()];

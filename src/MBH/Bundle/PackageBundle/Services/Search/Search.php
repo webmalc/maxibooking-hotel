@@ -74,6 +74,8 @@ class Search implements SearchInterface
     {
         $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
         $token = $this->container->get('security.token_storage')->getToken();
+        $session = $this->container->get('session');
+        $trans = $this->container->get('translator');
 
         if (!$query->memcached) {
             $this->memcached = null;
@@ -88,7 +90,8 @@ class Search implements SearchInterface
 
         $calc = $this->container->get('mbh.calculation');
         if (!empty($query->tariff) && !$query->tariff instanceof Tariff) {
-            $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($query->tariff);
+             $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                 ->fetchById($query->tariff, $this->memcached);
         }
 
         // dates
@@ -109,7 +112,6 @@ class Search implements SearchInterface
             if (!empty($query->availableRoomTypes)) {
                 $query->roomTypes = array_intersect($query->roomTypes, $query->availableRoomTypes);
             };
-
         } elseif ($this->manager->useCategories && !$query->forceRoomTypes) {
             $roomTypes = [];
             foreach ($query->roomTypes as $catId) {
@@ -123,13 +125,17 @@ class Search implements SearchInterface
 
         //roomCache with tariffs
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null,
-            $query->roomTypes, false, false, $this->memcached
+            $query->begin,
+            $end,
+            $query->tariff ? $query->tariff->getHotel() : null,
+            $query->roomTypes,
+            false,
+            false,
+            $this->memcached
         );
 
         //group caches
         foreach ($roomCaches as $roomCache) {
-
             if ($roomCache->getTariff()) {
                 // collect quotes
                 try {
@@ -141,7 +147,6 @@ class Search implements SearchInterface
                         $groupedCaches['tariff'][$roomCache->getHotel()->getId()][$roomCache->getRoomType()->getId()][] = $roomCache;
                     }
                 } catch (DocumentNotFoundException $e) {
-
                 }
             } else {
                 $skip = false;
@@ -161,7 +166,6 @@ class Search implements SearchInterface
 
         //tariff dates
         if (!empty($query->tariff)) {
-
             if ($query->tariff->getBegin() && $query->tariff->getBegin() > $this->now) {
                 return $results;
             }
@@ -173,11 +177,9 @@ class Search implements SearchInterface
         //delete short cache chains
         foreach ($groupedCaches['room'] as $hotelId => $hotelA) {
             foreach ($hotelA as $roomTypeId => $caches) {
-
                 $quotes = false;
                 if (isset($groupedCaches['tariff'][$hotelId][$roomTypeId])) {
                     foreach ($groupedCaches['tariff'][$hotelId][$roomTypeId] as $tariffCache) {
-
                         if (!isset($tariffMin[$hotelId][$roomTypeId]) || $tariffMin[$hotelId][$roomTypeId] > $tariffCache->getLeftRooms()) {
                             $tariffMin[$hotelId][$roomTypeId] = $tariffCache->getLeftRooms();
                         }
@@ -206,7 +208,13 @@ class Search implements SearchInterface
             }
 
             $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
-                $query->begin, $query->end, null, $query->roomTypes, $restrictionsTariff ? [$restrictionsTariff->getId()] : [], false, $this->memcached
+                $query->begin,
+                $query->end,
+                null,
+                $query->roomTypes,
+                $restrictionsTariff ? [$restrictionsTariff->getId()] : [],
+                false,
+                $this->memcached
             );
 
             foreach ($restrictions as $restriction) {
@@ -252,7 +260,7 @@ class Search implements SearchInterface
                 }
 
                 //MaxGuest
-                if ($restriction->getMaxGuest() && $query->getTotalPlaces() > $restriction->getMaxGuest() ) {
+                if ($restriction->getMaxGuest() && $query->getTotalPlaces() > $restriction->getMaxGuest()) {
                     $delete = true;
                 }
                 //MinGuest
@@ -288,7 +296,6 @@ class Search implements SearchInterface
         }
         //generate result
         foreach ($deletedCaches as $hotelId => $hotelArray) {
-
             //skip disabled tariff & hotel
             $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($hotelId);
             if (!$hotel || !$hotel->getIsEnabled()) {
@@ -297,7 +304,8 @@ class Search implements SearchInterface
             if (!empty($query->tariff)) {
                 $tariff = $query->tariff;
             } else {
-                $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
+                $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                    ->fetchBaseTariff($hotel, null, $this->memcached);
             }
             if (!$tariff || !$tariff->getIsEnabled()) {
                 continue;
@@ -309,14 +317,16 @@ class Search implements SearchInterface
 
             if (!$query->forceBooking) {
                 $check = PromotionConditionFactory::checkConditions(
-                    $tariff, $duration, $query->adults, $query->children
+                    $tariff,
+                    $duration,
+                    $query->adults,
+                    $query->children
                 );
 
                 if (!$check) {
                     continue;
                 }
             }
-
 
             $adults = $query->adults;
             $children = $query->children;
@@ -343,7 +353,6 @@ class Search implements SearchInterface
             }
 
             foreach ($hotelArray as $roomTypeId => $caches) {
-
                 $min = $cachesMin[$hotelId][$roomTypeId];
 
                 if (isset($tariffMin[$hotelId][$roomTypeId]) && $tariffMin[$hotelId][$roomTypeId] < $min) {
@@ -372,7 +381,11 @@ class Search implements SearchInterface
                         $query->begin,
                         $query->end,
                         $roomType->getHotel(),
-                        $roomType->getId(), null, null, false, $this->memcached
+                        $roomType->getId(),
+                        null,
+                        null,
+                        false,
+                        $this->memcached
                     );
                     $result->setRooms($accommodationRooms);
                 }
@@ -420,9 +433,15 @@ class Search implements SearchInterface
                     );
                 } else { //TODO: Убирать доседа
                     $prices = $calc->calcPrices(
-                        $roomType, $tariff, $query->begin, $end,
-                        $tourists['adults'], $tourists['children'], $promotion,
-                        $this->manager->useCategories, $query->getSpecial()
+                        $roomType,
+                    $tariff,
+                    $query->begin,
+                    $end,
+                        $tourists['adults'],
+                    $tourists['children'],
+                    $promotion,
+                        $this->manager->useCategories,
+                    $query->getSpecial()
                     );
                 }
 
@@ -439,14 +458,24 @@ class Search implements SearchInterface
                     continue;
                 }
 
+                $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                    ->fetchBaseTariff($result->getRoomType()->getHotel(), null, $this->memcached);
+
                 //check windows
                 $virtualResult = $this->setVirtualRoom(
                     $result,
-                    $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($result->getRoomType()->getHotel()),
+                    $baseTariff,
                     $query->getExcludePackage()
                 );
 
                 if (!$virtualResult) {
+                    $session->getFlashBag()->add(
+                        'search',
+                        $trans->trans(
+                            'windows.search.error',
+                            ['%room_type%' => $result->getRoomType()]
+                        )
+                    );
                     continue;
                 }
 
@@ -458,8 +487,7 @@ class Search implements SearchInterface
                     $results[$roomTypeObjId]->setRoomsCount($totalRooms);
                 }
 
-                if (
-                    !$result->isUseCategories() ||
+                if (!$result->isUseCategories() ||
                     !isset($results[$roomTypeObjId]) ||
                     $results[$roomTypeObjId]->getRoomType()->getTotalPlaces() > $result->getRoomType()->getTotalPlaces()
                 ) {
@@ -491,10 +519,8 @@ class Search implements SearchInterface
         $roomType = $result->getRoomType();
         $begin = clone $result->getBegin();
         $end = clone $result->getEnd();
-        $preferredRoom = null;
-        $emptyRoom = null;
         $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')
-            ->findOneByDate($begin, $roomType, $tariff);
+            ->findOneByDate($begin, $roomType, $tariff, $this->memcached);
 
         if ($restriction && $restriction->getMinStayArrival()) {
             $begin->modify('-' . $restriction->getMinStayArrival() . ' days');
@@ -506,7 +532,11 @@ class Search implements SearchInterface
         ;
 
         $minRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->getMinTotal(
-            $begin, $end, $roomType
+            $begin,
+            $end,
+            $roomType,
+            null,
+            $this->memcached
         );
 
         $groupedPackages = [];
@@ -516,33 +546,38 @@ class Search implements SearchInterface
 
         $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
             ->fetch(
-                null, [$result->getRoomType()->getId()], null, null, null, $minRoomCache, false, true,
-                ['roomType.id' => 'asc', 'fullTitle' => 'desc'], $this->memcached
+                null,
+                [$result->getRoomType()->getId()],
+                null,
+                null,
+                null,
+                $minRoomCache,
+                false,
+                true,
+                ['roomType.id' => 'asc', 'fullTitle' => 'desc'],
+                $this->memcached
             );
 
-        $min = 0;
         $preferredRooms = new \SplObjectStorage();
         $emptyRooms =  new \SplObjectStorage();
 
         foreach ($rooms as $room) {
             if (isset($groupedPackages[$room->getId()])) {
                 foreach ($groupedPackages[$room->getId()] as $package) {
-
-                    if ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
-                        $min += 1;
+                    if ($package->getBegin() == $result->getEnd() && $package->getEnd() == $result->getBegin()) {
+                        $preferredRooms->attach($room);
+                        break 2;
+                    } elseif ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
                         $preferredRooms->attach($room);
                     } elseif ($package->getBegin() == $end || $package->getEnd() == $begin) {
-                        $min += 1;
                         $preferredRooms->attach($room);
                     } else {
                         $preferredRooms->detach($room);
                         break;
                     }
                 }
-
             } else {
                 $emptyRooms->attach($room);
-                $min += 1;
             }
         }
         $result->setRoomsCount($emptyRooms->count() + $preferredRooms->count());
@@ -558,7 +593,6 @@ class Search implements SearchInterface
 
             return $result;
         }
-
         return false;
     }
 
@@ -600,7 +634,10 @@ class Search implements SearchInterface
         }
 
         foreach ($hotels as $hotel) {
-            foreach ($this->dm->getRepository('MBHPriceBundle:Tariff')->fetch($hotel) as $tariff) {
+            $hotelTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                ->fetch($hotel, null, null, false, $this->memcached);
+
+            foreach ($hotelTariffs as $tariff) {
                 if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
                     continue;
                 }
@@ -617,7 +654,7 @@ class Search implements SearchInterface
                 if (!$tariff->getIsEnabled()) {
                     continue;
                 }
-                if ($tariff->getDeletedAt() ) {
+                if ($tariff->getDeletedAt()) {
                     continue;
                 }
                 $tariffs[$tariff->getHotel()->getId()][] = $tariff;
@@ -625,7 +662,7 @@ class Search implements SearchInterface
         }
 
         foreach ($tariffs as $key => $tariffsCollection) {
-            usort ($tariffsCollection, function ($a, $b) {
+            usort($tariffsCollection, function ($a, $b) {
                 if ($a->getPosition() == $b->getPosition()) {
                     if ($a->getIsDefault() && $b->getIsDefault()) {
                         return 0;
@@ -654,5 +691,4 @@ class Search implements SearchInterface
 
         return $results;
     }
-
 }

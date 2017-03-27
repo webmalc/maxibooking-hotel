@@ -112,6 +112,17 @@ package.actions.xls_notice: Уведомление о прибытии ИГ
 package.window.not.virtual.room: Брони без номера
 package.window.not.virtual.room.expand: Развернуть
 package.window.not.virtual.room.turn: Свернуть
+package.window.amount.rooms: Всего номеров
+package.window.amount.rooms.virtual: Номеров виртуально
+package.window.amount.rooms.in.sale: Номеров в продаже
+package.window.diffirence.rooms.in.sale: Разница по номерам
+package.window.count.rooms.virtual: Виртуально размещено
+package.window.rooms.packages: Забронированно
+package.window.difference.packages.virtual: Остаток виртуальных номеров
+package.window.difference.room.in.packages.sales: Остаток номеров в продаже
+package.window.difference.room.sale.package: Разница в продаже
+package.window.difference.room.placed: Разница размещено
+package.window.difference.room.rest: Разница остатков
 
 package.actions.find_similar:  Найти похожую
 package.actions.cancel: Отмена
