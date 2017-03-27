@@ -22,7 +22,7 @@ trait ConditionsTrait
      * @ODM\Integer()
      * @var integer
      * @Assert\Type(type="numeric")
-     * @Assert\Range(min="1", max="10")
+     * @Assert\Range(min="1", max="30")
      */
     protected $conditionQuantity;
 
@@ -37,7 +37,7 @@ trait ConditionsTrait
      * @ODM\Integer()
      * @var integer
      * @Assert\Type(type="numeric")
-     * @Assert\Range(min="1", max="10")
+     * @Assert\Range(min="1", max="30")
      */
     protected $additionalConditionQuantity;
 
