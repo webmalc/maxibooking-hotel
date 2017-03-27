@@ -90,7 +90,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         if ($request->isMethod('GET')) {
             $isChain = !is_null($request->query->get('isChain')) && $request->query->get('isChain') == 'true';
         } else {
-            $isChain = $request->request->get('mbh_bundle_packagebundle_package_virtual_room_type')['isChainMoved'] == 1;
+            $isChain = isset($request->request->get('mbh_bundle_packagebundle_package_virtual_room_type')['isChainMoved'])
+                ? $request->request->get('mbh_bundle_packagebundle_package_virtual_room_type')['isChainMoved'] == 1
+                : false;
         }
 
         $response = ['package' => $package];

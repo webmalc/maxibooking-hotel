@@ -189,6 +189,12 @@ class VirtualRoomHandler
         return $emptyIntervals;
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param Room $firstVirtualRoom
+     * @param Room $secondVirtualRoom
+     * @param $excludedPackage
+     */
     public function replaceVirtualRoomChains(
         \DateTime $begin,
         Room $firstVirtualRoom,
@@ -197,8 +203,9 @@ class VirtualRoomHandler
     ) {
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
         $packages = $packageRepository->extendedFetchWithVirtualRooms($begin,
-            (clone $begin)->add(new \DateInterval('P360D')),
+            (clone $begin)->add(new \DateInterval('P2Y')),
             false, null, [$firstVirtualRoom->getId(), $secondVirtualRoom->getId()], $excludedPackage);
+
         /** @var Package $package */
         foreach ($packages as $package) {
             if ($package->getVirtualRoom() == $firstVirtualRoom) {
@@ -207,6 +214,7 @@ class VirtualRoomHandler
                 $package->setVirtualRoom($firstVirtualRoom);
             }
         }
+
         $this->dm->flush();
     }
 
