@@ -1,6 +1,6 @@
 {% extends 'MBHWarehouseBundle:Invoice:layout.html.twig' %}
 
-{% set small_title = 'создание новой товарной накладной' %}
+{% set small_title = 'warehouse.resources.view.creation_of_new_commodity_waybill'|trans %}
 {% set layout = 'box' %}
 
 {% block content %}
@@ -32,7 +32,7 @@
 			</thead>
 			<tfoot>
 				<tr>
-					<td colspan="6"><button id="addRow" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> Добавить</button></td>
+					<td colspan="6"><button id="addRow" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> {{ 'warehouse.resources.view.invoice.new.add'|trans }}</button></td>
 				</tr>
 			</tfoot>
 			<tbody>

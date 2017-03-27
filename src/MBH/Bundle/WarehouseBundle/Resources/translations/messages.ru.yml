@@ -65,3 +65,5 @@ warehouse.controller.invoicecontroller.consignment_saved: 'Накладная с
 warehouse.resources.view.record.dates: Даты
 warehouse.resources.view.invoice.add: Добавить
 warehouse.resources.view.inwoice.edit_consignment: редактирование накладной
+warehouse.resources.view.invoice.new.add: Добавить
+warehouse.resources.view.creation_of_new_commodity_waybill: создание новой товарной накладной
