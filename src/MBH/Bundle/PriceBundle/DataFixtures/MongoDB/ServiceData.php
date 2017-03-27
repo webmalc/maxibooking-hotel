@@ -17,44 +17,44 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class ServiceData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     const SERVICES = [
-        'Питание' => [
-            'Breakfast' => ['name' => 'Завтрак', 'calcType' => 'per_night', 'enabled' => false],
-            'Continental breakfast' => ['name' => 'Континентальный завтрак', 'calcType' => 'per_night', 'enabled' => false],
-            'American breakfast' => ['name' => 'Американский завтрак', 'calcType' => 'per_night', 'enabled' => false],
-            'Buffet breakfast' => ['name' => 'Завтрак-буфет', 'calcType' => 'per_night', 'enabled' => false],
-            'Full english breakfast' => ['name' => 'Полный английский завтрак', 'calcType' => 'per_night', 'enabled' => false],
-            'Lunch' => ['name' => 'Обед', 'calcType' => 'per_night', 'enabled' => false],
-            'Dinner' => ['name' => 'Ужин', 'calcType' => 'per_night', 'enabled' => false],
-            'Half board' => ['name' => 'Полупансион', 'calcType' => 'per_night', 'enabled' => false],
-            'Breakfast and Lunch' => ['name' => 'Завтрак и обед', 'calcType' => 'per_night', 'enabled' => false],
-            'Full board' => ['name' => 'Полный пансион', 'calcType' => 'per_night', 'enabled' => false],
-            'Full pansion' => ['name' => 'Обед и ужин', 'calcType' => 'per_night', 'enabled' => false],
-            'Breakfast for Children' => ['name' => 'Детский завтрак', 'calcType' => 'per_night', 'enabled' => false],
-            'Continental breakfast for Children' => ['name' => 'Детский континентальный завтрак', 'calcType' => 'per_night', 'enabled' => false],
-            'American breakfast for Children' => ['name' => 'Детский американский завтрак', 'calcType' => 'per_night', 'enabled' => false],
-            'Buffet breakfast for Children' => ['name' => 'Детский завтрак-буфет', 'calcType' => 'per_night', 'enabled' => false],
-            'Full english breakfast for Children' => ['name' => 'Детский полный английский завтрак', 'calcType' => 'per_night', 'enabled' => false],
-            'Lunch for Children' => ['name' => 'Детский обед', 'calcType' => 'per_night', 'enabled' => false],
-            'Dinner for Children' => ['name' => 'Детский ужин', 'calcType' => 'per_night', 'enabled' => false],
-            'Half board for Children' => ['name' => 'Детский полупансион', 'calcType' => 'per_night', 'enabled' => false],
-            'Full board for Children' => ['name' => 'Детский полный пансион', 'calcType' => 'per_night', 'enabled' => false],
-            'All Inclusive' => ['name' => 'Все включено', 'calcType' => 'per_night', 'enabled' => false],
+        'price.datafixtures.mongodb.servicedata.eat' => [
+            'Breakfast' => ['name' => 'price.datafixtures.mongodb.servicedata.breakfast', 'calcType' => 'per_night', 'enabled' => false],
+            'Continental breakfast' => ['name' => 'price.datafixtures.mongodb.servicedata.breakfast.continental_breakfast', 'calcType' => 'per_night', 'enabled' => false],
+            'American breakfast' => ['name' => 'price.datafixtures.mongodb.servicedata.breakfast.american_breakfast', 'calcType' => 'per_night', 'enabled' => false],
+            'Buffet breakfast' => ['name' => 'price.datafixtures.mongodb.servicedata.breakfast.breakfast_buffet', 'calcType' => 'per_night', 'enabled' => false],
+            'Full english breakfast' => ['name' => 'price.datafixtures.mongodb.servicedata.breakfast.full_english_breakfast', 'calcType' => 'per_night', 'enabled' => false],
+            'Lunch' => ['name' => 'price.datafixtures.mongodb.servicedata.dinner', 'calcType' => 'per_night', 'enabled' => false],
+            'Dinner' => ['name' => 'price.datafixtures.mongodb.servicedata.uzhit', 'calcType' => 'per_night', 'enabled' => false],
+            'Half board' => ['name' => 'price.datafixtures.mongodb.servicedata.polupansion', 'calcType' => 'per_night', 'enabled' => false],
+            'Breakfast and Lunch' => ['name' => 'price.datafixtures.mongodb.servicedata.breakfast_and_dinner', 'calcType' => 'per_night', 'enabled' => false],
+            'Full board' => ['name' => 'price.datafixtures.mongodb.servicedata.full_pansion', 'calcType' => 'per_night', 'enabled' => false],
+            'Full pansion' => ['name' => 'price.datafixtures.mongodb.servicedata.obed_i_uzhin', 'calcType' => 'per_night', 'enabled' => false],
+            'Breakfast for Children' => ['name' => 'price.datafixtures.mongodb.servicedata.children_breakfast', 'calcType' => 'per_night', 'enabled' => false],
+            'Continental breakfast for Children' => ['name' => 'price.datafixtures.mongodb.servicedata.children_continental_breakfast', 'calcType' => 'per_night', 'enabled' => false],
+            'American breakfast for Children' => ['name' => 'price.datafixtures.mongodb.servicedata.children_american_breakfast', 'calcType' => 'per_night', 'enabled' => false],
+            'Buffet breakfast for Children' => ['name' => 'price.datafixtures.mongodb.servicedata.children_breakfast_buffet', 'calcType' => 'per_night', 'enabled' => false],
+            'Full english breakfast for Children' => ['name' => 'price.datafixtures.mongodb.servicedata.children_full_english_breakfast', 'calcType' => 'per_night', 'enabled' => false],
+            'Lunch for Children' => ['name' => 'price.datafixtures.mongodb.servicedata.children_dinner', 'calcType' => 'per_night', 'enabled' => false],
+            'Dinner for Children' => ['name' => 'price.datafixtures.mongodb.servicedata.children_uzhin', 'calcType' => 'per_night', 'enabled' => false],
+            'Half board for Children' => ['name' => 'price.datafixtures.mongodb.servicedata.children_polupansion', 'calcType' => 'per_night', 'enabled' => false],
+            'Full board for Children' => ['name' => 'price.datafixtures.mongodb.servicedata.children_full_pansion', 'calcType' => 'per_night', 'enabled' => false],
+            'All Inclusive' => ['name' => 'price.datafixtures.mongodb.servicedata.all_inclusive', 'calcType' => 'per_night', 'enabled' => false],
         ],
         'Размещение' => [
-            'Extrabed' => ['name' => 'Дополнительная кровать', 'calcType' => 'per_night', 'enabled' => true],
-            'Infant' => ['name' => 'Инфант', 'calcType' => 'per_night', 'enabled' => true],
-            'Early check-in'  => ['name' => 'Ранний заезд', 'calcType' => 'day_percent', 'enabled' => true],
-            'Late check-out'  => ['name' => 'Поздний выезд', 'calcType' => 'day_percent', 'enabled' => true],
+            'Extrabed' => ['name' => 'price.datafixtures.mongodb.servicedata.extra_bed', 'calcType' => 'per_night', 'enabled' => true],
+            'Infant' => ['name' => 'price.datafixtures.mongodb.servicedata.infant', 'calcType' => 'per_night', 'enabled' => true],
+            'Early check-in'  => ['name' => 'price.datafixtures.mongodb.servicedata.early_check-in', 'calcType' => 'day_percent', 'enabled' => true],
+            'Late check-out'  => ['name' => 'price.datafixtures.mongodb.servicedata.late_check-out', 'calcType' => 'day_percent', 'enabled' => true],
         ],
         'Опции' => [
             'WiFi' => ['name' => 'WiFi', 'calcType' => 'per_night', 'enabled' => false],
-            'Internet' => ['name' => 'Интернет', 'calcType' => 'per_night', 'enabled' => false],
-            'Parking space' => ['name' => 'Парковка', 'calcType' => 'per_night', 'enabled' => false],
-            'Babycot' => ['name' => 'Детская кровать', 'calcType' => 'per_night', 'enabled' => false],
+            'Internet' => ['name' => 'price.datafixtures.mongodb.servicedata.internet', 'calcType' => 'per_night', 'enabled' => false],
+            'Parking space' => ['name' => 'price.datafixtures.mongodb.servicedata.parking', 'calcType' => 'per_night', 'enabled' => false],
+            'Babycot' => ['name' => 'price.datafixtures.mongodb.servicedata.children_bed', 'calcType' => 'per_night', 'enabled' => false],
 
         ],
         'Трансфер' => [
-            'Transfer' => ['name' => 'Трансфер', 'calcType' => 'not_applicable', 'date' => true, 'time' => true, 'enabled' => false]
+            'Transfer' => ['name' => 'price.datafixtures.mongodb.servicedata.transfer', 'calcType' => 'not_applicable', 'date' => true, 'time' => true, 'enabled' => false]
         ]
     ];
     

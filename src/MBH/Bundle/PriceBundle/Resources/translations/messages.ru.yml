@@ -366,3 +366,34 @@ specials.tariff: Тариф
 specials.discount: Скидка
 specials.sold: Продано
 special.apply: Применить
+
+price.datafixtures.mongodb.servicedata.eat: Питание
+price.datafixtures.mongodb.servicedata.breakfast: Завтрак
+price.datafixtures.mongodb.servicedata.breakfast.continental_breakfast: Континентальный завтрак
+price.datafixtures.mongodb.servicedata.breakfast.american_breakfast: Американский завтрак
+price.datafixtures.mongodb.servicedata.breakfast.breakfast_buffet: Завтрак-буфет
+price.datafixtures.mongodb.servicedata.breakfast.full_english_breakfast: Полный английский завтрак
+price.datafixtures.mongodb.servicedata.dinner: Обед
+price.datafixtures.mongodb.servicedata.uzhit: Ужин
+price.datafixtures.mongodb.servicedata.polupansion: Полупансион
+price.datafixtures.mongodb.servicedata.breakfast_and_dinner: Завтрак и обед
+price.datafixtures.mongodb.servicedata.full_pansion: Полный пансион
+price.datafixtures.mongodb.servicedata.obed_i_uzhin: Обуд и ужин
+price.datafixtures.mongodb.servicedata.children_breakfast: Детский завтрак
+price.datafixtures.mongodb.servicedata.children_continental_breakfast: Детский континентальный завтрак
+price.datafixtures.mongodb.servicedata.children_american_breakfast: Детский американский завтрак
+price.datafixtures.mongodb.servicedata.children_breakfast_buffet: Детский завтрак-буфет
+price.datafixtures.mongodb.servicedata.children_full_english_breakfast: Детский полный английский завтрак
+price.datafixtures.mongodb.servicedata.children_dinner: Детский обед
+price.datafixtures.mongodb.servicedata.children_uzhin: Детский ужин
+price.datafixtures.mongodb.servicedata.children_polupansion: Детский полупансион
+price.datafixtures.mongodb.servicedata.children_full_pansion: Детский полный пансион
+price.datafixtures.mongodb.servicedata.all_inclusive: Все включено
+price.datafixtures.mongodb.servicedata.extra_bed: Дополнительная кровать
+price.datafixtures.mongodb.servicedata.infant: Инфант
+price.datafixtures.mongodb.servicedata.early_check-in: Ранний заезд
+price.datafixtures.mongodb.servicedata.late_check-out: Поздний выезд
+price.datafixtures.mongodb.servicedata.internet: Интернет
+price.datafixtures.mongodb.servicedata.parking: Парковка
+price.datafixtures.mongodb.servicedata.children_bed: Детская кровать
+price.datafixtures.mongodb.servicedata.transfer: Трансфер
