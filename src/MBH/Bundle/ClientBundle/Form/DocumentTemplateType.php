@@ -31,7 +31,7 @@ class DocumentTemplateType extends AbstractType
                 'label' => 'mbhclientbundle.form.documenttemplatetype.oriyentatsiya', 'choices' => DocumentTemplate::getOrientations()
             ])
             ->add('hotel', DocumentType::class, [
-                'label' => 'Отель',
+                'label' => 'form.documentTemplateType.hotel',
                 'class' => Hotel::class,
                 'required' => false
             ])
