@@ -537,3 +537,40 @@ csv.form.countPersons: Кол-во Людей
 report.porter.note: 'Комментарий:'
 modal.form.delete.reasons.reason: Причина удаления
 modal.form.delete.delete_reason_package: Причина удаления брони
+
+package.resources.views.adres_region_ltc: адрес (регион, район, город, населенный пункт)
+package.resources.views.familiya: Фамилия
+package.resources.views.room: Комната
+package.resources.views.name: Имя
+package.resources.views.secondname: Отчество
+package.resources.views.birthday: Дата рождения
+package.resources.views.pol: Пол.
+package.resources.views.birthday_place: Место рождения
+package.resources.views.hotel_name_sanatory: '(Наименование гостиницы, санатория, дома отдыха и пр.)'
+package.resources.views.oblast: Область
+package.resources.views.raion: Район
+package.resources.views.city: Город
+package.resources.views.nas_punkt: Нас. пункт
+package.resources.views.grazhdanstvo: Гражданство
+package.resources.views.document: Документ, удостоверяющий личность
+package.resources.views.seria: Серия
+package.resources.views.vidan: Выдан
+package.resources.views.organ_vidaushiy_document: орган, выдавший документ
+package.resources.views.adres_mesta_zhitelstva: Адрес места жительства
+package.resources.views.country: Страна
+package.resources.views.obl: Обл.
+package.resources.views.raion: Район
+package.resources.views.nas_punkt: Нас. пункт
+package.resources.views.street: Улица
+package.resources.views.home: Дом
+package.resources.views.kor: Кор.
+package.resources.views.kv: Кв.
+package.resources.views.pribil: Прибыл
+package.resources.views.vibil: Выбыл
+package.resources.views.registrationed: Зарегистрировал
+package.resources.views.signature: Подпись
+package.resources.views.form: Форма
+package.resources.views.name_hotel_sanatory_home_relax: (Наименование гостиницы, санатория, дома отдыха и пр.)
+package.resources.views.g: г.
+package.resources.views.d: д.
+package.resources.views.kor: кор.
