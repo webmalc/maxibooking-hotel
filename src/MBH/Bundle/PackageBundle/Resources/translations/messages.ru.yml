@@ -574,3 +574,9 @@ package.resources.views.name_hotel_sanatory_home_relax: '(Наименовани
 package.resources.views.g: 'г.'
 package.resources.views.d: 'д.'
 package.resources.views.kor: 'кор.'
+package.services.first_day_live_in_booking_rooms: Первые сутки проживания в забронированных номерах
+package.services.percent_of_price_liveing: Процент от стоимости проживания
+package.services.fixed_price_for_all_booking_room: Фиксированная стоимость за каждый забронированный номер
+package.services.breakfast_sweden_table: Завтрак "Шведский стол"
+package.services.continental_breakfast: Завтрак "Континентальный"
+package.services.dinner: Обед
