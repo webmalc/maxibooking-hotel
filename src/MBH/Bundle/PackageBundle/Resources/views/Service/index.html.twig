@@ -25,6 +25,13 @@
             {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
 
             <div class="input">
+                <select id="package-filter-dates" name="package-filter-dates-type" class="package-filter form-control input-sm">
+                    <option value="begin">{{ 'package.index.check_in'|trans({}, 'MBHPackageBundle') }}</option>
+                    <option value="end">{{ 'package.index.check_out'|trans({}, 'MBHPackageBundle') }}</option>
+                    <option value="accommodation">{{ 'package.index.accommodation'|trans({}, 'MBHPackageBundle') }}</option>
+                </select>
+            </div>
+            <div class="input">
                 <i class="fa fa-plug" title='{{ "package.service.index.filter"|trans({}, "MBHPackageBundle") }}'
                                   data-toggle='tooltip'></i>&nbsp
 
@@ -56,8 +63,6 @@
                 <input name="deleted" type="checkbox">
             </div>
         </form>
-    </div></div>
-
 
     <table id="service-table"
            class="table not-auto-datatable table-striped table-hover table-condensed table-icons">
