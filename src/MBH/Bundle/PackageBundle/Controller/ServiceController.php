@@ -206,12 +206,12 @@ class ServiceController extends BaseController
             case 'begin':
                 $queryCriteria->dateFilterBy = 'begin';
                 $queryCriteria->begin = $begin;
-                $queryCriteria->end;
+                $queryCriteria->end = $end;
                 break;
             case 'end':
                 $queryCriteria->dateFilterBy = 'end';
                 $queryCriteria->begin = $begin;
-                $queryCriteria->end;
+                $queryCriteria->end = $end;
                 break;
             case 'accommodation':
                 $queryCriteria->filter = 'live_between';
