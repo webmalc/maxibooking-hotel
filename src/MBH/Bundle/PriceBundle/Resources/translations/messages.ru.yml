@@ -460,3 +460,4 @@ price.resources.views.roomcache.graph: 'График?'
 price.resources.views.roomcache.save: Сохранить
 price.resources.views.roomcache.left: осталось
 price.resources.views.roomcache.number_in_sell: Номера в продаже
+price.resources.views.roomcache.edit_category_of_services: редактирование категории услуг
