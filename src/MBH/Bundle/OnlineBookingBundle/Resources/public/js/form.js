@@ -325,7 +325,7 @@ $(function () {
             var prototype = $ageHolder.data("prototype"),
                 $newAge = $(prototype.replace(/__name__/g, index));
             $ageHolder.append($newAge.hide().fadeIn(300));
-            $newAge.easyDropDown();
+            $('select.dropdown',$newAge).easyDropDown();
 
         },
         deleteChildrenAge = function (index) {
