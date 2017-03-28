@@ -1,3 +1,33 @@
+mbhpricebundle.form.restrictiongeneratortype.nachalo.perioda: Начало периода
+mbhpricebundle.form.restrictiongeneratortype.konets.perioda: Конец периода
+mbhpricebundle.form.restrictiongeneratortype.dni.nedeli: Дни недели
+mbhpricebundle.form.restrictiongeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.nalichiya.mest: Дни недели для которых будет произведена генерация наличия мест
+mbhpricebundle.form.restrictiongeneratortype.vse.dni.nedeli: все дни недели
+mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov: Типы номеров
+mbhpricebundle.form.restrictiongeneratortype.setting: Настройки
+mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov.dlya.kotorykh.budet.proizvedena.generatsiya.tsen: 'Типы номеров для которых будет произведена генерация цен'
+mbhpricebundle.form.restrictiongeneratortype.vse.tipy.nomerov: все типы номеров
+mbhpricebundle.form.restrictiongeneratortype.tarify: Тарифы
+mbhpricebundle.form.restrictiongeneratortype.tarify.dlya.kotorykh.budet.proizvedena.generatsiya.tsen: Тарифы для которых будет произведена генерация цен
+mbhpricebundle.form.restrictiongeneratortype.vse.tarify: 'все тарифы'
+mbhpricebundle.form.restrictiongeneratortype.min_dlina: 'Мин. длина'
+mbhpricebundle.form.restrictiongeneratortype.max_dlina: 'Макс. длина'
+mbhpricebundle.form.restrictiongeneratortype.dlina_broni: 'Длина брони (заезд)'
+mbhpricebundle.form.restrictiongeneratortype.dlina_broni_skvosnoe: 'Длина брони (сквозное)'
+mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny: данные будут удалены
+mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_menshe_odnogo_dnia: Период не может быть меньше одного дня
+mbhpricebundle.form.restrictiongeneratortype.max_dney_do_zaezda: Макс. дней до заезда
+mbhpricebundle.form.restrictiongeneratortype.rannee_posdnee_bronirovanie: Раннее/позднее бронирование
+mbhpricebundle.form.restrictiongeneratortype.net_zaezda: 'Нет заезда?'
+mbhpricebundle.form.restrictiongeneratortype.ogranichenie_zaezda_viezda: Ограничение заезда/выезда
+mbhpricebundle.form.restrictiongeneratortype.net_viezda: 'Нет выезда?'
+mbhpricebundle.form.restrictiongeneratortype.zakrito: 'Закрыто?'
+mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey: 'Макс. количество гостей'
+mbhpricebundle.form.restrictiongeneratortype.ogranichenie_po_kolichestvu_gostey: Ограничение по количеству гостей
+mbhpricebundle.form.restrictiongeneratortype.kolichestvo_gostey_ne_mozhet_bit_menshe_nulia: 'Количество гостей не может быть меньше нуля'
+mbhpricebundle.form.restrictiongeneratortype.nachalo_perioda_dolzhno_bit_menshe_konca_perioda: 'Начало периода должно быть меньше конца периода.'
+mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_bolshe_goda: 'Период не может быть больше года.'
+mbhpricebundle.form.restrictiongeneratortype.minimalnoe_kolichestvo_gostey_ne_mozhet_bit_bolshe_maximalnogo_kolichestva_gostey: 'Минимальное количество гостей не может быть больше максимального количества гостей'
 form.promotionType.label.fullTitle: Название
 mbhpricebundle.view.tariff.index.osnovnoy: Основной
 form.promotionType.label.title: 'Внутреннее название'

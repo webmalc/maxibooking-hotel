@@ -26,7 +26,7 @@ class RestrictionGeneratorType extends AbstractType
                 'label' => 'mbhpricebundle.form.restrictiongeneratortype.nachalo.perioda',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'group' => 'Настройки',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.setting',
                 'data' => new \DateTime('midnight'),
                 'required' => true,
                 'attr' => array('class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
@@ -36,7 +36,7 @@ class RestrictionGeneratorType extends AbstractType
                 'label' => 'mbhpricebundle.form.restrictiongeneratortype.konets.perioda',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'group' => 'Настройки',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.setting',
                 'required' => true,
                 'attr' => array('class' => 'datepicker end-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()],
@@ -44,7 +44,7 @@ class RestrictionGeneratorType extends AbstractType
             ->add('weekdays',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'mbhpricebundle.form.restrictiongeneratortype.dni.nedeli',
                 'required' => false,
-                'group' => 'Настройки',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.setting',
                 'multiple' => true,
                 'choices' => $options['weekdays'],
                 'help' => 'mbhpricebundle.form.restrictiongeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.nalichiya.mest',
@@ -53,7 +53,7 @@ class RestrictionGeneratorType extends AbstractType
             ->add('roomTypes', DocumentType::class, [
                 'label' => 'mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov',
                 'required' => false,
-                'group' => 'Настройки',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.setting',
                 'multiple' => true,
                 'class' => 'MBHHotelBundle:RoomType',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
@@ -65,7 +65,7 @@ class RestrictionGeneratorType extends AbstractType
             ->add('tariffs', DocumentType::class, [
                 'label' => 'mbhpricebundle.form.restrictiongeneratortype.tarify',
                 'required' => true,
-                'group' => 'Настройки',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.setting',
                 'multiple' => true,
                 'class' => 'MBHPriceBundle:Tariff',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
@@ -75,43 +75,43 @@ class RestrictionGeneratorType extends AbstractType
                 'attr' => array('placeholder' => $options['hotel'].': mbhpricebundle.form.restrictiongeneratortype.vse.tarify', 'class' => 'select-all'),
             ])
             ->add('minStayArrival', TextType::class, [
-                'label' => 'Мин. длина',
-                'group' => 'Длина брони (заезд)',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.min_dlina',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.dlina_broni',
                 'required' => false,
                 'data' => null,
                 'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
-                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                    new Range(['min' => 1, 'minMessage' => 'mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_menshe_odnogo_dnia'])
                 ],
             ])
             ->add('maxStayArrival', TextType::class, [
-                'label' => 'Макс. длина',
-                'group' => 'Длина брони (заезд)',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.max_dlina',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.dlina_broni',
                 'required' => false,
                 'data' => null,
                 'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
-                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                    new Range(['min' => 1, 'minMessage' => 'mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_menshe_odnogo_dnia'])
                 ],
             ])
             ->add('minStay', TextType::class, [
-                'label' => 'Мин. длина',
-                'group' => 'Длина брони (сквозное)',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.min_dlina',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.dlina_broni_skvosnoe',
                 'required' => false,
                 'data' => null,
                 'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
-                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                    new Range(['min' => 1, 'minMessage' => 'mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_menshe_odnogo_dnia'])
                 ],
             ])
             ->add('maxStay', TextType::class, [
-                'label' => 'Макс. длина',
-                'group' => 'Длина брони (сквозное)',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.max_dlina',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.dlina_broni_skvosnoe',
                 'required' => false,
                 'data' => null,
                 'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
-                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                    new Range(['min' => 1, 'minMessage' => 'mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_menshe_odnogo_dnia'])
                 ],
             ])
             ->add('minBeforeArrival', TextType::class, [
@@ -121,48 +121,48 @@ class RestrictionGeneratorType extends AbstractType
                 'data' => null,
                 'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
-                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                    new Range(['min' => 1, 'minMessage' => 'mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_menshe_odnogo_dnia'])
                 ],
             ])
             ->add('maxBeforeArrival', TextType::class, [
-                'label' => 'Макс. дней до заезда',
-                'group' => 'Раннее/позднее бронирование',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.max_dney_do_zaezda',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.rannee_posdnee_bronirovanie',
                 'required' => false,
                 'data' => null,
                 'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
-                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                    new Range(['min' => 1, 'minMessage' => 'mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_menshe_odnogo_dnia'])
                 ],
             ])
             ->add('closedOnArrival', CheckboxType::class, [
-                'label' => 'Нет заезда?',
-                'group' => 'Ограничение заезда/выезда',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.net_zaezda',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.ogranichenie_zaezda_viezda',
                 'value' => true,
                 'required' => false,
                 'attr' => ['placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny']
             ])
             ->add('closedOnDeparture', CheckboxType::class, [
-                'label' => 'Нет выезда?',
-                'group' => 'Ограничение заезда/выезда',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.net_viezda',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.ogranichenie_zaezda_viezda',
                 'value' => true,
                 'required' => false,
                 'attr' => ['placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
             ])
             ->add('closed', CheckboxType::class, [
-                'label' => 'Закрыто?',
-                'group' => 'Ограничение заезда/выезда',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.zakrito',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.ogranichenie_zaezda_viezda',
                 'value' => true,
                 'required' => false,
                 'attr' => ['placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
             ])
             ->add('maxGuest', TextType::class, [
-                'label' => 'Макс. количество гостей',
-                'group' => 'Ограничение по количеству гостей',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.ogranichenie_po_kolichestvu_gostey',
                 'required' => false,
                 'data' => null,
                 'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
-                    new Range(['min' => 1, 'minMessage' => 'Количество гостей не может быть меньше нуля'])
+                    new Range(['min' => 1, 'minMessage' => 'mbhpricebundle.form.restrictiongeneratortype.kolichestvo_gostey_ne_mozhet_bit_menshe_nulia'])
                 ],
             ])
             ->add('minGuest', TextType::class, [
@@ -172,7 +172,7 @@ class RestrictionGeneratorType extends AbstractType
                 'data' => null,
                 'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
                 'constraints' => [
-                    new Range(['min' => 1, 'minMessage' => 'Количество гостей не может быть меньше нуля'])
+                    new Range(['min' => 1, 'minMessage' => 'mbhpricebundle.form.restrictiongeneratortype.kolichestvo_gostey_ne_mozhet_bit_menshe_nulia'])
                 ],
             ])
         ;
@@ -182,17 +182,17 @@ class RestrictionGeneratorType extends AbstractType
     public function checkDates($data, ExecutionContextInterface $context)
     {
         if ($data['begin'] >= $data['end']) {
-            $context->addViolation('Начало периода должно быть меньше конца периода.');
+            $context->addViolation('mbhpricebundle.form.restrictiongeneratortype.nachalo_perioda_dolzhno_bit_menshe_konca_perioda');
         }
         if ($data['end']->diff($data['begin'])->format("%a") > 370) {
-            $context->addViolation('Период не может быть больше года.');
+            $context->addViolation('mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_bolshe_goda');
         }
     }
 
     public function checkGuest($data, ExecutionContextInterface $context)
     {
         if ((int)$data['maxGuest'] < (int)$data['minGuest']) {
-            $context->addViolation('Минимальное количество гостей не может быть больше максимального количества гостей');
+            $context->addViolation('mbhpricebundle.form.restrictiongeneratortype.minimalnoe_kolichestvo_gostey_ne_mozhet_bit_bolshe_maximalnogo_kolichestva_gostey');
         }
 
     }
