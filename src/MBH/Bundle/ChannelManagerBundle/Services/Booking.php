@@ -13,6 +13,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -264,6 +265,13 @@ class Booking extends Base
 
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
+                        /** @var Tariff $tariffDocument */
+                        $tariffDocument = $tariff['doc'];
+                        $tariffChildOptions = $tariffDocument->getChildOptions();
+                        //Если тариф дочерний, берем данные о ценах по id родительского тарифа.
+                        $syncPricesTariffId = ($tariffDocument->getParent() && $tariffChildOptions->isInheritPrices())
+                            ? $tariffDocument->getParent()->getId()
+                            : $tariffId;
 
                         if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
                             continue;
@@ -273,8 +281,8 @@ class Booking extends Base
                             continue;
                         }
 
-                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
-                            $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
+                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
+                            $info = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $this->currencyConvertFromRub($config, $info->getPrice()),
                                 'price1' => $info->getSinglePrice() ? $this->currencyConvertFromRub(
@@ -356,6 +364,16 @@ class Booking extends Base
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
+                        /** @var Tariff $tariffDocument */
+                        $tariffDocument = $tariff['doc'];
+                        $tariffChildOptions = $tariffDocument->getChildOptions();
+                        //Если тариф дочерний, берем данные о ценах по id родительского тарифа.
+                        $syncPricesTariffId = ($tariffDocument->getParent() && $tariffChildOptions->isInheritPrices())
+                            ? $tariffDocument->getParent()->getId()
+                            : $tariffId;
+                        $syncRestrictionsTariffId = ($tariffDocument->getParent() && $tariffChildOptions->isInheritRestrictions())
+                            ? $tariffDocument->getParent()->getId()
+                            : $tariffId;
 
                         if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
                             continue;
@@ -366,12 +384,12 @@ class Booking extends Base
                         }
 
                         $price = false;
-                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
                             $price = true;
                         }
 
-                        if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
-                            $info = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
+                        if (isset($restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')])) {
+                            $info = $restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')];
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'minimumstay_arrival' => (int)$info->getMinStayArrival(),
                                 'maximumstay_arrival' => (int)$info->getMaxStayArrival(),
