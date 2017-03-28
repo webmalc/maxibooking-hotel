@@ -455,3 +455,6 @@ price.resources.views.left: Осталось
 price.resources.views.closet: Закрыто
 
 price.resources.views.roomcache.generator: генератор
+price.resources.views.roomcache.view: обзор
+price.resources.views.roomcache.graph: 'График?'
+price.resources.views.roomcache.save: Сохранить

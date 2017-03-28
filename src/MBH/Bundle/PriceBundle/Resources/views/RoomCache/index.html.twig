@@ -1,6 +1,6 @@
 {% extends 'MBHPriceBundle:RoomCache:layout.html.twig' %}
 
-{% set small_title = "обзор" %}
+{% set small_title = "price.resources.views.roomcache.view"|trans %}
 {% set layout = 'box' %}
 
 {% block content %}
@@ -32,7 +32,7 @@
                 </select>
             </div>
             <div class="input">
-                    <i class="fa fa-bar-chart" title='График?' data-toggle='tooltip'></i>
+                    <i class="fa fa-bar-chart" title='{{ 'price.resources.views.roomcache.graph'|trans }}' data-toggle='tooltip'></i>
                     &nbsp <input type="checkbox" id="room-cache-overview-filter-graph" class="room-cache-overview-filter" value="1"/>
                 </div>
         </form>
@@ -45,7 +45,7 @@
         <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
             <div class="container-fluid">
                 <ul class="nav navbar-nav">
-                    <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить</button></li>
+                    <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'price.resources.views.roomcache.save'|trans }}</button></li>
                     <li><button type="button" onclick="location.href = '{{ path('room_cache_generator') }}'" class="btn btn-primary navbar-btn"><i class="fa fa-magic"></i> {{ 'mbhpricebundle.view.roomcache.index.generator.nalichiya.mest'|trans }} </button></li>
                     <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> {{ 'mbhpricebundle.view.roomcache.index.otmena'|trans }} </button></li>
                 </ul>
