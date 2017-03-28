@@ -88,8 +88,13 @@ class PriceCacheRepository extends DocumentRepository
         $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories)->getQuery()->execute();
 
         if (!$grouped) {
+            if ($memcached) {
+                $memcached->set(iterator_to_array($caches), 'price_caches_fetch', func_get_args());
+            }
+
             return $caches;
         }
+
         $result = [];
         $method = $categories ? 'getRoomTypeCategory' : 'getRoomType';
         foreach ($caches as $cache) {
