@@ -3,3 +3,8 @@ mbhpricebundle.document.tariff.takoy.tarif.uzhe.sushchestvuyet: 'Такой та
 invalid.ages: Возраст инфанта должен быть меньше возраста ребенка
 special.dates.error: Некорректно введены даты
 special.displayDates.error: Некорректно введены даты отображения спецпредложения
+mbhpricebundle.document.so_short_name: Слишком короткое имя
+mbhpricebundle.document.name_is_too_long: Слишком длинное имя
+mbhpricebundle.document.so_short_description: Слишком короткое описание
+mbhpricebundle.document.description_is_too_long: Слишком длинное описание
+mbhpricebundle.document.price_can_not_be_less_than_zero: Цена не может быть меньше нуля

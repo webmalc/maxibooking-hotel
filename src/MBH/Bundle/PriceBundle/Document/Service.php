@@ -53,9 +53,9 @@ class Service extends Base
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="mbhpricebundle.document.so_short_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="mbhpricebundle.document.name_is_too_long"
      * )
      */
     protected $fullTitle;
@@ -66,9 +66,9 @@ class Service extends Base
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="mbhpricebundle.document.so_short_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="mbhpricebundle.document.name_is_too_long"
      * )
      */
     protected $title;
@@ -79,9 +79,9 @@ class Service extends Base
      * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое описание",
+     *      minMessage="mbhpricebundle.document.so_short_description",
      *      max=300,
-     *      maxMessage="Слишком длинное описание"
+     *      maxMessage="mbhpricebundle.document.description_is_too_long"
      * )
      */
     protected $description;
@@ -92,7 +92,7 @@ class Service extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Цена не может быть меньше нуля"
+     *      minMessage="mbhpricebundle.document.price_can_not_be_less_than_zero"
      * )
      */
     protected $price = 0;
