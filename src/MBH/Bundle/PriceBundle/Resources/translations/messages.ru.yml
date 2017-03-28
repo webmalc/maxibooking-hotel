@@ -453,3 +453,5 @@ price.resources.views.booking: Забронировано
 price.resources.views.booking_in_percents: Забронировано в %
 price.resources.views.left: Осталось
 price.resources.views.closet: Закрыто
+
+price.resources.views.roomcache.generator: генератор
