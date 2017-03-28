@@ -24,20 +24,20 @@ class TariffType extends AbstractType
         $builder
             ->add('fullTitle', TextType::class, [
                 'label' => 'mbhpricebundle.form.tarifftype.nazvaniye',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => true,
                 'attr' => ['placeholder' => 'mbhpricebundle.form.tarifftype.osnovnoy']
             ])
             ->add('title', TextType::class, [
                 'label' => 'mbhpricebundle.form.tarifftype.vnutrenneye.nazvaniye',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => false,
-                'attr' => ['placeholder' => 'Основной - лето ' . date('Y')],
-                'help' => 'Название для использования внутри MaxiBooking'
+                'attr' => ['placeholder' => 'price.form.public_summer' . ' ' . date('Y')],
+                'help' => 'price.form.nazvanie_dla_ispolzovania_vnutri'
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'mbhpricebundle.form.tarifftype.opisaniye',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => false,
                 'help' => 'mbhpricebundle.form.tarifftype.opisaniye.tarifa.dlya.onlayn.bronirovaniya'
             ])
@@ -49,7 +49,7 @@ class TariffType extends AbstractType
                     'group' => 'form.tariffType.conditions_and_restrictions',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-                    'help' => 'С какого числа используется тариф?',
+                    'help' => 'price.form.s_kakogo_chisla_ispolzuetsa_tarif',
                     'required' => false,
                     'attr' => array(
                         'class' => 'datepicker begin-datepicker input-small',
@@ -66,7 +66,7 @@ class TariffType extends AbstractType
                     'group' => 'form.tariffType.conditions_and_restrictions',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-                    'help' => 'По какое число используется тариф?',
+                    'help' => 'price.form.po_kakoe_chislo_ispolzuetsa_tarif',
                     'required' => false,
                     'attr' => array(
                         'class' => 'datepicker end-datepicker input-small',
@@ -122,11 +122,11 @@ class TariffType extends AbstractType
             ]);
         $builder
             ->add('isOnline', CheckboxType::class, [
-                'label' => 'Онлайн?',
+                'label' => 'price.form.online',
                 'group' => 'configuration',
                 'value' => true,
                 'required' => false,
-                'help' => 'Использовать ли тариф в онлайн бронировании?'
+                'help' => 'price.form.using_tariff_in_online_booking'
             ])
             ->add(
                 'childAge',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
@@ -137,7 +137,7 @@ class TariffType extends AbstractType
                     'multiple' => false,
                     'choices' => range(0, 18),
                     'attr' => array('class' => 'input-xxs plain-html'),
-                    'help' => 'До какого возраста клиент считается ребенком?'
+                    'help' => 'price.form.what_age_is_client_considered_child'
                 ]
             )
             ->add(
@@ -149,17 +149,18 @@ class TariffType extends AbstractType
                     'multiple' => false,
                     'choices' => range(0, 18),
                     'attr' => array('class' => 'input-xxs plain-html'),
-                    'help' => 'До какого возраста клиент считается инфантом?'
+                    'help' => 'price.form.what_age_is_client_considered_infant'
                 ]
             )
             ->add('defaultForMerging', CheckboxType::class, [
-                'label' => 'Использовать для комбинирования?',
+                'label' => 'price.form.use_combination',
                 'group' => 'configuration',
                 'value' => true,
                 'required' => false,
                 'help' =>
-                    'Использовать для комбинирования тарифов в переходных периодах?<br>
-                     По-молчанию спец. тарифы комбинируются с основным тарифом'
+                    'price.form.use_combine_tariffs_in_transition_periods' .
+                    '<br>' .
+                    'price.form.silence_special_tariffs_combined_with_basic_tariff'
             ])
             ->add('position', NumberType::class, [
                 'label' => 'position',
@@ -171,11 +172,11 @@ class TariffType extends AbstractType
                 ],
             ])
             ->add('isEnabled', CheckboxType::class, [
-                'label' => 'Включен?',
+                'label' => 'price.form.on',
                 'group' => 'configuration',
                 'value' => true,
                 'required' => false,
-                'help' => 'Используется ли тариф в поиске?'
+                'help' => 'price.form.tariff_used_search'
             ]);
     }
 

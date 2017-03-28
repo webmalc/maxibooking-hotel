@@ -492,3 +492,18 @@ price.resources.views.roomcache.save: Сохранить
 price.resources.views.roomcache.left: осталось
 price.resources.views.roomcache.number_in_sell: Номера в продаже
 price.resources.views.roomcache.edit_category_of_services: редактирование категории услуг
+
+price.form.public_information: Общая информация
+price.form.public_summer: Основной - лето
+price.form.nazvanie_dla_ispolzovania_vnutri: Название для использования внутри MaxiBooking
+price.form.s_kakogo_chisla_ispolzuetsa_tarif: С какого числа используется тариф?
+price.form.po_kakoe_chislo_ispolzuetsa_tarif: 'По какое число используется тариф?'
+price.form.online: 'Онлайн?'
+price.form.using_tariff_in_online_booking: 'Использовать ли тариф в онлайн бронировании?'
+price.form.what_age_is_client_considered_child: 'До какого возраста клиент считается ребенком?'
+price.form.what_age_is_client_considered_infant: 'До какого возраста клиент считается инфантом?'
+price.form.use_combine_tariffs_in_transition_periods: 'Использовать для комбинирования тарифов в переходных периодах?'
+price.form.silence_special_tariffs_combined_with_basic_tariff: 'По-молчанию спец. тарифы комбинируются с основным тарифом'
+price.form.on: 'Включен?'
+price.form.tariff_used_search: 'Используется ли тариф в поиске?'
+price.form.use_combination: 'Использовать для комбинирования?'
