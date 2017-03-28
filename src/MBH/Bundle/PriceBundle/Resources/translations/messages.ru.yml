@@ -23,6 +23,7 @@ mbhpricebundle.form.restrictiongeneratortype.ogranichenie_zaezda_viezda: Огр�
 mbhpricebundle.form.restrictiongeneratortype.net_viezda: 'Нет выезда?'
 mbhpricebundle.form.restrictiongeneratortype.zakrito: 'Закрыто?'
 mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey: 'Макс. количество гостей'
+mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey: 'Мин. количество гостей'
 mbhpricebundle.form.restrictiongeneratortype.ogranichenie_po_kolichestvu_gostey: Ограничение по количеству гостей
 mbhpricebundle.form.restrictiongeneratortype.kolichestvo_gostey_ne_mozhet_bit_menshe_nulia: 'Количество гостей не может быть меньше нуля'
 mbhpricebundle.form.restrictiongeneratortype.nachalo_perioda_dolzhno_bit_menshe_konca_perioda: 'Начало периода должно быть меньше конца периода.'

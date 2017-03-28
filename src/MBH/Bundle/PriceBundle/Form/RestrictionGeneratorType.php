@@ -115,8 +115,8 @@ class RestrictionGeneratorType extends AbstractType
                 ],
             ])
             ->add('minBeforeArrival', TextType::class, [
-                'label' => 'Мин. дней до заезда',
-                'group' => 'Раннее/позднее бронирование',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.min.dneydozayezda',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.rannee_posdnee_bronirovanie',
                 'required' => false,
                 'data' => null,
                 'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
@@ -166,8 +166,8 @@ class RestrictionGeneratorType extends AbstractType
                 ],
             ])
             ->add('minGuest', TextType::class, [
-                'label' => 'Мин. количество гостей',
-                'group' => 'Ограничение по количеству гостей',
+                'label' => 'mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey',
+                'group' => 'mbhpricebundle.form.restrictiongeneratortype.ogranichenie_po_kolichestvu_gostey',
                 'required' => false,
                 'data' => null,
                 'attr' => ['class' => 'spinner-1', 'placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny'],
