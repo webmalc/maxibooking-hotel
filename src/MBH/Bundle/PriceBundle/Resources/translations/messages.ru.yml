@@ -422,7 +422,7 @@ price.datafixtures.mongodb.servicedata.default_tariff: 'Основной тар�
 price.services.roomcachegraphgenerator.room_type_is_not_found: Типы номеров не найдены
 price.roomcachecontroller.room_type_is_not_found: Типы номеров не найдены
 price.roomcachecontroller.tariffs_is_not_found: 'Тарифы не найдены'
-price.roomcachecontroller.сhange_successfully_saved: 'Изменения успешно сохранены.'
+price.roomcachecontroller.change_successfully_saved: 'Изменения успешно сохранены.'
 price.roomcachecontroller.data_successfully_generate: 'Данные успешно сгенерированы.'
 
 price.tariffcontroller.children_tariff: дочерний тариф

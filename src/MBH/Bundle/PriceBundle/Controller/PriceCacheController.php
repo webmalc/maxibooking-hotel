@@ -201,7 +201,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $this->dm->flush();
 
         $request->getSession()->getFlashBag()
-            ->set('success', $this->container->get('translator')->trans('price.roomcachecontroller.сhange_successfully_saved'));
+            ->set('success', $this->container->get('translator')->trans('price.roomcachecontroller.change_successfully_saved'));
 
         $this->get('mbh.channelmanager')->updatePricesInBackground();
         $this->get('mbh.cache')->clear('price_cache');
