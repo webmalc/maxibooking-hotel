@@ -923,28 +923,18 @@ var mbhStartDate = function (e) {
 };
 
 var disableCheckboxListen = function () {
-    var disableCheckBox = document.getElementById('mbh-disable');
-    console.log(disableCheckBox);
-    disableCheckBox.onchange = function () {
-        console.log('change');
-        $.ajax({
-            url: Routing.generate('change_room_type_enableable_mode'),
-            type: "GET",
-            success: function () {
-                location.reload();
-            },
-            error: function () {
-                location.reload();
-            },
-            dataType: 'json'
-        });
-    }
+    var $disableCheckBox = $('#mbh-disable');
+    $disableCheckBox.is(':checked');
+    $disableCheckBox.on('switchChange.bootstrapSwitch', function () {
+        var disableMode = !$disableCheckBox.bootstrapSwitch('state') ? 'true' : 'false';
+        var routeName = $disableCheckBox.attr('data-route-name');
+        window.location.href = Routing.generate('change_room_type_enableable_mode', {disableMode: disableMode, route : routeName});
+    });
 };
 
 
 $(document).ready(function () {
     'use strict';
-
     docReadyForms();
 
     mbhStartDate();

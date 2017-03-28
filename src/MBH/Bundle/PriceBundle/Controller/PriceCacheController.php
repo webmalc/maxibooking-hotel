@@ -42,9 +42,20 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      */
     public function indexAction()
     {
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        //get roomTypes
+        if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->enable('disableable');
+        }
+        $roomTypes = $this->manager->getRooms($this->hotel);
+        if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->disable('disableable');
+        }
+        
         return [
-            'roomTypes' => $this->manager->getRooms($this->hotel),
+            'roomTypes' => $roomTypes,
             'tariffs' => $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'prices'),
+            'displayDisabledRoomType' => !$isDisableableOn
         ];
     }
 
@@ -83,11 +94,19 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             'hotel' => $this->hotel
         ];
 
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
         //get roomTypes
+        if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->enable('disableable');
+        }
         $roomTypes = $this->manager->getRooms($this->hotel, $request->get('roomTypes'));
+        if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->disable('disableable');
+        }
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => 'Типы номеров не найдены']);
         }
+
         //get tariffs
         $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
             ->fetchChildTariffs($this->hotel, 'prices', $request->get('tariffs'));

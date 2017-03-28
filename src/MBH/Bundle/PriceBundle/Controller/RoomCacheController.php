@@ -27,10 +27,20 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     public function indexAction()
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        //get roomTypes
+        if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->enable('disableable');
+        }
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
+        if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->disable('disableable');
+        }
 
         return [
-            'roomTypes' => $hotel->getRoomTypes(),
+            'roomTypes' => $roomTypes,
             'tariffs' => $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms'),
+            'displayDisabledRoomType' => !$isDisableableOn
         ];
     }
 
@@ -92,12 +102,20 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         ];
 
         //get roomTypes
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        //get roomTypes
+        if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->enable('disableable');
+        }
         $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->fetch($hotel, $request->get('roomTypes'))
-        ;
+            ->fetch($hotel, $request->get('roomTypes'));
+        if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->disable('disableable');
+        }
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => 'Типы номеров не найдены']);
         }
+
         //get tariffs
         if (!empty($request->get('tariffs'))) {
             $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')

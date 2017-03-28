@@ -33,18 +33,28 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function indexAction()
     {
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->enable('disableable');
+        }
+
         $entities = $this->dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder('s')
             ->field('hotel.id')->equals($this->hotel->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
+        if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->disable('disableable');
+        }
 
         if (!$entities->count()) {
             return $this->redirectToRoute('room_type_new');
         }
 
         return [
-            'entities' => $entities
+            'entities' => $entities,
+            'displayDisabledRoomType' =>
+                !$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isIsDisableableOn()
         ];
     }
 

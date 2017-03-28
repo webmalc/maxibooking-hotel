@@ -184,17 +184,20 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
     /**
      * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
-     * @Route("/change_room_type_enableable_mode", name="change_room_type_enableable_mode", options={"expose"=true})
-     * @return JsonResponse
+     * @Route("/change_room_type_enableable_mode/{disableMode}/{route}", name="change_room_type_enableable_mode", options={"expose"=true})
+     * @param $disableMode
+     * @param $route
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function changeRoomTypeEnableableModeAction()
+    public function changeRoomTypeEnableableModeAction($disableMode, $route)
     {
+        $disableMode = $disableMode == 'true';
         try {
-            $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode();
+            $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableMode);
         } catch (\Exception $exception) {
             $this->addFlash('error', 'controller.client_config.disableable_mode_change.error');
         }
 
-        return new JsonResponse(['success' => true]);
+        return $this->redirectToRoute($route);
     }
 }

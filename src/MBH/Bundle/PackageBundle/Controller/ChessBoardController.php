@@ -47,7 +47,7 @@ class ChessBoardController extends BaseController
 
         $rightsChecker = $this->get('security.authorization_checker');
         $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
-        $isDisabledRoomTypeDisplay = !$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isIsDisableableOn();
+        $displayDisabledRoomType = !$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isIsDisableableOn();
 
         return [
             'pageCount' => ceil($builder->getRoomCount() / $builder::ROOM_COUNT_ON_PAGE),
@@ -64,11 +64,11 @@ class ChessBoardController extends BaseController
             'noAccommodationIntervals' => json_encode($builder->getNoAccommodationPackageIntervals()),
             'leftRoomsJsonData' => json_encode($builder->getLeftRoomCounts()),
             'noAccommodationCounts' => json_encode($builder->getDayNoAccommodationPackageCounts()),
-            'roomTypes' => $this->hotel->getRoomTypes(),
+            'roomTypes' => $builder->getAvailableRoomTypes(),
             'housings' => $this->hotel->getHousings(),
             'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors(),
             'canCreatePackage' => $canCreatePackage,
-            'isDisabledRoomTypeDisplay' => $isDisabledRoomTypeDisplay
+            'displayDisabledRoomType' => $displayDisabledRoomType
         ];
     }
 
