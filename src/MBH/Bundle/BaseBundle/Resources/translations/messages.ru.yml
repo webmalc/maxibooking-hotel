@@ -463,3 +463,57 @@ position.help: Позиция записи для сортировки
 configuration: Настройки
 
 app.resources.twigBundle.translations.error: Ошибка
+
+basebundle.menu.navigation: Навигация
+basebundle.menu.booking: Брони
+basebundle.menu.picking: Подбор
+basebundle.menu.number_unsettled_armor: Количество незаехавших броней
+basebundle.menu.number_unintelligible_armor: Количество невыехавших броней
+basebundle.menu.receptionist: Портье
+basebundle.menu.number_of_rooms: Номерной фонд
+basebundle.menu.arrival_departure: Заезд/Выезд
+basebundle.menu.chess_player: Шахматка
+basebundle.menu.number_and_price: Номера и цены
+basebundle.menu.tasks: Задачи
+basebundle.menu.tariffs: Тарифы
+basebundle.menu.view: Обзор
+basebundle.menu.room_in_sales: Номера в продаже
+basebundle.menu.price: Цены
+basebundle.menu.terms_and_conditions: Условия и ограничения
+basebundle.menu.services: Услуги
+basebundle.menu.actions: Акции
+basebundle.menu.cass: Касса
+basebundle.menu.reports: Отчеты
+basebundle.menu.clients: Клиенты
+basebundle.menu.organization: Организации
+basebundle.menu.occupancy: Заполняемость
+basebundle.menu.managers: Менеджеры
+basebundle.menu.visa_invations: Визовые приглашения
+basebundle.menu.analitics: Аналитика
+basebundle.menu.assessments: Оценки
+basebundle.menu.windows: Окна
+basebundle.menu.work_shifts: Рабочие смены
+basebundle.menu.settings: Настройки
+basebundle.menu.hotels: Отели
+basebundle.menu.shells: Корпуса
+basebundle.menu.groups_numbers: Группы номеров
+basebundle.menu.restorant: Ресторан
+basebundle.menu.ingredients: Ингредиенты
+basebundle.menu.menu_of_dishes: Меню блюд
+basebundle.menu.tables: Столы
+basebundle.menu.users: Пользователи
+basebundle.menu.groups: Группы
+basebundle.menu.sources: Источники
+basebundle.menu.reasond_of_removal: Причины удаления
+basebundle.menu.templates_of_document: Шаблоны документов
+basebundle.menu.parammeters: Параметры
+basebundle.menu.type_of_task: Типы задач
+basebundle.menu.warehouse: Склад
+basebundle.menu.interaction: Взаимодействие
+basebundle.menu.additional_channels: Дополнительные каналы
+basebundle.menu.vashotel: ВашОтель
+basebundle.menu.onlineform: Онлайн форма
+basebundle.menu.estimates: Оценки
+basebundle.menu.visa_invitation: Визовое приглашение
+basebundle.menu.create_new_hotel: Создать новый отель
+basebundle.menu.navigation: Навигация
