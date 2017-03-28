@@ -20,31 +20,31 @@ class ServiceType extends AbstractType
             ->add('fullTitle', TextType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.nazvaniye',
                 'required' => true,
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'attr' => ['placeholder' => 'mbhpricebundle.form.servicetype.seyf']
             ])
             ->add('title', TextType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.vnutrenneye.nazvaniye',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => false,
-                'attr' => ['placeholder' => 'Сейф - лето ' . date('Y')],
-                'help' => 'Название для использования внутри MaxiBooking'
+                'attr' => ['placeholder' => 'price.form.save_summer' . ' ' . date('Y')],
+                'help' => 'price.form.name_for_using_inside_maxibooking'
             ])
             ->add('international_title', TextType::class, [
                 'label' => 'form.roomTypeType.international_title',
                 'required' => false,
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 //'help' => 'mbhpricebundle.form.servicetype.mezhdunarodnoye.nazvaniye'
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.opisaniye',
                 'required' => false,
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'help' => 'mbhpricebundle.form.servicetype.opisaniye.uslugi.dlya.onlayn.bronirovaniya'
             ])
             ->add('calcType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.tip.rascheta',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => true,
                 'placeholder' => '',
                 'multiple' => false,
@@ -52,37 +52,37 @@ class ServiceType extends AbstractType
             ])
             ->add('price', TextType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.tsena',
-                'group' => 'Общая информация',
+                'group' => 'price.form.public_information',
                 'required' => false,
-                'attr' => ['placeholder' => 'Услуга не используется', 'class' => 'spinner price-spinner'],
+                'attr' => ['placeholder' => 'price.form.service_not_use', 'class' => 'spinner price-spinner'],
             ])
             ->add('date', CheckboxType::class, [
-                'label' => 'Дата?',
-                'group' => 'Настройки',
+                'label' => 'price.form.date',
+                'group' => 'price.form.setting',
                 'value' => true,
                 'required' => false,
-                'help' => 'Использовать ли дату при добавлении услуги к брони?'
+                'help' => 'price.form.use_date_when_adding_service_reservation'
             ])
             ->add('time', CheckboxType::class, [
-                'label' => 'Время?',
-                'group' => 'Настройки',
+                'label' => 'price.form.time',
+                'group' => 'price.form.setting',
                 'value' => true,
                 'required' => false,
-                'help' => 'Использовать ли время при добавлении услуги к брони?'
+                'help' => 'price.form.should_i_use_time_when_i_add_service_my_reservation'
             ])
             ->add('isOnline', CheckboxType::class, [
-                'label' => 'Онлайн?',
+                'label' => 'price.form.online',
                 'value' => true,
-                'group' => 'Настройки',
+                'group' => 'price.form.setting',
                 'required' => false,
-                'help' => 'Использовать ли услугу в онлайн бронировании?'
+                'help' => 'price.form.should_i_use_service_online_booking'
             ])
             ->add('isEnabled', CheckboxType::class, [
-                'label' => 'Включена?',
-                'group' => 'Настройки',
+                'label' => 'price.form.she_on',
+                'group' => 'price.form.setting',
                 'value' => true,
                 'required' => false,
-                'help' => 'Доступна ли услуга для продажи?'
+                'help' => 'price.form.is_service_available_sale'
             ]);
     }
 

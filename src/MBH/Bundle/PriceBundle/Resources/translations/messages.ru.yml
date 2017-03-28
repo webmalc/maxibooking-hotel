@@ -507,3 +507,16 @@ price.form.silence_special_tariffs_combined_with_basic_tariff: 'По-молча�
 price.form.on: 'Включен?'
 price.form.tariff_used_search: 'Используется ли тариф в поиске?'
 price.form.use_combination: 'Использовать для комбинирования?'
+
+price.form.public_information: Общая информация
+price.form.save_summer: 'Сейф - лето'
+price.form.name_for_using_inside_maxibooking: 'Название для использования внутри MaxiBooking'
+price.form.service_not_use: Услуга не используется
+price.form.use_date_when_adding_service_reservation: 'Использовать ли дату при добавлении услуги к брони?'
+price.form.should_i_use_time_when_i_add_service_my_reservation: 'Использовать ли время при добавлении услуги к брони?'
+price.form.date: 'Дата?'
+price.form.setting: Настройки
+price.form.time: 'Время?'
+price.form.she_on: 'Включена?'
+price.form.should_i_use_service_online_booking: 'Использовать ли услугу в онлайн бронировании?'
+price.form.is_service_available_sale: 'Доступна ли услуга для продажи?'
