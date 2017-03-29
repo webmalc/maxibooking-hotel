@@ -25,28 +25,28 @@
     {% for tourist in tourists %}
         <div>
             <div style="float: right; margin-bottom: 20px">
-                Утверждена<br>
-                Приказом Министерства финансов<br>
-                Российской Федерации<br>
-                от 13 декабря 1993 г. № 121<br>
+                {{ 'mbhpackagebundle.views.utverzhdena'|trans }}<br>
+                {{ 'mbhpackagebundle.views.prikazom_ministerstava_finansov'|trans }}<br>
+                {{ 'mbhpackagebundle.views.rossiiskoi_federacii'|trans }}<br>
+                {{ 'mbhpackagebundle.views.ot_data_g'|trans }}<br>
                 <br>
-                Форма № 1-Г
+                {{ 'mbhpackagebundle.views.forma_g'|trans }}
             </div>
 
             <table border="1" style="width: 900px;text-align: center;" cellpadding="0" cellspacing="0">
                 <tbody>
                 <tr>
                     <td style="width: 25%">
-                        АНКЕТА № 3
+                        {{ 'mbhpackagebundle.views.anketa'|trans }}
                     </td>
                     <td style="width: 25%">
-                        Заказ № {{ entity.order.id }}
+                        {{ 'mbhpackagebundle.views.zakaz'|trans }} № {{ entity.order.id }}
                     </td>
                     <td style="width: 25%">
-                        Авто
+                        {{ 'mbhpackagebundle.views.auto'|trans }}
                     </td>
                     <td style="width: 25%">
-                        № счета {{ entity.numberWithPrefix }}
+                        № {{ 'mbhpackagebundle.views.scheta'|trans }} {{ entity.numberWithPrefix }}
                     </td>
                 </tr>
                 </tbody>
@@ -55,25 +55,25 @@
             <div>
                 <div class="left-block">
                     <div>
-                        1. Фамилия
+                        1. {{ 'mbhpackagebundle.views.familia'|trans }}
                         <div style="width: 360px" class="area ib">
                             &nbsp{% if tourist %} {{ tourist.lastName }} {% endif %}</div>
                     </div>
                     <div>
-                        2. Имя
+                        2. {{ 'mbhpackagebundle.views.imia'|trans }}
                         <div style="width: 400px" class="area ib">
                             &nbsp{% if tourist %} {{ tourist.firstName }} {% endif %}</div>
                     </div>
                     <div>
-                        3. Отчество
+                        3. {{ 'mbhpackagebundle.views.otchestvo'|trans }}
                         <div style="width: 360px" class="area ib">
                             &nbsp{% if tourist %} {{ tourist.patronymic }} {% endif %}</div>
                     </div>
                     <div>
-                        4. Дата рождения
+                        4. {{ 'mbhpackagebundle.views.data_rozhdenia'|trans }}
                         <div style="width: 160px" class="area ib">
                             &nbsp{% if tourist and tourist.birthday %} {{ tourist.birthday|date('d.m.Y') }} {% endif %}</div>
-                        г.
+                        {{ 'mbhpackagebundle.views.g'|trans }}.
                     </div>
                     <div>
                         <div class="ib left ">5.{{ 'mbhpackagebundle.view.documents.pdftemplates.form_1_g.mesto.rozhdeniya'|trans }} </div>
@@ -82,7 +82,7 @@
                     </div>
                     <div>
                         <div class="left">
-                            <div class="ib">6.серия</div>
+                            <div class="ib">6.{{ 'mbhpackagebundle.views.seria'|trans }}</div>
                             <div class="ib">
                                 <div style="width: 110px" class="area ib">
                                     &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.series }} {% endif %}
@@ -102,7 +102,7 @@
                                     &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
                                 </div>
                                 <div style="text-align: center">
-                                    <small>(когда)</small>
+                                    <small>({{ 'mbhpackagebundle.views.kogda'|trans }})</small>
                                 </div>
                             </div>
                         </div>
@@ -111,7 +111,7 @@
 
                 <div class="right-block">
                     <div>
-                        <div style="width: 130px" class="ib left">Комната №</div>
+                        <div style="width: 130px" class="ib left">{{ 'mbhpackagebundle.views.komnata'|trans }} №</div>
                         <div style="width: 220px"
                              class="area ib">{% if entity.accommodation %} {{ entity.accommodation.fullTitle }} {% endif %}</div>
                         <div style="clear:both;"></div>
@@ -142,23 +142,23 @@
                     {% endif %}
 
                     <div>
-                        <div class="ib left">Прибыл &nbsp</div>
+                        <div class="ib left">{{ 'mbhpackagebundle.views.pribil'|trans }} &nbsp</div>
                         <div class="ib">
                             <div style="width: 280px" class="area ib left">
                                 &nbsp{% if arrival %} {{ arrival }} {% endif %}</div>
                             <div class="center">
-                                <small>(дата, часы)</small>
+                                <small>({{ 'mbhpackagebundle.views.data_chasi'|trans }})</small>
                             </div>
                             <div style="clear: both;"></div>
                         </div>
                     </div>
                     <div>
-                        <div class="ib left">Выбыл &nbsp</div>
+                        <div class="ib left">{{ 'mbhpackagebundle.views.vibil'|trans }} &nbsp</div>
                         <div class="ib">
                             <div style="width: 290px" class="area ib left">
                                 &nbsp{% if departure  %} {{ departure }} {% endif %}</div>
                             <div class="center">
-                                <small>(дата, часы)</small>
+                                <small>({{ 'mbhpackagebundle.views.data_chasi'|trans }})</small>
                             </div>
                             <div style="clear: both;"></div>
                         </div>
@@ -180,26 +180,26 @@
                 <div style="width: 900px" class="area ib left">
                     &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}</div>
                 <div class="center">
-                    <small>(наименования органа внутренних дел, выдавшего документ)</small>
+                    <small>({{ 'mbhpackagebundle.views.naimenovanie_organa_vnutrennih_del_vidavshego_document'|trans }})</small>
                 </div>
             </div>
 
             <div>
-                <div>7. Адрес постоянного места жительства</div>
+                <div>7. {{ 'mbhpackagebundle.views.adres_postoyannogo_mesta_zhitelstva'|trans }}</div>
                 <div class="ib">
                     <div style="width: 900px" class="area ib left">
                         &nbsp
                         {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %}
                             {{ tourist.addressObjectDecomposed.region }},
-                            г. {{ tourist.addressObjectDecomposed.city }}{% if tourist.addressObjectDecomposed.street %},
-                            ул. {{ tourist.addressObjectDecomposed.street }},
+                            {{ 'mbhpackagebundle.views.g'|trans }}. {{ tourist.addressObjectDecomposed.city }}{% if tourist.addressObjectDecomposed.street %},
+                            {{ 'mbhpackagebundle.views.ul'|trans }}. {{ tourist.addressObjectDecomposed.street }},
                             {% if tourist.addressObjectDecomposed.house %}
-                                {% if tourist.addressObjectDecomposed.house %} д. {{ tourist.addressObjectDecomposed.house }}
+                                {% if tourist.addressObjectDecomposed.house %} {{ 'mbhpackagebundle.views.d'|trans }}. {{ tourist.addressObjectDecomposed.house }}
                                     {% if tourist.addressObjectDecomposed.corpus %},
-                                        кор. {{ tourist.addressObjectDecomposed.corpus }}
+                                        {{ 'mbhpackagebundle.views.korp'|trans }}. {{ tourist.addressObjectDecomposed.corpus }}
                                     {% endif %}
                                     {% if tourist.addressObjectDecomposed.flat %},
-                                        кв. {{ tourist.addressObjectDecomposed.flat }}
+                                        {{ 'mbhpackagebundle.views.ul'|trans }}. {{ tourist.addressObjectDecomposed.flat }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -207,38 +207,37 @@
                         {% endif %}
                     </div>
                     <div class="center">
-                        <small>(республика, край, область, округ, район, город, пгт, село, деревня, аул, улица, дом,
-                            корпус, квартира)
+                        <small>({{ 'mbhpackagebundle.views.respublika_krai_oblast_okrug_raion_gorod_pgr_selo'|trans }})
                         </small>
                     </div>
                 </div>
             </div>
 
             <div>
-                8. Цель приезда
+                8. {{ 'mbhpackagebundle.views.cel_priezda'|trans }}
                 <div style="width: 775px" class="area ib">
                     &nbsp{% if entity.purposeOfArrival %}{{ ('mbh.package.arrivals.' ~ entity.purposeOfArrival)|trans({}, 'MBHPackageBundle') }}{% endif %}
                 </div>
             </div>
             <div>
-                9. Срок проживания до {% if entity.end %} {{ entity.end|date('d.m.Y') }} {% endif %}
+                9. {{ 'mbhpackagebundle.views.srok_prozhivania_do'|trans }} {% if entity.end %} {{ entity.end|date('d.m.Y') }} {% endif %}
             </div>
             <div>
-                10. Продление проживания
+                10. {{ 'mbhpackagebundle.views.prodlenie_prozhivania'|trans }}
                 <div style="width: 690px" class="area ib">&nbsp</div>
             </div>
             <div>
-                11. С памяткой о правилах пожарной безопасности ознакомлен
+                11. {{ 'mbhpackagebundle.views.s_pamiatkoi_o_pravilakh_pozharnoi_bezopasnosti_oznakomlen'|trans }}
             </div>
         </div>
 
         <div>
             <div class="right">
-                <div class="ib left">Подпись &nbsp</div>
+                <div class="ib left">{{ 'mbhpackagebundle.views.podpis'|trans }} &nbsp</div>
                 <div class="ib">
                     <div style="width: 200px" class="area ib left">&nbsp</div>
                     <div class="center">
-                        <small>(лица, прибывшего в гостиницу)</small>
+                        <small>({{ 'mbhpackagebundle.views.litca_pribivshego_v_gostinnicu'|trans }})</small>
                     </div>
                     <div style="clear: both;"></div>
                 </div>
@@ -249,78 +248,78 @@
         <div style="page-break-after: always;"></div>
 
         <div>
-            <div style="width: 220px; float: right; font-weight: bold">Обратная сторона Ф. № 1-Г</div>
+            <div style="width: 220px; float: right; font-weight: bold">{{ 'mbhpackagebundle.views.obratnaya_storona'|trans }}</div>
             <div style="clear: both"></div>
         </div>
 
         <div style="margin-top: 30px">
             <div>
-                Поселен(а) "
+                {{ 'mbhpackagebundle.views.poselena'|trans }} "
                 <div style="width: 30px" class="area ib">&nbsp</div>
                 "
                 <div style="width: 690px" class="area ib">&nbsp</div>
                 20
                 <div style="width: 30px" class="area ib">&nbsp</div>
-                г.
+                {{ 'mbhpackagebundle.views.g'|trans }}.
             </div>
 
             {% set location = '' %}
 
             {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.street %}
-                {% set location = ' г. ' ~ entity.accommodation.housing.city  ~ ', ' ~ entity.accommodation.housing.settlement ~ ' ' ~ entity.accommodation.housing.street ~ ' д.' ~ entity.accommodation.housing.house %}
+                {% set location = ' ' ~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ entity.accommodation.housing.city  ~ ', ' ~ entity.accommodation.housing.settlement ~ ' ' ~ entity.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.views.d'|trans ~ '.' ~ entity.accommodation.housing.house %}
             {% endif %}
 
             {% if not location and entity.roomType.hotel.city and entity.roomType.hotel.street %}
-                {% set location = ' г. ' ~ entity.roomType.hotel.city  ~ ', ' ~ entity.roomType.hotel.settlement ~ ', ' ~ entity.roomType.hotel.street %}
+                {% set location = ' '~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ entity.roomType.hotel.city  ~ ', ' ~ entity.roomType.hotel.settlement ~ ', ' ~ entity.roomType.hotel.street %}
                 {% if entity.roomType.hotel.house %}
-                    {% set location = location ~ ', д. ' ~ entity.roomType.hotel.house %}
+                    {% set location = location ~ ', ' ~ 'mbhpackagebundle.views.g'|trans ~ '. ' ~ entity.roomType.hotel.house %}
                     {% if entity.roomType.hotel.corpus %}
-                        {% set location = location ~ ', кор. ' ~ entity.roomType.hotel.corpus %}
+                        {% set location = location ~ ', ' ~ 'mbhpackagebundle.views.korp'|trans ~ '. ' ~ entity.roomType.hotel.corpus %}
                         {% if entity.roomType.hotel.flat %}
-                            {% set location = location ~  ', кв. ' ~ entity.roomType.hotel.flat %}
+                            {% set location = location ~  ', ' ~ 'mbhpackagebundle.views.ul' |trans~ '. ' ~ entity.roomType.hotel.flat %}
                         {% endif %}
                     {% endif %}
                 {% endif %}
             {% endif %}
 
             <div style="margin-top: 10px">
-                город (селение) &nbsp
+                {{ 'mbhpackagebundle.views.gorod_selenie'|trans }} &nbsp
                 <div style="width: 760px" class="area ib">
                     &nbsp{{ location }}
                 </div>
             </div>
 
             <div style="margin-top: 10px">
-                гостиница
+                {{ 'mbhpackagebundle.views.gostinica'|trans }}
                 <div style="width: 810px" class="area ib">
                     &nbsp{% if entity.roomType and entity.roomType.hotel %} {{ entity.roomType.hotel.name }} {% endif %}
                 </div>
             </div>
 
             <div style="margin-top: 10px">
-                <div class="ib left">На дополнительное место в номере согласен(а) &nbsp</div>
+                <div class="ib left">{{ 'mbhpackagebundle.views.na_dopolnitelnoe_mesto_v_nomere_soglasen'|trans }} &nbsp</div>
                 <div class="ib">
                     <div style="width: 530px" class="area ib left">&nbsp</div>
                     <div class="center">
-                        <small>(подпись лица, прибывшего в гостиницу)</small>
+                        <small>({{ 'mbhpackagebundle.views.podpis_lica_pribivshego_v_gostinicu'|trans }})</small>
                     </div>
                     <div style="clear: both;"></div>
                 </div>
             </div>
 
             <div>
-                <div class="ib left">Согласен(а) на проживание в номере с оплатой всех мест &nbsp</div>
+                <div class="ib left">{{ 'mbhpackagebundle.views.soglasen_na_prozhivanie_v_nomere_s_oplatoi_vseh_mest'|trans }} &nbsp</div>
                 <div class="ib">
                     <div style="width: 460px" class="area ib left">&nbsp</div>
                     <div class="center">
-                        <small>(подпись лица, прибывшего в гостиницу)</small>
+                        <small>({{ 'mbhpackagebundle.views.podpis_lica_pribivshego_v_gostinicu'|trans }})</small>
                     </div>
                     <div style="clear: both;"></div>
                 </div>
             </div>
 
             <div>
-                Подпись ответственного лица
+                {{ 'mbhpackagebundle.views.podpis_otvetstvennogo_lica'|trans }}
                 <div style="width: 150px" class="area ib">&nbsp</div>
             </div>
         </div>

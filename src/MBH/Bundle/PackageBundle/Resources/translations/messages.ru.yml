@@ -660,3 +660,48 @@ mbhpackagebundle.views.svobodno: Свободно
 mbhpackagebundle.views.zaniato: Занято
 mbhpackagebundle.views.gostei_v_broni: Гостей в брони
 mbhpackage.views.gostei_oformleno: Гостей оформлено
+
+mbhpackagebundle.views.utverzhdena: Утверждена
+mbhpackagebundle.views.prikazom_ministerstava_finansov: Приказом Министерства финансов
+mbhpackagebundle.views.rossiiskoi_federacii: Российской Федерации
+mbhpackagebundle.views.ot_data_g: от 13 декабря 1993 г. № 121
+mbhpackagebundle.views.forma_g: Форма № 1-Г
+mbhpackagebundle.views.anketa: АНКЕТА № 3
+mbhpackagebundle.views.zakaz: Заказ
+mbhpackagebundle.views.auto: Авто
+mbhpackagebundle.views.scheta: счета
+mbhpackagebundle.views.familia: Фамилия
+mbhpackagebundle.views.imia: Имя
+mbhpackagebundle.views.otchestvo: Отчество
+mbhpackagebundle.views.data_rozhdenia: Дата рождения
+mbhpackagebundle.views.g: г
+mbhpackagebundle.views.ul: ул
+mbhpackagebundle.views.d: д
+mbhpackagebundle.views.korp: кор
+mbhpackagebundle.views.ul: кв
+mbhpackagebundle.view.documents.pdftemplates.form_1_g.mesto.rozhdeniya: Место рождения
+mbhpackagebundle.views.seria: серия
+mbhpackagebundle.view.documents.pdftemplates.form_1_g.vydan: Выдан
+mbhpackagebundle.views.kogda: когда
+mbhpackagebundle.views.komnata: Комната
+mbhpackagebundle.views.pribil: Прибыл
+mbhpackagebundle.views.data_chasi: дата, часы
+mbhpackagebundle.views.vibil: Выбыл
+mbhpackagebundle.views.naimenovanie_organa_vnutrennih_del_vidavshego_document: наименования органа внутренних дел, выдавшего документ
+mbhpackagebundle.views.adres_postoyannogo_mesta_zhitelstva: Адрес постоянного места жительства
+mbhpackagebundle.views.respublika_krai_oblast_okrug_raion_gorod_pgr_selo: республика, край, область, округ, район, город, пгт, село, деревня, аул, улица, дом, корпус, квартира
+mbhpackagebundle.views.cel_priezda: Цель приезда
+mbhpackagebundle.views.srok_prozhivania_do: Срок проживания до
+mbhpackagebundle.views.prodlenie_prozhivania: Продление проживания
+mbhpackagebundle.views.s_pamiatkoi_o_pravilakh_pozharnoi_bezopasnosti_oznakomlen: С памяткой о правилах пожарной безопасности ознакомлен
+mbhpackagebundle.views.podpis: Подпись
+mbhpackagebundle.views.litca_pribivshego_v_gostinnicu: лица, прибывшего в гостиницу
+mbhpackagebundle.views.obratnaya_storona: Обратная сторона Ф. № 1-Г
+mbhpackagebundle.views.poselena: Поселен(а)
+mbhpackagebundle.views.gorod_selenie: город (селение)
+mbhpackagebundle.views.gostinica: гостиница
+mbhpackagebundle.views.na_dopolnitelnoe_mesto_v_nomere_soglasen: На дополнительное место в номере согласен(а)
+mbhpackagebundle.views.podpis_lica_pribivshego_v_gostinicu: подпись лица, прибывшего в гостиницу
+mbhpackagebundle.views.soglasen_na_prozhivanie_v_nomere_s_oplatoi_vseh_mest: Согласен(а) на проживание в номере с оплатой всех мест
+mbhpackagebundle.views.podpis_lica_pribivshego_v_gostinicu: подпись лица, прибывшего в гостиницу
+mbhpackagebundle.views.podpis_otvetstvennogo_lica: Подпись ответственного лица
