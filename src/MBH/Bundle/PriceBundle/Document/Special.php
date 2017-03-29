@@ -205,10 +205,16 @@ class Special extends Base
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\Package", mappedBy="special") */
     protected $packages;
 
+    /**
+     * @ODM\EmbedMany(targetDocument="MBH\Bundle\PriceBundle\Document\SpecialPrice")
+     */
+    protected $prices;
+
     public function __construct()
     {
         $this->tariffs = new ArrayCollection();
         $this->roomTypes = new ArrayCollection();
+        $this->prices = new ArrayCollection();
     }
 
     /**
@@ -581,5 +587,45 @@ class Special extends Base
         }
 
         return true;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrices()
+    {
+        return $this->prices;
+    }
+
+    /**
+     * @param SpecialPrice $specialPrice
+     * @return Special
+     */
+    public function removePrice(SpecialPrice $specialPrice)
+    {
+        $this->prices->remove($specialPrice);
+
+        return $this;
+    }
+
+    /**
+     * @return Special
+     */
+    public function removeAllPrices()
+    {
+        $this->prices = new ArrayCollection();
+
+        return $this;
+    }
+
+    /**
+     * @param SpecialPrice $specialPrice
+     * @return Special
+     */
+    public function addPrice(SpecialPrice $specialPrice)
+    {
+        $this->prices->add($specialPrice);
+
+        return $this;
     }
 }

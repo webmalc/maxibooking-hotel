@@ -20,6 +20,9 @@ old_sound_rabbit_mq:
       task_notice_unpaid_order:
         connection:       default
         exchange_options: {name: 'task_notice_unpaid_order', type: direct}
+      task_calculate_special_prices:
+        connection: default
+        exchange_options: {name: 'task_special_recalculate', type: direct}
     consumers:
       task_room_cache_recalculate:
         connection:       default
@@ -32,3 +35,8 @@ old_sound_rabbit_mq:
 #        queue_options:    {name: 'task_notice_unpaid_order'}
 #        callback:         task_notice_unpaid_order
 #        idle_timeout:     10
+      task_calculate_special_prices:
+        connection:       default
+        exchange_options: {name: 'task_special_recalculate', type: direct}
+        queue_options:    {name: 'task_special_recalculate'}
+        callback:         task_special_recalculate
