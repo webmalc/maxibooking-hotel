@@ -9,20 +9,20 @@
     {% for i in 1..2 %}
         <h3 class="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.raspiska'|trans }} </h3>
         <div>
-            <p>Я, <strong>{% if tourist %}{{ tourist.generateFullName }}{% endif %}</strong></p>
+            <p>{{ 'package.resources.views.i'|trans }}, <strong>{% if tourist %}{{ tourist.generateFullName }}{% endif %}</strong></p>
             <p>
-                Дата рождения <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</span> г.,
+                {{ 'package.resources.views.birthday'|trans }} <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</span> {{ 'package.resources.views.g'|trans }},
             </p>
 
             <p>
-                Вид документа <span class="area" style="display: inline-block; width: 350px">{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</span>
-                серия <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</span>
-                номер <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</span>
+                {{ 'package.resources.views.document_view'|trans }} <span class="area" style="display: inline-block; width: 350px">{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</span>
+                {{ 'package.resources.views.series'|trans }} <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</span>
+                {{ 'package.resources.views.number'|trans }} <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</span>
             </p>
 
             <p>
-                выданный <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}</span> г.,
-                Место рождения <span class="area" style="display: inline-block; width: 505px">
+                {{ 'package.resources.views.issued'|trans }} <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}</span> {{ 'package.resources.views.g'|trans }},
+                {{ 'package.resources.views.place_of_birth'|trans }} <span class="area" style="display: inline-block; width: 505px">
                     &nbsp {% if tourist and tourist.birthPlace %}
                         {{ tourist.birthPlace.country }}
                         {{ tourist.birthPlace.mainRegion }}
@@ -45,11 +45,11 @@
             </div>-->
 
             <p>
-                Гражданоство <span class="area" style="display: inline-block; width: 300px">{% if tourist %}{{ tourist.citizenship }}{% endif %}</span>
+                {{ 'package.resources.views.citizenship'|trans }} <span class="area" style="display: inline-block; width: 300px">{% if tourist %}{{ tourist.citizenship }}{% endif %}</span>
             </p>
             <div>
                 <div style="float: left; width: 240px">
-                    постоянное место жительства
+                    {{ 'package.resources.views.permanent_residence'|trans }}
                 </div>
                 <div style="display: inline-block">
                 <span class="area" style="display: inline-block; width: 580px">
@@ -66,19 +66,19 @@
                                     ({{ decomposedAddress.corpus }})
                                 {% endif %}
                                 {% if decomposedAddress.flat %}
-                                    кв. {{ decomposedAddress.flat }}
+                                    {{ 'packages.rewources.kv'|trans }}. {{ decomposedAddress.flat }}
                                 {% endif %}
                             {% endif %}
                         {% endif %}
                     {% endif %}
                 </span>
-                    <div style="font-size: 15px; font-weight: normal;">г. обл/кр ул. д.</div>
+                    <div style="font-size: 15px; font-weight: normal;">{{ 'package.resources.views.g_obl_kr_ul_d'|trans }}</div>
                 </div>
             </div>
-            <p>за период проживания с <strong>{{ entity.begin|date('d.m.Y') }}</strong> г. по <strong>{{ entity.end|date('d.m.Y') }}</strong> г</p>
+            <p>{{ 'package.resources.period_live'|trans }} <strong>{{ entity.begin|date('d.m.Y') }}</strong> {{ 'package.resources.g_po'|trans }} <strong>{{ entity.end|date('d.m.Y') }}</strong> {{ 'package.resources.gg'|trans }}</p>
             <p>
             <div style="float: left; width: 350px">
-                в предоставленной мне квартире по адресу:
+                {{ 'package.resources.my_appartment_at'|trans }}:
             </div>
             <div style="display: inline-block">
                 <span class="area" style="display: inline-block; width: 470px">
@@ -95,27 +95,25 @@
                         {% endif %}
                     {% endif %}
                 </span>
-                <div style="font-size: 15px; font-weight: normal;">ул. д. корп. кв. </div>
+                <div style="font-size: 15px; font-weight: normal;">{{ 'package.resources.ul_d_korp_kv'|trans }} </div>
             </div>
             </p>
-            <div style="white-space: pre;"><span style="text-decoration: underline;font-weight: bold">Обязуюсь:</span>
-                -   не производить шум позднее 23-ч часов;
-                -   не загрязнять подъезды и прилегающую у дому территорию;
-                -   не беспокоить соседей;
-                -   не портить предметы обихода и интерьера;
-                -   не производить перестановку мебели
-                -   не хранить и не использовать взрыво и огнеопасные предметы.
-                За все происходящее в предоставленной мне квартире на период проживания я несу полную
-                ответственность. В случае нарушения данных обязательств согласен на досрочное выселение без
-                возврата залога и внесенной предоплаты, с возмещением возникшего материального ущерба.
+            <div style="white-space: pre;"><span style="text-decoration: underline;font-weight: bold">{{ 'package.resources.undertake'|trans }}:</span>
+                -   {{ 'package.resources.not_produce_noise'|trans }};
+                -   {{ 'package.resources.do_not_poll_entrances_and_surrounding_territory'|trans }};
+                -   {{ 'package.resources.do_not_disturb_neighbors'|trans }};
+                -   {{ 'package.resources.do_not_spoil_objects_of_everyday_life_and_interior'|trans }};
+                -   {{ 'package.resources.do_not_reshuffle_furniture'|trans }}
+                -   {{ 'package.resources.do_not_store_or_use_explosive_or_flammable_objects'|trans }}.
+               {{ 'package.resources.for_everything_that_happens_in_the_apartment_i_have_provided_for_the_period_of_residence_i_am_carrying'|trans }}.
             </div>
             <div>
                 <div style="float: left;">
                     <div class="area" style="display: inline-block; width: 150px"></div>
-                    (подпись)
+                    ({{ 'paclages.resources.signature'|trans }})
                 </div>
                 <div style="float: right; font-weight: bold">
-                    15.06.2015 г.
+                    15.06.2015 {{ 'package.resources.gg'|trans }}.
                 </div>
                 <div style="clear:both;"></div>
             </div>

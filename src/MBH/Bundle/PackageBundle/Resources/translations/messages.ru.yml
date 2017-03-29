@@ -391,6 +391,7 @@ templateDocument.type.act: Акт
 templateDocument.type.xls_notice: Уведомление о прибытии ИГ
 
 
+
 form.TouristExtendedType.group.person: Персональные данные
 form.TouristExtendedType.group.documentRelation: Удостоверение личности
 form.TouristExtendedType.group.liveAddress: Место проживания
@@ -580,3 +581,30 @@ package.services.fixed_price_for_all_booking_room: Фиксированная с
 package.services.breakfast_sweden_table: Завтрак "Шведский стол"
 package.services.continental_breakfast: Завтрак "Континентальный"
 package.services.dinner: Обед
+
+mbhpackagebundle.view.documents.pdftemplates.receipt.raspiska: Расписка
+package.resources.views.i: Я
+package.resources.views.g: 'г.'
+package.resources.views.document_view: Вид документа
+package.resources.views.series: серия
+package.resources.views.number: номер
+package.resources.views.issued: выданный
+package.resources.views.place_of_birth: Место рождения
+package.resources.views.citizenship: Гражданоство
+package.resources.views.permanent_residence: постоянное место жительства
+package.resources.views.g_obl_kr_ul_d: 'г. обл/кр ул. д.'
+package.resources.period_live: 'за период проживания с'
+package.resources.g_po: 'г. по'
+package.resources.gg: г
+package.resources.my_appartment_at: в предоставленной мне квартире по адресу
+package.resources.ul_d_korp_kv: 'ул. д. корп. кв.'
+package.resources.undertake: Обязуюсь
+package.resources.not_produce_noise: не производить шум позднее 23-ч часов
+package.resources.do_not_poll_entrances_and_surrounding_territory: не загрязнять подъезды и прилегающую у дому территорию
+package.resources.do_not_disturb_neighbors: не беспокоить соседей
+package.resources.do_not_spoil_objects_of_everyday_life_and_interior: не портить предметы обихода и интерьера
+package.resources.do_not_reshuffle_furniture: не производить перестановку мебели
+package.resources.do_not_store_or_use_explosive_or_flammable_objects: не хранить и не использовать взрыво и огнеопасные предметы
+package.resources.for_everything_that_happens_in_the_apartment_i_have_provided_for_the_period_of_residence_i_am_carrying:  За все происходящее в предоставленной мне квартире на период проживания я несу полную ответственность. В случае нарушения данных обязательств согласен на досрочное выселение безвозврата залога и внесенной предоплаты, с возмещением возникшего материального ущерба
+packages.rewources.kv: кв
+paclages.resources.signature: подпись
