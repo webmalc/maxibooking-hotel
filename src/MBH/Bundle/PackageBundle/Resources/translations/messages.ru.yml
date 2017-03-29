@@ -608,3 +608,19 @@ package.resources.do_not_store_or_use_explosive_or_flammable_objects: не хр�
 package.resources.for_everything_that_happens_in_the_apartment_i_have_provided_for_the_period_of_residence_i_am_carrying:  За все происходящее в предоставленной мне квартире на период проживания я несу полную ответственность. В случае нарушения данных обязательств согласен на досрочное выселение безвозврата залога и внесенной предоплаты, с возмещением возникшего материального ущерба
 packages.rewources.kv: кв
 paclages.resources.signature: подпись
+
+mbhpackagebundle.form.packagemaintype.zayezd: Заезд
+mbhpackagebundle.form.packagemaintype.viezd: Отъезд
+mbhpackagebundle.form.packagemaintype.zaezd_viezd: Заезд/отъезд
+mbhpackagebundle.form.packagemaintype.prinuditelnoe_bronirovanie: 'Принудительное бронирование?'
+mbhpackagebundle.form.packagemaintype.ignorirovat_uslovia_i_ogranichenia_pri_poiske_dostupnogo_nomera: 'Игнорировать условия и ограничения при поиске доступного номера?'
+mbhpackagebundle.form.packagemaintype.number: Номер
+mbhpackagebundle.form.packagemaintype.virtualnii_nomer: Виртуальный номер
+mbhpackagebundle.form.packagemaintype.kurashii: 'Курящий?'
+mbhpackagebundle.form.packagemaintype.akcia: Акция
+mbhpackagebundle.form.packagemaintype.cena: Цена
+mbhpackagebundle.form.packagemaintype.skidka: Скидка
+mbhpackagebundle.form.packagemaintype.specpredlozhenie: Спецпредложение
+mbhpackagebundle.form.packagemaintype.information: Информация
+mbhpackagebundle.form.packagemaintype.povrezhdena: 'Повреждена?'
+mbhpackagebundle.form.packagemaintype.bron_s_povrezhdennoi_informaciei: 'Бронь с поврежденной информацией. Подробности в комментарии к брони.'
