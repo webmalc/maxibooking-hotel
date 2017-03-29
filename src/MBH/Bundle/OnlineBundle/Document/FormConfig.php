@@ -82,6 +82,7 @@ class FormConfig extends Base
      */
     protected $nights = false;
 
+    protected $isDisplayChildrenAges = false;
     /**
      * @var array
      * @Gedmo\Versioned
@@ -94,6 +95,25 @@ class FormConfig extends Base
     public function __construct()
     {
         $this->hotels = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsDisplayChildrenAges(): ?bool
+    {
+        return $this->isDisplayChildrenAges;
+    }
+
+    /**
+     * @param bool $isDisplayChildrenAges
+     * @return FormConfig
+     */
+    public function setIsDisplayChildrenAges(bool $isDisplayChildrenAges): FormConfig
+    {
+        $this->isDisplayChildrenAges = $isDisplayChildrenAges;
+
+        return $this;
     }
 
     /**

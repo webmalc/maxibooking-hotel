@@ -23,6 +23,7 @@
                         <thead>
                         <tr>
                             <th id="mbh-results-table-th-roomType">{{ 'views.api.getResultsTable.room_type'|trans({}, 'MBHOnlineBundle') }}</th>
+                            <th id="mbh-results-table-th-room-cache-count">{{ 'views.api.getResultsTable.room_cache_count'|trans({}, 'MBHOnlineBundle') }}</th>
                             <th id="mbh-results-table-th-tourist">{{ 'views.api.getResultsTable.guests'|trans({}, 'MBHOnlineBundle') }}</th>
                             <th id="mbh-results-table-th-price">{{ 'views.api.getResultsTable.price'|trans({}, 'MBHOnlineBundle') }}</th>
                             <th id="mbh-results-table-th-amount">{{ 'views.api.getResultsTable.rooms_amount'|trans({}, 'MBHOnlineBundle') }}</th>
@@ -50,6 +51,9 @@
                                             </a>
                                         </div>
                                     {% endif %}
+                                </td>
+                                <td class="mbh-center">
+                                    {{ result.roomsCount }}
                                 </td>
                                 <td class="mbh-center">
                                     <select class="mbh-results-tourists-select select2 {% if result.prices|length == 1 %}hidden{% endif %}">

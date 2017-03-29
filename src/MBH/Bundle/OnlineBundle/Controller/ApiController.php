@@ -92,6 +92,7 @@ class ApiController extends Controller
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $config = $this->container->getParameter('mbh.online.form');
+        /** @var FormConfig $formConfig */
         $formConfig = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
 
         if (!$formConfig || !$formConfig->getEnabled()) {
@@ -126,7 +127,8 @@ class ApiController extends Controller
 
         return [
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:form.css.twig'),
-            'text' => $text
+            'text' => $text,
+            'isDisplayChildAges' => $formConfig->isIsDisplayChildrenAges()
         ];
     }
 
@@ -289,6 +291,13 @@ class ApiController extends Controller
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
         $isViewTariff = false;
+
+        foreach ($request->query as $queryParam => $queryParamValue) {
+            $startString = 'children-age-';
+            if (substr($queryParam, 0, strlen($startString)) === $startString) {
+                $query->childrenAges[] = intval($queryParamValue);
+            }
+        }
 
         foreach ($formConfig->getHotels() as $hotel) {
             if (is_null($query->tariff) && !$isViewTariff) {
