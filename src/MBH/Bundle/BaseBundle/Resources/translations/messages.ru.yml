@@ -517,3 +517,25 @@ basebundle.menu.estimates: Оценки
 basebundle.menu.visa_invitation: Визовое приглашение
 basebundle.menu.create_new_hotel: Создать новый отель
 basebundle.menu.navigation: Навигация
+
+mbhbasebundle.view.pdftemplates.organization.bank.poluchatelya: Банк получателя
+mbhbasebundle.view.pdftemplates.organization.bik: Бик
+mbhbasebundle.view.pdftemplates.organization.sch: Cч
+mbhbasebundle.view.pdftemplates.organization.inn: ИНН
+mbhbasebundle.view.pdftemplates.organization.kpp: КПП
+mbhbasebundle.view.pdftemplates.organization.poluchatel: Получатель
+mbhbasebundle.view.pdftemplates.organization.chet_na_oplatu: Счет на оплату
+mbhbasebundle.view.pdftemplates.organization.postavshik: Поставщик
+mbhbasebundle.view.pdftemplates.organization.tel: тел
+mbhbasebundle.view.pdftemplates.organization.pokupatel: Покупатель
+mbhbasebundle.view.pdftemplates.organization.tovary_raboty_uslugi: Товары (работы, услуги)
+mbhbasebundle.view.pdftemplates.organization.ed: Ед
+mbhbasebundle.view.pdftemplates.organization.uslugi_otela_po_schetu: Услуги отеля по счету
+mbhbasebundle.view.pdftemplates.organization.zakaz: Заказ
+mbhbasebundle.view.pdftemplates.organization.ot: от
+mbhbasebundle.view.pdftemplates.organization.g: г
+mbhbasebundle.view.pdftemplates.organization.itog: Итог
+mbhbasebundle.view.pdftemplates.organization.bez_naloga: Без налога (НДС)
+mbhbasebundle.view.pdftemplates.organization.vsego_k_oplate: Всего к оплате
+mbhbasebundle.view.pdftemplates.organization.vsego_naimenovanii: Всего наименований 1, на сумму
+mbhbasebundle.view.pdftemplates.organization.rukovoditel: Руководитель
