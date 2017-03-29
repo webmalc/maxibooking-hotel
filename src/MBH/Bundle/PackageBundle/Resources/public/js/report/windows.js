@@ -10,21 +10,7 @@ $(document).ready(function ($) {
                 event.preventDefault();
                 modal.find('.modal-body').html(mbh.loader.html);
                 modal.modal();
-
-                $.get(Routing.generate('report_windows_package', {'id': $(this).attr('data-id')}), function (html) {
-                    modal.find('.modal-body').html(html);
-                    $('#modal-submit').click(function () {
-                        var change_form = modal.find('.modal-body > form');
-                        if (change_form.length) {
-                            change_form.submit();
-                        } else {
-                            modal.modal('hide');
-                        }
-                    });
-                    //$('#mbh_bundle_packagebundle_package_virtual_room_type_virtualRoom').select2();
-                }).fail(function () {
-                    modal.find('.modal-body').html(mbh.error.html);
-                });
+                setModalContent(modal, this);
             });
         },
         update = function (data) {
@@ -84,3 +70,45 @@ $(document).ready(function ($) {
     });
 
 });
+
+function setModalContent($modal, packageElem, isChain) {
+    var isChainCarried = !!isChain;
+    $.get(Routing.generate('report_windows_package', {'id': packageElem.getAttribute('data-id'), isChain : isChainCarried}), function (html) {
+        $modal.find('.modal-body').html(html);
+        var $checkbox = $modal.find("#mbh_bundle_packagebundle_package_virtual_room_type_isChainMoved");
+        listenToCheckbox($modal, packageElem, $checkbox, isChainCarried);
+        if (isChainCarried) {
+            $('#mbh_bundle_packagebundle_package_virtual_room_type_virtualRoom').find('option').each(function (index, elem) {
+                if (!elem.value) {
+                    elem.parentNode.removeChild(elem);
+                }
+            });
+        }
+
+        $('#modal-submit').click(function () {
+            var change_form = $modal.find('.modal-body > form');
+            if (change_form.length) {
+                change_form.submit();
+            } else {
+                $modal.modal('hide');
+            }
+        });
+        //$('#mbh_bundle_packagebundle_package_virtual_room_type_virtualRoom').select2();
+    }).fail(function () {
+        $modal.find('.modal-body').html(mbh.error.html);
+    });
+}
+
+function listenToCheckbox($modal, packageElem, $checkbox, isChainCarried) {
+    $checkbox.bootstrapSwitch({
+        'size': 'small',
+        'onText': 'да',
+        'offText': 'нет',
+        'onColor': 'success'
+    });
+    $checkbox.on('switchChange.bootstrapSwitch', function() {
+        var isChainCarried = $checkbox.bootstrapSwitch('state');
+        $modal.find('.modal-body').html(mbh.loader.html);
+        setModalContent($modal, packageElem, isChainCarried);
+    });
+}
