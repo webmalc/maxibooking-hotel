@@ -119,7 +119,7 @@ doctrine_mongodb:
                         class: MBH\Bundle\BaseBundle\Filter\HotelableFilter
                         enabled: false
                     disableable:
-                        class: MBH\Bundle\BaseBundle\Lib\Gedmo\Disableable\Filter\ODM\DisableableFilter
+                        class: MBH\Bundle\BaseBundle\Lib\Disableable\Filter\ODM\DisableableFilter
                         enabled: false
             mappings:
                 gedmo_loggable:

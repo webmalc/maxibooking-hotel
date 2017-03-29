@@ -34,8 +34,9 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     public function indexAction()
     {
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
-        if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
-            $this->dm->getFilterCollection()->enable('disableable');
+        $filterCollection = $this->dm->getFilterCollection();
+        if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
+            $filterCollection->enable('disableable');
         }
 
         $entities = $this->dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder('s')
@@ -43,8 +44,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
-        if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
-            $this->dm->getFilterCollection()->disable('disableable');
+        if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
+            $filterCollection->disable('disableable');
         }
 
         if (!$entities->count()) {

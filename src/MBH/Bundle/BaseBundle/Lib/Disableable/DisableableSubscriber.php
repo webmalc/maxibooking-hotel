@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\BaseBundle\Lib\Gedmo\Disableable;
+namespace MBH\Bundle\BaseBundle\Lib\Disableable;
 
 use Doctrine\Common\EventArgs;
 use Gedmo\Mapping\MappedEventSubscriber;

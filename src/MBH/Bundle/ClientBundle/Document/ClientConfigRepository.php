@@ -38,6 +38,9 @@ class ClientConfigRepository extends DocumentRepository
         return $this->fetchConfig()->isIsDisableableOn();
     }
 
+    /**
+     * @param $disableMode
+     */
     public function changeDisableableMode($disableMode)
     {
         $this->fetchConfig()->setIsDisableableOn($disableMode);

@@ -150,6 +150,15 @@ class ChessBoardController extends BaseController
         return new JsonResponse(json_encode($messageFormatter->getMessages()));
     }
 
+    /**
+     * @param Package $package
+     * @param PackageAccommodation $accommodation
+     * @param Room $updatedRoom
+     * @param \DateTime $updatedBeginDate
+     * @param \DateTime $updatedEndDate
+     * @param ChessBoardMessageFormatter $messageFormatter
+     * @throws \Exception
+     */
     private function updateAccommodation(
         Package $package,
         PackageAccommodation $accommodation,
@@ -209,6 +218,13 @@ class ChessBoardController extends BaseController
         }
     }
 
+    /**
+     * @param \DateTime $updatedBeginDate
+     * @param \DateTime $updatedEndDate
+     * @param Room $updatedRoom
+     * @param Package $package
+     * @param ChessBoardMessageFormatter $messageFormatter
+     */
     private function addAccommodation(
         \DateTime $updatedBeginDate,
         \DateTime $updatedEndDate,
@@ -376,6 +392,10 @@ class ChessBoardController extends BaseController
         return json_encode($data);
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
     private function getFilterData(Request $request)
     {
         if ($request->isMethod('GET')) {
@@ -405,6 +425,10 @@ class ChessBoardController extends BaseController
         ];
     }
 
+    /**
+     * @param $fieldData
+     * @return array
+     */
     private function getDataFromMultipleSelectField($fieldData)
     {
         if (!empty($fieldData) && is_array($fieldData) && $fieldData[0] != '') {

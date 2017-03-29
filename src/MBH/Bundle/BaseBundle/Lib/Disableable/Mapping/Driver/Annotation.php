@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\BaseBundle\Lib\Gedmo\Disableable\Mapping\Driver;
+namespace MBH\Bundle\BaseBundle\Lib\Disableable\Mapping\Driver;
 
 use Gedmo\Mapping\Driver\AbstractAnnotationDriver;
 
@@ -9,7 +9,7 @@ class Annotation extends AbstractAnnotationDriver
     /**
      * Annotation to define that this object is loggable
      */
-    const DISABLEABLE = 'MBH\Bundle\BaseBundle\Lib\Gedmo\Disableable\Disableable';
+    const DISABLEABLE = 'MBH\Bundle\BaseBundle\Lib\Disableable\Disableable';
 
     /**
      * Read extended metadata configuration for

@@ -30,7 +30,6 @@ form.clientPaymentSystemType.password_two: Пароль 2
 form.clientPaymentSystemType.extended_account_number: Номер расширенного счета
 form.clientPaymentSystemType.data_integrity_code: Код проверки целостности данных
 controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'
-controller.client_config.disableable_mode_change.error: Произощла непредвиденная ошибка
 form.clientPaymentSystemType.successUrl: URl успешной оплаты
 form.clientPaymentSystemType.failUrl: URl неуспешной оплаты
 form.clientPaymentSystemType.successUrlDesc: URl для перенаправления пользователя после успешной оплаты

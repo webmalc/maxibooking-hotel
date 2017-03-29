@@ -43,13 +43,14 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     public function indexAction()
     {
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $filterCollection = $this->dm->getFilterCollection();
         //get roomTypes
-        if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
-            $this->dm->getFilterCollection()->enable('disableable');
+        if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
+            $filterCollection->enable('disableable');
         }
         $roomTypes = $this->manager->getRooms($this->hotel);
-        if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
-            $this->dm->getFilterCollection()->disable('disableable');
+        if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
+            $filterCollection->disable('disableable');
         }
         
         return [

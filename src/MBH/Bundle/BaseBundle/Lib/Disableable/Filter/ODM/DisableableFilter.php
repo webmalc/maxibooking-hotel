@@ -1,11 +1,11 @@
 <?php
 
-namespace MBH\Bundle\BaseBundle\Lib\Gedmo\Disableable\Filter\ODM;
+namespace MBH\Bundle\BaseBundle\Lib\Disableable\Filter\ODM;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
-use MBH\Bundle\BaseBundle\Lib\Gedmo\Disableable\DisableableSubscriber;
+use MBH\Bundle\BaseBundle\Lib\Disableable\DisableableSubscriber;
 
 class DisableableFilter extends BsonFilter
 {

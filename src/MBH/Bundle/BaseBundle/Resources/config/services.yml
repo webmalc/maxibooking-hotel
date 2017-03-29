@@ -143,7 +143,7 @@ services:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.event_listener.disable_listener:
-        class: MBH\Bundle\BaseBundle\Lib\Gedmo\Disableable\DisableableSubscriber
+        class: MBH\Bundle\BaseBundle\Lib\Disableable\DisableableSubscriber
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 

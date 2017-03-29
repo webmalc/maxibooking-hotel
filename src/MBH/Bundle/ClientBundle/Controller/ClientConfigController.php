@@ -191,12 +191,8 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      */
     public function changeRoomTypeEnableableModeAction($disableMode, $route)
     {
-        $disableMode = $disableMode == 'true';
-        try {
-            $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableMode);
-        } catch (\Exception $exception) {
-            $this->addFlash('error', 'controller.client_config.disableable_mode_change.error');
-        }
+        $disableModeBool = $disableMode == 'true';
+        $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableModeBool);
 
         return $this->redirectToRoute($route);
     }

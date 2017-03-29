@@ -432,15 +432,16 @@ class ChessBoardDataBuilder
     public function getAvailableRoomTypes()
     {
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
-        if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
-            $this->dm->getFilterCollection()->enable('disableable');
+        $filterCollection = $this->dm->getFilterCollection();
+        if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
+            $filterCollection->enable('disableable');
         }
 
         $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
             ->fetch($this->hotel, $this->roomTypeIds)->toArray();
 
-        if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
-            $this->dm->getFilterCollection()->disable('disableable');
+        if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
+            $filterCollection->disable('disableable');
         }
 
         return $roomTypes;
