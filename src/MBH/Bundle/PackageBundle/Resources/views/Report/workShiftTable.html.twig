@@ -42,7 +42,7 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найден ни один кассовый документ
+                        {{ 'package.resources.views.nenaiden_ni_odin_kassovii_document'|trans }}
                     </p>
                 </div>
             {% endif %}
@@ -56,7 +56,7 @@
         </div>
     {% endif %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Созданные брони'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'mbhpackagebundle.views.sozdanie_broni'|trans} %}
         {% block content %}
             {% if packages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' %}
@@ -64,14 +64,14 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найдена ни одна бронь
+                        {{ 'package.resources.views.ne_naidena_ni_odna_bron'|trans }}
                     </p>
                 </div>
             {% endif %}
         {% endblock %}
     {% endembed %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Измененные брони'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'mbhpackagebundle.views.izmenennie_broni'|trans} %}
         {% block content %}
             {% if packages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: updatePackages} %}
@@ -79,14 +79,14 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найдена ни одна бронь
+                        {{ 'package.resources.views.ne_naidena_ni_odna_bron'|trans }}
                     </p>
                 </div>
             {% endif %}
         {% endblock %}
     {% endembed %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Удаленные брони'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'mbhpackagebundle.views.udalennie_broni'|trans} %}
         {% block content %}
             {% if packages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: deletedPackages} %}
@@ -94,14 +94,14 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найдена ни одна бронь
+                        {{ 'package.resources.views.ne_naidena_ni_odna_bron'|trans }}
                     </p>
                 </div>
             {% endif %}
         {% endblock %}
     {% endembed %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Заезд'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'mbhpackagebundle.views.zaezd'|trans} %}
         {% block content %}
             {% if arrivalPackages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: arrivalPackages} %}
@@ -109,14 +109,14 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найдена ни одна бронь
+                        {{ 'package.resources.views.ne_naidena_ni_odna_bron'|trans }}
                     </p>
                 </div>
             {% endif %}
         {% endblock %}
     {% endembed %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Выезд'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'mbhpackagebundle.views.viezd'|trans} %}
         {% block content %}
             {% if departurePackages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: departurePackages} %}
@@ -124,7 +124,7 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найдена ни одна бронь
+                        {{ 'package.resources.views.ne_naidena_ni_odna_bron'|trans }}
                     </p>
                 </div>
             {% endif %}
@@ -134,7 +134,7 @@
     <div class="alert bg-gray">
         <p>
             <i class="fa fa-exclamation-circle"></i>
-            Не найдена ни одна смена
+            {{ 'mbhpackagebundle.views.ne_naidena_ni_odna_smena'|trans }}
         </p>
     </div>
 {% endif %}

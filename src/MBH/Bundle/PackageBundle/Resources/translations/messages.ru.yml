@@ -628,3 +628,14 @@ mbhpackagebundle.form.packagemaintype.vzroslykh: Взрослых
 mbhpackagebundle.form.packagemaintype.detey: Детей
 mbhpackagebundle.form.packagemaintype.tip.nomera: Тип номера
 form.packageMainType.promotion: Акция
+
+package.resources.views.nenaiden_ni_odin_kassovii_document: Не найден ни один кассовый документ
+package.resources.views.ne_naidena_ni_odna_bron: Не найдена ни одна бронь
+mbhpackagebundle.view.report.workshifttable.redaktirovaniye.zapisi: Редактирование записи
+mbhpackagebundle.view.report.workshifttable.da: Да
+mbhpackagebundle.views.izmenennie_broni: Измененные брони
+mbhpackagebundle.views.udalennie_broni: Удаленные брони
+mbhpackagebundle.views.zaezd: Заезд
+mbhpackagebundle.views.viezd: Выезд
+mbhpackagebundle.views.ne_naidena_ni_odna_smena: Не найдена ни одна смена
+mbhpackagebundle.views.sozdanie_broni: Созданные брони
