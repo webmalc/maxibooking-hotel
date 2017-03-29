@@ -145,7 +145,7 @@
                         <small>{{ 'package.window.difference.room.in.packages.sales'|trans({}, "MBHPackageBundle") }}</small>
                     </td>
                     {% for countNumber,value in countNumbers %}
-                        <td class="text-center text-muted mbh-graph-cell {% if (value.totalRooms|default(0) - value.packagesCount|default(0)) != 0 %}text-red {% endif %}">
+                        <td class="text-center text-muted mbh-graph-cell">
                             <small>{{ value.totalRooms|default(0) - value.packagesCount|default(0) }}</small>
                         </td>
                     {% endfor %}

@@ -169,6 +169,7 @@ controller.packageController.record_edited_fail_accommodation: 'Ошибка п�
 controller.packageController.relocation_success: 'Создана новая бронь для переселения. Теперь можно выбрать новый номер размещения гостей'
 controller.packageController.relocation_dates_error: 'Ошибка переселения. Некорректная дата переселения'
 controller.packageController.relocation_accommodation_error: 'Ошибка переселения. Нет размещения'
+controller.report_controller.chains_replaced.success: 'Цепочки броней успешно заменены'
 
 # TaskType Controller
 controller.taskTypeController.record_created_success: 'Запись успешно создана.'
@@ -406,6 +407,8 @@ report.porter.note: 'Комментарий:'
 modal.form.delete.reasons.reason: Причина удаления
 modal.form.delete.delete_reason_package: Причина удаления брони
 
+modal.form.virtual_room.virtual_room.group: Виртуальный номер
+modal.form.virtual_room.is_chain_moved.label: Перенос цепочки
 virtual_room_handler.package_virtual_room_changed: 'Брони %package_number% установлена виртуальная комната "%room_name%"'
 virtual_room_handler.empty_interval_data: 'Виртуальная комната %roomName% имеющая тип номера с ID = "%roomTypeId%" содержит окно в промежутке %emptyIntervalDates%'
 windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'

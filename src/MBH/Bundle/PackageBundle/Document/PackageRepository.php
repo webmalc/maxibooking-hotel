@@ -74,20 +74,7 @@ class PackageRepository extends DocumentRepository
             }
         }
 
-        $qb = $this->createQueryBuilder()
-            ->field('begin')->lte($end)
-            ->field('end')->gte($begin)
-            ->field('virtualRoom')->notEqual(null)
-            ->field('deletedAt')->equals(null);
-
-        if ($roomType) {
-            $qb->field('roomType.id')->equals($roomType->getId());
-        }
-
-        if ($exclude) {
-            $qb->field('id')->notEqual($exclude->getId());
-        }
-
+        $qb = $this->getFetchWithVirtualRoomQB($begin, $end, $roomType, $exclude);
         $packages = $qb->getQuery()->execute();
 
         if ($group) {
@@ -110,6 +97,64 @@ class PackageRepository extends DocumentRepository
         }
 
         return $packages;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param bool $sortByBegin
+     * @param RoomType|null $roomType
+     * @param null $inRooms
+     * @param Package|null $exclude
+     * @return mixed
+     */
+    public function extendedFetchWithVirtualRooms(
+        \DateTime $begin,
+        \DateTime $end,
+        $sortByBegin = false,
+        RoomType $roomType = null,
+        $inRooms = null,
+        Package $exclude = null
+    ) {
+        $qb = $this->getFetchWithVirtualRoomQB($begin, $end, $roomType, $exclude);
+        if (!is_null($inRooms)) {
+            $qb->field('virtualRoom.id')->in($inRooms);
+        }
+        if ($sortByBegin) {
+            $qb->sort('begin', 'asc');
+        }
+
+        return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType|null $roomType
+     * @param Package|null $exclude
+     * @return Builder
+     */
+    private function getFetchWithVirtualRoomQB(
+        \DateTime $begin,
+        \DateTime $end,
+        RoomType $roomType = null,
+        Package $exclude = null
+    ) {
+        $qb = $this->createQueryBuilder()
+            ->field('begin')->lte($end)
+            ->field('end')->gte($begin)
+            ->field('virtualRoom')->notEqual(null)
+            ->field('deletedAt')->equals(null);
+
+        if ($roomType) {
+            $qb->field('roomType.id')->equals($roomType->getId());
+        }
+
+        if ($exclude) {
+            $qb->field('id')->notEqual($exclude->getId());
+        }
+
+        return $qb;
     }
 
     /**
