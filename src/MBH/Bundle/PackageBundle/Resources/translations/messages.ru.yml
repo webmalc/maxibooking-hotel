@@ -624,3 +624,7 @@ mbhpackagebundle.form.packagemaintype.specpredlozhenie: Спецпредложе
 mbhpackagebundle.form.packagemaintype.information: Информация
 mbhpackagebundle.form.packagemaintype.povrezhdena: 'Повреждена?'
 mbhpackagebundle.form.packagemaintype.bron_s_povrezhdennoi_informaciei: 'Бронь с поврежденной информацией. Подробности в комментарии к брони.'
+mbhpackagebundle.form.packagemaintype.vzroslykh: Взрослых
+mbhpackagebundle.form.packagemaintype.detey: Детей
+mbhpackagebundle.form.packagemaintype.tip.nomera: Тип номера
+form.packageMainType.promotion: Акция
