@@ -639,3 +639,24 @@ mbhpackagebundle.views.zaezd: Заезд
 mbhpackagebundle.views.viezd: Выезд
 mbhpackagebundle.views.ne_naidena_ni_odna_smena: Не найдена ни одна смена
 mbhpackagebundle.views.sozdanie_broni: Созданные брони
+
+
+mbhpackagebundle.view.report.roomtypestable.gosti: Гости
+mbhpackagebundle.view.report.roomtypestable.daty: Даты
+mbhpackagebundle.views.nichego_ne_naideno: Ничего не найдено
+mbhpackagebundle.views.et: эт
+mbhpackagebundle.views.da: Да
+mbhpackagebundle.views.net: Нет
+mbhpackagebundle.views.zaekhali: Заехали
+mbhpackagebundle.views.viehali: Выехали
+mbhpackagebundle.views.gosti: Гости
+mbhpackagebundle.views.stoimost: Стоимость
+mbhpackagebundle.views.dolg: Долг
+mbhpackagebundle.views.uslugi: Услуги
+mbhpackagebundle.views.vz: вз
+mbhpackagebundle.views.rb: рб
+mbhpackagebundle.views.nomerov: Номеров
+mbhpackagebundle.views.svobodno: Свободно
+mbhpackagebundle.views.zaniato: Занято
+mbhpackagebundle.views.gostei_v_broni: Гостей в брони
+mbhpackage.views.gostei_oformleno: Гостей оформлено
