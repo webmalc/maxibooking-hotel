@@ -17,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -181,4 +182,18 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         ];
     }
 
+    /**
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
+     * @Route("/change_room_type_enableable_mode/{disableMode}/{route}", name="change_room_type_enableable_mode", options={"expose"=true})
+     * @param $disableMode
+     * @param $route
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function changeRoomTypeEnableableModeAction($disableMode, $route)
+    {
+        $disableModeBool = $disableMode == 'true';
+        $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableModeBool);
+
+        return $this->redirectToRoute($route);
+    }
 }

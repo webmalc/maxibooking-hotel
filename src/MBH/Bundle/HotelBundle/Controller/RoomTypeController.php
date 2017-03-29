@@ -16,6 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/roomtype")
@@ -32,18 +33,29 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function indexAction()
     {
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $filterCollection = $this->dm->getFilterCollection();
+        if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
+            $filterCollection->enable('disableable');
+        }
+
         $entities = $this->dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder('s')
             ->field('hotel.id')->equals($this->hotel->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
+        if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
+            $filterCollection->disable('disableable');
+        }
 
         if (!$entities->count()) {
             return $this->redirectToRoute('room_type_new');
         }
 
         return [
-            'entities' => $entities
+            'entities' => $entities,
+            'displayDisabledRoomType' =>
+                !$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isIsDisableableOn()
         ];
     }
 
@@ -312,4 +324,15 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             'images' => $entity->getImages(),
         );
     }
+     /**
+      * @Route("/test")
+      * @return Response
+      */
+      public function testAction()
+      {
+         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findAll();
+         $firstPackage = $packages[0];
+
+         return new Response($firstPackage->getRoomType()->getTitle());
+      }
 }

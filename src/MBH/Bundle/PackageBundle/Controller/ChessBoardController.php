@@ -46,8 +46,8 @@ class ChessBoardController extends BaseController
         ]);
 
         $rightsChecker = $this->get('security.authorization_checker');
-        $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW')
-        && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
+        $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
+        $displayDisabledRoomType = !$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isIsDisableableOn();
 
         return [
             'pageCount' => ceil($builder->getRoomCount() / $builder::ROOM_COUNT_ON_PAGE),
@@ -64,10 +64,11 @@ class ChessBoardController extends BaseController
             'noAccommodationIntervals' => json_encode($builder->getNoAccommodationPackageIntervals()),
             'leftRoomsJsonData' => json_encode($builder->getLeftRoomCounts()),
             'noAccommodationCounts' => json_encode($builder->getDayNoAccommodationPackageCounts()),
-            'roomTypes' => $this->hotel->getRoomTypes(),
+            'roomTypes' => $builder->getAvailableRoomTypes(),
             'housings' => $this->hotel->getHousings(),
             'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors(),
-            'canCreatePackage' => $canCreatePackage
+            'canCreatePackage' => $canCreatePackage,
+            'displayDisabledRoomType' => $displayDisabledRoomType
         ];
     }
 
@@ -149,6 +150,15 @@ class ChessBoardController extends BaseController
         return new JsonResponse(json_encode($messageFormatter->getMessages()));
     }
 
+    /**
+     * @param Package $package
+     * @param PackageAccommodation $accommodation
+     * @param Room $updatedRoom
+     * @param \DateTime $updatedBeginDate
+     * @param \DateTime $updatedEndDate
+     * @param ChessBoardMessageFormatter $messageFormatter
+     * @throws \Exception
+     */
     private function updateAccommodation(
         Package $package,
         PackageAccommodation $accommodation,
@@ -208,6 +218,13 @@ class ChessBoardController extends BaseController
         }
     }
 
+    /**
+     * @param \DateTime $updatedBeginDate
+     * @param \DateTime $updatedEndDate
+     * @param Room $updatedRoom
+     * @param Package $package
+     * @param ChessBoardMessageFormatter $messageFormatter
+     */
     private function addAccommodation(
         \DateTime $updatedBeginDate,
         \DateTime $updatedEndDate,
@@ -375,6 +392,10 @@ class ChessBoardController extends BaseController
         return json_encode($data);
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
     private function getFilterData(Request $request)
     {
         if ($request->isMethod('GET')) {
@@ -404,6 +425,10 @@ class ChessBoardController extends BaseController
         ];
     }
 
+    /**
+     * @param $fieldData
+     * @return array
+     */
     private function getDataFromMultipleSelectField($fieldData)
     {
         if (!empty($fieldData) && is_array($fieldData) && $fieldData[0] != '') {

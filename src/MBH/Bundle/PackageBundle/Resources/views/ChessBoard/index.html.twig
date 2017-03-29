@@ -7,11 +7,11 @@
 {% set headerHeight = 81 %}
 {% set dayTableWidth = days|length * 47 %}
 
+
 {% block scripts %}
     {{ parent() }}
     {% javascripts filter='uglifyjs2'
     '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
-    '@MBHBaseBundle/Resources/public/js/app/020-forms.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
@@ -115,6 +115,9 @@
         <div class="input">
             <button type="button" class="btn btn-primary navbar-btn" id="filter-button">Выбрать</button>
         </div>
+        <div style="float: right;display: inline-block;margin-top: 13px; margin-right: 5px;">
+            {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'chess_board_home'} %}
+        </div>
     </form>
     <input type="hidden" id="pageNumber" value="{{ pageNumber }}">
     {% include 'MBHBaseBundle:Partials:pager.html.twig' with {'page': pageNumber, 'pages': pageCount, class : 'accommodation-report-pagination'} %}
@@ -166,7 +169,7 @@
 
                             <li class="tile tile-not-selected tile-free both"
                                 style="width:{{ headerWidth }}px; background-color: #ecf0f5;">
-                                <div class="title"><strong class="text-info">
+                                <div class="title"><strong {% if not roomTypeData.isEnabled %} class="disabled-room-type"{% endif %} class="text-info">
                                         <i class="fa fa-bed"></i> {{ roomTypeData.name[0:30] }}</strong></div>
                             </li>
                             <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
