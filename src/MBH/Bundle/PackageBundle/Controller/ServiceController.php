@@ -5,8 +5,7 @@ namespace MBH\Bundle\PackageBundle\Controller;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
-use MBH\Bundle\PackageBundle\Document\Tourist;
-use MBH\Bundle\PriceBundle\Document\ServiceCategory;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -64,8 +63,9 @@ class ServiceController extends BaseController
      */
     public function ajaxListAction(Request $request)
     {
-        $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
-        $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
+        $helper = $this->get('mbh.helper');
+        $begin = $helper->getDateFromString($request->get('begin'));
+        $end = $helper->getDateFromString($request->get('end'));
         $service = $request->get('service');
         $category = $request->get('category');
         $services = null;
@@ -92,8 +92,12 @@ class ServiceController extends BaseController
 
         /** @var DocumentRepository $repository */
         $repository = $this->dm->getRepository('MBHPackageBundle:PackageService');
-
         $queryBuilder = $repository->createQueryBuilder();
+
+        $packageFilterType = $request->get('package-filter-dates-type');
+        $packageIds = $this->getPackageIdsByFilter($packageFilterType, $begin, $end);
+        $queryBuilder->field('package.id')->in($packageIds);
+
         $queryBuilder->addNor($queryBuilder->expr()
             ->addOr($queryBuilder->expr()
                 ->field('begin')->gt($begin)->addAnd($queryBuilder->expr()->field('begin')->gt($end))
@@ -192,5 +196,35 @@ class ServiceController extends BaseController
             'totals' => json_encode($totals),
             'config' => $this->container->getParameter('mbh.services'),
         ];
+    }
+
+    private function getPackageIdsByFilter($dateFilterType, \DateTime $begin, \DateTime $end) {
+        $packageIds = [];
+
+        $queryCriteria = new PackageQueryCriteria();
+        switch ($dateFilterType) {
+            case 'begin':
+                $queryCriteria->dateFilterBy = 'begin';
+                $queryCriteria->begin = $begin;
+                $queryCriteria->end = $end;
+                break;
+            case 'end':
+                $queryCriteria->dateFilterBy = 'end';
+                $queryCriteria->begin = $begin;
+                $queryCriteria->end = $end;
+                break;
+            case 'accommodation':
+                $queryCriteria->filter = 'live_between';
+                $queryCriteria->liveBegin = $begin;
+                $queryCriteria->liveEnd = $end;
+                break;
+        }
+
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($queryCriteria);
+        foreach ($packages as $package) {
+            $packageIds[] = $package->getId();
+        }
+
+        return $packageIds;
     }
 }
