@@ -42,3 +42,11 @@ payment_types:
   online_full: 'Онлайн оплата (100%)'
   online_first_day: 'Онлайн оплата (одни сутки)'
   online_half: 'Онлайн оплата (50%)'
+
+onlinebundle.resources.views.hotels: Отели
+onlinebundle.resources.views.room_types: Типы номеров
+onlinebundle.resources.views.guests: Гости
+onlinebundle.resources.views.on: Включена
+onlinebundle.resources.views.all_hotels: Все отели
+onlinebundle.resources.da: Да
+onlinebundle.resources.net: Нет
