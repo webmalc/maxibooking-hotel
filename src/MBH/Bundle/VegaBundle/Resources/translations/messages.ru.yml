@@ -90,7 +90,6 @@ vegabundle.service.OOm: Ом
 vegabundle.service.GGom: Гом
 vegabundle.service.OOik: Оик
 vegabundle.service.TTp: Тп
-
 vegabundle.service.UUvd: Увд
 vegabundle.service.UUvao: Уao
 vegabundle.service.SSao: Cao
@@ -101,7 +100,6 @@ vegabundle.service.VVao: Вао
 vegabundle.service.SSvao: Свао
 vegabundle.service.UUzao: Юзао
 vegabundle.service.UUvao: Ювао
-
 vegabundle.service.GG: ' Г. '
 vegabundle.service.OObl: 'Обл.'
 vegabundle.service.RRna: 'Р-на'
@@ -110,7 +108,6 @@ vegabundle.service.PPo: ' По '
 vegabundle.service.VV: ' В '
 vegabundle.service.NNa: ' На '
 vegabundle.service.GGor: ' Гор. '
-
 vegabundle.service.g: ' г. '
 vegabundle.service.obl: 'обл.'
 vegabundle.service.rna: 'р-на'
@@ -119,7 +116,6 @@ vegabundle.service.po: ' по '
 vegabundle.service.v: ' в '
 vegabundle.service.na: ' на '
 vegabundle.service.gor: ' гор. '
-
 vegabundle.service.PPo: ' По '
 vegabundle.service.OO: 'О'
 vegabundle.service.VV: ' В '
@@ -130,7 +126,6 @@ vegabundle.service.SSvo-vo: 'Св-Во'
 vegabundle.service.LLbg: 'Лбг'
 vegabundle.service.SSSr: 'Ссср'
 vegabundle.service.CC: 'С '
-
 vegabundle.service.po: ' по '
 vegabundle.service.o: 'о'
 vegabundle.service.v: ' в '
@@ -141,3 +136,21 @@ vegabundle.service.svo-vo: 'Св-во'
 vegabundle.service.lbg: 'ЛБГ'
 vegabundle.service.sssr: 'СССР'
 vegabundle.service.c: 'с '
+
+vegabundle.resources.views.ivanov: Иванов
+vegabundle.resources.views.ivan: Иван
+vegabundle.resources.views.ivanovich: Иванович
+vegabundle.resources.views.muzh: МУЖ
+vegabundle.resources.views.RUSSIA: РОССИЯ
+vegabundle.resources.views.KRASNODARSKY-KRY: КРАСНОДАРСКИЙ КРАЙ
+vegabundle.resources.views.G-Krasnodar: Г. КРАСНОДАР
+vegabundle.resources.views.P-Belozerniy: П. БЕЛОЗЕРНЫЙ
+vegabundle.resources.views.Russia: РОССИЯ
+vegabundle.resources.views.Pasport-RF: ПАСПОРТ РФ
+vegabundle.resources.views.Vladelec: ВЛАДЕЛЕЦ
+vegabundle.resources.views.Dom: ДОМ
+vegabundle.resources.views.Litera: ЛИТЕРА
+vegabundle.resources.views.Kvartira: КВАРТИРА
+vegabundle.resources.views.Visa: ВИЗА
+vegabundle.resources.views.Passport-Ig: ПАСПОРТ ИГ
+vegabundle.resources.views.Document-Ud-Lichnost: ДОКУМЕНТ, УД. ЛИЧНОСТЬ - УСТАНОВОЧНЫЕ ДАННЫЕ ЛИЦА (ФИО, Д.Р., ФОТО)
