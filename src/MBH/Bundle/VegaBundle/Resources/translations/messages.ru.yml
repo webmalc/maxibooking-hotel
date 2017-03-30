@@ -28,3 +28,116 @@ vega_national_id_republic_of_kazakhstan: 'УДОСТОВЕРЕНИЕ ЛИЧНО�
 
 owner: Владелец документа
 inscribed: Вписан в документ
+
+vegabundle.service.sha: США
+vegabundle.service.sssr: СССР
+vegabundle.service.kndr: КНДР
+vegabundle.service.uar: ЮАР
+vegabundle.service.gdr: gdr
+vegabundle.service.chessr: ЧССР
+vegabundle.service.BBez: Без
+vegabundle.service.II: И
+vegabundle.service.VV: В
+vegabundle.service.bez: без
+vegabundle.service.i: и
+vegabundle.service.v: в
+vegabundle.service.aya: ая
+vegabundle.service.obl: обл
+vegabundle.service.resp: 'респ.'
+vegabundle.service.krasnodarsky: Краснодарский
+vegabundle.service.kry: 'край'
+vegabundle.service.hanty-manciysky_avtonomny_okrug: 'Ханты-Мансийский Автономный Округ - Югра'
+vegabundle.service.karelia: Карелия
+vegabundle.service.primorsky: Приморский
+vegabundle.service.severnaya-osetia_alania: Северная Осетия - Алания
+vegabundle.service.bashkorkostan: 'Башкортостан'
+vegabundle.service.avt-okrug: 'авт. округ'
+vegabundle.service.komy: 'Коми'
+vegabundle.service.kalmikia: 'Калмыкия'
+vegabundle.service.tatarstan: 'Татарстан'
+vegabundle.service.yamalo-neneckiy: 'Ямало-Ненецкий'
+vegabundle.service.moskwa: 'Москва'
+vegabundle.service.permsky: 'Пермский'
+vegabundle.service.dagestan: 'Дагестан'
+vegabundle.service.baykonur: 'Байконур'
+vegabundle.service.saha-yakutia: 'Саха /якутия/'
+vegabundle.service.buryatia: 'Бурятия'
+vegabundle.service.ingushetia: 'Ингушетия'
+vegabundle.service.adygeya: 'Адыгея'
+vegabundle.service.hakasia: 'Хакасия'
+vegabundle.service.habarovsky: 'Хабаровский'
+vegabundle.service.zabaykalsky: 'Забайкальский'
+vegabundle.service.stavropolsky: 'Ставропольский'
+vegabundle.service.mariy-el: 'Марий Эл'
+vegabundle.service.nenecky: 'Ненецкий'
+vegabundle.service.tiva: 'Тыва'
+vegabundle.service.mordovia: 'Мордовия'
+vegabundle.service.altaisky: 'Алтайский'
+vegabundle.service.chuvashskaya-respublika: 'Чувашская Республика -'
+vegabundle.service.chukotsky: 'Чукотский'
+vegabundle.service.krasnodarsky: 'Красноярский'
+vegabundle.service.sankt-peterburg: 'Санкт-Петербург'
+vegabundle.service.sevastopol: 'Севастополь'
+vegabundle.service.altay: 'Алтай'
+vegabundle.service.krym: 'Крым'
+vegabundle.service.OOvd: Овд
+vegabundle.service.UUfms: Уфмс
+vegabundle.service.OOfms: Офмс
+vegabundle.service.OOufms: Оуфмс
+vegabundle.service.RRovd: Ровд
+vegabundle.service.GGovd: Говд
+vegabundle.service.OOm: Ом
+vegabundle.service.GGom: Гом
+vegabundle.service.OOik: Оик
+vegabundle.service.TTp: Тп
+
+vegabundle.service.UUvd: Увд
+vegabundle.service.UUvao: Уao
+vegabundle.service.SSao: Cao
+vegabundle.service.ZZao: Зао
+vegabundle.service.SSzao: Сзао
+vegabundle.service.UUao: Юао
+vegabundle.service.VVao: Вао
+vegabundle.service.SSvao: Свао
+vegabundle.service.UUzao: Юзао
+vegabundle.service.UUvao: Ювао
+
+vegabundle.service.GG: ' Г. '
+vegabundle.service.OObl: 'Обл.'
+vegabundle.service.RRna: 'Р-на'
+vegabundle.service.RRne: 'Р-не'
+vegabundle.service.PPo: ' По '
+vegabundle.service.VV: ' В '
+vegabundle.service.NNa: ' На '
+vegabundle.service.GGor: ' Гор. '
+
+vegabundle.service.g: ' г. '
+vegabundle.service.obl: 'обл.'
+vegabundle.service.rna: 'р-на'
+vegabundle.service.rne: 'р-не'
+vegabundle.service.po: ' по '
+vegabundle.service.v: ' в '
+vegabundle.service.na: ' на '
+vegabundle.service.gor: ' гор. '
+
+vegabundle.service.PPo: ' По '
+vegabundle.service.OO: 'О'
+vegabundle.service.VV: ' В '
+vegabundle.service.NNa: ' На '
+vegabundle.service.RRf: 'Рф'
+vegabundle.service.IIg: 'Иг'
+vegabundle.service.SSvo-vo: 'Св-Во'
+vegabundle.service.LLbg: 'Лбг'
+vegabundle.service.SSSr: 'Ссср'
+vegabundle.service.CC: 'С '
+
+vegabundle.service.po: ' по '
+vegabundle.service.o: 'о'
+vegabundle.service.v: ' в '
+vegabundle.service.na: ' на '
+vegabundle.service.rf: 'РФ'
+vegabundle.service.ig: 'ИГ'
+vegabundle.service.svo-vo: 'Св-во'
+vegabundle.service.lbg: 'ЛБГ'
+vegabundle.service.sssr: 'СССР'
+vegabundle.service.c: 'с '
