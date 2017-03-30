@@ -705,3 +705,34 @@ mbhpackagebundle.views.podpis_lica_pribivshego_v_gostinicu: подпись ли�
 mbhpackagebundle.views.soglasen_na_prozhivanie_v_nomere_s_oplatoi_vseh_mest: Согласен(а) на проживание в номере с оплатой всех мест
 mbhpackagebundle.views.podpis_lica_pribivshego_v_gostinicu: подпись лица, прибывшего в гостиницу
 mbhpackagebundle.views.podpis_otvetstvennogo_lica: Подпись ответственного лица
+
+mbhpackagebundle.view.documents.pdftemplates.registration_card.familiya: Фамилия
+mbhpackagebundle.view.documents.pdftemplates.registration_card.imya: Имя
+mbhpackagebundle.view.documents.pdftemplates.registration_card.otchestvo: Отчество
+mbhpackagebundle.view.documents.pdftemplates.registration_card.grazhdanstvo: Гражданство
+mbhpackagebundle.view.documents.pdftemplates.registration_card.pol: Пол
+mbhpackagebundle.view.documents.pdftemplates.registration_card.data.rozhdeniya: Дата рождения
+mbhpackagebundle.view.documents.pdftemplates.registration_card.mesto.rozhdeniya: Место рождения
+mbhpackagebundle.view.documents.pdftemplates.registration_card.strana: Страна
+mbhpackagebundle.view.documents.pdftemplates.registration_card.indeks: Индекс
+mbhpackagebundle.view.documents.pdftemplates.registration_card.gorod: Город
+mbhpackagebundle.view.documents.pdftemplates.registration_card.ulitsa: Улица
+mbhpackagebundle.view.documents.pdftemplates.registration_card.tarif: Тариф
+mbhpackagebundle.view.documents.pdftemplates.registration_card.tip: Тип
+mbhpackagebundle.view.documents.pdftemplates.registration_card.nomer: Номер
+mbhpackagebundle.view.documents.pdftemplates.registration_card.data: Дата
+mbhpackagebundle.view.documents.pdftemplates.registration_card.subekt-rf: Субъект РФ
+mbhpackagebundle.view.documents.pdftemplates.registration_card.otezd: Отъезд
+mbhpackagebundle.view.documents.pdftemplates.registration_card.kol_gostey: Кол. гостей
+mbhpackagebundle.view.documents.pdftemplates.registration_card.oplacheno: Оплачено
+mbhpackagebundle.view.documents.pdftemplates.registration_card.nasha_gostinica_predostavlaet_uslugi_etc: Наша гостиница предоставляет услуги, перечень которых Вы найдете в своем номере
+mbhpackagebundle.view.documents.pdftemplates.registration_card.viezd_gostey_ne_pozdnee_etc: Выезд гостей не позднее - 12:00, заселение гостей с 14:00
+mbhpackagebundle.view.documents.pdftemplates.registration_card.kurenie_v_nashey_gostinice_zapresheno_etc: Курение в нашей гостинице запрещено. Разрешается только в специально отведенных для этого местах
+mbhpackagebundle.view.documents.pdftemplates.registration_card.za_sohranenie_deneg_i_cennih_veshey_ne_sdannih_na_hranenie_etc: За сохранность денег и ценных вещей, не сданных на хранение, администрация гостиницы ответственности не несет
+mbhpackagebundle.view.documents.pdftemplates.registration_card.postoronnie_lica_po_prosbe_prozhivaushih_etc: Посторонние лица по просьбе проживающих, с ведома администрации, могут находиться в гостинице с 9 до 23 часов
+mbhpackagebundle.view.documents.pdftemplates.registration_card.v_sluchae_porchi_ili_uteri_imushestva_etc: В случае порчи или утери имущества гостиницы проживающий возмещает ущерб
+mbhpackagebundle.view.documents.pdftemplates.registration_card.vozvrat_denezhnih_sredstv_proizvodica_etc: Возврат денежных средств производится только при наличии кассового чека подтверждающего оплату
+mbhpackagebundle.view.documents.pdftemplates.registration_card.s_usloviyami_oplati_vozvrata_i_etc: С условиями оплаты, возврата и проживания согласен
+mbhpackagebundle.view.documents.pdftemplates.registration_card.podpis: Подпись
+mbhpackagebundle.view.documents.pdftemplates.registration_card.otcestvo: Отчество
+mbhpackagebundle.view.documents.pdftemplates.registration_card.otezd: Отъезд
