@@ -271,3 +271,8 @@ restaurant:
 
 restaurant.dishorder.noingredients: Нет ингредиентов для составления блюд.
 restaurant.dishmenu.item.action.new.action.new: Добавить новые ингрeдиенты
+
+restaurantbundle.controller.entity_successful_created: 'Запись успешно создана.'
+restaurantbundle.controller.entry_successfully_edited: 'Запись успешно отредактирована.'
+restaurantbundle.controller.price_successfully_saved: 'Цены успешно сохранены.'
+restaurantbundle.controller.attention_not_all_parameter_successful_saved: 'Внимание, не все параметры сохранены успешно'
