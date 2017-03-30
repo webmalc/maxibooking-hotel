@@ -64,3 +64,17 @@ workShift:
         closed: Закрыта
     notification:
         work_shift_expired: Смена идет больше 12 часов. Закройте её
+
+restaurantbundle.controller.system_administrator: 'Администратор системы'
+restaurantbundle.controller.hotel_administrator: 'Администратор отеля'
+restaurantbundle.controller.analitic: 'Аналитик'
+restaurantbundle.controller.buhgalter: 'Бухгалтер'
+restaurantbundle.controller.turagent: 'Турагент'
+restaurantbundle.controller.little_manager: Младший менеджер
+restaurantbundle.controller.manager: 'Менеджер'
+restaurantbundle.controller.senior_manager: 'Старший менеджер'
+restaurantbundle.controller.portie: 'Портье'
+restaurantbundle.controller.servive_staff: 'Обслуживающий персонал'
+restaurantbundle.controller.restoran_senior_manager: 'Ресторан старший менеджер'
+restaurantbundle.controller.restoran_manager: 'Ресторан менеджер'
+restaurantbundle.controller.warehouse: 'Склад'
