@@ -790,3 +790,16 @@ mbhpackagebundle.view.documents.pdftemplates.svidetelstvo_vidano_k_documentu_udo
 mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc: республика, край, область, округ, район, город, пгт, село, деревня, аул, улица, дом, корпус, квартира
 mbhpackagebundle.view.documents.pdftemplates.fio_god_i_mesto_rozhdenia: Ф.И.О., год и место рождения
 mbhpackagebundle.view.documents.pdftemplates.o_tom_chto_on_zaregistrirovan_po_mestu_prebivania: о том, что он(а) зарегистрирован(а) по месту пребывания по адресу
+
+mbhpackagebundle.view.report.ostatok_v_prodashe: Остаток (в продаже)
+mbhpackagebundle.view.report.ostatok_nomernoy_fond: Остаток (номерной фонд)
+mbhpackagebundle.view.report.zabronirovano_nomerov: Забронировано номеров
+mbhpackagebundle.view.report.nomera_bez_oplaty: Номера без оплаты (брони)
+mbhpackagebundle.view.report.gostey_na_odin_nomer: Гостей на 1 номер
+mbhpackagebundle.view.report.stoimost_prozhivania: Стоимость проживания
+mbhpackagebundle.view.report.stoimost_uslug: Стоимость услуг
+mbhpackagebundle.view.report.obshaya_stoimost: Общая стоимость
+mbhpackagebundle.view.report.polucheno_fakticheski: Получено фактически
+mbhpackagebundle.view.report.fillingtablerows.dolg: Долг
+mbhpackagebundle.view.report.fillingtablerows.max_vozm_viruchka_za_prozh: 'Макс. возм. выручка за прож'
+mbhpackagebundle.view.report.tek_stoim_prozhiv_ot_max_vozm: 'Тек. стоим. прожив. от макс. возм.'

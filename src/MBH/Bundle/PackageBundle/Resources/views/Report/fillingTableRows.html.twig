@@ -48,7 +48,7 @@
 </tr>
 <tr>
     <td>
-        <small>Остаток (в продаже)</small>
+        <small>{{ 'mbhpackagebundle.view.report.ostatok_v_prodashe'|trans }}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -64,7 +64,7 @@
 </tr>
 <tr>
     <td>
-        <small>Остаток (номерной фонд)</small>
+        <small>{{ 'mbhpackagebundle.view.report.ostatok_nomernoy_fond'|trans }}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -80,7 +80,7 @@
 </tr>
 <tr>
     <td>
-        <small>Забронировано номеров %</small>
+        <small>{{ 'mbhpackagebundle.view.report.zabronirovano_nomerov'|trans }} %</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -97,7 +97,7 @@
 
 <tr>
     <td>
-        <small>Номера без оплаты (брони)</small>
+        <small>{{ 'mbhpackagebundle.view.report.nomera_bez_oplaty'|trans }}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -130,7 +130,7 @@
 </tr>
 <tr>
     <td>
-        <small>Гостей на 1 номер</small>
+        <small>{{ 'mbhpackagebundle.view.report.gostey_na_odin_nomer'|trans }}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -147,7 +147,7 @@
 
 <tr class="info">
     <td>
-        <small>Стоимость проживания</small>
+        <small>{{ 'mbhpackagebundle.view.report.stoimost_prozhivania'|trans }}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -163,7 +163,7 @@
 </tr>
 <tr class="info">
     <td>
-        <small>Стоимость услуг</small>
+        <small>{{ 'mbhpackagebundle.view.report.stoimost_uslug'|trans }}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -179,7 +179,7 @@
 </tr>
 <tr class="info">
     <td>
-        <small>Общая стоимость</small>
+        <small>{{ 'mbhpackagebundle.view.report.obshaya_stoimost'|trans }}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -211,7 +211,7 @@
 </tr>
 <tr class="success">
     <td>
-        <small>Получено фактически %</small>
+        <small>{{ 'mbhpackagebundle.view.report.polucheno_fakticheski'|trans }} %</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -243,7 +243,7 @@
 </tr>
 <tr class="warning">
     <td>
-        <small>Макс. возм. выручка за прож.</small>
+        <small>{{ 'mbhpackagebundle.view.report.fillingtablerows.max_vozm_viruchka_za_prozh'|trans }}.</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -259,7 +259,7 @@
 </tr>
 <tr class="warning">
     <td>
-        <small>Тек. стоим. прожив. от макс. возм. %</small>
+        <small>{{ 'mbhpackagebundle.view.report.tek_stoim_prozhiv_ot_max_vozm'|trans }} %</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
