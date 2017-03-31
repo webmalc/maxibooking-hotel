@@ -736,7 +736,6 @@ mbhpackagebundle.view.documents.pdftemplates.registration_card.vozvrat_denezhnih
 mbhpackagebundle.view.documents.pdftemplates.registration_card.s_usloviyami_oplati_vozvrata_i_etc: С условиями оплаты, возврата и проживания согласен
 mbhpackagebundle.view.documents.pdftemplates.registration_card.podpis: Подпись
 mbhpackagebundle.view.documents.pdftemplates.registration_card.otcestvo: Отчество
-mbhpackagebundle.view.documents.pdftemplates.registration_card.otezd: Отъезд
 
 mbhpackagebundle.view.documents.pdftemplates.act: Акт
 mbhpackagebundle.view.documents.pdftemplates.ot: от
@@ -777,7 +776,10 @@ mbhpackagebundle.view.documents.pdftemplates.PP: П
 mbhpackagebundle.view.documents.pdftemplates.podtverzhdenie: Подтверждение
 mbhpackagebundle.view.documents.pdftemplates.zakaza: заказа
 mbhpackagebundle.view.documents.pdftemplates.ot: от
+mbhpackagebundle.view.documents.pdftemplates.do: до
+mbhpackagebundle.view.documents.pdftemplates.PPodpis: Подпись
 mbhpackagebundle.view.documents.pdftemplates.broni: брони
+mbhpackagebundle.view.documents.pdftemplates.passport: Паспорт
 mbhpackagebundle.view.documents.pdftemplates.fio: 'Ф.И.О'
 mbhpackagebundle.view.documents.pdftemplates.otel: Отель
 mbhpackagebundle.view.documents.pdftemplates.primechanie_v_sluchae_nesvoevremennogo_otkaza_etc: Примечание: в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание компенсации из внесенной предоплаты.

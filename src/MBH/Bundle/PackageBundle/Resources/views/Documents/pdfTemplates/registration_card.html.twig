@@ -180,7 +180,7 @@
                                 <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.mesto.rozhdeniya'|trans }} </div>
                             </div>
                             <div class="area"
-                                 style="margin-left: 130px;mbhpackagebundle.view.documents.pdftemplates.registration_card.otezd">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ '  ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
+                                 style="margin-left: 130px;">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ '  ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
                         </div>
                     </td>
                 </tr>
@@ -189,7 +189,7 @@
                         <div class="field">
                             <div class="title">
                                 <div>Pass №</div>
-                                <div>Паспорт №</div>
+                                <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.passport'|trans }} №</div>
                             </div>
                             <div class="area">{% if tourist and tourist.documentRelation and tourist.documentRelation.number and tourist.documentRelation.series %} {{ tourist.documentRelation.series }} {{ tourist.documentRelation.number }} {% endif %}</div>
                         </div>
@@ -241,7 +241,7 @@
                     <td colspan="5">
                         <div class="field">
                             <div class="title" style="width: 55px">
-                                <div>Сity</div>
+                                <div>City</div>
                                 <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.gorod'|trans }} </div>
                             </div>
                             <div style="margin-left: 56px" class="area">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
@@ -379,7 +379,7 @@
                 </div>
                 <div class="square">
                     {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.oplacheno'|trans }}<br>
-                    до<br>
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.do'|trans }}<br>
                     {% if entity.end %}{{ entity.end|date('d.m.Y') }} <br> 12:00 {% endif %}
                 </div>
                 <div class="text">
@@ -613,7 +613,7 @@
 
                     <div class="signature">
                         <div>SIGNATURE</div>
-                        <small>Подпись</small>
+                        <small>{{ 'mbhpackagebundle.view.documents.pdftemplates.PPodpis'|trans }}</small>
                     </div>
 
                 </div>
