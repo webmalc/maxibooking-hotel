@@ -752,3 +752,28 @@ mbhpackagebundle.view.documents.pdftemplates.itog: Итог
 mbhpackagebundle.view.documents.pdftemplates.dezhurniy_administrator: Дежурный администратор
 mbhpackagebundle.view.documents.pdftemplates.schet: Счёт
 mbhpackagebundle.view.documents.pdftemplates.ot: от
+
+mbhpackagebundle.view.documents.pdftemplates.form: Форма
+mbhpackagebundle.view.documents.pdftemplates.svidetelstvo: Свидетельство
+mbhpackagebundle.view.documents.pdftemplates.o_registracii_po_mestu_prebivania: о регистрации по месту пребывания
+mbhpackagebundle.view.documents.pdftemplates.vidano: Выдано
+mbhpackagebundle.view.documents.pdftemplates.g: г
+mbhpackagebundle.view.documents.pdftemplates.d: д
+mbhpackagebundle.view.documents.pdftemplates.r: р
+mbhpackagebundle.view.documents.pdftemplates.po: по
+mbhpackagebundle.view.documents.pdftemplates.kor: кор
+mbhpackagebundle.view.documents.pdftemplates.kv: кв
+mbhpackagebundle.view.documents.pdftemplates.na_srok_s: на срок с
+mbhpackagebundle.view.documents.pdftemplates.vid: вид
+mbhpackagebundle.view.documents.pdftemplates.seria: серия
+mbhpackagebundle.view.documents.pdftemplates.podpis: подпись
+mbhpackagebundle.view.documents.pdftemplates.familia: фамилия
+mbhpackagebundle.view.documents.pdftemplates.MM: М
+mbhpackagebundle.view.documents.pdftemplates.PP: П
+mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_registracionnogo_ucheta: наименование органа регистрационного учета
+mbhpackagebundle.view.documents.pdftemplates.nachalnik_rukovoditel_organa_registracionnogo_ucheta: Начальник (руководитель) органа регистрационного учета
+mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vidavshego_document: наименование органа, учреждения, выдавшего документ
+mbhpackagebundle.view.documents.pdftemplates.svidetelstvo_vidano_k_documentu_udostoveraushemu_lichnost: Свидетельство выдано к документу, удостоверяющему личность
+mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc: республика, край, область, округ, район, город, пгт, село, деревня, аул, улица, дом, корпус, квартира
+mbhpackagebundle.view.documents.pdftemplates.fio_god_i_mesto_rozhdenia: Ф.И.О., год и место рождения
+mbhpackagebundle.view.documents.pdftemplates.o_tom_chto_on_zaregistrirovan_po_mestu_prebivania: о том, что он(а) зарегистрирован(а) по месту пребывания по адресу
