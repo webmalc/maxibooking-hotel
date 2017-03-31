@@ -539,3 +539,9 @@ mbhbasebundle.view.pdftemplates.organization.bez_naloga: Без налога (Н
 mbhbasebundle.view.pdftemplates.organization.vsego_k_oplate: Всего к оплате
 mbhbasebundle.view.pdftemplates.organization.vsego_naimenovanii: Всего наименований 1, на сумму
 mbhbasebundle.view.pdftemplates.organization.rukovoditel: Руководитель
+
+mbhbasebundle.views.partials.yesterday: вчера
+mbhbasebundle.views.partials.today: сегодня
+mbhbasebundle.views.partials.tomorrow: завтра
+mbhbasebundle.views.partials.week: неделя
+mbhbasebundle.views.partials.month: месяц
