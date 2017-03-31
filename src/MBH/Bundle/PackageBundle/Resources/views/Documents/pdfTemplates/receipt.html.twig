@@ -59,9 +59,9 @@
                     {% endif %}
                     {% if decomposedAddress and decomposedAddress.country and decomposedAddress.city %}
                         {{ decomposedAddress.country ~ ' ' ~ decomposedAddress.city ~ ' ' ~ decomposedAddress.settlement }}
-                        {% if decomposedAddress.street %} ул. {{  decomposedAddress.street }}
+                        {% if decomposedAddress.street %} {{ 'mbhpackagebundle.view.documents.pdftemplates.ul'|trans }}. {{  decomposedAddress.street }}
                             {% if decomposedAddress.house %}
-                                д. {{ decomposedAddress.house }}
+                                {{ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans }}. {{ decomposedAddress.house }}
                                 {% if decomposedAddress.corpus %}
                                     ({{ decomposedAddress.corpus }})
                                 {% endif %}
