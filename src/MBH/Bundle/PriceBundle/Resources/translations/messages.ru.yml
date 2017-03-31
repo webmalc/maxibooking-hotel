@@ -520,3 +520,7 @@ price.form.time: 'Время?'
 price.form.she_on: 'Включена?'
 price.form.should_i_use_service_online_booking: 'Использовать ли услугу в онлайн бронировании?'
 price.form.is_service_available_sale: 'Доступна ли услуга для продажи?'
+pricebundle.resources.views.public_info: Общая информация
+pricebundle.resources.views.actions: Акции
+pricebundle.resources.views.services: Услуги
+pricebundle.resources.views.inheritage: Наследование
