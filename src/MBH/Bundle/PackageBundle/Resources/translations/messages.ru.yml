@@ -736,3 +736,11 @@ mbhpackagebundle.view.documents.pdftemplates.registration_card.s_usloviyami_opla
 mbhpackagebundle.view.documents.pdftemplates.registration_card.podpis: Подпись
 mbhpackagebundle.view.documents.pdftemplates.registration_card.otcestvo: Отчество
 mbhpackagebundle.view.documents.pdftemplates.registration_card.otezd: Отъезд
+
+mbhpackagebundle.view.documents.pdftemplates.act: Акт
+mbhpackagebundle.view.documents.pdftemplates.ot: от
+mbhpackagebundle.view.documents.pdftemplates.itogo: Итого
+mbhpackagebundle.view.documents.pdftemplates.ht: шт
+mbhpackagebundle.view.documents.pdftemplates.v_tom_chisle_nds: В том числе НДС
+mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug: Всего оказано услуг
+mbhpackagebundle.view.documents.pdftemplates.na_summu: на сумму
