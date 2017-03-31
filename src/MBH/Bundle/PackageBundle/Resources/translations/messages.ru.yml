@@ -744,3 +744,11 @@ mbhpackagebundle.view.documents.pdftemplates.ht: шт
 mbhpackagebundle.view.documents.pdftemplates.v_tom_chisle_nds: В том числе НДС
 mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug: Всего оказано услуг
 mbhpackagebundle.view.documents.pdftemplates.na_summu: на сумму
+
+mbhpackagebundle.view.documents.pdftemplates.zakazanno: Заказано
+mbhpackagebundle.view.documents.pdftemplates.na_summu: на сумму
+mbhpackagebundle.view.documents.pdftemplates.oplacheno: Оплачено
+mbhpackagebundle.view.documents.pdftemplates.itog: Итог
+mbhpackagebundle.view.documents.pdftemplates.dezhurniy_administrator: Дежурный администратор
+mbhpackagebundle.view.documents.pdftemplates.schet: Счёт
+mbhpackagebundle.view.documents.pdftemplates.ot: от
