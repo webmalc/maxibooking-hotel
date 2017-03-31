@@ -276,3 +276,6 @@ restaurantbundle.controller.entity_successful_created: 'Запись успеш�
 restaurantbundle.controller.entry_successfully_edited: 'Запись успешно отредактирована.'
 restaurantbundle.controller.price_successfully_saved: 'Цены успешно сохранены.'
 restaurantbundle.controller.attention_not_all_parameter_successful_saved: 'Внимание, не все параметры сохранены успешно'
+
+restaurantbundle.form.paid: Оплачено
+restaurantbundle.form.not_paid: Не оплачено
