@@ -298,6 +298,61 @@
                 {% endfor %}
             {% endif %}
             {#end_sale_tour#}
+            {#amountPeople Day#}
+            {% if (optionsShows is empty) or ('count-people-day' in optionsShows and optionsShows is not empty ) %}
+                <tr>
+                <td class="first-th" rowspan="{{ dynamicSale.periods|length }}" style="min-width: 150px;">
+                    <small>{{ 'dynamic.sales.day.sales.count.people.day'|trans({},'MBHPackageBundle') }}</small>
+                </td>
+                {% for dynamicSalePeriod in dynamicSale.periods %}
+                    {% set index = loop.index %}
+                    {% if  loop.index == 1 %}
+                        <td>
+                            {{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                            - {{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}
+                        </td>
+                        {% for dynamicSaleDay  in dynamicSalePeriod %}
+                            {% if loop.last %}
+                                {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                    {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right" style="text-align: right">
+                                    <strong>{{ dynamicSaleDay.countPeople }}</strong>
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ dynamicSaleDay.countPeople }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>{{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                                -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
+                            {% for dynamicSaleDay  in dynamicSalePeriod %}
+                                {% if loop.last %}
+                                    {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                        {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <td class="text-right" style="text-align: right">
+                                        <strong>{{ dynamicSaleDay.countPeople }}</strong>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        {{ dynamicSaleDay.countPeople }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
             {#amountPeople#}
             {% if (optionsShows is empty) or ('count-people' in optionsShows and optionsShows is not empty ) %}
                 <tr>
@@ -345,6 +400,61 @@
                                 {% else %}
                                     <td>
                                         {{ dynamicSaleDay.totalCountPeople }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+            {#amount numbers Day#}
+            {% if (optionsShows is empty) or ('count-room-day' in optionsShows and optionsShows is not empty ) %}
+                <tr>
+                <td class="first-th" rowspan="{{ dynamicSale.periods|length }}" style="min-width: 150px;">
+                    <small>{{ 'dynamic.sales.day.sales.count.room.day'|trans({},'MBHPackageBundle') }}</small>
+                </td>
+                {% for dynamicSalePeriod in dynamicSale.periods %}
+                    {% set index = loop.index %}
+                    {% if  loop.index == 1 %}
+                        <td>
+                            {{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                            - {{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}
+                        </td>
+                        {% for dynamicSaleDay  in dynamicSalePeriod %}
+                            {% if loop.last %}
+                                {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                    {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right" style="text-align: right">
+                                    <strong>{{ dynamicSaleDay.countNumbers }}</strong>
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ dynamicSaleDay.countNumbers }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>{{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                                -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
+                            {% for dynamicSaleDay  in dynamicSalePeriod %}
+                                {% if loop.last %}
+                                    {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                        {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <td class="text-right" style="text-align: right">
+                                        <strong>{{ dynamicSaleDay.totalCountNumbers }}</strong>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        {{ dynamicSaleDay.totalCountNumbers }}
                                     </td>
                                 {% endif %}
                             {% endfor %}
@@ -408,6 +518,397 @@
 
                 {% endfor %}
             {% endif %}
+            {# packages Paid #}
+            {% if (optionsShows is empty) or ('package-isPaid' in optionsShows and optionsShows is not empty ) %}
+                <tr>
+                <td class="first-th" rowspan="{{ dynamicSale.periods|length }}" style="min-width: 150px;">
+                    <small>{{ 'dynamic.sales.day.sales.package.is.paid'|trans({},'MBHPackageBundle') }}</small>
+                </td>
+                {% for dynamicSalePeriod in dynamicSale.periods %}
+                    {% set index = loop.index %}
+                    {% if  loop.index == 1 %}
+                        <td>
+                            {{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                            - {{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}
+                        </td>
+                        {% for dynamicSaleDay  in dynamicSalePeriod %}
+                            {% if loop.last %}
+                                {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                    {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right" style="text-align: right">
+                                    <strong>{{ dynamicSaleDay.packageIsPaid }}</strong>
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ dynamicSaleDay.packageIsPaid }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>{{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                                -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
+                            {% for dynamicSaleDay  in dynamicSalePeriod %}
+                                {% if loop.last %}
+                                    {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                        {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <td class="text-right" style="text-align: right">
+                                        <strong>{{ dynamicSaleDay.packageIsPaid }}</strong>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        {{ dynamicSaleDay.packageIsPaid }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+            {#packages Paid growth#}
+            {% if (optionsShows is empty) or ('package-isPaid-growth' in optionsShows and optionsShows is not empty ) %}
+                <tr>
+                <td class="first-th" rowspan="{{ dynamicSale.periods|length }}" style="min-width: 150px;">
+                    <small>{{ 'dynamic.sales.day.sales.package.is.paid.growth'|trans({},'MBHPackageBundle') }}</small>
+                </td>
+                {% for dynamicSalePeriod in dynamicSale.periods %}
+                    {% set index = loop.index %}
+                    {% if  loop.index == 1 %}
+                        <td>
+                            {{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                            - {{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}
+                        </td>
+                        {% for dynamicSaleDay  in dynamicSalePeriod %}
+                            {% if loop.last %}
+                                {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                    {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right" style="text-align: right">
+                                    <strong>{{ dynamicSaleDay.packageIsPaidGrowth }}</strong>
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ dynamicSaleDay.packageIsPaidGrowth }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>{{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                                -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
+                            {% for dynamicSaleDay  in dynamicSalePeriod %}
+                                {% if loop.last %}
+                                    {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                        {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <td class="text-right" style="text-align: right">
+                                        <strong>{{ dynamicSaleDay.packageIsPaidGrowth }}</strong>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        {{ dynamicSaleDay.packageIsPaidGrowth }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+            {#delete package#}
+            {% if (optionsShows is empty) or ('package-delete' in optionsShows and optionsShows is not empty ) %}
+                <tr>
+                <td class="first-th" rowspan="{{ dynamicSale.periods|length }}" style="min-width: 150px;">
+                    <small>{{ 'dynamic.sales.day.sales.package.delete'|trans({},'MBHPackageBundle') }}</small>
+                </td>
+                {% for dynamicSalePeriod in dynamicSale.periods %}
+                    {% set index = loop.index %}
+                    {% if  loop.index == 1 %}
+                        <td>
+                            {{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                            - {{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}
+                        </td>
+                        {% for dynamicSaleDay  in dynamicSalePeriod %}
+                            {% if loop.last %}
+                                {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                    {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right" style="text-align: right">
+                                    <strong>{{ dynamicSaleDay.deletePackages }}</strong>
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ dynamicSaleDay.deletePackages }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>{{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                                -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
+                            {% for dynamicSaleDay  in dynamicSalePeriod %}
+                                {% if loop.last %}
+                                    {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                        {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <td class="text-right" style="text-align: right">
+                                        <strong>{{ dynamicSaleDay.deletePackages }}</strong>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        {{ dynamicSaleDay.deletePackages }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+            {#delete package price#}
+            {% if (optionsShows is empty) or ('package-delete-price' in optionsShows and optionsShows is not empty ) %}
+                <tr>
+                <td class="first-th" rowspan="{{ dynamicSale.periods|length }}" style="min-width: 150px;">
+                    <small>{{ 'dynamic.sales.day.sales.package.delete.price'|trans({},'MBHPackageBundle') }}</small>
+                </td>
+                {% for dynamicSalePeriod in dynamicSale.periods %}
+                    {% set index = loop.index %}
+                    {% if  loop.index == 1 %}
+                        <td>
+                            {{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                            - {{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}
+                        </td>
+                        {% for dynamicSaleDay  in dynamicSalePeriod %}
+                            {% if loop.last %}
+                                {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                    {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right" style="text-align: right">
+                                    <strong>{{ dynamicSaleDay.deletePricePackage }}</strong>
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ dynamicSaleDay.deletePricePackage }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>{{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                                -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
+                            {% for dynamicSaleDay  in dynamicSalePeriod %}
+                                {% if loop.last %}
+                                    {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                        {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <td class="text-right" style="text-align: right">
+                                        <strong>{{ dynamicSaleDay.deletePricePackage }}</strong>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        {{ dynamicSaleDay.deletePricePackage }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+            {#delete package price growth#}
+            {% if (optionsShows is empty) or ('package-delete-price-growth' in optionsShows and optionsShows is not empty ) %}
+                <tr>
+                <td class="first-th" rowspan="{{ dynamicSale.periods|length }}" style="min-width: 150px;">
+                    <small>{{ 'dynamic.sales.day.sales.package.delete.price.growth'|trans({},'MBHPackageBundle') }}</small>
+                </td>
+                {% for dynamicSalePeriod in dynamicSale.periods %}
+                    {% set index = loop.index %}
+                    {% if  loop.index == 1 %}
+                        <td>
+                            {{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                            - {{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}
+                        </td>
+                        {% for dynamicSaleDay  in dynamicSalePeriod %}
+                            {% if loop.last %}
+                                {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                    {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right" style="text-align: right">
+                                    <strong>{{ dynamicSaleDay.deletePricePackage }}</strong>
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ dynamicSaleDay.deletePricePackage }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>{{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                                -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
+                            {% for dynamicSaleDay  in dynamicSalePeriod %}
+                                {% if loop.last %}
+                                    {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                        {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <td class="text-right" style="text-align: right">
+                                        <strong>{{ dynamicSaleDay.deletePricePackage }}</strong>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        {{ dynamicSaleDay.deletePricePackage }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+            {#delete package is paid#}
+            {% if (optionsShows is empty) or ('package-delete-price-isPaid' in optionsShows and optionsShows is not empty ) %}
+                <tr>
+                <td class="first-th" rowspan="{{ dynamicSale.periods|length }}" style="min-width: 150px;">
+                    <small>{{ 'dynamic.sales.day.sales.package.delete.price.is.paid'|trans({},'MBHPackageBundle') }}</small>
+                </td>
+                {% for dynamicSalePeriod in dynamicSale.periods %}
+                    {% set index = loop.index %}
+                    {% if  loop.index == 1 %}
+                        <td>
+                            {{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                            - {{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}
+                        </td>
+                        {% for dynamicSaleDay  in dynamicSalePeriod %}
+                            {% if loop.last %}
+                                {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                    {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right" style="text-align: right">
+                                    <strong>{{ dynamicSaleDay.deletePackageIsPaid }}</strong>
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ dynamicSaleDay.deletePackageIsPaid }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>{{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                                -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
+                            {% for dynamicSaleDay  in dynamicSalePeriod %}
+                                {% if loop.last %}
+                                    {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                        {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <td class="text-right" style="text-align: right">
+                                        <strong>{{ dynamicSaleDay.deletePackageIsPaid }}</strong>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        {{ dynamicSaleDay.deletePackageIsPaid }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+            {# package is paid subtraction delete package#}
+            {% if (optionsShows is empty) or ('package-isPaid-delete-package' in optionsShows and optionsShows is not empty ) %}
+                <tr>
+                <td class="first-th" rowspan="{{ dynamicSale.periods|length }}" style="min-width: 150px;">
+                    <small>{{ 'dynamic.sales.day.sales.package.is.paid.subtraction.deleted'|trans({},'MBHPackageBundle') }}</small>
+                </td>
+                {% for dynamicSalePeriod in dynamicSale.periods %}
+                    {% set index = loop.index %}
+                    {% if  loop.index == 1 %}
+                        <td>
+                            {{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                            - {{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}
+                        </td>
+                        {% for dynamicSaleDay  in dynamicSalePeriod %}
+                            {% if loop.last %}
+                                {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                    {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right" style="text-align: right">
+                                    <strong>{{ dynamicSaleDay.comparisonIsPaidAndDelete }}</strong>
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ dynamicSaleDay.comparisonIsPaidAndDelete }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>{{ dynamicSalePeriod|first.dateSales|date('d.m.Y') }}
+                                -{{ dynamicSalePeriod|last.dateSales|date('d.m.Y') }}</td>
+                            {% for dynamicSaleDay  in dynamicSalePeriod %}
+                                {% if loop.last %}
+                                    {% if (maxCount - dynamicSale.periods[index-1]|length) > 0 %}
+                                        {% for i in 1..(maxCount - dynamicSale.periods[index-1]|length) %}
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <td class="text-right" style="text-align: right">
+                                        <strong>{{ dynamicSaleDay.comparisonIsPaidAndDelete }}</strong>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        {{ dynamicSaleDay.comparisonIsPaidAndDelete }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+
+
+
+
+
+
             {#comparison#}
             {% if dynamicSale.comparison is not null and (((optionsShows is empty) or ( optionsShows|length >= 1)) ) %}
                 <tr class="info">
@@ -767,6 +1268,84 @@
                         {% endif %}
                     {% endfor %}
                 {% endif %}
+                {#comparison count people Day#}
+                {% if (optionsShows is empty) or ('count-people-day' in optionsShows and optionsShows is not empty ) %}
+                    <tr class="danger">
+                    <td class="first-th" rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.count.people.day'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.amounts'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                    <td>
+                                        <div class="{% if dynamicSaleComparisonDay.countPeople < 0 %} text-danger{% endif %}">
+                                            {{ dynamicSaleComparisonDay.countPeople }}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="warning">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.countPeople < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.countPeople }}
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    <tr class="danger">
+                    <td rowspan="{{ dynamicSale.periods|length }}">
+                        <small>%</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            <tr class="danger">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentCountPeople < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentCountPeople }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="warning">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentCountPeople < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentCountPeople }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 {#comparison count people#}
                 {% if (optionsShows is empty) or ('count-people' in optionsShows and optionsShows is not empty ) %}
                     <tr class="danger">
@@ -835,6 +1414,84 @@
                                         <td>
                                             <div class="{% if dynamicSaleComparisonDay.percentCountPeople < 0 %} text-danger{% endif %}">
                                                 {{ dynamicSaleComparisonDay.percentCountPeople }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {#comparison count numbers Day#}
+                {% if (optionsShows is empty) or ('count-room-day' in optionsShows and optionsShows is not empty ) %}
+                    <tr class="info">
+                    <td class="first-th" rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.count.room.day'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.amounts'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                    <td>
+                                        <div class="{% if dynamicSaleComparisonDay.countNumbers < 0 %} text-danger{% endif %}">
+                                            {{ dynamicSaleComparisonDay.countNumbers }}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="warning">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.countNumbers < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.countNumbers }}
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    <tr class="info">
+                    <td rowspan="{{ dynamicSale.periods|length }}">
+                        <small>%</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            <tr class="info">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentCountNumbersDay < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentCountNumbersDay }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="warning">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentCountNumbersDay < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentCountNumbersDay }}%
                                             </div>
                                         </td>
                                     {% else %}
@@ -923,6 +1580,553 @@
                         {% endif %}
                     {% endfor %}
                 {% endif %}
+                {#comparison packageIsPaid#}
+                {% if (optionsShows is empty) or ('package-isPaid' in optionsShows and optionsShows is not empty ) %}
+                    <tr class="success">
+                    <td class="first-th" rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.package.is.paid'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.amounts'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                    <td>
+                                        <div class="{% if dynamicSaleComparisonDay.packageIsPaid < 0 %} text-danger{% endif %}">
+                                            {{ dynamicSaleComparisonDay.packageIsPaid }}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="success">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.packageIsPaid < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.packageIsPaid }}
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    <tr class="success">
+                    <td rowspan="{{ dynamicSale.periods|length }}">
+                        <small>%</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            <tr class="success">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentPackageIsPaid < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentPackageIsPaid }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="success">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentPackageIsPaid < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentPackageIsPaid }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {#packages Paid growth#}
+                {% if (optionsShows is empty) or ('package-isPaid-growth' in optionsShows and optionsShows is not empty ) %}
+                    <tr class="danger">
+                    <td class="first-th" rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.package.is.paid.growth'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.amounts'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                    <td>
+                                        <div class="{% if dynamicSaleComparisonDay.packageIsPaidGrowth < 0 %} text-danger{% endif %}">
+                                            {{ dynamicSaleComparisonDay.packageIsPaidGrowth }}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="danger">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.packageIsPaidGrowth < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.packageIsPaidGrowth }}
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    <tr class="danger">
+                    <td rowspan="{{ dynamicSale.periods|length }}">
+                        <small>%</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            <tr class="danger">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentPackageIsPaidGrowth < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentPackageIsPaidGrowth }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="danger">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentPackageIsPaidGrowth < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentPackageIsPaidGrowth }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {#delete packages#}
+                {% if (optionsShows is empty) or ('package-delete' in optionsShows and optionsShows is not empty ) %}
+                    <tr class="info">
+                    <td class="first-th" rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.package.delete'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.amounts'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                    <td>
+                                        <div class="{% if dynamicSaleComparisonDay.deletePackages < 0 %} text-danger{% endif %}">
+                                            {{ dynamicSaleComparisonDay.deletePackages }}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="info">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.deletePackages < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.deletePackages }}
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    <tr class="info">
+                    <td rowspan="{{ dynamicSale.periods|length }}">
+                        <small>%</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            <tr class="info">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentDeletePackages < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentDeletePackages }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="info">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentDeletePackages < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentDeletePackages }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {#delete packages price#}
+                {% if (optionsShows is empty) or ('package-delete-price' in optionsShows and optionsShows is not empty ) %}
+                    <tr class="success">
+                    <td class="first-th" rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.package.delete.price'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.amounts'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                    <td>
+                                        <div class="{% if dynamicSaleComparisonDay.deletePricePackage < 0 %} text-danger{% endif %}">
+                                            {{ dynamicSaleComparisonDay.deletePricePackage }}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="success">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.deletePricePackage < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.deletePricePackage }}
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    <tr class="success">
+                    <td rowspan="{{ dynamicSale.periods|length }}">
+                        <small>%</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            <tr class="success">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentDeletePackages < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentDeletePackages }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="success">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentDeletePackages < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentDeletePackages }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {#delete package price growth #}
+                {% if (optionsShows is empty) or ('package-delete-price-growth' in optionsShows and optionsShows is not empty ) %}
+                    <tr class="danger">
+                    <td class="first-th" rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.package.delete.price.growth'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.amounts'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                    <td>
+                                        <div class="{% if dynamicSaleComparisonDay.deletePricePackageGrowth < 0 %} text-danger{% endif %}">
+                                            {{ dynamicSaleComparisonDay.deletePricePackageGrowth }}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="danger">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.deletePricePackageGrowth < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.deletePricePackageGrowth }}
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    <tr class="danger">
+                    <td rowspan="{{ dynamicSale.periods|length }}">
+                        <small>%</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            <tr class="danger">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentDeletePricePackageGrowth < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentDeletePricePackageGrowth }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="danger">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentDeletePricePackageGrowth < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentDeletePricePackageGrowth }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {#comparison delete package is paid #}
+                {% if (optionsShows is empty) or ('package-delete-price-growth' in optionsShows and optionsShows is not empty ) %}
+                    <tr class="info">
+                    <td class="first-th" rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.package.delete.price.growth'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.amounts'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                    <td>
+                                        <div class="{% if dynamicSaleComparisonDay.deletePackageIsPaid < 0 %} text-danger{% endif %}">
+                                            {{ dynamicSaleComparisonDay.deletePackageIsPaid }}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="info">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.deletePackageIsPaid < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.deletePackageIsPaid }}
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    <tr class="info">
+                    <td rowspan="{{ dynamicSale.periods|length }}">
+                        <small>%</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            <tr class="info">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentDeletePackageIsPaid < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentDeletePackageIsPaid }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="info">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentDeletePackageIsPaid < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentDeletePackageIsPaid }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {#comparison  package is paid subtraction delete packages #}
+                {% if (optionsShows is empty) or ('package-isPaid-delete-package' in optionsShows and optionsShows is not empty ) %}
+                    <tr class="success">
+                    <td class="first-th" rowspan="{{ (dynamicSale.periods|length*2)-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.package.is.paid.subtraction.deleted'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    <td rowspan="{{ dynamicSale.periods|length-1 }}">
+                        <small>{{ 'dynamic.sales.day.sales.amounts'|trans({},'MBHPackageBundle') }}</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                    <td>
+                                        <div class="{% if dynamicSaleComparisonDay.comparisonIsPaidAndDelete < 0 %} text-danger{% endif %}">
+                                            {{ dynamicSaleComparisonDay.comparisonIsPaidAndDelete }}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="success">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.comparisonIsPaidAndDelete < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.comparisonIsPaidAndDelete }}
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    <tr class="success">
+                    <td rowspan="{{ dynamicSale.periods|length }}">
+                        <small>%</small>
+                    </td>
+                    {% for dynamicSaleComparison in dynamicSale.comparison %}
+                        {% set index = loop.index %}
+                        {% if loop.first %}
+                            <tr class="success">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentComparisonIsPaidAndDelete < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentComparisonIsPaidAndDelete }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% else %}
+                            <tr class="success">
+                                {% for dynamicSaleComparisonDay  in dynamicSaleComparison %}
+                                    {% if loop.index <dynamicSale.periods[index]|length and index > 0 %}
+                                        <td>
+                                            <div class="{% if dynamicSaleComparisonDay.percentComparisonIsPaidAndDelete < 0 %} text-danger{% endif %}">
+                                                {{ dynamicSaleComparisonDay.percentComparisonIsPaidAndDelete }}%
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
             {% endif %}
 
         {% endfor %}

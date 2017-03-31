@@ -35,7 +35,16 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
             'dynamic.sales.day.packages' => 'packages-sales',
             'dynamic.sales.day.packages.growth' => 'packages-growth',
             'dynamic.sales.day.sales.count.people' => 'count-people',
-            'dynamic.sales.day.sales.count.room' => 'count-room'
+            'dynamic.sales.day.sales.count.room' => 'count-room',
+            'dynamic.sales.day.sales.package.is.paid' => 'package-isPaid',
+            'dynamic.sales.day.sales.package.is.paid.growth' => 'package-isPaid-growth',
+            'dynamic.sales.day.sales.package.delete' => 'package-delete',
+            'dynamic.sales.day.sales.package.delete.price' => 'package-delete-price',
+            'dynamic.sales.day.sales.package.delete.price.growth' => 'package-delete-price-growth',
+            'dynamic.sales.day.sales.package.delete.price.is.paid' => 'package-delete-price-isPaid',
+            'dynamic.sales.day.sales.package.is.paid.subtraction.deleted' => 'package-isPaid-delete-package',
+            'dynamic.sales.day.sales.count.people.day' => 'count-people-day',
+            'dynamic.sales.day.sales.count.room.day' => 'count-room-day',
         ];
 
         return [
