@@ -50,11 +50,11 @@
     <div class="header">
         <div class="title">
             <p>
-                Подтверждение
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.podtverzhdenie'|trans }}
                 {% if formParams.hasFull is defined and formParams.hasFull %}
-                    заказа № {{ entity.order.id }} от {{ entity.order.createdAt|date("d.m.Y") }} г.
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.zakaza'|trans }} № {{ entity.order.id }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ entity.order.createdAt|date("d.m.Y") }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}.
                 {% else %}
-                    брони № {{ entity.numberWithPrefix }} от {{ entity.createdAt|date("d.m.Y") }} г.
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.broni'|trans }} № {{ entity.numberWithPrefix }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ entity.createdAt|date("d.m.Y") }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}.
                 {% endif %}
             </p>
         </div>
@@ -85,7 +85,7 @@
             <table border="0">
                 <tbody>
                 <tr>
-                    <td style="width: 40px">Ф.И.О.</td>
+                    <td style="width: 40px">{{ 'mbhpackagebundle.view.documents.pdftemplates.fio'|trans }}.</td>
                     <td style="width: 60%;">
                         <div class="area">&nbsp{% if tourist %}{{ tourist.fullName }}{% endif %}</div>
                     </td>
@@ -101,8 +101,8 @@
                     <td>
                         <div class="area">&nbsp
                             {% if tourist and tourist.addressObjectDecomposed %}
-                                {{ tourist.addressObjectDecomposed.country }}, {{ tourist.addressObjectDecomposed.region }}{% if tourist.addressObjectDecomposed.city %}, г. {{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, ул. {{ tourist.addressObjectDecomposed.street }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
-                                д. {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, кор. {{ tourist.addressObjectDecomposed.corpus }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, кв. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
+                                {{ tourist.addressObjectDecomposed.country }}, {{ tourist.addressObjectDecomposed.region }}{% if tourist.addressObjectDecomposed.city %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.ul'|trans }}. {{ tourist.addressObjectDecomposed.street }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
+                                {{ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans }}. {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.kor'|trans }}. {{ tourist.addressObjectDecomposed.corpus }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, {{ 'mbhpackagebundle.view.documents.pdftemplates.kv'|trans }}. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
                             {% endif %}
                             {% endif %}
                         </div>
@@ -144,10 +144,10 @@
         </div>
 
         <p>
-            о нижеследующем:
+            {{ 'mbhpackagebundle.view.documents.pdftemplates.o_nizhesleduushem'|trans }}:
         </p>
         <p>
-            Отель гарантированно бронирует для Заказчика следующие услуги:
+            {{ 'mbhpackagebundle.view.documents.pdftemplates.otel_garantirovanno_broniruet_dlia_zakazchika_sleduushie_uslugi'|trans }}:
         </p>
 
         <!-- Services -->
@@ -196,7 +196,7 @@
                         <td align="center">{{ counter }}</td>
                         <td>{{ serviceGroup.byService.fullTitle }}</td>
                         <td align="center">{{ serviceGroup.actuallyAmount }}</td>
-                        <td align="center">шт.</td>
+                        <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
                         <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
                         <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
                     </tr>
@@ -207,27 +207,27 @@
 
         <table border="0" width="100%">
             <tr>
-                <td align="right"><strong>Итого:</strong></td>
+                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.itogo'|trans }}:</strong></td>
                 <td align="right" style="width: 100px;"><strong>{{ total|number_format(2) }}</strong></td>
             </tr>
             <tr>
-                <td align="right"><strong>В том числе НДС:</strong></td>
+                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.v_tom_chisle_nds'|trans }}:</strong></td>
                 <td align="right"><strong>0</strong></td>
             </tr>
         </table>
 
-        <p>Всего заказано услуг {{ entity.services|length + packages|length }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ entity.services|length + packages|length }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}<br>
             <strong>{{ total|num2str|capitalize }}</strong>
         </p>
 
         <p>
-            Примечание: в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание компенсации из внесенной предоплаты.
+            {{ 'mbhpackagebundle.view.documents.pdftemplates.primechanie_v_sluchae_nesvoevremennogo_otkaza_etc'|trans }}
         </p>
 
         <table class="signatures" cellpadding="0" cellspacing="0">
             <tr>
                 <td style="width: 40%">
-                    <h3>Отель</h3>
+                    <h3>{{ 'mbhpackagebundle.view.documents.pdftemplates.otel'|trans }}</h3>
                     <div class="area"></div>
                 </td>
                 <td style="width: 20%"></td>

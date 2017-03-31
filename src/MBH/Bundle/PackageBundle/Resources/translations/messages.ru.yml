@@ -47,6 +47,7 @@ mbhpackagebundle.view.report.porterrows.vyyekhal: Выехал
 mbhpackagebundle.view.report.portersummary.broney: Броней
 mbhpackagebundle.view.report.portersummary.nochey: Ночей
 mbhpackagebundle.view.report.portersummary.gostey: Гостей
+mbhpackagebundle.view.documents.pdftemplates.confirmation.tsena: Цена
 mbhpackagebundle.view.documents.pdftemplates.confirmation.summa: Сумма
 csv.form.paids: Оплачено
 mbhpackagebundle.view.tourist.jsonbuttons.redaktirovaniye.zapisi: 'Редактирование записи'
@@ -763,6 +764,9 @@ mbhpackagebundle.view.documents.pdftemplates.r: р
 mbhpackagebundle.view.documents.pdftemplates.po: по
 mbhpackagebundle.view.documents.pdftemplates.kor: кор
 mbhpackagebundle.view.documents.pdftemplates.kv: кв
+mbhpackagebundle.view.documents.pdftemplates.o_nizhesleduushem: о нижеследующем
+mbhpackagebundle.view.documents.pdftemplates.otel_garantirovanno_broniruet_dlia_zakazchika_sleduushie_uslugi: Отель гарантированно бронирует для Заказчика следующие услуги
+mbhpackagebundle.view.documents.pdftemplates.ul: ул
 mbhpackagebundle.view.documents.pdftemplates.na_srok_s: на срок с
 mbhpackagebundle.view.documents.pdftemplates.vid: вид
 mbhpackagebundle.view.documents.pdftemplates.seria: серия
@@ -770,6 +774,13 @@ mbhpackagebundle.view.documents.pdftemplates.podpis: подпись
 mbhpackagebundle.view.documents.pdftemplates.familia: фамилия
 mbhpackagebundle.view.documents.pdftemplates.MM: М
 mbhpackagebundle.view.documents.pdftemplates.PP: П
+mbhpackagebundle.view.documents.pdftemplates.podtverzhdenie: Подтверждение
+mbhpackagebundle.view.documents.pdftemplates.zakaza: заказа
+mbhpackagebundle.view.documents.pdftemplates.ot: от
+mbhpackagebundle.view.documents.pdftemplates.broni: брони
+mbhpackagebundle.view.documents.pdftemplates.fio: 'Ф.И.О'
+mbhpackagebundle.view.documents.pdftemplates.otel: Отель
+mbhpackagebundle.view.documents.pdftemplates.primechanie_v_sluchae_nesvoevremennogo_otkaza_etc: Примечание: в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание компенсации из внесенной предоплаты.
 mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_registracionnogo_ucheta: наименование органа регистрационного учета
 mbhpackagebundle.view.documents.pdftemplates.nachalnik_rukovoditel_organa_registracionnogo_ucheta: Начальник (руководитель) органа регистрационного учета
 mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vidavshego_document: наименование органа, учреждения, выдавшего документ
