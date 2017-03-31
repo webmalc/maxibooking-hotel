@@ -548,3 +548,4 @@ mbhbasebundle.views.partials.month: месяц
 
 mbhbasebundle.views.mailer.vz: вз
 mbhbasebundle.views.mailer.rb: рб
+mbhbasebundle.views.mailer.dla_poluchenia_coda_dostupa_otskaniruite_etc: Для получения кода доступа отсканируйте смартфоном QR-штрихкод с картинки с помощью приложения
