@@ -803,3 +803,76 @@ mbhpackagebundle.view.report.polucheno_fakticheski: Получено факти�
 mbhpackagebundle.view.report.fillingtablerows.dolg: Долг
 mbhpackagebundle.view.report.fillingtablerows.max_vozm_viruchka_za_prozh: 'Макс. возм. выручка за прож'
 mbhpackagebundle.view.report.tek_stoim_prozhiv_ot_max_vozm: 'Тек. стоим. прожив. от макс. возм.'
+
+mbhpackagebundle.view.deletereasons.index.da: Да
+mbhpackagebundle.view.deletereasons.index.net: Нет
+
+mbhpackagebundle.view.documents.pdftemplates.close: Закрыть
+mbhpackagebundle.view.documents.pdftemplates.generate: Сгенерировать
+mbhpackagebundle.view.order.organizationedit.redaktirovaniye.zapisi: Редактирование записи
+mbhpackagebundle.view.order.touristedit.redaktirovaniye.zapisi: Редактирование записи
+mbhpackagebundle.view.package.accommodation.tip.nomera: Тип номера
+mbhpackagebundle.view.package.accommodation.korpus: Корпус
+mbhpackagebundle.view.package.accomodation.nomera_dly_rezmesheniya_ne_naideny: Номера для размещения не найдены.
+mbhpackagebundle.view.package.edit.tarif: Тариф
+mbhpackagebundle.view.package.edit.aktsiya: Акция
+
+mbhpackagebundle.view.package.guest.fio: ФИО
+mbhpackagebundle.view.package.guest.dobavleno_maksimalnoe_kolichestvo_gostey: Добавлено максимальное количество гостей.
+mbhpackagebundle.view.package.guest.dobavit_eshe: Добавить ещё
+
+mbhpackagebundle.view.package.index.tip.nomera: Тип номера
+mbhpackagebundle.view.package.index.tip.broni: Тип брони
+
+mbhpackagebundle.view.package.late.early.check.modal.kolichestvo: Количество
+mbhpackagebundle.view.package.late.early.check.modal.otmena: Отмена
+mbhpackagebundle.view.package.late.early.check.modal.da: Да
+mbhpackagebundle.view.package.service.nazvaniye: Название
+
+mbhpackagebundle.view.report.accommodation.daty: Даты
+mbhpackagebundle.view.report.accommodation.tip.nomera: Номера
+mbhpackagebundle.view.report.accommodation.korpus: Корпус
+mbhpackagebundle.view.report.accommodation.etazh: Этаж
+
+mbhpackagebundle.view.report.filling.daty: Даты
+mbhpackagebundle.view.report.filling.tip.nomera: Тип номера
+
+mbhpackagebundle.view.report.fillingtable.mest: мест
+mbhpackagebundle.view.report.fillingtable.daty: Даты
+
+mbhpackagebundle.view.report.roomtypes.tip.nomera: Тип номера
+mbhpackagebundle.view.report.roomtypes.korpus: Корпус
+mbhpackagebundle.view.report.roomtypes.etazh: Этаж
+mbhpackagebundle.view.report.roomtypes.status.oplaty: Статус оплаты
+
+mbhpackagebundle.view.report.user.tip.nomera: Тип номера
+mbhpackagebundle.view.report.user.tarif: Тариф
+mbhpackagebundle.view.report.user.polzovatel: Пользователь
+mbhpackagebundle.view.report.user.daty: Даты
+
+mbhpackagebundle.view.report.windowpackage.daty: Даты
+mbhpackagebundle.view.report.windowpackage.tarif: Тариф
+mbhpackagebundle.view.report.windowpackage.nomer: Номер
+mbhpackagebundle.view.report.windowpackage.gosti: Гости
+mbhpackagebundle.view.report.windowpackage.tsena: Цена
+mbhpackagebundle.view.report.windowpackage.razmeshcheniye: Размещение
+mbhpackagebundle.view.report.windowpackage.kommentariy: Комментарии
+
+mbhpackagebundle.view.report.windows.daty: Даты
+mbhpackagebundle.view.report.windows.tip.nomera: Тип номера
+
+mbhpackagebundle.view.report.workshift.daty: Даты
+mbhpackagebundle.view.report.workshift.status: Статус
+mbhpackagebundle.view.report.workshiftlist.daty: Даты
+mbhpackagebundle.view.report.workshiftlist.gosti: Гости
+mbhpackagebundle.view.report.workshiftlist.status: Статус
+mbhpackagebundle.view.report.workshiftlist.ne_naydeno_ni_odnoy_rabochey_smeny: Не найдено ни одной рабочей смены
+mbhpackagebundle.view.report.workshiftlist.rabochaya_smena: Рабочая смена
+
+mbhpackagebundle.view.tourist.index.daty: Даты
+mbhpackagebundle.view.tourist.index.fio: ФИО
+mbhpackagebundle.view.tourist.index.osnovnoy.dokument: Основной документ
+mbhpackagebundle.view.tourist.index.komnata: Комната
+mbhpackagebundle.view.tourist.index.adres: Адрес
+mbhpackagebundle.view.tourist.index.data.rozhdeniya: Дата рождения
+mbhpackagebundle.view.tourist.jsonbuttons.udaleniye.zapisi: Удаленные записи

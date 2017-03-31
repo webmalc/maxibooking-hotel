@@ -103,10 +103,10 @@
 
             {% if not package.tourists|length < totalGuests %}
                 <div class="bg-gray color-palette alert" id="guest-overflow-alert">
-                    <i class="fa fa-info-circle"></i> Добавлено максимальное количество гостей.
+                    <i class="fa fa-info-circle"></i> {{ 'mbhpackagebundle.view.package.guest.dobavleno_maksimalnoe_kolichestvo_gostey'|trans }}
                     &nbsp;
                     <div class="btn btn-default btn-xs">
-                        <i class="fa fa-plus"></i> Добавить ещё
+                        <i class="fa fa-plus"></i> {{ 'mbhpackagebundle.view.package.guest.dobavit_eshe'|trans }}
                     </div>
                 </div>
             {% endif %}

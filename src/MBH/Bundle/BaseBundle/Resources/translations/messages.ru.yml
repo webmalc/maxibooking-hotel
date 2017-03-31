@@ -564,3 +564,5 @@ mbhbasebundle.view.navbar.spisok.oteley: Список отелей
 mbhbasebundle.view.navbar.input: Вошел
 mbhbasebundle.view.navbar.profile: Профиль
 mbhbasebundle.view.navbar.output: Выйти
+
+mbhbasebundle.view.pdftemplates.individual.vid.platezha: Вид платежа

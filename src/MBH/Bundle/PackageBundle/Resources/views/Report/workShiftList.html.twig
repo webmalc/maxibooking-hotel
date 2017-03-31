@@ -16,7 +16,7 @@
             <tr
                 data-id="{{ workShift.id }}"
                 data-electronicCashIncomeTotal="{{ workShift.electronicCashIncomeTotal }}"
-                data-detail-header="Рабочая смена {{ workShift.begin|mbh_format }} {{ workShift.begin|date('H:i') }} {% if workShift.end %} - {{ workShift.end|mbh_format }} {{ workShift.end|date('H:i') }}{% endif %}"
+                data-detail-header="{{ 'mbhpackagebundle.view.report.workshiftlist.rabochaya_smena'|trans }} {{ workShift.begin|mbh_format }} {{ workShift.begin|date('H:i') }} {% if workShift.end %} - {{ workShift.end|mbh_format }} {{ workShift.end|date('H:i') }}{% endif %}"
             class="{% if  workShift.status == 'locked' %}info{% elseif workShift.status == 'closed' %}danger{% endif %}">
                 <td>{{ workShift.id }}</td>
                 <td class="text-center">
@@ -73,7 +73,7 @@
     <div class="alert bg-gray">
         <p>
             <i class="fa fa-exclamation-circle"></i>
-            Не найдено ни одной рабочей смены
+            {{ 'mbhpackagebundle.view.report.workshiftlist.ne_naydeno_ni_odnoy_rabochey_smeny'|trans }}
         </p>
     </div>
 {% endif %}

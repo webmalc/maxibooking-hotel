@@ -78,3 +78,6 @@ restaurantbundle.controller.servive_staff: 'Обслуживающий перс�
 restaurantbundle.controller.restoran_senior_manager: 'Ресторан старший менеджер'
 restaurantbundle.controller.restoran_manager: 'Ресторан менеджер'
 restaurantbundle.controller.warehouse: 'Склад'
+
+
+mbhuserbundle.view.workshift.wait.vyyti: Выйти

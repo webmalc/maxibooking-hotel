@@ -524,3 +524,13 @@ pricebundle.resources.views.public_info: Общая информация
 pricebundle.resources.views.actions: Акции
 pricebundle.resources.views.services: Услуги
 pricebundle.resources.views.inheritage: Наследование
+mbhpricebundle.view.roomcache.graph.net.dannykh: Нет данных
+
+mbhpricebundle.view.roomcache.index.tip.nomera: Тип номера
+mbhpricebundle.view.roomcache.index.kvoty.po.tarifam: Квоты по тарифам
+mbhpricebundle.view.service.index.novaya.kategoriya.uslug: Новая категория услуг
+mbhpricebundle.view.service.index.tip.rascheta: Тип расчета
+
+mbhpricebundle.view.special.index.tarif: Тариф
+mbhpricebundle.view.special.index.tip.nomera: Тип номера
+mbhpricebundle.view.tariff.index.daty: Даты

@@ -21,7 +21,7 @@
             {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
             
             <div class="input">
-                <i class="fa fa-user" title='Пользователь' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Пользователь" id="users-report-filter-users" class="users-report-filter form-control input-sm">
+                <i class="fa fa-user" title='{{ 'mbhpackagebundle.view.report.user.polzovatel'|trans }}' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpackagebundle.view.report.user.polzovatel'|trans }}" id="users-report-filter-users" class="users-report-filter form-control input-sm">
                     <option></option>
                     {% for user in users %}
                         <option value="{{ user }}">{{ user }}</option>
