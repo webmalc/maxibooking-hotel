@@ -105,7 +105,8 @@ class VirtualRoomHandler
             ->setBegin($package->getBegin())
             ->setEnd($package->getEnd())
             ->setRoomType($package->getRoomType());
-        $result = $this->search->setVirtualRoom($searchResult, $package->getTariff(), $package);
+        $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($package->getRoomType()->getHotel());
+        $result = $this->search->setVirtualRoom($searchResult, $baseTariff, $package);
 
         if ($result instanceof SearchResult && $package->getVirtualRoom() != $result->getVirtualRoom()) {
             $package->setVirtualRoom($result->getVirtualRoom());

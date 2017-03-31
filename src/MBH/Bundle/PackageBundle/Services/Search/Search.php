@@ -526,10 +526,7 @@ class Search implements SearchInterface
         foreach ($rooms as $room) {
             if (isset($groupedPackages[$room->getId()])) {
                 foreach ($groupedPackages[$room->getId()] as $package) {
-                    if ($package->getBegin() == $result->getEnd() && $package->getEnd() == $result->getBegin()) {
-                        $preferredRooms->attach($room);
-                        break 2;
-                    } elseif ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
+                    if ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
                         $preferredRooms->attach($room);
                     } elseif ($package->getBegin() == $end || $package->getEnd() == $begin) {
                         $preferredRooms->attach($room);
