@@ -549,3 +549,18 @@ mbhbasebundle.views.partials.month: месяц
 mbhbasebundle.views.mailer.vz: вз
 mbhbasebundle.views.mailer.rb: рб
 mbhbasebundle.views.mailer.dla_poluchenia_coda_dostupa_otskaniruite_etc: Для получения кода доступа отсканируйте смартфоном QR-штрихкод с картинки с помощью приложения
+
+mbhbasebundle.views.minimize_menu: Свернуть меню
+mbhbasebundle.views.kass: Касса
+mbhbasebundle.views.doc: Документ
+mbhbasebundle.views.sum: сумма
+mbhbasebundle.views.not_allow: не подтвержден
+mbhbasebundle.view.navbar.pereyti.v.kassu: Перейти в кассу
+mbhbasebundle.view.navbar.change: Смена
+mbhbasebundle.view.navbar.ch: ч
+mbhbasebundle.view.navbar.booking_change: Заблокировать смену
+mbhbasebundle.view.navbar.select_hotel: Выберите отель
+mbhbasebundle.view.navbar.spisok.oteley: Список отелей
+mbhbasebundle.view.navbar.input: Вошел
+mbhbasebundle.view.navbar.profile: Профиль
+mbhbasebundle.view.navbar.output: Выйти
