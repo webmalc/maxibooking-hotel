@@ -13,6 +13,7 @@ use MBH\Bundle\OnlineBookingBundle\Lib\OnlineNotifyRecipient;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PackageBundle\Services\Search\Search;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\PaymentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -84,6 +85,7 @@ class DefaultController extends BaseController
         $form->handleRequest($request);
 
         $searchResults = [];
+        $onlineOptions = $this->getParameter('online_booking');
 
         if ($form->isValid()) {
             $formData = $form->getData();
@@ -106,31 +108,37 @@ class DefaultController extends BaseController
             $searchQuery->isOnline = true;
             $searchQuery->accommodations = true;
             $searchQuery->forceRoomTypes = false;
-            //$searchQuery->range = 2;
             if ($formData['children_age']) {
                 $searchQuery->setChildrenAges($formData['children_age']);
             };
 
             $searchService = $this->get('mbh.package.search');
+            if ($addDates = $onlineOptions['add_search_dates']) {
+                $searchQuery->range = $addDates;
+                $searchService->setAdditionalDates($addDates);
+            }
             $searchResults = $searchService
-                /*->setAdditionalDates()*/
                 ->setWithTariffs()
                 ->search($searchQuery);
 
+            $searchResults = $this->separateByAdditionalDays($searchResults, $searchQuery->begin, $searchQuery->end);
             $searchResults = $this->resultFilter($searchResults, $searchQuery);
+            $searchResults = $this->addImages($searchResults);
+            $searchResults = $this->addLeftRoomKeys($searchResults);
+
         }
 
-        $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
+        $requestSearchUrl = $onlineOptions['request_search_url'];
         if ($request->get('getalltariff')) {
             $html = '';
             if ($results = $searchResults[0]['results']??null) {
-                    $html = $this->renderView(
-                        '@MBHOnlineBooking/Default/allTariffRoomType.html.twig',
-                        [
-                            'results' => $results,
-                            'requestSearchUrl' => $requestSearchUrl
-                        ]
-                    );
+                $html = $this->renderView(
+                    '@MBHOnlineBooking/Default/allTariffRoomType.html.twig',
+                    [
+                        'results' => $results,
+                        'requestSearchUrl' => $requestSearchUrl,
+                    ]
+                );
             }
 
             $response = new Response();
@@ -145,9 +153,63 @@ class DefaultController extends BaseController
             [
                 'searchResults' => $searchResults,
                 'requestSearchUrl' => $requestSearchUrl,
-                'useCharts' => $this->getParameter('online_booking')['use_charts']
+                'useCharts' => $this->getParameter('online_booking')['use_charts'],
             ]
         );
+    }
+
+
+    /**
+     * Divide results to match and additional dates
+     * @param array $searchResults
+     * @return array
+     */
+    private function separateByAdditionalDays(array $searchResults, \DateTime $begin, \DateTime $end): array
+    {
+        $result = [];
+        foreach ($searchResults as $searchResult) {
+            $groups = [];
+            foreach ($searchResult['results'] as $keyNeedleInstance => $searchNeedleInstance) {
+                /** @var SearchResult $searchNeedleInstance */
+                $needle = $searchNeedleInstance->getBegin()->format('dmY').$searchNeedleInstance->getEnd()->format(
+                        'dmY'
+                    );
+                foreach ($searchResult['results'] as $searchKey => $searchInstance) {
+                    /** @var SearchResult $searchInstance */
+                    $hayStack = $searchInstance->getBegin()->format('dmY').$searchInstance->getEnd()->format('dmY');
+                    if ($needle == $hayStack) {
+                        $groups[$needle][$searchKey] = $searchInstance;
+                    }
+                }
+            }
+            foreach ($groups as $group) {
+                $tmpResult = $searchResult;
+                $tmpResult['results'] = array_values($group);
+
+
+                $firstResult = reset($group);
+                $isAdd = !($firstResult->getBegin() == $begin && $firstResult->getEnd() == $end);
+                $tmpResult['additional'] = $isAdd;
+
+                $tmpResult['dates'] = [
+                    'begin' => $firstResult->getBegin(),
+                    'end' => $firstResult->getEnd(),
+                ];
+
+                $result[] = $tmpResult;
+            }
+        }
+
+        usort(
+            $result,
+            function ($resA, $resB) {
+                $priceA = $resA['results'][0]->getPrices();
+                $priceB = $resB['results'][0]->getPrices();
+                return reset($priceA) <=> reset($priceB);
+            }
+        );
+
+        return $result;
     }
 
 
@@ -337,8 +399,6 @@ class DefaultController extends BaseController
     }
 
 
-
-
     /**
      * @Route("/minstay/{timestamp}", name="online_booking_min_stay", options={"expose" = true})
      * @Cache(expires="tomorrow", public=true)
@@ -432,7 +492,8 @@ class DefaultController extends BaseController
         foreach ($results as $result) {
             $maxY = max(
                 $maxY,
-                array_reduce( $result['prices'],
+                array_reduce(
+                    $result['prices'],
                     function ($max, $detail) {
                         return max($max, $detail['y']);
                     }
@@ -442,7 +503,7 @@ class DefaultController extends BaseController
         }
         foreach ($results as &$result) {
             $result['yMax'] = $maxY;
-            $result['yMin'] = $maxY/2;
+            $result['yMin'] = $maxY / 2;
         }
         $response = new JsonResponse($results);
         $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
@@ -458,10 +519,11 @@ class DefaultController extends BaseController
     {
         foreach ($searchResults as $index => $result) {
             $roomTypeCategory = $result['roomType']??false;
-            if($roomTypeCategory && $roomTypeCategory instanceof RoomTypeCategory) {
+            if ($roomTypeCategory && $roomTypeCategory instanceof RoomTypeCategory) {
                 /** @var RoomTypeCategory $roomTypeCategory */
                 $roomTypes = $roomTypeCategory->getTypes();
-                $images = []; $mainImage = null;
+                $images = [];
+                $mainImage = null;
                 foreach ($roomTypes as $roomType) {
                     if (!$mainImage && $roomType->getMainImage()) {
                         $mainImage = $roomType->getMainImage();
@@ -507,7 +569,8 @@ class DefaultController extends BaseController
                             ->getEnd()
                             ->format('dmY');
                     if (!array_key_exists($uniqueId, $filterSearchResults) ||
-                        $searchResult->getRoomType()->getTotalPlaces() < $filterSearchResults[$uniqueId]->getRoomType()->getTotalPlaces()
+                        $searchResult->getRoomType()->getTotalPlaces() < $filterSearchResults[$uniqueId]->getRoomType(
+                        )->getTotalPlaces()
                     ) {
                         $filterSearchResults[$uniqueId] = $searchResult;
                     }
@@ -517,8 +580,6 @@ class DefaultController extends BaseController
             $searchResults[$sResultKey]['results'] = $filterSearchResults;
             $searchResults[$sResultKey]['query'] = $searchQuery;
         }
-        $searchResults = $this->addImages($searchResults);
-        $searchResults = $this->leftRoomsKeyGenerate($searchResults);
 
         return $searchResults;
     }
@@ -527,7 +588,7 @@ class DefaultController extends BaseController
      * @param array $searchResults
      * @return array
      */
-    private function leftRoomsKeyGenerate(array $searchResults)
+    private function addLeftRoomKeys(array $searchResults)
     {
         foreach ($searchResults as $key => $searchResult) {
             $roomTypeCategoryId = $searchResult['roomType']->getId();

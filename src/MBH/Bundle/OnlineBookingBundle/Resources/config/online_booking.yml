@@ -3,6 +3,7 @@ parameters:
         request_search_url: '/mbresults.php'
         payonlineurl: http://azovsky-billing.com/pay/
         use_charts: false
+        add_search_dates: 1
 
     online_reservation_manager_email: "mail@azovsky.ru"
     offera: "https://yadi.sk/i/aSRIUwg0zjWVw"
