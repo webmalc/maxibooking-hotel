@@ -534,3 +534,9 @@ mbhpricebundle.view.service.index.tip.rascheta: Тип расчета
 mbhpricebundle.view.special.index.tarif: Тариф
 mbhpricebundle.view.special.index.tip.nomera: Тип номера
 mbhpricebundle.view.tariff.index.daty: Даты
+
+mbhpricebundle.form.tarifftype.vnutrenneye.nazvaniye: Внутреннее название
+mbhpricebundle.form.tarifftype.rebenok.do: Ребенок до
+mbhpricebundle.form.tarifftype.infant.do: Инфант до
+price.form.public_summer: Основной - лето
+mbhpricebundle.form.tarifftype.opisaniye.tarifa.dlya.onlayn.bronirovaniya: Описание тарифа для онлайн бронирования

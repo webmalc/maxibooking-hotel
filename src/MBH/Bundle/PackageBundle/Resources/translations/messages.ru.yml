@@ -782,14 +782,14 @@ mbhpackagebundle.view.documents.pdftemplates.broni: брони
 mbhpackagebundle.view.documents.pdftemplates.passport: Паспорт
 mbhpackagebundle.view.documents.pdftemplates.fio: 'Ф.И.О'
 mbhpackagebundle.view.documents.pdftemplates.otel: Отель
-mbhpackagebundle.view.documents.pdftemplates.primechanie_v_sluchae_nesvoevremennogo_otkaza_etc: Примечание: в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание компенсации из внесенной предоплаты.
-mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_registracionnogo_ucheta: наименование органа регистрационного учета
-mbhpackagebundle.view.documents.pdftemplates.nachalnik_rukovoditel_organa_registracionnogo_ucheta: Начальник (руководитель) органа регистрационного учета
-mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vidavshego_document: наименование органа, учреждения, выдавшего документ
-mbhpackagebundle.view.documents.pdftemplates.svidetelstvo_vidano_k_documentu_udostoveraushemu_lichnost: Свидетельство выдано к документу, удостоверяющему личность
-mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc: республика, край, область, округ, район, город, пгт, село, деревня, аул, улица, дом, корпус, квартира
-mbhpackagebundle.view.documents.pdftemplates.fio_god_i_mesto_rozhdenia: Ф.И.О., год и место рождения
-mbhpackagebundle.view.documents.pdftemplates.o_tom_chto_on_zaregistrirovan_po_mestu_prebivania: о том, что он(а) зарегистрирован(а) по месту пребывания по адресу
+mbhpackagebundle.view.documents.pdftemplates.primechanie_v_sluchae_nesvoevremennogo_otkaza_etc: 'Примечание: в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание компенсации из внесенной предоплаты.'
+mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_registracionnogo_ucheta: 'наименование органа регистрационного учета'
+mbhpackagebundle.view.documents.pdftemplates.nachalnik_rukovoditel_organa_registracionnogo_ucheta: 'Начальник (руководитель) органа регистрационного учета'
+mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vidavshego_document: 'наименование органа, учреждения, выдавшего документ'
+mbhpackagebundle.view.documents.pdftemplates.svidetelstvo_vidano_k_documentu_udostoveraushemu_lichnost: 'Свидетельство выдано к документу, удостоверяющему личность'
+mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc: 'республика, край, область, округ, район, город, пгт, село, деревня, аул, улица, дом, корпус, квартира'
+mbhpackagebundle.view.documents.pdftemplates.fio_god_i_mesto_rozhdenia: 'Ф.И.О., год и место рождения'
+mbhpackagebundle.view.documents.pdftemplates.o_tom_chto_on_zaregistrirovan_po_mestu_prebivania: 'о том, что он(а) зарегистрирован(а) по месту пребывания по адресу'
 
 mbhpackagebundle.view.report.ostatok_v_prodashe: Остаток (в продаже)
 mbhpackagebundle.view.report.ostatok_nomernoy_fond: Остаток (номерной фонд)
