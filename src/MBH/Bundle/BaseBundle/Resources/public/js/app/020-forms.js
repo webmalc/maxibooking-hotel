@@ -922,11 +922,21 @@ var mbhStartDate = function (e) {
     }
 };
 
+var disableCheckboxListen = function () {
+    var $disableCheckBox = $('#mbh-disable');
+    $disableCheckBox.is(':checked');
+    $disableCheckBox.on('switchChange.bootstrapSwitch', function () {
+        var disableMode = !$disableCheckBox.bootstrapSwitch('state') ? 'true' : 'false';
+        var routeName = $disableCheckBox.attr('data-route-name');
+        window.location.href = Routing.generate('change_room_type_enableable_mode', {disableMode: disableMode, route : routeName});
+    });
+};
+
 
 $(document).ready(function () {
     'use strict';
-
     docReadyForms();
 
     mbhStartDate();
+    disableCheckboxListen();
 });

@@ -121,8 +121,7 @@ class ChessBoardDataBuilder
         $noAccommodationIntervals = [];
         foreach ($this->getPackagesWithoutAccommodation() as $package) {
             /** @var Package $package */
-            $intervalData = $this->container
-                ->get('mbh.chess_board_unit')->setInitData($package);
+            $intervalData = $this->container->get('mbh.chess_board_unit')->setInitData($package);
             $noAccommodationIntervals[$intervalData->getId()] = $intervalData;
         }
 
@@ -173,10 +172,8 @@ class ChessBoardDataBuilder
         $packageQueryCriteria->liveBegin = $this->beginDate;
         $packageQueryCriteria->setIsWithoutAccommodation(true);
         $packageQueryCriteria->liveEnd = $this->endDate;
-        if (count($this->roomTypeIds) > 0) {
-            foreach ($this->roomTypeIds as $roomTypeId) {
-                $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
-            }
+        foreach ($this->getRoomTypeIds() as $roomTypeId) {
+            $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
         }
 
         return $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
@@ -274,7 +271,7 @@ class ChessBoardDataBuilder
             ->fetch($this->beginDate,
                 $this->endDate,
                 $this->hotel,
-                $this->roomTypeIds,
+                $this->getRoomTypeIds(),
                 $this->tariff === null ? [] : [$this->tariff],
                 true
             );
@@ -349,6 +346,7 @@ class ChessBoardDataBuilder
 
             /** @var RoomType $roomType */
             $roomTypeData[$roomType->getId()] = [
+                'isEnabled' => $roomType->getIsEnabled(),
                 'name' => $roomType->getName(),
                 'rooms' => $this->getRoomsData($roomsByRoomTypeIds, $roomType)
             ];
@@ -379,13 +377,19 @@ class ChessBoardDataBuilder
     {
         $roomTypes = $this->getRoomTypeIds();
 
-        return $this->dm->getRepository('MBHHotelBundle:Room')->fetchQuery(
-            $this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null, null, true)->getQuery()->count();
+        return $this->dm->getRepository('MBHHotelBundle:Room')
+            ->fetchQuery($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null, null, true)
+            ->getQuery()
+            ->count();
     }
 
     private function getRoomTypeIds()
     {
-        return count($this->roomTypeIds) > 0 ? $this->roomTypeIds : null;
+        if (count($this->roomTypeIds) > 0) {
+            return array_intersect($this->roomTypeIds, $this->getAvailableRoomTypeIds());
+        }
+
+        return $this->getAvailableRoomTypeIds();
     }
 
     /**
@@ -423,6 +427,38 @@ class ChessBoardDataBuilder
     }
 
     /**
+     * @return RoomType[]
+     */
+    public function getAvailableRoomTypes()
+    {
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $filterCollection = $this->dm->getFilterCollection();
+        if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
+            $filterCollection->enable('disableable');
+        }
+
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+            ->fetch($this->hotel, $this->roomTypeIds)->toArray();
+
+        if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
+            $filterCollection->disable('disableable');
+        }
+
+        return $roomTypes;
+    }
+
+    private function getAvailableRoomTypeIds()
+    {
+        $roomTypeIds = [];
+        /** @var RoomType $roomType */
+        foreach ($this->getAvailableRoomTypes() as $roomType) {
+            $roomTypeIds[] = $roomType->getId();
+        }
+
+        return $roomTypeIds;
+    }
+
+    /**
      * Ленивая загрузка массива объектов RoomType, используемых в данном запросе
      * @return RoomType[]
      */
@@ -431,7 +467,7 @@ class ChessBoardDataBuilder
         if (!$this->isRoomTypesInit) {
 
             $this->roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-                ->fetch($this->hotel, $this->roomTypeIds)->toArray();
+                ->fetch($this->hotel, $this->getRoomTypeIds())->toArray();
 
             $this->isRoomTypesInit = true;
         }
