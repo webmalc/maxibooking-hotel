@@ -51,6 +51,35 @@ tr.tariff-row:not(.alerting):hover {
   width: 40%;
   float: left;
 }
+
+.additional .datesrdm {
+  color: red;
+}
+
+.special-strip {
+  position: relative;
+  background: #fd0002;
+  color: #fff;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: -10px;
+  font-size: 16px;
+  padding: 9px 10px;
+}
+
+.special-strip:after {
+  content: ' ';
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: 0px;
+  top: 100%;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #bf0002 #bf0002 transparent transparent;
+}
+
 .imghotel {
   width: 100%;
   height: 220px;

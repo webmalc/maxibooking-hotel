@@ -15,6 +15,8 @@ function formFill() {
             }
         }
     }
+    //Гори в аду easyDropDown
+    $('select.dropdown').easyDropDown();
 }
 
 

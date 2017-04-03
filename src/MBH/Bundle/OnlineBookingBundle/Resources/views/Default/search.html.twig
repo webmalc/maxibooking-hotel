@@ -22,6 +22,11 @@
             <div class="leftrdm">
                 <div class="imghotel"
                      style="background:url('{{ offerByRoomType.mainimage.path }}')no-repeat;background-size:cover;">
+                    {% if offerByRoomType.additional %}
+                        <p class="special-strip">
+                            Другие даты
+                        </p>
+                    {% endif %}
                     <div class="inghotelline">
                         {% for image in images %}
                                 <a style="{{ (loop.index > 3) ? 'display: none;':'' }}" class="fancybox" href="{{ absolute_url(asset(image.path)) }}"

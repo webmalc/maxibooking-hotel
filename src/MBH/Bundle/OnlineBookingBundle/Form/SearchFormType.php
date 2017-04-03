@@ -139,7 +139,8 @@ class SearchFormType extends AbstractType
                     'placeholder' => false,
                     'choices' => range(0,13),
                     'attr' => [
-                        'class' => 'children_age_row dropdown'
+                        /*'class' => 'children_age_row dropdown'*/
+                        'class' => 'children_age_row'
                     ],
                     'data' => 12
                 ],
