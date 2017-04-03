@@ -5,6 +5,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Twig;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\OnlineBookingBundle\Document\LeftRoom;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 
 class OnlineBookingExtension extends \Twig_Extension
 {
@@ -42,7 +43,38 @@ class OnlineBookingExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            'left_sale' => new \Twig_SimpleFunction('left_sale', [$this, 'leftSale'], array('is_safe' => array('html')))
+            'left_sale' => new \Twig_SimpleFunction('left_sale', [$this, 'leftSale'], ['is_safe' => ['html']]),
+            'count_prices'=> new \Twig_SimpleFunction('count_prices', [$this, 'countPrices'], ['is_safe' => ['html']])
+        ];
+    }
+
+    public function countPrices(array $searchResults): array
+    {
+        $searches = $searchResults;
+        usort(
+            $searches,
+            function ($cmpA, $cmpB) {
+                /** @var $cmpA SearchResult */
+                return $cmpA->getPrice($cmpA->getAdults(), $cmpA->getChildren()) <=> $cmpB->getPrice( $cmpB->getAdults(), $cmpB->getChildren());
+            }
+        );
+
+        $oldPrice = $newPrice = $discount = null;
+        $firstSearch = reset($searches);
+        $newPrice = $firstSearch->getPrice($firstSearch->getAdults(), $firstSearch->getChildren());
+        foreach ($searches as $search) {
+            $promotion = $search->getTariff()->getDefaultPromotion()??false;
+            if ($promotion && $promotion->getDiscount()??false) {
+                $discount = $promotion->getDiscount();
+                $currentSearchPrice = $search->getPrice($search->getAdults(), $search->getChildren());
+                $oldPrice = $currentSearchPrice * 100 /(100 - $discount);
+                break;
+            }
+        }
+
+        return [
+            'old' => $oldPrice,
+            'new' => $newPrice,
         ];
     }
 

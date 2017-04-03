@@ -12,7 +12,6 @@
         <a href="http://azovsky.ru/putevka-v-Crimea/" target="_blank">Азовский</a>,
         <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a>
     </div>
-
     {% for offerByRoomType in searchResults %}
         {% set roomType, tariffResults, query, images, children = offerByRoomType.roomType, offerByRoomType.results, offerByRoomType.query, offerByRoomType.images, offerByRoomType.query.children %}
         {% set firstTariffResult, lastTariffResult = tariffResults|first, tariffResults|last %}
@@ -40,7 +39,14 @@
             <div class="rightrdm">
                 <div class="leftinrdm">
                     <p class="titlerdm">{{ roomType.hotel.fullTitle }}&nbsp;</p>
-                    <p class="numtype"><b>Тип номера:</b><br>{{ roomType.fullTitle }}</p>
+                    <p class="numtype"><b>Тип номера:</b><br>
+                        {% if roomType.descriptionurl is defined and roomType.descriptionurl is not empty %}
+                            <a href="{{ roomType.descriptionUrl }}"
+                               target="_blank">{{ roomType.fullTitle }}</a>
+                        {% else %}
+                            {{ roomType.fullTitle }}
+                        {% endif %}
+                    </p>
                     <p class="gueststype">
                         <b>Гости:</b>
                         {{ query.adults }} взр.
@@ -59,8 +65,11 @@
                     <p class="titlerdm">Цена за {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
                     <div class="clear"></div>
                     <p class="pricerdm">
-                        <span class="noneprice">{{ lastTariffResult.price(lastTariffResult.adults, lastTariffResult.children)|number_format(0, thousandSep=' ') }}&#8381;</span>
-                        <span class="newprice">{{ firstTariffResult.price(firstTariffResult.adults, firstTariffResult.children)|number_format(0, thousandSep=' ') }}&#8381;</span></p>
+                        {% set prices = count_prices(tariffResults) %}
+                        {% if prices.old is not null %}
+                        <span class="noneprice">{{ prices.old|number_format(0, thousandSep=' ') }}&#8381;</span>
+                        {% endif %}
+                        <span class="newprice">{{ prices.new|number_format(0, thousandSep=' ') }}&#8381;</span></p>
                     <p class="datesrdm">{{ dates.begin|date("d.m.Y") }} - {{ dates.end|date("d.m.Y") }}</p>
                     <p class="daysrdm">{{ firstTariffResult.days }} {{ 'days'|transchoice(firstTariffResult.days) }} / {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
                     {% set left_rooms = left_sale(firstTariffResult.roomsCount, leftRoomKey) %}
