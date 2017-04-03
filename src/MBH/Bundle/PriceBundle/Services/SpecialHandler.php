@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
@@ -37,10 +38,9 @@ class SpecialHandler
     {
         $searchQuery = new SearchQuery();
         $searchQuery->isOnline = true;
-
-        is_null($roomTypes) ?: $searchQuery->roomTypes = $roomTypes;
+        count($roomTypes) == 0 ?: $searchQuery->roomTypes = $roomTypes;
         if (count($specials) == 0) {
-            $searchQuery->begin = new \DateTime('midnight');
+            $searchQuery->begin = new \DateTime('midnight - 10 days');
             $searchQuery->end = new \DateTime('midnight + 2 year');
             $specials = $this->search->searchSpecials($searchQuery)->toArray();
         }
@@ -52,8 +52,8 @@ class SpecialHandler
             if ($special->getIsEnabled()
                 && $special->getRemain() > 0
                 && $special->getBegin() > $currentDate
-                && $special->getDisplayFrom() < $currentDate
-                && $special->getDisplayTo() > $currentDate
+                && $special->getDisplayFrom() <= $currentDate
+                && $special->getDisplayTo() >= $currentDate
             ) {
                 $searchQuery->setSpecial($special);
                 $searchQuery->begin = $special->getBegin();
@@ -61,39 +61,58 @@ class SpecialHandler
                 $results = $this->search->search($searchQuery);
 
                 foreach ($results as $resultsByRoomType) {
-                    /** @var RoomType $roomType */
-                    $roomType = $resultsByRoomType['roomType'];
-                    if (in_array($roomType, $special->getRoomTypes()->toArray())) {
-
-                        /** @var SearchResult $resultByTariff */
-                        foreach ($resultsByRoomType['results'] as $resultByTariff) {
-
-                            /** @var Tariff $tariff */
-                            $tariff = $resultByTariff->getTariff();
-                            $specialTariffs = $special->getTariffs()->toArray();
-                            if (count($specialTariffs) == 0 || in_array($tariff, $special->getTariffs()->toArray())) {
-
-                                foreach ($resultByTariff->getPrices() as $combination => $price) {
-                                    $underscorePosition = strpos($combination, '_');
-                                    $adultsCount = intval(substr($combination, 0, $underscorePosition));
-                                    $childrenCount = intval(substr($combination, $underscorePosition + 1));
-
-                                    $specialPrice = (new SpecialPrice())
-                                        ->setAdultsCount($adultsCount)
-                                        ->setChildrenCount($childrenCount)
-                                        ->setPrice($price)
-                                        ->setTariff($resultByTariff->getTariff())
-                                        ->setRoomType($roomType);
-
-                                    $special->addPrice($specialPrice);
-                                }
-                            }
+                    //$roomCategory может быть типом комнат или категорией типов комнат
+                    $roomCategory = $resultsByRoomType['roomType'];
+                    if ($roomCategory instanceof RoomTypeCategory) {
+                        foreach ($roomCategory->getTypes() as $roomType) {
+                            $this->calculateRoomTypeSpecialPrices($roomType, $roomTypes, $special, $resultsByRoomType);
                         }
+                    } else {
+                        $this->calculateRoomTypeSpecialPrices($roomCategory, $roomTypes, $special, $resultsByRoomType);
                     }
                 }
             }
         }
 
         $this->dm->flush();
+    }
+
+    /**
+     * @param RoomType $roomType
+     * @param $roomTypes
+     * @param Special $special
+     * @param $resultsByRoomType
+     */
+    private function calculateRoomTypeSpecialPrices(RoomType $roomType, $roomTypes, Special $special, $resultsByRoomType)
+    {
+        if (count($roomTypes) == 0 || in_array($roomType, $special->getRoomTypes()->toArray())) {
+
+            /** @var SearchResult $resultByTariff */
+            foreach ($resultsByRoomType['results'] as $resultByTariff) {
+
+                /** @var Tariff $tariff */
+                $tariff = $resultByTariff->getTariff();
+                $specialTariffs = $special->getTariffs()->toArray();
+                if (count($specialTariffs) == 0 || in_array($tariff, $special->getTariffs()->toArray())) {
+
+                    foreach ($resultByTariff->getPrices() as $combination => $price) {
+                        $underscorePosition = strpos($combination, '_');
+                        $adultsCount = intval(substr($combination, 0, $underscorePosition));
+                        $childrenCount = intval(substr($combination, $underscorePosition + 1));
+
+                        $specialPrice = (new SpecialPrice())
+                            ->setAdultsCount($adultsCount)
+                            ->setChildrenCount($childrenCount)
+                            ->setPrice($price)
+                            ->setTariff($resultByTariff->getTariff())
+                            ->setRoomType($roomType);
+
+                        $special->addPrice($specialPrice);
+                        $this->dm->persist($specialPrice);
+                        $this->dm->flush();
+                    }
+                }
+            }
+        }
     }
 }
