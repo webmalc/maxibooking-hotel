@@ -21,7 +21,7 @@
         <div class="oneblockinrdm room-type-row {{ offerByRoomType.additional?'additional':'' }}" data-roomtype="{{ roomType.id }}">
             <div class="leftrdm">
                 <div class="imghotel"
-                     style="background:url('{{ offerByRoomType.mainimage.path }}')no-repeat;background-size:cover;">
+                     style="background:url('{{ absolute_url(asset(offerByRoomType.mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
                     {% if offerByRoomType.additional %}
                         <p class="special-strip">
                             Другие даты
@@ -215,9 +215,6 @@
     RoomTypeRow.prototype.reBuildHref = function () {
         console.log('rebuild href');
         var href = this.selectedTariffRow.bookingHref;
-        /*if (this.selectedTariffRow.$promotionSelect.val()) {
-         href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val();
-         }*/
         var form_href = '&' + $("form#search-form").serialize();
         href = href + form_href;
 

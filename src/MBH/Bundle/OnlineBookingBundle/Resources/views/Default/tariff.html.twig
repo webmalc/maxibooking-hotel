@@ -13,5 +13,5 @@
     <td>{{ tariffResult.tariff.fullTitle }}</td>
     <td class="redtd">{{ discount?" - #{discount}%":'' }}</td>
     <td>{{ tariffResult.getPrice(tariffResult.adults, tariffResult.children)|round }}&#8381;</td>
-    <td><input name="booking-{{ tariffResult.roomType.id }}" type="radio" {% if loop.first %}checked="checked"{% endif %}></td>
+    <td><input name="booking-{{ tariffResult.roomType.id }}-{{ offerByRoomType.dates.begin|date("d_m_Y") ~ "_" ~ offerByRoomType.dates.end|date("d_m_Y") }}" type="radio" {% if loop.first %}checked="checked"{% endif %}></td>
 </tr>
