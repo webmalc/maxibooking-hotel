@@ -2,7 +2,10 @@
 
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
+use MBH\Bundle\BaseBundle\Lib\AdditionalDatesException;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -12,7 +15,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class SearchMultipleDates implements SearchInterface
 {
-    CONST MAX_RESULTS = 20;
+    const MAX_RESULTS = 100;
+
+    const MAX_ADDITIONAL_PERIOD = 10;
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -30,10 +35,20 @@ class SearchMultipleDates implements SearchInterface
     protected $dm;
 
     /**
+     * @var \MBH\Bundle\BaseBundle\Service\Cache
+     */
+    private $memcached;
+
+    /**
      * @var RoomTypeManager
      */
     private $manager;
 
+
+    /**
+     * @var array
+     */
+    private $inOut;
     /**
      * @param ContainerInterface $container
      */
@@ -42,6 +57,8 @@ class SearchMultipleDates implements SearchInterface
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
         $this->manager = $container->get('mbh.hotel.room_type_manager');
+        $this->memcached = $this->container->get('mbh.cache');
+        $this->inOut = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut($this->memcached);
     }
 
     /**
@@ -59,7 +76,6 @@ class SearchMultipleDates implements SearchInterface
      * @param SearchQuery $query
      * @return array
      * @throws Exception
-     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function search(SearchQuery $query)
     {
@@ -70,7 +86,8 @@ class SearchMultipleDates implements SearchInterface
         if (empty($roomTypes)) {
             foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
                 $roomTypes = array_merge(
-                    $this->container->get('mbh.helper')->toIds($hotel->getRoomTypes()), $roomTypes
+                    $this->container->get('mbh.helper')->toIds($hotel->getRoomTypes()),
+                    $roomTypes
                 );
             }
         } elseif ($this->manager->useCategories) {
@@ -86,7 +103,8 @@ class SearchMultipleDates implements SearchInterface
 
         $tariff = $query->tariff;
         if (!empty($query->tariff) && !$query->tariff instanceof Tariff) {
-            $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($query->tariff);
+            $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                ->fetchById($query->tariff, $this->memcached);
         }
         $results = [];
 
@@ -123,28 +141,8 @@ class SearchMultipleDates implements SearchInterface
     public function getDates(\DateTime $begin, \DateTime $end, int $range, RoomType $roomType = null, Tariff $tariff = null)
     {
         $result = [];
-
-        $dates = function (\DateTime $date, int $range): array {
-            $from = clone $date;
-            $to = clone $date;
-            $from->modify('- ' . ceil($range / 2) . ' days');
-            $to->modify('+ ' . (ceil($range / 2) + 1) . ' days');
-
-            $result = iterator_to_array(new \DatePeriod($from, new \DateInterval('P1D'), $to));
-            uasort($result, function ($a, $b) use ($date) {
-                $diffA = $date->diff($a)->days;
-                $diffB = $date->diff($b)->days;
-
-                if ($diffA == $diffB) {
-                    return 0;
-                }
-                return ($diffA < $diffB) ? -1 : 1;
-            });
-            return $result;
-        };
-
-        $begins = $dates($begin, $range);
-        $ends = $dates($end, $range);
+        $begins = $this->searchDaysByRestriction($begin, $range);
+        $ends = $this->searchDaysByRestriction($end, $range);
 
         foreach ($begins as $arrival) {
             foreach ($ends as $departure) {
@@ -157,6 +155,55 @@ class SearchMultipleDates implements SearchInterface
         return $result;
     }
 
+    private function searchDaysByRestriction(\DateTime $date, int $range, string $direction = null): array
+    {
+        $dates = [];
+        //Для азовского все ограничения одинаковы. Берем первый попавшийся массив
+        $restrictions = $this->inOut[array_keys($this->inOut)[0]];
+
+        if (!$direction) {
+            $dates = array_merge($dates, $this->searchDaysByRestriction($date, $range, 'up'));
+            $dates = array_merge($dates, $this->searchDaysByRestriction($date, $range, 'down'));
+            //Date of query if not in restriction
+            if (!in_array($date->format('d.m.Y'), $restrictions)) {
+                $dates = array_merge($dates, [$date]);
+            }
+
+            uasort($dates, function ($a, $b) use ($date) {
+                $diffA = $date->diff($a)->days;
+                $diffB = $date->diff($b)->days;
+
+                if ($diffA == $diffB) {
+                    return 0;
+                }
+                return ($diffA < $diffB) ? -1 : 1;
+            });
+
+            return $dates;
+        }
+
+        $directions = [ 'up' => '+', 'down' => '-'];
+        if (!in_array($direction, array_keys($directions))) {
+            throw new AdditionalDatesException('There is incorrect search days by restriction direction');
+        }
+
+        //First array element
+        $newDate = clone($date);
+        $loop = 0;
+        while (0 != $range) {
+            $loop++;
+            $newDate->modify($directions[$direction].' 1 day');
+            if (!in_array($newDate->format('d.m.Y'), array_keys($restrictions))) {
+                $dates[] = clone($newDate);
+                $range--;
+            }
+            if (self::MAX_ADDITIONAL_PERIOD < $loop) {
+                break;
+            }
+        }
+
+        return $dates;
+    }
 
     /**
      * @param SearchQuery $query

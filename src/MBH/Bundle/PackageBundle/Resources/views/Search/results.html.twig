@@ -1,4 +1,16 @@
 <div class="spacer-top">
+    {% if app.session.flashbag.has('search') %}
+        <div class="autohide bg-gray color-palette disabled alert alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <div id="search-flashbag" data-less="{{ 'hide'|trans }}" data-more="{{ 'show'|trans }}">
+                {% for message in app.session.flashbag.get('search') %}
+                    <p class="text-danger">
+                        <small>{{ message }}</small>
+                    </p>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 
     {% if specials is not empty %}
         <table class="package-search-special-table table table-striped table-hover table-condensed table-icons table-actions">

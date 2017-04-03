@@ -52,12 +52,21 @@ class RestrictionRepository extends DocumentRepository
 
         return $data;
     }
+
     /**
+     * @param Cache $memcached
      * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetchInOut()
+    public function fetchInOut(Cache $memcached = null)
     {
+
+
+        if ($memcached) {
+            $cache = $memcached->get('restrictions_in_out', []);
+            if ($cache !== false) {
+                return $cache;
+            }
+        }
 
         $tariffsIds = $hotelIds = $roomTypeIds = [];
         foreach ($this->dm->getRepository('MBHPriceBundle:Tariff')->findBy(['deletedAt' => null]) as $tariff) {
@@ -121,6 +130,10 @@ class RestrictionRepository extends DocumentRepository
             }
         }
 
+        if ($memcached) {
+            $memcached->set($data, 'restrictions_fetch', []);
+        }
+
         return $data;
     }
 
@@ -138,8 +151,8 @@ class RestrictionRepository extends DocumentRepository
         Hotel $hotel = null,
         array $roomTypes = [],
         array $tariffs = []
-    )
-    {
+    ) {
+
         $qb = $this->createQueryBuilder('q');
 
         // hotel
@@ -187,7 +200,7 @@ class RestrictionRepository extends DocumentRepository
         $qb
             ->field('date')->equals($date)
             ->field('tariff.id')->equals($tariff->getId())
-            ->field('roomType.id')->equals($roomType->getId());;
+            ->field('roomType.id')->equals($roomType->getId());
 
         $result = $qb->getQuery()->getSingleResult();
 
@@ -216,8 +229,8 @@ class RestrictionRepository extends DocumentRepository
         array $tariffs = [],
         $grouped = false,
         Cache $memcached = null
-    )
-    {
+    ) {
+
         if ($memcached) {
             $cache = $memcached->get('restrictions_fetch', func_get_args());
             if ($cache !== false) {

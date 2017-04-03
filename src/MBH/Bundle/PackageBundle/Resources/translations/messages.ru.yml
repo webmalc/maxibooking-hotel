@@ -411,3 +411,4 @@ modal.form.virtual_room.virtual_room.group: Виртуальный номер
 modal.form.virtual_room.is_chain_moved.label: Перенос цепочки
 virtual_room_handler.package_virtual_room_changed: 'Брони %package_number% установлена виртуальная комната "%room_name%"'
 virtual_room_handler.empty_interval_data: 'Виртуальная комната %roomName% имеющая тип номера с ID = "%roomTypeId%" содержит окно в промежутке %emptyIntervalDates%'
+windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'

@@ -285,6 +285,11 @@ $(document).ready(function () {
             sendForm();
         });
 
+        $('#search-flashbag').readmore({
+            moreLink: '<div class="more-link"><a href="#">'+$('#search-flashbag').attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
+            lessLink: '<div class="less-link"><a href="#">'+$('#search-flashbag').attr('data-less') +' <i class="fa fa-caret-up"></i></a></div>',
+            collapsedHeight: 35
+        });
         /*var $links = $('#package-search-tariffs li a');
          $links.on('click', function (e) {
          e.preventDefault();
@@ -333,6 +338,7 @@ $(document).ready(function () {
         } else {
             icon.show();
         }
+
         for (var i = 0; i < num; i++) {
             content += '<input type="number" id="children_age_' + i + '" name="s[children_age][]" class="children_age input-xxs form-control input-sm" min="0" max="18">'
         }
@@ -367,7 +373,7 @@ $(document).ready(function () {
         $wrapper.html('<div class="alert alert-danger">Заполните возраст детей</div>');
     }
 
-    var sendForm = function () {
+    var sendForm = function() {
 
         setTimeout(
             function () {
@@ -421,12 +427,12 @@ $(document).ready(function () {
             //         sendForm()
             // );
         });
-        // icon.on('hidden.bs.popover', function () {
+        // icon.on('hidden.bs.popover', function() {
         //     sendForm();
         // });
     }
 
-    $packageSearchForm.on('submit', function (e) {
+    $packageSearchForm.on('submit', function(e) {
         e.preventDefault();
 
          (checkChildrenAge())?sendForm():checkFormChildrenAge();
