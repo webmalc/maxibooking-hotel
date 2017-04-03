@@ -6,7 +6,9 @@ $(document).ready(function ($) {
         table = $('#windows-report-content'),
         modal = $('#package-info-modal'),
         processLinks = function () {
-            $('.windows-package-info-link').click(function (event) {
+            var links = $('.windows-package-info-link');
+            links.unbind('click');
+            links.click(function (event) {
                 event.preventDefault();
                 modal.find('.modal-body').html(mbh.loader.html);
                 modal.modal();

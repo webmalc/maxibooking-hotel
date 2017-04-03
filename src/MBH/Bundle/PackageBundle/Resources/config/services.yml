@@ -134,7 +134,6 @@ services:
             - '@doctrine_mongodb.odm.document_manager'
             - '@mbh.package.search_simple'
             - '@mbh.virtual_room_handler.logger'
-            - '@translator.default'
 
     mbh.virtual_room_handler.logger:
         class:     Symfony\Bridge\Monolog\Logger
