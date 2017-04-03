@@ -524,7 +524,7 @@ class Search implements SearchInterface
 
         if ($restriction && $restriction->getMinStayArrival()) {
             $begin->modify('-' . $restriction->getMinStayArrival() . ' days');
-            $end->modify('+' . ($restriction->getMinStayArrival() - 1) . ' days');
+            $end->modify('+' . $restriction->getMinStayArrival() . ' days');
         }
 
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')

@@ -53,7 +53,7 @@ class VirtualRoomHandler
                 unset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString]);
 
                 $this->logger->info(
-                    "For package \"{$package->getTitle()}\" set virtual room \"{$package->getVirtualRoom()->getName()}\""
+                    "For package \"{$package->getTitle()}\" set virtual room \"{$package->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\" in empty interval"
                 );
             }
         }
@@ -104,7 +104,7 @@ class VirtualRoomHandler
         if ($result instanceof SearchResult && $package->getVirtualRoom() != $result->getVirtualRoom()) {
             $package->setVirtualRoom($result->getVirtualRoom());
             $this->logger->info(
-                "For package \"{$package->getTitle()}\" set virtual room \"{$result->getVirtualRoom()->getName()}\""
+                "For package \"{$package->getTitle()}\" set virtual room \"{$result->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\""
             );
             $this->dm->flush();
         }
@@ -159,14 +159,13 @@ class VirtualRoomHandler
                 $sortedPackages[$package->getRoomType()->getId()][$package->getVirtualRoom()->getId()];
             for ($i = 1; $i < count($neighboringPackages); $i++) {
                 if ($neighboringPackages[$i] == $package) {
-                    continue;
-                }
-                $previous = $neighboringPackages[$i - 1];
-                if ($previous->getEnd() == $package->getBegin()
-                    && isset($neighboringPackages[$i + 1])
-                    && $neighboringPackages[$i + 1]->getBegin() == $package->getEnd()
-                ) {
-                    return true;
+                    $previous = $neighboringPackages[$i - 1];
+                    if ($previous->getEnd() == $package->getBegin()
+                        && isset($neighboringPackages[$i + 1])
+                        && $neighboringPackages[$i + 1]->getBegin() == $package->getEnd()
+                    ) {
+                        return true;
+                    }
                 }
             }
         }

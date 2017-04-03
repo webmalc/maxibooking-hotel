@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class VirtualRoomMovingCommand extends ContainerAwareCommand
 {
 
-    const MONTH_COUNT = 5;
+    const MONTH_COUNT = 3;
     /**
      * {@inheritdoc}
      */
