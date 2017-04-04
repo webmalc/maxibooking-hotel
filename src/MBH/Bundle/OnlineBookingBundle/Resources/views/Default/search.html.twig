@@ -1,3 +1,4 @@
+{% import _self as macro %}
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhbase/css/mbsuperfont/styles.css')) }}">
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/ssearch.css')) }}">
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
@@ -20,19 +21,32 @@
         <div class="oneblockinrdm room-type-row {{ offerByRoomType.additional?'additional':'' }}" data-roomtype="{{ roomType.id }}">
             <div class="leftrdm">
                 <div class="imghotel"
-                     style="background:url('{{ absolute_url(asset(offerByRoomType.mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
+                     {% set mainimage = offerByRoomType.mainimage %}
+                     style="background:url('{{ absolute_url(asset(mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
                     {% if offerByRoomType.additional %}
                         <p class="special-strip">
                             Другие даты
                         </p>
                     {% endif %}
                     <div class="inghotelline">
+                        {# Костыль для вывода главной фото первой в списке. Сделано до реализации очередности. #}
                         {% for image in images %}
-                                <a style="{{ (loop.index > 3) ? 'display: none;':'' }}" class="fancybox" href="{{ absolute_url(asset(image.path)) }}"
-                                   rel="cat{{ loop.parent.loop.index }}">
-                                    <img src="{{ absolute_url(image.path|imagine_filter('thumb_275x210')) }}" alt="">
-                                </a>
+                            {% if loop.first and not image.isMain %}
+                                {{ macro.drawimage(mainimage, loop) }}
+                                {{ macro.drawimage(image, loop) }}
+                            {% elseif not loop.first and image.isMain %}
+                            {% else %}
+                            {{ macro.drawimage(image, loop) }}
+                            {% endif %}
                         {% endfor %}
+                        {#Конец костыля#}
+                        {#Вернуть после убирания костыля#}
+                        {#{% for image in images %}
+                            <a style="{{ (loop.index > 1) ? 'display: none;':'' }}" class="fancybox" href="{{ absolute_url(asset(image.path)) }}"
+                               rel="cat{{ loop.parent.loop.index }}">
+                                <img src="{{ absolute_url(image.path|imagine_filter('thumb_275x210')) }}" alt="">
+                            </a>
+                        {% endfor %}#}
                     </div>
                 </div>
             </div>
@@ -152,6 +166,13 @@
         <p><strong>Смотрите также: </strong><a href="http://azovsky.ru/specpredlojenia-dnia/">Спецпредложения</a></p>
     </div>
 {% endif %}
+
+{% macro drawimage(image, loop, showImages) %}
+    <a style="{{ ( image.isMain or loop.index > showImages|default(3) ) ? 'display: none;':'' }}" class="fancybox" href="{{ absolute_url(asset(image.path)) }}"
+       rel="cat{{ loop.parent.loop.index }}">
+        <img src="{{ absolute_url(image.path|imagine_filter('thumb_275x210')) }}" alt="">
+    </a>
+{% endmacro %}
 
 <script>
     var mychart, myprices, myrows = [];
