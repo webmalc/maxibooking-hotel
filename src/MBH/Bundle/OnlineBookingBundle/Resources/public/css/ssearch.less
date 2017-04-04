@@ -309,6 +309,29 @@ a.eat_link, a.hotel_link {
   //margin-top: 55px !important;
 }
 
+.special-strip {
+  position: relative;
+  background: #fd0002;
+  color: #fff;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: -10px;
+  font-size: 16px;
+  padding: 9px 10px;
+  &:after {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 0px;
+    top: 100%;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #bf0002 #bf0002 transparent transparent;
+  }
+}
+
 @media (max-width: 750px) {
   .oneblockinrdm {
     width: 96%;
@@ -344,3 +367,4 @@ a.eat_link, a.hotel_link {
     padding-left: 0px;
   }
 }
+
