@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Bridge\Monolog\Logger;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -48,13 +49,15 @@ class VirtualRoomHandler
             ) {
                 /** @var Room $virtualRoomWithWindow */
                 $virtualRoomWithWindow = $emptyIntervals[$package->getRoomType()->getId()][$packageDatesString];
-                $package->setVirtualRoom($virtualRoomWithWindow);
-                $this->dm->flush();
-                unset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString]);
+                if ($this->hasSufficientWindows($package, $virtualRoomWithWindow)) {
+                    $package->setVirtualRoom($virtualRoomWithWindow);
+                    $this->dm->flush();
+                    unset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString]);
 
-                $this->logger->info(
-                    "For package \"{$package->getTitle()}\" set virtual room \"{$package->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\" in empty interval"
-                );
+                    $this->logger->info(
+                        "For package \"{$package->getTitle()}\" set virtual room \"{$package->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\" in empty interval"
+                    );
+                }
             }
         }
 
@@ -88,6 +91,51 @@ class VirtualRoomHandler
     }
 
     /**
+     * @param Package $package
+     * @param Room $virtualRoom
+     * @return bool
+     */
+    public function hasSufficientWindows(Package $package, Room $virtualRoom)
+    {
+        $roomType = $package->getRoomType();
+        $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($package->getRoomType()->getHotel());
+
+        $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')
+            ->findOneByDate($package->getBegin(), $roomType, $baseTariff);
+
+        $adjoiningPackagesBegin = clone $package->getBegin();
+        $adjoiningPackagesEnd = clone $package->getEnd();
+
+        if ($restriction && $restriction->getMinStayArrival()) {
+            $adjoiningPackagesBegin = $adjoiningPackagesBegin
+                ->modify('-' . ($restriction->getMinStayArrival() - 1) . ' days');
+            $adjoiningPackagesEnd = $adjoiningPackagesEnd
+                ->modify('+' . ($restriction->getMinStayArrival() - 1) . ' days');
+        }
+
+        $adjoiningPackages = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->extendedFetchWithVirtualRooms(
+                $adjoiningPackagesBegin,
+                $adjoiningPackagesEnd,
+                false,
+                $roomType,
+                [$virtualRoom->getId()],
+                $package
+            );
+
+        /** @var Package $adjoiningPackage */
+        foreach ($adjoiningPackages as $adjoiningPackage) {
+            if (!($adjoiningPackage->getBegin() == $package->getEnd() || $adjoiningPackage->getEnd() == $package->getBegin())) {
+                $this->logger->info('incorrect attempt to set virtual room for package "'
+                    . $package->getNumberWithPrefix() . '", in virtual room "' . $virtualRoom->getName() . '"');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Set virtual room for a single package
      *
      * @param Package $package
@@ -102,11 +150,13 @@ class VirtualRoomHandler
         $result = $this->search->setVirtualRoom($searchResult, $baseTariff, $package);
 
         if ($result instanceof SearchResult && $package->getVirtualRoom() != $result->getVirtualRoom()) {
-            $package->setVirtualRoom($result->getVirtualRoom());
-            $this->logger->info(
-                "For package \"{$package->getTitle()}\" set virtual room \"{$result->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\""
-            );
-            $this->dm->flush();
+            if ($this->hasSufficientWindows($package, $result->getVirtualRoom())) {
+                $package->setVirtualRoom($result->getVirtualRoom());
+                $this->logger->info(
+                    "For package \"{$package->getTitle()}\" set virtual room \"{$result->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\""
+                );
+                $this->dm->flush();
+            }
         }
     }
 
