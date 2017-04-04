@@ -3,8 +3,10 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use Psr\Log\LoggerInterface;
@@ -76,11 +78,10 @@ class PackageZip
         $info['error'] = 0;
 
         for ($i = 0; $i <= ceil($this->getMaxAmountPackages($roomTypesByCategories) / $skip); $i++) {
-
             try {
-
                 $packages = $this->getPackages($roomTypesByCategories, $skip, $i);
 
+                /** @var Package $package */
                 foreach ($packages as $package) {
 
                     $countPersons = $package->getCountPersons();
@@ -112,12 +113,14 @@ class PackageZip
                         $query->forceRoomTypes = true;
 
                         $groupedResult = $this->packageSearch->search($query);
-
+                        $this->logger->info('Поиск закончен');
                         if (!$groupedResult) {
                             continue;
                         }
 
                         usort($groupedResult, function ($a, $b) {
+                            /** @var SearchResult $a */
+                            /** @var SearchResult $a */
                             if ($a->getRoomType()->getTotalPlaces() == $b->getRoomType()->getTotalPlaces()) {
                                 return 0;
                             }
@@ -127,18 +130,16 @@ class PackageZip
                         $oldPackage = clone $package;
                         $newPackage = clone $package;
                         $newPackage->setRoomtype($groupedResult[0]->getRoomType());
-                        $overTotalPrice = $package->getPrice();
-                        $servicePrice = $package->getServicesPrice();
                         $endDate = clone $package->getEnd();
 
                         $result = $this->orderManager->updatePackage($oldPackage, $newPackage);
 
-                        if ($result instanceof Package && !($package->getRoomType()->getId() == $newPackage->getRoomType()->getId())) {
+                        if ($result instanceof Package && $package->getRoomType() != $newPackage->getRoomType()) {
 
                             $info['amount']++;
                             $package->setEnd($endDate)
-                                ->setServicesPrice($servicePrice)
-                                ->setTotalOverwrite($overTotalPrice)
+                                ->setServicesPrice($package->getServicesPrice())
+                                ->setTotalOverwrite($package->getPrice())
                                 ->setRoomtype($groupedResult[0]->getRoomType());
 
                             $this->dm->persist($package);
@@ -146,9 +147,7 @@ class PackageZip
                             $beginLog2 = clone $package->getBegin();
                             $endLog2 = clone $package->getEnd();
                             $this->logPackage('CHANGED PACKAGE INFO', $beginLog2, $endLog2, $package);
-
                         }
-
                     }
                 }
                 $this->dm->flush();
@@ -210,9 +209,7 @@ class PackageZip
      */
     protected function roomTypeByCategories($config)
     {
-
         return $this->dm->getRepository('MBHHotelBundle:RoomType')->roomByCategories($config->getHotel(), $this->helper->toIds($config->getCategories()));
-
     }
 
     /**

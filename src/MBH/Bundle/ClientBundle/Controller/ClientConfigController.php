@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/config")
@@ -181,4 +182,17 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         ];
     }
 
+    /**
+     * @Route("/test")
+     */
+    public function testAction()
+    {
+        $qb = $this->dm->createQueryBuilder('MBHPackageBundle:Package')
+            ->where('function() { return this.roomType.isEnabled == false }')
+            ->getQuery()
+            ->execute()
+            ->count();
+
+        return new Response();
+    }
 }
