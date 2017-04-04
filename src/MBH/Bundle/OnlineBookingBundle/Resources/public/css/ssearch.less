@@ -16,11 +16,12 @@ a[class^=btn-booking] {
 .alerting {
   background-color: #f3dfaf;
 }
+
 .alertinghover {
   background-color: #f3d492;
 }
 
-tr.tariff-row{
+tr.tariff-row {
   &:hover {
     .alerting;
     cursor: pointer;
@@ -31,6 +32,30 @@ tr.tariff-row{
 
 }
 
+section.s_results {
+  padding: 0;
+  min-height: 300px;
+}
+
+.no_text_decoration {
+  text-decoration: none!important;
+  color: inherit;
+}
+.room_link {
+  .no_text_decoration;
+  color: darkgrey;
+  &:hover {
+    cursor: pointer;
+    color: #909090;
+  }
+}
+a.eat_link, a.hotel_link {
+  .no_text_decoration;
+  &:hover {
+    .no_text_decoration;
+  }
+}
+
 
 .tariff-spinner {
   position: absolute;
@@ -38,9 +63,8 @@ tr.tariff-row{
   top: 45%;
   z-index: 10;
   color: #92b638;
-  display:none;
+  display: none;
 }
-
 
 .clear {
   clear: both;
@@ -50,6 +74,7 @@ tr.tariff-row{
     width: 795px;
     margin: auto;
 }*/
+
 
 .oneblockinrdm {
   width: 100%;

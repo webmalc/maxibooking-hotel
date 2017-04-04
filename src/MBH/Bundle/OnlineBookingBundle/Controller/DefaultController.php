@@ -153,7 +153,9 @@ class DefaultController extends BaseController
             [
                 'searchResults' => $searchResults,
                 'requestSearchUrl' => $requestSearchUrl,
-                'useCharts' => $this->getParameter('online_booking')['use_charts'],
+                'useCharts' => $onlineOptions['use_charts'],
+                'showAll' => $onlineOptions['show_all'],
+                'hotelsLinks' => $onlineOptions['hotels_links']
             ]
         );
     }

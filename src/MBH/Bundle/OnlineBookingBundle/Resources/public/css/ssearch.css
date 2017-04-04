@@ -23,6 +23,33 @@ tr.tariff-row.alerting:hover,
 tr.tariff-row:not(.alerting):hover {
   background-color: #f3d492;
 }
+section.s_results {
+  padding: 0;
+  min-height: 300px;
+}
+.no_text_decoration {
+  text-decoration: none!important;
+  color: inherit;
+}
+.room_link {
+  text-decoration: none!important;
+  color: inherit;
+  color: darkgrey;
+}
+.room_link:hover {
+  cursor: pointer;
+  color: #909090;
+}
+a.eat_link,
+a.hotel_link {
+  text-decoration: none!important;
+  color: inherit;
+}
+a.eat_link:hover,
+a.hotel_link:hover {
+  text-decoration: none!important;
+  color: inherit;
+}
 .tariff-spinner {
   position: absolute;
   left: 45%;
@@ -51,35 +78,6 @@ tr.tariff-row:not(.alerting):hover {
   width: 40%;
   float: left;
 }
-
-.additional .datesrdm {
-  color: red;
-}
-
-.special-strip {
-  position: relative;
-  background: #fd0002;
-  color: #fff;
-  text-transform: uppercase;
-  display: inline-block;
-  margin-top: 10px;
-  margin-left: -10px;
-  font-size: 16px;
-  padding: 9px 10px;
-}
-
-.special-strip:after {
-  content: ' ';
-  position: absolute;
-  width: 0;
-  height: 0;
-  left: 0px;
-  top: 100%;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #bf0002 #bf0002 transparent transparent;
-}
-
 .imghotel {
   width: 100%;
   height: 220px;

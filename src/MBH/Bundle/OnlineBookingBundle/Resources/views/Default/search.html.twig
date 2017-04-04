@@ -16,7 +16,7 @@
         {% set roomType, tariffResults, query, images, children = offerByRoomType.roomType, offerByRoomType.results, offerByRoomType.query, offerByRoomType.images, offerByRoomType.query.children %}
         {% set firstTariffResult, lastTariffResult = tariffResults|first, tariffResults|last %}
         {% set leftRoomKey, dates = offerByRoomType.leftRoomKey, offerByRoomType.dates %}
-        <section>
+        <section class="s_results">
         <div class="oneblockinrdm room-type-row {{ offerByRoomType.additional?'additional':'' }}" data-roomtype="{{ roomType.id }}">
             <div class="leftrdm">
                 <div class="imghotel"
@@ -38,10 +38,18 @@
             </div>
             <div class="rightrdm">
                 <div class="leftinrdm">
-                    <p class="titlerdm">{{ roomType.hotel.fullTitle }}&nbsp;</p>
+                    <p class="titlerdm">
+                        {% if hotelsLinks is defined and roomType.hotel.id in hotelsLinks|keys %}
+                        <a href="{{ hotelsLinks[roomType.hotel.id] }}" class="hotel_link" target="_blank">
+                            {{ roomType.hotel.fullTitle }}
+                        </a>
+                        {% else %}
+                            {{ roomType.hotel.fullTitle }}
+                        {% endif %}
+                        &nbsp;</p>
                     <p class="numtype"><b>Тип номера:</b><br>
                         {% if roomType.descriptionurl is defined and roomType.descriptionurl is not empty %}
-                            <a href="{{ roomType.descriptionUrl }}"
+                            <a class="room_link" href="{{ roomType.descriptionUrl }}"
                                target="_blank">{{ roomType.fullTitle }}</a>
                         {% else %}
                             {{ roomType.fullTitle }}
@@ -54,7 +62,13 @@
                         {0} | [1,4] + %children% реб |[5,Inf[ + %children% дет.
                         {% endtranschoice %}
                     </p>
-                    <p class="eattype"><img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
+                    {% if hotelsLinks.eat is defined and hotelsLinks.eat is not empty %}
+                    <a href="{{ hotelsLinks.eat }}" class="eat_link" target="_blank">
+                        <p class="eattype"><img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
+                    </a>
+                    {% else %}
+                        <img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
+                    {% endif %}
                     <div class="iconstype">
                         {% for facility in (roomType.types|first).facilities %}
                             <i class="fa fa-2x mbf-{{ facility }}" title="{{ facility|trans }}"></i>
@@ -110,7 +124,9 @@
                 {#</div>#}
                 <a href="javascript:void(0)" class="btn-booking-reservation"><p class="btmone btmonenotspec">Отправить заявку</p></a>
                 <a href="javascript:void(0)" class="btn-booking"><p class="btmtwo">Купить онлайн</p></a>
+                {% if showAll is defined and showAll %}
                 <a href="javascript:void(0)" class="btn-booking-all"><p class="btmthree">Показать всё</p></a>
+                {% endif %}
 
             </div>
             <div class="clear"></div>
