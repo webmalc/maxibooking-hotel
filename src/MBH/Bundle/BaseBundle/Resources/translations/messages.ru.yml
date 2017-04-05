@@ -71,6 +71,7 @@ mbhbasebundle.view.mailer.order.sposob: Способ
 mbhbasebundle.view.mailer.order.oplaty: оплаты
 services: услуга|услуги|услуг
 nights: ночь|ночи|ночей
+days: день|дня|дней
 twig.extension.jan: янв
 twig.extension.feb: февр
 twig.extension.march: март

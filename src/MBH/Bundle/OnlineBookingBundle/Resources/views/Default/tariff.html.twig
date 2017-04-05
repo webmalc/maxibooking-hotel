@@ -1,0 +1,17 @@
+{% set discount = tariffResult.tariff.defaultPromotion.discount??'' %}
+<tr
+        class="tariff-row"
+        data-tariff="{{ tariffResult.tariff.id }}"
+        data-roomtype="{{ tariffResult.roomType.id }}"
+        data-adults="{{ tariffResult.adults }}"
+        data-children="{{ tariffResult.children }}"
+        data-begin="{{ tariffResult.begin|date('d.m.Y') }}"
+        data-end="{{ tariffResult.end|date('d.m.Y') }}"
+        data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ tariffResult.adults }}&form[children]={{ tariffResult.children }}&form[begin]={{ tariffResult.begin|date('d.m.Y') }}&form[end]={{ tariffResult.end|date('d.m.Y') }}&form[roomType]={{ tariffResult.roomType.id }}&form[tariff]={{ tariffResult.tariff.id }}&form[total]={{ tariffResult.getPrice(tariffResult.adults, tariffResult.children) }}&form[infants]={{ tariffResult.infants }}&form[paymentType]={{ tariffResult.tariff.paymentType }}"
+        data-payment_type="{{ tariffResult.tariff.paymentType }}"
+>
+    <td>{{ tariffResult.tariff.fullTitle }}</td>
+    <td class="redtd">{{ discount?" - #{discount}%":'' }}</td>
+    <td>{{ tariffResult.getPrice(tariffResult.adults, tariffResult.children)|round }}&#8381;</td>
+    <td><input name="booking-{{ tariffResult.roomType.id }}-{{ offerByRoomType.dates.begin|date("d_m_Y") ~ "_" ~ offerByRoomType.dates.end|date("d_m_Y") }}" type="radio" {% if loop.first %}checked="checked"{% endif %}></td>
+</tr>

@@ -63,6 +63,10 @@ class SearchFormType extends AbstractType
                 'placeholder' => 'Все пансионаты',
                 'class' => Hotel::class,
                 'choice_label' => 'fullTitle',
+                'attr' => [
+                    'class' => 'dropdown',
+
+                ],
                 'query_builder' => function (DocumentRepository $documentRepository) {
                     return $documentRepository->createQueryBuilder()
                         ->field('_id')->in(['56fbd22174eb5383728b4567', '5705190e74eb53461c8b4916'])
@@ -105,14 +109,22 @@ class SearchFormType extends AbstractType
             ])
             ->add('adults', ChoiceType::class, [
                 'label' => 'Взрослые',
-                'choices' => array_combine(range(1,10),range(1,10)),
+                'choices' => array_combine(range(1,6),range(1,6)),
                 'data' => 1,
-                'placeholder' => false
+                'placeholder' => false,
+                'attr' => [
+                    'class' => 'dropdown',
+
+                ]
             ])
             ->add('children', ChoiceType::class, [
                 'label' => 'Дети',
                 'choices' => range(0, 5),
-                'attr' => ['min' => 0, 'max' => 5],
+                'attr' => [
+                    'min' => 0,
+                    'max' => 5,
+                    'class' => 'dropdown'
+                ]
 
             ])
             ->add('children_age', CollectionType::class, [
@@ -127,6 +139,7 @@ class SearchFormType extends AbstractType
                     'placeholder' => false,
                     'choices' => range(0,13),
                     'attr' => [
+                        /*'class' => 'children_age_row dropdown'*/
                         'class' => 'children_age_row'
                     ],
                     'data' => 12
@@ -152,6 +165,11 @@ class SearchFormType extends AbstractType
                     ]
                 ]
             );
+    }
+
+    public function getBlockPrefix()
+    {
+        return 'search_form';
     }
 
 
