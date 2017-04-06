@@ -88,7 +88,7 @@ class VirtualRoomHandler
      * @param Room $oldVirtualRoom
      * @param $movedPackagesData
      */
-    private function addPackageMovingData(Package $package, Room $oldVirtualRoom, &$movedPackagesData)
+    private function addPackageMovingData(Package $package, ?Room $oldVirtualRoom, &$movedPackagesData)
     {
         $movedPackagesData[] = [
             'package' => $package,
@@ -123,17 +123,21 @@ class VirtualRoomHandler
         $roomType = $package->getRoomType();
         $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($package->getRoomType()->getHotel());
 
-        $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')
-            ->findOneByDate($package->getBegin(), $roomType, $baseTariff);
+        $restrictionRepository = $this->dm->getRepository('MBHPriceBundle:Restriction');
+        $beginRestriction = $restrictionRepository->findOneByDate($package->getBegin(), $roomType, $baseTariff);
+        $endRestriction = $restrictionRepository->findOneByDate($package->getEnd(), $roomType, $baseTariff);
 
         $adjoiningPackagesBegin = clone $package->getBegin();
         $adjoiningPackagesEnd = clone $package->getEnd();
 
-        if ($restriction && $restriction->getMinStayArrival()) {
+        if ($beginRestriction && $beginRestriction->getMinStayArrival()) {
             $adjoiningPackagesBegin = $adjoiningPackagesBegin
-                ->modify('-' . ($restriction->getMinStayArrival() - 1) . ' days');
+                ->modify('-' . ($beginRestriction->getMinStayArrival() - 1) . ' days');
+        }
+
+        if ($endRestriction && $endRestriction->getMinStayArrival()) {
             $adjoiningPackagesEnd = $adjoiningPackagesEnd
-                ->modify('+' . ($restriction->getMinStayArrival() - 1) . ' days');
+                ->modify('+' . ($endRestriction->getMinStayArrival() - 1) . ' days');
         }
 
         $adjoiningPackages = $this->dm->getRepository('MBHPackageBundle:Package')

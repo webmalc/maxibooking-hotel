@@ -444,3 +444,4 @@ virtual_room_moving_command.mail_message.checkout: Выезд
 virtual_room_moving_command.mail_message.room_type: Тип номера
 virtual_room_moving_command.mail_message.old_virtual_room: Из комнаты
 virtual_room_moving_command.mail_message.new_virtual_room: В комнату
+virtual_room_moving_command.mail_message.old_virtual_room.without_virtual_room: Без комнаты
