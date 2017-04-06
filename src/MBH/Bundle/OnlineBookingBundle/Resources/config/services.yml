@@ -30,3 +30,7 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+
+    mbh.online.special_data_preparer:
+        class: MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer
+        arguments: ['@doctrine.odm.mongodb.document_manager']

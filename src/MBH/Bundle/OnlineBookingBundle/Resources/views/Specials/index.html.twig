@@ -1,0 +1,38 @@
+{{ dump(specials) }}
+<table>
+    <thead>
+    <tr>
+    <th>Отель/Тип номера</th>
+    <th>Даты</th>
+    <th>Скидка</th>
+    <th>Кол-во человек</th>
+    <th>Цена</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for special in specials %}
+            <tr>
+                <td>
+                    <p>{{ special.image }}</p>
+                    <p>{{ special.hotelName }}</p>
+                    <p>{{ special.roomTypeName }}</p>
+                    <p>{{ special.eat }}</p>
+                </td>
+                <td>
+                    {#<p>{{ special.dates.begin }} - {{ special.dates.end }}</p>#}
+                    <p>{{ special.dates.days }} - {{ special.dates.nights }}</p>
+                </td>
+                <td>
+                    <p>{{ special.discount }}</p>
+                </td>
+                <td>
+                    {#<p>{{ special.peoples }}</p>#}
+                </td>
+                <td>
+                    {#<p>{{ special.prices.new }}</p>#}
+                    {#<p>{{ special.prices.old }}</p>#}
+                </td>
+            </tr>
+    {% endfor %}
+    </tbody>
+</table>
