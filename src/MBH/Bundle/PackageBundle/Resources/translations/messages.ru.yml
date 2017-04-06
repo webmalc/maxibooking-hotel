@@ -360,6 +360,10 @@ report.windows.packaging_modal.content_text: Запустить упаковку
 report.windows.packaging_modal.confirmation_button: Начать упаковку
 report.windows.packaging_modal.close_button: Закрыть
 
+report.packaging.title: 'Перемещению'
+report.packaging.dates.title: Даты
+report.packaging.generate_report.button: Сгенерировать отчет
+
 manager.offline: Оффлайн
 manager.online: Онлайн
 manager.channel_manager: Channel manager

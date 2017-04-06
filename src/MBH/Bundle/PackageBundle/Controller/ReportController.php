@@ -15,6 +15,7 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
+use MBH\Bundle\PackageBundle\Form\PackagingReportFilterType;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -79,7 +80,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Security("is_granted('ROLE_WINDOWS_PACKAGING')")
      * @return JsonResponse
      */
-    public function packagingAction()
+    public function callPackagingAction()
     {
         $kernel = $this->get('kernel');
         $application = new Application($kernel);
@@ -1029,5 +1030,25 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
+    }
+
+    /**
+     * @Route("/packaging", name="packaging_report")
+     * @Template()
+     * @param Request $request
+     * @return array
+     */
+    public function packagingAction(Request $request)
+    {
+        $helper = $this->get('mbh.helper');
+        if ($request->isMethod('POST')) {
+            $begin = $helper->getDateFromString($request->request->get('begin'));
+            $end = $helper->getDateFromString($request->request->get('end'));
+            $roomTypeIds = $request->request->get('roomType');
+        }
+        $asdf =123;
+        return [
+            'roomTypes' => $this->hotel->getRoomTypes(),
+        ];
     }
 }
