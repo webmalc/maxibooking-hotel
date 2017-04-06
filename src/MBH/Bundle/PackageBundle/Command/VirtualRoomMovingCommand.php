@@ -37,7 +37,7 @@ class VirtualRoomMovingCommand extends ContainerAwareCommand
         $movedPackagesData = $virtualRoomHandler->setVirtualRooms($beginDate, $endDate);
         $output->writeln('Completed');
 
-        $this->sendMessage($movedPackagesData);
+//        $this->sendMessage($movedPackagesData);
     }
 
     private function sendMessage($movedPackagesData)
