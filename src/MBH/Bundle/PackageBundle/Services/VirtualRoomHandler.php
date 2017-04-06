@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\Search;
-use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 
 class VirtualRoomHandler
 {
@@ -18,15 +17,12 @@ class VirtualRoomHandler
     private $search;
     /** @var Logger $logger */
     private $logger;
-    /** @var Translator $translator */
-    private $translator;
 
-    public function __construct(DocumentManager $dm, Search $search, Logger $logger, Translator $translator)
+    public function __construct(DocumentManager $dm, Search $search, Logger $logger)
     {
         $this->dm = $dm;
         $this->search = $search;
         $this->logger = $logger;
-        $this->translator = $translator;
     }
 
     /**
@@ -47,7 +43,9 @@ class VirtualRoomHandler
         /** @var Package $package */
         foreach ($packages as $package) {
             $packageDatesString = $this->getPackageIntervalString($package->getBegin(), $package->getEnd());
-            if (isset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString])) {
+            if (isset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString])
+                && !$this->hasBothSideNeighbors($package, $sortedPackages)
+            ) {
                 /** @var Room $virtualRoomWithWindow */
                 $virtualRoomWithWindow = $emptyIntervals[$package->getRoomType()->getId()][$packageDatesString];
                 $package->setVirtualRoom($virtualRoomWithWindow);
@@ -55,10 +53,8 @@ class VirtualRoomHandler
                 unset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString]);
 
                 $this->logger->info(
-                    $this->translator->trans('virtual_room_handler.package_virtual_room_changed', [
-                        '%package_number%' => $package->getTitle(),
-                        '%room_name%' => $virtualRoomWithWindow->getName()
-                    ]));
+                    "For package \"{$package->getTitle()}\" set virtual room \"{$package->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\" in empty interval"
+                );
             }
         }
 
@@ -84,12 +80,9 @@ class VirtualRoomHandler
         foreach ($emptyIntervals as $roomTypeId => $emptyIntervalsByRoomType) {
             /** @var Room $emptyRoom */
             foreach ($emptyIntervalsByRoomType as $emptyIntervalDatesString => $emptyRoom) {
-                $this->logger->info($this->translator
-                    ->trans('virtual_room_handler.empty_interval_data', [
-                        '%roomTypeId%' => $roomTypeId,
-                        '%roomName%' => $emptyRoom->getName(),
-                        '%emptyIntervalDates%' => $emptyIntervalDatesString
-                    ]));
+                $this->logger->info(
+                    "Virtual room \"{$emptyRoom->getName()}\" with room type ID = \"$roomTypeId\" has empty interval \"$emptyIntervalDatesString\""
+                );
             }
         }
     }
@@ -105,15 +98,14 @@ class VirtualRoomHandler
             ->setBegin($package->getBegin())
             ->setEnd($package->getEnd())
             ->setRoomType($package->getRoomType());
-        $result = $this->search->setVirtualRoom($searchResult, $package->getTariff(), $package);
+        $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($package->getRoomType()->getHotel());
+        $result = $this->search->setVirtualRoom($searchResult, $baseTariff, $package);
 
         if ($result instanceof SearchResult && $package->getVirtualRoom() != $result->getVirtualRoom()) {
             $package->setVirtualRoom($result->getVirtualRoom());
             $this->logger->info(
-                $this->translator->trans('virtual_room_handler.package_virtual_room_changed', [
-                    '%package_number%' => $package->getTitle(),
-                    '%room_name%' => $result->getVirtualRoom()->getName()
-                ]));
+                "For package \"{$package->getTitle()}\" set virtual room \"{$result->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\""
+            );
             $this->dm->flush();
         }
     }
@@ -152,6 +144,28 @@ class VirtualRoomHandler
                     || $neighboringPackage->getEnd() == $package->getBegin()
                 ) {
                     return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function hasBothSideNeighbors(Package $package, array $sortedPackages)
+    {
+        if (isset($sortedPackages[$package->getRoomType()->getId()][$package->getVirtualRoom()->getId()])) {
+            /** @var Package[] $neighboringPackages */
+            $neighboringPackages =
+                $sortedPackages[$package->getRoomType()->getId()][$package->getVirtualRoom()->getId()];
+            for ($i = 1; $i < count($neighboringPackages); $i++) {
+                if ($neighboringPackages[$i] == $package) {
+                    $previous = $neighboringPackages[$i - 1];
+                    if ($previous->getEnd() == $package->getBegin()
+                        && isset($neighboringPackages[$i + 1])
+                        && $neighboringPackages[$i + 1]->getBegin() == $package->getEnd()
+                    ) {
+                        return true;
+                    }
                 }
             }
         }
