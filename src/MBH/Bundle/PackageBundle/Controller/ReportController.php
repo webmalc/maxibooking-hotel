@@ -21,6 +21,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -67,6 +69,27 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'error' => $generator->getError(),
             'notVirtualRooms' => $notVirtualRooms
         ];
+    }
+
+    /**
+     * Start packaging command
+     *
+     * @Route("/windows/packaging", name="windows_packaging", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_WINDOWS_PACKAGING')")
+     * @return JsonResponse
+     */
+    public function packagingAction()
+    {
+        $kernel = $this->get('kernel');
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+        $input = new ArrayInput([
+            'command' => 'mbh:virtual_rooms:move'
+        ]);
+        $application->run($input);
+
+        return new JsonResponse(['success' => true]);
     }
 
     /**
