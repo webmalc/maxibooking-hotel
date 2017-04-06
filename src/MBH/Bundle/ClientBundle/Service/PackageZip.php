@@ -1,10 +1,13 @@
 <?php
+
 namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\MovingPackageData;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageMovingInfo;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
@@ -53,8 +56,15 @@ class PackageZip
 
     const END = '+365 days';
 
-    public function __construct(DocumentManager $dm, ContainerInterface $container, ValidatorInterface $validator, LoggerInterface $logger, OrderManager $orderManager, SearchFactory $packageSearch, Helper $helper)
-    {
+    public function __construct(
+        DocumentManager $dm,
+        ContainerInterface $container,
+        ValidatorInterface $validator,
+        LoggerInterface $logger,
+        OrderManager $orderManager,
+        SearchFactory $packageSearch,
+        Helper $helper
+    ) {
         $this->dm = $dm;
         $this->container = $container;
         $this->validator = $validator;
@@ -94,42 +104,12 @@ class PackageZip
 
                         $this->logPackage('BEGIN PACKAGE INFO', $beginLog, $endLog, $package);
 
-                        $categoryRoomType[] = $package->getRoomType()->getCategory()->getId();
-                        $roomTypesByCategory = $this->dm->getRepository('MBHHotelBundle:RoomType')->roomByCategories($roomTypeZipConfig->getHotel(), $categoryRoomType);
-
-                        //query Search
-                        $query = new SearchQuery();
-
-                        foreach ($roomTypesByCategory as $roomTypeCategory) {
-                            if ($roomTypeCategory->getTotalPlaces() < $countRoom) {
-                                $query->roomTypes[] = $roomTypeCategory->getId();
-                            }
-                        }
-
-                        $query->begin = clone $package->getBegin();
-                        $query->end = clone $package->getEnd();
-                        $query->adults = $package->getAdults();
-                        $query->children = $package->getChildren();
-                        $query->forceRoomTypes = true;
-
-                        $groupedResult = $this->packageSearch->search($query);
+                        $optimalRoomType = $this->getOptimalRoomType($package);
                         $this->logger->info('Поиск закончен');
-                        if (!$groupedResult) {
-                            continue;
-                        }
-
-                        usort($groupedResult, function ($a, $b) {
-                            /** @var SearchResult $a */
-                            /** @var SearchResult $a */
-                            if ($a->getRoomType()->getTotalPlaces() == $b->getRoomType()->getTotalPlaces()) {
-                                return 0;
-                            }
-                            return ($a->getRoomType()->getTotalPlaces() < $b->getRoomType()->getTotalPlaces()) ? -1 : 1;
-                        });
-
-                        $oldPackage = clone $package;
-                        $newPackage = clone $package;
-                        $newPackage->setRoomtype($groupedResult[0]->getRoomType());
+                        if (!is_null($optimalRoomType)) {
+                            $oldPackage = clone $package;
+                            $newPackage = clone $package;
+                            $newPackage->setRoomtype($optimalRoomType);
                         $endDate = clone $package->getEnd();
 
                         $result = $this->orderManager->updatePackage($oldPackage, $newPackage);
@@ -148,6 +128,7 @@ class PackageZip
                             $endLog2 = clone $package->getEnd();
                             $this->logPackage('CHANGED PACKAGE INFO', $beginLog2, $endLog2, $package);
                         }
+                        }
                     }
                 }
                 $this->dm->flush();
@@ -164,6 +145,66 @@ class PackageZip
         $this->logger->alert('---------END---------');
 
         return $info;
+    }
+
+    /**
+     * @param Package[] $packages
+     * @return PackageMovingInfo
+     */
+    public function createPackageMovingInfo(array $packages): PackageMovingInfo
+    {
+        //TODO: Удалять ли предыдущий?
+        $packageMovingInfo = new PackageMovingInfo();
+
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $packageMovingInfo->setRunningBy($user);
+
+        foreach ($packages as $package) {
+            $optimalRoomType = $this->getOptimalRoomType($package);
+            $movingPackageData = (new MovingPackageData())
+                ->setNewRoomType($optimalRoomType)
+                ->setPackage($package);
+            $packageMovingInfo->addMovingPackageData($movingPackageData);
+        }
+
+        $this->dm->flush();
+
+        return $packageMovingInfo;
+    }
+
+    private function getOptimalRoomType(Package $package)
+    {
+        //query Search
+        $query = new SearchQuery();
+
+        $roomTypesByCategory = $package->getRoomType()->getCategory()->getTypes();
+        foreach ($roomTypesByCategory as $roomTypeCategory) {
+            if ($roomTypeCategory->getTotalPlaces() < $countRoom) {
+                $query->roomTypes[] = $roomTypeCategory->getId();
+            }
+        }
+
+        $query->begin = clone $package->getBegin();
+        $query->end = clone $package->getEnd();
+        $query->adults = $package->getAdults();
+        $query->children = $package->getChildren();
+        $query->forceRoomTypes = true;
+
+        $groupedResult = $this->packageSearch->search($query);
+        if (!$groupedResult) {
+            return null;
+        }
+
+        usort($groupedResult, function ($a, $b) {
+            /** @var SearchResult $a */
+            /** @var SearchResult $b */
+            if ($a->getRoomType()->getTotalPlaces() == $b->getRoomType()->getTotalPlaces()) {
+                return 0;
+            }
+            return ($a->getRoomType()->getTotalPlaces() < $b->getRoomType()->getTotalPlaces()) ? -1 : 1;
+        });
+
+        return $groupedResult[0]->getRoomType();
     }
 
     /**
@@ -209,7 +250,8 @@ class PackageZip
      */
     protected function roomTypeByCategories($config)
     {
-        return $this->dm->getRepository('MBHHotelBundle:RoomType')->roomByCategories($config->getHotel(), $this->helper->toIds($config->getCategories()));
+        return $this->dm->getRepository('MBHHotelBundle:RoomType')->roomByCategories($config->getHotel(),
+            $this->helper->toIds($config->getCategories()));
     }
 
     /**
