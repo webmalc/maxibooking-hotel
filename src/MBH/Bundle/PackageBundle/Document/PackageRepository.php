@@ -106,6 +106,8 @@ class PackageRepository extends DocumentRepository
      * @param RoomType|null $roomType
      * @param null $inRooms
      * @param Package|null $exclude
+     * @param int $limit
+     * @param int $skip
      * @return mixed
      */
     public function extendedFetchWithVirtualRooms(
@@ -114,7 +116,9 @@ class PackageRepository extends DocumentRepository
         $sortByBegin = false,
         RoomType $roomType = null,
         $inRooms = null,
-        Package $exclude = null
+        Package $exclude = null,
+        $limit = 0,
+        $skip = 0
     ) {
         $qb = $this->getFetchWithVirtualRoomQB($begin, $end, $roomType, $exclude);
         if (!is_null($inRooms)) {
@@ -123,6 +127,8 @@ class PackageRepository extends DocumentRepository
         if ($sortByBegin) {
             $qb->sort('begin', 'asc');
         }
+
+        $qb->limit($limit)->skip($skip);
 
         return $qb->getQuery()->execute();
     }
@@ -134,7 +140,7 @@ class PackageRepository extends DocumentRepository
      * @param Package|null $exclude
      * @return Builder
      */
-    private function getFetchWithVirtualRoomQB(
+    public function getFetchWithVirtualRoomQB(
         \DateTime $begin,
         \DateTime $end,
         RoomType $roomType = null,
