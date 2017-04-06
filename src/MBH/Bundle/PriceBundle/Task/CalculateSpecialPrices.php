@@ -23,9 +23,9 @@ class CalculateSpecialPrices implements ConsumerInterface
     public function execute(AMQPMessage $msg)
     {
         $message = unserialize($msg->body);
-        $specials = isset($message['specials']) ? $message['specials'] : [];
-        $roomTypes = isset($message['roomTypes']) ? $message['roomTypes'] : [];
-        $this->specialHandler->calculatePrices($specials, $roomTypes);
+        $specialIds = isset($message['specialIds']) ? $message['specialIds'] : [];
+        $roomTypeIds = isset($message['roomTypeIds']) ? $message['roomTypeIds'] : [];
+        $this->specialHandler->calculatePrices($specialIds, $roomTypeIds);
 
         return true;
     }

@@ -27,25 +27,22 @@ class SpecialHandler
     public function __construct(SearchFactory $search, DocumentManager $dm)
     {
         $this->dm = $dm;
-        $this->search = $search->setWithTariffs();
+        $this->search = $search;
     }
 
     /**
-     * @param Special[] $specials
-     * @param RoomType[] $roomTypes
+     * @param array $specialIds
+     * @param array $roomTypeIds
      */
-    public function calculatePrices(array $specials = [], array $roomTypes = [])
+    public function calculatePrices(array $specialIds = [], array $roomTypeIds = [])
     {
         $searchQuery = new SearchQuery();
-        $searchQuery->isOnline = true;
-        count($roomTypes) == 0 ?: $searchQuery->roomTypes = $roomTypes;
-        if (count($specials) == 0) {
-            $searchQuery->begin = new \DateTime('midnight - 10 days');
-            $searchQuery->end = new \DateTime('midnight + 2 year');
-            $specials = $this->search->searchSpecials($searchQuery)->toArray();
-        }
-        $currentDate = new \DateTime('midnight');
 
+        count($roomTypeIds) == 0 ?: $searchQuery->roomTypes = $specialIds;
+        $specials = $this->getSpecials($specialIds);
+
+        $currentDate = new \DateTime('midnight');
+        $searchQuery->isOnline = true;
         /** @var Special $special */
         foreach ($specials as $special) {
             $special->removeAllPrices();
@@ -75,6 +72,23 @@ class SpecialHandler
         }
 
         $this->dm->flush();
+    }
+
+    /**
+     * @param array $specialIds
+     * @return mixed
+     */
+    private function getSpecials(array $specialIds)
+    {
+        $qb = $this->dm->getRepository('MBHPriceBundle:Special')->createQueryBuilder();
+
+        if (count($specialIds) == 0) {
+            $qb->field('displayTo')->gte(new \DateTime('midnight - 10 days'));
+        } else {
+            $qb->field('id')->in($specialIds);
+        }
+
+        return $qb->getQuery()->execute();
     }
 
     /**
@@ -108,11 +122,11 @@ class SpecialHandler
                             ->setRoomType($roomType);
 
                         $special->addPrice($specialPrice);
-                        $this->dm->persist($specialPrice);
-                        $this->dm->flush();
                     }
                 }
             }
         }
+
+        $this->dm->flush();
     }
 }

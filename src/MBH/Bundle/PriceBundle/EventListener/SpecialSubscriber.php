@@ -45,7 +45,7 @@ class SpecialSubscriber implements EventSubscriber
         $specialDoc = $args->getDocument();
         if ($specialDoc instanceof Special) {
             $this->container->get('old_sound_rabbit_mq.task_calculate_special_prices_producer')->publish(serialize([
-                'specials' => [$specialDoc]
+                'specialIds' => [$specialDoc->getId()]
             ]));
         }
     }
