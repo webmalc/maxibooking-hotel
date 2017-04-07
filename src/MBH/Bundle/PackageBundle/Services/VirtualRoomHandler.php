@@ -20,10 +20,12 @@ class VirtualRoomHandler
     private $search;
     /** @var Logger $logger */
     private $logger;
-    /** @var  Translator $translator */
+    /** @var Translator $translator */
     private $translator;
 
-    public function __construct(DocumentManager $dm, Search $search, Logger $logger, TranslatorInterface $translator)
+    const HANDLED_PACKAGES_LIMIT = 100;
+
+    public function __construct(DocumentManager $dm, Search $search, Logger $logger, Translator $translator)
     {
         $this->dm = $dm;
         $this->search = $search;
@@ -41,43 +43,52 @@ class VirtualRoomHandler
     public function setVirtualRooms(\DateTime $begin, \DateTime $end)
     {
         $movedPackagesData = [];
-        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
-        $packages = $packageRepository->extendedFetchWithVirtualRooms($begin, $end, true)->toArray();
 
-        $sortedPackages = $this->sortPackagesByRoomTypeAndVirtualRoom($packages);
-        $emptyIntervals = $this->getEmptyIntervals($sortedPackages);
-        $this->logEmptyIntervalsData($emptyIntervals);
+        $packagesCount = $this->getHandledPackagesCount($begin, $end);
 
-        /** @var Package $package */
-        foreach ($packages as $package) {
-            $packageDatesString = $this->getPackageIntervalString($package->getBegin(), $package->getEnd());
-            if (isset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString])
-                && !$this->hasBothSideNeighbors($package)
-            ) {
-                /** @var Room $virtualRoomWithWindow */
-                $virtualRoomWithWindow = $emptyIntervals[$package->getRoomType()->getId()][$packageDatesString];
-                if ($this->hasSufficientWindows($package, $virtualRoomWithWindow)) {
-                    $this->addPackageMovingData($package, $package->getVirtualRoom(), $movedPackagesData);
-                    $package->setVirtualRoom($virtualRoomWithWindow);
-                    $this->dm->flush();
-                    unset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString]);
+        for ($i = 0; $i <= ceil($packagesCount / self::HANDLED_PACKAGES_LIMIT); $i++) {
+            $packages = $this->getLimitPackages($begin, $end, self::HANDLED_PACKAGES_LIMIT,
+                $i * self::HANDLED_PACKAGES_LIMIT);
 
-                    $this->logger->info(
-                        "For package \"{$package->getTitle()}\" set virtual room \"{$package->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\" in empty interval"
-                    );
+            $sortedPackages = $this->sortPackagesByRoomTypeAndVirtualRoom($packages);
+            $emptyIntervals = $this->getEmptyIntervals($sortedPackages);
+            $this->logEmptyIntervalsData($emptyIntervals);
+
+            /** @var Package $package */
+            foreach ($packages as $package) {
+                $packageDatesString = $this->getPackageIntervalString($package->getBegin(), $package->getEnd());
+                if (isset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString])
+                    && !$this->hasBothSideNeighbors($package)
+                ) {
+                    /** @var Room $virtualRoomWithWindow */
+                    $virtualRoomWithWindow = $emptyIntervals[$package->getRoomType()->getId()][$packageDatesString];
+                    if ($this->hasSufficientWindows($package, $virtualRoomWithWindow)) {
+                        $this->addPackageMovingData($package, $package->getVirtualRoom(), $movedPackagesData);
+                        $package->setVirtualRoom($virtualRoomWithWindow);
+                        $this->dm->flush();
+                        unset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString]);
+
+                        $this->logger->info(
+                            "For package \"{$package->getTitle()}\" set virtual room \"{$package->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\" in empty interval"
+                        );
+                    }
                 }
             }
-        }
 
-        $packagesWithoutVRoom = $packageRepository->getNotVirtualRoom($begin, $end);
-        foreach ($packagesWithoutVRoom as $package) {
-            $this->setVirtualRoom($package, $movedPackagesData);
-        }
-
-        foreach ($packages as $package) {
-            if (!$this->hasNeighboringPackages($package, $sortedPackages)) {
+            $packagesWithoutVRoom = $this->dm
+                ->getRepository('MBHPackageBundle:Package')
+                ->getNotVirtualRoom($begin, $end);
+            foreach ($packagesWithoutVRoom as $package) {
                 $this->setVirtualRoom($package, $movedPackagesData);
             }
+
+            foreach ($packages as $package) {
+                if (!$this->hasNeighboringPackages($package, $sortedPackages)) {
+                    $this->setVirtualRoom($package, $movedPackagesData);
+                }
+            }
+            $this->dm->clear();
+            $this->dm->flush();
         }
 
         return $movedPackagesData;
@@ -94,6 +105,29 @@ class VirtualRoomHandler
             'package' => $package,
             'oldVirtualRoom' => $oldVirtualRoom
         ];
+    }
+
+    private function getHandledPackagesCount($begin, $end)
+    {
+        return $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->getFetchWithVirtualRoomQB($begin, $end)
+            ->getQuery()
+            ->count();
+    }
+
+    private function getLimitPackages($begin, $end, $limit, $skip)
+    {
+        return $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->extendedFetchWithVirtualRooms($begin,
+                $end,
+                true,
+                null,
+                null,
+                null,
+                $limit,
+                $skip);
     }
 
     /**
