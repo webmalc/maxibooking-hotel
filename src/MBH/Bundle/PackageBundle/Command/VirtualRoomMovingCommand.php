@@ -3,8 +3,6 @@
 namespace MBH\Bundle\PackageBundle\Command;
 
 use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\HotelBundle\Document\Room;
-use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -37,7 +35,7 @@ class VirtualRoomMovingCommand extends ContainerAwareCommand
         $movedPackagesData = $virtualRoomHandler->setVirtualRooms($beginDate, $endDate);
         $output->writeln('Completed');
 
-//        $this->sendMessage($movedPackagesData);
+        $this->sendMessage($movedPackagesData);
     }
 
     private function sendMessage($movedPackagesData)
