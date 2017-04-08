@@ -23,6 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="document.already.exists")
+ * @MongoDBUnique(fields={"begin", "end", "virtualRoom"}, message="document.already.virtualRoom.exists")
  * @ODM\HasLifecycleCallbacks
  * @MBHAssert\Range(firstProperty="begin", secondProperty="end", message="special.dates.error")
  * @MBHAssert\Range(firstProperty="displayFrom", secondProperty="displayTo", message="special.displayDates.error")

@@ -77,7 +77,8 @@ class SpecialDataPreparer
             'prices' => $specialPrice->getPrices(),
             'specialId' => $special->getId(),
             'roomTypeId' => $roomType->getId(),
-            'roomCategoryId' => $roomType->getCategory()->getId()
+            'roomCategoryId' => $roomType->getCategory()->getId(),
+            /*'virtualRoomId' => $special->getVirtualRoom()->getId()*/
         ];
 
         return $result;
