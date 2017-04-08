@@ -12,6 +12,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\BaseBundle\Validator\Constraints as MBHAssert;
@@ -161,6 +162,13 @@ class Special extends Base
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      */
     protected $roomTypes;
+
+    /**
+     * @var Room
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
+     */
+    protected $virtualRoom;
+
 
     /**
      * @var \DateTime
@@ -681,6 +689,25 @@ class Special extends Base
     public function setNoRecalculation()
     {
         $this->recalculation = false;
+
+        return $this;
+    }
+
+    /**
+     * @return Room
+     */
+    public function getVirtualRoom(): ?Room
+    {
+        return $this->virtualRoom;
+    }
+
+    /**
+     * @param Room $virtualRoom
+     * @return $this
+     */
+    public function setVirtualRoom(Room $virtualRoom)
+    {
+        $this->virtualRoom = $virtualRoom;
 
         return $this;
     }
