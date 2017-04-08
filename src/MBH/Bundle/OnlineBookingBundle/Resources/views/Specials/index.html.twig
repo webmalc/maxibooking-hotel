@@ -1,38 +1,69 @@
-{{ dump(specials) }}
-<table>
-    <thead>
-    <tr>
-    <th>Отель/Тип номера</th>
-    <th>Даты</th>
-    <th>Скидка</th>
-    <th>Кол-во человек</th>
-    <th>Цена</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for special in specials %}
-            <tr>
-                <td>
-                    <p>{{ special.image }}</p>
-                    <p>{{ special.hotelName }}</p>
-                    <p>{{ special.roomTypeName }}</p>
-                    <p>{{ special.eat }}</p>
-                </td>
-                <td>
-                    {#<p>{{ special.dates.begin }} - {{ special.dates.end }}</p>#}
-                    <p>{{ special.dates.days }} - {{ special.dates.nights }}</p>
-                </td>
-                <td>
-                    <p>{{ special.discount }}</p>
-                </td>
-                <td>
-                    {#<p>{{ special.peoples }}</p>#}
-                </td>
-                <td>
-                    {#<p>{{ special.prices.new }}</p>#}
-                    {#<p>{{ special.prices.old }}</p>#}
-                </td>
-            </tr>
-    {% endfor %}
-    </tbody>
-</table>
+{% for special in specials %}
+<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/special_page.css')) }}">
+<div class="oneblockspec"
+     data-discount="{{ special.discount }}"
+     data-specialid="{{ special.specialId }}"
+     data-roomcategoryid="{{ special.roomCategoryId }}"
+     data-roomtypeid="{{ special.roomTypeId }}"
+     data-hotelid="{{ special.hotelId }}"
+>
+    <div class="spec-img">
+        <div class="main-img"style="background:url('{{ absolute_url(asset(special.images|first)) }}')no-repeat;background-size:cover;">
+            <p class="special-strip"> - {{ special.discount }}{{ (special.isPercent)?'%':'руб' }}</p>
+        </div>
+        <div class="hotel-thumb">
+            <div class="row-no-indent">
+                {% for image in special.images%}
+                    {% if not loop.first %}
+                        <div class="col-md-4"><img src="{{ absolute_url(asset(image)) }}" alt=""></div>
+                    {% endif %}
+                {% endfor %}
+
+                <div class="clear"></div>
+            </div>
+            <div class="clear"></div>
+            <p class="food"><img src="http://azovsky.ru/images/specnew/spoon.png" alt="">  <a href="http://azovsky.ru/shvedskiy-stol/" title="Шведский стол">3-раз. питание шведский стол</a></p>
+        </div>
+    </div>
+
+    <div class="spec-info">
+
+        <p class="hotel">{{ special.hotelName }}</p>
+        <p class="room">{{ special.roomTypeName }}</p>
+        <p class="food"><img src="http://azovsky.ru/images/specnew/spoon.png" alt=""> <a href="http://azovsky.ru/shvedskiy-stol/" title="Шведский стол">3-раз. питание шведский стол</a></p>
+    </div>
+    <div class="spec-date">
+        <p
+                class="date"
+                data-begin="{{ special.dates.begin|date('d.m.Y') }}"
+                data-end ="{{  special.dates.end|date('d.m.Y') }}"
+        >{{ special.dates.begin|date('d.m.y') }}-{{ special.dates.end|date('d.m.y') }}</p>
+        <p class="daynight">{{ special.dates.days }} {{ 'days'|transchoice(special.dates.days) }}/ {{ special.dates.nights }}{{ 'nights'|transchoice(special.dates.nights) }}</p>
+        <select class="capacity_choice">
+            {% for capacity, price in special.prices %}
+                {% set capacityValue = capacity|split('_') %}
+                {% set adults, children = capacityValue|first, capacityValue|last %}
+            <option
+                    data-price="{{ price|round }}"
+                    data-adults="{{ adults }}"
+                    data-children="{{ children }}"
+            >
+                {{ adults }} взр. {{ children ? '+' ~children~ ' ' ~ 'children'|transchoice(children):'' }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="spec-price">
+        <p><span class="spec_new_price"></span> p.</p>
+        <p class="crossout"><span class="spec_old_price"></span> p.</p>
+        <div class="clear"></div>
+        <form class="spec_form" action="/mbresults.php" method="GET">
+            <input type="submit" value="Бронирую">
+        </form>
+
+    </div>
+    <div class="clear"></div>
+
+</div>
+{% endfor %}
+<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/specials.js')) }}"></script>

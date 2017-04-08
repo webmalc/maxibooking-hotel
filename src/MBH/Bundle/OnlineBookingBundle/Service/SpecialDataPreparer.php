@@ -7,12 +7,16 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
+use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\SpecialDataPreparerExeption;
 use MBH\Bundle\PriceBundle\Document\Special;
+use MBH\Bundle\PriceBundle\Document\SpecialPrice;
 
 class SpecialDataPreparer
 {
 
     const NO_IMAGE_PATH = 'noimage.png';
+
+    const ONLY_DEFAULT_TARIFF = true;
 
     /** @var  DocumentManager */
     private $dm;
@@ -30,60 +34,79 @@ class SpecialDataPreparer
     {
         $result = [];
         foreach ($specials as $special) {
-            if (!$special instanceof Special) {
+            if (!($special instanceof Special) || !count($special->getRoomTypes()) || $special->isRecalculation()) {
                 continue;
             }
-            $this->mustHaveRoomTypes($special);
-            $result = array_merge($this->prepareDataToTwig($special));
-        }
+            foreach ($special->getPrices() as $specialPrice) {
+                $isDefaultTariff = $specialPrice->getTariff()->getIsDefault();
+                if (self::ONLY_DEFAULT_TARIFF && !$isDefaultTariff ) {
+                    continue;
+                }
 
-        return $result;
-    }
-
-    private function mustHaveRoomTypes(Special $special): void
-    {
-        if (count($special->getRoomTypes()) == 0) {
-            $hotel = $special->getHotel();
-            $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel)->toArray();
-            foreach ($roomTypes as $roomType) {
-                $special->addRoomType($roomType);
+                $result[] = $this->prepareDataToTwig($specialPrice, $special);
             }
         }
-    }
-
-    private function prepareDataToTwig(Special $special): array
-    {
-        $result = [];
-        foreach ($special->getRoomTypes() as $roomType) {
-            /** @var RoomType $roomType */
-            $result[] = [
-                'image' => $this->getImage($roomType),
-                'hotelName' => $roomType->getHotel()->getName(),
-                'roomTypeName' => $roomType->getName(),
-                'eat' => '',
-                'dates' => [
-                    'begin' => $special->getBegin(),
-                    'end' => $special->getEnd(),
-                    'days' => $special->getDays(),
-                    'nights' => $special->getNights(),
-                ],
-                'discount' => $special->getDiscount(),
-                'prices' => $special->getPrices()
-            ];
-        }
 
         return $result;
     }
 
-    private function getImage(RoomType $roomType): ?string
+    private function prepareDataToTwig(SpecialPrice $specialPrice, Special $special): array
+    {
+        /** @var SpecialPrice $specPrice */
+        $roomType = $specialPrice->getRoomType();
+        $tariff = $specialPrice->getTariff();
+
+
+        $result = [
+            'special' => $special,
+            'roomType' => $roomType,
+            'tariff' => $tariff,
+            'hotelId' => $roomType->getHotel()->getId(),
+            'images' => $this->getImage($roomType),
+            'hotelName' => $roomType->getHotel()->getName(),
+            'roomTypeName' => $roomType->getName(),
+            'eat' => '',
+            'dates' => [
+                'begin' => $special->getBegin(),
+                'end' => $special->getEnd(),
+                'days' => $special->getDays(),
+                'nights' => $special->getNights(),
+            ],
+            'discount' => $special->getDiscount(),
+            'isPercent' => $special->isIsPercent(),
+            'prices' => $specialPrice->getPrices(),
+            'specialId' => $special->getId(),
+            'roomTypeId' => $roomType->getId(),
+            'roomCategoryId' => $roomType->getCategory()->getId()
+        ];
+
+        return $result;
+    }
+
+    private function getPrices(array $prices): array
+    {
+        $result = [];
+        foreach ($prices as $priceKey => $price) {
+            $result[$priceKey] = $price['total'];
+        }
+
+        return $result;
+    }
+    private function getImage(RoomType $roomType): array
     {
         $roomImage = $roomType->getMainImage()??$roomType->getImages()->first()??null;
         $hotelImage = $roomType->getHotel()->getImages()->first()??null;
-        $image = $roomImage??$hotelImage;
-        if ($image instanceof Image || $image instanceof RoomTypeImage) {
-            $result = $image->getPath();
+        $mainImage = $roomImage??$hotelImage;
+        if ($mainImage instanceof Image || $mainImage instanceof RoomTypeImage) {
+            $result[] = $mainImage->getPath();
         } else {
             $result = self::NO_IMAGE_PATH;
+        }
+
+        foreach ($roomType->getImages() as $image) {
+            if (!$image->getIsMain()) {
+                $result[] = $image->getPath();
+            }
         }
 
         return $result;

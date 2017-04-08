@@ -259,7 +259,6 @@
         }
     };
     RoomTypeRow.prototype.reBuildHref = function () {
-        console.log('rebuild href');
         var href = this.selectedTariffRow.bookingHref;
         var form_href = '&' + $("form#search-form").serialize();
         href = href + form_href;

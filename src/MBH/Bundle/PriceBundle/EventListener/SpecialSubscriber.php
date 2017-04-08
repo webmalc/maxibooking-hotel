@@ -5,16 +5,17 @@ namespace MBH\Bundle\PriceBundle\EventListener;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\Common\EventSubscriber;
 use MBH\Bundle\PriceBundle\Document\Special;
+use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SpecialSubscriber implements EventSubscriber
 {
-    /** @var  ContainerInterface $container */
-    private $container;
 
-    public function __construct(ContainerInterface $container)
+    private $producer;
+
+    public function __construct(Producer $producer)
     {
-        $this->container = $container;
+        $this->producer = $producer;
     }
 
     /**
@@ -32,21 +33,25 @@ class SpecialSubscriber implements EventSubscriber
 
     public function postUpdate(LifecycleEventArgs $args)
     {
-        $this->recalculateSpecialPrices($args);
+        if ($args->getDocument() instanceof Special) {
+            $special = $args->getDocument();
+            $dm = $args->getDocumentManager();
+            $uow = $dm->getUnitOfWork();
+            $changeSet = $uow->getDocumentChangeSet($special);
+            $isChangePrices = (bool) ($changeSet['prices']??null);
+            $isChangeRecalculation = (bool) ($changeSet['recalculation']??null);
+
+            if (!$isChangePrices && !$isChangeRecalculation) {
+                $this->producer->publish( json_encode( [ 'specialIds' => $args->getDocument()->getId()]));
+            }
+        }
     }
 
     public function postPersist(LifecycleEventArgs $args)
     {
-        $this->recalculateSpecialPrices($args);
-    }
-
-    private function recalculateSpecialPrices(LifecycleEventArgs $args)
-    {
-        $specialDoc = $args->getDocument();
-        if ($specialDoc instanceof Special) {
-            $this->container->get('old_sound_rabbit_mq.task_calculate_special_prices_producer')->publish(serialize([
-                'specialIds' => [$specialDoc->getId()]
-            ]));
+        if ($args->getDocument() instanceof Special) {
+            $this->producer->publish( json_encode( [ 'specialIds' => $args->getDocument()->getId()]));
         }
     }
+
 }

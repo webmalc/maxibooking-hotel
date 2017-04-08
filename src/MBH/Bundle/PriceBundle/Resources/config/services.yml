@@ -18,7 +18,7 @@ services:
 
   mbh.special.subscriber:
       class: MBH\Bundle\PriceBundle\EventListener\SpecialSubscriber
-      arguments: ['@service_container']
+      arguments: ['@old_sound_rabbit_mq.task_calculate_special_prices_producer']
       tags:
         - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
@@ -44,7 +44,7 @@ services:
 
   mbh.special_handler:
     class: MBH\Bundle\PriceBundle\Services\SpecialHandler
-    arguments: ['@mbh.package.search', '@doctrine_mongodb.odm.document_manager']
+    arguments: ['@mbh.package.search', '@doctrine_mongodb.odm.document_manager', '@mbh.helper', '@mbh.calculation']
 
   mbh.type.special:
       class:      MBH\Bundle\PriceBundle\Form\SpecialType

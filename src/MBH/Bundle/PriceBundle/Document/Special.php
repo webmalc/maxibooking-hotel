@@ -210,6 +210,17 @@ class Special extends Base
      */
     protected $prices;
 
+    /**
+     * @var bool
+     * @ODM\Field(type="boolean")
+     * @Assert\NotNull()
+     */
+    protected $recalculation = false;
+
+
+    /**
+     * Special constructor.
+     */
     public function __construct()
     {
         $this->tariffs = new ArrayCollection();
@@ -628,4 +639,51 @@ class Special extends Base
 
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getDays()
+    {
+        return $this->getNights() + 1;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNights()
+    {
+        return $this->end->diff($this->begin)->format("%a");
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRecalculation(): bool
+    {
+        return $this->recalculation;
+    }
+
+
+    /**
+     * @return $this
+     */
+    public function setRecalculation()
+    {
+        $this->recalculation = true;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setNoRecalculation()
+    {
+        $this->recalculation = false;
+
+        return $this;
+    }
+
+
 }

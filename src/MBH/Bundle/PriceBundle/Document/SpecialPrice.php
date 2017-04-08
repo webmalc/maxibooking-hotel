@@ -14,24 +14,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SpecialPrice
 {
     /**
-     * @var float
-     * @ODM\Field(type="float")
-     */
-    protected $price;
-
-    /**
-     * @var int
-     * @ODM\Field(type="int")
-     */
-    protected $childrenCount;
-
-    /**
-     * @var int
-     * @ODM\Field(type="int")
-     */
-    protected $adultsCount;
-
-    /**
      * @var Tariff
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      */
@@ -42,6 +24,20 @@ class SpecialPrice
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      */
     protected $roomType;
+
+    /**
+     * @var array
+     * @ODM\Field(type="hash")
+     */
+    protected $prices;
+
+    /**
+     * @var array
+     * @ODM\Field(type="hash")
+     */
+    protected $pricesByDay;
+
+
 
     /**
      * @return Tariff
@@ -58,63 +54,6 @@ class SpecialPrice
     public function setTariff(Tariff $tariff): SpecialPrice
     {
         $this->tariff = $tariff;
-
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPrice()
-    {
-        return $this->price;
-    }
-
-    /**
-     * @param mixed $price
-     * @return SpecialPrice
-     */
-    public function setPrice($price): SpecialPrice
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getChildrenCount()
-    {
-        return $this->childrenCount;
-    }
-
-    /**
-     * @param mixed $childrenCount
-     * @return SpecialPrice
-     */
-    public function setChildrenCount($childrenCount): SpecialPrice
-    {
-        $this->childrenCount = $childrenCount;
-
-        return $this;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getAdultsCount()
-    {
-        return $this->adultsCount;
-    }
-
-    /**
-     * @param mixed $adultsCount
-     * @return SpecialPrice
-     */
-    public function setAdultsCount($adultsCount): SpecialPrice
-    {
-        $this->adultsCount = $adultsCount;
 
         return $this;
     }
@@ -137,4 +76,44 @@ class SpecialPrice
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getPrices(): ?array
+    {
+        return $this->prices;
+    }
+
+    /**
+     * @param array $prices
+     * @return $this
+     */
+    public function setPrices(array $prices)
+    {
+        $this->prices = $prices;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPricesByDay(): ?array
+    {
+        return $this->pricesByDay;
+    }
+
+    /**
+     * @param array $pricesByDay
+     * @return $this
+     */
+    public function setPricesByDay(array $pricesByDay)
+    {
+        $this->pricesByDay = $pricesByDay;
+
+        return $this;
+    }
+
+
 }
