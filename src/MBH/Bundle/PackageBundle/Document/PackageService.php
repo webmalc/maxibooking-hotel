@@ -170,13 +170,13 @@ class PackageService extends Base
     public function getActuallyAmount()
     {
         $type = $this->getService()->getCalcType();
-        if($type == 'per_stay') {
+        if ($type == 'per_stay') {
             return $this->getAmount() * $this->getPersons();
         }
-        if($type == 'per_night') {
+        if ($type == 'per_night') {
             return $this->getPersons() * $this->getNights() * $this->getAmount();
         }
-        if($type == 'not_applicable' or $type == 'day_percent') {
+        if ($type == 'not_applicable' or $type == 'day_percent') {
             return $this->getAmount();
         }
 
@@ -287,7 +287,6 @@ class PackageService extends Base
         }
 
         return $result;
-
     }
 
     public function getCalcType()
@@ -413,24 +412,39 @@ class PackageService extends Base
     public function setDefaults()
     {
         $service  = $this->getService();
-        if ($service->getCalcType() == 'per_stay') {
+        $calcType = $service->getCalcType();
+
+        if ($calcType == 'per_stay') {
             $this->setNights(1);
         }
-        if (in_array($service->getCalcType(),  ['not_applicable', 'day_percent'])) {
+
+        if (in_array($calcType, ['not_applicable', 'day_percent'])) {
             $this->setNights(1);
             $this->setPersons(1);
         }
-        if (!$this->getBegin() || !$service->getDate()) {
-            $this->setBegin($this->getPackage()->getBegin());
-        }
+
+
         if (!$service->getTime()) {
             $this->setTime(null);
         }
-        $end = clone $this->getBegin();
-        if (!$service->getDate()) {
-            $end->modify('+' . $this->getNights() . ' days');
+
+        if ($calcType != 'per_stay') {
+            if (!$this->getBegin() || !$service->getDate()) {
+                $this->setBegin($this->getPackage()->getBegin());
+            }
+            $end = clone $this->getBegin();
+            if (!$service->getDate()) {
+                $end->modify('+' . $this->getNights() . ' days');
+            }
+            $this->setEnd($end);
+        } else {
+            if (!$this->getBegin()) {
+                $this->setBegin($this->getPackage()->getBegin());
+            }
+            if (!$this->getEnd()) {
+                $this->setEnd($this->getPackage()->getEnd());
+            }
         }
-        $this->setEnd($end);
 
         $this->total = $this->calcTotal();
     }
@@ -541,5 +555,4 @@ class PackageService extends Base
     {
         return $this->service->getName();
     }
-
 }

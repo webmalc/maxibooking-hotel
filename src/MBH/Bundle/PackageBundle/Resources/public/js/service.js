@@ -15,6 +15,8 @@ var docReadyServices = function () {
             personsDiv = personsInput.closest('div.form-group'),
             dateInput = $('#mbh_bundle_packagebundle_package_service_type_begin'),
             dateDiv = dateInput.closest('div.form-group'),
+            endInput = $('#mbh_bundle_packagebundle_package_service_type_end'),
+            endDiv = endInput.closest('div.form-group'),
             dateDefault = dateInput.val(),
             serviceInput = $('#mbh_bundle_packagebundle_package_service_type_service'),
             serviceHelp = serviceInput.next('span.help-block'),
@@ -26,6 +28,7 @@ var docReadyServices = function () {
                 nightsDiv.hide();
                 personsDiv.hide();
                 dateDiv.hide();
+                endDiv.hide();
                 timeDiv.hide();
                 dateInput.val(dateInput.val() || dateDefault);
                 personsInput.val(personsInput.val() || 1);
@@ -62,7 +65,11 @@ var docReadyServices = function () {
                 if (info.time) {
                     timeDiv.show();
                 }
-
+                if (info.calcType === 'per_stay') {
+                   dateDiv.show();
+                   endDiv.show();
+                }
+                
                 var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' за 1 человека ' : ' ';
 
                 if (info.calcType !== 'day_percent') {

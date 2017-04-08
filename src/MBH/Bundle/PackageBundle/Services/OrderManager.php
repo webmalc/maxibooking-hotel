@@ -62,8 +62,7 @@ class OrderManager
         }
 
         //check changes
-        if (
-            $old->getBegin() == $new->getBegin() &&
+        if ($old->getBegin() == $new->getBegin() &&
             $old->getEnd() == $new->getEnd() &&
             $old->getRoomType()->getId() == $new->getRoomType()->getId() &&
             $old->getAdults() == $new->getAdults() &&
@@ -124,11 +123,18 @@ class OrderManager
         if (count($results) == 1) {
             //recalculate cache
             $this->container->get('mbh.room.cache')->recalculate(
-                $old->getBegin(), $oldEnd, $old->getRoomType(), $old->getTariff(), false
+                $old->getBegin(),
+                $oldEnd,
+                $old->getRoomType(),
+                $old->getTariff(),
+                false
             );
             $end = clone $new->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
-                $new->getBegin(), $end->modify('-1 day'), $new->getRoomType(), $new->getTariff()
+                $new->getBegin(),
+                $end->modify('-1 day'),
+                $new->getRoomType(),
+                $new->getTariff()
             );
 
             $new->setPrice($results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren()))
@@ -136,7 +142,13 @@ class OrderManager
                 ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
                 ->setVirtualRoom($results[0]->getVirtualRoom())
             ;
-
+            // Move services
+            foreach ($new->getSpecials() as $special) {
+                if ($special->getBegin() != $new->getBegin()) {
+                    $special->setBegin(null);
+                }
+                // TODO complete
+            }
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
             return $new;
@@ -266,14 +278,17 @@ class OrderManager
             !$data['children'] === null ||
             !$data['roomType']
         ) {
-            throw new PackageCreationException($order,
-                'Create package error: $data["begin"] || $data["end"] || $data["adults"] || $data["children"] || $data["roomType"] is empty.');
+            throw new PackageCreationException(
+                $order,
+                'Create package error: $data["begin"] || $data["end"] || $data["adults"] || $data["children"] || $data["roomType"] is empty.'
+            );
         }
 
         //search for packages
         $query = new SearchQuery();
         $query->begin = $this->helper->getDateFromString($data['begin']);
-        $query->end = $this->helper->getDateFromString($data['end']);;
+        $query->end = $this->helper->getDateFromString($data['end']);
+        ;
         $query->adults = (int)$data['adults'];
         $query->children = (int)$data['children'];
         $query->tariff = !empty($data['tariff']) ? $data['tariff'] : null;
@@ -291,8 +306,10 @@ class OrderManager
         $results = $this->container->get('mbh.package.search')->search($query);
 
         if (count($results) != 1) {
-            throw new PackageCreationException($order,
-                'Create package error: invalid search results: ' . count($results));
+            throw new PackageCreationException(
+                $order,
+                'Create package error: invalid search results: ' . count($results)
+            );
         }
 
         if ($user && !$this->container->get('mbh.hotel.selector')->checkPermissions($results[0]->getRoomType()->getHotel())) {
@@ -315,8 +332,10 @@ class OrderManager
             ->setOrder($order)
             ->setVirtualRoom($results[0]->getVirtualRoom())
             ->setPrice(
-                (isset($data['price'])) ? (int)$data['price'] : $results[0]->getPrice($results[0]->getAdults(),
-                    $results[0]->getChildren())
+                (isset($data['price'])) ? (int)$data['price'] : $results[0]->getPrice(
+                    $results[0]->getAdults(),
+                    $results[0]->getChildren()
+                )
             )
             ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
             ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
@@ -359,7 +378,6 @@ class OrderManager
         }
 
         foreach ($package->getTariff()->getDefaultServices() as $tariffService) {
-
             if (!$tariffService->getService() || !$tariffService->getAmount()) {
                 continue;
             }
@@ -470,7 +488,6 @@ class OrderManager
                 $this->dm->persist($infantService);
                 $this->dm->flush();
             }
-
         }
 
         return $package;
@@ -498,7 +515,6 @@ class OrderManager
             //find package
             foreach ($order->getPackages() as $package) {
                 if ($package->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
-
                     $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($package->getId());
 
                     $packageService = new PackageService();
@@ -535,6 +551,4 @@ class PackageCreationException extends Exception
         $this->order = $order;
         parent::__construct($message, $code, $previous);
     }
-
-
 }
