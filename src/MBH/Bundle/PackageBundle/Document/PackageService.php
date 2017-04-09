@@ -9,10 +9,12 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 
 /**
  * @ODM\Document(collection="PackageService")
  * @Gedmo\Loggable
+ * @MBHValidator\PackageService
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */

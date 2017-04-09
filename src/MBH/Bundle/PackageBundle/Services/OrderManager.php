@@ -47,6 +47,8 @@ class OrderManager
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->helper = $container->get('mbh.helper');
         $this->validator = $container->get('validator');
+        $this->flashBag = $container->get('session')
+            ->getFlashBag();
     }
 
 
@@ -159,13 +161,16 @@ class OrderManager
      */
     private function recalculateServices(Package $package): Package
     {
+        $services = $package->getServices();
         // Move services
-        foreach ($package->getServices() as $service) {
+        foreach ($services as $service) {
             $service->setBegin(null)->setEnd(null);
             $this->dm->persist($service);
         }
         $this->dm->flush();
-
+        if (count($services)) {
+            $this->flashBag->add('warning', 'controller.packageController.record_edited_success_services');
+        }
         return $package;
     }
 

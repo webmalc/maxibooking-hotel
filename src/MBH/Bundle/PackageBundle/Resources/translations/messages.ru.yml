@@ -492,3 +492,4 @@ modal.form.delete.reasons.reason: Причина удаления
 modal.form.delete.delete_reason_package: Причина удаления брони
 
 windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'
+controller.packageController.record_edited_success_services: 'Даты услуг измены вместе с бронью' 
