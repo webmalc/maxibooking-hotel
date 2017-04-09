@@ -1,0 +1,14 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+
+{% block subject %}
+    <div>
+        <p>
+            {{ 'mailer.package_moving.content'| trans({
+                '%begin%' : movingInfo.begin|date('d.m.Y'),
+                '%end%' : movingInfo.end|date('d.m.Y'),
+                '%runningBy%': movingInfo.runningBy.fullName,
+                '%startAt%' : movingInfo.startAt|date('d.m.Y H:i')
+            }) }}
+        </p>
+    </div>
+{% endblock %}

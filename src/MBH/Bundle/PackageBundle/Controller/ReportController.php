@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageMovingInfo;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -67,6 +68,27 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'error' => $generator->getError(),
             'notVirtualRooms' => $notVirtualRooms
         ];
+    }
+
+    /**
+     * Start packaging command
+     *
+     * @Route("/windows/packaging", name="windows_packaging", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_WINDOWS_PACKAGING')")
+     * @return JsonResponse
+     */
+    public function callPackagingAction()
+    {
+        $kernel = $this->get('kernel');
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+        $input = new ArrayInput([
+            'command' => 'mbh:virtual_rooms:move'
+        ]);
+        $application->run($input);
+
+        return new JsonResponse(['success' => true]);
     }
 
     /**
@@ -1006,5 +1028,73 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
+    }
+
+    /**
+     * @Route("/package_moving", name="package_moving")
+     * @Template()
+     * @param Request $request
+     * @return array
+     */
+    public function packageMovingAction(Request $request)
+    {
+        $packageMovingInfo = $this->dm
+            ->getRepository('MBHPackageBundle:PackageMovingInfo')
+            ->findOneBy(['isClosed' => false]);
+
+        if ($request->isMethod('POST') && is_null($packageMovingInfo)) {
+            $helper = $this->get('mbh.helper');
+            $user = $this->getUser();
+            $begin = $helper->getDateFromString($request->request->get('begin'));
+            $end = $helper->getDateFromString($request->request->get('end'));
+            $roomTypeIds = $request->request->get('roomType');
+
+            $packageMovingInfo = (new PackageMovingInfo())
+                ->setRunningBy($user)
+                ->setStartAt(new \DateTime())
+                ->setBegin($begin)
+                ->setEnd($end);
+
+            foreach ($roomTypeIds as $roomTypeId) {
+                $packageMovingInfo->addRoomTypeId($roomTypeId);
+            }
+
+            $this->dm->persist($packageMovingInfo);
+            $this->dm->flush();
+
+            $this->container->get('old_sound_rabbit_mq.task_prepare_package_moving_report_producer')
+                ->publish(
+                    serialize(
+                        [
+                            'packageMovingInfoId' => $packageMovingInfo->getId()
+                        ]
+                    )
+                );
+        }
+
+        return [
+            'roomTypes' => $this->hotel->getRoomTypes(),
+            'movingInfo' => $packageMovingInfo,
+        ];
+    }
+
+    /**
+     * @ParamConverter("packageMovingInfo", class="PackageBundle:PackageMovingInfo", options={"id" = "movingInfoId"})
+     * @Route("package_move/{movingInfoId}/{movingPackageId}", name="package_move", options={"expose" = true})
+     * @param PackageMovingInfo $packageMovingInfo
+     * @param $movingPackageId
+     * @return JsonResponse
+     */
+    public function movePackageAction(PackageMovingInfo $packageMovingInfo, $movingPackageId)
+    {
+        $isSuccess = true;
+        $movingPackageData = $packageMovingInfo->getMovingPackageDataById($movingPackageId);
+        if (is_null($movingPackageData)) {
+            $isSuccess = false;
+        } else {
+
+        }
+
+        return new JsonResponse(['success' => $isSuccess]);
     }
 }

@@ -110,24 +110,24 @@ class PackageZip
                             $oldPackage = clone $package;
                             $newPackage = clone $package;
                             $newPackage->setRoomtype($optimalRoomType);
-                        $endDate = clone $package->getEnd();
+                            $endDate = clone $package->getEnd();
 
-                        $result = $this->orderManager->updatePackage($oldPackage, $newPackage);
+                            $result = $this->orderManager->updatePackage($oldPackage, $newPackage);
 
-                        if ($result instanceof Package && $package->getRoomType() != $newPackage->getRoomType()) {
+                            if ($result instanceof Package && $package->getRoomType() !== $newPackage->getRoomType()) {
 
-                            $info['amount']++;
-                            $package->setEnd($endDate)
-                                ->setServicesPrice($package->getServicesPrice())
-                                ->setTotalOverwrite($package->getPrice())
-                                ->setRoomtype($groupedResult[0]->getRoomType());
+                                $info['amount']++;
+                                $package->setEnd($endDate)
+                                    ->setServicesPrice($package->getServicesPrice())
+                                    ->setTotalOverwrite($package->getPrice())
+                                    ->setRoomtype($optimalRoomType);
 
-                            $this->dm->persist($package);
+                                $this->dm->persist($package);
 
-                            $beginLog2 = clone $package->getBegin();
-                            $endLog2 = clone $package->getEnd();
-                            $this->logPackage('CHANGED PACKAGE INFO', $beginLog2, $endLog2, $package);
-                        }
+                                $beginLog2 = clone $package->getBegin();
+                                $endLog2 = clone $package->getEnd();
+                                $this->logPackage('CHANGED PACKAGE INFO', $beginLog2, $endLog2, $package);
+                            }
                         }
                     }
                 }
@@ -136,38 +136,51 @@ class PackageZip
 
             } catch (\Exception $e) {
                 $info['error']++;
-                $this->logPackage('ERROR: ' . $e->getMessage(), $package->getBegin(), $package->getEnd(), $package);
+                $this->logPackage('ERROR: '.$e->getMessage(), $package->getBegin(), $package->getEnd(), $package);
             }
 
         }
-        $this->logger->alert('Final TOTAL: ' . $info['amount'] . "\n");
-        $this->logger->alert('Final ERROR: ' . $info['error'] . "\n");
+        $this->logger->alert('Final TOTAL: '.$info['amount']."\n");
+        $this->logger->alert('Final ERROR: '.$info['error']."\n");
         $this->logger->alert('---------END---------');
 
         return $info;
     }
 
     /**
-     * @param Package[] $packages
+     * @param PackageMovingInfo $packageMovingInfo
      * @return PackageMovingInfo
      */
-    public function createPackageMovingInfo(array $packages): PackageMovingInfo
+    public function fillMovingPackageData(PackageMovingInfo $packageMovingInfo): PackageMovingInfo
     {
-        //TODO: Удалять ли предыдущий?
-        $packageMovingInfo = new PackageMovingInfo();
+        $queryBuilder = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->createQueryBuilder()
+            ->field('begin')->lte($packageMovingInfo->getEnd())
+            ->field('end')->gte($packageMovingInfo->getBegin())
+            ->field('roomType.id')->in($packageMovingInfo->getRoomTypeIds());
 
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
-        $packageMovingInfo->setRunningBy($user);
+        $handledPackagesCount = $queryBuilder->getQuery()->count();
+        $packagesPerIteration = 50;
 
-        foreach ($packages as $package) {
-            $optimalRoomType = $this->getOptimalRoomType($package);
-            $movingPackageData = (new MovingPackageData())
-                ->setNewRoomType($optimalRoomType)
-                ->setPackage($package);
-            $packageMovingInfo->addMovingPackageData($movingPackageData);
+        for ($i = 0; $i <= ceil($handledPackagesCount / $packagesPerIteration); $i++) {
+            $packages = $queryBuilder
+                ->skip($packagesPerIteration * $i)
+                ->limit($packagesPerIteration)
+                ->getQuery()
+                ->execute();
+
+            foreach ($packages as $package) {
+                $optimalRoomType = $this->getOptimalRoomType($package);
+                $movingPackageData = (new MovingPackageData())
+                    ->setNewRoomType($optimalRoomType)
+                    ->setPackage($package);
+                $packageMovingInfo->addMovingPackageData($movingPackageData);
+            }
+
+            $this->dm->flush();
+            $this->dm->clear();
         }
-
-        $this->dm->flush();
 
         return $packageMovingInfo;
     }
@@ -176,6 +189,7 @@ class PackageZip
     {
         //query Search
         $query = new SearchQuery();
+        $countRoom = $package->getRoomType()->getTotalPlaces();
 
         $roomTypesByCategory = $package->getRoomType()->getCategory()->getTypes();
         foreach ($roomTypesByCategory as $roomTypeCategory) {
@@ -195,14 +209,18 @@ class PackageZip
             return null;
         }
 
-        usort($groupedResult, function ($a, $b) {
-            /** @var SearchResult $a */
-            /** @var SearchResult $b */
-            if ($a->getRoomType()->getTotalPlaces() == $b->getRoomType()->getTotalPlaces()) {
-                return 0;
+        usort(
+            $groupedResult,
+            function ($a, $b) {
+                /** @var SearchResult $a */
+                /** @var SearchResult $b */
+                if ($a->getRoomType()->getTotalPlaces() == $b->getRoomType()->getTotalPlaces()) {
+                    return 0;
+                }
+
+                return ($a->getRoomType()->getTotalPlaces() < $b->getRoomType()->getTotalPlaces()) ? -1 : 1;
             }
-            return ($a->getRoomType()->getTotalPlaces() < $b->getRoomType()->getTotalPlaces()) ? -1 : 1;
-        });
+        );
 
         return $groupedResult[0]->getRoomType();
     }
@@ -250,8 +268,10 @@ class PackageZip
      */
     protected function roomTypeByCategories($config)
     {
-        return $this->dm->getRepository('MBHHotelBundle:RoomType')->roomByCategories($config->getHotel(),
-            $this->helper->toIds($config->getCategories()));
+        return $this->dm->getRepository('MBHHotelBundle:RoomType')->roomByCategories(
+            $config->getHotel(),
+            $this->helper->toIds($config->getCategories())
+        );
     }
 
     /**
@@ -262,17 +282,20 @@ class PackageZip
      */
     protected function logPackage($message, $begin, $end, $package)
     {
-        $this->logger->info($message, [
-            'Begin' => $begin->format('d-m-Y'),
-            'End' => $end->format('d-m-Y'),
-            'id' => $package->getId(),
-            'RoomType_id' => $package->getRoomType()->getId(),
-            'Tariff_id' => $package->getTariff()->getId(),
-            'CreatedBy' => $package->getCreatedBy(),
-            'NumberWithPrefix' => $package->getNumberWithPrefix(),
-            'Price' => $package->getPrice(),
-            'TotalPrice' => $package->getTotalOverwrite()
-        ]);
+        $this->logger->info(
+            $message,
+            [
+                'Begin' => $begin->format('d-m-Y'),
+                'End' => $end->format('d-m-Y'),
+                'id' => $package->getId(),
+                'RoomType_id' => $package->getRoomType()->getId(),
+                'Tariff_id' => $package->getTariff()->getId(),
+                'CreatedBy' => $package->getCreatedBy(),
+                'NumberWithPrefix' => $package->getNumberWithPrefix(),
+                'Price' => $package->getPrice(),
+                'TotalPrice' => $package->getTotalOverwrite(),
+            ]
+        );
     }
 
 }

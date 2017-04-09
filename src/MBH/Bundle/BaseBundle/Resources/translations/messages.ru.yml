@@ -101,7 +101,7 @@ mailer.online.payment.user: "Ваш платеж по заказу #%order% пр
 mailer.online.payment.subject: "Платеж по заказу #%order%"
 
 mailer.compare.1c.subject: "Отчет сверки остатков 1С"
-mailer.packageZip.subject: "Отчет Автообновления броний"
+mailer.packageZip.subject: "Отчет Автообновления броней"
 mailer.packageZip.text: "Автообновление броней"
 mailer.packageZip.error: "Ошибок"
 mailer.packageZip.amount: "Автообно броней"
@@ -122,7 +122,6 @@ mailer.online.backend.reservation.text: "Поступила новая заяв�
 mailer.online.backend.reservation.client.subject: "Заявка на бронь"
 mailer.online.backend.reservation.client.text: "Спасибо за ваше обращение"
 
-
 mailer.order.confirm.user.subject: "Подтверждение заказа #%order% от %date%"
 mailer.order.confirm.user.prepend: "Здравствуйте, %guest%!<br><br>Ваш заказ был успешно подтвержден службой бронирования."
 mailer.order.confirm.user.append: "Благодарим Вас за выбор нашего отеля!"
@@ -135,6 +134,9 @@ mailer.online.user.poll.prepend: "Здравствуйте, %guest%!<br><br>Мы
 mailer.online.user.poll.append: "Будем рады видеть вас снова!"
 mailer.online.user.poll.link: "Оцените качество обслуживания"
 
+mailer.package_moving.text: Перемещение броней
+mailer.package_moving.subject: Отчет о перемещении броней
+mailer.package_moving.content: 'Сгенерирован отчет о перемещении броней в промежутке между %begin% и %end%. Генерацию запустил(а) "%runningBy%" %startAt%'
 
 # Mailer
 mailer.base.address: Система управления отелем

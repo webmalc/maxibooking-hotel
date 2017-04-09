@@ -13,6 +13,12 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 class MovingPackageData
 {
     /**
+     * @var string
+     * @ODM\Id
+     */
+    protected $id;
+
+    /**
      * @var Package
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Package")
      */
@@ -23,6 +29,25 @@ class MovingPackageData
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      */
     private $newRoomType;
+
+    /**
+     * @return string
+     */
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     * @return MovingPackageData
+     */
+    public function setId(string $id): MovingPackageData
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * @return Package

@@ -28,14 +28,151 @@ class PackageMovingInfo
     protected $runningBy;
 
     /**
+     * @var \DateTime
+     * @ODM\Field(type="datetime")
+     */
+    protected $startAt;
+
+    /**
+     * @var \DateTime
+     * @ODM\Field(type="date")
+     */
+    protected $begin;
+
+    /**
+     * @var \DateTime
+     * @ODM\Field(type="date")
+     */
+    protected $end;
+
+    /**
+     * @var array
+     * @ODM\Field(type="collection")
+     */
+    protected $roomTypeIds;
+
+    /**
      * @var MovingPackageData[]
      * @ODM\EmbedMany(targetDocument="MovingPackageData")
      */
     protected $movingPackagesData;
 
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isClosed = false;
+
     public function __construct()
     {
         $this->movingPackagesData = new ArrayCollection();
+        $this->roomTypeIds = new ArrayCollection();
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsClosed(): ?bool
+    {
+        return $this->isClosed;
+    }
+
+    /**
+     * @param bool $isClosed
+     * @return PackageMovingInfo
+     */
+    public function setIsClosed(bool $isClosed): PackageMovingInfo
+    {
+        $this->isClosed = $isClosed;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getStartAt(): ?\DateTime
+    {
+        return $this->startAt;
+    }
+
+    /**
+     * @param \DateTime $startAt
+     * @return PackageMovingInfo
+     */
+    public function setStartAt(\DateTime $startAt): PackageMovingInfo
+    {
+        $this->startAt = $startAt;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getBegin(): ?\DateTime
+    {
+        return $this->begin;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @return PackageMovingInfo
+     */
+    public function setBegin(\DateTime $begin): PackageMovingInfo
+    {
+        $this->begin = $begin;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEnd(): ?\DateTime
+    {
+        return $this->end;
+    }
+
+    /**
+     * @param \DateTime $end
+     * @return PackageMovingInfo
+     */
+    public function setEnd(\DateTime $end): PackageMovingInfo
+    {
+        $this->end = $end;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoomTypeIds(): ?array
+    {
+        return $this->roomTypeIds;
+    }
+
+    /**
+     * @param $roomTypeId
+     * @return PackageMovingInfo
+     */
+    public function addRoomTypeId($roomTypeId): PackageMovingInfo
+    {
+        $this->roomTypeIds->add($roomTypeId);
+
+        return $this;
+    }
+
+    /**
+     * @param $roomTypeId
+     * @return PackageMovingInfo
+     */
+    public function removeRoomTypeId($roomTypeId): PackageMovingInfo
+    {
+        $this->roomTypeIds->remove($roomTypeId);
+
+        return $this;
     }
 
     /**
@@ -93,5 +230,20 @@ class PackageMovingInfo
         $this->movingPackagesData->add($data);
 
         return $this;
+    }
+
+    /**
+     * @param $id
+     * @return MovingPackageData|null
+     */
+    public function getMovingPackageDataById($id)
+    {
+        foreach ($this->movingPackagesData as $movingPackageData) {
+            if ($movingPackageData->getId() == $id) {
+                return $movingPackageData;
+            }
+        }
+
+        return null;
     }
 }
