@@ -423,7 +423,6 @@ class PackageService extends Base
             $this->setPersons(1);
         }
 
-
         if (!$service->getTime()) {
             $this->setTime(null);
         }

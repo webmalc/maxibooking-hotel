@@ -142,13 +142,7 @@ class OrderManager
                 ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
                 ->setVirtualRoom($results[0]->getVirtualRoom())
             ;
-            // Move services
-            foreach ($new->getSpecials() as $special) {
-                if ($special->getBegin() != $new->getBegin()) {
-                    $special->setBegin(null);
-                }
-                // TODO complete
-            }
+            $new = $this->recalculateServices($new);
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
             return $new;
@@ -156,6 +150,25 @@ class OrderManager
 
         return 'controller.packageController.record_edited_fail';
     }
+    
+    /**
+     * recalculate services while package update
+     *
+     * @param Package $package
+     * @return Package
+     */
+    private function recalculateServices(Package $package): Package
+    {
+        // Move services
+        foreach ($package->getServices() as $service) {
+            $service->setBegin(null)->setEnd(null);
+            $this->dm->persist($service);
+        }
+        $this->dm->flush();
+
+        return $package;
+    }
+
 
     /**
      * @param array $data
