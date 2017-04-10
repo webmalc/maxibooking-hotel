@@ -3,14 +3,12 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\HotelBundle\Document\Room;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Bridge\Monolog\Logger;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\Search;
 use Symfony\Component\Translation\Translator;
-use Symfony\Component\Translation\TranslatorInterface;
 
 class VirtualRoomHandler
 {
@@ -38,17 +36,17 @@ class VirtualRoomHandler
      *
      * @param \DateTime $begin
      * @param \DateTime $end
+     * @param $limit
+     * @param $offset
      * @return array Данные о перемещенных бронях. Ключи массива 'package' и 'oldVirtualRoom'
      */
-    public function setVirtualRooms(\DateTime $begin, \DateTime $end)
+    public function setVirtualRooms(\DateTime $begin, \DateTime $end, $limit, $offset)
     {
         $movedPackagesData = [];
 
-        $packagesCount = $this->getHandledPackagesCount($begin, $end);
-
-        for ($i = 0; $i <= ceil($packagesCount / self::HANDLED_PACKAGES_LIMIT); $i++) {
-            $packages = $this->getLimitPackages($begin, $end, self::HANDLED_PACKAGES_LIMIT,
-                $i * self::HANDLED_PACKAGES_LIMIT);
+        for ($i = 0; $i < ceil($limit / self::HANDLED_PACKAGES_LIMIT); $i++) {
+            $skipNumber = $i * self::HANDLED_PACKAGES_LIMIT + $offset;
+            $packages = $this->getLimitPackages($begin, $end, self::HANDLED_PACKAGES_LIMIT, $skipNumber);
 
             $sortedPackages = $this->sortPackagesByRoomTypeAndVirtualRoom($packages);
             $emptyIntervals = $this->getEmptyIntervals($sortedPackages);
@@ -105,15 +103,6 @@ class VirtualRoomHandler
             'package' => $package,
             'oldVirtualRoom' => $oldVirtualRoom
         ];
-    }
-
-    private function getHandledPackagesCount($begin, $end)
-    {
-        return $this->dm
-            ->getRepository('MBHPackageBundle:Package')
-            ->getFetchWithVirtualRoomQB($begin, $end)
-            ->getQuery()
-            ->count();
     }
 
     private function getLimitPackages($begin, $end, $limit, $skip)

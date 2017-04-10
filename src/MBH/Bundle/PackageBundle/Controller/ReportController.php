@@ -1031,24 +1031,4 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
     }
-
-    /**
-     * @Route("/packaging", name="packaging_report")
-     * @Template()
-     * @param Request $request
-     * @return array
-     */
-    public function packagingAction(Request $request)
-    {
-        $helper = $this->get('mbh.helper');
-        if ($request->isMethod('POST')) {
-            $begin = $helper->getDateFromString($request->request->get('begin'));
-            $end = $helper->getDateFromString($request->request->get('end'));
-            $roomTypeIds = $request->request->get('roomType');
-        }
-        $asdf =123;
-        return [
-            'roomTypes' => $this->hotel->getRoomTypes(),
-        ];
-    }
 }
