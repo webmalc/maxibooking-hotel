@@ -81,7 +81,9 @@ class VirtualRoomHandler
             }
 
             foreach ($packages as $package) {
-                if (!$this->hasBothSideNeighbors($package) && !$this->hasNeighboringPackages($package, $sortedPackages)) {
+                if (!$this->hasBothSideNeighbors($package) && !$this->hasNeighboringPackages($package,
+                        $sortedPackages)
+                ) {
                     $this->setVirtualRoom($package, $movedPackagesData);
                 }
             }
@@ -89,7 +91,7 @@ class VirtualRoomHandler
             $this->dm->flush();
         }
 
-        return $movedPackagesData;
+        return $this->sortResultData($movedPackagesData);
     }
 
     /**
@@ -105,6 +107,48 @@ class VirtualRoomHandler
         ];
     }
 
+    /**
+     * Sort resultData
+     *
+     * @param array $movedPackagesData
+     * @return array
+     */
+    private function sortResultData(array $movedPackagesData)
+    {
+        $result = [];
+
+        foreach ($movedPackagesData as $hotelName => $movedPackagesDataByHotel) {
+            $sortedArray = $movedPackagesDataByHotel;
+
+            usort($sortedArray, function ($first, $second) {
+                /** @var Package $firstPackage */
+                $firstPackage = $first['package'];
+                /** @var Package $secondPackage */
+                $secondPackage = $second['package'];
+
+                $roomTypesComparisonResult =
+                    strcmp($firstPackage->getRoomType()->getId(), $secondPackage->getRoomType()->getId());
+
+                if ($roomTypesComparisonResult != 0) {
+                    return $roomTypesComparisonResult;
+                }
+
+                return $firstPackage->getBegin() > $secondPackage->getBegin() ? 1 : -1;
+            });
+
+            $result[$hotelName] = $sortedArray;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $begin
+     * @param $end
+     * @param $limit
+     * @param $skip
+     * @return mixed
+     */
     private function getLimitPackages($begin, $end, $limit, $skip)
     {
         return $this->dm

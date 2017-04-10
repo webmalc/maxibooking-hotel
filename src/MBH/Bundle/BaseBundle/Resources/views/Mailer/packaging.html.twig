@@ -1,16 +1,16 @@
 {% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
 
 {% block subject %}
-
     <div style="text-align: left">
         <h2>
             {{ 'virtual_room_moving_command.mail_message.first_line'|trans() ~ ' ' ~ "now"|date('d.m.Y H:i') }}
         </h2>
-        <p>
-            {{ 'virtual_room_moving_command.mail_message.summary'|trans({'%packageCount%' : movedPackagesDataArray|length}) }}
-        </p>
+
         {% for hotelName, movedPackagesDataByHotel in movedPackagesDataArray %}
             <h2 style="text-align: center; background-color: #c0c0c0; padding: 8px;">{{ hotelName }}</h2>
+            <p>
+                {{ 'virtual_room_moving_command.mail_message.summary'|trans({'%packageCount%' : movedPackagesDataByHotel|length}) }}
+            </p>
             <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
                 <tbody>
                 <tr>
@@ -25,7 +25,7 @@
                 {% for iterationNumber, movedPackageData in movedPackagesDataByHotel %}
                     {% set package = movedPackageData['package'] %}
                     <tr>
-                        <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ iterationNumber }}</td>
+                        <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ iterationNumber + 1 }}</td>
                         <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.numberWithPrefix }}</td>
                         <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.begin|date('d.m.Y') }}</td>
                         <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.end|date('d.m.Y') }}</td>
