@@ -41,20 +41,20 @@ class SearchFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         /** @var DocumentRepository $roomTypeRepository */
-        $roomTypeRepository = $this->container->get('mbh.hotel.room_type_manager')->getRepository();
-        $roomTypes = $roomTypeRepository
-            ->createQueryBuilder()
-            ->field('isEnabled')
-            ->equals(true)
-            ->getQuery()
-            ->execute();
-        $roomTypeList = [];
-        $hotelIds = [];
-        /** @var RoomType $roomType */
-        foreach ($roomTypes as $roomType) {
-            $hotelIds[$roomType->getId()] = $roomType->getHotel()->getId();
-            $roomTypeList[$roomType->getId()] = $roomType->getFullTitle();
-        }
+//        $roomTypeRepository = $this->container->get('mbh.hotel.room_type_manager')->getRepository();
+//        $roomTypes = $roomTypeRepository
+//            ->createQueryBuilder()
+//            ->field('isEnabled')
+//            ->equals(true)
+//            ->getQuery()
+//            ->execute();
+//        $roomTypeList = [];
+//        $hotelIds = [];
+//        /** @var RoomType $roomType */
+//        foreach ($roomTypes as $roomType) {
+//            $hotelIds[$roomType->getId()] = $roomType->getHotel()->getId();
+//            $roomTypeList[$roomType->getId()] = $roomType->getFullTitle();
+//        }
 
         $builder
             ->add('hotel', DocumentType::class, [
@@ -74,14 +74,18 @@ class SearchFormType extends AbstractType
                 }
 
             ])
-            ->add('roomType', InvertChoiceType::class, [
-                'label' => 'Тип номера',
-                'required' => false,
-                'placeholder' => 'Все типы номеров',
-                'choices' => $roomTypeList,
-                'choice_attr' => function ($roomType) use ($hotelIds) {
-                    return ['data-hotel' => $hotelIds[$roomType]];
-                }
+//            ->add('roomType', InvertChoiceType::class, [
+//                'label' => 'Тип номера',
+//                'required' => false,
+//                'placeholder' => 'Все типы номеров',
+//                'choices' => $roomTypeList,
+//                'choice_attr' => function ($roomType) use ($hotelIds) {
+//                    return ['data-hotel' => $hotelIds[$roomType]];
+//                }
+//            ])
+            ->add('roomType', DocumentType::class, [
+                'class' => 'MBH\Bundle\HotelBundle\Document\RoomType',
+                'required' => false
             ])
             ->add('begin', DateType::class, [
                 'label' => 'Дата заезда',
@@ -147,7 +151,13 @@ class SearchFormType extends AbstractType
                 'prototype' => true,
                 'allow_add' => true,
                 'allow_delete' => true,
-            ]);
+            ])
+            ->add('special', DocumentType::class, [
+                'class' => 'MBHPriceBundle:Special',
+                'required' => false
+            ])
+        ;
+
     }
 
     /**

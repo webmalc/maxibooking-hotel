@@ -11,7 +11,7 @@ var Special = function ($row) {
     this.roomTypeId = $row.data('roomtypeid');
     this.begin = $(".spec-date p.date", $row).data('begin');
     this.end = $(".spec-date p.date", $row).data('end');
-    this.roomTypeCategoryId = $row.data('specialid');
+    this.specialId = $row.data('specialid');
     this.hotelId = $row.data('hotelid');
     this.activePrice = function () {
         return $("option:selected", this.$choice).data('price');
@@ -38,6 +38,7 @@ Special.prototype.bindHandlers = function () {
     });
     this.$form.on('submit', function(e) {
         e.preventDefault();
+        // console.log($(this).attr('action'));
         window.location = $(this).attr('action');
     })
 
@@ -60,14 +61,17 @@ Special.prototype.reNewPrices = function () {
 };
 
 Special.prototype.reNewHref = function () {
-    var page = 'http://azovsky.ru/mbresults.php?',
+    var page = '/mbresults.php?',
         data = {
+        step: 1,
         search_form: {
             hotel: this.hotelId,
+            roomType: this.roomTypeId,
             begin: this.begin,
             end: this.end,
             adults: this.activeAdults(),
-            children: this.activeChildren()
+            children: this.activeChildren(),
+            special: this.specialId,
             }
         },
         href = page + $.param(data);

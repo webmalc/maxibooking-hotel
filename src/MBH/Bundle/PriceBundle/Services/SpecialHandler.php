@@ -108,11 +108,13 @@ class SpecialHandler
 
     private function calculateSpecialPrice(Special $special, RoomType $roomType, Tariff $tariff): ?SpecialPrice
     {
+        $begin = clone $special->getBegin();
+        $end = (clone $special->getEnd())->modify("- 1 day");
         $calculation = $this->calc->calcPrices(
             $roomType,
             $tariff,
-            $special->getBegin(),
-            $special->getEnd(),
+            $begin,
+            $end,
             0,
             0,
             null,

@@ -13,7 +13,8 @@ use MBH\Bundle\OnlineBookingBundle\Lib\OnlineNotifyRecipient;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
-use MBH\Bundle\PackageBundle\Services\Search\Search;
+use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
+use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\PaymentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -80,52 +81,35 @@ class DefaultController extends BaseController
      */
     public function searchAction(Request $request)
     {
-        $searchQuery = new SearchQuery();
         $form = $this->createForm(SearchFormType::class);
         $form->handleRequest($request);
-
         $searchResults = [];
         $onlineOptions = $this->getParameter('online_booking');
 
         if ($form->isValid()) {
-            $formData = $form->getData();
-            if ($formData['roomType']??null) {
-                $searchQuery->addRoomType($formData['roomType']);
-            } elseif ($formData['hotel']) {
-                if ($this->get('mbh.hotel.room_type_manager')->useCategories) {
-                    foreach ($formData['hotel']->getRoomTypesCategories() as $cat) {
-                        $searchQuery->addRoomType($cat->getId());
-                    }
-                } else {
-                    $searchQuery->addHotel($formData['hotel']);
-                }
-            }
-
-            $searchQuery->begin = $formData['begin'];
-            $searchQuery->end = $formData['end'];
-            $searchQuery->adults = (int)$formData['adults'];
-            $searchQuery->children = (int)$formData['children'];
-            $searchQuery->isOnline = true;
-            $searchQuery->accommodations = true;
-            $searchQuery->forceRoomTypes = false;
-            if ($formData['children_age']) {
-                $searchQuery->setChildrenAges($formData['children_age']);
-            };
-
+            $data = $form->getData();
             $searchService = $this->get('mbh.package.search');
-            if ($addDates = $onlineOptions['add_search_dates']) {
-                $searchQuery->range = $addDates;
-                $searchService->setAdditionalDates($addDates);
-            }
-            $searchResults = $searchService
-                ->setWithTariffs()
-                ->search($searchQuery);
+            $searchQuery = $this->initSearchQUery($data);
+            $this->configureSearchByСondition($searchQuery, $data, $searchService, $onlineOptions);
 
-            $searchResults = $this->separateByAdditionalDays($searchResults, $searchQuery->begin, $searchQuery->end);
+            $searchResults = $searchService->search($searchQuery);
+
+            //$query->roomType returns only SearchResult. Adapt to exist code;
+            if (reset($searchResults) instanceof SearchResult) {
+                $tempResult = [];
+                foreach ($searchResults as $searchResult) {
+                    $tempResult[] = [
+                        'roomType' => $searchResult->getRoomType(),
+                        'results' => [$searchResult],
+                    ];
+                }
+                $searchResults = $tempResult;
+            }
+
+            $searchResults = $this->separateByAdditionalDays($searchResults, $searchQuery);
             $searchResults = $this->resultFilter($searchResults, $searchQuery);
             $searchResults = $this->addImages($searchResults);
             $searchResults = $this->addLeftRoomKeys($searchResults);
-
         }
 
         $requestSearchUrl = $onlineOptions['request_search_url'];
@@ -160,13 +144,57 @@ class DefaultController extends BaseController
         );
     }
 
+    private function configureSearchByСondition(SearchQuery $searchQuery, array $data, SearchFactory $search, array $onlineOptions): void
+    {
+        //Additional days only if not special
+        $special = $data['special']??null;
+        if ($special && $special instanceof Special) {
+            $searchQuery->setSpecial($special);
+            $searchQuery->roomTypes = $this->helper->toIds([$data['roomType']]);
+            $searchQuery->forceRoomTypes = true;
+            $searchQuery->setPreferredVirtualRoom($special->getVirtualRoom());
+        } elseif ($addDates = $onlineOptions['add_search_dates']) {
+            $searchQuery->range = $addDates;
+            $search
+                ->setAdditionalDates($addDates)
+                ->setWithTariffs();
+        }
+    }
 
+    private function initSearchQUery(array $data)
+    {
+        $searchQuery = new SearchQuery();
+        if ( $roomType = $data['roomType']) {
+            $searchQuery->addRoomType($roomType);
+        } elseif ($hotel = $data['hotel']) {
+            if ($this->get('mbh.hotel.room_type_manager')->useCategories) {
+                foreach ($data['hotel']->getRoomTypesCategories() as $cat) {
+                    $searchQuery->addRoomType($cat->getId());
+                }
+            } else {
+                $searchQuery->addHotel($data['hotel']);
+            }
+        }
+
+        $searchQuery->begin = $data['begin'];
+        $searchQuery->end = $data['end'];
+        $searchQuery->adults = (int)$data['adults'];
+        $searchQuery->children = (int)$data['children'];
+        $searchQuery->isOnline = true;
+        $searchQuery->accommodations = true;
+        $searchQuery->forceRoomTypes = false;
+        if ($data['children_age']) {
+            $searchQuery->setChildrenAges($data['children_age']);
+        };
+
+        return $searchQuery;
+    }
     /**
      * Divide results to match and additional dates
      * @param array $searchResults
      * @return array
      */
-    private function separateByAdditionalDays(array $searchResults, \DateTime $begin, \DateTime $end): array
+    private function separateByAdditionalDays(array $searchResults, SearchQuery $searchQuery): array
     {
         $result = [];
         foreach ($searchResults as $searchResult) {
@@ -190,7 +218,7 @@ class DefaultController extends BaseController
 
 
                 $firstResult = reset($group);
-                $isAdd = !($firstResult->getBegin() == $begin && $firstResult->getEnd() == $end);
+                $isAdd = !($firstResult->getBegin() == $searchQuery->begin && $firstResult->getEnd() == $searchQuery->end);
                 $tmpResult['additional'] = $isAdd;
 
                 $tmpResult['dates'] = [
@@ -520,26 +548,30 @@ class DefaultController extends BaseController
     private function addImages(array $searchResults)
     {
         foreach ($searchResults as $index => $result) {
-            $roomTypeCategory = $result['roomType']??false;
+            $images = [];
+            $mainImage = null;
+
+            $roomTypeCategory = $result['roomType']??null;
             if ($roomTypeCategory && $roomTypeCategory instanceof RoomTypeCategory) {
                 /** @var RoomTypeCategory $roomTypeCategory */
                 $roomTypes = $roomTypeCategory->getTypes();
-                $images = [];
-                $mainImage = null;
+
                 foreach ($roomTypes as $roomType) {
                     if (!$mainImage && $roomType->getMainImage()) {
                         $mainImage = $roomType->getMainImage();
                     }
                     $images = $roomType->getImages()->toArray();
                 }
-                $searchResults[$index] += [
-                    'images' => array_merge($images),
-                    'mainimage' => $mainImage,
-                ];
-
-
-                unset($images);
+            } elseif ($roomTypeCategory && $roomTypeCategory instanceof RoomType) {
+                $mainImage = $roomTypeCategory->getMainImage();
+                $images = $roomTypeCategory->getImages()->toArray();
             }
+
+            $searchResults[$index] += [
+                'images' => array_merge($images),
+                'mainimage' => $mainImage,
+            ];
+            unset($images);
         }
 
         return $searchResults;
@@ -581,6 +613,11 @@ class DefaultController extends BaseController
 
             $searchResults[$sResultKey]['results'] = $filterSearchResults;
             $searchResults[$sResultKey]['query'] = $searchQuery;
+
+            if ($searchQuery->getSpecial()) {
+                $searchResults[$sResultKey]['special'] = $searchQuery->getSpecial();
+            }
+            $searchResults[$sResultKey]['forceRoomType'] = $searchQuery->forceRoomTypes;
         }
 
         return $searchResults;

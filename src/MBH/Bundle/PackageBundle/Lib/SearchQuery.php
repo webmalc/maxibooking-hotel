@@ -127,6 +127,9 @@ class SearchQuery
      */
     public $tariff;
 
+    protected $preferredVirtualRoom;
+
+
     /**
      * @var Package
      */
@@ -290,6 +293,25 @@ class SearchQuery
     public function setExcludePackage(Package $excludePackage = null): SearchQuery
     {
         $this->excludePackage = $excludePackage;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPreferredVirtualRoom()
+    {
+        return $this->preferredVirtualRoom;
+    }
+
+    /**
+     * @param mixed $preferredVirtualRoom
+     * @return $this
+     */
+    public function setPreferredVirtualRoom($preferredVirtualRoom)
+    {
+        $this->preferredVirtualRoom = $preferredVirtualRoom;
 
         return $this;
     }

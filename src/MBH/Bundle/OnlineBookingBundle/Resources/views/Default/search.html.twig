@@ -1,3 +1,6 @@
+
+
+
 {% import _self as macro %}
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhbase/css/mbsuperfont/styles.css')) }}">
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/ssearch.css')) }}">
@@ -14,20 +17,25 @@
         <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a>
     </div>
     {% for offerByRoomType in searchResults %}
+
         {% set roomType, tariffResults, query, images, children = offerByRoomType.roomType, offerByRoomType.results, offerByRoomType.query, offerByRoomType.images, offerByRoomType.query.children %}
         {% set firstTariffResult, lastTariffResult = tariffResults|first, tariffResults|last %}
         {% set leftRoomKey, dates = offerByRoomType.leftRoomKey, offerByRoomType.dates %}
+        {% set isCategory = not offerByRoomType.forceRoomType %}
+        {% set special = offerByRoomType.special??null %}
         <section class="s_results">
-        <div class="oneblockinrdm room-type-row {{ offerByRoomType.additional?'additional':'' }}" data-roomtype="{{ roomType.id }}">
+        <div class="oneblockinrdm room-type-row {{ (special or offerByRoomType.additional)?'additional':'' }}"
+             data-roomtype="{{ roomType.id }}"
+             data-special = "{{ special?special.id:'' }}"
+        >
             <div class="leftrdm">
                 <div class="imghotel"
                      {% set mainimage = offerByRoomType.mainimage %}
                      style="background:url('{{ absolute_url(asset(mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
-                    {% if offerByRoomType.additional %}
-                        <p class="special-strip">
-                            Другие даты
-                        </p>
-                    {% endif %}
+                    <p class="special-strip">
+                        {{ offerByRoomType.additional?'Другие даты':'' }}
+                        {{ special?'Специальное предложение' }}
+                    </p>
                     <div class="inghotelline">
                         {# Костыль для вывода главной фото первой в списке. Сделано до реализации очередности. #}
                         {% for image in images %}
@@ -84,7 +92,7 @@
                         <img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
                     {% endif %}
                     <div class="iconstype">
-                        {% for facility in (roomType.types|first).facilities %}
+                        {% for facility in (isCategory?roomType.types|first:roomType).facilities %}
                             <i class="fa fa-2x mbf-{{ facility }}" title="{{ facility|trans }}"></i>
                         {% endfor %}
                     </div>
@@ -100,7 +108,7 @@
                         <span class="newprice">{{ prices.new|number_format(0, thousandSep=' ') }}&#8381;</span></p>
                     <p class="datesrdm">{{ dates.begin|date("d.m.Y") }} - {{ dates.end|date("d.m.Y") }}</p>
                     <p class="daysrdm">{{ firstTariffResult.days }} {{ 'days'|transchoice(firstTariffResult.days) }} / {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
-                    {% set left_rooms = left_sale(firstTariffResult.roomsCount, leftRoomKey) %}
+                    {% set left_rooms = left_sale(special.remain??firstTariffResult.roomsCount, leftRoomKey) %}
                     <p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>{#TODO:Add twig function#}
                     <p class="bronsrdm">{#забронировано сегодня 9 раз#}</p>{#TODO:Уточнить#}
                 </div>
@@ -121,7 +129,12 @@
                     <i class="fa fa-spinner fa-pulse fa-3x fa-fw tariff-spinner"></i>
                     <span class="sr-only">Loading...</span>
                     {% for tariffResult in tariffResults %}
-                        {{ include('@MBHOnlineBooking/Default/tariff.html.twig') }}
+                        {% if special is defined and special is not empty %}
+                            {{ include('@MBHOnlineBooking/Default/special.tariff.html.twig') }}
+                        {% else %}
+                            {{ include('@MBHOnlineBooking/Default/tariff.html.twig') }}
+                        {% endif %}
+
                     {% endfor %}
                     </tbody>
                 </table>
