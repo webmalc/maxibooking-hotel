@@ -81,7 +81,7 @@ class VirtualRoomHandler
             }
 
             foreach ($packages as $package) {
-                if (!$this->hasNeighboringPackages($package, $sortedPackages)) {
+                if (!$this->hasBothSideNeighbors($package) && !$this->hasNeighboringPackages($package, $sortedPackages)) {
                     $this->setVirtualRoom($package, $movedPackagesData);
                 }
             }
@@ -99,7 +99,7 @@ class VirtualRoomHandler
      */
     private function addPackageMovingData(Package $package, ?Room $oldVirtualRoom, &$movedPackagesData)
     {
-        $movedPackagesData[] = [
+        $movedPackagesData[$package->getHotel()->getName()][] = [
             'package' => $package,
             'oldVirtualRoom' => $oldVirtualRoom
         ];
