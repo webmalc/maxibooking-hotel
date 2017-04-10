@@ -14,10 +14,10 @@
                     {{ results|first.nights }} {{ 'nights'|transchoice(results|first.nights) }} {{ 'from'|trans }}
                     <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> {{ 'to'|trans }} <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
                 </div>
+
                 {% if tariffResults|length > 0 %}
                     {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
                 {% endif %}
-
                 <div id="mbh-results-table-wrapper">
                     <table id="mbh-results-table">
                         <thead>
@@ -139,7 +139,7 @@
             {% else %}
                 {% if tariffResults|length > 0 %}
                     {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
-                {% endif %}
+                {% endif %} 
                 <div class="mbh-results-error"><i
                             class="fa fa-exclamation-circle"> </i> {{ 'views.api.getResultsTable.nothing_found_for_your_query'|trans({}, 'MBHOnlineBundle') }}
                 </div>

@@ -82,7 +82,15 @@ class FormConfig extends Base
      */
     protected $nights = false;
 
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
     protected $isDisplayChildrenAges = false;
+
     /**
      * @var array
      * @Gedmo\Versioned
@@ -256,6 +264,4 @@ class FormConfig extends Base
         $this->hotels = $hotels;
         return $this;
     }
-
-
 }
