@@ -34,7 +34,6 @@
 
                     {% if hotel is not defined or hotel.id != roomType.hotel.id %}
                         <optgroup label="{{ roomType.hotel }}">
-                        <option value="allrooms_{{ roomType.hotel.id }}">{{ 'report.package_moving.all_room_types'|trans }}</option>
                         {% set hotel = roomType.hotel %}
                     {% endif %}
 

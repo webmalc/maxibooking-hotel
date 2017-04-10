@@ -11,6 +11,8 @@ use MBH\Bundle\UserBundle\Document\User;
 /**
  * Entity for saving data about package moving between room types
  * Class PackageMovingInfo
+ * @ODM\Document()
+ * @Gedmo\Loggable
  * @package MBH\Bundle\PackageBundle\Document
  */
 class PackageMovingInfo
