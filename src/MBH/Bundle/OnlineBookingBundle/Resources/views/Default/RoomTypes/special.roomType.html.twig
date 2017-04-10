@@ -1,0 +1,17 @@
+{% embed 'MBHOnlineBookingBundle:Default/RoomTypes:roomType.html.twig' with {'remain': special.remain} %}
+    {% block data_row %}
+        data-special = "{{ special.id}}"
+    {% endblock %}
+    {% block redbox_message %}
+        Специальное предложение
+    {% endblock %}
+    {% block tariffName %}
+        Специальное предложение
+    {% endblock %}
+    {% block discount %}
+        {{" - #{special.discount}%" }}
+    {% endblock %}
+    {% block oldPrice %}
+        {{ prices.new * 100 / (100 - special.discount) }}
+    {% endblock %}
+{% endembed %}

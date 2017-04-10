@@ -1,0 +1,12 @@
+{% embed 'MBHOnlineBookingBundle:Default/RoomTypes:roomType.html.twig' with {'remain': firstTariffResult.roomsCount} %}
+    {% block data_row %}
+    {% endblock %}
+    {% block redbox %}
+    {% endblock %}
+    {% block discount %}
+        {% set discount = tariffResult.tariff.defaultPromotion.discount??'' %}
+        {% if discount %}
+            {{" - #{discount}%" }}
+        {% endif %}
+    {% endblock %}
+{% endembed %}

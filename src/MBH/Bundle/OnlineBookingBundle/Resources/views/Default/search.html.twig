@@ -1,7 +1,3 @@
-
-
-
-{% import _self as macro %}
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhbase/css/mbsuperfont/styles.css')) }}">
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/ssearch.css')) }}">
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
@@ -16,6 +12,7 @@
         <a href="http://azovsky.ru/putevka-v-Crimea/" target="_blank">Азовский</a>,
         <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a>
     </div>
+    {% import _self as macro %}
     {% for offerByRoomType in searchResults %}
 
         {% set roomType, tariffResults, query, images, children = offerByRoomType.roomType, offerByRoomType.results, offerByRoomType.query, offerByRoomType.images, offerByRoomType.query.children %}
@@ -23,142 +20,18 @@
         {% set leftRoomKey, dates = offerByRoomType.leftRoomKey, offerByRoomType.dates %}
         {% set isCategory = not offerByRoomType.forceRoomType %}
         {% set special = offerByRoomType.special??null %}
-        <section class="s_results">
-        <div class="oneblockinrdm room-type-row {{ (special or offerByRoomType.additional)?'additional':'' }}"
-             data-roomtype="{{ roomType.id }}"
-             data-special = "{{ special?special.id:'' }}"
-        >
-            <div class="leftrdm">
-                <div class="imghotel"
-                     {% set mainimage = offerByRoomType.mainimage %}
-                     style="background:url('{{ absolute_url(asset(mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
-                    <p class="special-strip">
-                        {{ offerByRoomType.additional?'Другие даты':'' }}
-                        {{ special?'Специальное предложение' }}
-                    </p>
-                    <div class="inghotelline">
-                        {# Костыль для вывода главной фото первой в списке. Сделано до реализации очередности. #}
-                        {% for image in images %}
-                            {% if loop.first and not image.isMain %}
-                                {{ macro.drawimage(mainimage, loop) }}
-                                {{ macro.drawimage(image, loop) }}
-                            {% elseif not loop.first and image.isMain %}
-                            {% else %}
-                            {{ macro.drawimage(image, loop) }}
-                            {% endif %}
-                        {% endfor %}
-                        {#Конец костыля#}
-                        {#Вернуть после убирания костыля#}
-                        {#{% for image in images %}
-                            <a style="{{ (loop.index > 1) ? 'display: none;':'' }}" class="fancybox" href="{{ absolute_url(asset(image.path)) }}"
-                               rel="cat{{ loop.parent.loop.index }}">
-                                <img src="{{ absolute_url(image.path|imagine_filter('thumb_275x210')) }}" alt="">
-                            </a>
-                        {% endfor %}#}
-                    </div>
-                </div>
-            </div>
-            <div class="rightrdm">
-                <div class="leftinrdm">
-                    <p class="titlerdm">
-                        {% if hotelsLinks is defined and roomType.hotel.id in hotelsLinks|keys %}
-                        <a href="{{ hotelsLinks[roomType.hotel.id] }}" class="hotel_link" target="_blank">
-                            {{ roomType.hotel.fullTitle }}
-                        </a>
-                        {% else %}
-                            {{ roomType.hotel.fullTitle }}
-                        {% endif %}
-                        &nbsp;</p>
-                    <p class="numtype"><b>Тип номера:</b><br>
-                        {% if roomType.descriptionurl is defined and roomType.descriptionurl is not empty %}
-                            <a class="room_link" href="{{ roomType.descriptionUrl }}"
-                               target="_blank">{{ roomType.fullTitle }}</a>
-                        {% else %}
-                            {{ roomType.fullTitle }}
-                        {% endif %}
-                    </p>
-                    <p class="gueststype">
-                        <b>Гости:</b>
-                        {{ query.adults }} взр.
-                        {% transchoice children %}
-                        {0} | [1,4] + %children% реб |[5,Inf[ + %children% дет.
-                        {% endtranschoice %}
-                    </p>
-                    {% if hotelsLinks.eat is defined and hotelsLinks.eat is not empty %}
-                    <a href="{{ hotelsLinks.eat }}" class="eat_link" target="_blank">
-                        <p class="eattype"><img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
-                    </a>
-                    {% else %}
-                        <img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
-                    {% endif %}
-                    <div class="iconstype">
-                        {% for facility in (isCategory?roomType.types|first:roomType).facilities %}
-                            <i class="fa fa-2x mbf-{{ facility }}" title="{{ facility|trans }}"></i>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="rightinrdm">
-                    <p class="titlerdm">Цена за {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
-                    <div class="clear"></div>
-                    <p class="pricerdm">
-                        {% set prices = count_prices(tariffResults) %}
-                        {% if prices.old is not null %}
-                        <span class="noneprice">{{ prices.old|number_format(0, thousandSep=' ') }}&#8381;</span>
-                        {% endif %}
-                        <span class="newprice">{{ prices.new|number_format(0, thousandSep=' ') }}&#8381;</span></p>
-                    <p class="datesrdm">{{ dates.begin|date("d.m.Y") }} - {{ dates.end|date("d.m.Y") }}</p>
-                    <p class="daysrdm">{{ firstTariffResult.days }} {{ 'days'|transchoice(firstTariffResult.days) }} / {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
-                    {% set left_rooms = left_sale(special.remain??firstTariffResult.roomsCount, leftRoomKey) %}
-                    <p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>{#TODO:Add twig function#}
-                    <p class="bronsrdm">{#забронировано сегодня 9 раз#}</p>{#TODO:Уточнить#}
-                </div>
-                <div class="clear"></div>
-            </div>
-            <div class="clear"></div>
-            <div class="lefttblrdm">
-                <table class="pricetbl">
-                    <thead>
-                    <tr class="flinetbl">
-                        <td>Тариф</td>
-                        <td>Скидка</td>
-                        <td>Цена</td>
-                        <td></td>
-                    </tr>
-                    </thead>
-                    <tbody class="tariff-container">
-                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw tariff-spinner"></i>
-                    <span class="sr-only">Loading...</span>
-                    {% for tariffResult in tariffResults %}
-                        {% if special is defined and special is not empty %}
-                            {{ include('@MBHOnlineBooking/Default/special.tariff.html.twig') }}
-                        {% else %}
-                            {{ include('@MBHOnlineBooking/Default/tariff.html.twig') }}
-                        {% endif %}
+        {% set additional = offerByRoomType.additional %}
 
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="righttblrdm">
-                <div class="spros">Пользуется спросом!</div>
-                {#<div class="btmactions">#}
-                {#<a href="javascript:void(0)" tabindex="0" class="btn btn-default btn-booking-all"#}
-                {#title="Отправить заявку">ВСЕ ПРЕДЛОЖЕНИЯ</a>#}
-                {#<a href="javascript:void(0)" tabindex="1" class="btn btn-default btn-booking-reservation"#}
-                {#title="Отправить заявку">ОТПРАВИТЬ ЗАЯВКУ</a>#}
-                {#<a href="javascript:void(0)" tabindex="2" class="btn btn-warning btn-booking" title="Купить онлайн">КУПИТЬ#}
-                {#ОНЛАЙН</a>#}
-                {#</div>#}
-                <a href="javascript:void(0)" class="btn-booking-reservation"><p class="btmone btmonenotspec">Отправить заявку</p></a>
-                <a href="javascript:void(0)" class="btn-booking"><p class="btmtwo">Купить онлайн</p></a>
-                {% if showAll is defined and showAll %}
-                <a href="javascript:void(0)" class="btn-booking-all"><p class="btmthree">Показать всё</p></a>
-                {% endif %}
+        {% if special %}
+            {% include '@MBHOnlineBooking/Default/RoomTypes/special.roomType.html.twig' %}
+        {% elseif additional %}
+            {% include '@MBHOnlineBooking/Default/RoomTypes/addDates.roomType.html.twig' %}
+        {% else %}
+            {% include '@MBHOnlineBooking/Default/RoomTypes/common.roomType.html.twig' %}
+        {% endif %}
 
-            </div>
-            <div class="clear"></div>
-        </div>
-    </section>
+
+
     {% endfor %}
 
     {% if searchResults|length != 0 %}
