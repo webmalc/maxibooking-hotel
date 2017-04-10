@@ -204,8 +204,9 @@ class VirtualRoomHandler
             $oldVirtualRoom = $package->getVirtualRoom();
             if ($this->hasSufficientWindows($package, $result->getVirtualRoom())) {
                 $package->setVirtualRoom($result->getVirtualRoom());
+                $previousVirtualRoomData = $oldVirtualRoom ? 'with virtual room "' . $oldVirtualRoom->getName() . '"' : 'without virtual room';
                 $this->logger->info(
-                    "For package \"{$package->getTitle()}\" set virtual room \"{$result->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\""
+                    "For package \"{$package->getTitle()}\" $previousVirtualRoomData set virtual room \"{$result->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\""
                 );
                 $this->dm->flush();
             }
