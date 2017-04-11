@@ -17,6 +17,10 @@ use MBH\Bundle\UserBundle\Document\User;
  */
 class PackageMovingInfo
 {
+    const PREPARING_STATUS = 'preparing';
+    const ENABLED_STATUS = 'enabled';
+    const OLD_REPORT_STATUS = 'old';
+
     /**
      * @var string
      * @ODM\Id
@@ -30,8 +34,8 @@ class PackageMovingInfo
     protected $runningBy;
 
     /**
-     * @var \DateTime
-     * @ODM\Field(type="datetime")
+     * @var int
+     * @ODM\Field(type="string")
      */
     protected $startAt;
 
@@ -60,32 +64,33 @@ class PackageMovingInfo
     protected $movingPackagesData;
 
     /**
-     * @var bool
-     * @ODM\Field(type="bool")
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Choice(callback="getReportStatusesList")
      */
-    protected $isClosed = false;
+    protected $status = 'preparing';
 
     public function __construct()
     {
         $this->movingPackagesData = new ArrayCollection();
-        $this->roomTypeIds = new ArrayCollection();
+        $this->roomTypeIds = [];
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function getIsClosed(): ?bool
+    public function getStatus(): string
     {
-        return $this->isClosed;
+        return $this->status;
     }
 
     /**
-     * @param bool $isClosed
+     * @param string $status
      * @return PackageMovingInfo
      */
-    public function setIsClosed(bool $isClosed): PackageMovingInfo
+    public function setStatus(string $status): PackageMovingInfo
     {
-        $this->isClosed = $isClosed;
+        $this->status = $status;
 
         return $this;
     }
@@ -95,7 +100,7 @@ class PackageMovingInfo
      */
     public function getStartAt(): ?\DateTime
     {
-        return $this->startAt;
+        return new \DateTime('@' . $this->startAt);
     }
 
     /**
@@ -104,7 +109,7 @@ class PackageMovingInfo
      */
     public function setStartAt(\DateTime $startAt): PackageMovingInfo
     {
-        $this->startAt = $startAt;
+        $this->startAt = $startAt->getTimestamp();
 
         return $this;
     }
@@ -161,7 +166,7 @@ class PackageMovingInfo
      */
     public function addRoomTypeId($roomTypeId): PackageMovingInfo
     {
-        $this->roomTypeIds->add($roomTypeId);
+        $this->roomTypeIds[] = $roomTypeId;
 
         return $this;
     }
@@ -172,7 +177,9 @@ class PackageMovingInfo
      */
     public function removeRoomTypeId($roomTypeId): PackageMovingInfo
     {
-        $this->roomTypeIds->remove($roomTypeId);
+        if(($key = array_search($roomTypeId, $this->roomTypeIds)) !== false) {
+            unset($this->roomTypeIds[$key]);
+        }
 
         return $this;
     }
@@ -247,5 +254,17 @@ class PackageMovingInfo
         }
 
         return null;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getReportStatusesList()
+    {
+        return [
+            self::OLD_REPORT_STATUS,
+            self::PREPARING_STATUS,
+            self::ENABLED_STATUS
+        ];
     }
 }

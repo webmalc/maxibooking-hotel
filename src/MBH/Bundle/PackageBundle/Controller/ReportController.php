@@ -22,6 +22,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -1040,14 +1041,18 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     {
         $packageMovingInfo = $this->dm
             ->getRepository('MBHPackageBundle:PackageMovingInfo')
-            ->findOneBy(['isClosed' => false]);
+            ->createQueryBuilder()
+            ->limit(1)
+            ->field('status')->notEqual(PackageMovingInfo::OLD_REPORT_STATUS)
+            ->getQuery()
+            ->getSingleResult();
 
         if ($request->isMethod('POST') && is_null($packageMovingInfo)) {
             $helper = $this->get('mbh.helper');
             $user = $this->getUser();
             $begin = $helper->getDateFromString($request->request->get('begin'));
             $end = $helper->getDateFromString($request->request->get('end'));
-            $roomTypeIds = $request->request->get('roomType');
+            $roomTypeIds = $request->request->get('roomType') ?? [];
 
             $packageMovingInfo = (new PackageMovingInfo())
                 ->setRunningBy($user)

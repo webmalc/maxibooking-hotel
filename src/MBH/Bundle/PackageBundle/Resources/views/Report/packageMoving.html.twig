@@ -4,51 +4,62 @@
 {% set layout = "box" %}
 
 {% block content %}
-    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'analytics-filter-widget'} %}
-    <form id="analytics-filter" method="post" class="form-inline remember" role="form">
-        <div class="input">
-            <i class="fa fa-calendar" title={{ 'report.package_moving.dates.title'|trans }} data-toggle='tooltip'></i>&nbsp
-            <input
-                    value="{{ "now"|date('d.m.Y') }}" type="text"
-                    name="begin"
-                    id="analytics-filter-begin"
-                    class="datepicker begin-datepicker analytics-filter form-control input-sm"
-                    data-date-format="dd.mm.yyyy">
-        </div>
-        <div class="input">
-            — &nbsp<input value="{{ "now"|date_modify("+1 month")|date('d.m.Y') }}" type="text"
-                          id="analytics-filter-end"
-                          class="datepicker end-datepicker analytics-filter form-control input-sm"
-                          name="end"
-                          data-date-format="dd.mm.yyyy">
-        </div>
-        <div class="input">
-            <i class="fa fa-bed"
-               title={{ 'report.package_moving.room_type'|trans }} data-toggle='tooltip'></i>&nbsp
-            <select
-                    data-placeholder={{ 'report.package_moving.room_type'|trans }} id="analytics-filter-roomType" multiple="multiple"
-                    name="roomType[]"
-                    class="analytics-filter form-control input-sm">
-                <option></option>
-                {% for roomType in roomTypes %}
+    {% if movingInfo is null %}
 
-                    {% if hotel is not defined or hotel.id != roomType.hotel.id %}
-                        <optgroup label="{{ roomType.hotel }}">
-                        {% set hotel = roomType.hotel %}
-                    {% endif %}
+        {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'analytics-filter-widget'} %}
+        <form id="analytics-filter" method="post" class="form-inline remember" role="form">
+            <div class="input">
+                <i class="fa fa-calendar"
+                   title={{ 'report.package_moving.dates.title'|trans }} data-toggle='tooltip'></i>&nbsp
+                <input
+                        value="{{ "now"|date('d.m.Y') }}" type="text"
+                        name="begin"
+                        id="analytics-filter-begin"
+                        class="datepicker begin-datepicker analytics-filter form-control input-sm"
+                        data-date-format="dd.mm.yyyy">
+            </div>
+            <div class="input">
+                — &nbsp<input value="{{ "now"|date_modify("+1 month")|date('d.m.Y') }}" type="text"
+                              id="analytics-filter-end"
+                              class="datepicker end-datepicker analytics-filter form-control input-sm"
+                              name="end"
+                              data-date-format="dd.mm.yyyy">
+            </div>
+            <div class="input">
+                <i class="fa fa-bed"
+                   title={{ 'report.package_moving.room_type'|trans }} data-toggle='tooltip'></i>&nbsp
+                <select
+                        data-placeholder={{ 'report.package_moving.room_type'|trans }} id="analytics-filter-roomType"
+                        multiple="multiple"
+                        name="roomType[]"
+                        class="analytics-filter form-control input-sm">
+                    <option></option>
+                    {% for roomType in roomTypes %}
 
-                    <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+                        {% if hotel is not defined or hotel.id != roomType.hotel.id %}
+                            <optgroup label="{{ roomType.hotel }}">
+                            {% set hotel = roomType.hotel %}
+                        {% endif %}
 
-                    {% if hotel is not defined or hotel.id != roomType.hotel.id %}</optgroup>{% endif %}
+                        <option value="{{ roomType.id }}">{{ roomType.name }}</option>
 
-                {% endfor %}
-            </select>
-        </div>
-        <div class="input">
-            <button type="submit" class="btn btn-primary" id="accommodation-report-submit-button">
-                <i class="fa fa-search"></i> {{ 'report.package_moving.generate_report.button'|trans }}
-            </button>
-        </div>
-    </form>
+                        {% if hotel is not defined or hotel.id != roomType.hotel.id %}</optgroup>{% endif %}
+
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input">
+                <button type="submit" class="btn btn-primary" id="accommodation-report-submit-button">
+                    <i class="fa fa-search"></i> {{ 'report.package_moving.generate_report.button'|trans }}
+                </button>
+            </div>
+        </form>
+
+    {% elseif movingInfo.status == 'preparing' %}
+        Отчет формируется
+
+    {% elseif movingInfo.status == 'enabled' %}
+        Отчет готов!!!
+    {% endif %}
 {% endblock %}
 
