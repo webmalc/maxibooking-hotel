@@ -51,6 +51,52 @@
 
     <div id="windows-report-content" class="scrolling"></div>
 
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                {#TODO: Поменять роль #}
+                {% if is_granted('ROLE_WINDOWS_PACKAGING') %}
+                    <li>
+                        <button id="packaging-button" type="button" class="btn btn-warning navbar-btn"><i
+                                    class="fa fa-balance-scale"></i>{{ 'report.windows.packages_move' |trans }}</button>
+                    </li>
+                {% endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li id='list-export'></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Packaging Modal -->
+    {% if is_granted('ROLE_WINDOWS_PACKAGING') %}
+        <div class="modal fade" id="packaging-info-modal" tabindex="-1" role="dialog"
+             aria-labelledby="package-info-modal-label">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="packaging-modal-title">
+                            {{ 'report.windows.packaging_modal.title'|trans() }}
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        {{ 'report.windows.packaging_modal.content_text'|trans }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            <i class="fa fa-ban"></i> {{ 'report.windows.packaging_modal.close_button'|trans() }}
+                        </button>
+                        <button type="submit" id="packaging-modal-button" class="btn btn-primary">
+                            <i class="fa fa-check"></i> {{ 'report.windows.packaging_modal.confirmation_button'|trans() }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
     <!-- Modal -->
     <div class="modal fade" id="package-info-modal" tabindex="-1" role="dialog"
          aria-labelledby="package-info-modal-label">

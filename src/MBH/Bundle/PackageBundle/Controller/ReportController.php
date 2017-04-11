@@ -15,12 +15,15 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
+use MBH\Bundle\PackageBundle\Form\PackagingReportFilterType;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -67,6 +70,27 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'error' => $generator->getError(),
             'notVirtualRooms' => $notVirtualRooms
         ];
+    }
+
+    /**
+     * Start packaging command
+     *
+     * @Route("/windows/packaging", name="windows_packaging", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_WINDOWS_PACKAGING')")
+     * @return JsonResponse
+     */
+    public function callPackagingAction()
+    {
+        $kernel = $this->get('kernel');
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+        $input = new ArrayInput([
+            'command' => 'mbh:virtual_rooms:move'
+        ]);
+        $application->run($input);
+
+        return new JsonResponse(['success' => true]);
     }
 
     /**
@@ -1006,5 +1030,25 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
+    }
+
+    /**
+     * @Route("/packaging", name="packaging_report")
+     * @Template()
+     * @param Request $request
+     * @return array
+     */
+    public function packagingAction(Request $request)
+    {
+        $helper = $this->get('mbh.helper');
+        if ($request->isMethod('POST')) {
+            $begin = $helper->getDateFromString($request->request->get('begin'));
+            $end = $helper->getDateFromString($request->request->get('end'));
+            $roomTypeIds = $request->request->get('roomType');
+        }
+        $asdf =123;
+        return [
+            'roomTypes' => $this->hotel->getRoomTypes(),
+        ];
     }
 }

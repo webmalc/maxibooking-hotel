@@ -354,6 +354,15 @@ package.payer_in_unwelcome: Плательщик находится в черн�
 
 report.windows.title: 'окна'
 report.windows.modal.title: 'Информация'
+report.windows.packages_move: Упаковка броней
+report.windows.packaging_modal.title: Подтверждение упаковки
+report.windows.packaging_modal.content_text: Запустить упаковку броней?
+report.windows.packaging_modal.confirmation_button: Начать упаковку
+report.windows.packaging_modal.close_button: Закрыть
+
+report.packaging.title: 'Перемещению'
+report.packaging.dates.title: Даты
+report.packaging.generate_report.button: Сгенерировать отчет
 
 manager.offline: Оффлайн
 manager.online: Онлайн

@@ -1,4 +1,6 @@
 /*global window, document, $, Routing, console, mbh */
+var PACKAGING_COMMAND_CALL_SUCCESS = 'Запущен процесс упаковки броней, после завершения которой Вам на почту придет письмо с отчётом.';
+var PACKAGING_COMMAND_CALL_ERROR = 'При запуске команды упаковки броней произошла ошибка.';
 
 $(document).ready(function ($) {
     'use strict';
@@ -107,7 +109,6 @@ $(document).ready(function ($) {
                         });
 
                         $(this).find('a').tooltip();
-                        // processLinks();
 
                     }, function () {
                         $(this).children('td').each(function () {
@@ -124,7 +125,6 @@ $(document).ready(function ($) {
                         lessLink: '<div class="less-link"><a href="#">' + $('#turn-window').text() + ' <i class="fa fa-caret-up"></i></a></div>',
                         collapsedHeight: 35
                     });
-
                     specialBind();
                 }
             });
@@ -137,7 +137,7 @@ $(document).ready(function ($) {
         table.html(mbh.loader.html);
         update(form.serializeObject());
     });
-
+    hangPackagingHandlers();
 });
 
 function setModalContent($modal, packageElem, isChain) {
@@ -182,5 +182,35 @@ function listenToCheckbox($modal, packageElem, $checkbox, isChainCarried) {
         var isChainCarried = $checkbox.bootstrapSwitch('state');
         $modal.find('.modal-body').html(mbh.loader.html);
         setModalContent($modal, packageElem, isChainCarried);
+    });
+}
+
+function hangPackagingHandlers() {
+    var $packagingModal = $('#packaging-info-modal');
+    $('#packaging-button').click(function () {
+        $packagingModal.modal('show');
+    });
+
+    var $packagingButton = $('#packaging-modal-button');
+    $packagingButton.click(function () {
+        $packagingModal.find('.modal-body').html(mbh.loader.html);
+        $.ajax({
+            url: Routing.generate('windows_packaging'),
+            datatype: 'json',
+            method: 'GET',
+            success: function (data) {
+                if (data.success) {
+                    $packagingModal.find('.modal-body').text(PACKAGING_COMMAND_CALL_SUCCESS);
+                } else {
+                    $packagingModal.find('.modal-body').text(PACKAGING_COMMAND_CALL_ERROR);
+                }
+            },
+            error: function (error) {
+                console.log(error);
+                $packagingModal.find('.modal-body').text(PACKAGING_COMMAND_CALL_ERROR);
+            }
+        });
+        $('#packaging-button').attr('disabled', true);
+        $packagingButton.hide();
     });
 }

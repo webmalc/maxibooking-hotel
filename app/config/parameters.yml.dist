@@ -75,3 +75,5 @@ parameters:
 
   mbh_modules:
     tasks: true
+
+  packaging.month_count: 5
