@@ -3,8 +3,6 @@
 namespace MBH\Bundle\PackageBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +14,7 @@ use Symfony\Component\Process\Process;
  */
 class VirtualRoomMovingCommand extends ContainerAwareCommand
 {
-    const HANDLED_PACKAGES_COUNT = 500;
+    const HANDLED_PACKAGES_COUNT = 600;
 
     /**
      * {@inheritdoc}
