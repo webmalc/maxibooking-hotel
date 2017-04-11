@@ -58,7 +58,7 @@
             </div>
             <div class="mbh-form-row children-ages">
                 <div>{{ 'views.api.form.children_ages.label'|trans({}, 'MBHOnlineBundle') }}</div>
-                <select class="children-age-form" id="children-age-1" name="children-age-1">
+                <select class="children-age-form" id="children-age-1" name="children-ages[]">
                     {% for childAge in 0..18 %}
                         <option value="{{ childAge }}">{{ childAge }}</option>
                     {% endfor %}

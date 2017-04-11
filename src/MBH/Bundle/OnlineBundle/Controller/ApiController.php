@@ -292,12 +292,9 @@ class ApiController extends Controller
         $query->tariff = $request->get('tariff');
         $isViewTariff = false;
 
-        // foreach ($request->query as $queryParam => $queryParamValue) {
-        //     $startString = 'children-age-';
-        //     if (substr($queryParam, 0, strlen($startString)) === $startString) {
-        //         $query->childrenAges[] = intval($queryParamValue);
-        //     }
-        // }
+        $query->setChildrenAges(
+            !empty($request->get('children-ages')) ? $request->get('children-ages') : []
+        );
 
         $hotels = $formConfig->getHotels();
         if (!count($hotels)) {

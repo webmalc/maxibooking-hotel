@@ -145,7 +145,6 @@ function setChildAgeForms(childrenCount) {
         for (var i = selectFormCount; i < childrenCount; i++) {
             var childrenAgeForm = $('#children-age-1').clone();
             var selectFormName = 'children-age-' + (i + 1);
-            childrenAgeForm.attr('name', selectFormName);
             childrenAgeForm.attr('id', selectFormName);
             $childAgesBlock.append(childrenAgeForm);
         }
