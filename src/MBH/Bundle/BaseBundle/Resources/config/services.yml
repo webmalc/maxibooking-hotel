@@ -191,3 +191,14 @@ services:
     mbh.cache.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]
+
+
+    mbh.specials.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.specials.logger_handler']]
+
+    mbh.specials.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.specials.log", 200]

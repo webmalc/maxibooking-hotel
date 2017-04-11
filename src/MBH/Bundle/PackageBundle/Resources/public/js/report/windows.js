@@ -4,6 +4,7 @@ $(document).ready(function ($) {
     'use strict';
 
     var specialSwitch = $("[name='do_specials']").bootstrapSwitch(),
+        specialRoomType = null,
         specialRoom = null,
         specialBegin = null,
         specialEnd = null,
@@ -20,6 +21,7 @@ $(document).ready(function ($) {
                     event.preventDefault();
                     var $spec = $(this);
                     if (!specialBegin) {
+                        specialRoomType = $spec.parent('tr').data('roomtypeid');
                         specialBegin = $spec.data('fulldate');
                         specialRoom = $spec.data('roomid');
                         specBeginTd = $spec;
@@ -28,6 +30,7 @@ $(document).ready(function ($) {
                         var room = $spec.data('roomid'),
                             date = $spec.data('fulldate');
                         if (room !== specialRoom || specialBegin === date) {
+                            specialRoomType = null;
                             specialRoom = null;
                             specBeginTd.removeClass('special_selected');
                             specialBegin = null;
@@ -41,10 +44,12 @@ $(document).ready(function ($) {
                                 specialEnd = oldBegin;
                             }
                             var url = Routing.generate('special_new', {
-                                room: specialRoom,
+                                room: specialRoomType,
+                                virtual: specialRoom,
                                 begin: specialBegin,
                                 end: specialEnd
                             });
+                            specialRoomType = null;
                             specialRoom = null;
                             specialBegin = null;
                             specialEnd = null;

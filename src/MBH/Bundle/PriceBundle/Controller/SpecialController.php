@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Form\SpecialFilterType;
 use MBH\Bundle\PriceBundle\Form\SpecialType;
@@ -59,20 +60,26 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
     /**
      * Displays a form to create a new entity.
      *
-     * @Route("/new/{room}/{begin}/{end}", name="special_new", options={"expose"=true})
+     * @Route("/new/{virtual}/{room}/{begin}/{end}", name="special_new", options={"expose"=true})
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_SPECIAL_NEW')")
      * @Template()
-
      * @param Request $request
+     * @param Room|null $virtual
+     * @param RoomType|null $room
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function newAction(Request $request, Room $room = null, \DateTime $begin = null, \DateTime $end = null)
+    public function newAction(Request $request, Room $virtual = null,  RoomType $room = null, \DateTime $begin = null, \DateTime $end = null)
     {
         $entity = new Special();
         $entity->setHotel($this->hotel);
+        if ($virtual) {
+            $entity->setVirtualRoom($virtual);
+        }
         if ($room) {
-            $entity->setVirtualRoom($room);
+            $entity->addRoomType($room);
         }
         if ($begin) {
             $entity->setBegin($begin);
@@ -80,6 +87,7 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         if ($end) {
             $entity->setEnd($end);
         }
+        $entity->setRemain(1);
 
         $form = $this->createForm(SpecialType::class, $entity);
 

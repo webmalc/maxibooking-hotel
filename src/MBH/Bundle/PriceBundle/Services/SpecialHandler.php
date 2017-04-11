@@ -10,6 +10,7 @@ use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\SpecialPrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Monolog\Logger;
 
 class SpecialHandler
 {
@@ -31,14 +32,21 @@ class SpecialHandler
      * @param SearchFactory $search
      * @param DocumentManager $dm
      * @param Helper $helper
+     * @param Calculation $calc
+     * @param Logger $logger
      */
-    public function __construct(SearchFactory $search, DocumentManager $dm, Helper $helper, Calculation $calc)
-    {
+    public function __construct(
+        SearchFactory $search,
+        DocumentManager $dm,
+        Helper $helper,
+        Calculation $calc,
+        Logger $logger
+    ) {
         $this->dm = $dm;
         $this->search = $search;
-
         $this->helper = $helper;
         $this->calc = $calc;
+        $this->logger = $logger;
     }
 
 
@@ -49,21 +57,20 @@ class SpecialHandler
      */
     public function calculatePrices(array $specialIds = [], array $roomTypeIds = []): void
     {
-
-
         $specials = $this->getSpecials($specialIds);
         $currentDate = new \DateTime('midnight');
-
         /** @var Special $special */
         foreach ($specials as $special) {
             $special->setRecalculation();
             $this->dm->flush();
             $special->removeAllPrices();
+            $this->logger->addInfo(
+                'Start calculate for special',
+                ['specialId' => $special->getId(), 'specialName' => $special->getName()]
+            );
             if ($special->getIsEnabled()
                 && $special->getRemain() > 0
                 && $special->getBegin() > $currentDate
-                && $special->getDisplayFrom() <= $currentDate
-                && $special->getDisplayTo() >= $currentDate
             ) {
                 $roomTypes = $this->getRoomTypes($special);
                 $tariffs = $this->getTariffs($special);
@@ -77,10 +84,18 @@ class SpecialHandler
                         }
                     }
                 }
+            } else {
+                $this->logger->addInfo(
+                    'Не подошли услович для пересчета',
+                    ['specialId' => $special->getId(), 'specialName' => $special->getName()]
+                );
             }
-
             $special->setNoRecalculation();
             $this->dm->flush();
+            $this->logger->addInfo(
+                'End recalculate for special',
+                ['specialId' => $special->getId(), 'specialName' => $special->getName()]
+            );
         }
     }
 
@@ -129,13 +144,18 @@ class SpecialHandler
             $specialPrice
                 ->setTariff($tariff)
                 ->setRoomType($roomType)
-                ->setPrices($this->extractCalculationData($calculation));
+                ->setPrices($this->extractDataFromCalculation($calculation));
+
+            $this->logger->addInfo('Found special prices', ['special' =>  $special->getName()]);
+        } else {
+            $this->logger->addInfo('Not found special prices', ['special' => $special->getName()]);
         }
+
 
         return $specialPrice;
     }
 
-    private function extractCalculationData(array $calculation): array
+    private function extractDataFromCalculation(array $calculation): array
     {
         $result = [];
         foreach ($calculation as $calcKeys => $calcValue) {
@@ -144,7 +164,6 @@ class SpecialHandler
 
         return $result;
     }
-
 
     /**
      * @param array $specialIds
@@ -155,6 +174,7 @@ class SpecialHandler
         $qb = $this->dm->getRepository('MBHPriceBundle:Special')->createQueryBuilder();
 
         if (count($specialIds) == 0) {
+            //Why 10 days ?
             $qb->field('displayTo')->gte(new \DateTime('midnight - 10 days'));
         } else {
             $qb->field('id')->in($specialIds);

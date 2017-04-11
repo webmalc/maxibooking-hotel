@@ -20,9 +20,10 @@ class SpecialsController extends BaseController
      * @Route("/")
      * @Template()
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
         $specialsFilter = new SpecialFilter();
+
         $specialsFilter->setBegin(new \DateTime("now midnight"));
         $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($specialsFilter);
         $preparer = $this->get('mbh.online.special_data_preparer');

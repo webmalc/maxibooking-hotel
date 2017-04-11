@@ -2,6 +2,8 @@
     {% block data_row %}
     {% endblock %}
     {% block redbox %}
+        {% block redbox_message %}
+        {% endblock %}
     {% endblock %}
     {% block discount %}
         {% set discount = tariffResult.tariff.defaultPromotion.discount??'' %}

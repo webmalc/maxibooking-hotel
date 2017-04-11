@@ -22,7 +22,7 @@
         <div class="mbh-graph-wrapper">
             <table class="table-hover">
                 <thead>
-                <tr>
+                <tr >
                     <th class="mbh-graph-date-th" style="width: 180px !important;">#</th>
                     {% for date in data.dates %}
                         <th class="mbh-graph-date-th">
@@ -40,7 +40,7 @@
                 {% set countNumTwo = 0 %}
                 {% set countRowNum = 0 %}
                 {% for room in rooms %}
-                    <tr>
+                    <tr data-roomtypeid="{{ roomType.id }}" >
                         <td class="text-center text-muted mbh-graph-cell">
                             <small>{{ room }}</small>
                         </td>

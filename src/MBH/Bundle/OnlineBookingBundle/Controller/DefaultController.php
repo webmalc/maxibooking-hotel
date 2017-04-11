@@ -327,6 +327,7 @@ class DefaultController extends BaseController
                     'tariff' => $formData['tariff'],
                     'accommodation' => false,
                     'isOnline' => true,
+                    'special' => $formData['special']
                 ],
             ];
             $tourist = [
@@ -341,6 +342,8 @@ class DefaultController extends BaseController
                 'tourist' => $tourist,
                 'status' => 'online',
                 'confirmed' => false,
+                'special' => $formData['special']
+
             ];
             //--> Если по телефону - сюда
             if ($reservation) {
@@ -383,10 +386,16 @@ class DefaultController extends BaseController
                 ]
             );
         } else {
+
             $data = $isSubmit ? $form->getData() : $request->get('form');
             $roomTypeID = $data['roomType'];
             $tariffID = $data['tariff'];
+            $specialId = $data['special']??null;
 
+            $special = null;
+            if ($specialId) {
+                $special = $this->dm->find(Special::class, $specialId);
+            }
             /** @var RoomType $roomType */
             $roomType = $this->dm->getRepository(RoomType::class)->find($roomTypeID);
             if (!$roomType) {
@@ -394,8 +403,10 @@ class DefaultController extends BaseController
             }
 
             $roomTypeCategory = null;
-            if ($this->get('mbh.hotel.room_type_manager')->useCategories) {
+            if ($this->get('mbh.hotel.room_type_manager')->useCategories && !$special) {
                 $roomTypeCategory = $roomType->getCategory();
+            } else {
+                $roomTypeCategory = $roomType;
             }
 
             /** @var Tariff $tariff */
@@ -423,6 +434,7 @@ class DefaultController extends BaseController
                     'data' => $data,
                     'days' => $days,
                     'offera' => $this->getParameter('offera'),
+                    'special' => $special
                 ]
             );
         }
@@ -734,8 +746,13 @@ class DefaultController extends BaseController
         $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
             ['id' => $data['packages'][0]['tariff']]
         );
+        if ($data['special']) {
+            $special = $this->dm->find(Special::class, $data['special']);
+        }
+
         $recipient = new OnlineNotifyRecipient();
         $recipient->setEmail($this->container->getParameter('online_reservation_manager_email'));
+        $managerTemplate = $special?'MBHOnlineBookingBundle:Mailer:special.reservation.html.twig':'MBHOnlineBookingBundle:Mailer:reservation.html.twig';
         $message
             ->setRecipients([$recipient])
             ->setSubject('mailer.online.backend.reservation.subject')
@@ -752,11 +769,12 @@ class DefaultController extends BaseController
                     'client' => $data['tourist'],
                     'total' => $data['total'],
                     'package' => $data['packages'][0],
+                    'special' => $special??null
 
                 ]
             )
             ->setHotel($hotel)
-            ->setTemplate('MBHOnlineBookingBundle:Mailer:reservation.html.twig')
+            ->setTemplate($managerTemplate)
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'));
 
@@ -765,6 +783,7 @@ class DefaultController extends BaseController
             ->notify();
 
         if ($data['tourist']['email']) {
+            $clientTemplate = $special?'MBHOnlineBookingBundle:Mailer:special.reservation.client.html.twig':'MBHOnlineBookingBundle:Mailer:reservation.client.html.twig';
             $tourist = $data['tourist'];
             $notifier = $this->container->get('mbh.notifier.mailer');
             $recipient = new OnlineNotifyRecipient();
@@ -775,7 +794,7 @@ class DefaultController extends BaseController
                 ->setRecipients([$recipient])
                 ->setSubject('mailer.online.backend.reservation.client.subject')
                 ->setText('mailer.online.backend.reservation.client.text')
-                ->setTemplate('MBHOnlineBookingBundle:Mailer:reservation.client.html.twig');
+                ->setTemplate($clientTemplate);
             $notifier
                 ->setMessage($message)
                 ->notify();

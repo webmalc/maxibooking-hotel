@@ -124,8 +124,11 @@
                             data-children="{{ tariffResult.children }}"
                             data-begin="{{ tariffResult.begin|date('d.m.Y') }}"
                             data-end="{{ tariffResult.end|date('d.m.Y') }}"
-                            data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ tariffResult.adults }}&form[children]={{ tariffResult.children }}&form[begin]={{ tariffResult.begin|date('d.m.Y') }}&form[end]={{ tariffResult.end|date('d.m.Y') }}&form[roomType]={{ tariffResult.roomType.id }}&form[tariff]={{ tariffResult.tariff.id }}&form[total]={{ tariffResult.getPrice(tariffResult.adults, tariffResult.children) }}&form[infants]={{ tariffResult.infants }}&form[paymentType]={{ tariffResult.tariff.paymentType }}"
                             data-payment_type="{{ tariffResult.tariff.paymentType }}"
+                            {% block data_url %}
+                            data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ tariffResult.adults }}&form[children]={{ tariffResult.children }}&form[begin]={{ tariffResult.begin|date('d.m.Y') }}&form[end]={{ tariffResult.end|date('d.m.Y') }}&form[roomType]={{ tariffResult.roomType.id }}&form[tariff]={{ tariffResult.tariff.id }}&form[total]={{ tariffResult.getPrice(tariffResult.adults, tariffResult.children) }}&form[infants]={{ tariffResult.infants }}&form[paymentType]={{ tariffResult.tariff.paymentType }}"
+                            {% endblock %}
+
                     >
                         <td>{% block tariffName %}{{ tariffResult.tariff.name }}{% endblock %}</td>
                         <td class="redtd">{% block discount %}{% endblock %}</td>

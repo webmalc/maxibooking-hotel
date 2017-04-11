@@ -113,6 +113,7 @@ class SignType extends AbstractType
             ->add('paymentType', HiddenType::class, [])
             ->add('total', HiddenType::class)
             ->add('promotion', HiddenType::class)
+            ->add('special', HiddenType::class)
         ;
         $builder->get('cash')->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event){
             $data = $event->getForm()->getParent()->getData();

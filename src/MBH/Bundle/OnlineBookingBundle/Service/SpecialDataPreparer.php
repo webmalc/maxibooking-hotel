@@ -34,7 +34,7 @@ class SpecialDataPreparer
     {
         $result = [];
         foreach ($specials as $special) {
-            if (!($special instanceof Special) || !count($special->getRoomTypes()) || $special->isRecalculation()) {
+            if (!($special instanceof Special) || !count($special->getRoomTypes()) || $special->isRecalculation() || !$special->getRemain()) {
                 continue;
             }
             foreach ($special->getPrices() as $specialPrice) {
@@ -78,7 +78,6 @@ class SpecialDataPreparer
             'specialId' => $special->getId(),
             'roomTypeId' => $roomType->getId(),
             'roomCategoryId' => $roomType->getCategory()->getId(),
-            /*'virtualRoomId' => $special->getVirtualRoom()->getId()*/
         ];
 
         return $result;
