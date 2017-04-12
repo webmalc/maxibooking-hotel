@@ -24,10 +24,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Process\Process;
 
 /**
  * @Route("/report")
@@ -82,13 +84,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function callPackagingAction()
     {
-        $kernel = $this->get('kernel');
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-        $input = new ArrayInput([
-            'command' => 'mbh:virtual_rooms:move'
-        ]);
-        $application->run($input);
+        $console = $this->get('kernel')->getRootDir() . '/../bin/console ';
+        $command = 'nohup php ' . $console . 'mbh:virtual_rooms:move';
+        $process = new Process($command);
+        $process->start();
 
         return new JsonResponse(['success' => true]);
     }
@@ -1030,25 +1029,5 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
-    }
-
-    /**
-     * @Route("/packaging", name="packaging_report")
-     * @Template()
-     * @param Request $request
-     * @return array
-     */
-    public function packagingAction(Request $request)
-    {
-        $helper = $this->get('mbh.helper');
-        if ($request->isMethod('POST')) {
-            $begin = $helper->getDateFromString($request->request->get('begin'));
-            $end = $helper->getDateFromString($request->request->get('end'));
-            $roomTypeIds = $request->request->get('roomType');
-        }
-        $asdf =123;
-        return [
-            'roomTypes' => $this->hotel->getRoomTypes(),
-        ];
     }
 }
