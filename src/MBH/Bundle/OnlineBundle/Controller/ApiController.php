@@ -293,7 +293,7 @@ class ApiController extends Controller
         $isViewTariff = false;
 
         $query->setChildrenAges(
-            !empty($request->get('children-ages')) ? $request->get('children-ages') : []
+            !empty($request->get('children-ages')) && $query->children > 0 ? $request->get('children-ages') : []
         );
 
         $hotels = $formConfig->getHotels();
@@ -368,7 +368,7 @@ class ApiController extends Controller
                 $facilityArray[$key] = $val;
             }
         }
-
+        
         return [
             'defaultTariff' => $defaultTariff ?? null,
             'facilityArray' => $facilityArray,
@@ -391,13 +391,22 @@ class ApiController extends Controller
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
         }
-
+        $services = $hotels = [];
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
+        foreach ($requestJson->packages as $data) {
+            $hotels[] = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneById($data->hotel->id);
+        }
+
+        foreach ($hotels as $hotel) {
+            $services = array_merge($services, $hotel->getServices(true, true));
+        }
         return [
             'arrival' => $this->container->getParameter('mbh.package.arrival.time'),
             'departure' => $this->container->getParameter('mbh.package.departure.time'),
-            'request' => $requestJson
+            'request' => $requestJson,
+            'services' => $services,
+            'hotels' => $hotels
         ];
     }
 
