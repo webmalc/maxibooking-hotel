@@ -27,6 +27,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/report")
@@ -1061,7 +1062,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 ->setEnd($end);
 
             foreach ($roomTypeIds as $roomTypeId) {
-                $packageMovingInfo->addRoomTypeId($roomTypeId);
+                if ($roomTypeId != '') {
+                    $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
+                    $packageMovingInfo->addRoomTypeId($roomType);
+                }
             }
 
             $this->dm->persist($packageMovingInfo);
@@ -1084,7 +1088,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
-     * @ParamConverter("packageMovingInfo", class="PackageBundle:PackageMovingInfo", options={"id" = "movingInfoId"})
+     * @ParamConverter("packageMovingInfo", class="MBHPackageBundle:PackageMovingInfo", options={"id" = "movingInfoId"})
      * @Route("package_move/{movingInfoId}/{movingPackageId}", name="package_move", options={"expose" = true})
      * @param PackageMovingInfo $packageMovingInfo
      * @param $movingPackageId
@@ -1097,9 +1101,34 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         if (is_null($movingPackageData)) {
             $isSuccess = false;
         } else {
-
+            $movingPackageData->setIsMoved(true);
         }
 
         return new JsonResponse(['success' => $isSuccess]);
+    }
+
+    /**
+     * @Route("/test")
+     */
+    public function testAction()
+    {
+        $data = $this->dm->getRepository('MBHPackageBundle:PackageMovingInfo')->findOneBy([]);
+        $this->get('mbh_package_zip')->fillMovingPackageData($data);
+
+        return new Response();
+    }
+
+    /**
+     * @ParamConverter("packageMovingInfo", class="MBHPackageBundle:PackageMovingInfo", options={"id" = "movingInfoId"})
+     * @Route("/close_moving_report/{movingInfoId}", name="close_moving_report", options={"expose" = true})
+     * @param PackageMovingInfo $packageMovingInfo
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function closePackageMovingReport(PackageMovingInfo $packageMovingInfo)
+    {
+        $packageMovingInfo->setStatus(PackageMovingInfo::OLD_REPORT_STATUS);
+        $this->dm->flush();
+
+        return $this->redirectToRoute('package_moving');
     }
 }

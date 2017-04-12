@@ -19,6 +19,12 @@ class MovingPackageData
     protected $id;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isMoved = false;
+
+    /**
      * @var Package
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Package")
      */
@@ -29,6 +35,25 @@ class MovingPackageData
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      */
     private $newRoomType;
+
+    /**
+     * @return bool
+     */
+    public function getIsMoved(): bool
+    {
+        return $this->isMoved;
+    }
+
+    /**
+     * @param bool $isMoved
+     * @return MovingPackageData
+     */
+    public function setIsMoved(bool $isMoved): MovingPackageData
+    {
+        $this->isMoved = $isMoved;
+
+        return $this;
+    }
 
     /**
      * @return string

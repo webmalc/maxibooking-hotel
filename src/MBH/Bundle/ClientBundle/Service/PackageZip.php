@@ -114,7 +114,7 @@ class PackageZip
 
                             $result = $this->orderManager->updatePackage($oldPackage, $newPackage);
 
-                            if ($result instanceof Package && $package->getRoomType() !== $newPackage->getRoomType()) {
+                            if ($result instanceof Package && $package->getRoomType()->getId() !== $newPackage->getRoomType()->getId()) {
 
                                 $info['amount']++;
                                 $package->setEnd($endDate)
@@ -157,8 +157,12 @@ class PackageZip
             ->getRepository('MBHPackageBundle:Package')
             ->createQueryBuilder()
             ->field('begin')->lte($packageMovingInfo->getEnd())
-            ->field('end')->gte($packageMovingInfo->getBegin())
-            ->field('roomType.id')->in($packageMovingInfo->getRoomTypeIds());
+            ->field('end')->gte($packageMovingInfo->getBegin());
+        $helper = $this->container->get('mbh.helper');
+        if ($packageMovingInfo->getRoomTypes()->count() > 0) {
+            $roomTypeIds = $helper->toIds($packageMovingInfo->getRoomTypes()->toArray());
+            $queryBuilder->field('roomType.id')->in($roomTypeIds);
+        }
 
         $handledPackagesCount = $queryBuilder->getQuery()->count();
         $packagesPerIteration = 50;
@@ -170,17 +174,25 @@ class PackageZip
                 ->getQuery()
                 ->execute();
 
+            /** @var Package $package */
             foreach ($packages as $package) {
-                $optimalRoomType = $this->getOptimalRoomType($package);
-                $movingPackageData = (new MovingPackageData())
-                    ->setNewRoomType($optimalRoomType)
-                    ->setPackage($package);
-                $packageMovingInfo->addMovingPackageData($movingPackageData);
+                if ($package->getCountPersons() < $package->getRoomType()->getTotalPlaces()) {
+
+                    $optimalRoomType = $this->getOptimalRoomType($package);
+                    if (!is_null($optimalRoomType) && $optimalRoomType->getId() != $package->getRoomType()->getId()) {
+                        $movingPackageData = (new MovingPackageData())
+                            ->setNewRoomType($optimalRoomType)
+                            ->setPackage($package);
+                        $packageMovingInfo->addMovingPackageData($movingPackageData);
+                    }
+                }
             }
 
             $this->dm->flush();
-            $this->dm->clear();
         }
+
+        $packageMovingInfo->setStatus(PackageMovingInfo::READY_STATUS);
+        $this->dm->flush();
 
         return $packageMovingInfo;
     }
@@ -209,9 +221,7 @@ class PackageZip
             return null;
         }
 
-        usort(
-            $groupedResult,
-            function ($a, $b) {
+        usort($groupedResult, function ($a, $b) {
                 /** @var SearchResult $a */
                 /** @var SearchResult $b */
                 if ($a->getRoomType()->getTotalPlaces() == $b->getRoomType()->getTotalPlaces()) {

@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\UserBundle\Document\User;
 
@@ -18,7 +19,7 @@ use MBH\Bundle\UserBundle\Document\User;
 class PackageMovingInfo
 {
     const PREPARING_STATUS = 'preparing';
-    const ENABLED_STATUS = 'enabled';
+    const READY_STATUS = 'ready';
     const OLD_REPORT_STATUS = 'old';
 
     /**
@@ -53,9 +54,9 @@ class PackageMovingInfo
 
     /**
      * @var array
-     * @ODM\Field(type="collection")
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      */
-    protected $roomTypeIds;
+    protected $roomTypes;
 
     /**
      * @var MovingPackageData[]
@@ -73,7 +74,7 @@ class PackageMovingInfo
     public function __construct()
     {
         $this->movingPackagesData = new ArrayCollection();
-        $this->roomTypeIds = [];
+        $this->roomTypes = new ArrayCollection();
     }
 
     /**
@@ -153,33 +154,31 @@ class PackageMovingInfo
     }
 
     /**
-     * @return array
+     * @return ArrayCollection
      */
-    public function getRoomTypeIds(): ?array
+    public function getRoomTypes()
     {
-        return $this->roomTypeIds;
+        return $this->roomTypes;
     }
 
     /**
-     * @param $roomTypeId
+     * @param RoomType $roomType
      * @return PackageMovingInfo
      */
-    public function addRoomTypeId($roomTypeId): PackageMovingInfo
+    public function addRoomTypeId(RoomType $roomType): PackageMovingInfo
     {
-        $this->roomTypeIds[] = $roomTypeId;
+        $this->roomTypes->add($roomType);
 
         return $this;
     }
 
     /**
-     * @param $roomTypeId
+     * @param RoomType $roomType
      * @return PackageMovingInfo
      */
-    public function removeRoomTypeId($roomTypeId): PackageMovingInfo
+    public function removeRoomType(RoomType $roomType): PackageMovingInfo
     {
-        if(($key = array_search($roomTypeId, $this->roomTypeIds)) !== false) {
-            unset($this->roomTypeIds[$key]);
-        }
+        $this->roomTypes->remove($roomType);
 
         return $this;
     }
@@ -264,7 +263,7 @@ class PackageMovingInfo
         return [
             self::OLD_REPORT_STATUS,
             self::PREPARING_STATUS,
-            self::ENABLED_STATUS
+            self::READY_STATUS
         ];
     }
 }

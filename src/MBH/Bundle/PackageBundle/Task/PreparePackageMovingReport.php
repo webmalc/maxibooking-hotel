@@ -35,7 +35,7 @@ class PreparePackageMovingReport implements ConsumerInterface
             ->find('MBHPackageBundle:PackageMovingInfo', $message['packageMovingInfoId']);
 
         $packageMovingInfo = $this->packageZip->fillMovingPackageData($packageMovingInfo);
-        $this->sendMailNotification($packageMovingInfo);
+//        $this->sendMailNotification($packageMovingInfo);
 
         return true;
     }
