@@ -416,7 +416,7 @@ class PackageService extends Base
         $service  = $this->getService();
         $calcType = $service->getCalcType();
 
-        if ($calcType == 'per_stay') {
+        if ($calcType == 'per_stay' || !$this->getNights()) {
             $this->setNights(1);
         }
 

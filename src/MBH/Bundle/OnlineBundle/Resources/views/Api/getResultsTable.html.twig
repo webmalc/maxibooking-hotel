@@ -42,8 +42,8 @@
                                     {% endif %}
                                     <span class="mbh-results-roomType"
                                           data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle(app.request.locale) }}</span>
-                                    {% if hotels|length > 1 %}<span class="mbh-results-hotel"
-                                                                    data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>{% endif %}
+                                    <span class="mbh-results-hotel"
+                                                                    data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>
                                     {% if result.roomType.description is not empty %}
                                         <div class="mbh-results-roomType-description-wrappper">
                                             <a href="#" class="mbh-results-roomType-description-link"> <i

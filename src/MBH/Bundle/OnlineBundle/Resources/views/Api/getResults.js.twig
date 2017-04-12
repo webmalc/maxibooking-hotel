@@ -299,7 +299,7 @@ jQuery(document).ready(function () {
                         if(jQuery(this).val() > 0) {
                             var tr = jQuery(this).closest('tr'),
                                 id = tr.find('span.mbh-results-services-name').attr('data-id')
-                                ;
+                            ;
                             requestParams.services.push({
                                 'id' : id,
                                 'amount': jQuery(this).val()
@@ -321,7 +321,6 @@ jQuery(document).ready(function () {
                         success: function(data) {
                             wrapper.html('{{ styles|escape("js") }}' + data);
 
-                            console.log(requestParams)
                             var prevUser = jQuery.cookie('mbh.user');
                             var prevPackage = jQuery.cookie('mbh.package');
 
@@ -399,9 +398,39 @@ jQuery(document).ready(function () {
 
                             // user form next button
                             jQuery('#mbh-user-form-next').click(function(){
+                                servicesCount = jQuery('select.mbh-results-services-count')
+                                
+                                servicesCount.each( function() {
+                                    if(jQuery(this).val() > 0) {
+                                        var tr = jQuery(this).closest('tr'),
+                                            id = tr.find('span.mbh-results-services-name').attr('data-id')
+                                        ;
+                                        requestParams.services.push({
+                                            'id' : id,
+                                            'amount': jQuery(this).val()
+                                        });
+                                    }
+                                });
                                 requestParams.user = getUser();
                                 requestParams = jQuery.extend(requestParams, getPackageInfo());
 
+                                var totalServices = 0;
+                                servicesCount.each( function() {
+                                    if(jQuery(this).val() > 0) {
+                                        var tr = jQuery(this).closest('tr'),
+                                            span = tr.find('span.mbh-results-services-prices')
+                                        ;
+                                        if(span.length) {
+                                            totalServices += parseInt(span.attr('data-value')) * jQuery(this).val();
+                                        }
+                                        ;
+                                    }
+                                });
+                                var total = parseInt(requestParams.total.replace(/,/g,''));
+                                
+                                total += totalServices;
+                                requestParams.total = String(total);
+                                requestParams.totalServices = String(totalServices);
                                 waiting();
 
                                 // ------------------------------ STEP 3: load payment type -------------------------
