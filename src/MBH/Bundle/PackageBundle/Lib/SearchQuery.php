@@ -220,6 +220,13 @@ class SearchQuery
         }
     }
 
+    public function addRoomTypeArray(array $roomTypeIds)
+    {
+        foreach ($roomTypeIds as $id) {
+            $this->addRoomType($id);
+        }
+    }
+
     /**
      * @param array $ages
      */

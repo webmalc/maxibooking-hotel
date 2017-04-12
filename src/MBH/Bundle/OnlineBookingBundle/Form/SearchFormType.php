@@ -40,22 +40,6 @@ class SearchFormType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var DocumentRepository $roomTypeRepository */
-//        $roomTypeRepository = $this->container->get('mbh.hotel.room_type_manager')->getRepository();
-//        $roomTypes = $roomTypeRepository
-//            ->createQueryBuilder()
-//            ->field('isEnabled')
-//            ->equals(true)
-//            ->getQuery()
-//            ->execute();
-//        $roomTypeList = [];
-//        $hotelIds = [];
-//        /** @var RoomType $roomType */
-//        foreach ($roomTypes as $roomType) {
-//            $hotelIds[$roomType->getId()] = $roomType->getHotel()->getId();
-//            $roomTypeList[$roomType->getId()] = $roomType->getFullTitle();
-//        }
-
         $builder
             ->add('hotel', DocumentType::class, [
                 'label' => 'Пансионат',
@@ -73,19 +57,6 @@ class SearchFormType extends AbstractType
                         ->sort('fullTitle', 'DESC');
                 }
 
-            ])
-//            ->add('roomType', InvertChoiceType::class, [
-//                'label' => 'Тип номера',
-//                'required' => false,
-//                'placeholder' => 'Все типы номеров',
-//                'choices' => $roomTypeList,
-//                'choice_attr' => function ($roomType) use ($hotelIds) {
-//                    return ['data-hotel' => $hotelIds[$roomType]];
-//                }
-//            ])
-            ->add('roomType', DocumentType::class, [
-                'class' => 'MBH\Bundle\HotelBundle\Document\RoomType',
-                'required' => false
             ])
             ->add('begin', DateType::class, [
                 'label' => 'Дата заезда',
@@ -152,6 +123,10 @@ class SearchFormType extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
             ])
+            ->add('roomType', DocumentType::class, [
+                'class' => 'MBH\Bundle\HotelBundle\Document\RoomType',
+                'required' => false
+            ])
             ->add('special', DocumentType::class, [
                 'class' => 'MBHPriceBundle:Special',
                 'required' => false
@@ -172,7 +147,8 @@ class SearchFormType extends AbstractType
                     'csrf_protection' => false,
                     'attr' => [
                         'class' => 'booking-form'
-                    ]
+                    ],
+                    'data_class' => 'MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData'
                 ]
             );
     }

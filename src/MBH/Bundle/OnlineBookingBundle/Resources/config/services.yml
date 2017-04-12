@@ -34,3 +34,22 @@ services:
     mbh.online.special_data_preparer:
         class: MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer
         arguments: ['@doctrine.odm.mongodb.document_manager']
+
+    mbh.online.search_form_data:
+        class: MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData
+        arguments: ['@mbh.hotel.room_type_manager']
+
+    mbh.online.abstract_result_generator:
+        abstract: true
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\AbstractResultGenerator
+        arguments: ['@mbh.package.search']
+
+    mbh.online.common_result_generator:
+        parent: mbh.online.abstract_result_generator
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineCommonResultGenerator
+
+    mbh.online.search_helper:
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSearchHelper
+        arguments: ['%online_booking%']
+        calls:
+            - [addGenerator, ['@mbh.online.common_result_generator']]

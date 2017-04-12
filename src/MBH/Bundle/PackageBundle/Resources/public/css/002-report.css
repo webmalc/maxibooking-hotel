@@ -451,6 +451,10 @@
 #accommodation-report-content .tile-bookable {
   cursor: pointer;
 }
+#packaging-info-modal .modal-body {
+  text-align: center;
+  font-size: 1.2em;
+}
 .room-types-table .wait-accommodation td:nth-child(4),
 .room-types-table .wait-accommodation :nth-child(5),
 .room-types-table .wait-accommodation :nth-child(6),
