@@ -15,6 +15,12 @@
 {% endblock %}
 
 {% block content %}
+    <div id="dimmer"></div>
+    <div id="loading-indicator" style="position:fixed; display: none; z-index:500;">
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+    </div>
+
     {% if movingInfo is null %}
         {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'analytics-filter-widget'} %}
         <form id="analytics-filter" method="post" class="form-inline remember" role="form">
@@ -92,12 +98,14 @@
                             <tr>
                                 <td><a href="{{ path('user_edit', {'id': movingInfo.runningBy.id}) }}"
                                        target="_blank">{{ movingInfo.runningBy }}</a></td>
-                                <td>{{ movingInfo.startAt|date('d.m.Y H:m:s') }}</td>
+                                <td>{{ movingInfo.startAt|date('d.m.Y H:i:s') }}</td>
                                 <td>{{ movingInfo.begin|mbh_format }} - {{ movingInfo.end|mbh_format }}</td>
                                 <td>
-                                    {% for roomType in movingInfo.roomTypes %}
-                                        {{ roomType.name }} {% if roomType != movingInfo.roomTypes|last %}, {% endif %}
-                                    {% endfor %}
+                                    {% if movingInfo.roomTypes|length == 0 %}
+                                        Все типы комнат
+                                    {% else %}
+                                        {{ movingInfo.roomTypes|join(', ') }}
+                                    {% endif %}
                                 </td>
                             </tr>
                             </tbody>
@@ -122,6 +130,7 @@
                     <th class="td-md text-center">Гости</th>
                     <th class="td-md text-center">{{ 'report.packages_moving.old_room_type'|trans }}</th>
                     <th class="td-md text-center">{{ 'report.packages_moving.new_room_type'|trans }}</th>
+                    <th class="td-md text-center">Отель</th>
                     <th class="td-sm"></th>
                 </tr>
                 </thead>
@@ -129,51 +138,56 @@
 
                 {% for movingPackagesData in movingInfo.movingPackagesData %}
                     {% set package = movingPackagesData.package %}
-                    <tr>
-                        <td class="td-md text-center">
-                            <a href="{{ path('package_edit', { id : package.id}) }}" target="_blank">
-                                {{ package.numberWithPrefix }}
-                            </a>
-                        </td>
-                        <td class="td-md text-center">
-                            {{ package.begin|mbh_format }}
-                            - {{ package.end|mbh_format }}
-                        </td>
-                        <td class="text-center">
-                            <a data-toggle='tooltip'
-                               href='{{ path('package_order_tourist_edit', {'id': package.order.id, 'packageId': package.id}) }}'
-                               title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}'
-                               class='{{ package.order.payer ? '' : 'danger' }}'>{% if package.order.payer %}{{ package.order.payer.shortName }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
-                            <small>
-                                <br>{% if package.adults > 0 %}{{ package.adults }} вз.{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} рб.{% endif %}
-                                / оформлено: {{ package.tourists|length }}</small>
-                        </td>
-                        <td class="text-center">
-                            {{ package.roomType }}<br>
-                            <small><a target="_blank" data-toggle='tooltip'
-                                      title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}'
-                                      href='{{ path('package_accommodation', {'id': package.id}) }}'
-                                      class='{{ package.accommodation ? '' : 'danger' }}'>
-                                    {% if package.accommodation and package.accommodation.roomType %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
-                            </small>
-                        </td>
-                        <td class="text-center">
-                            {{ movingPackagesData.newRoomType }}
-                        </td>
-                        <td class="table-actions-td text-center">
-                            {% if movingPackagesData.isMoved == true %}
-                                <button class="btn btn-sm btn-primary package-move-button disabled" type="button"
-                                        id="{{ movingPackagesData.id }}">
-                                    Перемещено
-                                </button>
-                            {% else %}
-                                <button class="btn btn-sm btn-primary package-move-button" type="button"
-                                        id="{{ movingPackagesData.id }}">
-                                    Переместить
-                                </button>
-                            {% endif %}
-                        </td>
-                    </tr>
+                    {% if package.isMovable %}
+                        <tr>
+                            <td class="td-md text-center">
+                                <a href="{{ path('package_edit', { id : package.id}) }}" target="_blank">
+                                    {{ package.numberWithPrefix }}
+                                </a>
+                            </td>
+                            <td class="td-md text-center">
+                                {{ package.begin|mbh_format }}
+                                - {{ package.end|mbh_format }}
+                            </td>
+                            <td class="text-center">
+                                <a data-toggle='tooltip'
+                                   href='{{ path('package_order_tourist_edit', {'id': package.order.id, 'packageId': package.id}) }}'
+                                   title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}'
+                                   class='{{ package.order.payer ? '' : 'danger' }}'>{% if package.order.payer %}{{ package.order.payer.shortName }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
+                                <small>
+                                    <br>{% if package.adults > 0 %}{{ package.adults }} вз.{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} рб.{% endif %}
+                                    / оформлено: {{ package.tourists|length }}</small>
+                            </td>
+                            <td class="text-center">
+                                {{ movingPackagesData.oldRoomType }}<br>
+                                <small><a target="_blank" data-toggle='tooltip'
+                                          title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}'
+                                          href='{{ path('package_accommodation', {'id': package.id}) }}'
+                                          class='{{ movingPackagesData.oldAccommodation ? '' : 'danger' }}'>
+                                        {% if movingPackagesData.oldAccommodation and movingPackagesData.oldAccommodation.roomType %}{{ movingPackagesData.oldAccommodation.name(movingPackagesData.oldRoomType.id == movingPackagesData.oldAccommodation.roomType.id ? false : true) }}{% else %}&lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
+                                </small>
+                            </td>
+                            <td class="text-center">
+                                {{ movingPackagesData.newRoomType }}
+                            </td>
+                            <td class="text-center">
+                                {{ movingPackagesData.oldRoomType.hotel }}
+                            </td>
+                            <td class="table-actions-td text-center">
+                                {% if movingPackagesData.isMoved == true %}
+                                    <button class="btn btn-sm btn-primary package-move-button disabled" type="button"
+                                            id="{{ movingPackagesData.id }}">
+                                        Перемещено
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-sm btn-primary package-move-button" type="button"
+                                            id="{{ movingPackagesData.id }}">
+                                        Переместить
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
                 </tbody>
             </table>
@@ -211,7 +225,8 @@
                             <button type="button" class="btn btn-outline pull-left" data-dismiss="modal"><i
                                         class="fa fa-ban"> </i> {{ 'views.partials.entityDeleteForm.cancel'|trans({}, 'MBHBaseBundle') }}
                             </button>
-                            <button type="button" id="report-close-button" data-default="outline" class="btn btn-outline"><i
+                            <button type="button" id="report-close-button" data-default="outline"
+                                    class="btn btn-outline"><i
                                         id="report-close-button-icon" data-default="fa-trash-o"
                                         class="fa fa-times"></i>&nbsp;
                                 <span id="entity-delete-button-text">Закрыть отчет</span>

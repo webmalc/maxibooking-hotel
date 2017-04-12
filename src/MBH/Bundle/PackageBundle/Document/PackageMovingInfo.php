@@ -258,6 +258,20 @@ class PackageMovingInfo
     /**
      * @return array
      */
+    public function getSortedMovingPackageDataByHotels()
+    {
+        $result = [];
+        foreach ($this->movingPackagesData as $movingPackageData) {
+            $hotelName = $movingPackageData->getPackage()->getHotel()->getName();
+            $result[$hotelName][] = $movingPackageData;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
     public static function getReportStatusesList()
     {
         return [

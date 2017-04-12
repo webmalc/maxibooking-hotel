@@ -3,7 +3,6 @@
 namespace MBH\Bundle\PackageBundle\Task;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\ClientBundle\Service\PackageZip;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -14,14 +13,11 @@ class PreparePackageMovingReport implements ConsumerInterface
     private $packageZip;
     /** @var  DocumentManager $dm */
     private $dm;
-    /** @var  Notifier $mailer  */
-    private $mailer;
 
-    public function __construct(PackageZip $packageZip, DocumentManager $dm, Notifier $mailer)
+    public function __construct(PackageZip $packageZip, DocumentManager $dm)
     {
         $this->packageZip = $packageZip;
         $this->dm = $dm;
-        $this->mailer = $mailer;
     }
 
     /**
@@ -35,30 +31,9 @@ class PreparePackageMovingReport implements ConsumerInterface
             ->find('MBHPackageBundle:PackageMovingInfo', $message['packageMovingInfoId']);
 
         $packageMovingInfo = $this->packageZip->fillMovingPackageData($packageMovingInfo);
-//        $this->sendMailNotification($packageMovingInfo);
+        $this->packageZip->sendPackageMovingMail($packageMovingInfo, 'mailer.package_moving_report.text',
+            'mailer.package_moving_report.subject', 'MBHBaseBundle:Mailer:package_moving_report.html.twig');
 
         return true;
-    }
-
-    private function sendMailNotification($packageMovingInfo)
-    {
-        //TODO: мб сменить получателя
-        $message = $this->mailer::createMessage();
-        $message
-            ->setText('mailer.packaging.text')
-            ->setFrom('system')
-            ->setSubject('mailer.packaging.subject')
-            ->setType('info')
-            ->setCategory('notification')
-            ->setTemplate('MBHBaseBundle:Mailer:packageMoving.html.twig')
-            ->setAdditionalData([
-                'movingInfo' => $packageMovingInfo,
-            ])
-            ->setAutohide(false)
-            ->setEnd(new \DateTime('+1 minute'));
-
-        $this->mailer
-            ->setMessage($message)
-            ->notify();
     }
 }

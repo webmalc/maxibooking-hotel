@@ -4,7 +4,8 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\PackageBundle\Document\MovingPackageData;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageMovingInfo;
@@ -158,11 +159,26 @@ class PackageZip
             ->createQueryBuilder()
             ->field('begin')->lte($packageMovingInfo->getEnd())
             ->field('end')->gte($packageMovingInfo->getBegin());
-        $helper = $this->container->get('mbh.helper');
+
         if ($packageMovingInfo->getRoomTypes()->count() > 0) {
-            $roomTypeIds = $helper->toIds($packageMovingInfo->getRoomTypes()->toArray());
-            $queryBuilder->field('roomType.id')->in($roomTypeIds);
+            $handledRoomTypes = $packageMovingInfo->getRoomTypes();
+        } else {
+            $handledRoomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+                ->createQueryBuilder()
+                ->field('isEnabled')->equals(true)
+                ->getQuery()
+                ->execute()
+                ->toArray();
         }
+
+        $roomTypeIds = [];
+        foreach ($handledRoomTypes as $handledRoomType) {
+            if ($this->hasLessAvailability($handledRoomType)) {
+                $roomTypeIds[] = $handledRoomType->getId();
+            }
+        }
+
+        $queryBuilder->field('roomType.id')->in($roomTypeIds);
 
         $handledPackagesCount = $queryBuilder->getQuery()->count();
         $packagesPerIteration = 50;
@@ -176,12 +192,14 @@ class PackageZip
 
             /** @var Package $package */
             foreach ($packages as $package) {
-                if ($package->getCountPersons() < $package->getRoomType()->getTotalPlaces()) {
+                if ($package->getCountPersons() < $package->getRoomType()->getTotalPlaces() && $package->getIsMovable()) {
 
                     $optimalRoomType = $this->getOptimalRoomType($package);
                     if (!is_null($optimalRoomType) && $optimalRoomType->getId() != $package->getRoomType()->getId()) {
                         $movingPackageData = (new MovingPackageData())
                             ->setNewRoomType($optimalRoomType)
+                            ->setOldRoomType($package->getRoomType())
+                            ->setOldAccommodation($package->getAccommodation())
                             ->setPackage($package);
                         $packageMovingInfo->addMovingPackageData($movingPackageData);
                     }
@@ -197,7 +215,62 @@ class PackageZip
         return $packageMovingInfo;
     }
 
-    private function getOptimalRoomType(Package $package)
+    /**
+     * Проверяет, является ли тип комнаты самым маленьким в категории
+     * @param RoomType $roomType
+     * @return bool
+     */
+    private function hasLessAvailability(RoomType $roomType)
+    {
+        /** @var RoomTypeCategory $roomTypeCategory */
+        $roomTypeCategory = $roomType->getCategory();
+        if ($roomTypeCategory->getTypes()->count() == 1) {
+            return false;
+        }
+
+        foreach ($roomTypeCategory->getTypes() as $iteratedRoomType) {
+            if ($iteratedRoomType->getTotalPlaces() < $roomType->getTotalPlaces()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param PackageMovingInfo $packageMovingInfo
+     * @param $text
+     * @param $subject
+     * @param $template
+     */
+    public function sendPackageMovingMail(PackageMovingInfo $packageMovingInfo, $text, $subject, $template)
+    {
+        $mailer = $this->container->get('mbh.notifier.mailer');
+
+        $message = $mailer::createMessage();
+        $message
+            ->setText($text)
+            ->setFrom('system')
+            ->setSubject($subject)
+            ->setType('info')
+            ->setCategory('notification')
+            ->setTemplate($template)
+            ->setAdditionalData([
+                'movingInfo' => $packageMovingInfo,
+            ])
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'));
+
+        $mailer
+            ->setMessage($message)
+            ->notify();
+    }
+
+    /**
+     * @param Package $package
+     * @return \MBH\Bundle\HotelBundle\Document\RoomType|null
+     */
+    public function getOptimalRoomType(Package $package)
     {
         //query Search
         $query = new SearchQuery();
@@ -208,6 +281,9 @@ class PackageZip
             if ($roomTypeCategory->getTotalPlaces() < $countRoom) {
                 $query->roomTypes[] = $roomTypeCategory->getId();
             }
+        }
+        if (count($query->roomTypes) == 0) {
+            return null;
         }
 
         $query->begin = clone $package->getBegin();

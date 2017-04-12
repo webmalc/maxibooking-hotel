@@ -151,4 +151,3 @@ services:
         arguments:
             - '@mbh_package_zip'
             - '@doctrine_mongodb.odm.document_manager'
-            - '@mbh.notifier.mailer'

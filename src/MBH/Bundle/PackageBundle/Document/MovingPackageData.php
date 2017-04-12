@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 
 /**
@@ -35,6 +36,56 @@ class MovingPackageData
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      */
     private $newRoomType;
+
+    /**
+     * @var RoomType
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
+     */
+    private $oldRoomType;
+
+    /**
+     * @var Room
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
+     */
+    private $oldAccommodation;
+
+    /**
+     * @return Room
+     */
+    public function getOldAccommodation(): ?Room
+    {
+        return $this->oldAccommodation;
+    }
+
+    /**
+     * @param Room $oldAccommodation
+     * @return MovingPackageData
+     */
+    public function setOldAccommodation(?Room $oldAccommodation): MovingPackageData
+    {
+        $this->oldAccommodation = $oldAccommodation;
+
+        return $this;
+    }
+
+    /**
+     * @return RoomType
+     */
+    public function getOldRoomType(): ?RoomType
+    {
+        return $this->oldRoomType;
+    }
+
+    /**
+     * @param RoomType $oldRoomType
+     * @return MovingPackageData
+     */
+    public function setOldRoomType(RoomType $oldRoomType): MovingPackageData
+    {
+        $this->oldRoomType = $oldRoomType;
+
+        return $this;
+    }
 
     /**
      * @return bool

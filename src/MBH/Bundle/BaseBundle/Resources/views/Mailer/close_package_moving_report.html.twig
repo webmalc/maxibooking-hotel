@@ -1,0 +1,68 @@
+{#{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}#}
+
+{% block subject %}
+    <div style="font-size: 1.25em">
+        <h2>
+            Результаты перемещений броней из отчета сформированного {{ movingInfo.startAt|date('d.m.Y H:i:s') }}
+        </h2>
+        <br>
+        {% if movingInfo.movingPackagesData|length == 0 %}
+            Ни 1 записи
+        {% else %}
+            {% for hotelName, movingPackagesDataByHotel in movingInfo.getSortedMovingPackageDataByHotels %}
+                <h2 style="background-color: #bababa; padding: 0 5px; text-align: center">
+                    {{ hotelName }}
+                </h2>
+
+                <table class="table table-striped table-hover table-condensed table-icons table-actions">
+                    <thead>
+                    <tr>
+                        <th style="text-align: center">Бронь</th>
+                        <th style="text-align: center">Даты</th>
+                        <th style="text-align: center">Гости</th>
+                        <th style="text-align: center">Из</th>
+                        <th style="text-align: center">В</th>
+                        <th>Перемещено?</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for movingPackagesData in movingPackagesDataByHotel %}
+                        {% set package = movingPackagesData.package %}
+                        <tr>
+                            <td style="text-align: center; padding: 0 5px">
+                                {{ package.numberWithPrefix }}
+                            </td>
+                            <td style="text-align: center; padding: 0 5px">
+                                {{ package.begin|mbh_format }}
+                                - {{ package.end|mbh_format }}
+                            </td>
+                            <td style="text-align: center; padding: 0 5px">
+                                {% if package.order.payer %}{{ package.order.payer.shortName }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}
+                                <small>
+                                    <br>{% if package.adults > 0 %}{{ package.adults }} вз.{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} рб.{% endif %}
+                                    / оформлено: {{ package.tourists|length }}</small>
+                            </td>
+                            <td style="text-align: center; padding: 0 5px">
+                                {{ movingPackagesData.oldRoomType }}<br>
+                                <small>
+                                    {% if movingPackagesData.oldAccommodation and movingPackagesData.oldAccommodation.roomType %}{{ movingPackagesData.oldAccommodation.name(movingPackagesData.oldRoomType.id == movingPackagesData.oldAccommodation.roomType.id ? false : true) }}{% else %}&lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}
+                                </small>
+                            </td>
+                            <td style="text-align: center; padding: 0 5px">
+                                {{ movingPackagesData.newRoomType }}
+                            </td>
+                            <td style="text-align: center; padding: 0 5px">
+                                {% if movingPackagesData.isMoved == true %}
+                                    Да
+                                {% else %}
+                                    Нет
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

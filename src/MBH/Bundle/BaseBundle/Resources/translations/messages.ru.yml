@@ -134,9 +134,12 @@ mailer.online.user.poll.prepend: "Здравствуйте, %guest%!<br><br>Мы
 mailer.online.user.poll.append: "Будем рады видеть вас снова!"
 mailer.online.user.poll.link: "Оцените качество обслуживания"
 
-mailer.package_moving.text: Перемещение броней
-mailer.package_moving.subject: Отчет о перемещении броней
-mailer.package_moving.content: 'Сгенерирован отчет о перемещении броней в промежутке между %begin% и %end%. Генерацию запустил(а) "%runningBy%" %startAt%'
+mailer.package_moving_report.text: Перемещение броней
+mailer.package_moving_report.subject: Отчет о перемещении броней
+mailer.package_moving_report.content: 'Сгенерирован отчет о перемещении броней в промежутке между %begin% и %end% %roomTypeData%. Генерацию запустил(а) "%runningBy%" %startAt%'
+
+mailer.close_package_moving_report.text: Перемещение броней
+mailer.close_package_moving_report.subject: Закрытие отчета о перемещении броней
 
 # Mailer
 mailer.base.address: Система управления отелем

@@ -6,6 +6,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
@@ -1035,6 +1036,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/package_moving", name="package_moving")
      * @Template()
+     * @Security("is_granted('ROLE_PACKAGE_MOVING')")
      * @param Request $request
      * @return array
      */
@@ -1088,37 +1090,43 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * @Security("is_granted('ROLE_PACKAGE_MOVING')")
      * @ParamConverter("packageMovingInfo", class="MBHPackageBundle:PackageMovingInfo", options={"id" = "movingInfoId"})
      * @Route("package_move/{movingInfoId}/{movingPackageId}", name="package_move", options={"expose" = true})
      * @param PackageMovingInfo $packageMovingInfo
      * @param $movingPackageId
      * @return JsonResponse
+     * @throws Exception
      */
     public function movePackageAction(PackageMovingInfo $packageMovingInfo, $movingPackageId)
     {
         $isSuccess = true;
         $movingPackageData = $packageMovingInfo->getMovingPackageDataById($movingPackageId);
         if (is_null($movingPackageData)) {
-            $isSuccess = false;
-        } else {
-            $movingPackageData->setIsMoved(true);
+            throw new Exception('Не найден объект, хранящий данные о перемещении брони в меньший тип номера');
+        } elseif (!$movingPackageData->getIsMoved()) {
+            $roomTypeChangingResult = $this->get('mbh.order_manager')
+                ->changeRoomType($movingPackageData->getPackage(), $movingPackageData->getNewRoomType());
+            if ($roomTypeChangingResult) {
+                $movingPackageData->setIsMoved(true);
+                $this->dm->flush();
+            } else {
+                $isSuccess = false;
+                $errorMessage = 'Невозможно изменить тип комнат брони по причине отсутствия свободных мест.';
+            }
         }
 
-        return new JsonResponse(['success' => $isSuccess]);
+
+        $result = ['success' => $isSuccess];
+        if (isset($errorMessage)) {
+            $result['error'] = $errorMessage;
+        }
+
+        return new JsonResponse($result);
     }
 
     /**
-     * @Route("/test")
-     */
-    public function testAction()
-    {
-        $data = $this->dm->getRepository('MBHPackageBundle:PackageMovingInfo')->findOneBy([]);
-        $this->get('mbh_package_zip')->fillMovingPackageData($data);
-
-        return new Response();
-    }
-
-    /**
+     * @Security("is_granted('ROLE_PACKAGE_MOVING')")
      * @ParamConverter("packageMovingInfo", class="MBHPackageBundle:PackageMovingInfo", options={"id" = "movingInfoId"})
      * @Route("/close_moving_report/{movingInfoId}", name="close_moving_report", options={"expose" = true})
      * @param PackageMovingInfo $packageMovingInfo
@@ -1128,7 +1136,22 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     {
         $packageMovingInfo->setStatus(PackageMovingInfo::OLD_REPORT_STATUS);
         $this->dm->flush();
+        $this->get('mbh_package_zip')->sendPackageMovingMail($packageMovingInfo,
+            'mailer.close_package_moving_report.text', 'mailer.close_package_moving_report.subject',
+            'MBHBaseBundle:Mailer:close_package_moving_report.html.twig');
 
         return $this->redirectToRoute('package_moving');
+    }
+
+    /**
+     * @Route("/test")
+     * @return Response
+     */
+    public function testAction()
+    {
+        $DATA = $this->dm->find('MBHPackageBundle:PackageMovingInfo', "58ee22448634a600b11efa24");
+//        $this->get('mbh_package_zip')->fillMovingPackageData($DATA);
+
+        return $this->render('MBHBaseBundle:Mailer:close_package_moving_report.html.twig', ['movingInfo' => $DATA]);
     }
 }

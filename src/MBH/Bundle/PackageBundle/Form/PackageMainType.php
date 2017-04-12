@@ -6,6 +6,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
+use function Sodium\add;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -67,7 +68,13 @@ class PackageMainType extends AbstractType
                         ->sort(['fullTitle' => 'asc', 'title' => 'asc']);
                 },
                 'required' => true
-            ]);
+            ])
+            ->add('is_movable', CheckboxType::class, [
+                'label' => 'Перемещаемая?',
+                'group' => 'Номер',
+                'required' => false
+            ])
+        ;
             if ($options['virtualRooms']) {
                 $builder
                     ->add('virtualRoom', DocumentType::class, [
