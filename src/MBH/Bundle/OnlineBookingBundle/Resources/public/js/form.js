@@ -1,5 +1,3 @@
-
-
 <!--Заполняем форму-->
 function formFill() {
     var search_form_name = 'search_form';
@@ -11,21 +9,88 @@ function formFill() {
             var element = document.getElementsByName(element_name)[0];
             if (element && element.type !== 'submit') {
                 element.value = decodeURIComponent(p[1]);
-                if (element.id == 'search_form_children') {
+                if (element.id === 'search_form_children') {
                     $(element).trigger('change');
                 }
             }
         }
     }
-    $('.booking-form').find('input, select').styler({
-        selectSearch: true
-    });
-    $("#search_form_hotel").trigger("change");
-    $("#search_form_children").trigger('change');
 }
 
 
 $(function () {
+
+    // Block Children
+    var $children = $("#search_form_children"),
+        $ageHolder = $("#search_form_children_age"),
+        index;
+
+    index = $ageHolder.find(':input').length;
+
+    var checkShowAgeLabel = function () {
+        var $label = $(".children_age_label");
+        if (index == 0) {
+            $label.fadeOut(300);
+        } else if (index && $label.is(':hidden')) {
+            $label.removeClass('hidden').hide().fadeIn(300);
+        }
+    };
+    checkShowAgeLabel();
+
+    $ageHolder.data('index', index);
+    var drawChildrenAge = function (index) {
+            var prototype = $ageHolder.data("prototype"),
+                $newAge = $(prototype.replace(/__name__/g, index));
+            $ageHolder.append($newAge.hide().fadeIn(300));
+            // $('select.dropdown',$newAge).easyDropDown();
+
+        },
+        deleteChildrenAge = function (index) {
+            var prototype = $ageHolder.data("prototype"),
+                newAge = prototype.replace(/__name__/g, index);
+            $.each($ageHolder.children(), function (id, value) {
+                if ($(newAge).find('select').attr('id') == $(this).find('select').attr('id')) {
+                    $(this).fadeOut(300, function () {
+                        $(this).remove();
+                    });
+                }
+            })
+        },
+        countChildrenAge = function (value) {
+            if (value > index) {
+                var current, i;
+                for (i = index; i < value; i++) {
+                    current = parseInt(i) + 1;
+                    drawChildrenAge(current);
+                }
+            } else if (value < index) {
+                for (i = value; i < index; i++) {
+                    current = parseInt(i) + 1;
+                    deleteChildrenAge(current)
+                }
+            }
+            index = value;
+        };
+
+    $children.on('change', function (e) {
+        var target = e.target;
+        var value = parseInt($(target).val()) || 0,
+            min = parseInt($(target).attr('min')),
+            max = parseInt($(target).attr('max'));
+        if (value != index) {
+            if (value >= min && value <= max) {
+                countChildrenAge(value)
+            }
+        }
+        checkShowAgeLabel();
+    });
+
+
+
+    //Burn in HELL easyDropDown
+
+    formFill();
+    $('select.dropdown').easyDropDown();
 
     var restrictions,
         updateRestrictions = function () {
@@ -310,70 +375,7 @@ $(function () {
     });
 
 
-    // Block Children
-    var $children = $("#search_form_children"),
-        $ageHolder = $("#search_form_children_age"),
-        index;
 
-    index = $ageHolder.find(':input').length;
 
-    var checkShowAgeLabel = function () {
-        var $label = $(".children_age_label");
-        if (index == 0) {
-            $label.fadeOut(300);
-        } else if (index && $label.is(':hidden')) {
-            $label.removeClass('hidden').hide().fadeIn(300);
-        }
-    };
-    checkShowAgeLabel();
-
-    $ageHolder.data('index', index);
-    var drawChildrenAge = function (index) {
-            var prototype = $ageHolder.data("prototype"),
-                newAge = prototype.replace(/__name__/g, index);
-            $ageHolder.append($(newAge).hide().fadeIn(300));
-        },
-        deleteChildrenAge = function (index) {
-            var prototype = $ageHolder.data("prototype"),
-                newAge = prototype.replace(/__name__/g, index);
-            $.each($ageHolder.children(), function (id, value) {
-                if ($(newAge).find('select').attr('id') == $(this).find('select').attr('id')) {
-                    $(this).fadeOut(300, function () {
-                        $(this).remove();
-                    });
-                }
-            })
-        },
-        countChildrenAge = function (value) {
-            if (value > index) {
-                var current, i;
-                for (i = index; i < value; i++) {
-                    current = parseInt(i) + 1;
-                    drawChildrenAge(current);
-                }
-            } else if (value < index) {
-                for (i = value; i < index; i++) {
-                    current = parseInt(i) + 1;
-                    deleteChildrenAge(current)
-                }
-            }
-            index = value;
-        };
-
-    $children.on('change', function (e) {
-        var target = e.target;
-        var value = parseInt($(target).val()) || 0,
-            min = parseInt($(target).attr('min')),
-            max = parseInt($(target).attr('max'));
-        if (value != index) {
-            if (value >= min && value <= max) {
-                countChildrenAge(value)
-            }
-        }
-        checkShowAgeLabel();
-    });
-
-    //заполняем форму
-    formFill();
 
 });

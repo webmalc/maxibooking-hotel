@@ -318,6 +318,14 @@ class SearchResult
     }
 
     /**
+     * @return array|null
+     */
+    public function getAllPricesByDate(): ?array
+    {
+        return $this->pricesByDate;
+    }
+
+    /**
      * @param array $prices
      * @param int $adults
      * @param int $children

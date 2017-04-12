@@ -17,8 +17,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/config")
@@ -183,16 +183,17 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     }
 
     /**
-     * @Route("/test")
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
+     * @Route("/change_room_type_enableable_mode/{disableMode}/{route}", name="change_room_type_enableable_mode", options={"expose"=true})
+     * @param $disableMode
+     * @param $route
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function testAction()
+    public function changeRoomTypeEnableableModeAction($disableMode, $route)
     {
-        $qb = $this->dm->createQueryBuilder('MBHPackageBundle:Package')
-            ->where('function() { return this.roomType.isEnabled == false }')
-            ->getQuery()
-            ->execute()
-            ->count();
+        $disableModeBool = $disableMode == 'true';
+        $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableModeBool);
 
-        return new Response();
+        return $this->redirectToRoute($route);
     }
 }

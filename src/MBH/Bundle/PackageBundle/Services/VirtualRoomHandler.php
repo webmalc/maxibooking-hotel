@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\Search;
-use Symfony\Bundle\FrameworkBundle\Translation\Translator;
+use Symfony\Component\Translation\Translator;
 
 class VirtualRoomHandler
 {
@@ -36,61 +36,119 @@ class VirtualRoomHandler
      *
      * @param \DateTime $begin
      * @param \DateTime $end
+     * @param $limit
+     * @param $offset
+     * @return array Данные о перемещенных бронях. Ключи массива 'package' и 'oldVirtualRoom'
      */
-    public function setVirtualRooms(\DateTime $begin, \DateTime $end)
+    public function setVirtualRooms(\DateTime $begin, \DateTime $end, $limit, $offset)
     {
-        $sortedPackages = $this->sortPackagesByRoomTypeAndVirtualRoom($packages);
-        $emptyIntervals = $this->getEmptyIntervals($sortedPackages);
-        $this->logEmptyIntervalsData($emptyIntervals);
-        $packagesCount = $this->getHandledPackagesCount($begin, $end);
+        $movedPackagesData = [];
 
-        for ($i = 0; ceil($packagesCount / self::HANDLED_PACKAGES_LIMIT); $i++) {
-            $packages = $this->getLimitPackages($begin, $end, self::HANDLED_PACKAGES_LIMIT,
-                $i * self::HANDLED_PACKAGES_LIMIT);
+        for ($i = 0; $i < ceil($limit / self::HANDLED_PACKAGES_LIMIT); $i++) {
+            $skipNumber = $i * self::HANDLED_PACKAGES_LIMIT + $offset;
+            $packages = $this->getLimitPackages($begin, $end, self::HANDLED_PACKAGES_LIMIT, $skipNumber);
+
+            $sortedPackages = $this->sortPackagesByRoomTypeAndVirtualRoom($packages);
+            $emptyIntervals = $this->getEmptyIntervals($sortedPackages);
+            $this->logEmptyIntervalsData($emptyIntervals);
 
             /** @var Package $package */
             foreach ($packages as $package) {
                 $packageDatesString = $this->getPackageIntervalString($package->getBegin(), $package->getEnd());
-
-                if (isset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString])) {
+                if (isset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString])
+                    && !$this->hasBothSideNeighbors($package)
+                ) {
                     /** @var Room $virtualRoomWithWindow */
                     $virtualRoomWithWindow = $emptyIntervals[$package->getRoomType()->getId()][$packageDatesString];
-                    $package->setVirtualRoom($virtualRoomWithWindow);
-                    $this->dm->flush();
-                    unset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString]);
+                    if ($this->hasSufficientWindows($package, $virtualRoomWithWindow)) {
+                        $this->addPackageMovingData($package, $package->getVirtualRoom(), $movedPackagesData);
+                        $package->setVirtualRoom($virtualRoomWithWindow);
+                        $this->dm->flush();
+                        unset($emptyIntervals[$package->getRoomType()->getId()][$packageDatesString]);
 
-                    $this->logger->info(
-                        $this->translator->trans('virtual_room_handler.package_virtual_room_changed', [
-                            '%package_number%' => $package->getTitle(),
-                            '%room_name%' => $virtualRoomWithWindow->getName()
-                        ]));
+                        $this->logger->info(
+                            "For package \"{$package->getTitle()}\" set virtual room \"{$package->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\" in empty interval"
+                        );
+                    }
                 }
             }
 
-            $packagesWithoutVRoom = $packageRepository->getNotVirtualRoom($begin, $end);
+            $packagesWithoutVRoom = $this->dm
+                ->getRepository('MBHPackageBundle:Package')
+                ->getNotVirtualRoom($begin, $end);
             foreach ($packagesWithoutVRoom as $package) {
-                $this->setVirtualRoom($package);
+                $this->setVirtualRoom($package, $movedPackagesData);
             }
 
             foreach ($packages as $package) {
-                if (!$this->hasNeighboringPackages($package, $sortedPackages)) {
-                    $this->setVirtualRoom($package);
+                if (!$this->hasBothSideNeighbors($package) && !$this->hasNeighboringPackages($package,
+                        $sortedPackages)
+                ) {
+                    $this->setVirtualRoom($package, $movedPackagesData);
                 }
             }
             $this->dm->clear();
             $this->dm->flush();
         }
+
+        return $this->sortResultData($movedPackagesData);
     }
 
-    private function getHandledPackagesCount($begin, $end)
+    /**
+     * @param Package $package
+     * @param Room $oldVirtualRoom
+     * @param $movedPackagesData
+     */
+    private function addPackageMovingData(Package $package, ?Room $oldVirtualRoom, &$movedPackagesData)
     {
-        return $this->dm
-            ->getRepository('MBHPackageBundle:Package')
-            ->getFetchWithVirtualRoomQB($begin, $end)
-            ->getQuery()
-            ->count();
+        $movedPackagesData[$package->getHotel()->getName()][] = [
+            'package' => $package,
+            'oldVirtualRoom' => $oldVirtualRoom
+        ];
     }
 
+    /**
+     * Sort resultData
+     *
+     * @param array $movedPackagesData
+     * @return array
+     */
+    private function sortResultData(array $movedPackagesData)
+    {
+        $result = [];
+
+        foreach ($movedPackagesData as $hotelName => $movedPackagesDataByHotel) {
+            $sortedArray = $movedPackagesDataByHotel;
+
+            usort($sortedArray, function ($first, $second) {
+                /** @var Package $firstPackage */
+                $firstPackage = $first['package'];
+                /** @var Package $secondPackage */
+                $secondPackage = $second['package'];
+
+                $roomTypesComparisonResult =
+                    strcmp($firstPackage->getRoomType()->getId(), $secondPackage->getRoomType()->getId());
+
+                if ($roomTypesComparisonResult != 0) {
+                    return $roomTypesComparisonResult;
+                }
+
+                return $firstPackage->getBegin() > $secondPackage->getBegin() ? 1 : -1;
+            });
+
+            $result[$hotelName] = $sortedArray;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $begin
+     * @param $end
+     * @param $limit
+     * @param $skip
+     * @return mixed
+     */
     private function getLimitPackages($begin, $end, $limit, $skip)
     {
         return $this->dm
@@ -115,37 +173,89 @@ class VirtualRoomHandler
         foreach ($emptyIntervals as $roomTypeId => $emptyIntervalsByRoomType) {
             /** @var Room $emptyRoom */
             foreach ($emptyIntervalsByRoomType as $emptyIntervalDatesString => $emptyRoom) {
-                $this->logger->info($this->translator
-                    ->trans('virtual_room_handler.empty_interval_data', [
-                        '%roomTypeId%' => $roomTypeId,
-                        '%roomName%' => $emptyRoom->getName(),
-                        '%emptyIntervalDates%' => $emptyIntervalDatesString
-                    ]));
+                $this->logger->info(
+                    "Virtual room \"{$emptyRoom->getName()}\" with room type ID = \"$roomTypeId\" has empty interval \"$emptyIntervalDatesString\""
+                );
             }
         }
+    }
+
+    /**
+     * @param Package $package
+     * @param Room $virtualRoom
+     * @return bool
+     */
+    public function hasSufficientWindows(Package $package, Room $virtualRoom)
+    {
+        $roomType = $package->getRoomType();
+        $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($package->getRoomType()->getHotel());
+
+        $restrictionRepository = $this->dm->getRepository('MBHPriceBundle:Restriction');
+        $beginRestriction = $restrictionRepository->findOneByDate($package->getBegin(), $roomType, $baseTariff);
+        $endRestriction = $restrictionRepository->findOneByDate($package->getEnd(), $roomType, $baseTariff);
+
+        $adjoiningPackagesBegin = clone $package->getBegin();
+        $adjoiningPackagesEnd = clone $package->getEnd();
+
+        if ($beginRestriction && $beginRestriction->getMinStayArrival()) {
+            $adjoiningPackagesBegin = $adjoiningPackagesBegin
+                ->modify('-' . ($beginRestriction->getMinStayArrival() - 1) . ' days');
+        }
+
+        if ($endRestriction && $endRestriction->getMinStayArrival()) {
+            $adjoiningPackagesEnd = $adjoiningPackagesEnd
+                ->modify('+' . ($endRestriction->getMinStayArrival() - 1) . ' days');
+        }
+
+        $adjoiningPackages = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->extendedFetchWithVirtualRooms(
+                $adjoiningPackagesBegin,
+                $adjoiningPackagesEnd,
+                false,
+                $roomType,
+                [$virtualRoom->getId()],
+                $package
+            );
+
+        /** @var Package $adjoiningPackage */
+        foreach ($adjoiningPackages as $adjoiningPackage) {
+            if (!($adjoiningPackage->getBegin() == $package->getEnd() || $adjoiningPackage->getEnd() == $package->getBegin())) {
+                $this->logger->info('incorrect attempt to set virtual room for package "'
+                    . $package->getNumberWithPrefix() . '", in virtual room "' . $virtualRoom->getName() . '"');
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
      * Set virtual room for a single package
      *
      * @param Package $package
+     * @param $movedPackagesData
      */
-    private function setVirtualRoom(Package $package)
+    private function setVirtualRoom(Package $package, &$movedPackagesData)
     {
         $searchResult = (new SearchResult())
             ->setBegin($package->getBegin())
             ->setEnd($package->getEnd())
             ->setRoomType($package->getRoomType());
-        $result = $this->search->setVirtualRoom($searchResult, $package->getTariff(), $package);
+        $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($package->getRoomType()->getHotel());
+        $result = $this->search->setVirtualRoom($searchResult, $baseTariff, $package);
 
         if ($result instanceof SearchResult && $package->getVirtualRoom() != $result->getVirtualRoom()) {
-            $package->setVirtualRoom($result->getVirtualRoom());
-            $this->logger->info(
-                $this->translator->trans('virtual_room_handler.package_virtual_room_changed', [
-                    '%package_number%' => $package->getTitle(),
-                    '%room_name%' => $result->getVirtualRoom()->getName()
-                ]));
-            $this->dm->flush();
+            $oldVirtualRoom = $package->getVirtualRoom();
+            if ($this->hasSufficientWindows($package, $result->getVirtualRoom())) {
+                $package->setVirtualRoom($result->getVirtualRoom());
+                $previousVirtualRoomData = $oldVirtualRoom ? 'with virtual room "' . $oldVirtualRoom->getName() . '"' : 'without virtual room';
+                $this->logger->info(
+                    "For package \"{$package->getTitle()}\" $previousVirtualRoomData set virtual room \"{$result->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\""
+                );
+                $this->dm->flush();
+            }
+
+            $this->addPackageMovingData($package, $oldVirtualRoom, $movedPackagesData);
         }
     }
 
@@ -188,6 +298,15 @@ class VirtualRoomHandler
         }
 
         return false;
+    }
+
+    private function hasBothSideNeighbors(Package $package)
+    {
+        $adjoiningPackagesCount = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->extendedFetchWithVirtualRooms($package->getBegin(), $package->getEnd(), false, null,
+                [$package->getVirtualRoom()->getId()], $package)->count();
+
+        return $adjoiningPackagesCount == 2;
     }
 
     /**

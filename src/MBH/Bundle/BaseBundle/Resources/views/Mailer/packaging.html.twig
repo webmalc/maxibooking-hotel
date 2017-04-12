@@ -1,0 +1,42 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+
+{% block subject %}
+    <div style="text-align: left">
+        <h2>
+            {{ 'virtual_room_moving_command.mail_message.first_line'|trans() ~ ' ' ~ "now"|date('d.m.Y H:i') }}
+        </h2>
+
+        {% for hotelName, movedPackagesDataByHotel in movedPackagesDataArray %}
+            <h2 style="text-align: center; background-color: #c0c0c0; padding: 8px;">{{ hotelName }}</h2>
+            <p>
+                {{ 'virtual_room_moving_command.mail_message.summary'|trans({'%packageCount%' : movedPackagesDataByHotel|length}) }}
+            </p>
+            <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+                <tbody>
+                <tr>
+                    <th>#</th>
+                    <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left; ">{{ 'virtual_room_moving_command.mail_message.package_number' |trans }}</th>
+                    <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left; ">{{ 'virtual_room_moving_command.mail_message.check_in' |trans }}</th>
+                    <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left; ">{{ 'virtual_room_moving_command.mail_message.checkout'|trans }}</th>
+                    <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left; ">{{ 'virtual_room_moving_command.mail_message.room_type'|trans }}</th>
+                    <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left; ">{{ 'virtual_room_moving_command.mail_message.old_virtual_room'|trans }}</th>
+                    <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left; ">{{ 'virtual_room_moving_command.mail_message.new_virtual_room'|trans }}</th>
+                </tr>
+                {% for iterationNumber, movedPackageData in movedPackagesDataByHotel %}
+                    {% set package = movedPackageData['package'] %}
+                    <tr>
+                        <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ iterationNumber + 1 }}</td>
+                        <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.numberWithPrefix }}</td>
+                        <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.begin|date('d.m.Y') }}</td>
+                        <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.end|date('d.m.Y') }}</td>
+                        <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.roomType.name }}</td>
+                        <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ movedPackageData['oldVirtualRoom'] is not null ? movedPackageData['oldVirtualRoom'].name : 'virtual_room_moving_command.mail_message.old_virtual_room.without_virtual_room'|trans }}</td>
+                        <td style="vertical-align: top; border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.virtualRoom.name }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <br>
+        {% endfor %}
+    </div>
+{% endblock %}

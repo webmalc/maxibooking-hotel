@@ -16,6 +16,12 @@ services:
       tags:
         - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
+  mbh.special.subscriber:
+      class: MBH\Bundle\PriceBundle\EventListener\SpecialSubscriber
+      arguments: ['@old_sound_rabbit_mq.task_calculate_special_prices_producer']
+      tags:
+        - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
   mbh.room.cache:
           class: MBH\Bundle\PriceBundle\Services\RoomCache
           arguments: ['@service_container']
@@ -31,6 +37,14 @@ services:
   task_room_cache_recalculate:
     class:      MBH\Bundle\PriceBundle\Task\RecalculateCache
     arguments:  ["@mbh.room.cache", "@mbh.task.logger"]
+
+  task_special_recalculate:
+    class:      MBH\Bundle\PriceBundle\Task\CalculateSpecialPrices
+    arguments: ['@mbh.special_handler']
+
+  mbh.special_handler:
+    class: MBH\Bundle\PriceBundle\Services\SpecialHandler
+    arguments: ['@mbh.package.search', '@doctrine_mongodb.odm.document_manager', '@mbh.helper', '@mbh.calculation', '@mbh.specials.logger']
 
   mbh.type.special:
       class:      MBH\Bundle\PriceBundle\Form\SpecialType

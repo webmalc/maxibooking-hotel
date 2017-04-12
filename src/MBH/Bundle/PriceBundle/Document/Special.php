@@ -12,6 +12,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\BaseBundle\Validator\Constraints as MBHAssert;
@@ -22,6 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="document.already.exists")
+ * @MongoDBUnique(fields={"begin", "end", "virtualRoom"}, message="document.already.virtualRoom.exists")
  * @ODM\HasLifecycleCallbacks
  * @MBHAssert\Range(firstProperty="begin", secondProperty="end", message="special.dates.error")
  * @MBHAssert\Range(firstProperty="displayFrom", secondProperty="displayTo", message="special.displayDates.error")
@@ -163,6 +165,13 @@ class Special extends Base
     protected $roomTypes;
 
     /**
+     * @var Room
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
+     */
+    protected $virtualRoom;
+
+
+    /**
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date(name="begin")
@@ -205,10 +214,27 @@ class Special extends Base
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\Package", mappedBy="special") */
     protected $packages;
 
+    /**
+     * @ODM\EmbedMany(targetDocument="MBH\Bundle\PriceBundle\Document\SpecialPrice")
+     */
+    protected $prices;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="boolean")
+     * @Assert\NotNull()
+     */
+    protected $recalculation = false;
+
+
+    /**
+     * Special constructor.
+     */
     public function __construct()
     {
         $this->tariffs = new ArrayCollection();
         $this->roomTypes = new ArrayCollection();
+        $this->prices = new ArrayCollection();
     }
 
     /**
@@ -582,4 +608,110 @@ class Special extends Base
 
         return true;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPrices()
+    {
+        return $this->prices;
+    }
+
+    /**
+     * @param SpecialPrice $specialPrice
+     * @return Special
+     */
+    public function removePrice(SpecialPrice $specialPrice)
+    {
+        $this->prices->remove($specialPrice);
+
+        return $this;
+    }
+
+    /**
+     * @return Special
+     */
+    public function removeAllPrices()
+    {
+        $this->prices = new ArrayCollection();
+
+        return $this;
+    }
+
+    /**
+     * @param SpecialPrice $specialPrice
+     * @return Special
+     */
+    public function addPrice(SpecialPrice $specialPrice)
+    {
+        $this->prices->add($specialPrice);
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDays()
+    {
+        return $this->getNights() + 1;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNights()
+    {
+        return $this->end->diff($this->begin)->format("%a");
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRecalculation(): bool
+    {
+        return $this->recalculation;
+    }
+
+
+    /**
+     * @return $this
+     */
+    public function setRecalculation()
+    {
+        $this->recalculation = true;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setNoRecalculation()
+    {
+        $this->recalculation = false;
+
+        return $this;
+    }
+
+    /**
+     * @return Room
+     */
+    public function getVirtualRoom(): ?Room
+    {
+        return $this->virtualRoom;
+    }
+
+    /**
+     * @param Room $virtualRoom
+     * @return $this
+     */
+    public function setVirtualRoom(Room $virtualRoom)
+    {
+        $this->virtualRoom = $virtualRoom;
+
+        return $this;
+    }
+
+
 }

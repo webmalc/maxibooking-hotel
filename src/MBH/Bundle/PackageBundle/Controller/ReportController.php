@@ -17,18 +17,18 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageMovingInfo;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
+use MBH\Bundle\PackageBundle\Form\PackagingReportFilterType;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Process\Process;
 
 /**
  * @Route("/report")
@@ -83,13 +83,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function callPackagingAction()
     {
-        $kernel = $this->get('kernel');
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-        $input = new ArrayInput([
-            'command' => 'mbh:virtual_rooms:move'
-        ]);
-        $application->run($input);
+        $console = $this->get('kernel')->getRootDir() . '/../bin/console ';
+        $command = 'nohup php ' . $console . 'mbh:virtual_rooms:move';
+        $process = new Process($command);
+        $process->start();
 
         return new JsonResponse(['success' => true]);
     }
@@ -1141,17 +1138,5 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'MBHBaseBundle:Mailer:close_package_moving_report.html.twig');
 
         return $this->redirectToRoute('package_moving');
-    }
-
-    /**
-     * @Route("/test")
-     * @return Response
-     */
-    public function testAction()
-    {
-        $DATA = $this->dm->find('MBHPackageBundle:PackageMovingInfo', "58ee22448634a600b11efa24");
-//        $this->get('mbh_package_zip')->fillMovingPackageData($DATA);
-
-        return $this->render('MBHBaseBundle:Mailer:close_package_moving_report.html.twig', ['movingInfo' => $DATA]);
     }
 }

@@ -465,7 +465,8 @@ class Search implements SearchInterface
                 $virtualResult = $this->setVirtualRoom(
                     $result,
                     $baseTariff,
-                    $query->getExcludePackage()
+                    $query->getExcludePackage(),
+                    $query->getPreferredVirtualRoom()
                 );
 
                 if (!$virtualResult) {
@@ -507,7 +508,7 @@ class Search implements SearchInterface
      * @param Package $package
      * @return bool|SearchResult
      */
-    public function setVirtualRoom($result, Tariff $tariff, Package $package = null)
+    public function setVirtualRoom($result, Tariff $tariff, Package $package = null, $forcedVirtualRoom = null)
     {
 
         if ($result->getBegin() <= new \DateTime('midnight')) {
@@ -526,7 +527,7 @@ class Search implements SearchInterface
 
         if ($restriction && $restriction->getMinStayArrival()) {
             $begin->modify('-' . $restriction->getMinStayArrival() . ' days');
-            $end->modify('+' . ($restriction->getMinStayArrival() - 1) . ' days');
+            $end->modify('+' . $restriction->getMinStayArrival() . ' days');
         }
 
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')
@@ -566,10 +567,7 @@ class Search implements SearchInterface
         foreach ($rooms as $room) {
             if (isset($groupedPackages[$room->getId()])) {
                 foreach ($groupedPackages[$room->getId()] as $package) {
-                    if ($package->getBegin() == $result->getEnd() && $package->getEnd() == $result->getBegin()) {
-                        $preferredRooms->attach($room);
-                        break 2;
-                    } elseif ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
+                    if ($package->getBegin() == $result->getEnd() || $package->getEnd() == $result->getBegin()) {
                         $preferredRooms->attach($room);
                     } elseif ($package->getBegin() == $end || $package->getEnd() == $begin) {
                         $preferredRooms->attach($room);
@@ -587,9 +585,12 @@ class Search implements SearchInterface
         $collection = $preferredRooms->count() ? $preferredRooms :  $emptyRooms;
 
         if ($collection->count()) {
-            $collection->rewind();
-            $room = $collection->current();
-
+            if ($forcedVirtualRoom && $collection->contains($forcedVirtualRoom)) {
+                $room = $forcedVirtualRoom;
+            } else {
+                $collection->rewind();
+                $room = $collection->current();
+            }
             $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($room->getId());
             $result->setVirtualRoom($room);
 

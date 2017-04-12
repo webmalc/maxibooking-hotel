@@ -1,0 +1,20 @@
+{% embed 'MBHOnlineBookingBundle:Default/RoomTypes:roomType.html.twig' with {'remain': special.remain} %}
+    {% block data_row %}
+        data-special = "{{ special.id}}"
+    {% endblock %}
+    {% block redbox_message %}
+        Специальное предложение
+    {% endblock %}
+    {% block tariffName %}
+        Специальное предложение
+    {% endblock %}
+    {% block discount %}
+        {{" - #{special.discount}%" }}
+    {% endblock %}
+    {% block oldPrice %}
+        {{ prices.new * 100 / (100 - special.discount) }}
+    {% endblock %}
+    {% block data_url %}
+        data-url="{{ requestSearchUrl }}?step=2&form[special]={{ special.id }}&form[adults]={{ tariffResult.adults }}&form[children]={{ tariffResult.children }}&form[begin]={{ tariffResult.begin|date('d.m.Y') }}&form[end]={{ tariffResult.end|date('d.m.Y') }}&form[roomType]={{ tariffResult.roomType.id }}&form[tariff]={{ tariffResult.tariff.id }}&form[total]={{ tariffResult.getPrice(tariffResult.adults, tariffResult.children) }}&form[infants]={{ tariffResult.infants }}&form[paymentType]={{ tariffResult.tariff.paymentType }}"
+    {% endblock %}
+{% endembed %}

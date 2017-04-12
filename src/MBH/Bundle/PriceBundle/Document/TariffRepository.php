@@ -188,7 +188,7 @@ class TariffRepository extends DocumentRepository
      * @param boolean $enabled
      * @param Cache $memcached
      * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBExceptionп
      */
     public function fetch(Hotel $hotel = null, $tariffs = null, $enabled = false, $online = false, Cache $memcached = null)
     {

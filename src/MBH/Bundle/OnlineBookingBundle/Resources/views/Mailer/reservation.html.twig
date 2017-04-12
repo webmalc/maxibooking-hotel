@@ -30,7 +30,9 @@
 
                     <br>
                     <small style="color:#888;">
-                        {{ tariff.name }}
+                        {% block tariffName %}
+                            {{ tariff.name }}
+                        {% endblock %}
                     </small>
                 </td>
                 <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">

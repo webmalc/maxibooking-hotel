@@ -9,38 +9,102 @@
     <form id="windows-report-filter" class="form-inline filter-form remember mbh-start-date" role="form">
         <div class="input">
             <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
-            <input type="text" name="begin" id="windows-report-filter-begin" class="datepicker windows-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
+            <input type="text" name="begin" id="windows-report-filter-begin"
+                   class="datepicker windows-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm"
+                   data-date-format="dd.mm.yyyy">
         </div>
         <div class="input hidden">
             - &nbsp
-            <input type="text" name="end" id="windows-report-filter-end" class="datepicker windows-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
+            <input type="text" name="end" id="windows-report-filter-end"
+                   class="datepicker windows-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm"
+                   data-date-format="dd.mm.yyyy">
         </div>
 
         <div class="input">
-            <i class="fa fa-bed"  title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select name="roomType" multiple data-placeholder="Тип номера" id="windows-report-filter-roomType" class="windows-report-filter form-control input-sm">
+            <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp <select name="roomType" multiple
+                                                                                            data-placeholder="Тип номера"
+                                                                                            id="windows-report-filter-roomType"
+                                                                                            class="windows-report-filter form-control input-sm">
                 <option></option>
                 {% for roomType in roomTypes %}
-                    <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
+                    <option value="{{ roomType.id }}"
+                            {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
                 {% endfor %}
             </select>
         </div>
 
         <div class="input">
             <button class="btn btn-primary" id="report-submit-button">
-                <i class="fa fa-filter"></i> {{ 'show'|trans()|capitalize  }}
+                <i class="fa fa-filter"></i> {{ 'show'|trans()|capitalize }}
             </button>
         </div>
+        <div class="input">
+            <label for="do_specials">
+                &nbsp;<i class="fa fa-star-o" title="" data-toggle="tooltip"
+                         data-original-title="Создать спецпредложения"></i>&nbsp;
+            </label>
+            <input type="checkbox" id="do_specials" name="do_specials" checked>
+        </div>
     </form>
+
     </div></div>
 
     <div id="windows-report-content" class="scrolling"></div>
 
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                {#TODO: Поменять роль #}
+                {% if is_granted('ROLE_WINDOWS_PACKAGING') %}
+                    <li>
+                        <button id="packaging-button" type="button" class="btn btn-warning navbar-btn"><i
+                                    class="fa fa-balance-scale"></i>{{ 'report.windows.packages_move' |trans }}</button>
+                    </li>
+                {% endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li id='list-export'></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Packaging Modal -->
+    {% if is_granted('ROLE_WINDOWS_PACKAGING') %}
+        <div class="modal fade" id="packaging-info-modal" tabindex="-1" role="dialog"
+             aria-labelledby="package-info-modal-label">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="packaging-modal-title">
+                            {{ 'report.windows.packaging_modal.title'|trans() }}
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        {{ 'report.windows.packaging_modal.content_text'|trans }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            <i class="fa fa-ban"></i> {{ 'report.windows.packaging_modal.close_button'|trans() }}
+                        </button>
+                        <button type="submit" id="packaging-modal-button" class="btn btn-primary">
+                            <i class="fa fa-check"></i> {{ 'report.windows.packaging_modal.confirmation_button'|trans() }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
     <!-- Modal -->
-    <div class="modal fade" id="package-info-modal" tabindex="-1" role="dialog" aria-labelledby="package-info-modal-label">
+    <div class="modal fade" id="package-info-modal" tabindex="-1" role="dialog"
+         aria-labelledby="package-info-modal-label">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">
                         {{ 'report.windows.modal.title'|trans() }}
                     </h4>

@@ -44,13 +44,22 @@
 #online-booking-search .table i {
   color: #ebb630;
 }
-#online-booking-search .table-row tr.tariff-row:hover {
-  background-color: #f3dfaf;
-}
 #online-booking-search .alerting {
   background-color: #f3dfaf;
 }
+#online-booking-search .alerting:hover {
+  background-color: #f3dfaf;
+}
+#online-booking-search .table-row tr.tariff-row:hover {
+  background-color: #f3dfaf;
+}
+#online-booking-search .table-row tr.tariff-row:hover:hover {
+  background-color: #f3dfaf;
+}
 #online-booking-search .alerting-tr tr:first-child.tariff-row {
+  background-color: #f3dfaf;
+}
+#online-booking-search .alerting-tr tr:first-child.tariff-row:hover {
   background-color: #f3dfaf;
 }
 #online-booking-search .descr {
@@ -101,6 +110,9 @@
 #online-booking-search .roomname > a:visited,
 #online-booking-search .roomname > a:link {
   text-decoration: none;
+}
+#online-booking-search #online-booking-search .right-info .table tbody tr {
+  cursor: pointer;
 }
 #online-booking-search .infocontainer {
   overflow: hidden;

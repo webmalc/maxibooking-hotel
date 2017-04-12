@@ -20,6 +20,9 @@ old_sound_rabbit_mq:
       task_notice_unpaid_order:
         connection:       default
         exchange_options: {name: 'task_notice_unpaid_order', type: direct}
+      task_calculate_special_prices:
+        connection: default
+        exchange_options: {name: 'task_special_recalculate', type: direct}
       task_prepare_package_moving_report:
         connection:       default
         exchange_options: {name: 'task_prepare_package_moving_report', type: direct}
@@ -40,3 +43,8 @@ old_sound_rabbit_mq:
         exchange_options: {name: 'task_prepare_package_moving_report', type: direct}
         queue_options:    {name: 'task_prepare_package_moving_report'}
         callback:         mbh.task_prepare_package_moving_report
+      task_calculate_special_prices:
+        connection:       default
+        exchange_options: {name: 'task_special_recalculate', type: direct}
+        queue_options:    {name: 'task_special_recalculate'}
+        callback:         task_special_recalculate
