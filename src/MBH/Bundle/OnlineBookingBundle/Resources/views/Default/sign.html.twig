@@ -90,7 +90,7 @@
 
             {#<div>Гости: {{ data.adults }} взрослых {{ data.children }} ребёнок</div>#}
             <div>Гости: {{ data.adults }}{{ data.children?'+'~data.children }}{{ data.infants?'+'~data.infants }}</div>
-            <div>Тариф: {{ tariff.fullTitle }}</div>
+            <div>Тариф: {{ special?'Специальное предложение':tariff.fullTitle }}</div>
         </div>
 
         {#<div class="title" style="margin-top: 15px">Стоимость</div>

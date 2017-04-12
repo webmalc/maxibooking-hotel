@@ -50,6 +50,7 @@ class RoomTypeCategoryController extends BaseController
         if ($form->isValid()) {
             $this->dm->persist($category);
             $this->dm->flush();
+            $this->addFlash('success', 'task_type_category.controller.creation.success');
 
             return $this->afterSaveRedirect('room_type_category', $category->getId());
         }
@@ -76,6 +77,7 @@ class RoomTypeCategoryController extends BaseController
         if ($form->isValid()) {
             $this->dm->persist($category);
             $this->dm->flush();
+            $this->addFlash('success', 'task_type_category.controller.change.success');
 
             return $this->afterSaveRedirect('room_type_category', $category->getId());
         }

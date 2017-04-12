@@ -1,0 +1,154 @@
+<section class="s_results">
+    <div class="oneblockinrdm room-type-row {{ (special or offerByRoomType.additional)?'additional':'' }}"
+         data-roomtype="{{ roomType.id }}"
+         {% block data_row %}
+         {% endblock %}
+    >
+        <div class="leftrdm">
+            <div class="imghotel"
+                    {% set mainimage = offerByRoomType.mainimage %}
+                 style="background:url('{{ absolute_url(asset(mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
+                {% block redbox %}
+                <p class="special-strip">
+                    {% block redbox_message %}
+                    {{ offerByRoomType.additional?'Другие даты':'' }}
+                    {% endblock %}
+                </p>
+                {% endblock %}
+                <div class="inghotelline">
+                    {# Костыль для вывода главной фото первой в списке. Сделано до реализации очередности. #}
+                    {% for image in images %}
+                        {% if loop.first and not image.isMain %}
+                            {{ macro.drawimage(mainimage, loop) }}
+                            {{ macro.drawimage(image, loop) }}
+                        {% elseif not loop.first and image.isMain %}
+                        {% else %}
+                            {{ macro.drawimage(image, loop) }}
+                        {% endif %}
+                    {% endfor %}
+                    {#Конец костыля#}
+                    {#Вернуть после убирания костыля#}
+                    {#{% for image in images %}
+                        <a style="{{ (loop.index > 1) ? 'display: none;':'' }}" class="fancybox" href="{{ absolute_url(asset(image.path)) }}"
+                           rel="cat{{ loop.parent.loop.index }}">
+                            <img src="{{ absolute_url(image.path|imagine_filter('thumb_275x210')) }}" alt="">
+                        </a>
+                    {% endfor %}#}
+                </div>
+            </div>
+        </div>
+        <div class="rightrdm">
+            <div class="leftinrdm">
+                <p class="titlerdm">
+                    {% if hotelsLinks is defined and roomType.hotel.id in hotelsLinks|keys %}
+                        <a href="{{ hotelsLinks[roomType.hotel.id] }}" class="hotel_link" target="_blank">
+                            {{ roomType.hotel.fullTitle }}
+                        </a>
+                    {% else %}
+                        {{ roomType.hotel.fullTitle }}
+                    {% endif %}
+                    &nbsp;</p>
+                <p class="numtype"><b>Тип номера:</b><br>
+                    {% if roomType.descriptionurl is defined and roomType.descriptionurl is not empty %}
+                        <a class="room_link" href="{{ roomType.descriptionUrl }}"
+                           target="_blank">{{ roomType.fullTitle }}</a>
+                    {% else %}
+                        {{ roomType.fullTitle }}
+                    {% endif %}
+                </p>
+                <p class="gueststype">
+                    <b>Гости:</b>
+                    {{ query.adults }} взр.
+                    {% transchoice children %}
+                    {0} | [1,4] + %children% реб |[5,Inf[ + %children% дет.
+                    {% endtranschoice %}
+                </p>
+                {% if hotelsLinks.eat is defined and hotelsLinks.eat is not empty %}
+                    <a href="{{ hotelsLinks.eat }}" class="eat_link" target="_blank">
+                        <p class="eattype"><img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
+                    </a>
+                {% else %}
+                    <img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
+                {% endif %}
+                <div class="iconstype">
+                    {% for facility in (isCategory?roomType.types|first:roomType).facilities %}
+                        <i class="fa fa-2x mbf-{{ facility }}" title="{{ facility|trans }}"></i>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="rightinrdm">
+                <p class="titlerdm">Цена за {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
+                <div class="clear"></div>
+                <p class="pricerdm">
+                    {% block prices %}
+                        {% set prices = count_prices(tariffResults) %}
+                        <span class="noneprice">
+                            {% block oldPrice %}
+                            {{ prices.old|number_format(0, thousandSep=' ') }}&#8381;
+                            {% endblock %}
+                        </span>
+                    {% block newPrice %}
+                        <span class="newprice">{{ prices.new|number_format(0, thousandSep=' ') }}&#8381;</span></p>
+                    {% endblock newPrice %}
+                    {% endblock prices %}
+                <p class="datesrdm">{{ dates.begin|date("d.m.Y") }} - {{ dates.end|date("d.m.Y") }}</p>
+                <p class="daysrdm">{{ firstTariffResult.days }} {{ 'days'|transchoice(firstTariffResult.days) }} / {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
+                {% block remain %}
+                    {% set left_rooms = left_sale(remain, leftRoomKey) %}
+                    <p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>{#TODO:Add twig function#}
+                {% endblock remain %}
+                <p class="bronsrdm">{#забронировано сегодня 9 раз#}</p>{#TODO:Уточнить#}
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        <div class="lefttblrdm">
+            <table class="pricetbl">
+                <thead>
+                <tr class="flinetbl">
+                    <td>Тариф</td>
+                    <td>Скидка</td>
+                    <td>Цена</td>
+                    <td></td>
+                </tr>
+                </thead>
+                <tbody class="tariff-container">
+                <i class="fa fa-spinner fa-pulse fa-3x fa-fw tariff-spinner"></i>
+                <span class="sr-only">Loading...</span>
+                {% for tariffResult in tariffResults %}
+                    <tr
+                            class="tariff-row"
+                            data-tariff="{{ tariffResult.tariff.id }}"
+                            data-roomtype="{{ tariffResult.roomType.id }}"
+                            data-adults="{{ tariffResult.adults }}"
+                            data-children="{{ tariffResult.children }}"
+                            data-begin="{{ tariffResult.begin|date('d.m.Y') }}"
+                            data-end="{{ tariffResult.end|date('d.m.Y') }}"
+                            data-payment_type="{{ tariffResult.tariff.paymentType }}"
+                            {% block data_url %}
+                            data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ tariffResult.adults }}&form[children]={{ tariffResult.children }}&form[begin]={{ tariffResult.begin|date('d.m.Y') }}&form[end]={{ tariffResult.end|date('d.m.Y') }}&form[roomType]={{ tariffResult.roomType.id }}&form[tariff]={{ tariffResult.tariff.id }}&form[total]={{ tariffResult.getPrice(tariffResult.adults, tariffResult.children) }}&form[infants]={{ tariffResult.infants }}&form[paymentType]={{ tariffResult.tariff.paymentType }}"
+                            {% endblock %}
+
+                    >
+                        <td>{% block tariffName %}{{ tariffResult.tariff.name }}{% endblock %}</td>
+                        <td class="redtd">{% block discount %}{% endblock %}</td>
+                        <td>{{ tariffResult.getPrice(tariffResult.adults, tariffResult.children)|round }}&#8381;</td>
+                        <td><input name="booking-{{ tariffResult.roomType.id }}-{{ offerByRoomType.dates.begin|date("d_m_Y") ~ "_" ~ offerByRoomType.dates.end|date("d_m_Y") }}" type="radio" {% if loop.first %}checked="checked"{% endif %}></td>
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="righttblrdm">
+            <div class="spros">Пользуется спросом!</div>
+            <a href="javascript:void(0)" class="btn-booking-reservation"><p class="btmone btmonenotspec">Отправить заявку</p></a>
+            <a href="javascript:void(0)" class="btn-booking"><p class="btmtwo">Купить онлайн</p></a>
+            {% if showAll is defined and showAll %}
+                <a href="javascript:void(0)" class="btn-booking-all"><p class="btmthree">Показать всё</p></a>
+            {% endif %}
+
+        </div>
+        <div class="clear"></div>
+    </div>
+</section>

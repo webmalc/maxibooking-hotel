@@ -188,22 +188,6 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
         $this->types = $types;
     }
 
-    /**
-     * @return RoomType[]
-     */
-    public function getRoomTypes()
-    {
-        return $this->roomTypes;
-    }
-
-    /**
-     * @param RoomType[] $roomTypes
-     */
-    public function setRoomTypes($roomTypes)
-    {
-        $this->roomTypes = $roomTypes;
-    }
-
     public function getIsHostel()
     {
         return false;
@@ -221,7 +205,7 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
 
     public function getMainImage()
     {
-        foreach($this->getRoomTypes() as $roomType) {
+        foreach($this->getTypes() as $roomType) {
             if($roomType->getMainImage()) {
                 return $roomType->getMainImage();
             }

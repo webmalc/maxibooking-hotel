@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by Zavalyuk Alexandr (Zalex).
- * email: zalex@zalex.com.ua
- * Date: 10/3/16
- * Time: 2:40 PM
- */
 
 namespace MBH\Bundle\OnlineBookingBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController;

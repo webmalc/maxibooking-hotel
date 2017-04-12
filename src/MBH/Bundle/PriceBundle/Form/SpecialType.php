@@ -137,6 +137,19 @@ class SpecialType extends AbstractType
                 },
                 'help' => 'special.roomTypes.help',
             ])
+            ->add('virtualRoom', DocumentType::class, [
+                'label' => 'special.virtualRoom',
+                'group' => 'special.group.conditions',
+                'class' => 'MBH\Bundle\HotelBundle\Document\Room',
+                'multiple' => false,
+                'required' => false,
+                'query_builder' => function (DocumentRepository $er) {
+                    return $er->createQueryBuilder()
+                        ->field('hotel')
+                        ->references($this->hotelSelector->getSelected());
+                },
+                'help' => 'special.virtualRoom.help'
+            ])
             ->add('limit', NumberType::class, [
                 'label' => 'special.limit',
                 'help' => 'special.limit.help',

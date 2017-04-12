@@ -1,5 +1,6 @@
 {% form_theme form '@MBHOnlineBooking/Form/children_age_entry_widget.twig' %}
 
+{#ID формы не менять, используется в js#}
 {{ form_start(form, {attr: {id: 'search-form'}, action: requestSearchUrl }) }}
 <div class="booking-title">Расчет стоимости</div>
 <div class="booking-group">
@@ -9,25 +10,27 @@
     </div>
 </div>
 
-<div class="form-group hidden">
-    <div class="input-group">
-        {{ form_widget(form.roomType) }}
-    </div>
-</div>
+
+{#<div class="form-group">#}
+    {#{{ form_label(form.roomType) }}#}
+    {#<div class="input-group">#}
+        {#{{ form_widget(form.roomType) }}#}
+    {#</div>#}
+{#</div>#}
+
 
 <div class="booking-date clearfix">
     <div class="col-md-12 col-sm-12 col-xs-12">
         {{ form_label(form.begin) }}
-        {{ form_widget(form.begin) }}
+        {{ form_widget(form.begin, {attr: {readonly: 'readonly'}}) }}
 
     </div>
     <div class="col-md-12 col-sm-12 col-xs-12">
         {{ form_label(form.end) }}
-        {{ form_widget(form.end) }}
+        {{ form_widget(form.end, {attr: {readonly: 'readonly'}}) }}
 
     </div>
 </div>
-
 <div class="booking-nights">
     <span>Количество ночей:&nbsp;<span id="nights_amount"></span> </span>
 </div>
@@ -53,34 +56,30 @@
 <div class="booking-submit">
     <input type="submit" name="submit" value="Узнать цены">
 </div>
-{#<div class="spinn"><i class="fa fa-spinner fa-spin fa-2x"></i></div>#}
-{#<div class="hinform newmargin h2" style="padding:16px 0 11px; margin-top: 26px;"><a href="{{ payOnlineUrl }}" target="_blank"><img src="http://azovsky.ru/images/vzmc.png" style="margin-right:10px;height:30px;">Внести оплату Online</a></div>#}
 <div class="booking-title pay-online">
     <a href="http://azovsky-billing.com/pay/" target="_blank">Внести оплату Online</a>
 </div>
 {{ form_end(form, {render_rest: false}) }}
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
-{#<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/form.css', null, true)) }}">#}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css">
+<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/easydropdown.css')) }}">
+
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment-with-locales.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.0/jquery.mask.min.js"></script>
-{#<script src="http://www.azovsky.ru/services/mb-search/js/jquery.maskedinput-1.2.2.js"></script>#}
 <script src="http://www.azovsky.ru/services/mb-search/vendor/chosen_v1.0.0/chosen.jquery.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.ru.min.js"></script>
 
 {#Стиль подключен в азовском#}
-{#<link rel="stylesheet" href="{{ absolute_url(asset('/bundles/mbhonlinebooking/css/form-style.css')) }}">#}
-<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/form.js', null, true)) }}"></script>
 <script src="{{ absolute_url(asset('bundles/fosjsrouting/js/router.js', null, true)) }}"></script>
-{#<script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>#}
 <script src="{{ absolute_url(asset('js/fos_js_routes.js', null, true)) }}"></script>
-<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/jquery.formstyler.js'))}}"></script>
+<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/jquery.easydropdown.js'))}}"></script>
+<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/form.js')) }}"></script>
 
 <script>
     var mbh = {

@@ -23,3 +23,14 @@ services:
     mbh.online.chart.data.former:
         class: MBH\Bundle\OnlineBookingBundle\Service\ChartDataFormer
         arguments: ["@mbh.calculation"]
+
+    mbh.online.left_sale.twig_extension:
+        class: MBH\Bundle\OnlineBookingBundle\Twig\OnlineBookingExtension
+        arguments: ["@doctrine_mongodb.odm.default_document_manager", "%online_left_rooms%"]
+        public: false
+        tags:
+            - { name: twig.extension }
+
+    mbh.online.special_data_preparer:
+        class: MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer
+        arguments: ['@doctrine.odm.mongodb.document_manager']

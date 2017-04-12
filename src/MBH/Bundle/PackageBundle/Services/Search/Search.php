@@ -465,7 +465,8 @@ class Search implements SearchInterface
                 $virtualResult = $this->setVirtualRoom(
                     $result,
                     $baseTariff,
-                    $query->getExcludePackage()
+                    $query->getExcludePackage(),
+                    $query->getPreferredVirtualRoom()
                 );
 
                 if (!$virtualResult) {
@@ -505,7 +506,7 @@ class Search implements SearchInterface
      * @param Package $package
      * @return bool|SearchResult
      */
-    public function setVirtualRoom($result, Tariff $tariff, Package $package = null)
+    public function setVirtualRoom($result, Tariff $tariff, Package $package = null, $forcedVirtualRoom = null)
     {
 
         if ($result->getBegin() <= new \DateTime('midnight')) {
@@ -582,9 +583,12 @@ class Search implements SearchInterface
         $collection = $preferredRooms->count() ? $preferredRooms :  $emptyRooms;
 
         if ($collection->count()) {
-            $collection->rewind();
-            $room = $collection->current();
-
+            if ($forcedVirtualRoom && $collection->contains($forcedVirtualRoom)) {
+                $room = $forcedVirtualRoom;
+            } else {
+                $collection->rewind();
+                $room = $collection->current();
+            }
             $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($room->getId());
             $result->setVirtualRoom($room);
 

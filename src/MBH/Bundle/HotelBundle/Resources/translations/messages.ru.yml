@@ -222,6 +222,8 @@ controller.corpus.created_success: Копрус успешно добавлен
 form.taskTypeCategory.general_info: Добавление категории задач
 form.taskTypeCategory.title: Внутреннее Название
 form.taskTypeCategory.fullTitle: Название
+task_type_category.controller.creation.success: Группа номеров успешно создана
+task_type_category.controller.change.success: Группа номеров успешно изменена
 
 views.task.index.creation: Создание
 views.task.index.performance: Исполнение
