@@ -1,6 +1,7 @@
 ///<reference path="DataManager.ts"/>
 var ChessBoardManager = (function () {
     function ChessBoardManager(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals) {
+        this.canMoveAccommodation = true;
         this.dataManager = new DataManager(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals, this);
         this.actionManager = new ActionManager(this.dataManager);
         this.updateNoAccommodationPackageCounts();
@@ -352,6 +353,7 @@ var ChessBoardManager = (function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
             });
             $element.find('.divide-package-button').click(function () {
+                self.canMoveAccommodation = false;
                 if (intervalData.viewPackage) {
                     var scissorsElement = this.childNodes[0];
                     scissorsElement.onclick = function () {
@@ -367,8 +369,9 @@ var ChessBoardManager = (function () {
                         var packageLeftCoordinate_1 = accommodationElement_1.getBoundingClientRect().left;
                         var line_1 = document.createElement('div');
                         line_1.style = 'position:absolute; border: 2px dashed red; height: 41px; z-index = 250;top: 0';
-                        var isAccommodationAbroadTable_1 = (parseInt(getComputedStyle(accommodationElement_1).width, 10)
-                            % ChessBoardManager.DATE_ELEMENT_WIDTH) != 0;
+                        var accommodationElementWidth = parseInt(getComputedStyle(accommodationElement_1).width, 10);
+                        var isAccommodationAbroadTable_1 = (accommodationElementWidth % ChessBoardManager.DATE_ELEMENT_WIDTH) != 0
+                            && ((accommodationElementWidth + 1) % ChessBoardManager.DATE_ELEMENT_WIDTH) != 0;
                         var defaultLeftValue_1 = isAccommodationAbroadTable_1
                             ? ChessBoardManager.DATE_ELEMENT_WIDTH + ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET
                             : ChessBoardManager.DATE_ELEMENT_WIDTH;
@@ -406,6 +409,7 @@ var ChessBoardManager = (function () {
         // console.timeEnd('resizable etc');
     };
     ChessBoardManager.prototype.divide = function (packageElement, firstAccommodationWidth) {
+        this.canMoveAccommodation = true;
         if (packageElement.parentNode) {
             var packageWidth = parseInt(packageElement.style.width, 10);
             $(packageElement).find('.divide-package-button, .remove-package-button, .ui-resizable-e, .ui-resizable-w').remove();
@@ -461,7 +465,7 @@ var ChessBoardManager = (function () {
                     grid: [ChessBoardManager.DATE_ELEMENT_WIDTH, 1],
                     scroll: true,
                     drag: function (event, ui) {
-                        if (!ChessBoardManager.isIntervalAvailable(intervalData, isDivide)) {
+                        if (!ChessBoardManager.isIntervalAvailable(intervalData, isDivide) || !self.canMoveAccommodation) {
                             ui.position.left = ui.originalPosition.left;
                             ui.position.top = ui.originalPosition.top;
                         }
@@ -907,6 +911,7 @@ var ChessBoardManager = (function () {
         });
     };
     ChessBoardManager.prototype.updatePackagesData = function () {
+        this.canMoveAccommodation = true;
         ChessBoardManager.deleteAllPackages();
         this.addAccommodationElements();
     };
@@ -959,15 +964,15 @@ var ChessBoardManager = (function () {
         editButton.innerHTML = '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>';
         return editButton;
     };
-    ChessBoardManager.DATE_ELEMENT_WIDTH = 47;
-    ChessBoardManager.DATE_ELEMENT_HEIGHT = 40;
-    ChessBoardManager.PACKAGE_ELEMENT_HEIGHT = 41;
-    ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET = 20;
-    ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH = 8;
-    ChessBoardManager.POPOVER_MIN_WIDTH = 250;
-    ChessBoardManager.LEFT_BAR_WIDTH = 200;
-    ChessBoardManager.SCROLL_BAR_WIDTH = 16;
-    ChessBoardManager.ACCOMMODATION_ELEMENT_ZINDEX = 100;
     return ChessBoardManager;
 }());
+ChessBoardManager.DATE_ELEMENT_WIDTH = 47;
+ChessBoardManager.DATE_ELEMENT_HEIGHT = 40;
+ChessBoardManager.PACKAGE_ELEMENT_HEIGHT = 41;
+ChessBoardManager.PACKAGE_TO_MIDDAY_OFFSET = 20;
+ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH = 8;
+ChessBoardManager.POPOVER_MIN_WIDTH = 250;
+ChessBoardManager.LEFT_BAR_WIDTH = 200;
+ChessBoardManager.SCROLL_BAR_WIDTH = 16;
+ChessBoardManager.ACCOMMODATION_ELEMENT_ZINDEX = 100;
 //# sourceMappingURL=ChessBoardManager.js.map
