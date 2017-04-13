@@ -9,6 +9,7 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
 
 /**
  * @ODM\Document(collection="PriceCache", repositoryClass="MBH\Bundle\PriceBundle\Document\PriceCacheRepository")
@@ -17,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="PriceCache already exist.")
  * @MongoDBUnique(fields={"roomTypeCategory", "date", "tariff"}, message="PriceCache already exist.")
  * @ODM\HasLifecycleCallbacks
+ * @Disableable\Disableable
  */
 class PriceCache extends Base
 {
@@ -128,6 +130,30 @@ class PriceCache extends Base
      */
     protected $singlePrice = null;
 
+    /**
+     * @var \DateTime
+     * @ODM\Field(type="date")
+     */
+    protected $modifiedDate;
+
+    /**
+     * @return \DateTime
+     */
+    public function getModifiedDate(): ?\DateTime
+    {
+        return $this->modifiedDate;
+    }
+
+    /**
+     * @param \DateTime $modifiedDate
+     * @return PriceCache
+     */
+    public function setModifiedDate(\DateTime $modifiedDate): PriceCache
+    {
+        $this->modifiedDate = $modifiedDate;
+
+        return $this;
+    }
 
     /**
      * Set hotel

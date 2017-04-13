@@ -96,10 +96,19 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         ];
 
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
-        //get roomTypes
+
         if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
             $this->dm->getFilterCollection()->enable('disableable');
         }
+        //get priceCaches
+        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+            $begin, $end, $this->hotel,
+            $request->get('roomTypes') ? $request->get('roomTypes') : [],
+            $request->get('tariffs') ? $request->get('tariffs') : [],
+            true,
+            $this->manager->useCategories
+        );
+        //get roomTypes
         $roomTypes = $this->manager->getRooms($this->hotel, $request->get('roomTypes'));
         if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
             $this->dm->getFilterCollection()->disable('disableable');
@@ -114,15 +123,6 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         if (!count($tariffs)) {
             return array_merge($response, ['error' => 'Тарифы не найдены']);
         }
-
-        //get priceCaches
-        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-            $begin, $end, $this->hotel,
-            $request->get('roomTypes') ? $request->get('roomTypes') : [],
-            $request->get('tariffs') ? $request->get('tariffs') : [],
-            true,
-            $this->manager->useCategories
-        );
 
         return array_merge($response, [
             'roomTypes' => $roomTypes,
