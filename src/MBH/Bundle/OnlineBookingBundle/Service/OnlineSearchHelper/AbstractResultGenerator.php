@@ -35,14 +35,27 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         $this->results = new ArrayCollection();
     }
 
-    abstract protected function resultOnlineInstanceCreator($searchResult): OnlineResultInstance;
+    protected function resultOnlineInstanceCreator($searchResult): OnlineResultInstance
+    {
+        if ($searchResult instanceof SearchResult) {
+            $instance = $this->createOnlineResultInstance($searchResult->getRoomType(), [$searchResult]);
+        } elseif (is_array($searchResult)) {
+            $roomType = $searchResult['roomType'];
+            $results = $searchResult['results'];
+            $instance = $this->createOnlineResultInstance($roomType, $results);
+        } else {
+            throw new OnlineBookingSearchException('Cannot create OnlineResult from searchResult');
+        }
+
+        return $instance;
+    }
 
     public function getResults(OnlineSearchFormData $formData): ArrayCollection
     {
         $this->initSearchQuery($formData);
         $this->configureSearch();
-        $searchResults = $this->search->search($this->searchQuery);
-        if (is_array($searchResults)) {
+        $searchResults = $this->search($this->searchQuery);
+        if (!empty($searchResults)) {
             foreach ($searchResults as $searchResult) {
                 $this->results->add($this->resultOnlineInstanceCreator($searchResult));
             }
@@ -52,6 +65,10 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         return $this->results;
     }
 
+    protected function search(SearchQuery $searchQuery){
+
+        return $this->search->search($searchQuery);
+    }
 
     private function initSearchQuery(OnlineSearchFormData $data): void
     {
@@ -93,6 +110,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
     {
         $this->separateByAdditionalDays();
         $this->filterByCapacity();
+        $this->injectSearchQuery();
     }
 
 
@@ -136,6 +154,13 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         }
 
         $this->results = new ArrayCollection($result);
+    }
+
+    private function injectSearchQuery()
+    {
+        foreach ($this->results as $result) {
+            $result->setQuery($this->searchQuery);
+        }
     }
 
     /**

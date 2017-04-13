@@ -115,5 +115,11 @@ class SpecialPrice
         return $this;
     }
 
+    public function getNewPrice()
+    {
+        $prices = $this->getPrices();
+
+    }
+
 
 }

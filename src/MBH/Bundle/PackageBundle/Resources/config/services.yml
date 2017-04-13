@@ -3,6 +3,7 @@ services:
     #begin: search
     mbh.package.search:
             class: MBH\Bundle\PackageBundle\Services\Search\SearchFactory
+            shared: false
             arguments: ['@service_container']
 
     mbh.package.search_simple:

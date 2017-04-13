@@ -13,25 +13,9 @@
         <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a>
     </div>
     {% import _self as macro %}
-    {% for offerByRoomType in searchResults %}
-
-        {% set roomType, tariffResults, query, images, children = offerByRoomType.roomType, offerByRoomType.results, offerByRoomType.query, offerByRoomType.images, offerByRoomType.query.children %}
-        {% set firstTariffResult, lastTariffResult = tariffResults|first, tariffResults|last %}
-        {% set leftRoomKey, dates = offerByRoomType.leftRoomKey, offerByRoomType.dates %}
-        {% set isCategory = not offerByRoomType.forceRoomType %}
-        {% set special = offerByRoomType.special??null %}
-        {% set additional = offerByRoomType.additional %}
-
-        {% if special %}
-            {% include '@MBHOnlineBooking/Default/RoomTypes/special.roomType.html.twig' %}
-        {% elseif additional %}
-            {% include '@MBHOnlineBooking/Default/RoomTypes/addDates.roomType.html.twig' %}
-        {% else %}
-            {% include '@MBHOnlineBooking/Default/RoomTypes/common.roomType.html.twig' %}
-        {% endif %}
-
-
-
+    {% for onlineResult in searchResults %}
+        {#{{ dump(onlineResult.special.prices.toarray) }}#}
+        {% include '@MBHOnlineBooking/Default/RoomTypes/'~onlineResult.type~'.roomType.html.twig' %}
     {% endfor %}
 
     {% if searchResults|length != 0 %}

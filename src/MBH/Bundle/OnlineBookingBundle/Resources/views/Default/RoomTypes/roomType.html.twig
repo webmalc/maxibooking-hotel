@@ -1,25 +1,25 @@
+{% set roomType = onlineResult.roomType %}
 <section class="s_results">
-    <div class="oneblockinrdm room-type-row {{ (special or offerByRoomType.additional)?'additional':'' }}"
+    {#<div class="oneblockinrdm room-type-row {{ (special or offerByRoomType.additional)?'additional':'' }}"#}
+    <div class="oneblockinrdm room-type-row {% block add %}{% endblock %}"
          data-roomtype="{{ roomType.id }}"
          {% block data_row %}
          {% endblock %}
     >
         <div class="leftrdm">
             <div class="imghotel"
-                    {% set mainimage = offerByRoomType.mainimage %}
-                 style="background:url('{{ absolute_url(asset(mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
+                 style="background:url('{{ absolute_url(asset(onlineResult.mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
                 {% block redbox %}
                 <p class="special-strip">
                     {% block redbox_message %}
-                    {{ offerByRoomType.additional?'Другие даты':'' }}
                     {% endblock %}
                 </p>
                 {% endblock %}
                 <div class="inghotelline">
                     {# Костыль для вывода главной фото первой в списке. Сделано до реализации очередности. #}
-                    {% for image in images %}
+                    {% for image in onlineResult.images.images %}
                         {% if loop.first and not image.isMain %}
-                            {{ macro.drawimage(mainimage, loop) }}
+                            {{ macro.drawimage(onlineResult.mainimage, loop) }}
                             {{ macro.drawimage(image, loop) }}
                         {% elseif not loop.first and image.isMain %}
                         {% else %}
@@ -58,10 +58,10 @@
                 </p>
                 <p class="gueststype">
                     <b>Гости:</b>
-                    {{ query.adults }} взр.
-                    {% transchoice children %}
-                    {0} | [1,4] + %children% реб |[5,Inf[ + %children% дет.
-                    {% endtranschoice %}
+                    {{ onlineResult.query.adults }} взр.
+                    {% if onlineResult.query.children %}
+                    {{ onlineResult.query.children }} {{ 'children'|transchoice(onlineResult.query.children) }}
+                    {% endif %}
                 </p>
                 {% if hotelsLinks.eat is defined and hotelsLinks.eat is not empty %}
                     <a href="{{ hotelsLinks.eat }}" class="eat_link" target="_blank">
@@ -71,17 +71,17 @@
                     <img src="images/vl.png" alt=""> 3-разовое питание<br>шведский стол</p>
                 {% endif %}
                 <div class="iconstype">
-                    {% for facility in (isCategory?roomType.types|first:roomType).facilities %}
+                    {% for facility in (onlineResult.isCategory?onlineResult.roomType.types|first:onlineResult.roomType).facilities %}
                         <i class="fa fa-2x mbf-{{ facility }}" title="{{ facility|trans }}"></i>
                     {% endfor %}
                 </div>
             </div>
             <div class="rightinrdm">
-                <p class="titlerdm">Цена за {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
+                <p class="titlerdm">Цена за {{ onlineResult.firstResult.nights }} {{ 'nights'|transchoice(onlineResult.firstResult.nights) }}</p>
                 <div class="clear"></div>
                 <p class="pricerdm">
                     {% block prices %}
-                        {% set prices = count_prices(tariffResults) %}
+                        {% set prices = count_prices(onlineResult.results.toArray) %}
                         <span class="noneprice">
                             {% block oldPrice %}
                             {{ prices.old|number_format(0, thousandSep=' ') }}&#8381;
@@ -91,11 +91,11 @@
                         <span class="newprice">{{ prices.new|number_format(0, thousandSep=' ') }}&#8381;</span></p>
                     {% endblock newPrice %}
                     {% endblock prices %}
-                <p class="datesrdm">{{ dates.begin|date("d.m.Y") }} - {{ dates.end|date("d.m.Y") }}</p>
-                <p class="daysrdm">{{ firstTariffResult.days }} {{ 'days'|transchoice(firstTariffResult.days) }} / {{ firstTariffResult.nights }} {{ 'nights'|transchoice(firstTariffResult.nights) }}</p>
+                <p class="datesrdm">{{ onlineResult.dates.begin|date("d.m.Y") }} - {{ onlineResult.dates.end|date("d.m.Y") }}</p>
+                <p class="daysrdm">{{ onlineResult.firstResult.days }} {{ 'days'|transchoice(onlineResult.firstResult.days) }} / {{ onlineResult.firstResult.nights }} {{ 'nights'|transchoice(onlineResult.firstResult.nights) }}</p>
                 {% block remain %}
-                    {% set left_rooms = left_sale(remain, leftRoomKey) %}
-                    <p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>{#TODO:Add twig function#}
+                    {% set left_rooms = left_sale(onlineResult.remain, onlineResult.leftRoomKey) %}
+                    <p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>
                 {% endblock remain %}
                 <p class="bronsrdm">{#забронировано сегодня 9 раз#}</p>{#TODO:Уточнить#}
             </div>
@@ -115,7 +115,7 @@
                 <tbody class="tariff-container">
                 <i class="fa fa-spinner fa-pulse fa-3x fa-fw tariff-spinner"></i>
                 <span class="sr-only">Loading...</span>
-                {% for tariffResult in tariffResults %}
+                {% for tariffResult in onlineResult.results %}
                     <tr
                             class="tariff-row"
                             data-tariff="{{ tariffResult.tariff.id }}"
@@ -133,7 +133,7 @@
                         <td>{% block tariffName %}{{ tariffResult.tariff.name }}{% endblock %}</td>
                         <td class="redtd">{% block discount %}{% endblock %}</td>
                         <td>{{ tariffResult.getPrice(tariffResult.adults, tariffResult.children)|round }}&#8381;</td>
-                        <td><input name="booking-{{ tariffResult.roomType.id }}-{{ offerByRoomType.dates.begin|date("d_m_Y") ~ "_" ~ offerByRoomType.dates.end|date("d_m_Y") }}" type="radio" {% if loop.first %}checked="checked"{% endif %}></td>
+                        <td><input name="booking-{{ tariffResult.roomType.id }}-{{ onlineResult.dates.begin|date("d_m_Y") ~ "_" ~ onlineResult.dates.end|date("d_m_Y") }}" type="radio" {% if loop.first %}checked="checked"{% endif %}></td>
                     </tr>
 
                 {% endfor %}

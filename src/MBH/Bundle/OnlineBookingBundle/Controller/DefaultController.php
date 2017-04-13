@@ -153,12 +153,6 @@ class DefaultController extends BaseController
     }
 
 
-
-    private function configureCommonSearch(SearchQuery $searchQuery, SearchFactory $search): void
-    {
-
-    }
-
     private function specialOnlySearch(
         SearchQuery $searchQuery,
         Special $special = null,

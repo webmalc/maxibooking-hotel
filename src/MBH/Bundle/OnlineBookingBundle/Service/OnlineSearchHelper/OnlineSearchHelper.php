@@ -3,7 +3,7 @@
 namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 
-use Doctrine\Common\Collections\ArrayCollection;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
@@ -16,15 +16,19 @@ class OnlineSearchHelper
 
     /** @var  \SplObjectStorage */
     private $resultsGenerators;
+    /** @var  Helper */
+    private $helper;
 
     /**
      * OnlineSearchHelper constructor.
      * @param array $options
+     * @param Helper $helper
      */
-    public function __construct(array $options)
+    public function __construct(array $options, Helper $helper)
     {
         $this->options = $options;
         $this->resultsGenerators = new \SplObjectStorage();
+        $this->helper = $helper;
     }
 
     public function addGenerator(AbstractResultGenerator $generator){
@@ -33,8 +37,22 @@ class OnlineSearchHelper
 
     public function getResults(OnlineSearchFormData $formInstance)
     {
-        $results = new ArrayCollection();
+        $results = [];
         foreach ($this->resultsGenerators as $generator) {
+
+//            if ('special' === $generator->getType()) {
+//                if ($formInstance->getSpecial() && $formInstance->getRoomType() && 'special' === $generator->getType()) {
+//                    $generator->setSearchConfigurator(
+//                        function (SearchQuery $searchQuery) use ($formInstance) {
+//                            $searchQuery->setSpecial($formInstance->getSpecial());
+//                            $searchQuery->roomTypes = $this->helper->toIds([$formInstance->getRoomType()]);
+//                            $searchQuery->forceRoomTypes = true;
+//                            $searchQuery->setPreferredVirtualRoom($formInstance->getSpecial()->getVirtualRoom());
+//                        }
+//                    );
+//
+//                }
+//            }
             /** @var AbstractResultGenerator $generator */
             if ( 'common' === $generator->getType() && $this->options['add_search_dates']) {
                 $generator->setSearchConfigurator(
@@ -46,9 +64,38 @@ class OnlineSearchHelper
                 );
             }
             /** @var AbstractResultGenerator $generator */
-            $results->add(array_merge($generator->getResults($formInstance)->toArray()));
+            $results[$generator->getType()] = $generator->getResults($formInstance)->toArray();
         }
 
-        return $results;
+        return $this->finishFilter($results);
+    }
+
+    public function searchSpecialOnly(OnlineSearchFormData $formInstance){
+        foreach ($this->resultsGenerators as $generator) {
+            if ('special' === $generator->getType()) {
+                if ($formInstance->getSpecial() && $formInstance->getRoomType() && 'special' === $generator->getType()) {
+                    $generator->setSearchConfigurator(
+                        function (SearchQuery $searchQuery) use ($formInstance) {
+                            $searchQuery->setSpecial($formInstance->getSpecial());
+                            $searchQuery->roomTypes = $this->helper->toIds([$formInstance->getRoomType()]);
+                            $searchQuery->forceRoomTypes = true;
+                            $searchQuery->setPreferredVirtualRoom($formInstance->getSpecial()->getVirtualRoom());
+                        }
+                    );
+
+                }
+            }
+        }
+    }
+
+    private function finishFilter(array $searchResults)
+    {
+        $result = [];
+        foreach ($searchResults as $key => $sResults) {
+            //Тут можно фильтровать
+            $result = array_merge($result, $sResults);
+        }
+
+        return $result;
     }
 }

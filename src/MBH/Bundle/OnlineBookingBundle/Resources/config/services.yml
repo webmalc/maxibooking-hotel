@@ -48,8 +48,13 @@ services:
         parent: mbh.online.abstract_result_generator
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineCommonResultGenerator
 
+    mbh.online.special_result_generator:
+        parent: mbh.online.abstract_result_generator
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSpecialResultGenerator
+
     mbh.online.search_helper:
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSearchHelper
-        arguments: ['%online_booking%']
+        arguments: ['%online_booking%', '@mbh.helper']
         calls:
             - [addGenerator, ['@mbh.online.common_result_generator']]
+            - [addGenerator, ['@mbh.online.special_result_generator']]

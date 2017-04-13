@@ -3,8 +3,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Lib;
 
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
-use MBH\Bundle\HotelBundle\Form\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\Document\Special;
 

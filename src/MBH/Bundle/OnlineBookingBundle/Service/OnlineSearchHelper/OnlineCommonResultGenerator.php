@@ -12,29 +12,17 @@ class OnlineCommonResultGenerator extends AbstractResultGenerator
         $this->search->setWithTariffs();
     }
 
-    protected function resultOnlineInstanceCreator($searchResult): OnlineResultInstance
-    {
-        $roomType = $searchResult['roomType'];
-        $results = $searchResult['results'];
-        $instance = $this->createOnlineResultInstance($roomType, $results);
-
-        return $instance;
-    }
-
     protected function createOnlineResultInstance($roomType, $results): OnlineResultInstance
     {
         $instance = parent::createOnlineResultInstance($roomType, $results);
 
-        $isAdd = !(
+        $isAdditional = !(
             $instance->getResults()->first()->getBegin() == $this->searchQuery->begin &&
             $instance->getResults()->first()->getEnd() == $this->searchQuery->end);
 
-        if ($isAdd) {
-            $type = 'additional';
-        } else {
-            $type = static::TYPE;
+        if ($isAdditional && static::TYPE === $instance->getType()) {
+            $instance->setType('additional');
         }
-        $instance->setType($type);
 
         return $instance;
     }

@@ -9,6 +9,7 @@ use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Special;
 
 class OnlineResultInstance
 {
@@ -22,12 +23,10 @@ class OnlineResultInstance
     protected $query;
     /** @var  array */
     protected $forceRoomType;
-    /** @var  RoomTypeImage */
-    protected $mainImage;
-    /** @var  string */
-    protected $leftRoomKey;
     /** @var  string */
     protected $type;
+    /** @var Special */
+    protected $special;
 
     /**
      * OnlineResultInstance constructor.
@@ -35,7 +34,6 @@ class OnlineResultInstance
     public function __construct()
     {
         $this->results = new ArrayCollection();
-        $this->images = new ArrayCollection();
     }
 
 
@@ -124,18 +122,7 @@ class OnlineResultInstance
      */
     public function getMainImage(): RoomTypeImage
     {
-        return $this->mainImage;
-    }
-
-    /**
-     * @param RoomTypeImage $mainImage
-     * @return $this
-     */
-    public function setMainImage(RoomTypeImage $mainImage)
-    {
-        $this->mainImage = $mainImage;
-
-        return $this;
+        return $this->getImages()['mainimage'];
     }
 
     /**
@@ -143,16 +130,12 @@ class OnlineResultInstance
      */
     public function getLeftRoomKey(): string
     {
-        return $this->leftRoomKey;
+        return $this->roomType->getId().
+            $this->getFirstResult()->getTariff()->getId().
+            $this->getQuery()->begin->format('dmY').
+            $this->getQuery()->end->format('dmY');
     }
 
-    /**
-     * @param string $leftRoomKey
-     */
-    public function setLeftRoomKey(string $leftRoomKey)
-    {
-        $this->leftRoomKey = $leftRoomKey;
-    }
 
     /**
      * @return string
@@ -181,7 +164,7 @@ class OnlineResultInstance
 
         if ($this->roomType instanceof RoomTypeCategory) {
             /** @var RoomTypeCategory $roomTypeCategory */
-            $roomTypes = $roomTypeCategory->getTypes();
+            $roomTypes = $this->roomType->getTypes();
             foreach ($roomTypes as $roomType) {
                 $mainImage = $roomType->getMainImage();
                 $images = $roomType->getImages()->toArray();
@@ -206,5 +189,38 @@ class OnlineResultInstance
             'end' => $firstResult->getEnd(),
         ];
     }
+
+    public function isCategory()
+    {
+        return ($this->getRoomType() instanceof RoomTypeCategory);
+    }
+
+    public function getFirstResult()
+    {
+        return $this->getResults()->first();
+    }
+
+    public function getRemain()
+    {
+        return $this->getFirstResult()->getRoomsCount();
+    }
+
+    /**
+     * @return Special
+     */
+    public function getSpecial(): Special
+    {
+        return $this->special;
+    }
+
+    /**
+     * @param Special $special
+     */
+    public function setSpecial(Special $special)
+    {
+        $this->special = $special;
+    }
+
+
 
 }
