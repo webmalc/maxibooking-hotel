@@ -80,6 +80,10 @@ class ChessBoardManager {
             $('#entity-delete-button').unbind('click');
         });
 
+        $('#modal_delete_package').on('hidden.bs.modal', function () {
+            self.updateTable();
+        });
+
         document.getElementById('packageModalConfirmButton').onclick = function () {
             let data = ActionManager.getDataFromUpdateModal();
             let packageId = data.packageId;
@@ -1081,6 +1085,7 @@ class ChessBoardManager {
         removeButton.setAttribute('type', 'button');
         removeButton.setAttribute('title', Translator.trans('chessboard_manager.remove_button.popup'));
         removeButton.setAttribute('data-toggle', 'tooltip');
+        removeButton.setAttribute('data-container', 'body');
         removeButton.classList.add('remove-package-button');
         removeButton.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
 
@@ -1092,6 +1097,7 @@ class ChessBoardManager {
         divideButton.setAttribute('type', 'button');
         divideButton.setAttribute('title', Translator.trans('chessboard_manager.divide_button.popup'));
         divideButton.setAttribute('data-toggle', 'tooltip');
+        divideButton.setAttribute('data-container', 'body');
         divideButton.classList.add('divide-package-button');
         divideButton.innerHTML = '<i class="fa fa-scissors" aria-hidden="true"></i>';
 
