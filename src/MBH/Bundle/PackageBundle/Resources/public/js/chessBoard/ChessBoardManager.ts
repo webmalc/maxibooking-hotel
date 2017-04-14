@@ -150,7 +150,8 @@ class ChessBoardManager {
                     document.onmousemove = null;
                     this.onmouseup = null;
                     if ((newPackage.style.width) && self.isPackageLocationCorrect(newPackage) && newPackage.id) {
-                        self.saveNewPackage(newPackage);
+                        let packageData = ChessBoardManager.getPackageData($(newPackage));
+                        self.saveNewPackage(packageData);
                     }
                     self.updateTable();
                 };
@@ -181,17 +182,30 @@ class ChessBoardManager {
         }
     }
 
-    private saveNewPackage(packageElement) {
+    private saveNewPackage(packageData) {
         'use strict';
-        let packageData = ChessBoardManager.getPackageData($(packageElement));
         let $searchPackageForm = $('#package-search-form');
 
         $searchPackageForm.find('#s_roomType').val(packageData.roomType);
         $searchPackageForm.find('#s_begin').val(packageData.begin);
         $searchPackageForm.find('#s_end').val(packageData.end);
         $searchPackageForm.find('#s_range').val('0');
+        let newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm);
 
-        this.dataManager.getPackageOptionsRequest(ChessBoardManager.getFilterData($searchPackageForm), packageData);
+        this.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
+    }
+
+    public static getNewPackageRequestData($searchPackageForm, specialId = null) {
+        let newPackageRequestData = ChessBoardManager.getFilterData($searchPackageForm);
+        if (specialId) {
+            let specialString = 'special%5D=';
+            let specialPosition = newPackageRequestData.indexOf(specialString);
+            let specialValuePosition = specialPosition + specialString.length;
+            newPackageRequestData = newPackageRequestData.slice(0, specialValuePosition) + specialId
+                + newPackageRequestData.slice(specialValuePosition, newPackageRequestData.length);
+        }
+
+        return newPackageRequestData;
     }
 
     public static getFilterData($searchPackageForm) {
@@ -1036,13 +1050,20 @@ class ChessBoardManager {
             if (leftRoomCounts[roomTypeId]) {
                 let dateElements = item.children[0].children;
                 for (let i = 0; i < dateElements.length; i++) {
-                    dateElements[i].children[0].innerHTML = leftRoomCounts[roomTypeId][i];
+                    let dateLeftRoomsCount = leftRoomCounts[roomTypeId][i];
+                    dateElements[i].children[0].innerHTML = dateLeftRoomsCount;
+                    dateElements[i].setAttribute('data-toggle', "tooltip" );
+
+                    let toolTipTitle = Translator.trans('chessboard_manager.left_rooms_count.tooltip_title', {'count' : dateLeftRoomsCount});
+                    dateElements[i].setAttribute('data-original-title', toolTipTitle);
+                    dateElements[i].setAttribute('data-placement', "bottom");
+                    dateElements[i].setAttribute('data-container', 'body');
                 }
             }
         })
     }
 
-    private updatePackagesData() {
+    public updatePackagesData() {
         this.canMoveAccommodation = true;
         ChessBoardManager.deleteAllPackages();
         this.addAccommodationElements();

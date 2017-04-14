@@ -112,7 +112,8 @@ var ChessBoardManager = (function () {
                     document.onmousemove = null;
                     this.onmouseup = null;
                     if ((newPackage.style.width) && self.isPackageLocationCorrect(newPackage) && newPackage.id) {
-                        self.saveNewPackage(newPackage);
+                        var packageData = ChessBoardManager.getPackageData($(newPackage));
+                        self.saveNewPackage(packageData);
                     }
                     self.updateTable();
                 };
@@ -139,15 +140,27 @@ var ChessBoardManager = (function () {
             chessBoardContentBlock.style.width = 'auto';
         }
     };
-    ChessBoardManager.prototype.saveNewPackage = function (packageElement) {
+    ChessBoardManager.prototype.saveNewPackage = function (packageData) {
         'use strict';
-        var packageData = ChessBoardManager.getPackageData($(packageElement));
         var $searchPackageForm = $('#package-search-form');
         $searchPackageForm.find('#s_roomType').val(packageData.roomType);
         $searchPackageForm.find('#s_begin').val(packageData.begin);
         $searchPackageForm.find('#s_end').val(packageData.end);
         $searchPackageForm.find('#s_range').val('0');
-        this.dataManager.getPackageOptionsRequest(ChessBoardManager.getFilterData($searchPackageForm), packageData);
+        var newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm);
+        this.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
+    };
+    ChessBoardManager.getNewPackageRequestData = function ($searchPackageForm, specialId) {
+        if (specialId === void 0) { specialId = null; }
+        var newPackageRequestData = ChessBoardManager.getFilterData($searchPackageForm);
+        if (specialId) {
+            var specialString = 'special%5D=';
+            var specialPosition = newPackageRequestData.indexOf(specialString);
+            var specialValuePosition = specialPosition + specialString.length;
+            newPackageRequestData = newPackageRequestData.slice(0, specialValuePosition) + specialId
+                + newPackageRequestData.slice(specialValuePosition, newPackageRequestData.length);
+        }
+        return newPackageRequestData;
     };
     ChessBoardManager.getFilterData = function ($searchPackageForm) {
         var searchData = $searchPackageForm.serialize();
@@ -905,7 +918,13 @@ var ChessBoardManager = (function () {
             if (leftRoomCounts[roomTypeId]) {
                 var dateElements = item.children[0].children;
                 for (var i = 0; i < dateElements.length; i++) {
-                    dateElements[i].children[0].innerHTML = leftRoomCounts[roomTypeId][i];
+                    var dateLeftRoomsCount = leftRoomCounts[roomTypeId][i];
+                    dateElements[i].children[0].innerHTML = dateLeftRoomsCount;
+                    dateElements[i].setAttribute('data-toggle', "tooltip");
+                    var toolTipTitle = Translator.trans('chessboard_manager.left_rooms_count.tooltip_title', { 'count': dateLeftRoomsCount });
+                    dateElements[i].setAttribute('data-original-title', toolTipTitle);
+                    dateElements[i].setAttribute('data-placement', "bottom");
+                    dateElements[i].setAttribute('data-container', 'body');
                 }
             }
         });

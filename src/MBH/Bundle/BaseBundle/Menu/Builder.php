@@ -94,10 +94,10 @@ class Builder implements ContainerAwareInterface
             'label' => 'Заезд/Выезд',
         ])
             ->setAttributes(['icon' => 'fa fa-exchange']);
-        $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
-            ->setAttributes(['icon' => 'fa fa-table']);
+//        $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
+//            ->setAttributes(['icon' => 'fa fa-table']);
 
-        $menu['porter_links']->addChild('chessboard', ['route' => 'chess_board_home', 'label' => 'ШахматкаТест'])
+        $menu['porter_links']->addChild('chessboard', ['route' => 'chess_board_home', 'label' => 'Шахматка'])
             ->setAttributes(['icon' => 'fa fa-table']);
 
         //Prices links
