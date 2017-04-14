@@ -221,17 +221,20 @@ class Ostrovok extends Base
 
         // iterate hotels
         $rna_request_data = [];
+        /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
-            /** @var ChannelManagerConfigInterface $config */
-            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                $begin,
-                $end,
-                $config->getHotel(),
-                $this->getRoomTypeArray($roomType),
-                [],
-                true,
-                $this->roomManager->useCategories
-            );
+            $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                    $begin,
+                    $end,
+                    $config->getHotel(),
+                    $this->getRoomTypeArray($roomType),
+                    [],
+                    true,
+                    $this->roomManager->useCategories
+                );
+            };
+            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             $octrovokRoomTypes = $this->getRoomTypes($config, true);
             $ostrovokTariffs = $this->getTariffs($config, true);

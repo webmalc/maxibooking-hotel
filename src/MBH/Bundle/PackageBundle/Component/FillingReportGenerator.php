@@ -72,7 +72,11 @@ class FillingReportGenerator
                 $criteria['roomType.id'] = ['$in' => $roomTypeIDs];
             }
         }
-        $priceCaches = $priceCacheRepository->findBy($criteria);
+        $priceCachesCallback = function () use ($criteria, $priceCacheRepository) {
+            return $priceCacheRepository->findBy($criteria);
+        };
+        $priceCaches = $this->container->get('mbh.helper')
+            ->getFilteredResult($this->container->get('doctrine.odm.mongodb.document_manager'), $priceCachesCallback);
 
 
         $allPackages = $dm->getRepository('MBHPackageBundle:Package')->findBy([

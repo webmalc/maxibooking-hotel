@@ -100,10 +100,13 @@ class OverviewController extends Controller implements CheckHotelControllerInter
                 $request->get('roomTypes') && !$manager->useCategories ? $request->get('roomTypes') : [], [], true);
         
         //get priceCaches
-        $priceCaches = $dm->getRepository('MBHPriceBundle:PriceCache')
-            ->fetch(
-                $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [], [], true, $manager->useCategories);
+        $priceCachesCallback = function () use ($dm, $begin, $end, $hotel, $request, $manager) {
+            return $dm->getRepository('MBHPriceBundle:PriceCache')
+                ->fetch(
+                    $begin, $end, $hotel,
+                    $request->get('roomTypes') ? $request->get('roomTypes') : [], [], true, $manager->useCategories);
+        };
+        $priceCaches = $helper->getFilteredResult($dm, $priceCachesCallback);
         
         //get restrictions
         $restrictions = $dm->getRepository('MBHPriceBundle:Restriction')

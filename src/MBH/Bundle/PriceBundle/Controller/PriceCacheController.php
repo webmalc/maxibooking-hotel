@@ -17,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("price_cache")
@@ -43,15 +44,10 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     public function indexAction()
     {
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
-        $filterCollection = $this->dm->getFilterCollection();
-        //get roomTypes
-        if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
-            $filterCollection->enable('disableable');
-        }
-        $roomTypes = $this->manager->getRooms($this->hotel);
-        if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
-            $filterCollection->disable('disableable');
-        }
+        $getRoomTypeCallback = function () {
+            return $this->manager->getRooms($this->hotel);
+        };
+        $roomTypes = $this->get('mbh.helper')->getFilteredResult($this->dm, $getRoomTypeCallback, $isDisableableOn);
         
         return [
             'roomTypes' => $roomTypes,
@@ -95,24 +91,23 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             'hotel' => $this->hotel
         ];
 
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $priceCachesCallBack = function() use ($begin, $end, $request) {
+            return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                $begin, $end, $this->hotel,
+                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                $request->get('tariffs') ? $request->get('tariffs') : [],
+                true,
+                $this->manager->useCategories
+            );
+        };
+        $priceCaches = $helper->getFilteredResult($this->dm, $priceCachesCallBack);
 
-        if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
-            $this->dm->getFilterCollection()->enable('disableable');
-        }
-        //get priceCaches
-        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-            $begin, $end, $this->hotel,
-            $request->get('roomTypes') ? $request->get('roomTypes') : [],
-            $request->get('tariffs') ? $request->get('tariffs') : [],
-            true,
-            $this->manager->useCategories
-        );
-        //get roomTypes
-        $roomTypes = $this->manager->getRooms($this->hotel, $request->get('roomTypes'));
-        if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
-            $this->dm->getFilterCollection()->disable('disableable');
-        }
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $roomTypesCallback = function () use ($request) {
+            return $this->manager->getRooms($this->hotel, $request->get('roomTypes'));
+        };
+        $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => 'Типы номеров не найдены']);
         }
@@ -132,12 +127,26 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     }
 
     /**
+     * @Route("/test")
+     */
+    public function testAction()
+    {
+        $date = \DateTime::createFromFormat('d.m.Y H:i:s', '09.03.2017 00:00:00');
+        $callback = function () use ($date) {
+            return $this->dm->getRepository('MBHPriceBundle:PriceCache')->findBy(['date' => $date]);
+        };
+        $priceCaches = $this->helper->getFilteredResult($this->dm, $callback, false);
+
+        return new Response();
+    }
+
+    /**
      * @Route("/save", name="price_cache_overview_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
      * @Template("MBHPriceBundle:PriceCache:index.html.twig")
      * @param Request $request
-     * @return array
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function saveAction(Request $request)
     {
@@ -191,18 +200,25 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
         //update
         foreach ($updateData as $priceCacheId => $prices) {
-            $priceCache = $this->dm->getRepository('MBHPriceBundle:PriceCache')->find($priceCacheId);
+            $priceCacheCallback = function () use ($priceCacheId) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->find($priceCacheId);
+            };
+            /** @var PriceCache $priceCache */
+            $priceCache = $helper->getFilteredResult($this->dm, $priceCacheCallback);
             if (!$priceCache || $priceCache->getHotel() != $this->hotel) {
                 continue;
             }
 
+            $priceCache->setModifiedDate(new \DateTime(), true);
             //delete
             if (isset($prices['price']) && $prices['price'] === '') {
-                $this->dm->remove($priceCache);
                 continue;
             }
 
-            $priceCache
+            $newPriceCache = (new PriceCache())
+                ->setDate($priceCache->getDate())
+                ->setTariff($priceCache->getTariff())
+                ->setCategoryOrRoomType($priceCache->getCategoryOrRoomType())
                 ->setPrice($prices['price'])
                 ->setChildPrice(isset($prices['childPrice']) && $prices['childPrice'] !== '' ? $prices['childPrice'] : null)
                 ->setIsPersonPrice(isset($prices['isPersonPrice']) ? true : false)
@@ -210,18 +226,17 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 ->setAdditionalPrice(isset($prices['additionalPrice']) && $prices['additionalPrice'] !== '' ? $prices['additionalPrice'] : null)
                 ->setAdditionalChildrenPrice(isset($prices['additionalChildrenPrice']) && $prices['additionalChildrenPrice'] !== '' ? $prices['additionalChildrenPrice'] : null);
 
-            $priceCache = $this->addAdditionalPrices(
-                $priceCache->getCategoryOrRoomType($this->manager->useCategories), $priceCache, $prices
+            $newPriceCache = $this->addAdditionalPrices(
+                $priceCache->getCategoryOrRoomType($this->manager->useCategories), $newPriceCache, $prices
             );
 
-            if ($validator->validate($priceCache)) {
-                $this->dm->persist($priceCache);
+            if ($validator->validate($newPriceCache)) {
+                $this->dm->persist($newPriceCache);
             }
         }
         $this->dm->flush();
 
-        $request->getSession()->getFlashBag()
-            ->set('success', 'Изменения успешно сохранены.');
+        $this->addFlash('success', 'Изменения успешно сохранены.');
 
         $this->get('mbh.channelmanager')->updatePricesInBackground();
         $this->get('mbh.cache')->clear('price_cache');
@@ -240,7 +255,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @param array $prices
      * @return PriceCache
      */
-    private function addAdditionalPrices(RoomTypeInterface $roomType, PriceCache $priceCache, array $prices)
+    private function  addAdditionalPrices(RoomTypeInterface $roomType, PriceCache $priceCache, array $prices)
     {
         if ($roomType->getIsIndividualAdditionalPrices() && $roomType->getAdditionalPlaces() > 1) {
             $childrenPrices = $additionalPrices = [];
@@ -297,7 +312,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
      * @Template("MBHPriceBundle:PriceCache:generator.html.twig")
      * @param Request $request
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function generatorSaveAction(Request $request)
     {

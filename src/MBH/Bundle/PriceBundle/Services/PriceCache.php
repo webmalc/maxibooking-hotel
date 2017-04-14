@@ -101,11 +101,15 @@ class PriceCache
         (empty($availableTariffs)) ? $tariffs = $hotel->getTariffs()->toArray() : $tariffs = $availableTariffs;
 
         // find && group old caches
-        $oldPriceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-            ->fetch(
-                $begin, $end, $hotel, $this->helper->toIds($roomTypes), $this->helper->toIds($tariffs), false, $this->roomManager->useCategories
-            );
+        $oldPriceCachesCallback = function () use ($begin, $end, $hotel, $roomTypes, $tariffs) {
+            return $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                ->fetch(
+                    $begin, $end, $hotel, $this->helper->toIds($roomTypes), $this->helper->toIds($tariffs), false, $this->roomManager->useCategories
+                );
+        };
+        $oldPriceCaches = $this->helper->getFilteredResult($this->dm, $oldPriceCachesCallback);
 
+        /** @var \MBH\Bundle\PriceBundle\Document\PriceCache $oldPriceCache */
         foreach ($oldPriceCaches as $oldPriceCache) {
 
             if (!empty($weekdays) && !in_array($oldPriceCache->getDate()->format('w'), $weekdays)) {
@@ -114,13 +118,30 @@ class PriceCache
 
             $updateCaches[$oldPriceCache->getDate()->format('d.m.Y')][$oldPriceCache->getTariff()->getId()][$oldPriceCache->getCategoryOrRoomType($this->roomManager->useCategories)->getId()] = $oldPriceCache;
 
-            if ($price == -1) {
-                $remove['_id']['$in'][] = new \MongoId($oldPriceCache->getId());
-            }
-
             $updates[] = [
                 'criteria' => ['_id' => new \MongoId($oldPriceCache->getId())],
                 'values' => [
+                    'isEnabled' => false,
+                    'modifiedDate' => new \MongoDate((new \DateTime())->getTimestamp())
+                ]
+            ];
+
+            if ($this->roomManager->useCategories) {
+                $field = 'roomTypeCategory';
+                $collection = 'RoomTypeCategory';
+                $collectionId = $oldPriceCache->getRoomTypeCategory()->getId();
+            } else {
+                $field = 'roomType';
+                $collection = 'RoomTypes';
+                $collectionId = $oldPriceCache->getRoomType()->getId();
+            }
+
+            if ($price != -1) {
+                $priceCaches[] = [
+                    'hotel' => \MongoDBRef::create('Hotels', new \MongoId($hotel->getId())),
+                    $field => \MongoDBRef::create($collection, new \MongoId($collectionId)),
+                    'tariff' => \MongoDBRef::create('Tariffs', new \MongoId($oldPriceCache->getTariff()->getId())),
+                    'date' => new \MongoDate($oldPriceCache->getDate()->getTimestamp()),
                     'price' => (float) $price,
                     'childPrice' => $childPrice,
                     'isPersonPrice' => $isPersonPrice,
@@ -128,12 +149,14 @@ class PriceCache
                     'additionalPrice' => $additionalPrice,
                     'additionalChildrenPrice' => $additionalChildrenPrice,
                     'additionalPrices' => $additionalPrices,
-                    'additionalChildrenPrices' => $additionalChildrenPrices
-                ]
-            ];
+                    'additionalChildrenPrices' => $additionalChildrenPrices,
+                    'isEnabled' => true
+                ];
+            }
         }
         foreach ($tariffs as $tariff) {
             foreach ($roomTypes as $roomType) {
+                /** @var \DateTime $date */
                 foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $endWithDay) as $date) {
 
                     if (isset($updateCaches[$date->format('d.m.Y')][$tariff->getId()][$roomType->getId()])) {
@@ -170,11 +193,7 @@ class PriceCache
             }
         }
 
-        if ($price == -1) {
-            $this->container->get('mbh.mongo')->remove('PriceCache', $remove);
-        } else {
-            $this->container->get('mbh.mongo')->batchInsert('PriceCache', $priceCaches);
-            $this->container->get('mbh.mongo')->update('PriceCache', $updates);
-        }
+        $this->container->get('mbh.mongo')->batchInsert('PriceCache', $priceCaches);
+        $this->container->get('mbh.mongo')->update('PriceCache', $updates);
     }
 }

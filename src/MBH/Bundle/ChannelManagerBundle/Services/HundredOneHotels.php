@@ -118,14 +118,17 @@ class HundredOneHotels extends Base
             //$roomTypes array[roomId => [roomId('syncId'), roomType('doc')]]
             $roomTypes = $this->getRoomTypes($config, true);
             //$priceCaches array [roomTypeId][tariffId][date => PriceCache]
-            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                $begin,
-                $end,
-                $config->getHotel(),
-                $this->getRoomTypeArray($roomType),
-                [],
-                true
-            );
+            $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                    $begin,
+                    $end,
+                    $config->getHotel(),
+                    $this->getRoomTypeArray($roomType),
+                    [],
+                    true
+                );
+            };
+            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                 /** @var \DateTime $day */
@@ -215,14 +218,18 @@ class HundredOneHotels extends Base
                 [],
                 true
             );
-            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                $begin,
-                $end,
-                $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
-                [],
-                true
-            );
+
+            $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                    $begin,
+                    $end,
+                    $config->getHotel(),
+                    $roomType ? [$roomType->getId()] : [],
+                    [],
+                    true
+                );
+            };
+            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                 /** @var \DateTime $day */
