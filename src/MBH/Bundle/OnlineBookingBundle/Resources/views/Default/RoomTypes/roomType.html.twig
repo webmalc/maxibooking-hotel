@@ -144,6 +144,8 @@
             <div class="spros">Пользуется спросом!</div>
             <a href="javascript:void(0)" class="btn-booking-reservation"><p class="btmone btmonenotspec">Отправить заявку</p></a>
             <a href="javascript:void(0)" class="btn-booking"><p class="btmtwo">Купить онлайн</p></a>
+            {% block anotherSpec %}
+            {% endblock %}
             {% if showAll is defined and showAll %}
                 <a href="javascript:void(0)" class="btn-booking-all"><p class="btmthree">Показать всё</p></a>
             {% endif %}

@@ -1,6 +1,18 @@
-{% for special in specials %}
-<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/special_page.css')) }}">
-<div class="oneblockspec"
+{#<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/special_page.css')) }}">#}
+<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/spec-slider.css')) }}">
+{% set month = ['Май'] %}
+<div class="spec-wrap">
+    <div class="month-spec">
+        <ul class="bxslider">
+            {% for key, monthName in monthList %}
+                <li class="month-switcher"><a href="#" id="{{ key }}" {% if key not in data.byMonth|keys %}class="disable-month"{% endif %}>{{ monthName }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% for special in data.specials %}
+
+<div class="oneblockspec{% for keymonth, month in data.byMonth %}{% if special.special.id in month %} {{ keymonth }} {% endif %}{% endfor %}"
      data-discount="{{ special.discount }}"
      data-specialid="{{ special.specialId }}"
      data-roomcategoryid="{{ special.roomCategoryId }}"
@@ -12,16 +24,6 @@
             <p class="special-strip"> - {{ special.discount }}{{ (special.isPercent)?'%':'руб' }}</p>
         </div>
         <div class="hotel-thumb">
-            <div class="row-no-indent">
-                {% for image in special.images%}
-                    {% if not loop.first %}
-                        <div class="col-md-4"><img src="{{ absolute_url(asset(image)) }}" alt=""></div>
-                    {% endif %}
-                {% endfor %}
-
-                <div class="clear"></div>
-            </div>
-            <div class="clear"></div>
             <p class="food"><img src="http://azovsky.ru/images/specnew/spoon.png" alt="">  <a href="http://azovsky.ru/shvedskiy-stol/" title="Шведский стол">3-раз. питание шведский стол</a></p>
         </div>
     </div>
@@ -67,3 +69,20 @@
 </div>
 {% endfor %}
 <script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/specials.js')) }}"></script>
+<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/jquery.bxslider.min.js')) }}"></script>
+
+<!--вызов салайдера-->
+<script>
+    $(document).ready(function(){
+        $('.bxslider').bxSlider({
+
+            minSlides: 3,
+            maxSlides: 3,
+            slideWidth: 360,
+            slideMargin: 10,
+            infiniteLoop:false,
+            pager: false
+
+        });
+    });
+</script>

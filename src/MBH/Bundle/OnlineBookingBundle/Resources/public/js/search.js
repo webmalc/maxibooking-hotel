@@ -6,6 +6,7 @@ var RoomTypeRow = function ($row) {
     this.$bookingButton = $row.find('.btn-booking');
     this.$bookingButtonReservation = $row.find('.btn-booking-reservation');
     this.$bookingButtonAll = $row.find('.btn-booking-all');
+    this.$showAllSpecialButton = $row.find('.showspecial');
     this.tariffRows = [];
     this.selectedTariffRow = null;
     this.chartContainer = this.$row.find("div[id^=chart]").attr('id');
@@ -34,6 +35,10 @@ RoomTypeRow.prototype.bindEventHandlers = function () {
         e.stopPropagation();
         that.allTariffAction();
         $(this).off('click').find('.btmthree').removeClass('btmthree').addClass('btmthreeoff');
+    });
+    this.$showAllSpecialButton.on('click', function (e) {
+        e.preventDefault();
+        alert("На азовском нужна страница со спецпредложениями");
     });
 
 };

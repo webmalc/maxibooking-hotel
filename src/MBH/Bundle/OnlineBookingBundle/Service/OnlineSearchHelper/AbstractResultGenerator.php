@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\OnlineBookingSearchException;
@@ -11,38 +12,56 @@ use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
+use MBH\Bundle\PriceBundle\Document\Special;
 
 abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterface
 {
     protected const TYPE = '';
     /** @var SearchFactory $search */
     protected $search;
-    /** @var SearchQuery */
-    protected $searchQuery;
     /** @var  callable */
     protected $searchConfigurator;
     /** @var  ArrayCollection */
     protected $results;
 
+    protected $options;
+
+    protected $helper;
+
     /**
      * AbstractResultGenerator constructor.
      * @param SearchFactory $search
      */
-    public function __construct(SearchFactory $search)
+    public function __construct(SearchFactory $search, array $options, Helper $helper)
     {
         $this->search = $search;
-        $this->searchQuery = new SearchQuery();
         $this->results = new ArrayCollection();
+        $this->options = $options;
+        $this->helper = $helper;
     }
 
-    protected function resultOnlineInstanceCreator($searchResult): OnlineResultInstance
+    public function getResults(OnlineSearchFormData $formData): ArrayCollection
+    {
+        $searchQuery = $this->initSearchQuery($formData);
+        $searchResults = $this->search($searchQuery, $formData->getRoomType(), $formData->getSpecial());
+        if (!empty($searchResults)) {
+            foreach ($searchResults as $searchResult) {
+                $this->results->add($this->resultOnlineInstanceCreator($searchResult, $searchQuery));
+            }
+        }
+        $this->resultsHandle($searchQuery);
+
+        return $this->results;
+    }
+
+    protected function resultOnlineInstanceCreator($searchResult, SearchQuery $searchQuery): OnlineResultInstance
     {
         if ($searchResult instanceof SearchResult) {
-            $instance = $this->createOnlineResultInstance($searchResult->getRoomType(), [$searchResult]);
+            $instance = $this->createOnlineResultInstance($searchResult->getRoomType(), [$searchResult], $searchQuery);
         } elseif (is_array($searchResult)) {
             $roomType = $searchResult['roomType'];
             $results = $searchResult['results'];
-            $instance = $this->createOnlineResultInstance($roomType, $results);
+            $instance = $this->createOnlineResultInstance($roomType, $results, $searchQuery);
         } else {
             throw new OnlineBookingSearchException('Cannot create OnlineResult from searchResult');
         }
@@ -50,67 +69,40 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         return $instance;
     }
 
-    public function getResults(OnlineSearchFormData $formData): ArrayCollection
+
+
+    protected function search(SearchQuery $searchQuery, $roomType = null, Special $special = null)
     {
-        $this->initSearchQuery($formData);
-        $this->configureSearch();
-        $searchResults = $this->search($this->searchQuery);
-        if (!empty($searchResults)) {
-            foreach ($searchResults as $searchResult) {
-                $this->results->add($this->resultOnlineInstanceCreator($searchResult));
-            }
-        }
-        $this->resultsHandle();
-
-        return $this->results;
-    }
-
-    protected function search(SearchQuery $searchQuery){
-
         return $this->search->search($searchQuery);
     }
 
-    private function initSearchQuery(OnlineSearchFormData $data): void
+    private function initSearchQuery(OnlineSearchFormData $data): SearchQuery
     {
+        $searchQuery = new SearchQuery();
         $roomType = $data->getRoomType();
         if ($roomType) {
             /** @var RoomType $roomType */
-            $this->searchQuery->addRoomType($roomType->getId());
+            $searchQuery->addRoomType($roomType->getId());
         } elseif ($data->getHotel()) {
-            $this->searchQuery->addRoomTypeArray($data->getActualRoomTypeIds());
+            $searchQuery->addRoomTypeArray($data->getActualRoomTypeIds());
         }
-        $this->searchQuery->begin = $data->getBegin();
-        $this->searchQuery->end = $data->getEnd();
-        $this->searchQuery->adults = (int)$data->getAdults();
-        $this->searchQuery->children = (int)$data->getChildren();
-        $this->searchQuery->isOnline = true;
-        $this->searchQuery->accommodations = true;
-        $this->searchQuery->forceRoomTypes = false;
+        $searchQuery->begin = $data->getBegin();
+        $searchQuery->end = $data->getEnd();
+        $searchQuery->adults = (int)$data->getAdults();
+        $searchQuery->children = (int)$data->getChildren();
+        $searchQuery->isOnline = true;
+        $searchQuery->accommodations = true;
+        $searchQuery->forceRoomTypes = false;
         if ($data->getChildrenAge()) {
-            $this->searchQuery->setChildrenAges($data->getChildrenAge());
+            $searchQuery->setChildrenAges($data->getChildrenAge());
         };
 
+        return $searchQuery;
     }
 
-    protected function configureSearch()
+    protected function resultsHandle(SearchQuery $searchQuery): void
     {
-        $configurator = $this->searchConfigurator;
-        if (is_callable($configurator)) {
-            $configurator($this->searchQuery, $this->search);
-        }
-    }
-
-    public function setSearchConfigurator(callable $configurator)
-    {
-        $this->searchConfigurator = $configurator;
-    }
-
-
-    protected function resultsHandle(): void
-    {
-        $this->separateByAdditionalDays();
-        $this->filterByCapacity();
-        $this->injectSearchQuery();
+        $this->injectSearchQuery($searchQuery);
     }
 
 
@@ -139,7 +131,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
      * @param array $searchResults
      * @return array
      */
-    private function filterByCapacity()
+    protected function filterByCapacity()
     {
         $result = [];
         $groups = $this->groupedByRoomTypeCategory($this->results);
@@ -156,10 +148,10 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         $this->results = new ArrayCollection($result);
     }
 
-    private function injectSearchQuery()
+    private function injectSearchQuery(SearchQuery $searchQuery)
     {
         foreach ($this->results as $result) {
-            $result->setQuery($this->searchQuery);
+            $result->setQuery($searchQuery);
         }
     }
 
@@ -183,7 +175,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
     /**
      * Divide results to match and additional dates
      */
-    private function separateByAdditionalDays(): void
+    protected function separateByAdditionalDays(SearchQuery $searchQuery): void
     {
 
         $result = [];
@@ -205,7 +197,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
                 }
             }
             foreach ($groups as $group) {
-                $instance = $this->createOnlineResultInstance($resultInstance->getRoomType(), array_values($group));
+                $instance = $this->createOnlineResultInstance($resultInstance->getRoomType(), array_values($group), $searchQuery);
                 $result[] = $instance;
             }
         }
@@ -242,7 +234,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         $this->results->detach($resultInstance);
     }
 
-    protected function createOnlineResultInstance($roomType, $results): OnlineResultInstance
+    protected function createOnlineResultInstance($roomType, $results, SearchQuery $searchQuery): OnlineResultInstance
     {
         $instance = new OnlineResultInstance();
         $instance->setType(static::TYPE);

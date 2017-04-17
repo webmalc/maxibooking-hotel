@@ -38,7 +38,6 @@ Special.prototype.bindHandlers = function () {
     });
     this.$form.on('submit', function(e) {
         e.preventDefault();
-        // console.log($(this).attr('action'));
         window.location = $(this).attr('action');
     })
 
@@ -75,14 +74,76 @@ Special.prototype.reNewHref = function () {
             }
         },
         href = page + $.param(data);
-    console.log(href);
     this.$form.attr("action", href);
 };
 
+Special.prototype.show = function () {
+    this.$row.removeClass('hide');
+};
+Special.prototype.hide = function() {
+    this.$row.addClass('hide');
+};
+
+var MonthSwitcher = function ($row) {
+    this.$row = $row;
+    this.id = $row.attr('id');
+    this.allSpecials = [];
+    this.specials = [];
+    console.log('activate');
+    console.log($row.hasClass('disable-month'));
+    this.isActive = false === $row.hasClass('disable-month');
+};
+
+MonthSwitcher.prototype.init = function(specials) {
+    this.allSpecials = specials;
+    var special;
+    for (special in specials) {
+        if(specials[special].$row.hasClass(this.id)) {
+            this.specials.push(specials[special])
+        }
+    }
+    this.bindHandlers();
+};
+
+MonthSwitcher.prototype.bindHandlers = function() {
+        var that = this;
+        this.$row.on('click', function (event) {
+            event.preventDefault();
+            if (that.isActive) {
+                that.activeSpecial();
+            }
+        });
+};
+
+MonthSwitcher.prototype.activeSpecial = function () {
+    var special;
+    for (special in this.allSpecials) {
+        this.allSpecials[special].hide();
+    }
+    for (special in this.specials) {
+        this.specials[special].show();
+    }
+};
 
 $(function () {
+    var specials = [],
+        monthSwitchers = [];
     $.each($('.oneblockspec'), function () {
         var special = new Special($(this));
         special.init();
+        specials.push(special);
     });
+    $.each($('.month-switcher>a'), function () {
+        var switcher = new MonthSwitcher($(this));
+        switcher.init(specials);
+        monthSwitchers.push(switcher);
+    });
+    var switcher;
+    for (switcher in monthSwitchers) {
+         if(monthSwitchers[switcher].isActive) {
+            monthSwitchers[switcher].activeSpecial();
+             break;
+        }
+    }
+
 });

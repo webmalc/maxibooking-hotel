@@ -47,7 +47,37 @@ class SpecialDataPreparer
             }
         }
 
-        return $result;
+        return ['specials' => $result];
+    }
+
+    public function getPreparedDataByMonth(array $specials): array
+    {
+        $results = [];
+        $data = $this->getPreparedData($specials);
+        foreach ($data['specials'] as $specialEntity ) {
+            $begin = $specialEntity['dates']['begin'];
+            $end = $specialEntity['dates']['end'];
+            $special = $specialEntity['special'];
+            $results['month_'.$begin->format('m')][] = $special->getId();
+            $results['month_'.$end->format('m')][] = $special->getId();
+
+        }
+        $data['byMonth'] = $results;
+        $data = $this->uniqueByMonthFilter($data);
+
+        return $data;
+    }
+
+    private function uniqueByMonthFilter(array $data): array
+    {
+        if (!$data['byMonth']??false) {
+            return $data;
+        }
+        foreach ($data['byMonth'] as $byMonthKey => $value) {
+            $data['byMonth'][$byMonthKey] = array_unique($value);
+        }
+
+        return $data;
     }
 
     private function prepareDataToTwig(SpecialPrice $specialPrice, Special $special): array
@@ -83,15 +113,6 @@ class SpecialDataPreparer
         return $result;
     }
 
-    private function getPrices(array $prices): array
-    {
-        $result = [];
-        foreach ($prices as $priceKey => $price) {
-            $result[$priceKey] = $price['total'];
-        }
-
-        return $result;
-    }
     private function getImage(RoomType $roomType): array
     {
         $roomImage = $roomType->getMainImage()??$roomType->getImages()->first()??null;

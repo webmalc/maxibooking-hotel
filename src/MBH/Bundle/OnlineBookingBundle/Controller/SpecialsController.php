@@ -16,6 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SpecialsController extends BaseController
 {
+    const SPECIAL_MONTH_BEGIN = 4;
+    const SPECIAL_MONTH_END = 11;
     /**
      * @Route("/")
      * @Template()
@@ -28,9 +30,40 @@ class SpecialsController extends BaseController
         $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($specialsFilter);
         $preparer = $this->get('mbh.online.special_data_preparer');
 
+        $result = $preparer->getPreparedDataByMonth($specials->toArray());
+//        $result = $preparer->getPreparedData($specials->toArray());
         return [
-            'specials' => $preparer->getPreparedData($specials->toArray())
+            'data' => $result,
+            'monthList' => $this->getMonthList()
         ];
     }
+
+    private function getMonthList()
+    {
+
+        $now = new \DateTime();
+
+        $begin = \DateTime::createFromFormat('d-n-Y', '01-'.self::SPECIAL_MONTH_BEGIN.'-'.$now->format('Y'));
+        $end = \DateTime::createFromFormat('d-n-Y', '01-'.self::SPECIAL_MONTH_END.'-'.$now->format('Y'));
+
+        $result = [];
+
+        $fmt = new \IntlDateFormatter(
+            'ru_RU',
+            \IntlDateFormatter::NONE,
+            \IntlDateFormatter::NONE,
+            'Europe/Moscow',
+            null,
+            "LLLL"
+        );
+        foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 month'), $end) as $month) {
+
+            $result['month_'.$month->format('m')] = $fmt->format($month);
+        }
+
+        return $result;
+    }
+
+
 
 }
