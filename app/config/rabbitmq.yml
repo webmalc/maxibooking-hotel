@@ -23,6 +23,9 @@ old_sound_rabbit_mq:
       task_calculate_special_prices:
         connection: default
         exchange_options: {name: 'task_special_recalculate', type: direct}
+      task_prepare_package_moving_report:
+        connection:       default
+        exchange_options: {name: 'task_prepare_package_moving_report', type: direct}
     consumers:
       task_room_cache_recalculate:
         connection:       default
@@ -35,6 +38,11 @@ old_sound_rabbit_mq:
 #        queue_options:    {name: 'task_notice_unpaid_order'}
 #        callback:         task_notice_unpaid_order
 #        idle_timeout:     10
+      task_prepare_package_moving_report:
+        connection:       default
+        exchange_options: {name: 'task_prepare_package_moving_report', type: direct}
+        queue_options:    {name: 'task_prepare_package_moving_report'}
+        callback:         mbh.task_prepare_package_moving_report
       task_calculate_special_prices:
         connection:       default
         exchange_options: {name: 'task_special_recalculate', type: direct}

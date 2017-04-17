@@ -169,6 +169,30 @@ class SearchQuery
     public $limit;
 
     /**
+     * @var bool
+     */
+    private $isShowNoVirtRoomFlash = false;
+
+    /**
+     * @return bool
+     */
+    public function getIsShowNoVirtRoomFlash(): bool
+    {
+        return $this->isShowNoVirtRoomFlash;
+    }
+
+    /**
+     * @param bool $isShowNoVirtRoomFlash
+     * @return SearchQuery
+     */
+    public function setIsShowNoVirtRoomFlash(bool $isShowNoVirtRoomFlash): SearchQuery
+    {
+        $this->isShowNoVirtRoomFlash = $isShowNoVirtRoomFlash;
+
+        return $this;
+    }
+
+    /**
      * @param $id
      */
     public function addExcludeRoomType($id)

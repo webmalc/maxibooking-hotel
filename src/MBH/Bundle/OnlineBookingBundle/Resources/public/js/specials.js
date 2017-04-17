@@ -89,8 +89,6 @@ var MonthSwitcher = function ($row) {
     this.id = $row.attr('id');
     this.allSpecials = [];
     this.specials = [];
-    console.log('activate');
-    console.log($row.hasClass('disable-month'));
     this.isActive = false === $row.hasClass('disable-month');
 };
 

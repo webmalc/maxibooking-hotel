@@ -38,7 +38,7 @@ RoomTypeRow.prototype.bindEventHandlers = function () {
     });
     this.$showAllSpecialButton.on('click', function (e) {
         e.preventDefault();
-        alert("На азовском нужна страница со спецпредложениями");
+        window.open('http://azovsky.ru/index3.php', '_blank');
     });
 
 };

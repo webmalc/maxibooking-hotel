@@ -364,6 +364,16 @@ report.packaging.title: 'Перемещению'
 report.packaging.dates.title: Даты
 report.packaging.generate_report.button: Сгенерировать отчет
 
+report.package_moving.title: 'Перемещение'
+report.package_moving.dates.title: Даты
+report.package_moving.generate_report.button: Сгенерировать отчет
+report.package_moving.room_type: Тип комнат
+report.package_moving.all_room_types: Все типы
+report.packages_moving.close_report: Закрыть отчет
+report.packages_moving.package_name: Бронь
+report.packages_moving.old_room_type: Из
+report.packages_moving.new_room_type: В
+
 manager.offline: Оффлайн
 manager.online: Онлайн
 manager.channel_manager: Channel manager

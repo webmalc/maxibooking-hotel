@@ -6,6 +6,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
@@ -14,6 +15,7 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageMovingInfo;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
 use MBH\Bundle\PackageBundle\Form\PackagingReportFilterType;
 use MBH\Bundle\UserBundle\Document\WorkShift;
@@ -22,12 +24,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Process\Process;
 
 /**
  * @Route("/report")
@@ -82,13 +83,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function callPackagingAction()
     {
-        $kernel = $this->get('kernel');
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-        $input = new ArrayInput([
-            'command' => 'mbh:virtual_rooms:move'
-        ]);
-        $application->run($input);
+        $console = $this->get('kernel')->getRootDir() . '/../bin/console ';
+        $command = 'nohup php ' . $console . 'mbh:virtual_rooms:move';
+        $process = new Process($command);
+        $process->start();
 
         return new JsonResponse(['success' => true]);
     }
@@ -1033,22 +1031,112 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
-     * @Route("/packaging", name="packaging_report")
+     * @Route("/package_moving", name="package_moving")
      * @Template()
+     * @Security("is_granted('ROLE_PACKAGE_MOVING')")
      * @param Request $request
      * @return array
      */
-    public function packagingAction(Request $request)
+    public function packageMovingAction(Request $request)
     {
-        $helper = $this->get('mbh.helper');
-        if ($request->isMethod('POST')) {
+        $packageMovingInfo = $this->dm
+            ->getRepository('MBHPackageBundle:PackageMovingInfo')
+            ->createQueryBuilder()
+            ->limit(1)
+            ->field('status')->notEqual(PackageMovingInfo::OLD_REPORT_STATUS)
+            ->getQuery()
+            ->getSingleResult();
+
+        if ($request->isMethod('POST') && is_null($packageMovingInfo)) {
+            $helper = $this->get('mbh.helper');
+            $user = $this->getUser();
             $begin = $helper->getDateFromString($request->request->get('begin'));
             $end = $helper->getDateFromString($request->request->get('end'));
-            $roomTypeIds = $request->request->get('roomType');
+            $roomTypeIds = $request->request->get('roomType') ?? [];
+
+            $packageMovingInfo = (new PackageMovingInfo())
+                ->setRunningBy($user)
+                ->setStartAt(new \DateTime())
+                ->setBegin($begin)
+                ->setEnd($end);
+
+            foreach ($roomTypeIds as $roomTypeId) {
+                if ($roomTypeId != '') {
+                    $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
+                    $packageMovingInfo->addRoomTypeId($roomType);
+                }
+            }
+
+            $this->dm->persist($packageMovingInfo);
+            $this->dm->flush();
+
+            $this->container->get('old_sound_rabbit_mq.task_prepare_package_moving_report_producer')
+                ->publish(
+                    serialize(
+                        [
+                            'packageMovingInfoId' => $packageMovingInfo->getId()
+                        ]
+                    )
+                );
         }
-        $asdf =123;
+
         return [
             'roomTypes' => $this->hotel->getRoomTypes(),
+            'movingInfo' => $packageMovingInfo,
         ];
+    }
+
+    /**
+     * @Security("is_granted('ROLE_PACKAGE_MOVING')")
+     * @ParamConverter("packageMovingInfo", class="MBHPackageBundle:PackageMovingInfo", options={"id" = "movingInfoId"})
+     * @Route("package_move/{movingInfoId}/{movingPackageId}", name="package_move", options={"expose" = true})
+     * @param PackageMovingInfo $packageMovingInfo
+     * @param $movingPackageId
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function movePackageAction(PackageMovingInfo $packageMovingInfo, $movingPackageId)
+    {
+        $isSuccess = true;
+        $movingPackageData = $packageMovingInfo->getMovingPackageDataById($movingPackageId);
+        if (is_null($movingPackageData)) {
+            throw new Exception('Не найден объект, хранящий данные о перемещении брони в меньший тип номера');
+        } elseif (!$movingPackageData->getIsMoved()) {
+            $roomTypeChangingResult = $this->get('mbh.order_manager')
+                ->changeRoomType($movingPackageData->getPackage(), $movingPackageData->getNewRoomType());
+            if ($roomTypeChangingResult) {
+                $movingPackageData->setIsMoved(true);
+                $this->dm->flush();
+            } else {
+                $isSuccess = false;
+                $errorMessage = 'Невозможно изменить тип комнат брони по причине отсутствия свободных мест.';
+            }
+        }
+
+
+        $result = ['success' => $isSuccess];
+        if (isset($errorMessage)) {
+            $result['error'] = $errorMessage;
+        }
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * @Security("is_granted('ROLE_PACKAGE_MOVING')")
+     * @ParamConverter("packageMovingInfo", class="MBHPackageBundle:PackageMovingInfo", options={"id" = "movingInfoId"})
+     * @Route("/close_moving_report/{movingInfoId}", name="close_moving_report", options={"expose" = true})
+     * @param PackageMovingInfo $packageMovingInfo
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function closePackageMovingReport(PackageMovingInfo $packageMovingInfo)
+    {
+        $packageMovingInfo->setStatus(PackageMovingInfo::OLD_REPORT_STATUS);
+        $this->dm->flush();
+        $this->get('mbh_package_zip')->sendPackageMovingMail($packageMovingInfo,
+            'mailer.close_package_moving_report.text', 'mailer.close_package_moving_report.subject',
+            'MBHBaseBundle:Mailer:close_package_moving_report.html.twig');
+
+        return $this->redirectToRoute('package_moving');
     }
 }

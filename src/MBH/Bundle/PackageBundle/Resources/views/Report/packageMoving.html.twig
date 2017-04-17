@@ -1,0 +1,241 @@
+{% extends 'MBHPackageBundle::layout.html.twig' %}
+
+{% set small_title = "report.package_moving.title"|trans %}
+{% set layout = "box" %}
+
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='?uglifyjs2'
+    '@MBHPackageBundle/Resources/public/js/report/package_moving.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block content %}
+    <div id="dimmer"></div>
+    <div id="loading-indicator" style="position:fixed; display: none; z-index:500;">
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+    </div>
+
+    {% if movingInfo is null %}
+        {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'analytics-filter-widget'} %}
+        <form id="analytics-filter" method="post" class="form-inline remember" role="form">
+            <div class="input">
+                <i class="fa fa-calendar"
+                   title={{ 'report.package_moving.dates.title'|trans }} data-toggle='tooltip'></i>&nbsp
+                <input
+                        value="{{ "now"|date('d.m.Y') }}" type="text"
+                        name="begin"
+                        id="analytics-filter-begin"
+                        class="datepicker begin-datepicker analytics-filter form-control input-sm"
+                        data-date-format="dd.mm.yyyy">
+            </div>
+            <div class="input">
+                — &nbsp<input value="{{ "now"|date_modify("+1 month")|date('d.m.Y') }}" type="text"
+                              id="analytics-filter-end"
+                              class="datepicker end-datepicker analytics-filter form-control input-sm"
+                              name="end"
+                              data-date-format="dd.mm.yyyy">
+            </div>
+            <div class="input">
+                <i class="fa fa-bed"
+                   title={{ 'report.package_moving.room_type'|trans }} data-toggle='tooltip'></i>&nbsp
+                <select
+                        data-placeholder={{ 'report.package_moving.room_type'|trans }} id="analytics-filter-roomType"
+                        multiple="multiple"
+                        name="roomType[]"
+                        class="analytics-filter form-control input-sm">
+                    <option></option>
+                    {% for roomType in roomTypes %}
+
+                        {% if hotel is not defined or hotel.id != roomType.hotel.id %}
+                            <optgroup label="{{ roomType.hotel }}">
+                            {% set hotel = roomType.hotel %}
+                        {% endif %}
+
+                        <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+
+                        {% if hotel is not defined or hotel.id != roomType.hotel.id %}</optgroup>{% endif %}
+
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input">
+                <button type="submit" class="btn btn-primary" id="accommodation-report-submit-button">
+                    <i class="fa fa-search"></i> {{ 'report.package_moving.generate_report.button'|trans }}
+                </button>
+            </div>
+        </form>
+
+    {% else %}
+        <div class="box box-default box-solid">
+
+            <div class="box-header with-border">
+                <h3 class="box-title">Данные об отчёте</h3>
+
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool form-group-collapse" data-widget="collapse">
+                        <i class="fa fa-minus"></i></button>
+                </div>
+            </div>
+
+            <div class="box-body">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table not-auto-datatable table-striped">
+                            <tbody>
+                            <tr>
+                                <td>Запустил</td>
+                                <td>Запущено</td>
+                                <td>Даты</td>
+                                <td>Типы комнат</td>
+                            </tr>
+                            <tr>
+                                <td><a href="{{ path('user_edit', {'id': movingInfo.runningBy.id}) }}"
+                                       target="_blank">{{ movingInfo.runningBy }}</a></td>
+                                <td>{{ movingInfo.startAt|date('d.m.Y H:i:s') }}</td>
+                                <td>{{ movingInfo.begin|mbh_format }} - {{ movingInfo.end|mbh_format }}</td>
+                                <td>
+                                    {% if movingInfo.roomTypes|length == 0 %}
+                                        Все типы комнат
+                                    {% else %}
+                                        {{ movingInfo.roomTypes|join(', ') }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <br>
+        {% if movingInfo.status == 'preparing' %}
+            <h3 class="text-center" style="padding-bottom: 30px">
+                Идет формирование отчета, после генерации которого, Вам будет отправлено письмо.
+            </h3>
+        {% elseif movingInfo.status == 'ready' %}
+            <input type="hidden" id="moving-info-id" value="{{ movingInfo.id }}">
+            <table class="table table-striped table-hover table-condensed table-icons table-actions">
+                <thead>
+                <tr>
+                    <th class="td-md text-center">{{ 'report.packages_moving.package_name'|trans }}</th>
+                    <th class="td-md text-center">Даты</th>
+                    <th class="td-md text-center">Гости</th>
+                    <th class="td-md text-center">{{ 'report.packages_moving.old_room_type'|trans }}</th>
+                    <th class="td-md text-center">{{ 'report.packages_moving.new_room_type'|trans }}</th>
+                    <th class="td-md text-center">Отель</th>
+                    <th class="td-sm"></th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for movingPackagesData in movingInfo.movingPackagesData %}
+                    {% set package = movingPackagesData.package %}
+                    {% if package.isMovable %}
+                        <tr>
+                            <td class="td-md text-center">
+                                <a href="{{ path('package_edit', { id : package.id}) }}" target="_blank">
+                                    {{ package.numberWithPrefix }}
+                                </a>
+                            </td>
+                            <td class="td-md text-center">
+                                {{ package.begin|mbh_format }}
+                                - {{ package.end|mbh_format }}
+                            </td>
+                            <td class="text-center">
+                                <a data-toggle='tooltip'
+                                   href='{{ path('package_order_tourist_edit', {'id': package.order.id, 'packageId': package.id}) }}'
+                                   title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}'
+                                   class='{{ package.order.payer ? '' : 'danger' }}'>{% if package.order.payer %}{{ package.order.payer.shortName }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
+                                <small>
+                                    <br>{% if package.adults > 0 %}{{ package.adults }} вз.{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} рб.{% endif %}
+                                    / оформлено: {{ package.tourists|length }}</small>
+                            </td>
+                            <td class="text-center">
+                                {{ movingPackagesData.oldRoomType }}<br>
+                                <small><a target="_blank" data-toggle='tooltip'
+                                          title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}'
+                                          href='{{ path('package_accommodation', {'id': package.id}) }}'
+                                          class='{{ movingPackagesData.oldAccommodation ? '' : 'danger' }}'>
+                                        {% if movingPackagesData.oldAccommodation and movingPackagesData.oldAccommodation.roomType %}{{ movingPackagesData.oldAccommodation.name(movingPackagesData.oldRoomType.id == movingPackagesData.oldAccommodation.roomType.id ? false : true) }}{% else %}&lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
+                                </small>
+                            </td>
+                            <td class="text-center">
+                                {{ movingPackagesData.newRoomType }}
+                            </td>
+                            <td class="text-center">
+                                {{ movingPackagesData.oldRoomType.hotel }}
+                            </td>
+                            <td class="table-actions-td text-center">
+                                {% if movingPackagesData.isMoved == true %}
+                                    <button class="btn btn-sm btn-primary package-move-button disabled" type="button"
+                                            id="{{ movingPackagesData.id }}">
+                                        Перемещено
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-sm btn-primary package-move-button" type="button"
+                                            id="{{ movingPackagesData.id }}">
+                                        Переместить
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+                <div class="container-fluid">
+                    <ul class="nav navbar-nav">
+                        {% if is_granted('ROLE_PACKAGE_MOVING') %}
+                            <li>
+                                <button id="package-moving-report-close-button" type="button"
+                                        class="btn btn-warning navbar-btn"><i
+                                            class="fa fa-times">&nbsp;</i>{{ 'report.packages_moving.close_report' |trans }}
+                                </button>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li id='list-export'></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="modal fade modal-danger" id="report-close-modal" tabindex="-1" role="dialog"
+                 aria-labelledby="entity-delete-button" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="report-close-header">Подтверждение закрытия отчета</h4>
+                        </div>
+                        <div class="modal-body" id="report-close-body-text">
+                            Точно закрыть этот отчет?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal"><i
+                                        class="fa fa-ban"> </i> {{ 'views.partials.entityDeleteForm.cancel'|trans({}, 'MBHBaseBundle') }}
+                            </button>
+                            <button type="button" id="report-close-button" data-default="outline"
+                                    class="btn btn-outline"><i
+                                        id="report-close-button-icon" data-default="fa-trash-o"
+                                        class="fa fa-times"></i>&nbsp;
+                                <span id="entity-delete-button-text">Закрыть отчет</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+

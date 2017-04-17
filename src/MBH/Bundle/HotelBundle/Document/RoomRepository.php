@@ -47,13 +47,13 @@ class RoomRepository extends AbstractBaseRepository
                 }
 
                 return null;
-
             }, iterator_to_array($packages));
 
             $qb->field('roomType')->references($package->getRoomType())
                 ->field('id')->notIn($rooms)
                 //TODO Is this change need also for master?
                 ->field('isEnabled')->equals(true)
+                ->field('deletedAt')->equals(null)
                 ->sort(['fullTitle', 'title'])
             ;
         }
@@ -111,7 +111,7 @@ class RoomRepository extends AbstractBaseRepository
         $qb = $this->createQueryBuilder('r')
             ->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
         ;
-        if($hotelRoomTypes) {
+        if ($hotelRoomTypes) {
             $qb->inToArray('roomType.id', $hotelRoomTypes);
         }
 
@@ -140,10 +140,16 @@ class RoomRepository extends AbstractBaseRepository
      * @return array|mixed
      */
     public function fetchAccommodationRooms(
-        \DateTime $begin, \DateTime $end, Hotel $hotel, $roomTypes = null,
-        $rooms = null, $excludePackages = null, $grouped = false, Cache $memcached = null
-    )
-    {
+        \DateTime $begin,
+        \DateTime $end,
+        Hotel $hotel,
+        $roomTypes = null,
+        $rooms = null,
+        $excludePackages = null,
+        $grouped = false,
+        Cache $memcached = null
+    ) {
+    
         if ($memcached) {
             $cache = $memcached->get('accommodation_rooms', func_get_args());
             if ($cache !== false) {
@@ -236,8 +242,8 @@ class RoomRepository extends AbstractBaseRepository
         $isEnabled = null,
         array $sort = null,
         Cache $cache = null
-    )
-    {
+    ) {
+    
         if ($cache) {
             $cacheEntry = $cache->get('rooms_fetch', func_get_args());
             if ($cacheEntry !== false) {

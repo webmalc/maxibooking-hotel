@@ -3,14 +3,12 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\HotelBundle\Document\Room;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Bridge\Monolog\Logger;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\Search;
 use Symfony\Component\Translation\Translator;
-use Symfony\Component\Translation\TranslatorInterface;
 
 class VirtualRoomHandler
 {
@@ -38,17 +36,17 @@ class VirtualRoomHandler
      *
      * @param \DateTime $begin
      * @param \DateTime $end
+     * @param $limit
+     * @param $offset
      * @return array Данные о перемещенных бронях. Ключи массива 'package' и 'oldVirtualRoom'
      */
-    public function setVirtualRooms(\DateTime $begin, \DateTime $end)
+    public function setVirtualRooms(\DateTime $begin, \DateTime $end, $limit, $offset)
     {
         $movedPackagesData = [];
 
-        $packagesCount = $this->getHandledPackagesCount($begin, $end);
-
-        for ($i = 0; $i <= ceil($packagesCount / self::HANDLED_PACKAGES_LIMIT); $i++) {
-            $packages = $this->getLimitPackages($begin, $end, self::HANDLED_PACKAGES_LIMIT,
-                $i * self::HANDLED_PACKAGES_LIMIT);
+        for ($i = 0; $i < ceil($limit / self::HANDLED_PACKAGES_LIMIT); $i++) {
+            $skipNumber = $i * self::HANDLED_PACKAGES_LIMIT + $offset;
+            $packages = $this->getLimitPackages($begin, $end, self::HANDLED_PACKAGES_LIMIT, $skipNumber);
 
             $sortedPackages = $this->sortPackagesByRoomTypeAndVirtualRoom($packages);
             $emptyIntervals = $this->getEmptyIntervals($sortedPackages);
@@ -83,7 +81,9 @@ class VirtualRoomHandler
             }
 
             foreach ($packages as $package) {
-                if (!$this->hasNeighboringPackages($package, $sortedPackages)) {
+                if (!$this->hasBothSideNeighbors($package) && !$this->hasNeighboringPackages($package,
+                        $sortedPackages)
+                ) {
                     $this->setVirtualRoom($package, $movedPackagesData);
                 }
             }
@@ -91,7 +91,7 @@ class VirtualRoomHandler
             $this->dm->flush();
         }
 
-        return $movedPackagesData;
+        return $this->sortResultData($movedPackagesData);
     }
 
     /**
@@ -101,21 +101,54 @@ class VirtualRoomHandler
      */
     private function addPackageMovingData(Package $package, ?Room $oldVirtualRoom, &$movedPackagesData)
     {
-        $movedPackagesData[] = [
+        $movedPackagesData[$package->getHotel()->getName()][] = [
             'package' => $package,
             'oldVirtualRoom' => $oldVirtualRoom
         ];
     }
 
-    private function getHandledPackagesCount($begin, $end)
+    /**
+     * Sort resultData
+     *
+     * @param array $movedPackagesData
+     * @return array
+     */
+    private function sortResultData(array $movedPackagesData)
     {
-        return $this->dm
-            ->getRepository('MBHPackageBundle:Package')
-            ->getFetchWithVirtualRoomQB($begin, $end)
-            ->getQuery()
-            ->count();
+        $result = [];
+
+        foreach ($movedPackagesData as $hotelName => $movedPackagesDataByHotel) {
+            $sortedArray = $movedPackagesDataByHotel;
+
+            usort($sortedArray, function ($first, $second) {
+                /** @var Package $firstPackage */
+                $firstPackage = $first['package'];
+                /** @var Package $secondPackage */
+                $secondPackage = $second['package'];
+
+                $roomTypesComparisonResult =
+                    strcmp($firstPackage->getRoomType()->getId(), $secondPackage->getRoomType()->getId());
+
+                if ($roomTypesComparisonResult != 0) {
+                    return $roomTypesComparisonResult;
+                }
+
+                return $firstPackage->getBegin() > $secondPackage->getBegin() ? 1 : -1;
+            });
+
+            $result[$hotelName] = $sortedArray;
+        }
+
+        return $result;
     }
 
+    /**
+     * @param $begin
+     * @param $end
+     * @param $limit
+     * @param $skip
+     * @return mixed
+     */
     private function getLimitPackages($begin, $end, $limit, $skip)
     {
         return $this->dm
@@ -215,8 +248,9 @@ class VirtualRoomHandler
             $oldVirtualRoom = $package->getVirtualRoom();
             if ($this->hasSufficientWindows($package, $result->getVirtualRoom())) {
                 $package->setVirtualRoom($result->getVirtualRoom());
+                $previousVirtualRoomData = $oldVirtualRoom ? 'with virtual room "' . $oldVirtualRoom->getName() . '"' : 'without virtual room';
                 $this->logger->info(
-                    "For package \"{$package->getTitle()}\" set virtual room \"{$result->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\""
+                    "For package \"{$package->getTitle()}\" $previousVirtualRoomData set virtual room \"{$result->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\""
                 );
                 $this->dm->flush();
             }
