@@ -118,6 +118,18 @@ class PriceCache
 
             $updateCaches[$oldPriceCache->getDate()->format('d.m.Y')][$oldPriceCache->getTariff()->getId()][$oldPriceCache->getCategoryOrRoomType($this->roomManager->useCategories)->getId()] = $oldPriceCache;
 
+            if ($oldPriceCache->getPrice() == $price
+                && $oldPriceCache->getChildPrice() == $childPrice
+                && $oldPriceCache->getIsPersonPrice() == $isPersonPrice
+                && $oldPriceCache->getSinglePrice() == $singlePrice
+                && $oldPriceCache->getAdditionalPrice() == $additionalPrice
+                && $oldPriceCache->getAdditionalChildrenPrice() == $additionalChildrenPrice
+                && $oldPriceCache->getAdditionalPrices() == $additionalPrices
+                && $oldPriceCache->getAdditionalChildrenPrices() == $additionalChildrenPrices
+            ) {
+                continue;
+            }
+
             $updates[] = [
                 'criteria' => ['_id' => new \MongoId($oldPriceCache->getId())],
                 'values' => [

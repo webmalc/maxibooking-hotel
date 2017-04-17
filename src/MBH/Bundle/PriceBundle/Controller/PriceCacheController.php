@@ -48,7 +48,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             return $this->manager->getRooms($this->hotel);
         };
         $roomTypes = $this->get('mbh.helper')->getFilteredResult($this->dm, $getRoomTypeCallback, $isDisableableOn);
-        
+
         return [
             'roomTypes' => $roomTypes,
             'tariffs' => $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'prices'),
@@ -134,11 +134,11 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      */
     public function testAction()
     {
-        $date = \DateTime::createFromFormat('d.m.Y H:i:s', '07.03.2017 00:00:00');
+        $date = \DateTime::createFromFormat('d.m.Y H:i:s', '11.03.2017 00:00:00');
         $callback = function () use ($date) {
             return $this->dm->getRepository('MBHPriceBundle:PriceCache')->findBy(['date' => $date]);
         };
-        $priceCaches = $this->helper->getFilteredResult($this->dm, $callback, true);
+        $priceCaches = $this->helper->getFilteredResult($this->dm, $callback, false);
 
         return new Response();
     }
@@ -212,9 +212,9 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 continue;
             }
 
-            $priceCache->setModifiedDate(new \DateTime(), true);
             //delete
             if (isset($prices['price']) && $prices['price'] === '') {
+                $priceCache->setModifiedDate(new \DateTime(), true);
                 continue;
             }
 
@@ -234,8 +234,9 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 $priceCache->getCategoryOrRoomType($this->manager->useCategories), $newPriceCache, $prices
             );
 
-            if ($validator->validate($newPriceCache)) {
+            if ($validator->validate($newPriceCache) && !$this->isSamePriceCaches($priceCache, $newPriceCache)) {
                 $this->dm->persist($newPriceCache);
+                $priceCache->setModifiedDate(new \DateTime(), true);
             }
         }
         $this->dm->flush();
@@ -251,6 +252,25 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             'roomTypes' => $request->get('roomTypes'),
             'tariffs' => $request->get('tariffs'),
         ]));
+    }
+
+    /**
+     * @param PriceCache $oldPriceCache
+     * @param PriceCache $newPriceCache
+     * @return bool
+     */
+    private function isSamePriceCaches(PriceCache $oldPriceCache, PriceCache $newPriceCache)
+    {
+        return $oldPriceCache->getAdditionalPrice() == $newPriceCache->getAdditionalPrice()
+            && $oldPriceCache->getIsPersonPrice() == $newPriceCache->getIsPersonPrice()
+            && $oldPriceCache->getPrice() == $newPriceCache->getPrice()
+            && $oldPriceCache->getChildPrice() == $newPriceCache->getChildPrice()
+            && $oldPriceCache->getAdditionalChildrenPrice() == $newPriceCache->getAdditionalChildrenPrice()
+            && $oldPriceCache->getSinglePrice() == $newPriceCache->getSinglePrice()
+            && $oldPriceCache->isDataCollectionsEqual($oldPriceCache->getAdditionalPrices(),
+                $newPriceCache->getAdditionalPrices())
+            && $oldPriceCache->isDataCollectionsEqual($newPriceCache->getAdditionalChildrenPrices(),
+                $newPriceCache->getAdditionalChildrenPrices());
     }
 
     /**

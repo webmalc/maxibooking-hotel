@@ -547,4 +547,19 @@ class PriceCache extends Base
         return $category ? $this->getRoomTypeCategory() : $this->getRoomType();
     }
 
+    /**
+     * @param array $firstPriceCacheCollection
+     * @param array $secondPriceCacheCollection
+     * @return bool
+     */
+    public function isDataCollectionsEqual(array $firstPriceCacheCollection, array $secondPriceCacheCollection)
+    {
+        $additionalChildrenPricesDiff = array_diff($firstPriceCacheCollection, $secondPriceCacheCollection);
+        if (count($additionalChildrenPricesDiff) == 0
+            || (count($additionalChildrenPricesDiff) == 1 && current($additionalChildrenPricesDiff) == null)) {
+            return true;
+        }
+
+        return true;
+    }
 }
