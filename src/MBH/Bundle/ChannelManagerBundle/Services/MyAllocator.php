@@ -320,7 +320,7 @@ class MyAllocator extends Base
             $allocations = [];
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config);
-            $priceCachesCallback = function () {
+            $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
                 return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
                     $begin,
                     $end,

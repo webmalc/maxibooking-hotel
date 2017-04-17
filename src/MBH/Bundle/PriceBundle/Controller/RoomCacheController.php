@@ -32,7 +32,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $roomTypesCallback = function () use ($hotel) {
             return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
         };
-        $roomTypes = $this->get('mbh.helper')->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+        $roomTypes = $this->helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         return [
             'roomTypes' => $roomTypes,
@@ -99,7 +99,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         ];
 
         //get roomTypes
-        $roomTypesCallback = function () {
+        $roomTypesCallback = function () use ($hotel, $request) {
             return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
         };
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();

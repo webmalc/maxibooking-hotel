@@ -347,18 +347,18 @@ class Helper
      *
      * @param DocumentManager $dm
      * @param  $callback
-     * @param bool $isDisableableOn
+     * @param bool $isFilterOn
      * @param string $filter
      * @return mixed
      */
-    public function getFilteredResult(DocumentManager $dm, $callback, $isDisableableOn = true, $filter = 'disableable')
+    public function getFilteredResult(DocumentManager $dm, $callback, $isFilterOn = true, $filter = 'disableable')
     {
-        if ($isDisableableOn && !$dm->getFilterCollection()->isEnabled($filter)) {
+        if ($isFilterOn && !$dm->getFilterCollection()->isEnabled($filter)) {
             $dm->getFilterCollection()->enable($filter);
         }
         $result = $callback();
 
-        if ($isDisableableOn && $dm->getFilterCollection()->isEnabled($filter)) {
+        if ($isFilterOn && $dm->getFilterCollection()->isEnabled($filter)) {
             $dm->getFilterCollection()->disable($filter);
         }
 

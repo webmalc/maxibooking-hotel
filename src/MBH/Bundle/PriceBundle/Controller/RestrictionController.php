@@ -45,7 +45,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $roomTypesCallback = function () use ($hotel) {
             return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
         };
-        $roomTypes = $this->get('mbh.helper')->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+        $roomTypes = $this->helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         return [
             'roomTypes' => $roomTypes,
@@ -94,11 +94,11 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         ];
 
         //get roomTypes
-        $roomTypesCallback = function () {
+        $roomTypesCallback = function () use ($hotel, $request) {
             return $dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
         };
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
-        $roomTypes = $this->get('mbh.helper')->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+        $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => 'Типы номеров не найдены']);
