@@ -393,6 +393,31 @@ class Package extends Base implements \JsonSerializable
     protected $childAges = [];
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isMovable = true;
+
+    /**
+     * @return bool
+     */
+    public function getIsMovable(): bool
+    {
+        return $this->isMovable;
+    }
+
+    /**
+     * @param bool $isMovable
+     * @return Package
+     */
+    public function setIsMovable(bool $isMovable): Package
+    {
+        $this->isMovable = $isMovable;
+
+        return $this;
+    }
+
+    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff

@@ -4,10 +4,12 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
@@ -64,7 +66,7 @@ class OrderManager
         if (!$package->getAccommodation()) {
             throw new Exception('controller.packageController.relocation_accommodation_error');
         }
-        
+
         if ($date > $end || $date < $start) {
             throw new Exception('controller.packageController.relocation_dates_error');
         }
@@ -91,7 +93,7 @@ class OrderManager
         $cacheEnd = $newPackage->getEnd();
         $this->dm->flush();
 
-        
+
         $this->container->get('mbh.room.cache')->recalculate(
             $newPackage->getBegin(), $cacheEnd->modify('-1 day'), $newPackage->getRoomType(), $newPackage->getTariff(), false
         );
@@ -187,6 +189,59 @@ class OrderManager
         }
 
         return 'controller.packageController.record_edited_fail';
+    }
+
+    /**
+     * @param Package $package
+     * @param RoomType $newRoomType
+     * @return bool
+     */
+    public function changeRoomType(Package $package, RoomType $newRoomType)
+    {
+        //search for packages
+        $query = new SearchQuery();
+        $query->begin = $package->getBegin();
+        $query->end = $package->getEnd();
+        $query->adults = $package->getAdults();
+        $query->children = $package->getChildren();
+        $query->addRoomType($newRoomType->getId());
+        $query->forceRoomTypes = true;
+//        $query->forceBooking = $package->getIsForceBooking();
+        $query->memcached = false;
+
+        $searchResults = $this->container->get('mbh.package.search')->search($query);
+
+        if (count($searchResults) > 0) {
+            $oldRoomType = $package->getRoomType();
+            $package->setRoomType($newRoomType);
+            $this->dm->flush();
+            $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                ->fetchBaseTariff($package->getRoomType()->getHotel());
+            $searchResult = $this->container->get('mbh.package.search_simple')
+                ->setVirtualRoom(current($searchResults), $baseTariff, $package);
+
+            if ($searchResult instanceof SearchResult) {
+                $package->setVirtualRoom($searchResult->getVirtualRoom());
+                $this->dm->flush();
+            }
+
+            //recalculate cache
+            $this->container->get('mbh.room.cache')->recalculate(
+                $package->getBegin(), $package->getEnd(), $oldRoomType, $package->getTariff(), false
+            );
+
+            $this->container->get('mbh.room.cache')->recalculate(
+                $package->getBegin(), (clone $package->getEnd())->modify('-1 day'), $newRoomType,
+                $package->getTariff()
+            );
+
+            $this->container->get('mbh.channelmanager')
+                ->updateRoomsInBackground($package->getBegin(), $package->getEnd());
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

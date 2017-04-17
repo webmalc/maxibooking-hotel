@@ -43,9 +43,7 @@ class UpdateRoomTypeZipCommand extends ContainerAwareCommand
                     $this->sendMessage($info);
 
                     $output->writeln(['completed']);
-
                 }
-
             }
 
     }

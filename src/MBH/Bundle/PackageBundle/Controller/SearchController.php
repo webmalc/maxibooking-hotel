@@ -89,6 +89,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
     {
         $query = new SearchQuery();
         $query->accommodations = true;
+        $query->setIsShowNoVirtRoomFlash(true);
         $specials = null;
         $form = $this->createForm(SearchType::class, $query, [
             'security' => $this->container->get('mbh.hotel.selector'),

@@ -145,3 +145,9 @@ services:
     mbh.virtual_room_handler.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ['%kernel.logs_dir%/%kernel.environment%.virtualRoom.log', 200]
+
+    mbh.task_prepare_package_moving_report:
+        class: MBH\Bundle\PackageBundle\Task\PreparePackageMovingReport
+        arguments:
+            - '@mbh_package_zip'
+            - '@doctrine_mongodb.odm.document_manager'

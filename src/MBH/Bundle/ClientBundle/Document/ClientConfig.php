@@ -529,7 +529,7 @@ class ClientConfig extends Base
     /**
      * @param mixed $beginDate
      */
-    public function setBeginDate(?\DateTime $beginDate)
+    public function setBeginDate(?\DateTime $beginDate = null)
     {
         $this->beginDate = $beginDate;
     }

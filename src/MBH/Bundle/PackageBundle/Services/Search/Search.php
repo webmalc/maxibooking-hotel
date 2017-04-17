@@ -470,13 +470,15 @@ class Search implements SearchInterface
                 );
 
                 if (!$virtualResult) {
-                    $session->getFlashBag()->add(
-                        'search',
-                        $trans->trans(
-                            'windows.search.error',
-                            ['%room_type%' => $result->getRoomType()]
-                        )
-                    );
+                    if ($query->getIsShowNoVirtRoomFlash()) {
+                        $session->getFlashBag()->add(
+                            'search',
+                            $trans->trans(
+                                'windows.search.error',
+                                ['%room_type%' => $result->getRoomType()]
+                            )
+                        );
+                    }
                     continue;
                 }
 
