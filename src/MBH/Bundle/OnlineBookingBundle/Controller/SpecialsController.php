@@ -25,13 +25,13 @@ class SpecialsController extends BaseController
     public function indexAction()
     {
         $specialsFilter = new SpecialFilter();
-
+        $specialsFilter->setRemain(1);
         $specialsFilter->setBegin(new \DateTime("now midnight"));
         $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($specialsFilter);
+
         $preparer = $this->get('mbh.online.special_data_preparer');
 
         $result = $preparer->getPreparedDataByMonth($specials->toArray());
-//        $result = $preparer->getPreparedData($specials->toArray());
         return [
             'data' => $result,
             'monthList' => $this->getMonthList()

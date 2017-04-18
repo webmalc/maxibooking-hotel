@@ -826,6 +826,7 @@ class Package extends Base implements \JsonSerializable
     {
         $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tourists = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
 

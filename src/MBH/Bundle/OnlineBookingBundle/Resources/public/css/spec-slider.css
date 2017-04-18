@@ -6,7 +6,8 @@
     border-bottom: none;
 }
 
-.oneblockspec:last-child {
+
+.spec-last {
     border-bottom: 1px solid #969696;
 }
 
@@ -474,8 +475,18 @@
 }
 
 .month-spec li a:hover {
-    background: #2196f3;
+    background: #25a7ff;
     color: #fff;
+    font-weight: bold;
+    padding: 7px 25px;
+    text-decoration: none;
+}
+.mont-spec li a:focus {
+    text-decoration: none;
+}
+.spec-active {
+    background: #2196f3;
+    color: #fff!important;
     font-weight: bold;
     padding: 7px 25px;
     text-decoration: none;

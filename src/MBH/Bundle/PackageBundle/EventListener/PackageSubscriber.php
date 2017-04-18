@@ -2,6 +2,7 @@
 namespace MBH\Bundle\PackageBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
@@ -124,7 +125,8 @@ class PackageSubscriber implements EventSubscriber
                 $notifier->setMessage($message)->notify();
             }
 
-            $request = $this->container->get('request_stack')->getCurrentRequest();
+//            $this->packageEffectSpecials($args->getDocumentManager(), $package, false); //TODO: Реализация пересечения виртуальных номеров в спец и packages
+//            $request = $this->container->get('request_stack')->getCurrentRequest();
 //            $this->container->get('mbh.mbhs')->sendPackageInfo($package, $request ? $request->getClientIp() : null);
         }
     }
@@ -271,5 +273,27 @@ class PackageSubscriber implements EventSubscriber
                 $creator->createCheckInTasks($document);
             }
         }
+    }
+
+    private function packageEffectSpecials(DocumentManager $dm, Package $package, bool $isEnabled)
+    {
+        if ($package->getSpecial()) {
+            return;
+        }
+        $virtualRoom = $package->getVirtualRoom();
+        $specials = $dm->getRepository('MBHPriceBundle:Special')->findBy(
+            [
+                'virtualRoom.id' => $virtualRoom->getId(),
+            ]
+        );
+        if (count($specials)) {
+            foreach ($specials as $special) {
+                /** @var Special $special */
+                $special->setIsEnabled($isEnabled);
+                $meta = $dm->getClassMetadata(get_class($special));
+                $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $special);
+            }
+        }
+
     }
 }

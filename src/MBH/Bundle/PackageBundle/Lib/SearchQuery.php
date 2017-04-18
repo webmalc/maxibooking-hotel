@@ -333,7 +333,14 @@ class SearchQuery
      */
     public function getPreferredVirtualRoom()
     {
-        return $this->preferredVirtualRoom;
+        $virtualRoom = null;
+        if ($this->preferredVirtualRoom) {
+            $virtualRoom = $this->preferredVirtualRoom;
+        } elseif ($this->special) {
+            $virtualRoom = $this->special->getVirtualRoom();
+        }
+
+        return $virtualRoom;
     }
 
     /**

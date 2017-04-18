@@ -27,6 +27,9 @@ section.s_results {
   padding: 0;
   min-height: 300px;
 }
+section.s_results p {
+  line-height: 1;
+}
 .no_text_decoration {
   text-decoration: none!important;
   color: inherit;

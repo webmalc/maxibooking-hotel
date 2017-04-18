@@ -506,6 +506,7 @@ class Search implements SearchInterface
      * @param SearchResult $result
      * @param Tariff $tariff
      * @param Package $package
+     * @param null $forcedVirtualRoom
      * @return bool|SearchResult
      */
     public function setVirtualRoom($result, Tariff $tariff, Package $package = null, $forcedVirtualRoom = null)

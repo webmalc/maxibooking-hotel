@@ -70,7 +70,7 @@ Special.prototype.reNewHref = function () {
             end: this.end,
             adults: this.activeAdults(),
             children: this.activeChildren(),
-            special: this.specialId,
+            special: this.specialId
             }
         },
         href = page + $.param(data);
@@ -83,6 +83,12 @@ Special.prototype.show = function () {
 Special.prototype.hide = function() {
     this.$row.addClass('hide');
 };
+Special.prototype.setLast = function () {
+    if(!this.$row.hasClass('spec-last')) {
+        this.$row.addClass('spec-last')
+    }
+
+};
 
 var MonthSwitcher = function ($row) {
     this.$row = $row;
@@ -90,6 +96,7 @@ var MonthSwitcher = function ($row) {
     this.allSpecials = [];
     this.specials = [];
     this.isActive = false === $row.hasClass('disable-month');
+    this.$neighbors = $row.parent().siblings().find('a');
 };
 
 MonthSwitcher.prototype.init = function(specials) {
@@ -108,18 +115,46 @@ MonthSwitcher.prototype.bindHandlers = function() {
         this.$row.on('click', function (event) {
             event.preventDefault();
             if (that.isActive) {
-                that.activeSpecial();
+                that.showClickedSpecials();
             }
         });
 };
-
-MonthSwitcher.prototype.activeSpecial = function () {
+MonthSwitcher.prototype.setActive = function () {
+    this.$neighbors.removeClass('spec-active');
+    this.$row.addClass('spec-active');
+};
+MonthSwitcher.prototype.showClickedSpecials = function () {
     var special;
     for (special in this.allSpecials) {
         this.allSpecials[special].hide();
     }
     for (special in this.specials) {
         this.specials[special].show();
+    }
+    //last element
+    this.specials[special].setLast();
+    this.setActive()
+};
+
+var callMonthSlider = function (month) {
+    $('.bxslider').bxSlider({
+
+        minSlides: 3,
+        maxSlides: 3,
+        slideWidth: 360,
+        slideMargin: 10,
+        infiniteLoop:false,
+        pager: false
+
+    });
+};
+var showFirstActiveSpecials = function (monthSwitchers) {
+    var switcher;
+    for (switcher in monthSwitchers) {
+        if(monthSwitchers[switcher].isActive) {
+            monthSwitchers[switcher].showClickedSpecials();
+            break;
+        }
     }
 };
 
@@ -136,12 +171,6 @@ $(function () {
         switcher.init(specials);
         monthSwitchers.push(switcher);
     });
-    var switcher;
-    for (switcher in monthSwitchers) {
-         if(monthSwitchers[switcher].isActive) {
-            monthSwitchers[switcher].activeSpecial();
-             break;
-        }
-    }
-
+    callMonthSlider();
+    showFirstActiveSpecials(monthSwitchers);
 });

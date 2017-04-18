@@ -37,14 +37,17 @@ class SpecialDataPreparer
             if (!($special instanceof Special) || !count($special->getRoomTypes()) || $special->isRecalculation() || !$special->getRemain()) {
                 continue;
             }
-            foreach ($special->getPrices() as $specialPrice) {
-                $isDefaultTariff = $specialPrice->getTariff()->getIsDefault();
-                if (self::ONLY_DEFAULT_TARIFF && !$isDefaultTariff ) {
-                    continue;
-                }
+            if (count($special->getPrices())) {
+                foreach ($special->getPrices() as $specialPrice) {
+                    $isDefaultTariff = $specialPrice->getTariff()->getIsDefault();
+                    if (self::ONLY_DEFAULT_TARIFF && !$isDefaultTariff ) {
+                        continue;
+                    }
 
-                $result[] = $this->prepareDataToTwig($specialPrice, $special);
+                    $result[] = $this->prepareDataToTwig($specialPrice, $special);
+                }
             }
+
         }
 
         return ['specials' => $result];

@@ -96,29 +96,6 @@ class DefaultController extends BaseController
             $data = $form->getData();
             $resultGenerator = $this->get('mbh.online.search_helper');
             $searchResults = $resultGenerator->getResults($data);
-
-
-//            $searchService = $this->get('mbh.package.search');
-
-            //For common Search
-//            $this->configureCommonSearch($searchQuery, $searchService);
-//            $commonSearchResults = $searchService->search($searchQuery);
-//            $searchResults = array_merge($this->resultsHandle($commonSearchResults, $searchQuery));
-
-//            $this->configureSearchByСondition($searchQuery, $data, $searchService);
-
-            //$query->roomType returns only SearchResult. Adapt to exist code;
-
-//            if (reset($searchResults) instanceof SearchResult) {
-//                $tempResult = [];
-//                foreach ($searchResults as $searchResult) {
-//                    $tempResult[] = [
-//                        'roomType' => $searchResult->getRoomType(),
-//                        'results' => [$searchResult],
-//                    ];
-//                }
-//                $searchResults = $tempResult;
-//            }
         }
 
         $requestSearchUrl = $this->onlineOptions['request_search_url'];
@@ -151,34 +128,6 @@ class DefaultController extends BaseController
             ]
         );
     }
-
-
-    private function specialOnlySearch(
-        SearchQuery $searchQuery,
-        Special $special = null,
-        RoomType $roomType,
-        SearchFactory $search
-    ): void {
-        if ($special && $roomType) {
-            $searchQuery->setSpecial($special);
-            $searchQuery->roomTypes = $this->helper->toIds([$roomType]);
-            $searchQuery->forceRoomTypes = true;
-            $searchQuery->setPreferredVirtualRoom($special->getVirtualRoom());
-        } else {
-            throw new OnlineBookingSearchException();
-        }
-    }
-
-    private function specialsResults(\DateTime $begin, \DateTime $end)
-    {
-
-    }
-
-    private function configureSearchByСondition(SearchQuery $searchQuery, array $data): void
-    {
-
-    }
-
 
 
     /**

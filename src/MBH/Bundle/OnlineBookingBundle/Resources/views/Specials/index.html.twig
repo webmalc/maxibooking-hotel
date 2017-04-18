@@ -1,6 +1,7 @@
-{#<link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/special_page.css')) }}">#}
+<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/specials.js')) }}"></script>
+<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/jquery.bxslider.min.js')) }}"></script>
+
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/spec-slider.css')) }}">
-{% set month = ['Май'] %}
 <div class="spec-wrap">
     <div class="month-spec">
         <ul class="bxslider">
@@ -68,21 +69,4 @@
 
 </div>
 {% endfor %}
-<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/specials.js')) }}"></script>
-<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/jquery.bxslider.min.js')) }}"></script>
 
-<!--вызов салайдера-->
-<script>
-    $(document).ready(function(){
-        $('.bxslider').bxSlider({
-
-            minSlides: 3,
-            maxSlides: 3,
-            slideWidth: 360,
-            slideMargin: 10,
-            infiniteLoop:false,
-            pager: false
-
-        });
-    });
-</script>

@@ -45,11 +45,14 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
             $form->submit($request->get('form'));
             $entities = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($filter);
 
-            return $this->render('MBHPriceBundle:Special:list.json.twig', [
-                'entities' => $entities,
-                'draw' => $request->get('draw'),
-                'total' => $entities->count()
-            ]);
+            return $this->render(
+                'MBHPriceBundle:Special:list.json.twig',
+                [
+                    'entities' => $entities,
+                    'draw' => $request->get('draw'),
+                    'total' => $entities->count(),
+                ]
+            );
         }
 
         return [
@@ -71,8 +74,13 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
      * @param \DateTime|null $end
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function newAction(Request $request, Room $virtual = null,  RoomType $room = null, \DateTime $begin = null, \DateTime $end = null)
-    {
+    public function newAction(
+        Request $request,
+        Room $virtual = null,
+        RoomType $room = null,
+        \DateTime $begin = null,
+        \DateTime $end = null
+    ) {
         $entity = new Special();
         $entity->setHotel($this->hotel);
         if ($virtual) {
@@ -87,7 +95,10 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         if ($end) {
             $entity->setEnd($end);
         }
-        $entity->setRemain(1);
+        $entity->setLimit(1);
+        $entity
+            ->setFullTitle(
+                'Спец_'.($room ? $room->getName() : '').'_'.($begin ? $begin->format('d_m-Y') : '').'_'.($end ? $end->format('d_m_Y') : '') );
 
         $form = $this->createForm(SpecialType::class, $entity);
 
@@ -142,7 +153,7 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         return [
             'entity' => $entity,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($entity),
         ];
     }
 

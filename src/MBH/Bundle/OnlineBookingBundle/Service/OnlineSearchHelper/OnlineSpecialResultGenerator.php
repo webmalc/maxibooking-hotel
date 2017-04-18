@@ -23,6 +23,9 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
     {
         $results = [];
         if ($special && $roomType) {
+            if (!$special->getRemain() || !$special->getIsEnabled()) {
+                return [];
+            }
             $searchQuery->begin = $special->getBegin();
             $searchQuery->end = $special->getEnd();
             $searchQuery->setSpecial($special);
