@@ -113,7 +113,7 @@ class PriceCacheRepository extends DocumentRepository
      * @param \DateTime|null $displayedDate
      * @return array
      */
-    public function fetchWithModifiedDate(\DateTime $begin = null,
+    public function fetchWithCancelDate(\DateTime $begin = null,
         \DateTime $end = null,
         Hotel $hotel = null,
         array $roomTypes = [],
@@ -124,21 +124,21 @@ class PriceCacheRepository extends DocumentRepository
         $cachesQB = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories);
         if (!is_null($displayedDate)) {
             $cachesQB->field('createdAt')->lt($displayedDate);
-            $cachesQB->addOr($cachesQB->expr()->field('modifiedDate')->gt($displayedDate));
+            $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->gt($displayedDate));
         }
-        $cachesQB->addOr($cachesQB->expr()->field('modifiedDate')->equals(null));
-        $cachesQB->addOr($cachesQB->expr()->field('modifiedDate')->exists(false));
+        $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->equals(null));
+        $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->exists(false));
         $caches = $cachesQB->getQuery()->execute()->toArray();
 
         $result = [];
         $method = $categories ? 'getRoomTypeCategory' : 'getRoomType';
         /** @var PriceCache $cache */
         foreach ($caches as $cache) {
-            if (!$cache->getModifiedDate() || $cache->getModifiedDate() > $displayedDate) {
+            if (!$cache->getCancelDate() || $cache->getCancelDate() > $displayedDate) {
                 if (isset($result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')])) {
                     /** @var PriceCache $existedCache */
                     $existedCache = $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')];
-                    if (!$existedCache->getModifiedDate() || (!is_null($cache->getModifiedDate()) && $existedCache->getModifiedDate() > $cache->getModifiedDate())) {
+                    if (!$existedCache->getCancelDate() || (!is_null($cache->getCancelDate()) && $existedCache->getCancelDate() > $cache->getCancelDate())) {
                         $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
                     }
                 } else {

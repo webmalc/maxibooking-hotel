@@ -134,7 +134,7 @@ class PriceCache
                 'criteria' => ['_id' => new \MongoId($oldPriceCache->getId())],
                 'values' => [
                     'isEnabled' => false,
-                    'modifiedDate' => new \MongoDate((new \DateTime())->getTimestamp())
+                    'cancelDate' => new \MongoDate((new \DateTime())->getTimestamp())
                 ]
             ];
 

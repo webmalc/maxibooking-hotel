@@ -15,8 +15,8 @@ use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
  * @ODM\Document(collection="PriceCache", repositoryClass="MBH\Bundle\PriceBundle\Document\PriceCacheRepository")
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
- * @MongoDBUnique(fields={"roomType", "date", "tariff", "modifiedDate"}, message="PriceCache already exist.")
- * @MongoDBUnique(fields={"roomTypeCategory", "date", "tariff", "modifiedDate"}, message="PriceCache already exist.")
+ * @MongoDBUnique(fields={"roomType", "date", "tariff", "cancelDate"}, message="PriceCache already exist.")
+ * @MongoDBUnique(fields={"roomTypeCategory", "date", "tariff", "cancelDate"}, message="PriceCache already exist.")
  * @ODM\HasLifecycleCallbacks
  * @Disableable\Disableable
  */
@@ -134,7 +134,7 @@ class PriceCache extends Base
      * @var \DateTime
      * @ODM\Field(type="date")
      */
-    protected $modifiedDate;
+    protected $cancelDate;
 
     /**
      * @var \DateTime
@@ -165,19 +165,19 @@ class PriceCache extends Base
     /**
      * @return \DateTime
      */
-    public function getModifiedDate(): ?\DateTime
+    public function getCancelDate(): ?\DateTime
     {
-        return $this->modifiedDate;
+        return $this->cancelDate;
     }
 
     /**
-     * @param \DateTime $modifiedDate
+     * @param \DateTime $cancelDate
      * @param bool $isDisabled
      * @return PriceCache
      */
-    public function setModifiedDate(\DateTime $modifiedDate, $isDisabled = false): PriceCache
+    public function setCancelDate(\DateTime $cancelDate, $isDisabled = false): PriceCache
     {
-        $this->modifiedDate = $modifiedDate;
+        $this->cancelDate = $cancelDate;
         if ($isDisabled) {
             $this->setIsEnabled(false);
         }

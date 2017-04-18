@@ -104,17 +104,17 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             if (empty($displayedPricesTimeString = $request->get('displayed-prices-time'))) {
                 $displayedPricesTimeString = '12:00';
             }
-            $modifiedDate = \DateTime::createFromFormat('d.m.Y H:i', $displayedPricesDateString . ' ' . $displayedPricesTimeString);
+            $cancellDate = \DateTime::createFromFormat('d.m.Y H:i', $displayedPricesDateString . ' ' . $displayedPricesTimeString);
         } else {
-            $modifiedDate = new \DateTime();
+            $cancellDate = new \DateTime();
         }
 
-        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetchWithModifiedDate(
+        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetchWithCancelDate(
             $begin, $end, $this->hotel,
             $roomTypeIds,
             $request->get('tariffs') ? $request->get('tariffs') : [],
             $this->manager->useCategories,
-            $modifiedDate
+            $cancellDate
         );
 
         if (!count($roomTypes)) {
@@ -133,30 +133,6 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             'tariffs' => $tariffs,
             'priceCaches' => $priceCaches
         ]);
-    }
-
-    /**
-     * @Route("/test")
-     */
-    public function testAction()
-    {
-        $date = \DateTime::createFromFormat('d.m.Y H:i:s', '18.04.2017 10:01:00');
-//        $callback = function () use ($date) {
-//            return $this->dm->getRepository('MBHPriceBundle:PriceCache')->findBy(['date' => $date, 'roomType.id' => '58b93c04a8471801ee458578']);
-//        };
-        $result = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-            ->createQueryBuilder()
-            ->field('modifiedDate')->gt($date)
-            ->getQuery()
-            ->execute()
-            ->toArray()
-        ;
-//        $begin = (clone $date)->modify('-1 day');
-//        $modifiedDate = new \DateTime();
-////        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetchWithModifiedDate($begin, $date, $this->hotel, ['58b93c04a8471801ee458578'], [], false, $modifiedDate);
-//        $priceCaches = $this->helper->getFilteredResult($this->dm, $callback, false);
-
-        return new Response();
     }
 
     /**
@@ -231,7 +207,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
             //delete
             if (isset($prices['price']) && $prices['price'] === '') {
-                $priceCache->setModifiedDate(new \DateTime(), true);
+                $priceCache->setCancelDate(new \DateTime(), true);
                 continue;
             }
 
@@ -253,7 +229,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
             if ($validator->validate($newPriceCache) && !$this->isSamePriceCaches($priceCache, $newPriceCache)) {
                 $this->dm->persist($newPriceCache);
-                $priceCache->setModifiedDate(new \DateTime(), true);
+                $priceCache->setCancelDate(new \DateTime(), true);
             }
         }
         $this->dm->flush();
