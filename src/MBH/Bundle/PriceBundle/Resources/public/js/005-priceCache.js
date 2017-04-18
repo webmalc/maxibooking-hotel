@@ -2,7 +2,26 @@
 
 $(document).ready(function () {
     'use strict';
-
+    var $displayedDateInput = $('#displayed-prices-date').eq(0);
+    var $displayedTimeInput = $('#displayed-prices-time');
+    var $irrelevantPricesAlert = $('#irrelevant-prices-alert');
+    if ($displayedDateInput.val()) {
+        $irrelevantPricesAlert.show();
+    }
+    $displayedDateInput.change(function () {
+        if (!this.value) {
+            $irrelevantPricesAlert.hide();
+            $displayedTimeInput.val('');
+        } else {
+            $irrelevantPricesAlert.show();
+            if (!$displayedTimeInput.val()) {
+                $displayedTimeInput.val('12:00');
+            }
+        }
+    });
+    $irrelevantPricesAlert.find('.close').click(function () {
+        $displayedDateInput.val('').trigger("change");
+    });
     //Show table
     var pricesProcessing = false,
         showTable = function () {
@@ -13,32 +32,36 @@ $(document).ready(function () {
                     'begin': begin.val(),
                     'end': end.val(),
                     'roomTypes': $('#price-cache-overview-filter-roomType').val(),
-                    'tariffs': $('#price-cache-overview-filter-tariff').val()
+                    'tariffs': $('#price-cache-overview-filter-tariff').val(),
+                    'displayed-prices-date' : $displayedDateInput.val(),
+                    'displayed-prices-time' : $('#displayed-prices-time').val()
                 },
                 inputs = function () {
                     var input = $('input.mbh-grid-input, span.disabled-detector');
-                    input.closest('td').click(function () {
-                        var td = $("td[data-id='" + $(this).attr('data-id') + "']"),
-                            field = $(this).children('span.input').children('input[disabled]');
+                    if (!$displayedDateInput.val()) {
+                        input.closest('td').click(function () {
+                            var td = $("td[data-id='" + $(this).attr('data-id') + "']"),
+                                field = $(this).children('span.input').children('input[disabled]');
 
-                        td.children('span.input').children('input').removeAttr('disabled');
+                            td.children('span.input').children('input').removeAttr('disabled');
 
-                        if (field.prop('type') === 'checkbox') {
-                            field.prop('checked', !field.prop('checked')).css('checkbox-end');
-                        } else {
-                            field.focus();
-                        }
-                        td.children('span.input').children('span.disabled-detector').remove();
-                    });
-                    input.change(function () {
-                        if (this.value === '') {
-                            return;
-                        }
-                        var value = parseFloat(this.value);
-                        if (value < 0 || isNaN(value)) {
-                            this.value = 0;
-                        }
-                    });
+                            if (field.prop('type') === 'checkbox') {
+                                field.prop('checked', !field.prop('checked')).css('checkbox-end');
+                            } else {
+                                field.focus();
+                            }
+                            td.children('span.input').children('span.disabled-detector').remove();
+                        });
+                        input.change(function () {
+                            if (this.value === '') {
+                                return;
+                            }
+                            var value = parseFloat(this.value);
+                            if (value < 0 || isNaN(value)) {
+                                this.value = 0;
+                            }
+                        });
+                    }
                 };
             if (wrapper.length === 0) {
                 return false;

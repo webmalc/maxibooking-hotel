@@ -132,9 +132,35 @@ class PriceCache extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date
+     * @ODM\Field(type="date")
      */
     protected $modifiedDate;
+
+    /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="create")
+     * @ODM\Date
+     */
+    protected $createdAt;
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     * @return PriceCache
+     */
+    public function setCreatedAt(\DateTime $createdAt): PriceCache
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
 
     /**
      * @return \DateTime
@@ -547,19 +573,4 @@ class PriceCache extends Base
         return $category ? $this->getRoomTypeCategory() : $this->getRoomType();
     }
 
-    /**
-     * @param array $firstPriceCacheCollection
-     * @param array $secondPriceCacheCollection
-     * @return bool
-     */
-    public function isDataCollectionsEqual(array $firstPriceCacheCollection, array $secondPriceCacheCollection)
-    {
-        $additionalChildrenPricesDiff = array_diff($firstPriceCacheCollection, $secondPriceCacheCollection);
-        if (count($additionalChildrenPricesDiff) == 0
-            || (count($additionalChildrenPricesDiff) == 1 && current($additionalChildrenPricesDiff) == null)) {
-            return true;
-        }
-
-        return true;
-    }
 }
