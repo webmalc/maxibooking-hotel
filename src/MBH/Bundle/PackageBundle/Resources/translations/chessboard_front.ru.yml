@@ -2,6 +2,7 @@ chessboard_manager.remove_button.popup: Удалить
 chessboard_manager.divide_button.popup: Переселить
 chessboard_manager.info_button.popup.title: Информация о брони
 chessboard_manager.edit_button.popup.title: Перейти в окно редактирования
+chessboard_manager.left_rooms_count.tooltip_title: 'Осталось %count% номеров'
 
 action_manager.modal.remove_confirmation.title: Подтверждение удаления
 action_manager.modal.remove_confirmation.text: Вы действительно хотите удалить эту бронь

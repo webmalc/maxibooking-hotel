@@ -114,7 +114,7 @@ class Builder implements ContainerAwareInterface
         $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
 
         $taskAttributes = ['icon' => 'fa fa-tasks'];
-        
+
         if ($openTaskCount > 0) {
             $taskAttributes += [
                 'badge' => true,
@@ -393,4 +393,5 @@ class Builder implements ContainerAwareInterface
         return $this->filter($menu, $factory, $options);
         ;
     }
+
 }

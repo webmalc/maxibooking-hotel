@@ -168,12 +168,7 @@ var DataManager = (function () {
     DataManager.prototype.deletePackageRequest = function (packageId) {
         ActionManager.showLoadingIndicator();
         var self = this;
-        for (var accommodationId in this._accommodations) {
-            if (this._accommodations.hasOwnProperty(accommodationId)
-                && this._accommodations[accommodationId].packageId == packageId) {
-                delete this._accommodations[accommodationId];
-            }
-        }
+        this.deleteAccommodationsByPackageId(packageId);
         $.ajax({
             url: Routing.generate('chessboard_remove_package', { id: packageId }),
             type: "DELETE",
@@ -185,6 +180,14 @@ var DataManager = (function () {
                 self.handleError();
             }
         });
+    };
+    DataManager.prototype.deleteAccommodationsByPackageId = function (packageId) {
+        for (var accommodationId in this._accommodations) {
+            if (this._accommodations.hasOwnProperty(accommodationId)
+                && this._accommodations[accommodationId].packageId == packageId) {
+                delete this._accommodations[accommodationId];
+            }
+        }
     };
     DataManager.prototype.getPackageDataRequest = function (packageId) {
         ActionManager.showLoadingIndicator();
