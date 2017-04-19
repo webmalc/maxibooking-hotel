@@ -133,6 +133,8 @@ class PriceCache extends Base
     /**
      * @var \DateTime
      * @ODM\Field(type="date")
+     * @ODM\Index()
+     * @Assert\Date()
      */
     protected $cancelDate;
 
@@ -140,6 +142,8 @@ class PriceCache extends Base
      * @var \DateTime
      * @Gedmo\Timestampable(on="create")
      * @ODM\Date
+     * @Assert\Date()
+     * @Assert\NotNull()
      */
     protected $createdAt;
 

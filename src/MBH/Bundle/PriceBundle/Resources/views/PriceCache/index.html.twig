@@ -8,6 +8,7 @@
         <i class="fa fa-exclamation-circle"></i>&nbsp;
         <button type="button" class="close">&times;</button>
         {{ 'price.views.priceCache.index.warning_displayed_irrelevant_prices'|trans() }}
+        (<span id="irrelevant-prices-alert-date"></span>)
     </div>
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'price-cache-overview-filter-widget' } %}
     <form id="price-cache-overview-filter" class="form-inline filter-form remember mbh-start-date" role="form">
@@ -60,7 +61,7 @@
         <div class="input">
             <label for="displayed-prices-time"><i class="fa fa-clock-o" aria-hidden="true" title='{{ 'mbhpricebundle.view.pricecache.filter.displayed_price_caches_time'|trans }}' data-toggle='tooltip'></i>&nbsp;</label>
             <div class="bootstrap-timepicker">
-                <input name="displayed-prices-time" type="text" id="displayed-prices-time" class="price-cache-overview-filter timepicker form-control input-sm" style="width: 60px;">
+                <input name="displayed-prices-time" type="text" id="displayed-prices-time" class="form-control input-sm" style="width: 60px;">
             </div>
         </div>
     </form>

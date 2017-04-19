@@ -102,11 +102,11 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
         if (!empty($displayedPricesDateString = $request->get('displayed-prices-date'))) {
             if (empty($displayedPricesTimeString = $request->get('displayed-prices-time'))) {
-                $displayedPricesTimeString = '12:00';
+                $displayedPricesTimeString = '00:00';
             }
-            $cancellDate = \DateTime::createFromFormat('d.m.Y H:i', $displayedPricesDateString . ' ' . $displayedPricesTimeString);
+            $cancelDate = \DateTime::createFromFormat('d.m.Y H:i', $displayedPricesDateString . ' ' . $displayedPricesTimeString);
         } else {
-            $cancellDate = new \DateTime();
+            $cancelDate = new \DateTime();
         }
 
         $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetchWithCancelDate(
@@ -114,7 +114,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             $roomTypeIds,
             $request->get('tariffs') ? $request->get('tariffs') : [],
             $this->manager->useCategories,
-            $cancellDate
+            $cancelDate
         );
 
         if (!count($roomTypes)) {

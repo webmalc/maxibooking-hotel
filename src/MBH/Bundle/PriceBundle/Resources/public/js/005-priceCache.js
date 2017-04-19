@@ -5,23 +5,36 @@ $(document).ready(function () {
     var $displayedDateInput = $('#displayed-prices-date').eq(0);
     var $displayedTimeInput = $('#displayed-prices-time');
     var $irrelevantPricesAlert = $('#irrelevant-prices-alert');
+    $displayedTimeInput.timepicker({
+        showMeridian: false,
+        minuteStep: 5
+    });
     if ($displayedDateInput.val()) {
         $irrelevantPricesAlert.show();
+        $irrelevantPricesAlert.find('#irrelevant-prices-alert-date').text($displayedDateInput.val() + ' ' + $displayedTimeInput.val())
+    } else {
+        $displayedTimeInput.val('');
+        $displayedTimeInput.attr('disabled', true);
     }
+
     $displayedDateInput.change(function () {
         if (!this.value) {
             $irrelevantPricesAlert.hide();
             $displayedTimeInput.val('');
+            $displayedTimeInput.attr('disabled', true);
         } else {
             $irrelevantPricesAlert.show();
+            $irrelevantPricesAlert.find('#irrelevant-prices-alert-date').text(this.value + ' ' + $displayedTimeInput.val())
+            $displayedTimeInput.removeAttr('disabled');
             if (!$displayedTimeInput.val()) {
-                $displayedTimeInput.val('12:00');
+                $displayedTimeInput.val('00:00');
             }
         }
     });
     $irrelevantPricesAlert.find('.close').click(function () {
         $displayedDateInput.val('').trigger("change");
     });
+
     //Show table
     var pricesProcessing = false,
         showTable = function () {
@@ -89,6 +102,9 @@ $(document).ready(function () {
 
     showTable();
     $('.price-cache-overview-filter').change(function () {
+        showTable();
+    });
+    $displayedTimeInput.on('hide.timepicker', function() {
         showTable();
     });
 

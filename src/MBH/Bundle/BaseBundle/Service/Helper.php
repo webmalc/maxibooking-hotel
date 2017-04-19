@@ -343,7 +343,7 @@ class Helper
     }
 
     /**
-     * Получение профильтрованных по указанному фильтру значений
+     * Get filtered values for the specified filter
      *
      * @param DocumentManager $dm
      * @param  $callback
