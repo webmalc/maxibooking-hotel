@@ -754,6 +754,7 @@ class Package extends Base implements \JsonSerializable
    
     public function __construct()
     {
+        $this->services = new ArrayCollection();
         $this->restarauntSeat = new ArrayCollection();
         $this->tourists = new ArrayCollection();
         $this->accommodations = new ArrayCollection();

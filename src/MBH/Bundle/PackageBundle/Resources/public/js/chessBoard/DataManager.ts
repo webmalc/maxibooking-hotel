@@ -200,12 +200,7 @@ class DataManager {
         ActionManager.showLoadingIndicator();
         let self = this;
 
-        for (let accommodationId in this._accommodations) {
-            if (this._accommodations.hasOwnProperty(accommodationId)
-                && this._accommodations[accommodationId].packageId == packageId) {
-                delete this._accommodations[accommodationId];
-            }
-        }
+        this.deleteAccommodationsByPackageId(packageId);
 
         $.ajax({
             url: Routing.generate('chessboard_remove_package', {id: packageId}),
@@ -218,6 +213,15 @@ class DataManager {
                 self.handleError();
             }
         });
+    }
+
+    public deleteAccommodationsByPackageId(packageId) {
+        for (let accommodationId in this._accommodations) {
+            if (this._accommodations.hasOwnProperty(accommodationId)
+                && this._accommodations[accommodationId].packageId == packageId) {
+                delete this._accommodations[accommodationId];
+            }
+        }
     }
 
     public getPackageDataRequest(packageId) {

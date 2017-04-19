@@ -56,6 +56,9 @@ var ActionManager = (function () {
         $('.btn.package-search-book').each(function (index, element) {
             self.modifyBookButton(packageData, element, editModal);
         });
+        $('.search-special-apply').each(function (index, element) {
+            self.modifySpecialButton(packageData, element, editModal);
+        });
         $('.package-search-table').find('tr').not(':first').not(':first').each(function (index, row) {
             var $row = $(row);
             ActionManager.showResultPrices($row);
@@ -85,6 +88,18 @@ var ActionManager = (function () {
         else {
             $searchTouristsSelect.attr("disabled", true);
         }
+    };
+    ActionManager.prototype.modifySpecialButton = function (packageData, element, editModal) {
+        var self = this;
+        element.onclick = function () {
+            event.preventDefault();
+            var $searchPackageForm = $('#package-search-form');
+            var specialId = element.getAttribute('data-id');
+            console.log(specialId);
+            var newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm, specialId);
+            editModal.modal('hide');
+            self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
+        };
     };
     ActionManager.prototype.modifyBookButton = function (packageData, element, editModal) {
         'use strict';

@@ -75,6 +75,10 @@ class ActionManager {
             self.modifyBookButton(packageData, element, editModal);
         });
 
+        $('.search-special-apply').each(function (index, element) {
+            self.modifySpecialButton(packageData, element, editModal);
+        });
+
         $('.package-search-table').find('tr').not(':first').not(':first').each(function (index, row) {
             let $row = $(row);
             ActionManager.showResultPrices($row);
@@ -110,6 +114,19 @@ class ActionManager {
             $packageSearchBook.attr('data-url', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
         } else {
             $searchTouristsSelect.attr("disabled", true);
+        }
+    }
+
+    private modifySpecialButton(packageData, element, editModal) {
+        let self = this;
+        element.onclick = function () {
+            event.preventDefault();
+            let $searchPackageForm = $('#package-search-form');
+            let specialId = element.getAttribute('data-id');
+            console.log(specialId);
+            let newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm, specialId);
+            editModal.modal('hide');
+            self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
         }
     }
 
