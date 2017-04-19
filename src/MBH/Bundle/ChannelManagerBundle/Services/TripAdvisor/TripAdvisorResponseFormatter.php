@@ -9,6 +9,7 @@ use MBH\Bundle\BaseBundle\Service\Currency;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorRoomType;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
 use MBH\Bundle\ChannelManagerBundle\Services\OrderHandler;
 use MBH\Bundle\HotelBundle\Document\ContactInfo;
@@ -157,7 +158,7 @@ class TripAdvisorResponseFormatter
             $contactInformation = $hotel->getContactInformation();
             /** @var Hotel $hotel */
             $hotelData = [
-                'ta_id' => $config->getHotelId(),
+                'ta_id' => (int)$config->getHotelId(),
                 'partner_id' => $hotel->getId(),
                 'name' => $hotel->getInternationalTitle(),
                 'street' => $hotel->getInternationalStreetName(),
@@ -192,16 +193,17 @@ class TripAdvisorResponseFormatter
                 if ($roomType->getDescription() && !is_null($tripAdvisorRoomType) && $tripAdvisorRoomType->getIsEnabled()) {
                     $roomTypeData = [];
                     if ($roomType->getDescription()) {
-                        $roomTypeData['desc'] = $roomType->getDescription();
+                        $description = str_replace('</p>', '', str_replace('<p>', '',$roomType->getDescription()));
+                        $roomTypeData['desc'] = $description;
                     }
-                    $hotelData['room_types'][] = $roomTypeData;
+                    $hotelData['room_types'][$roomType->getName()] = $roomTypeData;
                 }
             }
             $hotelsData[] = $hotelData;
         }
 
         $response = [
-            'api_version' => $apiVersion,
+            'api_version' => (int)$apiVersion,
             'lang' => $language,
             'hotels' => $hotelsData
         ];
@@ -224,7 +226,7 @@ class TripAdvisorResponseFormatter
         $configs
     ) {
         $response = [
-            'api_version' => $apiVersion,
+            'api_version' => (int)$apiVersion,
             'start_date' => $startDate,
             'end_date' => $endDate,
             'party' => $adultsChildrenCombinations,
@@ -296,7 +298,7 @@ class TripAdvisorResponseFormatter
                             'fees_at_checkout' => 0,
                             'taxes' => 0,
                             'taxes_at_checkout' => 0,
-                            'final_price' => 0,
+                            'final_price' => $price,
                             'currency' => $currency
                         ];
 
@@ -338,8 +340,8 @@ class TripAdvisorResponseFormatter
         $currency
     ) {
         $response = [
-            'api_version' => $apiVersion,
-            'hotel_id' => $hotelData['ta_id'],
+            'api_version' => (int)$apiVersion,
+            'hotel_id' => (int)$hotelData['ta_id'],
             'start_date' => $startDate,
             'end_date' => $endDate,
             'party' => $adultsChildrenCombination,
@@ -353,7 +355,7 @@ class TripAdvisorResponseFormatter
             'accepted_credit_cards' => $this->getAcceptedCardTypes($hotel),
             'terms_and_conditions' => $hotel->getTripAdvisorConfig()->getTermsAndConditions(),
             'payment_policy' => $hotel->getTripAdvisorConfig()->getPaymentPolicy(),
-            'customer_support' => $this->getContactInfo($hotel->getContactInformation())
+            'customer_support' => $this->getCustomerSupportData($hotel->getContactInformation())
         ];
 
         if ($deviceType) {
@@ -364,29 +366,34 @@ class TripAdvisorResponseFormatter
         if (is_null($config) || !$config->getIsEnabled()) {
             $response['errors'][] = [
                 "error_code" => 3,
-                "hotel_ids" => [$hotelData['ta_id']]
+                "hotel_ids" => [(int)$hotelData['ta_id']]
             ];
         } else {
             foreach ($availabilityData as $roomTypeAvailabilityData) {
                 /** @var RoomType $roomType */
                 $roomType = $roomTypeAvailabilityData['roomType'];
-                foreach ($roomTypeAvailabilityData['results'] as $searchResult) {
-                    /** @var SearchResult $searchResult */
-                    $tariff = $searchResult->getTariff();
-                    $tripAdvisorTariff = $config->getTATariffByMBHTariffId($tariff->getId());
-                    if (!is_null($tripAdvisorTariff) && $tripAdvisorTariff->getIsEnabled()) {
-                        if (!isset($response['hotel_room_types'][$roomType->getId()])) {
-                            $response['hotel_room_types'][$roomType->getId()] = $this->getRoomTypeData($roomType,
-                                $language);
-                        }
-                        if (!isset($response['hotel_rate_plans'][$tariff->getId()])) {
-                            $response['hotel_rate_plans'][$tariff->getId()] = $this->getTariffData($tripAdvisorTariff);
-                        }
-                        $hotelRoomRate = $this->getHotelRoomRates($searchResult, $adultsChildrenCombination, $currency,
-                            $config, $language);
+                /** @var TripAdvisorRoomType $taRoomType */
+                $taRoomType = $config->getTARoomTypeByMBHRoomTypeId($roomType->getId());
+                if ($taRoomType->getIsEnabled()) {
+                    foreach ($roomTypeAvailabilityData['results'] as $searchResult) {
+                        /** @var SearchResult $searchResult */
+                        $tariff = $searchResult->getTariff();
+                        $tripAdvisorTariff = $config->getTATariffByMBHTariffId($tariff->getId());
+                        if (!is_null($tripAdvisorTariff) && $tripAdvisorTariff->getIsEnabled()) {
+                            if (!isset($response['hotel_room_types'][$roomType->getId()])) {
+                                $response['hotel_room_types'][$roomType->getId()] = $this->getRoomTypeData($roomType,
+                                    $language);
+                            }
+                            if (!isset($response['hotel_rate_plans'][$tariff->getId()])) {
+                                $response['hotel_rate_plans'][$tariff->getId()] = $this->getTariffData($tripAdvisorTariff);
+                            }
+                            $hotelRoomRate = $this->getHotelRoomRates($searchResult, $adultsChildrenCombination,
+                                $currency,
+                                $config, $language);
 
-                        if ($hotelRoomRate) {
-                            $response['hotel_room_rates'][] = $hotelRoomRate;
+                            if ($hotelRoomRate) {
+                                $response['hotel_room_rates'][] = $hotelRoomRate;
+                            }
                         }
                     }
                 }
@@ -767,7 +774,7 @@ class TripAdvisorResponseFormatter
             'line_items' => $this->getLineItems($resultPrice, $currency, $config->getPaymentType()),
             'payment_policy' => $config->getPaymentPolicy(),
             'rooms_remaining' => $result->getRoomsCount(),
-            'partnerData' => [
+            'partner_data' => [
                 'pricesByDate' => $priceData['pricesByDate'],
                 'roomTypeId' => $result->getRoomType()->getId(),
                 'tariffId' => $result->getTariff()->getId(),
@@ -836,7 +843,7 @@ class TripAdvisorResponseFormatter
                 'number_of_adults' => $roomType->getTotalPlaces(),
                 'number_of_children' => 0
             ],
-            'bed_configurations' => $this->getBedConfiguration($roomType),
+            'bed_configurations' => [$this->getBedConfiguration($roomType)],
             'extra_bed_configurations' => [],
             'room_smoking_policy' => $roomType->getIsSmoking() ? 'smoking' : 'non_smoking',
             'room_view_type' => $this->getRoomViewTypes($roomType)

@@ -183,6 +183,8 @@ class TripAdvisorOrderInfo extends AbstractOrderInfo
     private function getRoomType(): RoomType
     {
         $roomTypeId = $this->bookingMainData['roomTypeId'];
+        dump($roomTypeId);
+        exit();
         $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
         if (!$roomType) {
             $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(

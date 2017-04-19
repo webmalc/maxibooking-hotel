@@ -207,7 +207,7 @@ class TripAdvisorController extends BaseController
     }
 
     /**
-     * @Route("/config")
+     * @Route("/api/config")
      * @Method("GET")
      * @return JsonResponse
      */
@@ -221,7 +221,7 @@ class TripAdvisorController extends BaseController
 
     /**
      * @Method("GET")
-     * @Route("/hotel_inventory")
+     * @Route("/api/hotel_inventory")
      * @param Request $request
      * @return JsonResponse
      */
@@ -241,17 +241,17 @@ class TripAdvisorController extends BaseController
 
     /**
      * @Method("POST")
-     * @Route("/hotel_availability")
+     * @Route("/api/hotel_availability")
      * @param Request $request
      * @return Response
      */
     public function getHotelAvailabilityAction(Request $request)
     {
         $apiVersion = $request->get('api_version');
-        $requestedHotels = $request->get('hotels');
+        $requestedHotels = json_decode($request->get('hotels'), true);
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
-        $requestedAdultsChildrenCombination = $request->get('party');
+        $requestedAdultsChildrenCombination = json_decode($request->get('party'), true);
         $language = $request->get('lang');
         $queryKey = $request->get('query_key');
         $currency = $request->get('currency');
@@ -284,17 +284,17 @@ class TripAdvisorController extends BaseController
 
     /**
      * @Method("POST")
-     * @Route("/booking_availability")
+     * @Route("/api/booking_availability")
      * @param Request $request
      * @return string
      */
     public function getBookingAvailabilityAction(Request $request)
     {
         $apiVersion = $request->get('api_version');
-        $requestedHotel = $request->get('hotel');
+        $requestedHotel = json_decode($request->get('hotel'), true);
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
-        $requestedAdultsChildrenCombination = $request->get('party');
+        $requestedAdultsChildrenCombination = json_decode($request->get('party'), true);
         $language = $request->get('lang');
         $queryKey = $request->get('query_key');
         $currency = $request->get('currency');
@@ -327,7 +327,7 @@ class TripAdvisorController extends BaseController
 
     /**
      * @Method("POST")
-     * @Route("/booking_submit")
+     * @Route("/api/booking_submit")
      * @param Request $request
      * @return JsonResponse
      */
@@ -338,13 +338,13 @@ class TripAdvisorController extends BaseController
         $hotelId = $request->get('partner_hotel_code');
         $bookingSession = $request->get('reference_id');
 //        $ipAddress = $request->get('ip_address');
-        $customerData = $request->get('customer');
-        $roomsData = $request->get('rooms');
+        $customerData = json_decode($request->get('customer'), true);
+        $roomsData = json_decode($request->get('rooms'),true);
         $specialRequests = $request->get('special_requests');
-        $paymentData = $request->get('payment_method');
-        $finalPriceAtBooking = $request->get('final_price_at_booking');
-        $finalPriceAtCheckout = $request->get('final_price_at_checkout');
-        $bookingMainData = $request->get('partner_data');
+        $paymentData = json_decode($request->get('payment_method'), true);
+        $finalPriceAtBooking = json_decode($request->get('final_price_at_booking'), true);
+        $finalPriceAtCheckout = json_decode($request->get('final_price_at_checkout'), true);
+        $bookingMainData = json_decode($request->get('partner_data'), true);
 
 //        $checkInDate = '2017-03-12';
 //        $checkOutDate = '2017-03-18';
@@ -468,7 +468,7 @@ class TripAdvisorController extends BaseController
 
     /**
      * @Method("GET")
-     * @Route("/booking_verify")
+     * @Route("/api/booking_verify")
      * @param Request $request
      * @return string
      */
@@ -490,7 +490,7 @@ class TripAdvisorController extends BaseController
 
     /**
      * @Method("POST")
-     * @Route("/booking_cancel")
+     * @Route("/api/booking_cancel")
      * @param Request $request
      * @return string
      */
@@ -526,7 +526,7 @@ class TripAdvisorController extends BaseController
 
     /**
      * @Method("POST")
-     * @Route("/room_information")
+     * @Route("/api/room_information")
      * @param Request $request
      * @return string
      * @throws \Exception
@@ -549,14 +549,5 @@ class TripAdvisorController extends BaseController
             ->formatRoomInformationResponse($apiVersion, $hotelData, $language, $queryKey, $hotel);
 
         return new JsonResponse($response);
-    }
-
-    /**
-     * @Route("/test")
-     * @return Response
-     */
-    public function testAction()
-    {
-        return new Response();
     }
 }
