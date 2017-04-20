@@ -7,12 +7,13 @@ var Special = function ($row) {
     this.$choice = $(".capacity_choice", $row);
     this.$form = $("form", $row);
     this.discount = $row.data('discount');
-    this.roomCategoryId = $row.data('roomcategoryid');
     this.roomTypeId = $row.data('roomtypeid');
     this.begin = $(".spec-date p.date", $row).data('begin');
     this.end = $(".spec-date p.date", $row).data('end');
     this.specialId = $row.data('specialid');
     this.hotelId = $row.data('hotelid');
+    this.imageDiv = $row.find('.main-img');
+    console.log(this.imageDiv);
     this.activePrice = function () {
         return $("option:selected", this.$choice).data('price');
     };
@@ -36,9 +37,12 @@ Special.prototype.bindHandlers = function () {
         that.reNewPrices();
         that.reNewHref();
     });
-    this.$form.on('submit', function(e) {
+    this.$form.on('submit', function (e) {
         e.preventDefault();
         window.location = $(this).attr('action');
+    });
+    this.imageDiv.on('click', function (e) {
+        $.fancybox($(this).data('image'));
     })
 
 };
@@ -83,11 +87,21 @@ Special.prototype.show = function () {
 Special.prototype.hide = function() {
     this.$row.addClass('hide');
 };
+Special.prototype.showHotel = function () {
+    this.$row.removeClass('hotel-hide');
+};
+Special.prototype.hideHotel = function () {
+    this.$row.addClass('hotel-hide');
+};
+Special.prototype.removeLast = function () {
+    if(this.$row.hasClass('spec-last')) {
+        this.$row.removeClass('spec-last')
+    }
+};
 Special.prototype.setLast = function () {
     if(!this.$row.hasClass('spec-last')) {
         this.$row.addClass('spec-last')
     }
-
 };
 
 var MonthSwitcher = function ($row) {
@@ -95,7 +109,7 @@ var MonthSwitcher = function ($row) {
     this.id = $row.attr('id');
     this.allSpecials = [];
     this.specials = [];
-    this.isActive = false === $row.hasClass('disable-month');
+    this.isEnabled = false === $row.hasClass('disable-month');
     this.$neighbors = $row.parent().siblings().find('a');
 };
 
@@ -114,7 +128,8 @@ MonthSwitcher.prototype.bindHandlers = function() {
         var that = this;
         this.$row.on('click', function (event) {
             event.preventDefault();
-            if (that.isActive) {
+            event.stopPropagation();
+            if (that.isEnabled) {
                 that.showClickedSpecials();
             }
         });
@@ -130,10 +145,46 @@ MonthSwitcher.prototype.showClickedSpecials = function () {
     }
     for (special in this.specials) {
         this.specials[special].show();
+        this.specials[special].removeLast();
     }
     //last element
     this.specials[special].setLast();
     this.setActive()
+};
+
+var HotelSwitcher = function ($row) {
+    this.$row = $row;
+    this.id = $row.data('hotelid');
+    this.allSpecials = [];
+    this.specials = [];
+};
+HotelSwitcher.prototype.init = function (specials) {
+    this.allSpecials = specials;
+    var special;
+    for (special in specials) {
+        if(specials[special].$row.data('hotelid') === (this.id)) {
+            this.specials.push(specials[special])
+        }
+    }
+    this.bindHandlers();
+};
+HotelSwitcher.prototype.bindHandlers = function () {
+    var that = this;
+    this.$row.on('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        that.showClickedSpecials();
+    });
+};
+HotelSwitcher.prototype.showClickedSpecials = function () {
+    var special;
+    for (special in this.allSpecials) {
+        this.allSpecials[special].hideHotel();
+    }
+    for (special in this.specials) {
+        this.specials[special].showHotel();
+    }
+    this.specials[special].setLast();
 };
 
 var callMonthSlider = function (month) {
@@ -148,10 +199,10 @@ var callMonthSlider = function (month) {
 
     });
 };
-var showFirstActiveSpecials = function (monthSwitchers) {
+var showFirstEnabledSwitcher = function (monthSwitchers) {
     var switcher;
     for (switcher in monthSwitchers) {
-        if(monthSwitchers[switcher].isActive) {
+        if(monthSwitchers[switcher].isEnabled) {
             monthSwitchers[switcher].showClickedSpecials();
             break;
         }
@@ -160,7 +211,8 @@ var showFirstActiveSpecials = function (monthSwitchers) {
 
 $(function () {
     var specials = [],
-        monthSwitchers = [];
+        monthSwitchers = [],
+        hotelSwitchers = [];
     $.each($('.oneblockspec'), function () {
         var special = new Special($(this));
         special.init();
@@ -171,6 +223,11 @@ $(function () {
         switcher.init(specials);
         monthSwitchers.push(switcher);
     });
+    $.each($('.hotel-switcher'), function () {
+        var hotelSwitcher = new HotelSwitcher($(this));
+        hotelSwitcher.init(specials);
+        hotelSwitchers.push(hotelSwitcher);
+    });
     callMonthSlider();
-    showFirstActiveSpecials(monthSwitchers);
+    showFirstEnabledSwitcher(monthSwitchers);
 });

@@ -6,9 +6,13 @@
     border-bottom: none;
 }
 
-
 .spec-last {
     border-bottom: 1px solid #969696;
+}
+
+
+.hotel-hide {
+    display: none;
 }
 
 .oneblockspec div {
@@ -481,15 +485,28 @@
     padding: 7px 25px;
     text-decoration: none;
 }
+
 .mont-spec li a:focus {
     text-decoration: none;
 }
+
 .spec-active {
     background: #2196f3;
-    color: #fff!important;
+    color: #fff !important;
     font-weight: bold;
     padding: 7px 25px;
     text-decoration: none;
+}
+
+.month-spec li a.disable-month {
+    color: #c7c7c7;
+    cursor: default;
+}
+
+.month-spec li a.disable-month:hover {
+    background: none;
+    color: #c7c7c7;
+    font-weight: normal;
 }
 
 @media (max-width: 875px) {

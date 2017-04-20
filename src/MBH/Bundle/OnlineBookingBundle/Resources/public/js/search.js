@@ -38,7 +38,7 @@ RoomTypeRow.prototype.bindEventHandlers = function () {
     });
     this.$showAllSpecialButton.on('click', function (e) {
         e.preventDefault();
-        window.open('http://azovsky.ru/index3.php', '_blank');
+        window.open('http://azovsky.ru/specpredlojenia-dnia/', '_blank');
     });
 
 };

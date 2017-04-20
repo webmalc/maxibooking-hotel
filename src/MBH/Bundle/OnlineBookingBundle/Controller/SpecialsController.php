@@ -3,10 +3,10 @@
 namespace MBH\Bundle\OnlineBookingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -19,23 +19,44 @@ class SpecialsController extends BaseController
     const SPECIAL_MONTH_BEGIN = 4;
     const SPECIAL_MONTH_END = 11;
     /**
-     * @Route("/")
+     * @Route("/{id}", name="all_specials", defaults={"id":""})
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Hotel $hotel = null)
     {
         $specialsFilter = new SpecialFilter();
         $specialsFilter->setRemain(1);
         $specialsFilter->setBegin(new \DateTime("now midnight"));
+        if ($hotel) {
+            $specialsFilter->setHotel($hotel);
+        }
         $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($specialsFilter);
 
         $preparer = $this->get('mbh.online.special_data_preparer');
+        $preparedData = $preparer->getPreparedDataByMonth($specials->toArray());
 
-        $result = $preparer->getPreparedDataByMonth($specials->toArray());
+
+        $hotelsIds = $this->getHotelsIdsFromSpecials($specials->toArray());
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->getHotelsByIds($hotelsIds);
+
         return [
-            'data' => $result,
-            'monthList' => $this->getMonthList()
+            'data' => $preparedData,
+            'monthList' => $this->getMonthList(),
+            'hotels' => $hotels,
+            'multiHotel' => $hotel == false
+
         ];
+    }
+
+    private function getHotelsIdsFromSpecials(array $specials): array
+    {
+        $ids = [];
+        foreach ($specials as $special) {
+            /** @var Special $special */
+            array_push($ids, $special->getHotel()->getId());
+        }
+
+        return array_unique($ids);
     }
 
     private function getMonthList()

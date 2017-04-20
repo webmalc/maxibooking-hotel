@@ -11,6 +11,11 @@
         </ul>
     </div>
 </div>
+{#{% if multiHotel %}#}
+    {#{% for hotel in hotels %}#}
+        {#<p class="hotel-switcher" data-hotelid="{{ hotel.id }}">{{ hotel.name }}</p>#}
+    {#{% endfor %}#}
+{#{% endif %}#}
 {% for special in data.specials %}
 
 <div class="oneblockspec{% for keymonth, month in data.byMonth %}{% if special.special.id in month %} {{ keymonth }} {% endif %}{% endfor %}"
@@ -21,7 +26,7 @@
      data-hotelid="{{ special.hotelId }}"
 >
     <div class="spec-img">
-        <div class="main-img"style="background:url('{{ absolute_url(asset(special.images|first)) }}')no-repeat;background-size:cover;">
+        <div data-image="{{ absolute_url(asset(special.images|first)) }}" class="main-img"style="background:url('{{ absolute_url(asset(special.images|first|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
             <p class="special-strip"> - {{ special.discount }}{{ (special.isPercent)?'%':'руб' }}</p>
         </div>
         <div class="hotel-thumb">

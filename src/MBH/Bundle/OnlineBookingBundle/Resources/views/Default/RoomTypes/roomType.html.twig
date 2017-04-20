@@ -84,9 +84,10 @@
                         {% set prices = count_prices(onlineResult.results.toArray) %}
                         <span class="noneprice">
                             {% block oldPrice %}
-                            {{ prices.old|number_format(0, thousandSep=' ') }}&#8381;
+                            {{ prices.old|number_format(0, thousandSep=' ') }}
                             {% endblock %}
                         </span>
+                    &#8381;
                     {% block newPrice %}
                         <span class="newprice">{{ prices.new|number_format(0, thousandSep=' ') }}&#8381;</span></p>
                     {% endblock newPrice %}

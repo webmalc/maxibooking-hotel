@@ -27,15 +27,15 @@ section.s_results {
   padding: 0;
   min-height: 300px;
 }
-section.s_results p {
+.righttblrdm p {
   line-height: 1;
 }
 .no_text_decoration {
-  text-decoration: none!important;
+  text-decoration: none !important;
   color: inherit;
 }
 .room_link {
-  text-decoration: none!important;
+  text-decoration: none !important;
   color: inherit;
   color: darkgrey;
 }
@@ -45,12 +45,12 @@ section.s_results p {
 }
 a.eat_link,
 a.hotel_link {
-  text-decoration: none!important;
+  text-decoration: none !important;
   color: inherit;
 }
 a.eat_link:hover,
 a.hotel_link:hover {
-  text-decoration: none!important;
+  text-decoration: none !important;
   color: inherit;
 }
 .tariff-spinner {

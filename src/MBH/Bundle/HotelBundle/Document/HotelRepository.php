@@ -22,4 +22,15 @@ class HotelRepository extends DocumentRepository
         return $qb ?? null;
     }
 
+    public function getHotelsByIds(array $ids)
+    {
+        return $this
+            ->createQueryBuilder()
+            ->hydrate(true)
+            ->field('id')
+            ->in($ids)
+            ->getQuery()
+            ->execute();
+    }
+
 }
