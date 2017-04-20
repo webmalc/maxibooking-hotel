@@ -169,6 +169,7 @@ class ApiController extends Controller
      */
     public function checkOrderAction(Request $request)
     {
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();

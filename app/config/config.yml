@@ -65,6 +65,7 @@ twig:
           7: 'Вс'
         environment: "%mbh.environment%"
         version: "%mbh.version%"
+        currency: "%locale.currency%"
 
 # Assetic Configuration
 assetic:
