@@ -7,6 +7,9 @@ use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorTariff;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -46,29 +49,26 @@ class TripAdvisorTariffType extends AbstractType
                 'empty_data'  => null,
                 'group' => $tariff->getName()
             ])
-//            ->add('deadline', DateTimeType::class, array(
-//                'label' => 'form.trip_advisor_tariff_type.deadline.label',
-//                'help' => 'form.trip_advisor_tariff_type.deadline.help',
-//                'html5' => false,
-//                'required' => false,
-//                'date_format' => 'dd.MM.yyyy',
-//                'time_widget' => 'single_text',
-//                'date_widget' => 'single_text',
-//                'attr' => [
-//                    'data-is-date-time' => true,
-//                ],
-//                'group' => false
-//            ))
-//            ->add('isPenaltyExists', CheckboxType::class, [
-//                'label' => 'form.trip_advisor_tariff_type.is_penalty_exists.label',
-//                'help' => 'form.trip_advisor_tariff_type.is_penalty_exists.help',
-//                'group' => false
-//            ])
-//            ->add('policyInfo', TextareaType::class, [
-//                'label' => 'form.trip_advisor_tariff_type.policy_info.label',
-//                'help' => 'form.trip_advisor_tariff_type.policy_info.help',
-//                'group' => false
-//            ])
+            ->add('deadline', NumberType::class, [
+                'label' => 'form.trip_advisor_tariff_type.deadline.label',
+                'help' => 'form.trip_advisor_tariff_type.deadline.help',
+                'attr' => [
+                    'class' => 'days-spinner',
+                ],
+                'group' => $tariff->getName()
+            ])
+            ->add('isPenaltyExists', CheckboxType::class, [
+                'label' => 'form.trip_advisor_tariff_type.is_penalty_exists.label',
+                'help' => 'form.trip_advisor_tariff_type.is_penalty_exists.help',
+                'group' => $tariff->getName(),
+                'required' => false
+            ])
+            ->add('policyInfo', TextareaType::class, [
+                'label' => 'form.trip_advisor_tariff_type.policy_info.label',
+                'help' => 'form.trip_advisor_tariff_type.policy_info.help',
+                'group' => $tariff->getName(),
+                'required' => false
+            ])
 //            ->add('fees', CollectionType::class, [
 //                'entry_type' => TripAdvisorFeeType::class,
 //                'group' => 'Комиссии',

@@ -172,6 +172,9 @@ form.trip_advisor_tariff_type.refundable_type.label: Возвратный
 form.trip_advisor_tariff_type.refundable_type.help: Возвращаются ли деньги при отмене брони?
 form.trip_advisor_tariff_type.isSynchronized.label: Включен
 form.trip_advisor_tariff_type.isSynchronized.help: Используется ли тариф в Tripadvisor.com?
+form.trip_advisor_tariff_type.deadline.label: Дедлайн
+form.trip_advisor_tariff_type.deadline.help: Дней до конца свободной отмены брони
+trip_advisor_helper.meal_data.field_name: Данные о питании(Услуги->Услуги по умолчанию)
 form.trip_advisor_fee_type.amount_type.fixed: Фиксированная
 form.trip_advisor_fee_type.amount_type.percent: В процентах
 form.trip_advisor_fee_type.amount_type.numNights: В кол-ве ночей
@@ -181,7 +184,7 @@ form.trip_advisor_fee_type.price.label: Цена
 form.trip_advisor_fee_type.days_before_arrival.label: Дней до заезда
 form.trip_advisor_tariff_type.sync_tariff.label: Синхронизируемый тариф
 form.trip_advisor_tariff_type.deadline.label: Крайний срок
-form.trip_advisor_tariff_type.deadline.help: Дата и время, после которого нельзя свободно отменить заказ
+form.trip_advisor_tariff_type.deadline.help: Дата и время момента, после которого нельзя свободно отменить заказ
 form.trip_advisor_tariff_type.is_penalty_exists.label: Штраф
 form.trip_advisor_tariff_type.is_penalty_exists.help: Есть ли штраф при отмене брони?
 form.trip_advisor_tariff_type.policy_info.label: Правила закрытия

@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\ChannelManagerBundle\Model\TripAdvisor\TripAdvxisorFee;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -35,23 +34,23 @@ class TripAdvisorTariff
      */
     protected $refundableType;
     
-//    /**
-//     * @var \DateTime
-//     * @ODM\Field(type="date")
-//     */
-//    protected $deadline;
-//
-//    /**
-//     * @var bool
-//     * @ODM\Field(type="bool")
-//     */
-//    protected $isPenaltyExists = false;
-//
-//    /**
-//     * @var string
-//     * @ODM\Field(type="string")
-//     */
-//    protected $policyInfo;
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $deadline;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isPenaltyExists = false;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $policyInfo;
 //
 //    /**
 //     * @var TripAdvisorFee[]
@@ -109,6 +108,7 @@ class TripAdvisorTariff
     public function setTariff(Tariff $tariff): TripAdvisorTariff
     {
         $this->tariff = $tariff;
+
         return $this;
     }
 
@@ -127,62 +127,66 @@ class TripAdvisorTariff
     public function setRefundableType(string $refundableType): TripAdvisorTariff
     {
         $this->refundableType = $refundableType;
+
         return $this;
     }
-//
-//    /**
-//     * @return \DateTime
-//     */
-//    public function getDeadline(): ?\DateTime
-//    {
-//        return $this->deadline;
-//    }
-//
-//    /**
-//     * @param \DateTime $deadline
-//     * @return TripAdvisorTariff
-//     */
-//    public function setDeadline(\DateTime $deadline): TripAdvisorTariff
-//    {
-//        $this->deadline = $deadline;
-//        return $this;
-//    }
-//
-//    /**
-//     * @return bool
-//     */
-//    public function getIsPenaltyExists(): bool
-//    {
-//        return $this->isPenaltyExists;
-//    }
-//
-//    /**
-//     * @param bool $isPenaltyExists
-//     * @return TripAdvisorTariff
-//     */
-//    public function setIsPenaltyExists(bool $isPenaltyExists): TripAdvisorTariff
-//    {
-//        $this->isPenaltyExists = $isPenaltyExists;
-//        return $this;
-//    }
-//
-//    /**
-//     * @return string
-//     */
-//    public function getPolicyInfo(): ?string
-//    {
-//        return $this->policyInfo;
-//    }
-//
-//    /**
-//     * @param string $policyInfo
-//     * @return TripAdvisorTariff
-//     */
-//    public function setPolicyInfo(string $policyInfo): TripAdvisorTariff
-//    {
-//        $this->policyInfo = $policyInfo;
-//        return $this;
-//    }
+
+    /**
+     * @return int
+     */
+    public function getDeadline(): ?int
+    {
+        return $this->deadline;
+    }
+
+    /**
+     * @param int $deadline
+     * @return TripAdvisorTariff
+     */
+    public function setDeadline(int $deadline): TripAdvisorTariff
+    {
+        $this->deadline = $deadline;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsPenaltyExists(): bool
+    {
+        return $this->isPenaltyExists;
+    }
+
+    /**
+     * @param bool $isPenaltyExists
+     * @return TripAdvisorTariff
+     */
+    public function setIsPenaltyExists(bool $isPenaltyExists): TripAdvisorTariff
+    {
+        $this->isPenaltyExists = $isPenaltyExists;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPolicyInfo(): ?string
+    {
+        return $this->policyInfo;
+    }
+
+    /**
+     * @param string $policyInfo
+     * @return TripAdvisorTariff
+     */
+    public function setPolicyInfo(string $policyInfo): TripAdvisorTariff
+    {
+        $this->policyInfo = $policyInfo;
+
+        return $this;
+    }
 
     public static function getRefundableTypes()
     {

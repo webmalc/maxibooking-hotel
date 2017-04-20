@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Document\TariffService;
 use Symfony\Component\Validator\ConstraintViolation;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
@@ -71,6 +72,7 @@ class TripAdvisorHelper
         !empty($roomType->getDescription()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.description';
         (in_array('bed', $roomType->getFacilities()) || in_array('double-bed', $roomType->getFacilities()))
             ?: $requiredRoomTypeData[] = 'channel_manager_helper.bed_configuration_not_exists';
+        count($roomType->getRoomViewsTypes()) > 0 ?: $requiredRoomTypeData[] = 'form.roomType.room_view_types.label';
 
         return $requiredRoomTypeData;
     }
@@ -84,6 +86,17 @@ class TripAdvisorHelper
     {
         $requiredTariffData = [];
         !empty($tariff->getDescription()) ?: $requiredTariffData[] = 'mbhpricebundle.form.tarifftype.opisaniye';
+        $mealTypeCodes = [];
+        /** @var TariffService $defaultService */
+        foreach ($tariff->getDefaultServices() as $defaultService) {
+            //TODO: Что делать с локализацией?
+            if ($defaultService->getService()->getCategory()->getName() == 'Питание') {
+                $mealTypeCodes[] = $defaultService->getService()->getCode();
+            }
+        }
+        if (count($mealTypeCodes) == 0) {
+            $requiredTariffData[] = 'trip_advisor_helper.meal_data.field_name';
+        }
 
         return $requiredTariffData;
     }

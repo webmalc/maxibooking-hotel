@@ -20,6 +20,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\ServiceData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffService;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
@@ -552,6 +553,11 @@ class TripAdvisorResponseFormatter
         return $tariffData;
     }
 
+    private function getCancellactionRules(Tariff $tariff)
+    {
+
+    }
+
     private function getReservationData(Order $order, Hotel $hotel, TripAdvisorConfig $config)
     {
         /** @var Package $orderFirstPackage */
@@ -590,8 +596,8 @@ class TripAdvisorResponseFormatter
                     'order' => $order->getId(),
                     'hotelId' => $hotel->getId()
                 ]),
-            'checkin_date' => $orderFirstPackage->getBegin(),
-            'checkout_date' => $orderFirstPackage->getEnd(),
+            'checkin_date' => $orderFirstPackage->getBegin()->format(self::TRIP_ADVISOR_DATE_FORMAT),
+            'checkout_date' => $orderFirstPackage->getEnd()->format(self::TRIP_ADVISOR_DATE_FORMAT),
             'partner_hotel_code' => $orderFirstPackage->getHotel()->getId(),
             'hotel' => $this->getHotelDetails($orderFirstPackage->getHotel(), $language),
             'customer' => [
@@ -998,15 +1004,22 @@ class TripAdvisorResponseFormatter
         return $this->getSortedAmenities($defaultServiceNames, self::RATE_AMENITIES);
     }
 
+    /**
+     * @param Tariff $tariff
+     * @return array
+     */
     private function getRateMealPlanes(Tariff $tariff)
     {
         $rateMealPlanes = [];
+        $customMealTypes = self::getCustomMealTypes();
         foreach ($tariff->getDefaultServices() as $service) {
             /** @var TariffService $service */
             $serviceCode = $service->getService()->getCode();
 
             if (in_array($serviceCode, array_keys(self::RATE_MEAL_TYPES))) {
                 $rateMealPlanes['standard'][] = self::RATE_MEAL_TYPES[$serviceCode];
+            } elseif (in_array($serviceCode, array_keys($customMealTypes))) {
+                $rateMealPlanes['custom'][] = $customMealTypes[$serviceCode];
             }
         }
 
@@ -1066,5 +1079,21 @@ class TripAdvisorResponseFormatter
         }
 
         return $acceptedCardTypeCodes;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getCustomMealTypes()
+    {
+        $customMealTypes = [];
+        $mealTypes = ServiceData::SERVICES['Питание'];
+        $mealTypeKeys = array_keys($mealTypes);
+        $customMealTypesKeys = array_diff($mealTypeKeys, array_keys(self::RATE_MEAL_TYPES));
+        foreach ($customMealTypesKeys as $customMealTypesKey) {
+            $customMealTypes[$customMealTypesKey] = $mealTypes[$customMealTypesKey]['name'];
+        }
+
+        return $customMealTypes;
     }
 }
