@@ -43,7 +43,7 @@ class OnlineCommonResultGenerator extends AbstractResultGenerator
     protected function resultsHandle(SearchQuery $searchQuery): void
     {
         $this->separateByAdditionalDays($searchQuery);
-        $this->filterByCapacity();
+//        $this->filterByCapacity();
         parent::resultsHandle($searchQuery);
     }
 

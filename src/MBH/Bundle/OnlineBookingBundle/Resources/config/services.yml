@@ -42,7 +42,7 @@ services:
     mbh.online.abstract_result_generator:
         abstract: true
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\AbstractResultGenerator
-        arguments: ['@mbh.package.search', '%online_booking%', '@mbh.helper']
+        arguments: ['@mbh.package.search', '%online_booking%', '@mbh.helper', '%mbh_cache%']
 
     mbh.online.common_result_generator:
         parent: mbh.online.abstract_result_generator

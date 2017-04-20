@@ -19,21 +19,25 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
     protected const TYPE = '';
     /** @var SearchFactory $search */
     protected $search;
-    /** @var  callable */
-    protected $searchConfigurator;
     /** @var  ArrayCollection */
     protected $results;
-
+    /** @var array  */
     protected $options;
-
+    /** @var Helper  */
     protected $helper;
+    /** @var  array */
+    protected $cache;
 
     /**
      * AbstractResultGenerator constructor.
      * @param SearchFactory $search
+     * @param array $options
+     * @param Helper $helper
+     * @param array $cache
      */
-    public function __construct(SearchFactory $search, array $options, Helper $helper)
+    public function __construct(SearchFactory $search, array $options, Helper $helper, array $cache)
     {
+        $this->cache = $cache['is_enabled'];
         $this->search = $search;
         $this->results = new ArrayCollection();
         $this->options = $options;
@@ -93,6 +97,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         $searchQuery->isOnline = true;
         $searchQuery->accommodations = true;
         $searchQuery->forceRoomTypes = false;
+        $searchQuery->memcached = $this->cache;
         if ($data->getChildrenAge()) {
             $searchQuery->setChildrenAges($data->getChildrenAge());
         };
@@ -127,10 +132,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         return $groups;
     }
 
-    /**
-     * @param array $searchResults
-     * @return array
-     */
+
     protected function filterByCapacity()
     {
         $result = [];
