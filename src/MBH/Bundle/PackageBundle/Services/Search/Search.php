@@ -418,13 +418,15 @@ class Search implements SearchInterface
                 $hardCodeTariffId= ['5717836174eb539c308b456d', '571760bd74eb536f1b8b4605'];
                 /** @var Tariff $tariff */
                 if (in_array($tariff->getId(),$hardCodeTariffId)) {
-                    /*Не выдаем цену если один ребенок старше 7 лет в запросе*/
+
+                    /*Не выдаем цену если нет детей в запросе или один от 7 */
                     $isOneChild = $query->children == 1 && count($query->childrenAges) == 1 && 6 < $query->childrenAges[0];
                     $isNoChildren = (bool)!count($query->childrenAges);
-                    /*Не выдаем цену если нет детей в запросе или один от 7 */
                     if (($query->adults == 1 && $isOneChild) || $isNoChildren) {
                         continue;
                     }
+
+
                     $mcalc = $this->container->get('mbh.magic.calculation');
                     $prices = $mcalc->calcPrices(
                         $roomType, $tariff, $query->begin, $end,
@@ -433,11 +435,11 @@ class Search implements SearchInterface
                     );
                 } else { //TODO: Убирать доседа
                     $prices = $calc->calcPrices(
-                        $roomType,
+                    $roomType,
                     $tariff,
                     $query->begin,
                     $end,
-                        $tourists['adults'],
+                    $tourists['adults'],
                     $tourists['children'],
                     $promotion,
                         $this->manager->useCategories,

@@ -55,7 +55,7 @@ class MagicCalculation extends Calculation
             $tariff = $tariff->getParent();
         }
         $tariffId = $tariff->getId();
-        $duration = $end->diff($begin)->format('%a') + 1;
+        $duration = (int) $end->diff($begin)->format('%a') + 1;
         $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
             ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories, $memcached);
 
@@ -149,8 +149,26 @@ class MagicCalculation extends Calculation
 
             $dayPrices = $packagePrices = [];
             $total = 0;
-            $table = $this->getMagicTable();
+            /*Если один взорслый и более одного ребенка , то первый от 7 до 14 идет за взрослого удаляясь из childrenage */
+            $tempResult = false;
+            $asAdultAge = array_filter($ages, function ($age) use (&$tempResult){
+
+                        if (!$tempResult) {
+                            $tempResult = (bool)($age > 7);
+
+                            return $tempResult;
+                        }
+                        return false;
+                    });
+            $childAsAdult = $adults == 1 && 2 <= count($ages) && $asAdultAge;
+            if ($childAsAdult) {
+                $adults ++;
+                $ages = array_diff_key($ages, $asAdultAge);
+            }
+
+            $table = $this->getMagicTable($adults);
             $ageGroups = $this->getAgeGroups($ages);
+
             /**
              * @var PriceCache $cache
              */
@@ -160,7 +178,7 @@ class MagicCalculation extends Calculation
                 $discountPercent = null;
                 //count adults price
                 for ($i = 0; $i < $adults; $i++) {
-                    $discountPercent = $table[(string)$adults.'adult']['discount'][$i+1]??null;
+                    $discountPercent = $table['discount'][$i+1]??null;
                     if ($discountPercent) {
                         $discount = $bulkPrice * $discountPercent / 100;
                     } else {
@@ -168,11 +186,14 @@ class MagicCalculation extends Calculation
                     }
                     $dayPrice += $bulkPrice - $discount;
                 }
+                //Условие когда 1+1+1 - ребенок старше 7 идет как взрослый
+                //ребенок до 7 считается по таблице с двумя взрослыми.
+
                 //count children price by ageGroups
                 $discountPercent = null;
                 foreach ($ageGroups as $groupName => $ages) {
                     foreach ($ages as $index => $age) {
-                        $discountPercent = $table[$adults.'adult'][(string)(($index+1).$groupName)]['discount'];
+                        $discountPercent = $table[(string)(($index+1).$groupName)]['discount'];
                         if ($discountPercent) {
                             $discount = $bulkPrice * $discountPercent / 100;
                         } else {
@@ -347,10 +368,10 @@ class MagicCalculation extends Calculation
         return $groups;
     }
 
-    private function getMagicTable()
+    private function getMagicTable(int $adults)
     {
 
-        return [
+        $table = [
             '1adult' => [
                 '1j' => ['discount' => 50],
                 '2j' => ['discount' => 50],
@@ -399,6 +420,8 @@ class MagicCalculation extends Calculation
                 ],
             ],
         ];
+
+        return $table[$adults.'adult'];
 
     }
 
