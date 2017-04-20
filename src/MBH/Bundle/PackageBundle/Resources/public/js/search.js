@@ -46,22 +46,25 @@ $(document).ready(function() {
         guestModal.modal('show');
         button.click(function() {
             errors.hide();
-            $.post(form.prop('action'), form.serialize(), function(data) {
-                if (data.error) {
-                    errors.html(data.text).show();
-                } else {
-                    $('.findGuest').append($("<option/>", {
-                        value: data.id,
-                        text: data.text
-                    })).val(data.id).trigger('change');
-                    form.trigger('reset');
-                    //form.find('select').select2('data', null);
-                    guestModal.modal('hide');
-                    form.find('select').select2('data', null);
-                    //form.find('input').select2('data', null);
-                    return 1;
+            $.ajax({
+                method: "POST",
+                url: form.prop('action'),
+                data: form.serialize(),
+                success: function(data) {
+                    if (data.error) {
+                        errors.html(data.text).show();
+                    } else {
+                        $('.findGuest').append($("<option/>", {
+                            value: data.id,
+                            text: data.text
+                        })).val(data.id).trigger('change');
+                        form.trigger('reset');
+                        guestModal.modal('hide');
+                        form.find('select').select2('data', null);
+                        return 1;
+                    }
                 }
-            });
+            })
         });
     });
 
