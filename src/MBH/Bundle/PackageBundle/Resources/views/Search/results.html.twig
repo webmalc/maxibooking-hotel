@@ -13,6 +13,7 @@
     {% endif %}
 
     {% if specials is not empty %}
+        <div id="package-search-special-wrapper" data-less="{{ 'hide'|trans }}" data-more="{{ 'show.more'|trans }}">
         <table class="package-search-special-table table table-striped table-hover table-condensed table-icons table-actions">
             <thead>
             <tr class="warning">
@@ -55,6 +56,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     {% if results is not empty %}
