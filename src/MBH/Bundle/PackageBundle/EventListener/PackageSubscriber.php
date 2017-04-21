@@ -71,6 +71,7 @@ class PackageSubscriber implements EventSubscriber
 
         //Calc package
         if ($entity instanceof Package) {
+            //Если удаляет бронь, то следующие события не вызываются, они продублированы в OrderSubscriber
             foreach ($entity->getServices() as $packageService) {
                 $packageService->setDeletedAt(new \DateTime());
                 $dm->persist($packageService);
