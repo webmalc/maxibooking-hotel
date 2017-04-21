@@ -441,6 +441,7 @@ position: Позиция
 position.help: Позиция записи для сортировки
 configuration: Настройки
 hide: скрыть
+show.more: Показать еще
 
 virtual_room_moving_command.mail_message.first_line: Отчет об упаковке броней
 virtual_room_moving_command.mail_message.moved_package_data: 'Перемещена бронь "%packageNumber%", заезд %begin%, выезд %end%, тип номера "%roomTypeName%", из виртуальной комнаты "%oldVirtualRoomName%" в виртуальную комнату "%newVirtualRoomName%".'

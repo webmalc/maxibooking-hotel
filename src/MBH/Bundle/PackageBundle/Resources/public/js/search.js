@@ -234,7 +234,6 @@ $(document).ready(function () {
     var successCallback = function (data) {
         searchProcess = false;
         $wrapper.html(data);
-
         $(function () {
             $('[data-toggle="popover"]').popover()
         })
@@ -283,6 +282,12 @@ $(document).ready(function () {
             e.preventDefault();
             $('#s_roomType').select2("val", [$(this).attr('data-roomType')]);
             sendForm();
+        });
+
+        $('#package-search-special-wrapper').readmore({
+            moreLink: '<div class="more-link pull-right"><a href="#">'+$('#package-search-special-wrapper').attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
+            lessLink: '<div class="less-link"><a href="#">'+$('#package-search-special-wrapper').attr('data-less') +' <i class="fa fa-caret-up"></i></a></div>',
+            collapsedHeight: 230
         });
 
         $('#search-flashbag').readmore({
