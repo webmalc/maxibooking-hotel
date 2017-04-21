@@ -115,7 +115,7 @@
         <div class="input">
             <button type="button" class="btn btn-primary navbar-btn" id="filter-button">Выбрать</button>
         </div>
-        <div style="float: right;display: inline-block;margin-top: 13px; margin-right: 5px;">
+        <div style="display: inline-block;margin-top: 13px; margin-right: 5px;">
             {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'chess_board_home'} %}
         </div>
     </form>
@@ -231,7 +231,7 @@
                                         <ul class="list-unstyled calendarDays">
                                             {% if leftRoomsData[roomTypeId] is defined %}
                                                 {% for leftRoomsCount in leftRoomsData[roomTypeId] %}
-                                                    <li class="tile">
+                                                    <li class="tile" title="{{ 'chessboard_manager.left_rooms_count.tooltip_title'|trans({'%count%' : leftRoomsCount}, 'chessboard_front')  }}" data-toggle="tooltip" data-placement="bottom" data-container="body">
                                                         <div class="leftRooms">
                                                             {{ leftRoomsCount }}
                                                         </div>

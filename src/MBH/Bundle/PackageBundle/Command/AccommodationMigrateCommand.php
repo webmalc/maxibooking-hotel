@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Command;
 
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,13 +35,14 @@ class AccommodationMigrateCommand extends ContainerAwareCommand
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findBy(['accommodation' => ['$ne' => null]]);
         $iterator = 0;
         foreach ($packages as $package) {
+            /** @var Package $package */
             if (!count($package->getAccommodations())) {
                 $accommodation = new PackageAccommodation();
                 $accommodation
                     ->setBegin($package->getBegin())
                     ->setEnd($package->getEnd())
-                    ->setAccommodation($package->getAccommodation(true))
-                    ->setPackage($package);
+                    ->setAccommodation($package->getAccommodation(true));
+                $package->addAccommodation($accommodation);
                 $this->dm->persist($accommodation);
                 $iterator++;
             }

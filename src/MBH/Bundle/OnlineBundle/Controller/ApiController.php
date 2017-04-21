@@ -169,6 +169,7 @@ class ApiController extends Controller
      */
     public function checkOrderAction(Request $request)
     {
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
@@ -472,7 +473,7 @@ class ApiController extends Controller
 
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
-                    'data' => array_merge(['test' => false,
+                    'data' => array_merge(['test' => false, 'currency' => strtoupper($this->getParameter('locale.currency')),
                         'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
                             ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle')

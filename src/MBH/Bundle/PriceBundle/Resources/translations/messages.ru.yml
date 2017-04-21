@@ -152,6 +152,10 @@ mbhpricebundle.view.pricecache.generator.generator: генератор
 mbhpricebundle.view.pricecache.table.tsena: Цена
 mbhpricebundle.view.pricecache.table.tsenazadetskoyeosn: Цена за детское осн. место
 mbhpricebundle.view.pricecache.table.tsenazavzrosloyedop: Цена за взрослое доп. место
+mbhpricebundle.view.pricecache.filter.displayed_price_caches_date: Дата, для которой указаны цены
+mbhpricebundle.view.pricecache.filter.displayed_price_caches_time: Время, для которого указаны цены
+price.views.priceCache.index.warning_displayed_irrelevant_prices: 'Указаны неактульные цены'
+
 mbhpricebundle.view.service.index.spisok: список
 mbhpricebundle.view.service.index.novayakategoriyauslug: Новая категория услуг
 mbhpricebundle.view.service.index.redaktirovatʹkategoriyuuslug: Редактировать категорию услуг 

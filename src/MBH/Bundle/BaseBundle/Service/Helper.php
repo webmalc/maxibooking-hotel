@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -339,5 +340,28 @@ class Helper
         ];
 
         return str_replace($rus, $lat, $text);
+    }
+
+    /**
+     * Get filtered values for the specified filter
+     *
+     * @param DocumentManager $dm
+     * @param  $callback
+     * @param bool $isFilterOn
+     * @param string $filter
+     * @return mixed
+     */
+    public function getFilteredResult(DocumentManager $dm, $callback, $isFilterOn = true, $filter = 'disableable')
+    {
+        if ($isFilterOn && !$dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->enable($filter);
+        }
+        $result = $callback();
+
+        if ($isFilterOn && $dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->disable($filter);
+        }
+
+        return $result;
     }
 }

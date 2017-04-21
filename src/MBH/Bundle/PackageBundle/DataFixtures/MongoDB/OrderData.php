@@ -5,9 +5,11 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Promise\Tests\Thing1;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -35,7 +37,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface, Cont
     ];
 
     const LAST_NAME = [
-        'Иванов', 'Петров', 'Сидоров', 'Петренко', 'Курицин'
+        'Виноградов', 'Алексеев', 'Тищенко', 'Петренко', 'Всеволодов'
     ];
 
     const PATRONYMIC = [
@@ -103,7 +105,9 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface, Cont
 
     public function persistPackage(ObjectManager $manager)
     {
+        /** @var Tariff $tariff */
         $tariff = $this->getReference('main-tariff');
+        /** @var RoomType $roomType */
         $roomType = $this->getReference('roomtype-double');
         $date = new \DateTime();
 

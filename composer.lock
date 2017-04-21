@@ -3028,7 +3028,7 @@
             ],
             "authors": [
                 {
-                    "name": "Marc Aubé"
+                    "name": "Marc AubÃ©"
                 }
             ],
             "description": "Symfony2 Bundle that ease the use of highcharts to display rich graph and charts in your app",
@@ -3211,7 +3211,7 @@
                     "email": "thibault.duplessis@gmail.com"
                 },
                 {
-                    "name": "Henrik Bjørnskov",
+                    "name": "Henrik BjÃ¸rnskov",
                     "email": "henrik@bjrnskov.dk"
                 }
             ],
@@ -3379,7 +3379,7 @@
                     "role": "Maintainer"
                 },
                 {
-                    "name": "Raúl Araya",
+                    "name": "RaÃºl Araya",
                     "email": "nubeiro@gmail.com",
                     "role": "Maintainer"
                 }

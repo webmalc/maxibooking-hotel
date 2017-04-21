@@ -28,15 +28,11 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
-        $filterCollection = $this->dm->getFilterCollection();
         //get roomTypes
-        if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
-            $filterCollection->enable('disableable');
-        }
-        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
-        if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
-            $filterCollection->disable('disableable');
-        }
+        $roomTypesCallback = function () use ($hotel) {
+            return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
+        };
+        $roomTypes = $this->helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         return [
             'roomTypes' => $roomTypes,
@@ -103,16 +99,12 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         ];
 
         //get roomTypes
+        $roomTypesCallback = function () use ($hotel, $request) {
+            return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
+        };
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
-        //get roomTypes
-        if ($isDisableableOn && !$this->dm->getFilterCollection()->isEnabled('disableable')) {
-            $this->dm->getFilterCollection()->enable('disableable');
-        }
-        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->fetch($hotel, $request->get('roomTypes'));
-        if ($isDisableableOn && $this->dm->getFilterCollection()->isEnabled('disableable')) {
-            $this->dm->getFilterCollection()->disable('disableable');
-        }
+        $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => 'Типы номеров не найдены']);
         }
