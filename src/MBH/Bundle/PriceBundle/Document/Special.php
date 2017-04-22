@@ -610,7 +610,7 @@ class Special extends Base
     }
 
     /**
-     * @return mixed
+     * @return ArrayCollection
      */
     public function getPrices()
     {

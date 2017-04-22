@@ -1,0 +1,48 @@
+#prices-overview-filter div.input {
+  margin: 0px;
+  padding: 0px 0px 5px 10px;
+  display: inline-block;
+}
+#prices-overview-filter select {
+  width: 250px;
+}
+#prices-overview-filter input.datepicker {
+  width: 80px;
+}
+#prices-overview-table tr.header td {
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+}
+#prices-overview-table td.first-th {
+  min-width: 200px;
+}
+#prices-overview-table td input {
+  width: 80px;
+}
+#prices-overview-table td input {
+  width: 80px;
+  text-align: right;
+}
+#prices-overview-table td.prices-overview-table-td-price {
+  text-align: right;
+  min-width: 90px;
+  width: 90px;
+  height: 45px;
+}
+#prices-overview-table td.prices-overview-table-td-price small.link {
+  border-bottom: 1px dashed #999999;
+  cursor: pointer;
+}
+#prices-overview-table td.prices-overview-table-td-price-changed {
+  cursor: default;
+}
+#prices-overview-table td input[disabled] {
+  cursor: pointer;
+}
+#prices-overview-table td.weekend {
+  background-color: #F8ECEC;
+}
+#prices-overview-table td.chosen {
+  background-color: #FAF3D2;
+}

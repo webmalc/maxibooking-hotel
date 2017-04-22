@@ -50,7 +50,20 @@ class SpecialDataPreparer
 
         }
 
-        return ['specials' => $result];
+        return ['specials' => $this->sortSpecialsByPrice($result)];
+    }
+
+    private function sortSpecialsByPrice(array $specials): array
+    {
+        uasort(
+            $specials,
+            function ($a, $b) {
+                /** @var Special $a */
+                /** @var SpecialPrice $c */
+                return reset($a['prices']) <=> reset($b['prices']);
+            }
+        );
+        return $specials;
     }
 
     public function getPreparedDataByMonth(array $specials): array
@@ -97,7 +110,7 @@ class SpecialDataPreparer
             'hotelId' => $roomType->getHotel()->getId(),
             'images' => $this->getImage($roomType),
             'hotelName' => $roomType->getHotel()->getName(),
-            'roomTypeName' => $roomType->getName(),
+            'roomTypeName' => $roomType->getCategory()->getName(),
             'eat' => '',
             'dates' => [
                 'begin' => $special->getBegin(),

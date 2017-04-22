@@ -39,6 +39,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
             if (count($specials)) {
                 foreach ($specials as $special) {
                     /** @var Special $special */
+                    //Тут рекурсия
                     $results = array_merge($this->search($searchQuery, $special->getRoomTypes()->first(), $special));
                 }
 

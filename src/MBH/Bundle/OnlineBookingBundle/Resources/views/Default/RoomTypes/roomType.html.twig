@@ -8,7 +8,7 @@
     >
         <div class="leftrdm">
             <div class="imghotel"
-                 style="background:url('{{ absolute_url(asset(onlineResult.mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;">
+                 style="{% if onlineResult.mainimage %}background:url('{{ absolute_url(asset(onlineResult.mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;{% endif %}">
                 {% block redbox %}
                 <p class="special-strip">
                     {% block redbox_message %}

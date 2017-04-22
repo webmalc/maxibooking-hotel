@@ -19,8 +19,6 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
     protected const TYPE = '';
     /** @var SearchFactory $search */
     protected $search;
-    /** @var  ArrayCollection */
-    protected $results;
     /** @var array  */
     protected $options;
     /** @var Helper  */
@@ -39,23 +37,23 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
     {
         $this->cache = $cache['is_enabled'];
         $this->search = $search;
-        $this->results = new ArrayCollection();
         $this->options = $options;
         $this->helper = $helper;
     }
 
     public function getResults(OnlineSearchFormData $formData): ArrayCollection
     {
+        $results = new ArrayCollection();
         $searchQuery = $this->initSearchQuery($formData);
         $searchResults = $this->search($searchQuery, $formData->getRoomType(), $formData->getSpecial());
         if (!empty($searchResults)) {
             foreach ($searchResults as $searchResult) {
-                $this->results->add($this->resultOnlineInstanceCreator($searchResult, $searchQuery));
+                $results->add($this->resultOnlineInstanceCreator($searchResult, $searchQuery));
             }
         }
-        $this->resultsHandle($searchQuery);
+        $results = $this->resultsHandle($searchQuery, $results);
 
-        return $this->results;
+        return $results;
     }
 
     protected function resultOnlineInstanceCreator($searchResult, SearchQuery $searchQuery): OnlineResultInstance
@@ -72,8 +70,6 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
 
         return $instance;
     }
-
-
 
     protected function search(SearchQuery $searchQuery, $roomType = null, Special $special = null)
     {
@@ -105,13 +101,30 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         return $searchQuery;
     }
 
-    protected function resultsHandle(SearchQuery $searchQuery): void
+    protected function resultsHandle(SearchQuery $searchQuery, ArrayCollection $results): ArrayCollection
     {
-        $this->injectSearchQuery($searchQuery);
+        return $this->injectSearchQuery($searchQuery, $results);
     }
 
+    //Исходя из старого кода предполагалось что могут быть возвращены результаты для одной группы - несколько типов комнат.
+    //Пока отключено до выяснения.
+    protected function filterByCapacity(ArrayCollection $results): ArrayCollection
+    {
+        $result = [];
+        $groups = $this->groupedByRoomTypeCategory($results);
+        foreach ($groups as $group) {
+            usort(
+                $group,
+                function ($a, $b) {
+                    return $a->getRoomType()->getTotalPlace() <=> $b->getRoomType()->getTotalPlace();
+                }
+            );
+            $result[] = $group[0];
+        }
 
+        return new ArrayCollection($result);
 
+    }
     private function groupedByRoomTypeCategory(ArrayCollection $onlineInstances): array
     {
         $groups = [];
@@ -133,55 +146,24 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
     }
 
 
-    protected function filterByCapacity()
-    {
-        $result = [];
-        $groups = $this->groupedByRoomTypeCategory($this->results);
-        foreach ($groups as $group) {
-            usort(
-                $group,
-                function ($a, $b) {
-                    return $a->getRoomType()->getTotalPlace() <=> $b->getRoomType()->getTotalPlace();
-                }
-            );
-            $result[] = $group[0];
-        }
 
-        $this->results = new ArrayCollection($result);
-    }
-
-    private function injectSearchQuery(SearchQuery $searchQuery)
+    private function injectSearchQuery(SearchQuery $searchQuery, ArrayCollection $results): ArrayCollection
     {
-        foreach ($this->results as $result) {
+        foreach ($results as $result) {
             $result->setQuery($searchQuery);
         }
-    }
 
-    /**
-     * @param array $searchResults
-     * @return array
-     */
-    private function addLeftRoomKeys(array $searchResults)
-    {
-        foreach ($searchResults as $key => $searchResult) {
-            $roomTypeCategoryId = $searchResult['roomType']->getId();
-            $begin = $searchResult['query']->begin;
-            $end = $searchResult['query']->end;
-            $leftRoomKey = $roomTypeCategoryId.$begin->format('dmY').$end->format('dmY');
-            $searchResults[$key]['leftRoomKey'] = $leftRoomKey;
-        }
-
-        return $searchResults;
+        return $results;
     }
 
     /**
      * Divide results to match and additional dates
      */
-    protected function separateByAdditionalDays(SearchQuery $searchQuery): void
+    protected function separateByAdditionalDays(SearchQuery $searchQuery, ArrayCollection $results): ArrayCollection
     {
 
         $result = [];
-        foreach ($this->results as $resultInstance) {
+        foreach ($results as $resultInstance) {
             /** @var OnlineResultInstance $resultInstance */
             $groups = [];
 
@@ -214,7 +196,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
             }
         );
 
-        $this->results = new ArrayCollection($result);
+        return new ArrayCollection($result);
     }
 
     public function getType(): string
@@ -224,16 +206,6 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         }
 
         return static::TYPE;
-    }
-
-    protected function addResult(OnlineResultInstance $resultInstance)
-    {
-        $this->results->attach($resultInstance);
-    }
-
-    protected function removeResult(OnlineResultInstance $resultInstance)
-    {
-        $this->results->detach($resultInstance);
     }
 
     protected function createOnlineResultInstance($roomType, $results, SearchQuery $searchQuery): OnlineResultInstance
@@ -246,6 +218,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         foreach ($results as $searchResult) {
             $instance->addResult($searchResult);
         }
+
         return $instance;
     }
 

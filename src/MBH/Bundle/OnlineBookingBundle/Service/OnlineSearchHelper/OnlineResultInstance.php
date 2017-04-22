@@ -120,7 +120,7 @@ class OnlineResultInstance
     /**
      * @return RoomTypeImage
      */
-    public function getMainImage(): RoomTypeImage
+    public function getMainImage(): ?RoomTypeImage
     {
         return $this->getImages()['mainimage'];
     }
@@ -164,10 +164,10 @@ class OnlineResultInstance
 
         if ($this->roomType instanceof RoomTypeCategory) {
             /** @var RoomTypeCategory $roomTypeCategory */
+            $mainImage = $this->roomType->getMainImage();
             $roomTypes = $this->roomType->getTypes();
             foreach ($roomTypes as $roomType) {
-                $mainImage = $roomType->getMainImage();
-                $images = $roomType->getImages()->toArray();
+                $images = array_merge($roomType->getImages()->toArray());
             }
         } elseif ($this->roomType instanceof RoomType) {
             $mainImage = $this->roomType->getMainImage();

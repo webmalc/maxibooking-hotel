@@ -38,10 +38,12 @@
 {% endif %}
 
 {% macro drawimage(image, loop, showImages) %}
+    {% if image %}
     <a style="{{ ( image.isMain or loop.index > showImages|default(4) ) ? 'display: none;':'' }}" class="fancybox" href="{{ absolute_url(asset(image.path)) }}"
        rel="cat{{ loop.parent.loop.index }}">
         <img src="{{ absolute_url(image.path|imagine_filter('thumb_275x210')) }}" alt="">
     </a>
+    {% endif %}
 {% endmacro %}
 
 <script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/search.js')) }}"></script>

@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PriceBundle\Document\Special;
 
@@ -40,11 +41,11 @@ class OnlineCommonResultGenerator extends AbstractResultGenerator
         return $instance;
     }
 
-    protected function resultsHandle(SearchQuery $searchQuery): void
+    protected function resultsHandle(SearchQuery $searchQuery, ArrayCollection $results): ArrayCollection
     {
-        $this->separateByAdditionalDays($searchQuery);
-//        $this->filterByCapacity();
-        parent::resultsHandle($searchQuery);
+        $results = $this->separateByAdditionalDays($searchQuery, $results);
+        /*$this->filterByCapacity();*/
+        return parent::resultsHandle($searchQuery, $results);
     }
 
 

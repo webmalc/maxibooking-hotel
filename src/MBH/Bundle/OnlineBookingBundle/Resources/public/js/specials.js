@@ -13,7 +13,7 @@ var Special = function ($row) {
     this.specialId = $row.data('specialid');
     this.hotelId = $row.data('hotelid');
     this.imageDiv = $row.find('.main-img');
-    console.log(this.imageDiv);
+    this.submit_button = $("form input[type='submit']", $row);
     this.activePrice = function () {
         return $("option:selected", this.$choice).data('price');
     };
@@ -40,6 +40,10 @@ Special.prototype.bindHandlers = function () {
     this.$form.on('submit', function (e) {
         e.preventDefault();
         window.location = $(this).attr('action');
+    });
+    this.submit_button.on('click', function (e) {
+        e.preventDefault();
+        window.location = $(this).closest('form').attr('action');
     });
     this.imageDiv.on('click', function (e) {
         $.fancybox($(this).data('image'));
