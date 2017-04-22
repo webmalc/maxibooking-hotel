@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\Translator;
 
 /**
@@ -479,7 +480,7 @@ class ApiController extends Controller
                             'MBHOnlineBundle')
                     ], $clientConfig->getFormData($order->getCashDocuments()[0],
                         $this->container->getParameter('online_form_result_url'),
-                        $this->generateUrl('online_form_check_order', [], true)))
+                        $this->generateUrl('online_form_check_order', [], UrlGeneratorInterface::ABSOLUTE_URL)))
                 ]
             );
         }
@@ -638,10 +639,10 @@ class ApiController extends Controller
         return [
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
             'urls' => [
-                'table' => $this->generateUrl('online_form_results_table', $params, true),
-                'user_form' => $this->generateUrl('online_form_user_form', [], true),
-                'payment_type' => $this->generateUrl('online_form_payment_type', $params, true),
-                'results' => $this->generateUrl('online_form_packages_create', [], true),
+                'table' => $this->generateUrl('online_form_results_table', $params, UrlGeneratorInterface::ABSOLUTE_URL),
+                'user_form' => $this->generateUrl('online_form_user_form', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                'payment_type' => $this->generateUrl('online_form_payment_type', $params, UrlGeneratorInterface::ABSOLUTE_URL),
+                'results' => $this->generateUrl('online_form_packages_create', [], UrlGeneratorInterface::ABSOLUTE_URL),
             ]
         ];
     }
