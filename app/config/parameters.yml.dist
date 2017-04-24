@@ -77,3 +77,5 @@ parameters:
     tasks: true
 
   packaging.month_count: 5
+
+  dev_delivery_addresses: ['info@maxi-booking.ru']

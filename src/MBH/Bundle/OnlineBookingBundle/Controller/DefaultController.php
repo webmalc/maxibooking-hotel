@@ -24,6 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 /**
@@ -187,9 +188,7 @@ class DefaultController extends BaseController
         if ($reservation) {
             $form = $this->createForm(ReservationType::class);
         } else {
-            ///////////////
             $form = $this->createForm(SignType::class);
-            ///////////////
         }
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
 
@@ -535,6 +534,7 @@ class DefaultController extends BaseController
         $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
             ['id' => $data['packages'][0]['tariff']]
         );
+        $special = null;
         if ($data['special']) {
             $special = $this->dm->find(Special::class, $data['special']);
         }
@@ -542,6 +542,7 @@ class DefaultController extends BaseController
         $recipient = new OnlineNotifyRecipient();
         $recipient->setEmail($this->container->getParameter('online_reservation_manager_email'));
         $managerTemplate = $special ? 'MBHOnlineBookingBundle:Mailer:special.reservation.html.twig' : 'MBHOnlineBookingBundle:Mailer:reservation.html.twig';
+
         $message
             ->setRecipients([$recipient])
             ->setSubject('mailer.online.backend.reservation.subject')
@@ -558,7 +559,7 @@ class DefaultController extends BaseController
                     'client' => $data['tourist'],
                     'total' => $data['total'],
                     'package' => $data['packages'][0],
-                    'special' => $special??null,
+                    'special' => $special??null
 
                 ]
             )
@@ -567,12 +568,17 @@ class DefaultController extends BaseController
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'));
 
+        if ($special) {
+            $link = $this->specialLinkCreate($data);
+            $message->setLink($link);
+        }
+
         $notifier
             ->setMessage($message)
             ->notify();
 
         if ($data['tourist']['email']) {
-            $clientTemplate = $special ? 'MBHOnlineBookingBundle:Mailer:special.reservation.client.html.twig' : 'MBHOnlineBookingBundle:Mailer:reservation.client.html.twig';
+            $clientTemplate = $special ? 'MBHOnlineBookingBundle:Mailer:special.client.reservation.html.twig' : 'MBHOnlineBookingBundle:Mailer:reservation.client.html.twig';
             $tourist = $data['tourist'];
             $notifier = $this->container->get('mbh.notifier.mailer');
             $recipient = new OnlineNotifyRecipient();
@@ -583,11 +589,39 @@ class DefaultController extends BaseController
                 ->setRecipients([$recipient])
                 ->setSubject('mailer.online.backend.reservation.client.subject')
                 ->setText('mailer.online.backend.reservation.client.text')
-                ->setTemplate($clientTemplate);
+                ->setTemplate($clientTemplate)
+                ->addAdditionalData([
+                    'hideLink' => true
+                ])
+            ;
             $notifier
                 ->setMessage($message)
                 ->notify();
         }
+    }
+
+    private function specialLinkCreate(array $data): ?string
+    {
+        $data = $data['packages'][0]??null;
+        if (!$data) {
+            return '';
+        }
+        $attrs = [
+            's[begin]' => $data['begin']->format('d.m.Y')??'',
+            's[end]' => $data['end']->format('d.m.Y')??'',
+            's[adults]' => $data['adults']??'',
+            's[children]' => $data['children']??'',
+            's[special]' => $data['special']??'',
+        ];
+        $roomType = $this->dm->find('MBHHotelBundle:RoomType', ['id' => $data['roomType']]);
+        if ($roomType) {
+            $attrs['s[roomType][]'] = $roomType->getCategory()->getId();
+        }
+
+        $prefix = $this->generateUrl('package_search', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $link = $prefix .'#'.http_build_query($attrs);
+
+        return $link;
     }
 
 }

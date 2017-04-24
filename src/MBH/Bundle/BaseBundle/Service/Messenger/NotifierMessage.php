@@ -410,6 +410,13 @@ class NotifierMessage
         return $this;
     }
 
+    public function addAdditionalData(array $additionalData)
+    {
+        $this->additionalData = array_merge($this->additionalData, $additionalData);
+
+        return $this;
+    }
+
     /**
      * @return string
      */
