@@ -94,6 +94,9 @@ class ActionManager {
 
         editModal.find('input.modalPackageId').val(packageData.id);
         editModal.modal('show');
+        editModal.on('shown.bs.modal', function () {
+            $('.findGuest').mbhGuestSelectPlugin();
+        });
     }
 
     private static showResultPrices($row) {
