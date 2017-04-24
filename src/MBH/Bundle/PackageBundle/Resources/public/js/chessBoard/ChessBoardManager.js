@@ -1,4 +1,4 @@
-///<reference path="DataManager.ts"/>
+///<reference path="DataManager.ts"/>Tra
 var ChessBoardManager = (function () {
     function ChessBoardManager(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals) {
         this.canMoveAccommodation = true;

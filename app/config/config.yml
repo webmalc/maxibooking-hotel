@@ -257,3 +257,9 @@ vich_uploader:
         upload_image:
             uri_prefix:         /upload/images
             upload_destination: '%kernel.root_dir%/../web/upload/images'
+
+bazinga_js_translation:
+    locale_fallback:      ru
+    default_domain:       front_messages
+    active_domains:
+            - front_messages

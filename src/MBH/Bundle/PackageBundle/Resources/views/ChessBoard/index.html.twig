@@ -16,7 +16,7 @@
     '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
     '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
-    <script src="{{ asset('bundles/bazingajstranslation/js/translator.min.js') }}"></script>
+
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {# Передаем данные о бронях для обработки на клиенте #}
     <script>
@@ -33,8 +33,8 @@
         roomTypes['{{ roomTypeID }}'] = '{{ roomTypeData.name }}';
         {% endfor %}
         var canCreatePackage = {{ canCreatePackage }};
+        var canBookWithoutPayer = {{ client_config().canBookWithoutPayer ? 'true' : 'false' }};
     </script>
-    <script src="{{ url('bazinga_jstranslation_js', {'domain': 'chessboard_front'}) }}"></script>
     {% endjavascripts %}
 
     {% block styles %}
@@ -50,7 +50,6 @@
 {% block content %}
     <div id="chessboard-messages"></div>
     <div id="dimmer"></div>
-    {# TODO: Поменять значок#}
     <div id="loading-indicator" style="position:fixed; display: none; z-index:500;">
         <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
         <span class="sr-only">Loading...</span>
@@ -231,7 +230,7 @@
                                         <ul class="list-unstyled calendarDays">
                                             {% if leftRoomsData[roomTypeId] is defined %}
                                                 {% for leftRoomsCount in leftRoomsData[roomTypeId] %}
-                                                    <li class="tile" title="{{ 'chessboard_manager.left_rooms_count.tooltip_title'|trans({'%count%' : leftRoomsCount}, 'chessboard_front')  }}" data-toggle="tooltip" data-placement="bottom" data-container="body">
+                                                    <li class="tile" title="{{ 'chessboard_manager.left_rooms_count.tooltip_title'|trans({'%count%' : leftRoomsCount}, 'front_messages')  }}" data-toggle="tooltip" data-placement="bottom" data-container="body">
                                                         <div class="leftRooms">
                                                             {{ leftRoomsCount }}
                                                         </div>
@@ -396,8 +395,7 @@
                     </div>
                     <div id="package-edit-body" class="modal-body">
                         <div class="input">
-                            <i class="fa fa-users" title='{{ 'form.searchType.payer'|trans() }}'
-                               data-toggle='tooltip'></i>&nbsp;
+                            <strong>Плательщик</strong>&nbsp;
                             {{ form_widget(searchForm.tourist) }}&nbsp;
                             <small>
                                 <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"

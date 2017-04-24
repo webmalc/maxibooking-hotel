@@ -93,5 +93,6 @@
         $(document).ready(function () {
             setSearchDatepickers('{{ 'now'|date_modify('-1 year')|date('Y-m-d') }}');
         });
+        var canBookWithoutPayer = {{ client_config().canBookWithoutPayer ? 'true' : 'false' }};
     </script>
 {% endblock %}

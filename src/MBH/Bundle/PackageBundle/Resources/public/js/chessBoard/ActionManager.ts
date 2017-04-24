@@ -2,6 +2,7 @@
 ///<reference path="ChessBoardManager.ts"/>
 /*global $ */
 // declare let $;
+declare let canBookWithoutPayer;
 declare let roomTypes;
 declare let rooms;
 
@@ -140,6 +141,17 @@ class ActionManager {
     private modifyButtonsByGuest($editModal) {
         let touristVal = $('#s_tourist').val();
         $editModal.find('.package-search-book').each(function (index, element) {
+            let title;
+            if (!touristVal && !canBookWithoutPayer) {
+                element.setAttribute('disabled', true);
+                title = Translator.trans('action_manager.modal.disabled_book_button.title');
+            } else {
+                let leftRoomsCount = $(element).parent().parent().find('.package-search-book-count').eq(0).text();
+                title = Translator.trans('action_manager.modal.book_button.title', {'roomsCount' : leftRoomsCount});
+                element.removeAttribute('disabled');
+            }
+            element.setAttribute('title', title);
+            element.setAttribute('data-original-title', title);
             let url = element.getAttribute('data-url');
             url = url.replace(/&(s%5Btourist|tourist).*?(?=(&|$))/, '');
             if (touristVal) {
@@ -164,9 +176,11 @@ class ActionManager {
         element.setAttribute('data-url', newPackageCreateUrl);
 
         element.onclick = function () {
-            let url = element.getAttribute('data-url');
-            self.dataManager.createPackageRequest(url, packageData);
-            editModal.modal('hide');
+            if (!element.getAttribute('disabled')) {
+                let url = element.getAttribute('data-url');
+                self.dataManager.createPackageRequest(url, packageData);
+                editModal.modal('hide');
+            }
         };
     }
 

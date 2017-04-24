@@ -184,23 +184,23 @@ class ClientConfig extends Base
      * @Assert\NotNull()
      * @ODM\Field(type="bool")
      */
-    protected $isBookWithoutPayer = true;
+    protected $canBookWithoutPayer = true;
 
     /**
      * @return bool
      */
-    public function isIsBookWithoutPayer(): bool
+    public function isCanBookWithoutPayer(): bool
     {
-        return $this->isBookWithoutPayer;
+        return $this->canBookWithoutPayer;
     }
 
     /**
-     * @param bool $isBookWithoutPayer
+     * @param bool $canBookWithoutPayer
      * @return ClientConfig
      */
-    public function setIsBookWithoutPayer(bool $isBookWithoutPayer): ClientConfig
+    public function setCanBookWithoutPayer(bool $canBookWithoutPayer): ClientConfig
     {
-        $this->isBookWithoutPayer = $isBookWithoutPayer;
+        $this->canBookWithoutPayer = $canBookWithoutPayer;
 
         return $this;
     }

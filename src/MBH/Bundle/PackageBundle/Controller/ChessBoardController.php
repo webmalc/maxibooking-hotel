@@ -53,7 +53,9 @@ class ChessBoardController extends BaseController
 
         $rightsChecker = $this->get('security.authorization_checker');
         $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
-        $displayDisabledRoomType = !$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isIsDisableableOn();
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $displayDisabledRoomType = !$clientConfig->isIsDisableableOn();
+        $canBookWithoutPayer = $clientConfig->isCanBookWithoutPayer();
 
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
@@ -80,6 +82,7 @@ class ChessBoardController extends BaseController
             'housings' => $this->hotel->getHousings(),
             'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors(),
             'canCreatePackage' => $canCreatePackage,
+            'canBookWithoutPayer' => $canBookWithoutPayer ? 'true' : 'false',
             'displayDisabledRoomType' => $displayDisabledRoomType,
             'touristForm' => $this->createForm(TouristType::class, null,
                 ['genders' => $this->container->getParameter('mbh.gender.types')])->createView(),

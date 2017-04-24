@@ -110,6 +110,18 @@ var ActionManager = (function () {
     ActionManager.prototype.modifyButtonsByGuest = function ($editModal) {
         var touristVal = $('#s_tourist').val();
         $editModal.find('.package-search-book').each(function (index, element) {
+            var title;
+            if (!touristVal && !canBookWithoutPayer) {
+                element.setAttribute('disabled', true);
+                title = Translator.trans('action_manager.modal.disabled_book_button.title');
+            }
+            else {
+                var leftRoomsCount = $(element).parent().parent().find('.package-search-book-count').eq(0).text();
+                title = Translator.trans('action_manager.modal.book_button.title', { 'roomsCount': leftRoomsCount });
+                element.removeAttribute('disabled');
+            }
+            element.setAttribute('title', title);
+            element.setAttribute('data-original-title', title);
             var url = element.getAttribute('data-url');
             url = url.replace(/&(s%5Btourist|tourist).*?(?=(&|$))/, '');
             if (touristVal) {
@@ -131,9 +143,11 @@ var ActionManager = (function () {
         }
         element.setAttribute('data-url', newPackageCreateUrl);
         element.onclick = function () {
-            var url = element.getAttribute('data-url');
-            self.dataManager.createPackageRequest(url, packageData);
-            editModal.modal('hide');
+            if (!element.getAttribute('disabled')) {
+                var url = element.getAttribute('data-url');
+                self.dataManager.createPackageRequest(url, packageData);
+                editModal.modal('hide');
+            }
         };
     };
     ActionManager.callIntervalBeginOutOfRangeModal = function (side) {
