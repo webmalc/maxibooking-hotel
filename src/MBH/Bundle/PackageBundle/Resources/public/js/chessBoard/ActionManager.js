@@ -45,19 +45,23 @@ var ActionManager = (function () {
     };
     ActionManager.prototype.handleSearchOptionsModal = function (packageData, searchData) {
         var self = this;
-        var editBody = $('#package-edit-body');
+        var editBody = $('#package-new-results');
         editBody.html(searchData);
         editBody.find('.search-room-select').val(packageData.accommodation);
         editBody.find('td:nth-child(4)').remove();
         editBody.find('thead th:nth-child(4)').remove();
         editBody.find('thead th').css('text-align', 'center');
-        editBody.find('select').select2();
+        editBody.find('select').not("s[tourist]").select2();
         var editModal = $('#package-edit-modal');
         $('.btn.package-search-book').each(function (index, element) {
             self.modifyBookButton(packageData, element, editModal);
         });
         $('.search-special-apply').each(function (index, element) {
             self.modifySpecialButton(packageData, element, editModal);
+        });
+        self.modifyButtonsByGuest(editModal);
+        $('#s_tourist').change(function () {
+            self.modifyButtonsByGuest(editModal);
         });
         $('.package-search-table').find('tr').not(':first').not(':first').each(function (index, row) {
             var $row = $(row);
@@ -95,16 +99,28 @@ var ActionManager = (function () {
             event.preventDefault();
             var $searchPackageForm = $('#package-search-form');
             var specialId = element.getAttribute('data-id');
-            console.log(specialId);
             var newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm, specialId);
             editModal.modal('hide');
             self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
         };
     };
+    ActionManager.prototype.modifyButtonsByGuest = function ($editModal) {
+        var touristVal = $('#s_tourist').val();
+        $editModal.find('.package-search-book').each(function (index, element) {
+            var url = element.getAttribute('data-url');
+            url = url.replace(/&(s%5Btourist|tourist).*?(?=(&|$))/, '');
+            if (touristVal) {
+                url = url + '&tourist=' + touristVal;
+            }
+            element.setAttribute('data-url', url);
+        });
+    };
     ActionManager.prototype.modifyBookButton = function (packageData, element, editModal) {
         'use strict';
         var self = this;
         var newPackageCreateUrl = element.href;
+        $(element).find('.package-search-book-reservation-text').hide();
+        $(element).find('.package-search-book-accommodation-text').show();
         element.removeAttribute('href');
         var accommodationValue = document.getElementsByClassName('search-room-select')[0].value;
         if (accommodationValue) {

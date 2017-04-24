@@ -61,13 +61,13 @@ class ActionManager {
     public handleSearchOptionsModal(packageData, searchData) {
         let self = this;
 
-        let editBody = $('#package-edit-body');
+        let editBody = $('#package-new-results');
         editBody.html(searchData);
         editBody.find('.search-room-select').val(packageData.accommodation);
         editBody.find('td:nth-child(4)').remove();
         editBody.find('thead th:nth-child(4)').remove();
         editBody.find('thead th').css('text-align', 'center');
-        editBody.find('select').select2();
+        editBody.find('select').not("s[tourist]").select2();
 
         let editModal = $('#package-edit-modal');
 
@@ -77,6 +77,11 @@ class ActionManager {
 
         $('.search-special-apply').each(function (index, element) {
             self.modifySpecialButton(packageData, element, editModal);
+        });
+
+        self.modifyButtonsByGuest(editModal);
+        $('#s_tourist').change(function () {
+            self.modifyButtonsByGuest(editModal);
         });
 
         $('.package-search-table').find('tr').not(':first').not(':first').each(function (index, row) {
@@ -123,19 +128,33 @@ class ActionManager {
             event.preventDefault();
             let $searchPackageForm = $('#package-search-form');
             let specialId = element.getAttribute('data-id');
-            console.log(specialId);
             let newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm, specialId);
             editModal.modal('hide');
             self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
         }
     }
 
+    private modifyButtonsByGuest($editModal) {
+        let touristVal = $('#s_tourist').val();
+        $editModal.find('.package-search-book').each(function (index, element) {
+            let url = element.getAttribute('data-url');
+            url = url.replace(/&(s%5Btourist|tourist).*?(?=(&|$))/, '');
+            if (touristVal) {
+                url = url + '&tourist=' + touristVal
+            }
+
+            element.setAttribute('data-url', url);
+        });
+    }
+
     private modifyBookButton(packageData, element, editModal) {
         'use strict';
         let self = this;
         let newPackageCreateUrl = element.href;
+        $(element).find('.package-search-book-reservation-text').hide();
+        $(element).find('.package-search-book-accommodation-text').show();
         element.removeAttribute('href');
-        let accommodationValue = document.getElementsByClassName('search-room-select')[0].value;
+        let accommodationValue = (<HTMLInputElement>document.getElementsByClassName('search-room-select')[0]).value;
         if (accommodationValue) {
             newPackageCreateUrl += '&accommodation=' + accommodationValue;
         }

@@ -175,8 +175,35 @@ class ClientConfig extends Base
     /**
      * @var bool
      * @ODM\Field(type="bool")
+     * @Assert\NotNull()
      */
     protected $isDisableableOn = false;
+
+    /**
+     * @var bool
+     * @Assert\NotNull()
+     * @ODM\Field(type="bool")
+     */
+    protected $isBookWithoutPayer = true;
+
+    /**
+     * @return bool
+     */
+    public function isIsBookWithoutPayer(): bool
+    {
+        return $this->isBookWithoutPayer;
+    }
+
+    /**
+     * @param bool $isBookWithoutPayer
+     * @return ClientConfig
+     */
+    public function setIsBookWithoutPayer(bool $isBookWithoutPayer): ClientConfig
+    {
+        $this->isBookWithoutPayer = $isBookWithoutPayer;
+
+        return $this;
+    }
 
     /**
      * @return PayPal

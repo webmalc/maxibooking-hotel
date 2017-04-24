@@ -49,6 +49,10 @@ class ChessBoardManager {
         ChessBoardManager.setContentWidth(chessBoardContentBlock);
 
         this.addAccommodationElements();
+        $('#s_tourist').change(function () {
+            $('#select2-s_tourist-results').val(this.value);
+        });
+
         document.body.style.paddingBottom = '0px';
         $('.tile-bookable').find('.date').hover(function () {
             $(this).children('div').show();
@@ -117,6 +121,8 @@ class ChessBoardManager {
             $reportFilter.submit();
         });
 
+        this.onAddGuestClick();
+
         //Фиксирование верхнего и левого блоков таблицы
         chessBoardContentBlock.onscroll = function () {
             ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
@@ -129,7 +135,7 @@ class ChessBoardManager {
             dateElements.mousedown(function (event) {
                 let startXPosition = event.pageX;
                 let startLeftScroll = chessBoardContentBlock.scrollLeft;
-                let newPackage = templatePackageElement.cloneNode(true);
+                let newPackage = <HTMLElement>templatePackageElement.cloneNode(true);
                 let dateJqueryObject = $(this.parentNode);
                 let currentRoomDateElements = dateJqueryObject.parent().children();
                 let startDateNumber = currentRoomDateElements.index(dateJqueryObject);
@@ -168,11 +174,11 @@ class ChessBoardManager {
     }
 
     public static getTableStartDate() {
-        return moment(document.getElementById('accommodation-report-begin').value, "DD.MM.YYYY");
+        return moment((<HTMLInputElement>document.getElementById('accommodation-report-begin')).value, "DD.MM.YYYY");
     }
 
     public static getTableEndDate() {
-        return moment(document.getElementById('accommodation-report-end').value, "DD.MM.YYYY");
+        return moment((<HTMLInputElement>document.getElementById('accommodation-report-end')).value, "DD.MM.YYYY");
     }
 
     private static setContentWidth(chessBoardContentBlock) {
@@ -214,9 +220,43 @@ class ChessBoardManager {
 
     public static getFilterData($searchPackageForm) {
         let searchData = $searchPackageForm.serialize();
-        let pageNumber = document.getElementById('pageNumber').value;
+        let pageNumber = (<HTMLInputElement>document.getElementById('pageNumber')).value;
 
         return searchData + '&page=' + pageNumber;
+    }
+
+    private onAddGuestClick() {
+        $('#add-guest').on('click', function(e) {
+            let guestModal = $('#add-guest-modal'),
+                form = guestModal.find('form'),
+                button = $('#add-guest-modal-submit'),
+                errors = $('#add-guest-modal-errors');
+
+            e.preventDefault();
+            guestModal.modal('show');
+            button.click(function() {
+                errors.hide();
+                $.ajax({
+                    method: "POST",
+                    url: form.prop('action'),
+                    data: form.serialize(),
+                    success: function(data) {
+                        if (data.error) {
+                            errors.html(data.text).show();
+                        } else {
+                            $('.findGuest').append($("<option/>", {
+                                value: data.id,
+                                text: data.text
+                            })).val(data.id).trigger('change');
+                            form.trigger('reset');
+                            guestModal.modal('hide');
+                            form.find('select').select2('data', null);
+                            return 1;
+                        }
+                    }
+                })
+            });
+        });
     }
 
     private static getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction) {
@@ -274,8 +314,8 @@ class ChessBoardManager {
 
 
     private static getTemplateElement() {
-        let templateDiv = document.createElement('div');
-        templateDiv.style = 'position: absolute;';
+        let templateDiv : HTMLElement = document.createElement('div');
+        templateDiv.style.position = 'absolute';
         templateDiv.style.height = ChessBoardManager.PACKAGE_ELEMENT_HEIGHT + 'px';
         templateDiv.classList.add('package');
 
@@ -465,8 +505,8 @@ class ChessBoardManager {
                         self.divide(accommodationElement, accommodationWidth / 2);
                     } else {
                         let packageLeftCoordinate = accommodationElement.getBoundingClientRect().left;
-                        let line = document.createElement('div');
-                        line.style = 'position:absolute; border: 2px dashed red; height: 41px; z-index = 250;top: 0';
+                        let line : HTMLElement = document.createElement('div');
+                        line.classList.add('dividing-line');
 
                         let accommodationElementWidth = parseInt(getComputedStyle(accommodationElement).width, 10);
                         let isAccommodationAbroadTable = (accommodationElementWidth % ChessBoardManager.DATE_ELEMENT_WIDTH) != 0
@@ -856,7 +896,7 @@ class ChessBoardManager {
             return ChessBoardManager.saveOffsetCompare($(this).offset().left, leftOffset);
         });
         let dateNumber = dateElements.index(dateElement);
-        let momentDate = moment(document.getElementById('accommodation-report-begin').value, "DD.MM.YYYY")
+        let momentDate = moment((<HTMLInputElement>document.getElementById('accommodation-report-begin')).value, "DD.MM.YYYY")
             .add(dateNumber, 'day');
 
         return momentDate.format("DD.MM.YYYY");

@@ -67,6 +67,12 @@ class ClientConfigType extends AbstractType
                 'group' => 'form.clientConfigType.main_group',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm begin-datepicker'],
             ])
+            ->add('is_book_without_payer', CheckboxType::class, [
+                'label' => 'form.clientConfigType.is_book_without_payer.label',
+                'help' => 'form.clientConfigType.is_book_without_payer.help',
+                'group' => 'form.clientConfigType.search_group',
+                'required' => false,
+            ])
         ;
     }
 

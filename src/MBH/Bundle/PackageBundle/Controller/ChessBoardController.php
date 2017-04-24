@@ -5,9 +5,15 @@ namespace MBH\Bundle\PackageBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\PackageBundle\Document\BirthPlace;
+use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
 use MBH\Bundle\PackageBundle\Form\ChessBoardConciseType;
+use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
+use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -49,6 +55,12 @@ class ChessBoardController extends BaseController
         $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
         $displayDisabledRoomType = !$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isIsDisableableOn();
 
+        $tourist = new Tourist();
+        $tourist->setDocumentRelation(new DocumentRelation());
+        $tourist->setBirthplace(new BirthPlace());
+        $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $tourist->getDocumentRelation()->setType('vega_russian_passport');
+
         return [
             'pageCount' => ceil($builder->getRoomCount() / $builder::ROOM_COUNT_ON_PAGE),
             'pageNumber' => $filterData['pageNumber'],
@@ -68,7 +80,13 @@ class ChessBoardController extends BaseController
             'housings' => $this->hotel->getHousings(),
             'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors(),
             'canCreatePackage' => $canCreatePackage,
-            'displayDisabledRoomType' => $displayDisabledRoomType
+            'displayDisabledRoomType' => $displayDisabledRoomType,
+            'touristForm' => $this->createForm(TouristType::class, null,
+                ['genders' => $this->container->getParameter('mbh.gender.types')])->createView(),
+            'documentForm' => $this->createForm(DocumentRelationType::class, $tourist)
+                ->createView(),
+            'addressForm' => $this->createForm(AddressObjectDecomposedType::class, $tourist->getAddressObjectDecomposed())
+                ->createView()
         ];
     }
 

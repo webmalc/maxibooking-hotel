@@ -22,6 +22,9 @@ var ChessBoardManager = (function () {
         var chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
         ChessBoardManager.setContentWidth(chessBoardContentBlock);
         this.addAccommodationElements();
+        $('#s_tourist').change(function () {
+            $('#select2-s_tourist-results').val(this.value);
+        });
         document.body.style.paddingBottom = '0px';
         $('.tile-bookable').find('.date').hover(function () {
             $(this).children('div').show();
@@ -79,6 +82,7 @@ var ChessBoardManager = (function () {
         $reportFilter.find('#filter-button').click(function () {
             $reportFilter.submit();
         });
+        this.onAddGuestClick();
         //Фиксирование верхнего и левого блоков таблицы
         chessBoardContentBlock.onscroll = function () {
             ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
@@ -170,6 +174,36 @@ var ChessBoardManager = (function () {
         var pageNumber = document.getElementById('pageNumber').value;
         return searchData + '&page=' + pageNumber;
     };
+    ChessBoardManager.prototype.onAddGuestClick = function () {
+        $('#add-guest').on('click', function (e) {
+            var guestModal = $('#add-guest-modal'), form = guestModal.find('form'), button = $('#add-guest-modal-submit'), errors = $('#add-guest-modal-errors');
+            e.preventDefault();
+            guestModal.modal('show');
+            button.click(function () {
+                errors.hide();
+                $.ajax({
+                    method: "POST",
+                    url: form.prop('action'),
+                    data: form.serialize(),
+                    success: function (data) {
+                        if (data.error) {
+                            errors.html(data.text).show();
+                        }
+                        else {
+                            $('.findGuest').append($("<option/>", {
+                                value: data.id,
+                                text: data.text
+                            })).val(data.id).trigger('change');
+                            form.trigger('reset');
+                            guestModal.modal('hide');
+                            form.find('select').select2('data', null);
+                            return 1;
+                        }
+                    }
+                });
+            });
+        });
+    };
     ChessBoardManager.getGriddedOffset = function (mouseXOffset, scrollOffset, packageLengthRestriction) {
         'use strict';
         var griddedOffset = Math.ceil((Math.abs(mouseXOffset) + scrollOffset) / ChessBoardManager.DATE_ELEMENT_WIDTH) * ChessBoardManager.DATE_ELEMENT_WIDTH;
@@ -215,7 +249,7 @@ var ChessBoardManager = (function () {
     };
     ChessBoardManager.getTemplateElement = function () {
         var templateDiv = document.createElement('div');
-        templateDiv.style = 'position: absolute;';
+        templateDiv.style.position = 'absolute';
         templateDiv.style.height = ChessBoardManager.PACKAGE_ELEMENT_HEIGHT + 'px';
         templateDiv.classList.add('package');
         var buttonsDiv = document.createElement('div');
@@ -384,7 +418,7 @@ var ChessBoardManager = (function () {
                     else {
                         var packageLeftCoordinate_1 = accommodationElement_1.getBoundingClientRect().left;
                         var line_1 = document.createElement('div');
-                        line_1.style = 'position:absolute; border: 2px dashed red; height: 41px; z-index = 250;top: 0';
+                        line_1.classList.add('dividing-line');
                         var accommodationElementWidth = parseInt(getComputedStyle(accommodationElement_1).width, 10);
                         var isAccommodationAbroadTable_1 = (accommodationElementWidth % ChessBoardManager.DATE_ELEMENT_WIDTH) != 0
                             && ((accommodationElementWidth + 1) % ChessBoardManager.DATE_ELEMENT_WIDTH) != 0;

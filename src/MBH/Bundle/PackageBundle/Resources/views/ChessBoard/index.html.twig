@@ -383,7 +383,7 @@
             </div>
         </div>
         <!---------------------------- Package Create Modal ------------------------->
-        <div class="modal fade bs-example-modal-lg" id="package-edit-modal" tabindex="-1" role="dialog"
+        <div class="modal fade bs-example-modal-lg" id="package-edit-modal" role="dialog"
              aria-labelledby="exampleModalLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <input type="hidden" class="modalPackageId">
@@ -395,7 +395,19 @@
                             id="packageModalTitle">{{ 'modal.chessBoard.search_results' | trans }}</h4>
                     </div>
                     <div id="package-edit-body" class="modal-body">
-
+                        <div class="input">
+                            <i class="fa fa-users" title='{{ 'form.searchType.payer'|trans() }}'
+                               data-toggle='tooltip'></i>&nbsp;
+                            {{ form_widget(searchForm.tourist) }}&nbsp;
+                            <small>
+                                <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
+                                   title='{{ 'form.searchType.payer_add'|trans() }}'
+                                   data-toggle='tooltip'>
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </small>
+                        </div>
+                        <div id="package-new-results"></div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" id="packageModalCancelButton"
@@ -435,6 +447,9 @@
                 </div>
             </div>
         </div>
+
+        <!---------------------------- New Guest Modal ------------------------->
+        {% include '@MBHUser/Partials/addGuestModal.html.twig' %}
 
         {% include '@MBHBase/Partials/entityDeleteForm.html.twig' %}
         {% include '@MBHPackage/Package/deleteModal.html.twig' %}
