@@ -1,0 +1,137 @@
+{% extends 'MBHPriceBundle:Special:layout.html.twig' %}
+{% import _self as spec %}
+{% set small_title = "special.booking" %}
+{% set layout = 'box' %}
+
+
+{% block content %}
+    {% include '@MBHBase/messages.html.twig' %}
+        <table class="table not-auto-datatable table-striped" id="spec">
+            <tbody>
+            <tr class="">
+                <td class="col-md-3"><i class="fa fa-star" title='Спецпредложение'
+                                        data-toggle='tooltip'></i>&nbsp;<strong>Спецпредложение</strong></td>
+                <td id="special"
+                    data-special="{{ special.id }}"
+                >
+                    {{ special.name }}
+                </td>
+            </tr>
+            {% if searchResult %}
+            <tr class="">
+                <td class="col-md-3">
+                    <i class="fa fa-calendar" title="Даты" data-toggle="tooltip"></i>&nbsp;
+                    <strong>Даты</strong></td>
+                <td id="dates"
+                    data-begin="{{ searchResult.begin|date('d.m.Y') }}"
+                    data-end="{{ searchResult.end|date('d.m.Y') }}"
+                >
+                    {{ searchResult.begin|localizeddate('medium', 'none', 'ru', null, 'd MMM') }}
+                    - {{ searchResult.end|localizeddate('medium', 'none', 'ru', null, 'd MMM') }}
+                    / {{ searchResult.nights }} ночей - {{ searchResult.days }} дней
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    <i class="fa fa-bed"></i>&nbsp;<strong>Виртуальная комната спецпредложения</strong>
+                </td>
+                <td id="roomType" data-roomtypeid="{{ special.virtualRoom.roomType.id }}">
+                    <span class="label label-default">{{ special.virtualRoom.name }}</span> {{ special.virtualRoom.roomType.name }}
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    <i class="fa fa-bed"></i>&nbsp;<strong>Виртуальная комната для бронирования</strong>
+                </td>
+                <td id="virtualRoom"
+                    data-virtualroom="{{ searchResult.virtualRoom.id }}"
+                >
+                    <span class="label label-{{ (special.virtualRoom.name == searchResult.virtualRoom.name)?'success':'warning' }}">{{ searchResult.virtualRoom.name }}</span> {{ searchResult.virtualRoom.roomType.name }}
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    <i class="fa fa-sliders"></i>&nbsp;<strong>Тариф</strong>
+                </td>
+                <td id="tariff" data-tariff="{{ searchResult.tariff.id }}">
+                {{ searchResult.tariff }}
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    <i class="fa fa-users"></i>&nbsp;<label for="capacity">Вместимость</label>
+                </td>
+                <td>
+                    <select id="capacity" class="capacity_choice" style="width:150px;">
+                        {{ spec.showPrices(searchResult.prices, adults, children) }}
+                    </select>
+                    <select id="sitecapacity" class="plain-html" style="display: none;">
+                        {{ spec.showPrices(special.prices.first.prices, adults, children) }}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    <i class="fa fa-money"></i>&nbsp;<strong>Цена/Цена на сайте</strong>
+                </td>
+                <td>
+                    <span id="price" class="label"></span> / <span id="sitePrice" class="label"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">
+                    <div
+                            class="btn btn-success"
+                            id="booking"
+                    >Бронировать</div>
+                </td>
+                <td>
+                    <div style="float:right;" class="btn btn-danger" id="closeSpec">Закрыть спец предложение</div>
+                </td>
+            </tr>
+                {% else %}
+                    <tr>
+                        <td class="col-md-3"><strong>Невозможно бронирование по этому спецпредложению</strong></td>
+                        <td>{% for error in errors %}
+                                {{ error }}
+                            {% endfor %}</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-3">
+                            <div
+                                    class="btn btn-success"
+                                    id="edit"
+                            >Редактировать</div>
+                        </td>
+                        <td>
+                            <div style="float:right;" class="btn btn-danger" id="closeSpec">Закрыть спец предложение</div>
+                        </td>
+                    </tr>
+            {% endif %}
+
+
+            </tbody>
+        </table>
+    {#{% else %}#}
+        {#Невозможно бронирование по этому специальному предложению#}
+
+    {% if errors is defined and errors is not empty %}
+
+    {% endif %}
+{% endblock %}
+
+{% macro showPrices(prices, adults, children) %}
+{% for capacity, price in prices %}
+    {% set capacityValue = capacity|split('_') %}
+    {% set cadults, cchildren = capacityValue|first, capacityValue|last %}
+    <option
+            data-price="{{ price|round }}"
+            data-adults="{{ cadults }}"
+            data-children="{{ cchildren }}"
+            {{ (adults == cadults and children == cchildren)?'selected':'' }}
+    >
+        {{ cadults }}
+        взр. {{ cchildren ? '+' ~cchildren~ ' ' ~ 'children'|transchoice(cchildren):'' }}
+    </option>
+{% endfor %}
+{% endmacro %}

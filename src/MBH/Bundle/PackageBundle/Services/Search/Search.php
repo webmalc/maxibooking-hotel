@@ -604,11 +604,7 @@ class Search implements SearchInterface
 
     public function searchSpecials(SearchQuery $query)
     {
-        $filter = new SpecialFilter();
-        $filter->setRemain(1)
-            ->setDisplayFrom($query->begin)
-            ->setDisplayTo($query->end);
-
+        $filter = $this->specialFilter($query);
         $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($filter);
 
         if (!$specials->count()) {
@@ -616,6 +612,28 @@ class Search implements SearchInterface
         }
 
         return $specials;
+    }
+
+    public function searchStrictNowSpecials(SearchQuery $query)
+    {
+        $filter = $this->specialFilter($query);
+        $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getStrictBeginFiltered($filter);
+
+        if (!$specials->count()) {
+            $query->setSpecial(null);
+        }
+
+        return $specials;
+    }
+
+    private function specialFilter(SearchQuery $query)
+    {
+        $filter = new SpecialFilter();
+        $filter->setRemain(1)
+            ->setDisplayFrom($query->begin)
+            ->setDisplayTo($query->end);
+
+        return $filter;
     }
 
     /**

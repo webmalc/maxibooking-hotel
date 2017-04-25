@@ -13,8 +13,9 @@
 
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
     <div class="container-fluid">
+        {% block saveButtons %}
         {% include 'MBHBaseBundle:Actions:saveButtons.html.twig' with {'save_close': save_close, 'save_text': save_text|default('views.actions.update.save'|trans({}, 'MBHBaseBundle'))}%}
-
+        {% endblock saveButtons %}
         {% if delete_route is defined and delete_route is not empty and delete_role is defined and is_granted(delete_role) %}
         <ul class="nav navbar-nav navbar-right">
             <li>

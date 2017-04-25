@@ -35,7 +35,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
 
             $results = array_merge(parent::search($searchQuery, $roomType, $special));
         } else {
-            $specials = $this->search->searchSpecials($searchQuery);
+            $specials = $this->search->searchStrictSpecials($searchQuery);
             if (count($specials)) {
                 foreach ($specials as $special) {
                     /** @var Special $special */

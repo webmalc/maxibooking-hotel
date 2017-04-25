@@ -99,4 +99,12 @@ class SpecialRepository extends DocumentRepository
 
         return $qb->getQuery()->execute();
     }
+
+    public function getStrictBeginFiltered(SpecialFilter $filter): CursorInterface
+    {
+        $qb = $this->getFilteredQueryBuilder($filter);
+        $qb->addAnd($qb->expr()->field('begin')->gt(new \DateTime("midnight")));
+
+        return $qb->getQuery()->execute();
+    }
 }

@@ -6,6 +6,9 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
+use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Form\SpecialFilterType;
 use MBH\Bundle\PriceBundle\Form\SpecialType;
@@ -121,7 +124,7 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
     /**
      * Displays a form to edit an existing entity.
      *
-     * @Route("/{id}/edit", name="special_edit")
+     * @Route("/{id}/edit", name="special_edit", options={"expose"=true})
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_SPECIAL_EDIT')")
      * @Template()
@@ -169,5 +172,59 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
     public function deleteAction($id)
     {
         return $this->deleteEntity($id, 'MBHPriceBundle:Special', 'special');
+    }
+
+    /**
+     * @param Special $special
+     * @param int $adults
+     * @param int $children
+     * @param int $infants
+     * @return array
+     * @Route("/{id}/booking/{adults}/{children}/{infants}", name="special_booking", defaults={"adults":0, "children":0})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_PACKAGE_NEW')")
+     * @Template()
+     */
+    public function bookingAction(Special $special, int $adults = 0, int $children = 0, int $infants = 0)
+    {
+        $search = $this->get('mbh.online.special_result_generator');
+        $searchData = $this->get('mbh.online.search_form_data');
+        $searchData
+            ->setSpecial($special)
+            ->setRoomType($special->getVirtualRoom()->getRoomType());
+        $specialResult = $search->getResults($searchData);
+        $searchResult = null;
+        $errors = [];
+        if (count($specialResult)) {
+            $searchResult = $specialResult->first()->getResults()->first()??null;
+        } else {
+            $errors[] = 'Поиск не вернул результат, проверьте даты заезда-выезда, ограничения.';
+        }
+        if (!$special->getRemain()) {
+            $errors[] = 'Спецпредложение вероятно уже выкуплено.';
+        }
+
+        return [
+            'special' => $special,
+            'searchResult' => $searchResult,
+            'adults' => $adults,
+            'children' => $children,
+            'infants' => $infants,
+            'errors' => $errors
+        ];
+    }
+
+    /**
+     * @param Special $special
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @Route("/{id}/close", name="special_close", options={"expose"=true} )
+     * @Security("is_granted('ROLE_SPECIAL_EDIT')")
+     */
+    public function closeSpecial(Special $special)
+    {
+        $special->setIsEnabled(false);
+        $this->dm->flush();
+
+        return $this->redirectToRoute('special');
     }
 }

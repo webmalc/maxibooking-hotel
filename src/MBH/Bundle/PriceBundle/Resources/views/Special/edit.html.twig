@@ -16,7 +16,20 @@
     </div>
     {{ form_start(form, {'action': path('special_edit', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'special_delete' } %}
+    {% embed 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'special_delete' } %}
+        {% block saveButtons %}
+            <ul class="nav navbar-nav">
+                <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"> </i><span class="hidden-xs">&nbsp;{{ 'views.actions.saveButtons.save_and_close'|trans({}, 'MBHBaseBundle') }}</span></button></li>
+                    <li>
+                    <button type="submit" name="save" class="btn btn-primary navbar-btn"><i
+                                class="fa fa-check-square-o"> </i><span class="hidden-xs">&nbsp;{{ save_text|default('views.actions.saveButtons.save'|trans({}, 'MBHBaseBundle')) }}</span>
+                    </button></li>
+                <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i><span class="hidden-xs">&nbsp;{{ 'views.actions.saveButtons.cancel'|trans({}, 'MBHBaseBundle') }}</span></button></li>
+                <li><button type="button" onclick="location.href = '{{ path('special_booking', {id: entity.id})}}'" class="btn btn-warning navbar-btn"><i class="fa fa-book"></i><span class="hidden-xs">&nbsp;Бронировать</span></button></li>
+            </ul>
+        {% endblock %}
+    {#{% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'special_delete' } %}#}
+    {% endembed %}
     {{ form_end(form) }}
 
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'special_delete' } %}

@@ -8,11 +8,8 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Form\ReservationType;
 use MBH\Bundle\OnlineBookingBundle\Form\SearchFormType;
 use MBH\Bundle\OnlineBookingBundle\Form\SignType;
-use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\OnlineBookingSearchException;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineNotifyRecipient;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
-use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\PaymentType;
@@ -606,20 +603,14 @@ class DefaultController extends BaseController
         if (!$data) {
             return '';
         }
-        $attrs = [
-            's[begin]' => $data['begin']->format('d.m.Y')??'',
-            's[end]' => $data['end']->format('d.m.Y')??'',
-            's[adults]' => $data['adults']??'',
-            's[children]' => $data['children']??'',
-            's[special]' => $data['special']??'',
-        ];
-        $roomType = $this->dm->find('MBHHotelBundle:RoomType', ['id' => $data['roomType']]);
-        if ($roomType) {
-            $attrs['s[roomType][]'] = $roomType->getCategory()->getId();
-        }
 
-        $prefix = $this->generateUrl('package_search', [], UrlGeneratorInterface::ABSOLUTE_URL);
-        $link = $prefix .'#'.http_build_query($attrs);
+        $attrs = [
+            'id' => $data['special'],
+            'adults' => $data['adults'],
+            'children' => $data['children']
+        ];
+
+        $link = $this->generateUrl('special_booking', $attrs, UrlGeneratorInterface::ABSOLUTE_URL);
 
         return $link;
     }

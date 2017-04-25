@@ -86,4 +86,10 @@ class SearchFactory implements SearchInterface
     {
         return $this->search->searchSpecials($query);
     }
+
+    public function searchStrictSpecials(SearchQuery $query)
+
+    {
+        return $this->search->searchStrictNowSpecials($query);
+    }
 }

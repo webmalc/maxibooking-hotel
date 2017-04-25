@@ -30,7 +30,7 @@ class SpecialsController extends BaseController
         if ($hotel) {
             $specialsFilter->setHotel($hotel);
         }
-        $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($specialsFilter);
+        $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getStrictBeginFiltered($specialsFilter);
 
         $preparer = $this->get('mbh.online.special_data_preparer');
         $preparedData = $preparer->getPreparedDataByMonth($specials->toArray());
