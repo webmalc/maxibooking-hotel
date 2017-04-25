@@ -2,17 +2,17 @@
 namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 
 /**
- * Class TaskData
+ * Class HotelData
 
  */
-class HotelData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+class HotelData extends AbstractFixture implements OrderedFixtureInterface
 {
     const HOTELS = [
         'hotel-one' => [
@@ -24,8 +24,6 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface, Cont
             'default' => false
         ]
     ];
-    
-    use ContainerAwareTrait;
 
     /**
      * {@inheritDoc}
@@ -46,6 +44,10 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface, Cont
                 $manager->flush();
 
                 $this->setReference($key, $hotel);
+
+                if ($this->getEnv() != 'test') {
+                    break;
+                }
             }
         }
     }
