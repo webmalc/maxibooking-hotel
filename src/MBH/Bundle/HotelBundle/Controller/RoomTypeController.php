@@ -138,7 +138,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $this->addFlash('success', 'controller.TaskTypeController.success_delete_photo');
 
         return $this->redirectToRoute('room_type_image_edit', ['id' => $id, 'imageTab' => 'active']);
-
     }
 
     /**
@@ -196,8 +195,10 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success',
-                $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
+            $request->getSession()->getFlashBag()->set(
+                'success',
+                $this->get('translator')->trans('controller.roomTypeController.record_edited_success')
+            );
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -223,20 +224,22 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function editAutoTasksAction(Request $request, RoomType $roomType)
     {
-        if(!$roomType->getTaskSettings()) {
+        if (!$roomType->getTaskSettings()) {
             $roomType->setTaskSettings(new TaskSettings());
         }
         $form = $this->createForm(RoomTypeTasksType::class, $roomType->getTaskSettings(), ['hotel' => $roomType->getHotel()]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
             $form->handleRequest($request);
-            if($form->isValid()) {
+            if ($form->isValid()) {
                 //$this->dm->persist($entity);
                 $this->dm->persist($roomType->getTaskSettings());
                 $this->dm->flush();
 
-                $this->ad('success',
-                    $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
+                $this->ad(
+                    'success',
+                    $this->get('translator')->trans('controller.roomTypeController.record_edited_success')
+                );
 
                 return $this->afterSaveRedirect('room_type', $roomType->getId(), [], '_task_edit');
             }
@@ -324,15 +327,4 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             'images' => $entity->getImages(),
         );
     }
-     /**
-      * @Route("/test")
-      * @return Response
-      */
-      public function testAction()
-      {
-         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findAll();
-         $firstPackage = $packages[0];
-
-         return new Response($firstPackage->getRoomType()->getTitle());
-      }
 }

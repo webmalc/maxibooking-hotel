@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\BaseBundle\Document\CacheItem;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 
 class CacheTest extends KernelTestCase
 {
@@ -35,6 +36,11 @@ class CacheTest extends KernelTestCase
      * @var DocumentManager
      */
     private $documentManager;
+
+    public static function setUpBeforeClass()
+    {
+        WebTestCase::clearDB();
+    }
 
     public function setUp()
     {
