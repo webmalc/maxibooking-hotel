@@ -131,7 +131,7 @@
                             {% endblock %}
 
                     >
-                        <td>{% block tariffName %}{{ tariffResult.tariff.name }}{% endblock %}</td>
+                        <td>{% block tariffName %}{{ tariffResult.tariff.fullTitle }}{% endblock %}</td>
                         <td class="redtd">{% block discount %}{% endblock %}</td>
                         <td>{{ tariffResult.getPrice(tariffResult.adults, tariffResult.children)|round }}&#8381;</td>
                         <td><input name="booking-{{ tariffResult.roomType.id }}-{{ onlineResult.dates.begin|date("d_m_Y") ~ "_" ~ onlineResult.dates.end|date("d_m_Y") }}" type="radio" {% if loop.first %}checked="checked"{% endif %}></td>
