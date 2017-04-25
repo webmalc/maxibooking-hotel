@@ -956,6 +956,14 @@ var ChessBoardManager = (function () {
                 var dateElements = item.children[0].children;
                 for (var i = 0; i < dateElements.length; i++) {
                     var dateLeftRoomsCount = leftRoomCounts[roomTypeId][i];
+                    var backgroundColor = 'yellowgreen';
+                    if (dateLeftRoomsCount == 0) {
+                        backgroundColor = 'rgba(243, 156, 18, 0.66)';
+                    }
+                    else if (dateLeftRoomsCount < 0) {
+                        backgroundColor = 'rgba(221, 75, 57, 0.6)';
+                    }
+                    dateElements[i].children[0].style.backgroundColor = backgroundColor;
                     dateElements[i].children[0].innerHTML = dateLeftRoomsCount;
                     dateElements[i].setAttribute('data-toggle', "tooltip");
                     var toolTipTitle = Translator.trans('chessboard_manager.left_rooms_count.tooltip_title', { 'count': dateLeftRoomsCount });

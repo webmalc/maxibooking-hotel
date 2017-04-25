@@ -1095,6 +1095,13 @@ class ChessBoardManager {
                 let dateElements = item.children[0].children;
                 for (let i = 0; i < dateElements.length; i++) {
                     let dateLeftRoomsCount = leftRoomCounts[roomTypeId][i];
+                    let backgroundColor  = 'yellowgreen';
+                    if(dateLeftRoomsCount == 0) {
+                        backgroundColor = 'rgba(243, 156, 18, 0.66)'
+                    } else if(dateLeftRoomsCount < 0) {
+                        backgroundColor = 'rgba(221, 75, 57, 0.6)';
+                    }
+                    dateElements[i].children[0].style.backgroundColor = backgroundColor;
                     dateElements[i].children[0].innerHTML = dateLeftRoomsCount;
                     dateElements[i].setAttribute('data-toggle', "tooltip" );
 

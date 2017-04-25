@@ -168,7 +168,9 @@
 
                             <li class="tile tile-not-selected tile-free both"
                                 style="width:{{ headerWidth }}px; background-color: #ecf0f5;">
-                                <div class="title"><strong {% if not roomTypeData.isEnabled %} class="disabled-room-type"{% endif %} class="text-info">
+                                <div class="title">
+                                    <strong {% if not roomTypeData.isEnabled %} class="disabled-room-type"{% endif %}
+                                            class="text-info">
                                         <i class="fa fa-bed"></i> {{ roomTypeData.name[0:30] }}</strong></div>
                             </li>
                             <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
@@ -225,12 +227,20 @@
                             {% for roomTypeId, roomTypeData in roomTypesData %}
                                 {% if roomTypeData['rooms']|length > 0 %}
                                     <div class="calendarRow clearfix leftRoomsLine"
-                                         data-roomTypeId="{{ roomTypeId }}"
-                                         style="background-color: yellowgreen">
+                                         data-roomTypeId="{{ roomTypeId }}">
                                         <ul class="list-unstyled calendarDays">
                                             {% if leftRoomsData[roomTypeId] is defined %}
                                                 {% for leftRoomsCount in leftRoomsData[roomTypeId] %}
-                                                    <li class="tile" title="{{ 'chessboard_manager.left_rooms_count.tooltip_title'|trans({'%count%' : leftRoomsCount}, 'front_messages')  }}" data-toggle="tooltip" data-placement="bottom" data-container="body">
+                                                    {% set leftRoomsBackgroundColor = 'yellowgreen' %}
+                                                    {% if leftRoomsCount == 0 %}
+                                                        {% set leftRoomsBackgroundColor = 'rgba(243, 156, 18, 0.66)' %}
+                                                    {% elseif leftRoomsCount < 0 %}
+                                                        {% set leftRoomsBackgroundColor = 'rgba(221, 75, 57, 0.6)' %}
+                                                    {% endif %}
+                                                    <li class="tile" style="background-color: {{ leftRoomsBackgroundColor }}"
+                                                        title="{{ 'chessboard_manager.left_rooms_count.tooltip_title'|trans({'%count%' : leftRoomsCount}, 'front_messages') }}"
+                                                        data-toggle="tooltip" data-placement="bottom"
+                                                        data-container="body">
                                                         <div class="leftRooms">
                                                             {{ leftRoomsCount }}
                                                         </div>
