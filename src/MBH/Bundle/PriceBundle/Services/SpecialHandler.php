@@ -5,6 +5,10 @@ namespace MBH\Bundle\PriceBundle\Services;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSpecialResultGenerator;
+use MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Calculation;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -18,35 +22,36 @@ class SpecialHandler
     private $search;
     /** @var  DocumentManager */
     private $dm;
-    /**
-     * @var Helper
-     */
-    private $helper;
-    /**
-     * @var Calculation
-     */
-    private $calc;
+    /** @var  SpecialDataPreparer */
+    private $specialHepler;
+    /** @var OnlineSpecialResultGenerator */
+    private $specialSearchHelper;
+    /** @var  OnlineSearchFormData */
+    private $onlineSearchFormData;
 
     /**
      * SpecialHandler constructor.
      * @param SearchFactory $search
      * @param DocumentManager $dm
-     * @param Helper $helper
-     * @param Calculation $calc
      * @param Logger $logger
+     * @param SpecialDataPreparer $specialHelper
+     * @param OnlineSpecialResultGenerator $specialSearchHelper
+     * @param OnlineSearchFormData $onlineSearchFormData
      */
     public function __construct(
         SearchFactory $search,
         DocumentManager $dm,
-        Helper $helper,
-        Calculation $calc,
-        Logger $logger
+        Logger $logger,
+        SpecialDataPreparer $specialHelper,
+        OnlineSpecialResultGenerator $specialSearchHelper,
+        OnlineSearchFormData $onlineSearchFormData
     ) {
         $this->dm = $dm;
         $this->search = $search;
-        $this->helper = $helper;
-        $this->calc = $calc;
         $this->logger = $logger;
+        $this->specialHepler = $specialHelper;
+        $this->specialSearchHelper = $specialSearchHelper;
+        $this->onlineSearchFormData = $onlineSearchFormData;
     }
 
 
@@ -55,114 +60,80 @@ class SpecialHandler
      * @param array $roomTypeIds
      * @return void
      */
-    public function calculatePrices(array $specialIds = [], array $roomTypeIds = []): void
+    public function calculatePrices(array $specialIds = [], array $roomTypeIds = [], callable $output = null): void
     {
         $specials = $this->getSpecials($specialIds);
-        $currentDate = new \DateTime('midnight');
         /** @var Special $special */
         foreach ($specials as $special) {
-            $special->setRecalculation();
-            $this->dm->flush();
-            $special->removeAllPrices();
-            $this->logger->addInfo(
-                'Start calculate for special',
-                ['specialId' => $special->getId(), 'specialName' => $special->getName()]
-            );
-            if ($special->getIsEnabled()
-                && $special->getRemain() > 0
-                && $special->getBegin() > $currentDate
-            ) {
-                $roomTypes = $this->getRoomTypes($special);
-                $tariffs = $this->getTariffs($special);
-                foreach ($roomTypes as $roomType) {
-                    /** @var RoomType $roomType */
-                    foreach ($tariffs as $tariff) {
-                        /** @var Tariff $tariff */
-                        $specialPrice = $this->calculateSpecialPrice($special, $roomType, $tariff);
-                        if ($specialPrice) {
-                            $special->addPrice($specialPrice);
-                        }
-                    }
-                }
-            } else {
-                $this->logger->addInfo(
-                    'Не подошли услович для пересчета',
-                    ['specialId' => $special->getId(), 'specialName' => $special->getName()]
-                );
-            }
-            $special->setNoRecalculation();
-            $this->dm->flush();
-            $this->logger->addInfo(
-                'End recalculate for special',
-                ['specialId' => $special->getId(), 'specialName' => $special->getName()]
-            );
+            $this->calculateSpecial($special->getId(), $output);
         }
     }
 
-    private function getRoomTypes(Special $special)
+    private function calculateSpecial(string $specialId, callable $output = null): void
     {
-        $roomTypes = $special->getRoomTypes();
-        if (!count($roomTypes)) {
-            $hotel = $special->getHotel();
-            $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel);
+        $special = $this->dm->find('MBHPriceBundle:Special', ['id' => $specialId]);
+        if (!$special) {
+            return;
         }
-
-        return $roomTypes;
-    }
-
-    private function getTariffs(Special $special)
-    {
-        $tariffs = $special->getTariffs();
-        if (!count($tariffs)) {
-            $hotel = $special->getHotel();
-            $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetch($hotel, null, true);
-        }
-
-        return $tariffs;
-    }
-
-    private function calculateSpecialPrice(Special $special, RoomType $roomType, Tariff $tariff): ?SpecialPrice
-    {
-        $begin = clone $special->getBegin();
-        $end = (clone $special->getEnd())->modify("- 1 day");
-        $calculation = $this->calc->calcPrices(
-            $roomType,
-            $tariff,
-            $begin,
-            $end,
-            0,
-            0,
-            null,
-            true,
-            $special
+        $special->setRecalculation();
+        $this->dm->flush();
+        $special->removeAllPrices();
+        $this->addLogMessage(
+            'Start calculate for special',
+            ['specialId' => $special->getId(), 'specialName' => $special->getName()],
+            $output
         );
-
-        $specialPrice = null;
-
-        if ($calculation) {
+        //Здесь используется уже готовый код для поиска в онлайн
+        $searchForm = $this->getFormData($special);
+        $searchResults = $this->specialSearchHelper->getResults($searchForm);
+        /** @var SearchResult $searchResult */
+        if (count($searchResults) && count($searchResults->first()->getResults())) {
+            $searchResult = $searchResults->first()->getResults()->first();
             $specialPrice = new SpecialPrice();
             $specialPrice
-                ->setTariff($tariff)
-                ->setRoomType($roomType)
-                ->setPrices($this->extractDataFromCalculation($calculation));
-
-            $this->logger->addInfo('Found special prices', ['special' =>  $special->getName()]);
+                ->setTariff($searchResult->getTariff())
+                ->setRoomType($searchResult->getRoomType())
+                ->setPrices($searchResult->getPrices());
+            $special->addPrice($specialPrice);
+            $special->clearError();
+            $this->addLogMessage('Найдены цены, еще не записаны в БД', $searchResult->getPrices(), $output);
         } else {
-            $this->logger->addInfo('Not found special prices', ['special' => $special->getName()]);
+            $special->setError('Нет подходящих вариантов для спецпредложения');
+            $this->addLogMessage(
+                'Нет подходящих предложений для поиска по спецпредложению',
+                ['specialId' => $special->getId(), 'specialName' => $special->getName()],
+                $output
+            );
         }
-
-
-        return $specialPrice;
+        $special->setNoRecalculation();
+        $this->dm->flush();
+        $this->dm->clear();
+        $this->addLogMessage(
+            'End recalculate for special',
+            ['specialId' => $special->getId(), 'specialName' => $special->getName()],
+            $output
+        );
     }
 
-    private function extractDataFromCalculation(array $calculation): array
+    private function addLogMessage(string $message, array $context, callable $output = null)
     {
-        $result = [];
-        foreach ($calculation as $calcKeys => $calcValue) {
-            $result[$calcKeys] = $calcValue['total'];
+        $this->logger->addInfo($message, $context);
+        if ($output && is_callable($output)) {
+            $output($message, $context);
         }
+    }
 
-        return $result;
+    private function getFormData(Special $special): OnlineSearchFormData
+    {
+        $roomType = $special->getVirtualRoom() ? $special->getVirtualRoom()->getRoomType() : null;
+        $data = $this->onlineSearchFormData;
+        $data->setSpecial($special);
+        if ($roomType) {
+            $data->setRoomType($roomType);
+        }
+        $data->setCache(false);
+
+        return $this->onlineSearchFormData;
     }
 
     /**
@@ -171,15 +142,13 @@ class SpecialHandler
      */
     private function getSpecials(array $specialIds)
     {
-        $qb = $this->dm->getRepository('MBHPriceBundle:Special')->createQueryBuilder();
-
-        if (count($specialIds) == 0) {
-            //Why 10 days ?
-            $qb->field('displayTo')->gte(new \DateTime('midnight - 10 days'));
+        if (count($specialIds)) {
+            $qb = $this->dm->getRepository('MBHPriceBundle:Special')->createQueryBuilder();
+            $specials = $qb->field('id')->in($specialIds)->getQuery()->execute();
         } else {
-            $qb->field('id')->in($specialIds);
+            $specials = $this->specialHepler->getSpecials();
         }
 
-        return $qb->getQuery()->execute();
+        return $specials;
     }
 }

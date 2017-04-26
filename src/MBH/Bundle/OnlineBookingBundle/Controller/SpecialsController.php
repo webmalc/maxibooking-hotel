@@ -24,18 +24,12 @@ class SpecialsController extends BaseController
      */
     public function indexAction(Hotel $hotel = null)
     {
-        $specialsFilter = new SpecialFilter();
-        $specialsFilter->setRemain(1);
-        $specialsFilter->setBegin(new \DateTime("now midnight"));
-        if ($hotel) {
-            $specialsFilter->setHotel($hotel);
-        }
-        $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getStrictBeginFiltered($specialsFilter);
+
 
         $preparer = $this->get('mbh.online.special_data_preparer');
-        $preparedData = $preparer->getPreparedDataByMonth($specials->toArray());
+        $specials = $preparer->getSpecials($hotel);
 
-
+        $preparedData = $preparer->getSpecialsPageFormatWithMonth($specials->toArray());
         $hotelsIds = $this->getHotelsIdsFromSpecials($specials->toArray());
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->getHotelsByIds($hotelsIds);
 

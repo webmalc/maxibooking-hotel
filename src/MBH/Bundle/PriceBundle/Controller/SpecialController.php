@@ -220,11 +220,27 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/close", name="special_close", options={"expose"=true} )
      * @Security("is_granted('ROLE_SPECIAL_EDIT')")
      */
-    public function closeSpecial(Special $special)
+    public function closeSpecialAction(Special $special)
     {
         $special->setIsEnabled(false);
         $this->dm->flush();
 
         return $this->redirectToRoute('special');
     }
+
+    /**
+     * @param Special $special
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @Route("/{id}/close", name="special_recalculate", options={"expose"=true} )
+     * @Security("is_granted('ROLE_SPECIAL_EDIT')")
+     */
+    public function recalculateSpecialAction(Special $special = null)
+    {
+        $id = $special->getId()??null;
+        $this->get('mbh.special_handler')->calculatePrices([$id]);
+
+        return $this->redirectToRoute('special');
+
+    }
+
 }

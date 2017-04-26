@@ -5,6 +5,7 @@
 
 
 {% block content %}
+    {{ dump(''g == true) }}
     {% include '@MBHBase/messages.html.twig' %}
         <table class="table not-auto-datatable table-striped" id="spec">
             <tbody>
@@ -62,11 +63,15 @@
                     <i class="fa fa-users"></i>&nbsp;<label for="capacity">Вместимость</label>
                 </td>
                 <td>
-                    <select id="capacity" class="capacity_choice" style="width:150px;">
+                    <select id="capacity" class="capacity_choice" style="width:150px;" required>
+                        <option ></option>
                         {{ spec.showPrices(searchResult.prices, adults, children) }}
                     </select>
                     <select id="sitecapacity" class="plain-html" style="display: none;">
-                        {{ spec.showPrices(special.prices.first.prices, adults, children) }}
+                        <option ></option>
+                        {% if special.prices.toArray is not empty %}
+                            {{ spec.showPrices(special.prices.first.prices, adults, children) }}
+                        {% endif %}
                     </select>
                 </td>
             </tr>
@@ -86,7 +91,10 @@
                     >Бронировать</div>
                 </td>
                 <td>
-                    <div style="float:right;" class="btn btn-danger" id="closeSpec">Закрыть спец предложение</div>
+                    <div style="float:right;margin-left: 10px;" class="btn btn-danger" id="closeSpec">Закрыть спец предложение</div>
+                    <div class="btn btn-success"
+                         id="edit" style="float:right;"
+                    >Редактировать</div>
                 </td>
             </tr>
                 {% else %}
@@ -121,17 +129,19 @@
 {% endblock %}
 
 {% macro showPrices(prices, adults, children) %}
-{% for capacity, price in prices %}
-    {% set capacityValue = capacity|split('_') %}
-    {% set cadults, cchildren = capacityValue|first, capacityValue|last %}
-    <option
-            data-price="{{ price|round }}"
-            data-adults="{{ cadults }}"
-            data-children="{{ cchildren }}"
-            {{ (adults == cadults and children == cchildren)?'selected':'' }}
-    >
-        {{ cadults }}
-        взр. {{ cchildren ? '+' ~cchildren~ ' ' ~ 'children'|transchoice(cchildren):'' }}
-    </option>
-{% endfor %}
+{% if prices is iterable %}
+    {% for capacity, price in prices %}
+        {% set capacityValue = capacity|split('_') %}
+        {% set cadults, cchildren = capacityValue|first, capacityValue|last %}
+        <option
+                data-price="{{ price|round }}"
+                data-adults="{{ cadults }}"
+                data-children="{{ cchildren }}"
+                {{ (adults == cadults and children == cchildren)?'selected':'' }}
+        >
+            {{ cadults }}
+            взр. {{ cchildren ? '+' ~cchildren~ ' ' ~ 'children'|transchoice(cchildren):'' }}
+        </option>
+    {% endfor %}
+{% endif %}
 {% endmacro %}

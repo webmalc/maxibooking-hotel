@@ -32,6 +32,8 @@ class OnlineSearchFormData
     /** @var  Special */
     protected $special;
 
+    protected $cache = true;
+
     /**
      * OnlineSearchFormData constructor.
      * @param RoomTypeManager $roomTypeManager
@@ -209,6 +211,24 @@ class OnlineSearchFormData
 
         return $result;
     }
+
+    /**
+     * @return bool
+     */
+    public function isCache(): bool
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param bool $cache
+     */
+    public function setCache(bool $cache)
+    {
+        $this->cache = $cache;
+    }
+
+
 
 
 

@@ -93,7 +93,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         $searchQuery->isOnline = true;
         $searchQuery->accommodations = true;
         $searchQuery->forceRoomTypes = false;
-        $searchQuery->memcached = $this->cache;
+        $searchQuery->memcached = $this->cache && $data->isCache();
         if ($data->getChildrenAge()) {
             $searchQuery->setChildrenAges($data->getChildrenAge());
         };

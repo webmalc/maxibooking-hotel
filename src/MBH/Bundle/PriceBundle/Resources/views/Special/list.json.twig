@@ -5,14 +5,15 @@
     "data": [
         {% for entity in entities %}
         [
-            "<div class='text-center {{ not entity.isEnabled ? 'disabled-entry' }}'><i class='fa fa-star'></i></div>",
+            {% set error = entity.error is defined and entity.error %}
+            "<div class='text-center {{ not entity.isEnabled ? 'disabled-entry' }}'><i class='fa fa-star'{{ error?'style=\'color:lightgrey;\''}}></i></div>",
             "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'special'} %}{% endembed %}",
             "{{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}",
             "<small>{{ entity.roomTypes|join(';<br>')|raw }}</small>",
             "<small>{{ entity.tariffs|join(';<br>')|raw }}</small>",
             "{{ entity.discount|number_format(2) }} {% if not entity.isPercent  %}{{ currency()['text'] }}{% else %}%{% endif %}",
             "<div class='text-center'>{{ entity.sold }}/{{ entity.limit }}</div>",
-            "<div class='btn-list text-right'>{% if entity.isEnabled and entity.remain and is_granted("ROLE_PACKAGE_NEW") %}<a href='{{ path('special_booking', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='Бронировать' data-toggle='tooltip'><i class='fa fa-book'></i></a>{% endif %}{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'special'} %}{% endembed %}</div>"
+            "<div class='btn-list text-right'>{% if entity.isEnabled and entity.remain and is_granted("ROLE_PACKAGE_NEW") %}<a href='{{ path('special_booking', { 'id': entity.id }) }}' class='btn btn-{{ error?'warning':'success' }} btn-xs' title='Бронировать' data-toggle='tooltip'><i class='fa fa-book'></i></a>{% endif %}{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'special'} %}{% endembed %}</div>"
         ]{% if loop.index != entities|length %},{% endif %}
         {% endfor %}
     ]

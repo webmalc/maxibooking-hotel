@@ -5,17 +5,26 @@ namespace MBH\Bundle\OnlineBookingBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\Image;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
 use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\SpecialDataPreparerExeption;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\SpecialPrice;
+use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 
+/**
+ * Class SpecialDataPreparer
+ * @package MBH\Bundle\OnlineBookingBundle\Service
+ */
 class SpecialDataPreparer
 {
 
     const NO_IMAGE_PATH = 'noimage.png';
 
+    /**
+     *
+     */
     const ONLY_DEFAULT_TARIFF = true;
 
     /** @var  DocumentManager */
@@ -30,7 +39,53 @@ class SpecialDataPreparer
         $this->dm = $dm;
     }
 
-    public function getPreparedData(array $specials): array
+    /**
+     * @param Hotel|null $hotel
+     * @param \DateTime|null $begin
+     * @return \Doctrine\MongoDB\CursorInterface
+     */
+    public function getSpecials(Hotel $hotel = null, \DateTime $begin = null)
+    {
+        $specialsFilter = new SpecialFilter();
+        $specialsFilter->setRemain(1);
+        if (!$begin) {
+            $begin = new \DateTime("now midnight");
+        }
+        $specialsFilter->setBegin($begin);
+        if ($hotel) {
+            $specialsFilter->setHotel($hotel);
+        }
+
+        return $this->dm->getRepository('MBHPriceBundle:Special')->getStrictBeginFiltered($specialsFilter);
+    }
+
+    /**
+     * @param array $specials
+     * @return array
+     */
+    public function getSpecialsPageFormatWithMonth(array $specials): array
+    {
+        $results = [];
+        $data = $this->getSpecialsPageFormat($specials);
+        foreach ($data['specials'] as $specialEntity ) {
+            $begin = $specialEntity['dates']['begin'];
+            $end = $specialEntity['dates']['end'];
+            $special = $specialEntity['special'];
+            $results['month_'.$begin->format('m')][] = $special->getId();
+            $results['month_'.$end->format('m')][] = $special->getId();
+
+        }
+        $data['byMonth'] = $results;
+        $data = $this->uniqueByMonthFilter($data);
+
+        return $data;
+    }
+
+    /**
+     * @param array $specials
+     * @return array
+     */
+    public function getSpecialsPageFormat(array $specials): array
     {
         $result = [];
         foreach ($specials as $special) {
@@ -53,49 +108,11 @@ class SpecialDataPreparer
         return ['specials' => $this->sortSpecialsByPrice($result)];
     }
 
-    private function sortSpecialsByPrice(array $specials): array
-    {
-        uasort(
-            $specials,
-            function ($a, $b) {
-                /** @var Special $a */
-                /** @var SpecialPrice $c */
-                return reset($a['prices']) <=> reset($b['prices']);
-            }
-        );
-        return $specials;
-    }
-
-    public function getPreparedDataByMonth(array $specials): array
-    {
-        $results = [];
-        $data = $this->getPreparedData($specials);
-        foreach ($data['specials'] as $specialEntity ) {
-            $begin = $specialEntity['dates']['begin'];
-            $end = $specialEntity['dates']['end'];
-            $special = $specialEntity['special'];
-            $results['month_'.$begin->format('m')][] = $special->getId();
-            $results['month_'.$end->format('m')][] = $special->getId();
-
-        }
-        $data['byMonth'] = $results;
-        $data = $this->uniqueByMonthFilter($data);
-
-        return $data;
-    }
-
-    private function uniqueByMonthFilter(array $data): array
-    {
-        if (!$data['byMonth']??false) {
-            return $data;
-        }
-        foreach ($data['byMonth'] as $byMonthKey => $value) {
-            $data['byMonth'][$byMonthKey] = array_unique($value);
-        }
-
-        return $data;
-    }
-
+    /**
+     * @param SpecialPrice $specialPrice
+     * @param Special $special
+     * @return array
+     */
     private function prepareDataToTwig(SpecialPrice $specialPrice, Special $special): array
     {
         /** @var SpecialPrice $specPrice */
@@ -128,6 +145,39 @@ class SpecialDataPreparer
 
         return $result;
     }
+
+
+    private function sortSpecialsByPrice(array $specials): array
+    {
+        uasort(
+            $specials,
+            function ($a, $b) {
+                /** @var Special $a */
+                /** @var SpecialPrice $c */
+                return reset($a['prices']) <=> reset($b['prices']);
+            }
+        );
+        return $specials;
+    }
+
+
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    private function uniqueByMonthFilter(array $data): array
+    {
+        if (!$data['byMonth']??false) {
+            return $data;
+        }
+        foreach ($data['byMonth'] as $byMonthKey => $value) {
+            $data['byMonth'][$byMonthKey] = array_unique($value);
+        }
+
+        return $data;
+    }
+
 
     private function getImage(RoomType $roomType): array
     {

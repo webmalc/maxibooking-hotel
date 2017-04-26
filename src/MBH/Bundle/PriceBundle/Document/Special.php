@@ -226,6 +226,13 @@ class Special extends Base
      */
     protected $recalculation = false;
 
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Length(min=1, max=2048)
+     */
+    protected $error;
+
 
     /**
      * Special constructor.
@@ -711,6 +718,27 @@ class Special extends Base
         $this->virtualRoom = $virtualRoom;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getError(): ?string
+    {
+        return $this->error;
+    }
+
+    /**
+     * @param string $error
+     */
+    public function setError(string $error)
+    {
+        $this->error = $error;
+    }
+
+    public function clearError()
+    {
+        $this->setError('');
     }
 
 

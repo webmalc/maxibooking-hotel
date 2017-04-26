@@ -1,6 +1,6 @@
 /* global $, window, Routing */
 
-var Special = function($row) {
+var Special = function ($row) {
     this.id = $("#special", $row).data('special');
     this.begin = $("#dates", $row).data('begin');
     this.end = $("#dates", $row).data('end');
@@ -21,17 +21,33 @@ Special.prototype.init = function () {
     this.reNewPrices();
     this.reNewSitePrices();
     this.priceLabels();
+    this.isBookingButtonEnabled();
     this.bindHandlers();
 };
+Special.prototype.isBookingButtonEnabled = function () {
+    if (this.activeOption().data('price') === undefined) {
+        this.$bookingButton.addClass('disabled');
+
+        return false;
+    } else if (this.$bookingButton.hasClass('disabled')) {
+        this.$bookingButton.removeClass('disabled');
+    }
+
+    return true;
+};
+
 Special.prototype.bindHandlers = function () {
     var that = this;
     this.$select.on('change', function () {
         that.reNewPrices();
         that.reNewSitePrices();
         that.priceLabels();
+        that.isBookingButtonEnabled();
     });
     this.$bookingButton.on('click', function (e) {
-        that.booking(e);
+        if(that.isBookingButtonEnabled()) {
+            that.booking(e);
+        }
     });
     this.$closeButton.on('click', function (e) {
         that.closeSpecial(e);
@@ -96,7 +112,7 @@ Special.prototype.booking = function (e) {
     window.location.href = Routing.generate('package_new', data);
 };
 
-Special.prototype.closeSpecial = function(e) {
+Special.prototype.closeSpecial = function (e) {
     e.preventDefault();
     window.location.href = Routing.generate('special_close', {id: this.id});
 };

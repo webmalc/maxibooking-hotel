@@ -25,6 +25,7 @@ class CalculateSpecialPrices implements ConsumerInterface
         $message = json_decode($msg->body, true);
         $specialIds = isset($message['specialIds']) ? [$message['specialIds']] : [];
         $roomTypeIds = isset($message['roomTypeIds']) ? [$message['roomTypeIds']] : [];
+
         $this->specialHandler->calculatePrices($specialIds, $roomTypeIds);
 
         return true;

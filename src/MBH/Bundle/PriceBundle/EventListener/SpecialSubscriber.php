@@ -42,7 +42,7 @@ class SpecialSubscriber implements EventSubscriber
             $isChangeRecalculation = (bool) ($changeSet['recalculation']??null);
 
             if (!$isChangePrices && !$isChangeRecalculation) {
-                $this->producer->publish( json_encode( [ 'specialIds' => $args->getDocument()->getId()]));
+                $this->producer->publish( json_encode( [ 'specialIds' => $args->getDocument()->getId(), 'discount' => $args->getDocument()->getDiscount()]));
             }
         }
     }

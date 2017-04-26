@@ -20,7 +20,7 @@ class Mongo
     protected $config;
 
     /**
-     * @var MongoClient
+     * @var \MongoClient
      */
     protected $mongo;
 
