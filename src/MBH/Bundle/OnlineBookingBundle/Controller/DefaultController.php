@@ -436,16 +436,28 @@ class DefaultController extends BaseController
         return $response;
     }
 
+    private function createDateTimeForMail(\DateTime $date = null, $hour){
 
+        if (!$date) {
+            $date = new \DateTime();
+        }
 
+        $result = \DateTime::createFromFormat(
+            'd-m-Y H:i',
+            $date->format('d-m-Y').' '.$hour.':00'
+        );
+
+        return $result;
+
+    }
     /**
      * @param Order $order
-     * @param string $arrival
-     * @param string $departure
      * @return bool
      */
-    private function sendNotifications(Order $order, $arrival = '12:00', $departure = '12:00')
+    private function sendNotifications(Order $order)
     {
+
+
         try {
             //backend
             $notifier = $this->container->get('mbh.notifier');
