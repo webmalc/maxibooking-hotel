@@ -46,8 +46,8 @@ body {
 .with-left-divider:after,
 .with-right-divider:before {
   content: ' ';
-  height: 14px;
-  top: 16.5px;
+  height: 10px;
+  top: 7.5px;
   position: absolute;
   -webkit-border-radius: 0 7px 7px 0;
   -moz-border-radius: 0 7px 7px 0;
@@ -87,9 +87,9 @@ body {
 }
 .popover-package-container .popover-info-button,
 .popover-package-container .popover-edit-button {
-  width: 55px;
+  width: 33px;
   margin: 0 5px;
-  font-size: 47px;
+  font-size: 25px;
 }
 .popover-package-container .popover-info-button {
   border: 0;
@@ -136,22 +136,22 @@ body {
   z-index: 250;
 }
 #accommodation-chessBoard-content #header-title .tableTitleCell {
-  height: 47px;
+  height: 25px;
   padding: 10px;
   text-align: center;
 }
 #accommodation-chessBoard-content #calendarWrapper {
   position: relative;
   display: inline-block;
-  margin-left: 200px;
+  margin-left: 180px;
 }
 #accommodation-chessBoard-content #roomTypeColumn {
   z-index: 150;
   border-left: 1px solid #ddd;
   background-color: white;
   display: inline-block;
-  width: 200px;
-  top: 95px;
+  width: 180px;
+  top: 51px;
   position: absolute;
 }
 #accommodation-chessBoard-content .calendarDays li {
@@ -170,7 +170,7 @@ body {
 #accommodation-chessBoard-content .tile,
 #accommodation-chessBoard-content .calendarDaysHeader li {
   float: left;
-  width: 55px;
+  width: 33px;
 }
 #accommodation-chessBoard-content .tile {
   border-bottom: 1px solid #dce0e0;
@@ -187,8 +187,8 @@ body {
   font-size: 11px;
   line-height: 11px;
   font-weight: bold;
-  padding: 14px 2px 0px 8px;
-  height: 47px;
+  padding: 10px 2px 0px 8px;
+  height: 25px;
   position: relative;
   text-align: right;
 }
@@ -198,11 +198,11 @@ body {
 #accommodation-chessBoard-content .tile .leftRooms,
 #accommodation-chessBoard-content .tile .no-accommodation-date {
   border-right: 1px solid #eee;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 16px;
   font-weight: bold;
-  padding: 14px 5px;
-  height: 47px;
+  padding: 5px 5px;
+  height: 25px;
   position: relative;
   text-align: center;
 }
@@ -229,7 +229,7 @@ body {
   font-size: 14px;
   font-weight: bold;
   padding: 0px 5px;
-  height: 47px;
+  height: 25px;
   position: relative;
   text-align: center;
   display: table-cell;
@@ -237,45 +237,45 @@ body {
 }
 #accommodation-chessBoard-content .tile .day {
   border-right: 1px solid #e3e3e3;
-  font-size: 14px;
+  font-size: 10px;
   line-height: 16px;
   font-weight: bold;
-  padding: 9px 5px;
-  height: 47px;
+  padding: 7px 5px;
+  height: 25px;
   position: relative;
   text-align: center;
 }
 #accommodation-chessBoard-content .tile .day span {
   display: block;
   text-align: center;
-  font-size: 14px;
+  font-size: 10px;
   font-weight: normal;
   color: #999;
 }
 #accommodation-chessBoard-content .tile .title {
   border-top: 1px solid #ddd;
   border-right: 1px solid #e3e3e3;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: bold;
   padding: 0px 5px;
-  height: 47px;
+  height: 25px;
   position: relative;
   text-align: left;
   display: table-cell;
   vertical-align: middle;
-  width: 200px;
+  width: 180px;
 }
 #accommodation-chessBoard-content .tile .title-sub {
   border-right: 1px solid #e3e3e3;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: bold;
   padding: 0 5px 0 9px;
-  height: 47px;
+  height: 25px;
   position: relative;
   text-align: left;
   display: table-cell;
   vertical-align: middle;
-  width: 200px;
+  width: 180px;
 }
 #accommodation-chessBoard-content .tile .title-sub a:hover {
   cursor: default;
@@ -640,7 +640,7 @@ body {
 .ui-resizable-w {
   z-index: 150;
   width: 7px;
-  height: 47px;
+  height: 25px;
   position: absolute;
   background-color: #dd4b39;
   cursor: pointer;
@@ -687,9 +687,9 @@ body {
   -webkit-border-radius: 8px;
   -moz-border-radius: 8px;
   border-radius: 8px;
-  margin: 14px auto;
+  margin: 5px auto;
   text-align: center;
-  font-size: 13px;
+  font-size: 11px;
 }
 #work-shift-detail-header {
   margin-bottom: 5px;
@@ -703,13 +703,13 @@ body {
 .dividing-line {
   position: absolute;
   border: 2px dashed red;
-  height: 47px;
+  height: 25px;
   z-index: 250;
   top: 0;
 }
 #ex1Slider {
   display: inline-block;
-  width: 70%;
+  width: 60%;
 }
 #ex1Slider .slider-selection {
   background: #BABABA;

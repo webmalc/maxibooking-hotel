@@ -29,7 +29,7 @@ var ChessBoardManager = (function () {
         $('.sidebar-toggle').click(function () {
             setTimeout(function () {
                 self.setContentWidth(chessBoardContentBlock);
-            }, 700);
+            }, 1000);
         });
         this.addAccommodationElements();
         $('#s_tourist').change(function () {
@@ -157,7 +157,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.prototype.handleSizeSlider = function () {
         var _this = this;
         var $slider = $('#ex1');
-        $slider.slider();
+        $slider.slider({ tooltip: 'hide', reverseed: true });
         $slider.on('slideStop', function () {
             var sliderValue = $('#ex1').slider('getValue');
             ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);

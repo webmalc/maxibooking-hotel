@@ -52,7 +52,7 @@ class ChessBoardManager {
         $('.sidebar-toggle').click(function () {
             setTimeout(function () {
                 self.setContentWidth(chessBoardContentBlock);
-            }, 700)
+            }, 1000)
         });
         this.addAccommodationElements();
         $('#s_tourist').change(function () {
@@ -196,7 +196,7 @@ class ChessBoardManager {
 
     private handleSizeSlider() {
         let $slider = $('#ex1');
-        $slider.slider();
+        $slider.slider({tooltip : 'hide', reverseed: true});
         $slider.on('slideStop', () => {
             let sliderValue = $('#ex1').slider('getValue');
             ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);

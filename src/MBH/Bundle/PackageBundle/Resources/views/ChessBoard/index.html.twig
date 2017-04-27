@@ -115,7 +115,7 @@
 
     <form method="post" id="accommodation-report-filter" class="form-inline filter-form" role="form">
         <div class="input">
-            <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp;
+            <i class="fa fa-calendar" title='{{ 'chessboard_manager.dates.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
             <input type="text" name="filter_begin" id="accommodation-report-filter-begin"
                    class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm"
                    data-date-format="dd.mm.yyyy" value="{{ beginDate|date('d.m.Y') }}">
@@ -127,8 +127,8 @@
                    data-date-format="dd.mm.yyyy" value="{{ endDate|date('d.m.Y') }}">
         </div>
         <div class="input">
-            <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp;
-            <select name="filter_roomType[]" multiple data-placeholder="Тип номера"
+            <i class="fa fa-bed" title='{{ 'chessboard_manager.room_type.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
+            <select name="filter_roomType[]" multiple data-placeholder="{{ 'chessboard_manager.room_type.title'|trans }}"
                     id="accommodation-report-filter-roomType"
                     class="accommodation-report-filter form-control input-sm">
                 <option></option>
@@ -140,8 +140,8 @@
         </div>
         {% if housings|length %}
             <div class="input">
-                <i class="fa fa-home" title='Корпус' data-toggle='tooltip'></i>&nbsp;
-                <select name="housing[]" multiple data-placeholder="Корпус" id="accommodation-report-filter-housing"
+                <i class="fa fa-home" title='{{ 'chessboard_manager.housing.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
+                <select name="housing[]" multiple data-placeholder="{{ 'chessboard_manager.housing.title'|trans }}" id="accommodation-report-filter-housing"
                         class="accommodation-report-filter form-control input-sm">
                     <option></option>
                     {% for housing in housings %}
@@ -154,8 +154,8 @@
 
         {% if floors|length %}
             <div class="input">
-                <i class="fa fa-home" title='Этаж' data-toggle='tooltip'></i>&nbsp;
-                <select name="floor[]" multiple data-placeholder="Этаж" id="accommodation-report-filter-floor"
+                <i class="fa fa-home" title='{{ 'chessboard_manager.floor.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
+                <select name="floor[]" multiple data-placeholder="{{ 'chessboard_manager.floor.title'|trans }}" id="accommodation-report-filter-floor"
                         class="accommodation-report-filter form-control input-sm">
                     <option></option>
                     {% for floor in floors %}
@@ -166,15 +166,16 @@
             </div>
         {% endif %}
         <div class="input">
-            <button type="button" class="btn btn-primary navbar-btn" id="filter-button">Выбрать</button>
+            <button type="button" class="btn btn-primary navbar-btn" id="filter-button">{{ 'chessboard_manager.filter.button.text'|trans }}</button>
         </div>
         <div style="display: inline-block;margin-top: 13px; margin-right: 5px;">
             {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'chess_board_home'} %}
         </div>
         <div class="input" style="width: 150px;">
-            <i class="fa fa-bed" style="margin-right: 10px"></i>&nbsp;
-            <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="3"
+            <i class="fa fa-minus" style="margin-right: 5px"></i>&nbsp;
+            <input style="display: none;" id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="3"
                    data-slider-step="1" data-slider-value="{{ stylesFileNumber }}"/>
+            <i class="fa fa-plus" style="margin-left: 15px"></i>&nbsp;
         </div>
     </form>
 
@@ -235,11 +236,10 @@
                             <li class="tile tile-not-selected tile-free both not-standard-tile" style="width:{{ headerWidth }}px;">
                                 <div class="title-sub text-right">
                                     <div class="text-right">
-                                        Без размещения
+                                        {{ 'chessboard_manager.without_accommodation.tile.text'|trans }}
                                     </div>
                                 </div>
                             </li>
-                            {#TODO: Разобраться с тултипами#}
                             {% for key, roomData in roomTypeData['rooms'] %}
                                 <li class="tile tile-not-selected tile-free both not-standard-tile"
                                     style="width:{{ headerWidth }}px;">
@@ -313,7 +313,7 @@
                                                     <li class=" tile tile-bookable tile-free both">
                                                         <div class="no-accommodation-date" data-container="body"
                                                              data-placement="bottom" data-html="true"
-                                                             title="Брони без размещения" tabindex="0"
+                                                             title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}" tabindex="0"
                                                              data-date="{{ day|date('d.m.Y') }}"
                                                              data-toggle="popover">
                                                             {#<div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}#}
@@ -335,7 +335,7 @@
                                                     <li class=" tile tile-bookable tile-free both">
                                                         <div class="no-accommodation-date" data-container="body"
                                                              data-placement="bottom" data-html="true"
-                                                             title="Брони без размещения" tabindex="0"
+                                                             title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}" tabindex="0"
                                                              data-date="{{ day|date('d.m.Y') }}"
                                                              data-toggle="popover">
                                                             {#<div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}#}
@@ -438,14 +438,14 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" id="packageModalCancelButton"
-                                data-dismiss="modal">Отмена
+                                data-dismiss="modal">{{ 'modal.chessBoard.cancel'|trans }}
                         </button>
                         <button type="button" class="btn btn-primary" style="display: none;"
                                 id="package-modal-continue-button">
-                            Да
+                            {{ 'modal.chessBoard.button.yes_text'|trans }}
                         </button>
                         <button type="button" id="packageModalConfirmButton" class="btn btn-primary">
-                            Сохранить
+                            {{ 'modal.chessBoard.save'|trans }}
                         </button>
                     </div>
                 </div>
@@ -465,7 +465,7 @@
                     </div>
                     <div id="package-edit-body" class="modal-body">
                         <div class="input">
-                            <strong>Плательщик</strong>&nbsp;
+                            <strong>{{ 'modal.chessBoard.payer'|trans }}</strong>&nbsp;
                             {{ form_widget(searchForm.tourist) }}&nbsp;
                             <small>
                                 <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
@@ -479,7 +479,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" id="packageModalCancelButton"
-                                data-dismiss="modal">Закрыть
+                                data-dismiss="modal">{{ 'modal.chessBoard.close'|trans }}
                         </button>
                     </div>
                 </div>

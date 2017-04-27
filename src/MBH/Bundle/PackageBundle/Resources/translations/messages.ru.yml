@@ -420,6 +420,9 @@ form.chessBoard.children.label: Детей
 form.chessBoard.accommodation.label: Комната
 form.chessBoard.tariff.label: Тариф
 form.chessBoard.price.label: Цена
+modal.chessBoard.cancel: Отмена
+modal.chessBoard.save: Сохранить
+modal.chessBoard.button.yes_text: Да
 modal.chessBoard.close: Закрыть
 modal.chessBoard.delete: Удалить
 modal.chessBoard.edit: Редактировать
@@ -456,6 +459,7 @@ modal.chessBoard.room_name: Комната
 modal.chessBoard.room_type_name: Тип комнаты
 modal.chessBoard.begin: Дата заезда
 modal.chessBoard.end: Дата выезда
+modal.chessBoard.payer: Плательщик
 controller.chessboard.package_create.success: Бронь успешно создана
 controller.chessboard.package_update.success: Бронь успешно обновлена
 controller.chessboard.package_remove.success: Бронь успешно удалена
@@ -466,6 +470,13 @@ controller.chessboard.accommodation_divide.error: Дата разделения 
 controller.chessboard.accommodation_divide.error.empty_date_string: Передана пустая строка даты разделения размещения
 controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: Ошибка! Недопустимо изменение промежуточного размещения
 controller.chessboard.payer: Плательщик
+chessboard_manager.dates.title: Даты
+chessboard_manager.size_slider.title: Масштаб
+chessboard_manager.room_type.title: Тип номера
+chessboard_manager.housing.title: Корпус
+chessboard_manager.floor.title: Этаж
+chessboard_manager.filter.button.text: Выбрать
+chessboard_manager.without_accommodation.tile.text: Без размещения
 
 #package accommodation manipulator service
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
