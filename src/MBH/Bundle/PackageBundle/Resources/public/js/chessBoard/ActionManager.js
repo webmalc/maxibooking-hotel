@@ -42,6 +42,7 @@ var ActionManager = (function () {
     };
     ActionManager.prototype.callPackageInfoModal = function (accommodationId) {
         this.dataManager.getPackageDataRequest(accommodationId);
+        this.dataManager.getPackageDataRequest(accommodationId);
     };
     ActionManager.prototype.handleSearchOptionsModal = function (packageData, searchData) {
         var self = this;
@@ -240,14 +241,14 @@ var ActionManager = (function () {
         }, 12000);
         document.getElementById(messageBlockId).appendChild(messageDiv);
     };
-    ActionManager.callUpdatePackageModal = function (packageElement, intervalData, changedSide, isDivide) {
+    ActionManager.prototype.callUpdatePackageModal = function (packageElement, intervalData, changedSide, isDivide) {
         if (changedSide === void 0) { changedSide = null; }
         if (isDivide === void 0) { isDivide = false; }
         var $updateForm = $('#concise_package_update');
         $updateForm.show();
         var modalAlertDiv = document.getElementById('package-modal-change-alert');
         modalAlertDiv.innerHTML = '';
-        var newIntervalData = ChessBoardManager.getPackageData(packageElement);
+        var newIntervalData = this.dataManager.chessBoardManager.getPackageData(packageElement);
         if (intervalData && changedSide) {
             var alertMessageData = ActionManager.getAlertData(changedSide, intervalData, newIntervalData);
             if (alertMessageData) {

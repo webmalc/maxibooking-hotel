@@ -57,6 +57,7 @@ class ActionManager {
 
     public callPackageInfoModal(accommodationId) {
         this.dataManager.getPackageDataRequest(accommodationId);
+        this.dataManager.getPackageDataRequest(accommodationId);
     }
 
     public handleSearchOptionsModal(packageData, searchData) {
@@ -281,12 +282,12 @@ class ActionManager {
         document.getElementById(messageBlockId).appendChild(messageDiv);
     }
 
-    public static callUpdatePackageModal(packageElement, intervalData, changedSide = null, isDivide = false) {
+    public callUpdatePackageModal(packageElement, intervalData, changedSide = null, isDivide = false) {
         let $updateForm = $('#concise_package_update');
         $updateForm.show();
         let modalAlertDiv = document.getElementById('package-modal-change-alert');
         modalAlertDiv.innerHTML = '';
-        let newIntervalData = ChessBoardManager.getPackageData(packageElement);
+        let newIntervalData = this.dataManager.chessBoardManager.getPackageData(packageElement);
         if (intervalData && changedSide) {
             let alertMessageData = ActionManager.getAlertData(changedSide, intervalData, newIntervalData);
             if (alertMessageData) {

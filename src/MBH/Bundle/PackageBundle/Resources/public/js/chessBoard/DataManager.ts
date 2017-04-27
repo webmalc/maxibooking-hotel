@@ -9,7 +9,7 @@ class DataManager {
 
     private _accommodations;
     private _leftRoomCounts;
-    private chessBoardManager;
+    public chessBoardManager;
     private actionManager;
     private noAccommodationCounts;
     private noAccommodationIntervals;

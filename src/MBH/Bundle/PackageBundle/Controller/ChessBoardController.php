@@ -28,6 +28,53 @@ use MBH\Bundle\PackageBundle\Form\SearchType;
  */
 class ChessBoardController extends BaseController
 {
+    const SIZE_CONFIGS = [
+        [
+            'headerWidth' => 200,
+            'tableCellHeight' => 47,
+            'tableCellWidth' => 55,
+            'tileFontSize' => 14,
+            'tileTopPadding' => 12,
+            'dayTopPadding' => 9,
+            'titleSubPadding' => 0,
+            'titleSubFontSize' => 11,
+            'leftRoomsAndNoAccFontSize' => 20,
+        ],
+        [
+            'headerWidth' => 200,
+            'tableCellHeight' => 40,
+            'tableCellWidth' => 47,
+            'tileFontSize' => 12,
+            'tileTopPadding' => 12,
+            'dayTopPadding' => 5,
+            'titleSubPadding' => 5,
+            'titleSubFontSize' => 11,
+            'leftRoomsAndNoAccFontSize' => 16,
+        ],
+        [
+            'headerWidth' => 180,
+            'tableCellHeight' => 30,
+            'tableCellWidth' => 40,
+            'tileFontSize' => 10,
+            'tileTopPadding' => 7,
+            'dayTopPadding' => 0,
+            'titleSubPadding' => 0,
+            'titleSubFontSize' => 11,
+            'leftRoomsAndNoAccFontSize' => 16,
+        ],
+        [
+            'headerWidth' => 180,
+            'tableCellHeight' => 25,
+            'tableCellWidth' => 33,
+            'tileFontSize' => 10,
+            'tileTopPadding' => 5,
+            'dayTopPadding' => 7,
+            'titleSubPadding' => 0,
+            'titleSubFontSize' => 11,
+            'leftRoomsAndNoAccFontSize' => 16,
+        ]
+    ];
+
     /**
      * @Route("/", name="chess_board_home", options={"expose"=true})
      * @Template()
@@ -50,6 +97,8 @@ class ChessBoardController extends BaseController
             'hotel' => $this->hotel,
             'roomManager' => $this->get('mbh.hotel.room_type_manager')
         ]);
+
+        $stylesFileNumber = $request->cookies->get('chessboardSizeNumber') ?? 1;
 
         $rightsChecker = $this->get('security.authorization_checker');
         $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
@@ -88,8 +137,11 @@ class ChessBoardController extends BaseController
                 ['genders' => $this->container->getParameter('mbh.gender.types')])->createView(),
             'documentForm' => $this->createForm(DocumentRelationType::class, $tourist)
                 ->createView(),
-            'addressForm' => $this->createForm(AddressObjectDecomposedType::class, $tourist->getAddressObjectDecomposed())
-                ->createView()
+            'addressForm' => $this->createForm(AddressObjectDecomposedType::class,
+                $tourist->getAddressObjectDecomposed())
+                ->createView(),
+            'sizes' => self::SIZE_CONFIGS,
+            'stylesFileNumber' => $stylesFileNumber
         ];
     }
 
