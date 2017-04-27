@@ -2,12 +2,15 @@
 
 namespace MBH\Bundle\PriceBundle\Services;
 
+use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSpecialResultGenerator;
 use MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Calculation;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
@@ -96,11 +99,17 @@ class SpecialHandler
                 ->setPrices($searchResult->getPrices());
             $special->addPrice($specialPrice);
             $special->clearError();
-            $this->addLogMessage('Найдены цены, еще не записаны в БД', $searchResult->getPrices(), $output);
+            $this->addLogMessage('Найдены цены', $searchResult->getPrices(), $output);
         } else {
-            $special->setError('Нет подходящих вариантов для спецпредложения');
+            $err = 'Нет подходящих вариантов для спецпредложения';
+            //Находит чем занята вирт комната.
+//            $packages = $this->getPackage($special->getBegin(), $special->getEnd(), $special->getVirtualRoom());
+//            if ($packages && count($packages)) {
+//                $err .= ' Виртуальная комната занята заказом '.reset($packages)->getOrder()->getName();
+//            }
+            $special->setError($err);
             $this->addLogMessage(
-                'Нет подходящих предложений для поиска по спецпредложению',
+                $err,
                 ['specialId' => $special->getId(), 'specialName' => $special->getName()],
                 $output
             );
@@ -113,6 +122,21 @@ class SpecialHandler
             ['specialId' => $special->getId(), 'specialName' => $special->getName()],
             $output
         );
+    }
+
+    private function getPackage(\DateTime $begin, \DateTime $end, Room $virtualRoom)
+    {
+        $criteria = new PackageQueryCriteria();
+        $criteria->begin = $begin;
+        $criteria->end = $end;
+        $criteria->roomType = $virtualRoom->getRoomType();
+        $criteria->virtualRoom = $virtualRoom;
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($criteria);
+        if ($packages && count($packages) && $packages instanceof CursorInterface) {
+            $packages = $packages->toArray();
+        }
+
+        return $packages;
     }
 
     private function addLogMessage(string $message, array $context, callable $output = null)

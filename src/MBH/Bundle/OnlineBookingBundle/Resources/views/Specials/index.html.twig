@@ -17,7 +17,6 @@
     {#{% endfor %}#}
 {#{% endif %}#}
 {% for special in data.specials %}
-
 <div class="oneblockspec{% for keymonth, month in data.byMonth %}{% if special.special.id in month %} {{ keymonth }} {% endif %}{% endfor %}"
      data-discount="{{ special.discount }}"
      data-specialid="{{ special.specialId }}"
@@ -35,9 +34,18 @@
     </div>
 
     <div class="spec-info">
+        {% if special.hotelLink is defined and special.hotelLink is not empty %}
+            <a class="hotel_link" href="{{ special.hotelLink }}"><p class="hotel">{{ special.hotelName }}</p></a>
+            {% else %}
+                <p class="hotel">{{ special.hotelName }}</p>
+        {% endif %}
+        {% if special.roomType.category.descriptionurl is defined and special.roomType.category.descriptionurl is not empty %}
+            <a class="room_link" href="{{ special.roomType.category.descriptionUrl }}"
+               target="_blank"><p class="room">{{ special.roomTypeName }}</p></a>
+        {% else %}
+            <p class="room">{{ special.roomTypeName }}</p>
+        {% endif %}
 
-        <p class="hotel">{{ special.hotelName }}</p>
-        <p class="room">{{ special.roomTypeName }}</p>
         <p class="food"><img src="http://azovsky.ru/images/specnew/spoon.png" alt=""> <a href="http://azovsky.ru/shvedskiy-stol/" title="Шведский стол">3-раз. питание шведский стол</a></p>
     </div>
     <div class="spec-date">

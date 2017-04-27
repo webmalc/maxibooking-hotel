@@ -22,21 +22,22 @@ class SpecialDataPreparer
 
     const NO_IMAGE_PATH = 'noimage.png';
 
-    /**
-     *
-     */
     const ONLY_DEFAULT_TARIFF = true;
 
     /** @var  DocumentManager */
     private $dm;
 
+    private $onlineOptions;
+
     /**
      * SpecialDataPreparer constructor.
      * @param DocumentManager $dm
+     * @param array $hotelsLinks
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, array $onlineOptions)
     {
         $this->dm = $dm;
+        $this->onlineOptions = $onlineOptions;
     }
 
     /**
@@ -89,7 +90,7 @@ class SpecialDataPreparer
     {
         $result = [];
         foreach ($specials as $special) {
-            if (!($special instanceof Special) || !count($special->getRoomTypes()) || $special->isRecalculation() || !$special->getRemain()) {
+            if (!($special instanceof Special) || !count($special->getRoomTypes()) || $special->isRecalculation() || !$special->getRemain() || !empty($special->getError())) {
                 continue;
             }
             if (count($special->getPrices())) {
@@ -141,6 +142,7 @@ class SpecialDataPreparer
             'specialId' => $special->getId(),
             'roomTypeId' => $roomType->getId(),
             'roomCategoryId' => $roomType->getCategory()->getId(),
+            'hotelLink' => $this->onlineOptions['hotels_links'][$roomType->getHotel()->getId()]??null
         ];
 
         return $result;

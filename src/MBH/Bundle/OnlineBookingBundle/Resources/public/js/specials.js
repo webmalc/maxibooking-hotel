@@ -203,17 +203,23 @@ var callMonthSlider = function (month) {
 
     });
 };
-var showFirstEnabledSwitcher = function (monthSwitchers) {
-    var switcher;
-    for (switcher in monthSwitchers) {
+var showFirstEnabledSwitcher = function (monthSwitchers, defaultMonth) {
+    var switcher, activeSwitcher;
+
+
+    for (switcher in monthSwitchers.reverse()) {
         if(monthSwitchers[switcher].isEnabled) {
-            monthSwitchers[switcher].showClickedSpecials();
-            break;
+            activeSwitcher = monthSwitchers[switcher];
+            if(activeSwitcher.id === defaultMonth) {
+                break
+            }
         }
     }
+    activeSwitcher.showClickedSpecials();
 };
 
 $(function () {
+    var defaultMonth = 'month_06';
     var specials = [],
         monthSwitchers = [],
         hotelSwitchers = [];
@@ -233,5 +239,5 @@ $(function () {
         hotelSwitchers.push(hotelSwitcher);
     });
     callMonthSlider();
-    showFirstEnabledSwitcher(monthSwitchers);
+    showFirstEnabledSwitcher(monthSwitchers, defaultMonth);
 });

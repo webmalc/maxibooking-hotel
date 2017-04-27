@@ -23,7 +23,7 @@ class SpecialPriceRecalculateCommand extends ContainerAwareCommand
             $output->writeln($message);
         };
 
-        $this->getContainer()->get('mbh.special_handler')->calculatePrices([],[], $logOutput);
+        $this->getContainer()->get('mbh.special_handler')->calculatePrices([],[], $input->getOption('verbose')?$logOutput:null);
         $time = $start->diff(new \DateTime());
         $output->writeln(
             sprintf('Recalculate complete. Elapsed time: %s', $time->format('%H:%I:%S'))

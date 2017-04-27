@@ -33,7 +33,7 @@ services:
 
     mbh.online.special_data_preparer:
         class: MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer
-        arguments: ['@doctrine.odm.mongodb.document_manager']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '%online_booking%']
 
     mbh.online.search_form_data:
         class: MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData

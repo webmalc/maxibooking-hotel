@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Document\Criteria;
 
 use MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria;
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -103,4 +104,7 @@ class PackageQueryCriteria extends AbstractQueryCriteria
      * @var bool
      */
     public $deleted = false;
+
+    /** @var Room */
+    public $virtualRoom;
 }

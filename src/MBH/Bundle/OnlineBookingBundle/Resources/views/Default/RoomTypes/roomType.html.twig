@@ -49,11 +49,11 @@
                     {% endif %}
                     &nbsp;</p>
                 <p class="numtype"><b>Тип номера:</b><br>
-                    {% if roomType.descriptionurl is defined and roomType.descriptionurl is not empty %}
-                        <a class="room_link" href="{{ roomType.descriptionUrl }}"
-                           target="_blank">{{ roomType.fullTitle }}</a>
+                    {% if roomType.category.descriptionurl is defined and roomType.category.descriptionurl is not empty %}
+                        <a class="room_link" href="{{ roomType.category.descriptionUrl }}"
+                           target="_blank">{{ roomType.category.name }}</a>
                     {% else %}
-                        {{ roomType.fullTitle }}
+                        {{ roomType.category.fullTitle??roomType.fullTitle }}
                     {% endif %}
                 </p>
                 <p class="gueststype">

@@ -57,7 +57,11 @@
             <div class="col-xs-8">
                 <div>{{ roomType.hotel.fullTitle }}</div>
                 <div class="numtype">Тип номера</div>
-                <div>{{ roomTypeCategory.fullTitle }}</div>
+                {% if roomTypeCategory.category.descriptionUrl is defined and roomTypeCategory.category.descriptionUrl is not empty %}
+                <div><a class="room_link" href="{{ roomTypeCategory.category.descriptionUrl }}" target="_blank">{{ roomTypeCategory.category.name }}</a></div>
+                    {% else %}
+                        <div>{{ roomTypeCategory.category.name }}</div>
+                {% endif %}
             </div>
         </div>
         <div class="date-info row">

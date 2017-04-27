@@ -232,6 +232,13 @@ class PackageRepository extends DocumentRepository
             $queryBuilder->field('roomType.id')->equals($criteria->roomType->getId());
         }
 
+        if (isset($criteria->virtualRoom)) {
+            if ($criteria->virtualRoom instanceof Room) {
+                $criteria->virtualRoom = $criteria->virtualRoom->getId();
+            }
+            $queryBuilder->field('virtualRoom.id')->equals($criteria->virtualRoom);
+        }
+
         $dateFilterBy = $criteria->dateFilterBy ? $criteria->dateFilterBy : 'begin';
         //begin
         if (isset($criteria->begin)) {
