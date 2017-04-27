@@ -83,6 +83,15 @@ class FormConfig extends Base
     protected $nights = false;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isDisplayChildrenAges = false;
+
+    /**
      * @var array
      * @Gedmo\Versioned
      * @ODM\Collection
@@ -94,6 +103,25 @@ class FormConfig extends Base
     public function __construct()
     {
         $this->hotels = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsDisplayChildrenAges(): ?bool
+    {
+        return $this->isDisplayChildrenAges;
+    }
+
+    /**
+     * @param bool $isDisplayChildrenAges
+     * @return FormConfig
+     */
+    public function setIsDisplayChildrenAges(bool $isDisplayChildrenAges): FormConfig
+    {
+        $this->isDisplayChildrenAges = $isDisplayChildrenAges;
+
+        return $this;
     }
 
     /**
@@ -236,6 +264,4 @@ class FormConfig extends Base
         $this->hotels = $hotels;
         return $this;
     }
-
-
 }

@@ -72,6 +72,13 @@ class PackageServiceType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
             ])
+            ->add('end', DateType::class, [
+                'label' => 'form.packageServiceType.end',
+                'group' => 'form.packageServiceType.add_service',
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
+            ])
             ->add('time', TimeType::class, [
                 'label' => 'form.packageServiceType.time',
                 'required' => false,
@@ -111,5 +118,4 @@ class PackageServiceType extends AbstractType
     {
         return 'mbh_bundle_packagebundle_package_service_type';
     }
-
 }

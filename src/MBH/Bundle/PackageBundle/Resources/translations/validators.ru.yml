@@ -63,3 +63,4 @@ validator.accommodation.intersect.neighbour: Размещение пересек
 validator.accommodation.wrong.start.end: Размещение выходит за пределы брони.
 validator.accommodation.end_less_or_equal_begin: Дата окончания размещения не может быть меньше или равна началу размещения.
 validator.package.special_message: Некорректное спецпредложение
+validator.service.wrong_dates: 'Некорректные даты услуги'

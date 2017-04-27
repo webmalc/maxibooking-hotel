@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Validator\Constraints;
 
-
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -24,6 +23,4 @@ class PackageAccommodations extends Constraint
     {
         return self::CLASS_CONSTRAINT;
     }
-
-
 }

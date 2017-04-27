@@ -274,6 +274,7 @@ jQuery(document).ready(function () {
                             var tr = jQuery(this).closest('tr'),
                                 pricesLi = tr.find('ul.mbh-results-prices li:visible'),
                                 roomType = tr.find('span.mbh-results-roomType'),
+                                hotel = tr.find('span.mbh-results-hotel'),
                                 tariff = tr.find('span.mbh-results-tariff')
                             ;
                             for(var i = 1; i <= jQuery(this).val(); i++) {
@@ -284,6 +285,7 @@ jQuery(document).ready(function () {
                                     requestParams.packages.push({
                                         'price': parseInt(pricesLi.attr('data-value')),
                                         'roomType': {id : roomType.attr('data-id'), 'title': roomType.text()},
+                                        'hotel': {id : hotel.attr('data-id'), 'title': hotel.text()},
                                         'tariff': {id: tariff.attr('data-id'), 'title': tariff.text()},
                                         'adults': tourists[0],
                                         'children': tourists[1]
@@ -297,7 +299,7 @@ jQuery(document).ready(function () {
                         if(jQuery(this).val() > 0) {
                             var tr = jQuery(this).closest('tr'),
                                 id = tr.find('span.mbh-results-services-name').attr('data-id')
-                                ;
+                            ;
                             requestParams.services.push({
                                 'id' : id,
                                 'amount': jQuery(this).val()
@@ -396,9 +398,39 @@ jQuery(document).ready(function () {
 
                             // user form next button
                             jQuery('#mbh-user-form-next').click(function(){
+                                servicesCount = jQuery('select.mbh-results-services-count')
+                                
+                                servicesCount.each( function() {
+                                    if(jQuery(this).val() > 0) {
+                                        var tr = jQuery(this).closest('tr'),
+                                            id = tr.find('span.mbh-results-services-name').attr('data-id')
+                                        ;
+                                        requestParams.services.push({
+                                            'id' : id,
+                                            'amount': jQuery(this).val()
+                                        });
+                                    }
+                                });
                                 requestParams.user = getUser();
                                 requestParams = jQuery.extend(requestParams, getPackageInfo());
 
+                                var totalServices = 0;
+                                servicesCount.each( function() {
+                                    if(jQuery(this).val() > 0) {
+                                        var tr = jQuery(this).closest('tr'),
+                                            span = tr.find('span.mbh-results-services-prices')
+                                        ;
+                                        if(span.length) {
+                                            totalServices += parseInt(span.attr('data-value')) * jQuery(this).val();
+                                        }
+                                        ;
+                                    }
+                                });
+                                var total = parseInt(requestParams.total.replace(/,/g,''));
+                                
+                                total += totalServices;
+                                requestParams.total = String(total);
+                                requestParams.totalServices = String(totalServices);
                                 waiting();
 
                                 // ------------------------------ STEP 3: load payment type -------------------------

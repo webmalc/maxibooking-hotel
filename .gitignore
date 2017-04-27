@@ -1,5 +1,5 @@
 azovsky_remote/
-web/test
+/web/test
 scripts/deploy_to_test.sh
 /scripts/upload
 /web/bundles/

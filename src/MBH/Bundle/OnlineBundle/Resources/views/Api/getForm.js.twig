@@ -111,11 +111,12 @@ jQuery(document).ready(function () {
         });
     }
     if (children.length) {
-        children.change(function () {
+        children.bind('keyup mouseup change', function () {
             var val = parseInt(children.val());
             if (isNaN(val)) {
                 children.val(0);
             } else {
+                setChildAgeForms(val);
                 children.val(val);
             }
         });
@@ -128,6 +129,30 @@ jQuery(document).ready(function () {
             button.prop('disabled', true);
         }
     });
-})
+    setChildAgeForms(children.val());
+});
 
+function setChildAgeForms(childrenCount) {
+    var $childAgesBlock = $('.children-ages');
+    if (childrenCount > 0) {
+        $childAgesBlock.show();
+    } else if ($childAgesBlock) {
+        $childAgesBlock.hide();
+    }
+    var selectFormCount = $childAgesBlock.find('select').size();
+    var difference = childrenCount - selectFormCount;
+    if (difference > 0) {
+        for (var i = selectFormCount; i < childrenCount; i++) {
+            var childrenAgeForm = $('#children-age-1').clone();
+            var selectFormName = 'children-age-' + (i + 1);
+            childrenAgeForm.attr('id', selectFormName);
+            $childAgesBlock.append(childrenAgeForm);
+        }
+    } else if (difference < 0) {
+        while (childrenCount != selectFormCount && $childAgesBlock.find('select').size() > 1) {
+            $childAgesBlock.find('select').last().remove();
+            selectFormCount--;
+        }
+    }
+}
 
