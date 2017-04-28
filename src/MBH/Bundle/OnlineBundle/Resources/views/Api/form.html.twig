@@ -1,6 +1,6 @@
 {% spaceless %}
 {% if hotels|length %}
-<form id="mbh-form" method="get" action="{{ config.result.url }}">
+<form id="mbh-form" method="get" target="_parent" action="{{ config.result.url }}">
 
     <h3>{{ 'views.api.form.rooms_reservation'|trans({}, 'MBHOnlineBundle') }}</h3>
 
@@ -16,12 +16,12 @@
 
     <div class="mbh-form-row">
         <label for="mbh-form-begin"> {{ 'views.api.form.check_in_date'|trans({}, 'MBHOnlineBundle') }}</label>
-        <input type="text" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}">
+        <input type="text" class="mbh-calendar-input" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}">
     </div>
 
     <div class="mbh-form-row" {% if formConfig.nights %}style='display: none;'{% endif %}>
         <label for="mbh-form-end"> {{ 'views.api.form.check_out_date'|trans({}, 'MBHOnlineBundle') }}</label>
-        <input type="text" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
+        <input type="text" class="mbh-calendar-input" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
     </div>
 
     {% if formConfig.nights %}
