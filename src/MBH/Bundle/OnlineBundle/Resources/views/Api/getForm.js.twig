@@ -89,10 +89,13 @@ jQuery(document).ready(function() {
     if (nights.length) {
         jQuery('#mbh-form-nights, #mbh-form-begin').change(function() {
 
-            var beginDate = begin.datepicker("getDate");
+            var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', begin.val());
+            if (!beginDate) {
+                return;
+            }
             var endDate = beginDate;
             endDate.setDate(endDate.getDate() + parseInt(nights.val(), 10));
-            end.datepicker('setDate', endDate);
+            end.val(jQuery.datepicker.formatDate( "dd.mm.yy", endDate));
         });
 
     }

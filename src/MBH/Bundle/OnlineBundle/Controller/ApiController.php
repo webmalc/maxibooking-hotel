@@ -30,7 +30,7 @@ class ApiController extends Controller
      * Online form iframe calendar
      * @Route("/form/iframe/calendar", name="online_form_calendar")
      * @Method("GET")
-     * ///// @Cache(expires="tomorrow", public=true)
+     * @Cache(expires="tomorrow", public=true)
      * @Template()
      */
     public function getFormCalendarAction()
@@ -42,7 +42,7 @@ class ApiController extends Controller
      * Online form iframe
      * @Route("/form/iframe/{formId}", name="online_form_iframe", defaults={"formId"=null})
      * @Method("GET")
-     * ////// @Cache(expires="tomorrow", public=true)
+     * @Cache(expires="tomorrow", public=true)
      * @Template()
      */
     public function getFormIframeAction($formId = null)
@@ -107,7 +107,7 @@ class ApiController extends Controller
      * Online form js
      * @Route("/form/{id}", name="online_form_get", defaults={"_format"="js", "id"=null})
      * @Method("GET")
-     * //// @Cache(expires="tomorrow", public=true)
+     * @Cache(expires="tomorrow", public=true)
      * @Template()
      */
     public function getFormAction($id = null)
