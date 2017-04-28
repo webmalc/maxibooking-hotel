@@ -205,6 +205,7 @@ class Ostrovok extends Base
         } catch (OstrovokApiServiceException $exception) {
             $result = false;
             $this->log('Ostrovok fail roomUpdate '.$exception->getMessage());
+            $this->logger->addAlert('RoomUpdateFailed', $rna_request_data);
         }
 
         return $result;

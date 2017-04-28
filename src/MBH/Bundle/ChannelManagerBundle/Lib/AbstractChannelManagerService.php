@@ -112,13 +112,14 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     public function closeAll()
     {
+        $this->log('Abstract closeAll function start');
         $result = true;
-
         foreach ($this->getConfig() as $config) {
             $check = $this->closeForConfig($config);
             $result ? $result = $check : $result;
 
         }
+        $this->log('Abstract closeAll function end.');
 
         return $result;
     }
@@ -147,6 +148,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
+        $this->log('ChannelManager update function start');
+
         $result = true;
 
         $check = $this->updateRooms($begin, $end, $roomType);
@@ -158,6 +161,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->updatePrices($begin, $end, $roomType);
         $result ? $result = $check : $result;
 
+        $this->log('ChannelManager update function end.');
+
+
         return $result;
     }
 
@@ -166,9 +172,14 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     public function clearAllConfigs()
     {
+        $this->log('Abstract clearAllConfigs function start.');
+
         foreach ($this->getConfig() as $config) {
             $this->clearConfig($config);
         }
+
+        $this->log('Abstract clearAllConfigs function end.');
+
     }
 
     /**
@@ -547,7 +558,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             return $amount * $config->getCurrencyDefaultRatio();
         }
 
-        return $amount;
     }
 
     /**
@@ -568,6 +578,5 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             return $amount / $config->getCurrencyDefaultRatio();
         }
 
-        return $amount;
     }
 }
