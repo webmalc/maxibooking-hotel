@@ -526,10 +526,7 @@ class ChessBoardManager {
         let jQueryObj = $(identifier);
         let self = this;
 
-        // console.time('draggable');
         this.addDraggable(jQueryObj);
-        // console.timeEnd('draggable');
-        // console.time('resizable etc');
         jQueryObj.each(function (index, element) {
             let intervalData = self.dataManager.getAccommodationIntervalById(this.id);
             let $element = $(element);
@@ -599,7 +596,6 @@ class ChessBoardManager {
                 }
             });
         });
-        // console.timeEnd('resizable etc');
     }
 
     private divide(packageElement, firstAccommodationWidth) {

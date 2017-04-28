@@ -123,7 +123,8 @@ class PriceCacheRepository extends DocumentRepository
     ) {
         $cachesQB = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories);
         if (!is_null($displayedDate)) {
-            $cachesQB->field('createdAt')->lt($displayedDate);
+            $cachesQB->addOr($cachesQB->expr()->field('createdAt')->exists(false));
+            $cachesQB->addOr($cachesQB->expr()->field('createdAt')->lt($displayedDate));
             $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->gt($displayedDate));
         }
         $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->equals(null));

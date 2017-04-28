@@ -491,23 +491,10 @@ class ChessBoardController extends BaseController
         return [
             'begin' => $beginDate,
             'end' => $endDate,
-            'roomTypeIds' => $this->getDataFromMultipleSelectField(isset($data['filter_roomType']) ? $data['filter_roomType'] : null),
-            'housing' => $this->getDataFromMultipleSelectField(isset($data['housing']) ? $data['housing'] : null),
-            'floor' => $this->getDataFromMultipleSelectField(isset($data['floor']) ? $data['floor'] : null),
+            'roomTypeIds' => $this->helper->getDataFromMultipleSelectField(isset($data['filter_roomType']) ? $data['filter_roomType'] : null),
+            'housing' => $this->helper->getDataFromMultipleSelectField(isset($data['housing']) ? $data['housing'] : null),
+            'floor' => $this->helper->getDataFromMultipleSelectField(isset($data['floor']) ? $data['floor'] : null),
             'pageNumber' => isset($data['page']) ? $data['page'] : 1
         ];
-    }
-
-    /**
-     * @param $fieldData
-     * @return array
-     */
-    private function getDataFromMultipleSelectField($fieldData)
-    {
-        if (!empty($fieldData) && is_array($fieldData) && $fieldData[0] != '') {
-            return $fieldData;
-        }
-
-        return [];
     }
 }

@@ -437,10 +437,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.prototype.addListeners = function (identifier) {
         var jQueryObj = $(identifier);
         var self = this;
-        // console.time('draggable');
         this.addDraggable(jQueryObj);
-        // console.timeEnd('draggable');
-        // console.time('resizable etc');
         jQueryObj.each(function (index, element) {
             var _this = this;
             var intervalData = self.dataManager.getAccommodationIntervalById(this.id);
@@ -510,7 +507,6 @@ var ChessBoardManager = (function () {
                 }
             });
         });
-        // console.timeEnd('resizable etc');
     };
     ChessBoardManager.prototype.divide = function (packageElement, firstAccommodationWidth) {
         this.canMoveAccommodation = true;
