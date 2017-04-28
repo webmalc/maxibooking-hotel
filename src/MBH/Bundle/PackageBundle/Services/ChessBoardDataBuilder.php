@@ -497,7 +497,7 @@ class ChessBoardDataBuilder
         }
 
         $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->fetch($this->hotel, $this->roomTypeIds)->toArray();
+            ->fetch($this->hotel)->toArray();
 
         if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
             $filterCollection->disable('disableable');

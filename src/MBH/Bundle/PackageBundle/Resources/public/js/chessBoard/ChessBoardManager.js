@@ -401,10 +401,21 @@ var ChessBoardManager = (function () {
         return element;
     };
     ChessBoardManager.prototype.getNearestTableLineTopOffset = function (yCoordinate) {
+        var tableLines = [].slice.call(document.getElementsByClassName('roomDates'));
+        var topOffset = this.getNearestTableLineToYOffset(yCoordinate, tableLines);
+        if (!topOffset) {
+            var leftRoomsLines = [].slice.call(document.getElementsByClassName('leftRoomsLine'));
+            topOffset = this.getNearestTableLineToYOffset(yCoordinate, leftRoomsLines);
+            if (!topOffset) {
+                topOffset = tableLines[1].getBoundingClientRect().top;
+            }
+        }
+        return topOffset;
+    };
+    ChessBoardManager.prototype.getNearestTableLineToYOffset = function (yCoordinate, lines) {
         var _this = this;
         var topOffset = null;
-        var tableLines = [].slice.call(document.getElementsByClassName('roomDates'));
-        tableLines.some(function (line) {
+        lines.some(function (line) {
             var lineTopOffset = line.getBoundingClientRect().top;
             if (yCoordinate >= lineTopOffset && yCoordinate <= (lineTopOffset + styleConfigs[_this.currentSizeConfigNumber].tableCellHeight)) {
                 topOffset = lineTopOffset;
@@ -414,10 +425,6 @@ var ChessBoardManager = (function () {
                 return false;
             }
         });
-        if (!topOffset) {
-            topOffset = tableLines[1].getBoundingClientRect().top;
-        }
-        return topOffset;
     };
     ChessBoardManager.prototype.getPackageLeftOffset = function (startDate) {
         var tableStartDate = ChessBoardManager.getTableStartDate();

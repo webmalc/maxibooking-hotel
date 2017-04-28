@@ -485,9 +485,22 @@ class ChessBoardManager {
     }
 
     private getNearestTableLineTopOffset(yCoordinate) {
-        let topOffset = null;
         let tableLines = [].slice.call(document.getElementsByClassName('roomDates'));
-        tableLines.some((line) => {
+        let topOffset = this.getNearestTableLineToYOffset(yCoordinate, tableLines);
+        if (!topOffset) {
+            let leftRoomsLines = [].slice.call(document.getElementsByClassName('leftRoomsLine'));
+            topOffset = this.getNearestTableLineToYOffset(yCoordinate, leftRoomsLines);
+            if (!topOffset) {
+                topOffset = tableLines[1].getBoundingClientRect().top;
+            }
+        }
+
+        return topOffset;
+    }
+
+    private getNearestTableLineToYOffset(yCoordinate, lines) {
+        let topOffset = null;
+        lines.some((line) => {
             let lineTopOffset = line.getBoundingClientRect().top;
             if (yCoordinate >= lineTopOffset && yCoordinate <= (lineTopOffset + styleConfigs[this.currentSizeConfigNumber].tableCellHeight)) {
                 topOffset = lineTopOffset;
@@ -496,11 +509,6 @@ class ChessBoardManager {
                 return false;
             }
         });
-        if (!topOffset) {
-            topOffset = tableLines[1].getBoundingClientRect().top;
-        }
-
-        return topOffset;
     }
 
     private getPackageLeftOffset(startDate) {
