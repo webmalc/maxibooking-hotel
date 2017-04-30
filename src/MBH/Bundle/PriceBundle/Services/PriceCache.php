@@ -167,42 +167,45 @@ class PriceCache
                 ];
             }
         }
-        foreach ($tariffs as $tariff) {
-            foreach ($roomTypes as $roomType) {
-                /** @var \DateTime $date */
-                foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $endWithDay) as $date) {
 
-                    if (isset($updateCaches[$date->format('d.m.Y')][$tariff->getId()][$roomType->getId()])) {
-                        continue;
-                    }
-                    if (!empty($weekdays) && !in_array($date->format('w'), $weekdays)) {
-                        continue;
-                    }
+        if ($price != -1) {
+            foreach ($tariffs as $tariff) {
+                foreach ($roomTypes as $roomType) {
+                    /** @var \DateTime $date */
+                    foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $endWithDay) as $date) {
 
-                    if ($this->roomManager->useCategories) {
-                        $field = 'roomTypeCategory';
-                        $collection = 'RoomTypeCategory';
-                    } else {
-                        $field = 'roomType';
-                        $collection = 'RoomTypes';
-                    }
+                        if (isset($updateCaches[$date->format('d.m.Y')][$tariff->getId()][$roomType->getId()])) {
+                            continue;
+                        }
+                        if (!empty($weekdays) && !in_array($date->format('w'), $weekdays)) {
+                            continue;
+                        }
 
-                    $priceCaches[] = [
-                        'hotel' => \MongoDBRef::create('Hotels', new \MongoId($hotel->getId())),
-                        $field => \MongoDBRef::create($collection, new \MongoId($roomType->getId())),
-                        'tariff' => \MongoDBRef::create('Tariffs', new \MongoId($tariff->getId())),
-                        'date' => new \MongoDate($date->getTimestamp()),
-                        'createdAt' => new \MongoDate((new \DateTime())->getTimestamp()),
-                        'price' => (float) $price,
-                        'childPrice' => $childPrice,
-                        'isPersonPrice' => $isPersonPrice,
-                        'singlePrice' => $singlePrice,
-                        'additionalPrice' => $additionalPrice,
-                        'additionalChildrenPrice' => $additionalChildrenPrice,
-                        'additionalPrices' => $additionalPrices,
-                        'additionalChildrenPrices' => $additionalChildrenPrices,
-                        'isEnabled' => true
-                    ];
+                        if ($this->roomManager->useCategories) {
+                            $field = 'roomTypeCategory';
+                            $collection = 'RoomTypeCategory';
+                        } else {
+                            $field = 'roomType';
+                            $collection = 'RoomTypes';
+                        }
+
+                        $priceCaches[] = [
+                            'hotel' => \MongoDBRef::create('Hotels', new \MongoId($hotel->getId())),
+                            $field => \MongoDBRef::create($collection, new \MongoId($roomType->getId())),
+                            'tariff' => \MongoDBRef::create('Tariffs', new \MongoId($tariff->getId())),
+                            'date' => new \MongoDate($date->getTimestamp()),
+                            'createdAt' => new \MongoDate((new \DateTime())->getTimestamp()),
+                            'price' => (float)$price,
+                            'childPrice' => $childPrice,
+                            'isPersonPrice' => $isPersonPrice,
+                            'singlePrice' => $singlePrice,
+                            'additionalPrice' => $additionalPrice,
+                            'additionalChildrenPrice' => $additionalChildrenPrice,
+                            'additionalPrices' => $additionalPrices,
+                            'additionalChildrenPrices' => $additionalChildrenPrices,
+                            'isEnabled' => true
+                        ];
+                    }
                 }
             }
         }
