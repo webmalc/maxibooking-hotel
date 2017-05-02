@@ -39,6 +39,20 @@ class ApiController extends Controller
     }
 
     /**
+     * Online form results iframe
+     * @Route("/form/results/iframe/{formId}", name="online_form_results_iframe", defaults={"formId"=null})
+     * @Method("GET")
+     * @Cache(expires="tomorrow", public=true)
+     * @Template()
+     */
+    public function getFormResultsIframeAction($formId = null)
+    {
+        return [
+            'formId' => $formId
+        ];
+    }
+
+    /**
      * Online form iframe
      * @Route("/form/iframe/{formId}", name="online_form_iframe", defaults={"formId"=null})
      * @Method("GET")

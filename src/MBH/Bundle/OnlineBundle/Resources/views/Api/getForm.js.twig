@@ -40,8 +40,8 @@ jQuery(document).ready(function() {
         window.parent.postMessage({
             type: 'mbh',
             action: 'showCalendar',
-            top: el.offset().top + el.outerHeight() + 3,
-            left: el.offset().left + 2,
+            top: el.offset().top + el.outerHeight(),
+            left: el.offset().left,
             date: el.val()
         }, "*");
     };

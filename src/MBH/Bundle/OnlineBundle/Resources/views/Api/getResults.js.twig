@@ -21,6 +21,18 @@
     }
 
 jQuery(document).ready(function () {
+    var resize = function () {
+        window.parent.postMessage({
+            type: 'mbh',
+            action: 'resize',
+            height: document.body.scrollHeight
+        }, "*");
+    };
+    resize();
+    setInterval(function(){
+        resize();
+    }, 300);
+
     var wrapper = jQuery('#mbh-results-wrapper'),
         requestParams = {},
         getLocale = function() {

@@ -22,9 +22,10 @@ window.onload = function() {
     if (!formWrapper) {
         return;
     }
-    var url = window.location.href.slice(window.location.href.indexOf('?'));
-    formWrapper.innerHTML = '<iframe id="mbh-form-iframe" scrolling="no" frameborder="1" width="300" height="400" src="' + mbh.form_url + url +'"></iframe>'
-    document.body.innerHTML += '<iframe id="mbh-form-calendar" style="display: none; position: absolute; top: 0px;" scrolling="no" frameborder="0" width="310" height="250" src="' + mbh.calendar_url + '"></iframe>'
+    var urlIndex = window.location.href.indexOf('?');
+    var url = urlIndex !== -1 ? window.location.href.slice(urlIndex) : '';
+    formWrapper.innerHTML = '<iframe id="mbh-form-iframe" scrolling="no" frameborder="0" width="300" height="400" src="' + mbh.form_url + url +'"></iframe>';
+    document.body.innerHTML += '<iframe id="mbh-form-calendar" style="display: none; position: absolute; top: 0px;" scrolling="no" frameborder="0" width="310" height="250" src="' + mbh.calendar_url + '"></iframe>';
 
     var formIframe = document.getElementById('mbh-form-iframe');
     var formCalendar = document.getElementById('mbh-form-calendar');
@@ -48,8 +49,8 @@ window.onload = function() {
         if (e.data.action == 'showCalendar') {
             var c = getCoords(formIframe);
             formCalendar.style.display = 'block';
-            formCalendar.style.top = e.data.top + c.top + 'px';
-            formCalendar.style.left = e.data.left + c.left + 'px';
+            formCalendar.style.top = (e.data.top + c.top - 10) + 'px';
+            formCalendar.style.left = (e.data.left + c.left) + 'px';
             formCalendar.contentWindow.postMessage(e.data, '*');
         }
         if (e.data.action == 'hideCalendar') {
