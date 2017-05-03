@@ -207,6 +207,8 @@ class OrderManager
             if (empty($tourist)) {
                 throw new Exception('Tourist error: tourist not found.');
             }
+        } elseif (!$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isCanBookWithoutPayer()) {
+            throw new Exception('Can not create order without payer.');
         }
 
         // create order

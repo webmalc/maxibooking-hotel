@@ -364,4 +364,23 @@ class Helper
 
         return $result;
     }
+
+    /**
+     * @param $fieldData
+     * @return array
+     */
+    public function getDataFromMultipleSelectField($fieldData)
+    {
+        if (!empty($fieldData) && is_array($fieldData) && $fieldData[0] != '') {
+            foreach ($fieldData as $index => $singleValue) {
+                if ($singleValue === '') {
+                    unset($fieldData[$index]);
+                }
+            }
+
+            return $fieldData;
+        }
+
+        return [];
+    }
 }

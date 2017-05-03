@@ -409,6 +409,7 @@ class HundredOneHotels extends Base
                         && ($orderInfo->getOrderState() == 1 || $orderInfo->getOrderState() == 3) && !$order)
                 ) {
                     $result = $this->createOrder($orderInfo, null);
+                    $order = $result;
                     $this->notify($result, self::CHANNEL_MANAGER_TYPE, 'new');
                 }
 
