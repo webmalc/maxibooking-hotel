@@ -99,6 +99,13 @@ class FormConfig extends Base
      * @Assert\Choice(callback = "getPaymentTypesList", multiple = true)
      */
     protected $paymentTypes = [];
+    
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
+    protected $css;
 
     public function __construct()
     {
@@ -262,6 +269,24 @@ class FormConfig extends Base
     public function setHotels($hotels)
     {
         $this->hotels = $hotels;
+        return $this;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getCss()
+    {
+        return $this->css;
+    }
+
+    /**
+     * @param array $css
+     * @return FormConfig
+     */
+    public function setCss($css)
+    {
+        $this->css = $css;
         return $this;
     }
 }

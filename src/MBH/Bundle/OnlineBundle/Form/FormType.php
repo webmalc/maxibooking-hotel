@@ -5,6 +5,7 @@ namespace MBH\Bundle\OnlineBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -83,13 +84,24 @@ class FormType extends AbstractType
                 'help' => 'form.formType.used_children_ages.help'
             ])
             ->add(
-                'paymentTypes',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
+                'paymentTypes',
+                \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [
                     'group' => 'form.formType.payment',
                     'choices' => $options['paymentTypes'],
                     'label' => 'form.formType.payment_type',
                     'multiple' => true,
                     'help' => 'form.formType.reservation_payment_types_with_online_form'
+                ]
+            )
+            ->add(
+                'css',
+                TextareaType::class,
+                [
+                    'group' => 'form.formType.css',
+                    'label' => 'form.formType.css_label',
+                    'help' => 'form.formType.css_help',
+                    'attr' => ['rows' => 60]
                 ]
             )
         ;
@@ -109,5 +121,4 @@ class FormType extends AbstractType
     {
         return 'mbh_bundle_onlinebundle_form_type';
     }
-
 }
