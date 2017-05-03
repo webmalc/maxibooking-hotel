@@ -450,12 +450,15 @@ class Ostrovok extends Base
     public function pullOrders()
     {
         $result = true;
-
+        $date = (new \DateTime('now midnight'))->format('Y-m-d');
         /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
 
-            $bookings = $this->apiBrowser->getBookings(['hotel' => $config->getHotelId()]);
-            $this->log('There are '.count($bookings).' total ');
+            $bookings = $this->apiBrowser->getBookings([
+                'hotel' => $config->getHotelId(),
+                'modified_at_start_at' => $date
+            ]);
+            $this->log('There are '.count($bookings).' total '.$date);
             if (!$bookings) {
                 continue;
             }
