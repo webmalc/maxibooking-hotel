@@ -577,4 +577,37 @@ class PriceCache extends Base
         return $category ? $this->getRoomTypeCategory() : $this->getRoomType();
     }
 
+    /**
+     * @param PriceCache $newPriceCache
+     * @return bool
+     */
+    public function isSamePriceCaches(PriceCache $newPriceCache)
+    {
+        return $this->getAdditionalPrice() == $newPriceCache->getAdditionalPrice()
+            && $this->getIsPersonPrice() == $newPriceCache->getIsPersonPrice()
+            && $this->getPrice() == $newPriceCache->getPrice()
+            && $this->getChildPrice() == $newPriceCache->getChildPrice()
+            && $this->getAdditionalChildrenPrice() == $newPriceCache->getAdditionalChildrenPrice()
+            && $this->getSinglePrice() == $newPriceCache->getSinglePrice()
+            && $this->isDataCollectionsEqual($this->getAdditionalPrices(),
+                $newPriceCache->getAdditionalPrices())
+            && $this->isDataCollectionsEqual($newPriceCache->getAdditionalChildrenPrices(),
+                $newPriceCache->getAdditionalChildrenPrices());
+    }
+
+    /**
+     * @param array $firstPriceCacheCollection
+     * @param array $secondPriceCacheCollection
+     * @return bool
+     */
+    public function isDataCollectionsEqual(array $firstPriceCacheCollection, array $secondPriceCacheCollection)
+    {
+        $additionalChildrenPricesDiff = array_diff($firstPriceCacheCollection, $secondPriceCacheCollection);
+        if (count($additionalChildrenPricesDiff) == 0
+            || (count($additionalChildrenPricesDiff) == 1 && current($additionalChildrenPricesDiff) == null)) {
+            return true;
+        }
+
+        return true;
+    }
 }

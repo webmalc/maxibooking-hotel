@@ -6,7 +6,9 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiService;
 use MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiServiceException;
+use MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
@@ -64,16 +66,15 @@ class Ostrovok extends Base
      * @var array
      */
     private $params;
-
+    /** @var OstrovokApiService */
     private $apiBrowser;
 
     private $calculation;
-
     /**
      * @var string
      */
     private $url = self::URL;
-
+    /** @var OstrovokDataGenerator */
     private $dataGenerator;
 
     public function __construct(ContainerInterface $container)
@@ -143,18 +144,7 @@ class Ostrovok extends Base
             );
         }
 
-
-        try {
-            $this->apiBrowser->updateRNA($rna_request_data);
-            $result = true;
-            $this->log('Ostrovok was closed config');
-        } catch (OstrovokApiServiceException $exception) {
-            $result = false;
-            $this->log('Ostrovok was closed config '.$exception->getMessage());
-
-        }
-
-        return $result;
+        return $this->sendApiRequest($rna_request_data, __METHOD__);
     }
 
     /**
@@ -199,15 +189,8 @@ class Ostrovok extends Base
                 }
             }
         }
-        try {
-            $this->apiBrowser->updateRNA($rna_request_data);
-            $this->log('Ostrovok was updatedRooms');
-        } catch (OstrovokApiServiceException $exception) {
-            $result = false;
-            $this->log('Ostrovok fail roomUpdate '.$exception->getMessage());
-        }
 
-        return $result;
+        return $this->sendApiRequest($rna_request_data, __METHOD__);
     }
 
     /**
@@ -278,7 +261,8 @@ class Ostrovok extends Base
                                 );
                                 $price = $price[$adults.'_'.$children]['total']??null;
                                 if (!$price) {
-                                    $message = 'Ошибка получения цены для номера '.$roomType->getFullTitle().' для '.$adults.' вз.';
+                                    $message = 'Ошибка получения цены для номера '.$roomType->getFullTitle(
+                                        ).' для '.$adults.' вз.';
                                     $this->log('Error! '.$message);
                                     throw new \Exception($message);
                                 }
@@ -324,15 +308,8 @@ class Ostrovok extends Base
 
             }
         }
-        try {
-            $this->apiBrowser->updateRNA($rna_request_data);
-            $this->log('Ostrovok prices was Update');
-        } catch (OstrovokApiServiceException $exception) {
-            $this->log('Error! Ostrovok prices were not update');
-            $result = false;
-        }
 
-        return $result;
+        return $this->sendApiRequest($rna_request_data, __METHOD__);
     }
 
     /**
@@ -448,21 +425,8 @@ class Ostrovok extends Base
                 }
             }
         }
-        if (!$rna_request_data) {
-            $this->log('Нет ограничений для синхронизации');
 
-            return $result;
-        }
-        try {
-            $this->apiBrowser->updateRNA($rna_request_data);
-            $answer = 'Ostrovok was updated Restrictions';
-        } catch (OstrovokApiServiceException $exception) {
-            $answer = $exception->getMessage();
-            $result = false;
-        }
-        $this->log($answer);
-
-        return $result;
+        return $this->sendApiRequest($rna_request_data, __METHOD__);
     }
 
     /**
@@ -486,12 +450,15 @@ class Ostrovok extends Base
     public function pullOrders()
     {
         $result = true;
-
+        $date = (new \DateTime('now midnight'))->format('Y-m-d');
         /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
 
-            $bookings = $this->apiBrowser->getBookings(['hotel' => $config->getHotelId()]);
-            $this->log('There are '.count($bookings).' total ');
+            $bookings = $this->apiBrowser->getBookings([
+                'hotel' => $config->getHotelId(),
+                'modified_at_start_at' => $date
+            ]);
+            $this->log('There are '.count($bookings).' total '.$date);
             if (!$bookings) {
                 continue;
             }
@@ -836,6 +803,28 @@ class Ostrovok extends Base
         $ratePlans = $this->apiBrowser->getRatePlans(['hotel' => $hotelId]);
         foreach ($ratePlans as $ratePlan) {
             $result[$ratePlan['id']] = $ratePlan;
+        }
+
+        return $result;
+    }
+
+    private function sendApiRequest(array $rna_request_data, string $action)
+    {
+
+        try {
+            if (count($rna_request_data)) {
+                $this->apiBrowser->updateRNA($rna_request_data);
+                $result = true;
+                $this->log('Ostrovok '.$action.' success');
+            } else {
+                $result = true;
+                $this->log('Ostrovok '.$action.' empty $rna_request_data!');
+            }
+
+        } catch (OstrovokApiServiceException $exception) {
+            $result = false;
+            $this->log('Ostrovok '.$action.' error '.$exception->getMessage());
+            $this->logger->addAlert($action.' error. ', $rna_request_data);
         }
 
         return $result;

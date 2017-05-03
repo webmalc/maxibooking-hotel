@@ -59,6 +59,7 @@ class OstrovokApiService
             foreach ($tmp as $key => $value) {
                 $result[] = implode("=", $value);
             }
+
             return implode(";", $result);
         } elseif (is_array($data) && $isList) {
             $result = array();

@@ -23,4 +23,5 @@ protectedUpload/*
 web/app_dev.php
 nbproject
 .idea
+docs/
 

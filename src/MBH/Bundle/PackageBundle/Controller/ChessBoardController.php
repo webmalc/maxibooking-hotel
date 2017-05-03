@@ -5,9 +5,15 @@ namespace MBH\Bundle\PackageBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\PackageBundle\Document\BirthPlace;
+use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
 use MBH\Bundle\PackageBundle\Form\ChessBoardConciseType;
+use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
+use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -22,6 +28,53 @@ use MBH\Bundle\PackageBundle\Form\SearchType;
  */
 class ChessBoardController extends BaseController
 {
+    const SIZE_CONFIGS = [
+        [
+            'headerWidth' => 180,
+            'tableCellHeight' => 25,
+            'tableCellWidth' => 33,
+            'tileFontSize' => 10,
+            'tileTopPadding' => 5,
+            'dayTopPadding' => 7,
+            'titleSubPadding' => 0,
+            'titleSubFontSize' => 11,
+            'leftRoomsAndNoAccFontSize' => 16,
+        ],
+        [
+            'headerWidth' => 180,
+            'tableCellHeight' => 30,
+            'tableCellWidth' => 40,
+            'tileFontSize' => 10,
+            'tileTopPadding' => 7,
+            'dayTopPadding' => 0,
+            'titleSubPadding' => 0,
+            'titleSubFontSize' => 11,
+            'leftRoomsAndNoAccFontSize' => 16,
+        ],
+        [
+            'headerWidth' => 200,
+            'tableCellHeight' => 40,
+            'tableCellWidth' => 47,
+            'tileFontSize' => 12,
+            'tileTopPadding' => 12,
+            'dayTopPadding' => 5,
+            'titleSubPadding' => 5,
+            'titleSubFontSize' => 11,
+            'leftRoomsAndNoAccFontSize' => 16,
+        ],
+        [
+            'headerWidth' => 200,
+            'tableCellHeight' => 47,
+            'tableCellWidth' => 55,
+            'tileFontSize' => 14,
+            'tileTopPadding' => 12,
+            'dayTopPadding' => 9,
+            'titleSubPadding' => 0,
+            'titleSubFontSize' => 11,
+            'leftRoomsAndNoAccFontSize' => 20,
+        ]
+    ];
+
     /**
      * @Route("/", name="chess_board_home", options={"expose"=true})
      * @Template()
@@ -45,9 +98,19 @@ class ChessBoardController extends BaseController
             'roomManager' => $this->get('mbh.hotel.room_type_manager')
         ]);
 
+        $stylesFileNumber = $request->cookies->get('chessboardSizeNumber') ?? 1;
+
         $rightsChecker = $this->get('security.authorization_checker');
         $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
-        $displayDisabledRoomType = !$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isIsDisableableOn();
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $displayDisabledRoomType = !$clientConfig->isIsDisableableOn();
+        $canBookWithoutPayer = $clientConfig->isCanBookWithoutPayer();
+
+        $tourist = new Tourist();
+        $tourist->setDocumentRelation(new DocumentRelation());
+        $tourist->setBirthplace(new BirthPlace());
+        $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $tourist->getDocumentRelation()->setType('vega_russian_passport');
 
         return [
             'pageCount' => ceil($builder->getRoomCount() / $builder::ROOM_COUNT_ON_PAGE),
@@ -68,7 +131,17 @@ class ChessBoardController extends BaseController
             'housings' => $this->hotel->getHousings(),
             'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors(),
             'canCreatePackage' => $canCreatePackage,
-            'displayDisabledRoomType' => $displayDisabledRoomType
+            'canBookWithoutPayer' => $canBookWithoutPayer ? 'true' : 'false',
+            'displayDisabledRoomType' => $displayDisabledRoomType,
+            'touristForm' => $this->createForm(TouristType::class, null,
+                ['genders' => $this->container->getParameter('mbh.gender.types')])->createView(),
+            'documentForm' => $this->createForm(DocumentRelationType::class, $tourist)
+                ->createView(),
+            'addressForm' => $this->createForm(AddressObjectDecomposedType::class,
+                $tourist->getAddressObjectDecomposed())
+                ->createView(),
+            'sizes' => self::SIZE_CONFIGS,
+            'stylesFileNumber' => $stylesFileNumber
         ];
     }
 
@@ -418,23 +491,10 @@ class ChessBoardController extends BaseController
         return [
             'begin' => $beginDate,
             'end' => $endDate,
-            'roomTypeIds' => $this->getDataFromMultipleSelectField(isset($data['filter_roomType']) ? $data['filter_roomType'] : null),
-            'housing' => $this->getDataFromMultipleSelectField(isset($data['housing']) ? $data['housing'] : null),
-            'floor' => $this->getDataFromMultipleSelectField(isset($data['floor']) ? $data['floor'] : null),
+            'roomTypeIds' => $this->helper->getDataFromMultipleSelectField(isset($data['filter_roomType']) ? $data['filter_roomType'] : null),
+            'housing' => $this->helper->getDataFromMultipleSelectField(isset($data['housing']) ? $data['housing'] : null),
+            'floor' => $this->helper->getDataFromMultipleSelectField(isset($data['floor']) ? $data['floor'] : null),
             'pageNumber' => isset($data['page']) ? $data['page'] : 1
         ];
-    }
-
-    /**
-     * @param $fieldData
-     * @return array
-     */
-    private function getDataFromMultipleSelectField($fieldData)
-    {
-        if (!empty($fieldData) && is_array($fieldData) && $fieldData[0] != '') {
-            return $fieldData;
-        }
-
-        return [];
     }
 }

@@ -1,4 +1,4 @@
-/*global window, $, Routing, document, mbh */
+/*global window, $, Routing, document, mbh, Translator, canBookWithoutPayer */
 
 var setSearchDatepickers = function(date) {
     'use strict';
@@ -9,7 +9,6 @@ var setSearchDatepickers = function(date) {
 
 $(document).ready(function() {
     'use strict';
-
 
     (function() {
 
@@ -97,7 +96,9 @@ $(document).ready(function() {
 
         this.$packageSearchBook.on('click', function(e) {
             e.preventDefault();
-            that.packageSearchBookClickHandler()
+            if (canBookWithoutPayer || $('#s_tourist').val()) {
+                that.packageSearchBookClickHandler();
+            }
         });
 
         that.showAccommodation();
@@ -113,7 +114,7 @@ $(document).ready(function() {
         this.$quantitySelect.on('change', function() {
             that.showQuality()
         });
-    }
+    };
 
     Row.prototype.updateViewBookCount = function() {
         this.$bookCount.text(this.bookCount);
@@ -237,7 +238,7 @@ $(document).ready(function() {
         $wrapper.html(data);
         $(function() {
             $('[data-toggle="popover"]').popover()
-        })
+        });
 
         var $quantitySelect = $wrapper.find('.quantity-select');
         var $searchRoomsSelect = $wrapper.find('.search-room-select');
@@ -296,6 +297,7 @@ $(document).ready(function() {
             lessLink: '<div class="less-link"><a href="#">'+$('#search-flashbag').attr('data-less') +' <i class="fa fa-caret-up"></i></a></div>',
             collapsedHeight: 35
         });
+        updateBookButtons();
         /*var $links = $('#package-search-tariffs li a');
          $links.on('click', function (e) {
          e.preventDefault();
@@ -358,6 +360,24 @@ $(document).ready(function() {
         }
     };
 
+    var updateBookButtons = function () {
+        if (!canBookWithoutPayer) {
+            var touristValue = $('#s_tourist').val();
+            $('.package-search-book').each(function () {
+                var title;
+                if (!touristValue) {
+                    this.setAttribute('disabled', true);
+                    title = Translator.trans('search.disabled_book_button.title');
+                } else {
+                    var leftRoomsCount = $(this).parent().parent().find('.package-search-book-count').eq(0).text();
+                    title = Translator.trans('search.book_button.title', {'roomsCount' : leftRoomsCount});
+                    this.removeAttribute('disabled');
+                }
+                this.setAttribute('data-original-title', title);
+            })
+        }
+    };
+
     var sendForm = function() {
 
         setTimeout(
@@ -405,7 +425,7 @@ $(document).ready(function() {
 
     if (!$('#search-submit-button').length) {
         sendForm();
-        $packageSearchForm.find('input, select').not('.daterangepicker-input').on('change switchChange.bootstrapSwitch', sendForm);
+        $packageSearchForm.find('input, select').not('#s_tourist').not('.daterangepicker-input').on('change switchChange.bootstrapSwitch', sendForm);
         icon.on('shown.bs.popover', function() {
             $('.children_age').change(sendForm);
         });
@@ -416,5 +436,8 @@ $(document).ready(function() {
     $packageSearchForm.on('submit', function(e) {
         e.preventDefault();
         sendForm()
+    });
+    $('#s_tourist').change(function () {
+       updateBookButtons();
     });
 });

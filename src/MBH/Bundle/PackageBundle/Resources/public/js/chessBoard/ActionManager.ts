@@ -2,6 +2,7 @@
 ///<reference path="ChessBoardManager.ts"/>
 /*global $ */
 // declare let $;
+declare let canBookWithoutPayer;
 declare let roomTypes;
 declare let rooms;
 
@@ -56,18 +57,19 @@ class ActionManager {
 
     public callPackageInfoModal(accommodationId) {
         this.dataManager.getPackageDataRequest(accommodationId);
+        this.dataManager.getPackageDataRequest(accommodationId);
     }
 
     public handleSearchOptionsModal(packageData, searchData) {
         let self = this;
 
-        let editBody = $('#package-edit-body');
+        let editBody = $('#package-new-results');
         editBody.html(searchData);
         editBody.find('.search-room-select').val(packageData.accommodation);
         editBody.find('td:nth-child(4)').remove();
         editBody.find('thead th:nth-child(4)').remove();
         editBody.find('thead th').css('text-align', 'center');
-        editBody.find('select').select2();
+        editBody.find('select').not("s[tourist]").select2();
 
         let editModal = $('#package-edit-modal');
 
@@ -77,6 +79,11 @@ class ActionManager {
 
         $('.search-special-apply').each(function (index, element) {
             self.modifySpecialButton(packageData, element, editModal);
+        });
+
+        self.modifyButtonsByGuest(editModal);
+        $('#s_tourist').change(function () {
+            self.modifyButtonsByGuest(editModal);
         });
 
         $('.package-search-table').find('tr').not(':first').not(':first').each(function (index, row) {
@@ -89,6 +96,9 @@ class ActionManager {
 
         editModal.find('input.modalPackageId').val(packageData.id);
         editModal.modal('show');
+        editModal.on('shown.bs.modal', function () {
+            $('.findGuest').mbhGuestSelectPlugin();
+        });
     }
 
     private static showResultPrices($row) {
@@ -123,28 +133,55 @@ class ActionManager {
             event.preventDefault();
             let $searchPackageForm = $('#package-search-form');
             let specialId = element.getAttribute('data-id');
-            console.log(specialId);
             let newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm, specialId);
             editModal.modal('hide');
             self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
         }
     }
 
+    private modifyButtonsByGuest($editModal) {
+        let touristVal = $('#s_tourist').val();
+        $editModal.find('.package-search-book').each(function (index, element) {
+            let title;
+            if (!touristVal && !canBookWithoutPayer) {
+                element.setAttribute('disabled', true);
+                title = Translator.trans('action_manager.modal.disabled_book_button.title');
+            } else {
+                let leftRoomsCount = $(element).parent().parent().find('.package-search-book-count').eq(0).text();
+                title = Translator.trans('action_manager.modal.book_button.title', {'roomsCount' : leftRoomsCount});
+                element.removeAttribute('disabled');
+            }
+            element.setAttribute('title', title);
+            element.setAttribute('data-original-title', title);
+            let url = element.getAttribute('data-url');
+            url = url.replace(/&(s%5Btourist|tourist).*?(?=(&|$))/, '');
+            if (touristVal) {
+                url = url + '&tourist=' + touristVal
+            }
+
+            element.setAttribute('data-url', url);
+        });
+    }
+
     private modifyBookButton(packageData, element, editModal) {
         'use strict';
         let self = this;
         let newPackageCreateUrl = element.href;
+        $(element).find('.package-search-book-reservation-text').hide();
+        $(element).find('.package-search-book-accommodation-text').show();
         element.removeAttribute('href');
-        let accommodationValue = document.getElementsByClassName('search-room-select')[0].value;
+        let accommodationValue = (<HTMLInputElement>document.getElementsByClassName('search-room-select')[0]).value;
         if (accommodationValue) {
             newPackageCreateUrl += '&accommodation=' + accommodationValue;
         }
         element.setAttribute('data-url', newPackageCreateUrl);
 
         element.onclick = function () {
-            let url = element.getAttribute('data-url');
-            self.dataManager.createPackageRequest(url, packageData);
-            editModal.modal('hide');
+            if (!element.getAttribute('disabled')) {
+                let url = element.getAttribute('data-url');
+                self.dataManager.createPackageRequest(url, packageData);
+                editModal.modal('hide');
+            }
         };
     }
 
@@ -245,12 +282,12 @@ class ActionManager {
         document.getElementById(messageBlockId).appendChild(messageDiv);
     }
 
-    public static callUpdatePackageModal(packageElement, intervalData, changedSide = null, isDivide = false) {
+    public callUpdatePackageModal(packageElement, intervalData, changedSide = null, isDivide = false) {
         let $updateForm = $('#concise_package_update');
         $updateForm.show();
         let modalAlertDiv = document.getElementById('package-modal-change-alert');
         modalAlertDiv.innerHTML = '';
-        let newIntervalData = ChessBoardManager.getPackageData(packageElement);
+        let newIntervalData = this.dataManager.chessBoardManager.getPackageData(packageElement);
         if (intervalData && changedSide) {
             let alertMessageData = ActionManager.getAlertData(changedSide, intervalData, newIntervalData);
             if (alertMessageData) {
