@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use MBH\Bundle\HotelBundle\Form\HotelImageType;
+use MBH\Bundle\HotelBundle\Form\HotelRbkType;
 use MBH\Bundle\HotelBundle\Form\HotelType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -347,6 +348,65 @@ class HotelController extends Controller
             'form' => $form->createView(),
             'images' => $hotel->getImages()
         ];
+    }
+
+    /**
+     * @Route("/{id}/rbk", name="hotel_rbk")
+     * @Method({"GET","POST"})
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
+     * @Template()
+     * @param Hotel $hotel
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function rbkAction(Hotel $hotel)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(HotelRbkType::class, $hotel);
+        return [
+            'entity' => $hotel,
+            'form' => $form->createView(),
+            'logs' => $this->logs($hotel)
+        ];
+    }
+
+    /**
+     * Save extended config of an existing entity.
+     *
+     * @Route("/{id}/edit/rbk", name="hotel_rbk_edit")
+     * @Method({"POST", "GET"})
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
+     * @Template("MBHHotelBundle:Hotel:rbk.html.twig")
+     * @param Hotel $hotel
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function rbkEditAction(Request $request, Hotel $hotel)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(HotelRbkType::class, $hotel);
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $this->dm->persist($hotel);
+            $this->dm->flush();
+
+            $this->addFlash('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'));
+
+            return $this->isSavedRequest() ?
+                $this->redirectToRoute('hotel_rbk_edit', ['id' => $hotel->getId()]) :
+                $this->redirectToRoute('hotel', ['id' => $hotel->getId()]);
+        }
+
+        return array(
+            'entity' => $hotel,
+            'form' => $form->createView(),
+            'logs' => $this->logs($hotel)
+        );
     }
 
     /**

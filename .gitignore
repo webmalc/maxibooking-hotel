@@ -104,3 +104,6 @@ GTAGS
 ctags
 env
 gtags
+localScripts/
+
+/src/MBH/Bundle/BaseBundle/Controller/TestController.php

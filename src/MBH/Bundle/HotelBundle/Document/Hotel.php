@@ -16,6 +16,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
+use MBH\Bundle\ClientBundle\Document\Rbk;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
@@ -377,6 +378,11 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @ODM\Field(type="string")
      */
     protected $smokingPolicy;
+
+    /**
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\Rbk")
+     */
+    protected $rbk;
 
     public function __construct()
     {
@@ -1597,4 +1603,25 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
         return $this;
     }
+
+    /**
+     * @return Rbk
+     */
+    public function getRbk()
+    {
+        return $this->rbk;
+    }
+
+    /**
+     * @param Rbk $rbk
+     * @return $this
+     */
+    public function setRbk(Rbk $rbk)
+    {
+        $this->rbk = $rbk;
+
+        return $this;
+    }
+
+
 }

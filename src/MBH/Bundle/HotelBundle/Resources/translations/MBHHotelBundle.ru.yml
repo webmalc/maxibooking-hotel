@@ -102,6 +102,8 @@ views.hotel.tabs.address: 'Адрес'
 views.hotel.tabs.visa: 'Виза'
 views.hotel.tabs.unwelcome: 'Черный список'
 views.hotel.tabs.main_info_required: "Необходимо заполнить основную информацию!"
+views.hotel.tabs.rbk: 'RBK Настройки'
+views.hotel.rbk.editing: 'Редактирование RBK настроек'
 
 # RoomType
 views.roomType.edit.edit_room_type: "редактирование типа номера #"
@@ -161,5 +163,4 @@ views.corpus: Корпус
 
 
 view.create_task_type_categoty: 'Новая категория'
-
 

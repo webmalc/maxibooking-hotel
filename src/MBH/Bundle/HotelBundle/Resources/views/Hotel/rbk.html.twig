@@ -1,0 +1,20 @@
+{% extends 'MBHHotelBundle:Hotel:layout.html.twig' %}
+
+{% set small_title = 'views.hotel.rbk.editing'|trans({}, 'MBHHotelBundle') ~ '/' ~ entity.id %}
+{% set layout = "tabs" %}
+
+{% block content %}
+
+    {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 5, 'entity': entity} %}
+
+    <div class="tab-content">
+        {{ form_start(form, {'action': path('hotel_rbk_edit', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'hotel' } %}
+        {{ form_end(form) }}
+
+        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+    </div>
+
+{% endblock %}
+

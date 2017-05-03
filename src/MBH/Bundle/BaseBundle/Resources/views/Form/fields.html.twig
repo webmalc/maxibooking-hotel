@@ -24,7 +24,7 @@
         {% endif %}
 
         {% for group, items in groups %}
-
+            {% if group != 'no-group' %}
             <div class="box box-default box-solid">
 
                 <div class="box-header with-border">
@@ -42,6 +42,12 @@
                     {% endfor %}
                 </div>
             </div>
+            {% else %}
+                {% for item in items %}
+                    {{ form_row(form[item]) }}
+                {% endfor %}
+            {% endif %}
+
         {% endfor %}
 
         {{ form_rest(form) }}

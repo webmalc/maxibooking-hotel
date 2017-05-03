@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Form\ReservationType;
 use MBH\Bundle\OnlineBookingBundle\Form\SearchFormType;
@@ -136,37 +137,29 @@ class DefaultController extends BaseController
     {
         $payButtonHtml = '';
         $orderId = $request->get('order');
-        $cash = $request->get('cash');
-
-        if (!$orderId || !$cash) {
+        $order = $this->dm->find('MBHPackageBundle:Order', $orderId);
+        $cashDocument = $order->getCashDocuments()[0];
+        if (!$order || !$cashDocument || !($cashDocument instanceof CashDocument) || !$cashDocument->getHotel()->getRbk()) {
             $type = 'reservation';
         } else {
             $type = 'online';
-            $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-            if ($orderId && $cash && $clientConfig->getPaymentSystem()) {
-                $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(['id' => $orderId]);
-                if ($order) {
-                    $payButtonHtml = $this->renderView(
-                        'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig',
+            $rbk = $cashDocument->getHotel()->getRbk();
+            $payButtonHtml = $this->renderView(
+                'MBHClientBundle:PaymentSystem:rbk.html.twig',
+                [
+                    'data' => array_merge(
                         [
-                            'data' => array_merge(
-                                [
-                                    'test' => false,
-                                    'buttonText' => $this->get('translator')->trans(
-                                        'views.api.make_payment_for_order_id',
-                                        ['%total%' => number_format($cash, 2), '%order_id%' => $order->getId()],
-                                        'MBHOnlineBundle'
-                                    ),
-                                ],
-                                $clientConfig->getFormData(
-                                    $order->getCashDocuments()[0],
-                                    $this->container->getParameter('online_form_result_url')
-                                )
+                            'test' => false,
+                            'buttonText' => $this->get('translator')->trans(
+                                'views.api.make_payment_for_order_id',
+                                ['%total%' => number_format($cashDocument->getTotal(), 2), '%order_id%' => $order->getId()],
+                                'MBHOnlineBundle'
                             ),
-                        ]
-                    );
-                }
-            }
+                        ],
+                        $rbk->getFormData($cashDocument, 'http://azovsky.ru')
+                    )
+                ]
+            );
         }
 
         return [

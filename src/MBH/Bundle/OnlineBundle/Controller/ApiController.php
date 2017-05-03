@@ -172,17 +172,22 @@ class ApiController extends Controller
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        //MultiValletRBK hard changes
+//        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
         $logger = $this->get('mbh.online.logger');
         $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP' . $request->getClientIp() . '. Post data: ' . implode('; ',
                 $_POST) . ' . Keys: ' . implode('; ', array_keys($_POST));
 
+        $cashDocId = $request->get('orderId');
+        $cashDocument = $dm->getManager()->find('MBHCashBundle:CashDocument', $cashDocId);
 
-        if (!$clientConfig) {
-            $logger->info('FAIL. ' . $logText . ' .Not found config');
+        if (!$cashDocument) {
+            $logger->info('FAIL. ' . $logText . ' .Not found cash document');
             throw $this->createNotFoundException();
         }
-        $response = $clientConfig->checkRequest($request);
+        $rbk = $cashDocument->getHotel()->getRbk();
+        $response = $rbk->checkRequest($request);
 
         if (!$response) {
             $logger->info('FAIL. ' . $logText . ' .Bad signature');
@@ -190,7 +195,6 @@ class ApiController extends Controller
         }
 
         //save cashDocument
-        $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
 
         if ($cashDocument && !$cashDocument->getIsPaid()) {
             $cashDocument->setIsPaid(true);
@@ -213,7 +217,7 @@ class ApiController extends Controller
 
         //send notifications
         $order = $cashDocument->getOrder();
-        $package = $order->getPackages()[0];
+        $package = $order->getFirstPackage();
         $params = [
             '%cash%' => $cashDocument->getTotal(),
             '%order%' => $order->getId(),
