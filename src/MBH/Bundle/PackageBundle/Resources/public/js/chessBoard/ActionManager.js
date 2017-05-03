@@ -42,22 +42,27 @@ var ActionManager = (function () {
     };
     ActionManager.prototype.callPackageInfoModal = function (accommodationId) {
         this.dataManager.getPackageDataRequest(accommodationId);
+        this.dataManager.getPackageDataRequest(accommodationId);
     };
     ActionManager.prototype.handleSearchOptionsModal = function (packageData, searchData) {
         var self = this;
-        var editBody = $('#package-edit-body');
+        var editBody = $('#package-new-results');
         editBody.html(searchData);
         editBody.find('.search-room-select').val(packageData.accommodation);
         editBody.find('td:nth-child(4)').remove();
         editBody.find('thead th:nth-child(4)').remove();
         editBody.find('thead th').css('text-align', 'center');
-        editBody.find('select').select2();
+        editBody.find('select').not("s[tourist]").select2();
         var editModal = $('#package-edit-modal');
         $('.btn.package-search-book').each(function (index, element) {
             self.modifyBookButton(packageData, element, editModal);
         });
         $('.search-special-apply').each(function (index, element) {
             self.modifySpecialButton(packageData, element, editModal);
+        });
+        self.modifyButtonsByGuest(editModal);
+        $('#s_tourist').change(function () {
+            self.modifyButtonsByGuest(editModal);
         });
         $('.package-search-table').find('tr').not(':first').not(':first').each(function (index, row) {
             var $row = $(row);
@@ -68,6 +73,9 @@ var ActionManager = (function () {
         });
         editModal.find('input.modalPackageId').val(packageData.id);
         editModal.modal('show');
+        editModal.on('shown.bs.modal', function () {
+            $('.findGuest').mbhGuestSelectPlugin();
+        });
     };
     ActionManager.showResultPrices = function ($row) {
         var $searchTouristsSelect = $row.find('.search-tourists-select');
@@ -95,16 +103,40 @@ var ActionManager = (function () {
             event.preventDefault();
             var $searchPackageForm = $('#package-search-form');
             var specialId = element.getAttribute('data-id');
-            console.log(specialId);
             var newPackageRequestData = ChessBoardManager.getNewPackageRequestData($searchPackageForm, specialId);
             editModal.modal('hide');
             self.dataManager.getPackageOptionsRequest(newPackageRequestData, packageData);
         };
     };
+    ActionManager.prototype.modifyButtonsByGuest = function ($editModal) {
+        var touristVal = $('#s_tourist').val();
+        $editModal.find('.package-search-book').each(function (index, element) {
+            var title;
+            if (!touristVal && !canBookWithoutPayer) {
+                element.setAttribute('disabled', true);
+                title = Translator.trans('action_manager.modal.disabled_book_button.title');
+            }
+            else {
+                var leftRoomsCount = $(element).parent().parent().find('.package-search-book-count').eq(0).text();
+                title = Translator.trans('action_manager.modal.book_button.title', { 'roomsCount': leftRoomsCount });
+                element.removeAttribute('disabled');
+            }
+            element.setAttribute('title', title);
+            element.setAttribute('data-original-title', title);
+            var url = element.getAttribute('data-url');
+            url = url.replace(/&(s%5Btourist|tourist).*?(?=(&|$))/, '');
+            if (touristVal) {
+                url = url + '&tourist=' + touristVal;
+            }
+            element.setAttribute('data-url', url);
+        });
+    };
     ActionManager.prototype.modifyBookButton = function (packageData, element, editModal) {
         'use strict';
         var self = this;
         var newPackageCreateUrl = element.href;
+        $(element).find('.package-search-book-reservation-text').hide();
+        $(element).find('.package-search-book-accommodation-text').show();
         element.removeAttribute('href');
         var accommodationValue = document.getElementsByClassName('search-room-select')[0].value;
         if (accommodationValue) {
@@ -112,9 +144,11 @@ var ActionManager = (function () {
         }
         element.setAttribute('data-url', newPackageCreateUrl);
         element.onclick = function () {
-            var url = element.getAttribute('data-url');
-            self.dataManager.createPackageRequest(url, packageData);
-            editModal.modal('hide');
+            if (!element.getAttribute('disabled')) {
+                var url = element.getAttribute('data-url');
+                self.dataManager.createPackageRequest(url, packageData);
+                editModal.modal('hide');
+            }
         };
     };
     ActionManager.callIntervalBeginOutOfRangeModal = function (side) {
@@ -207,14 +241,14 @@ var ActionManager = (function () {
         }, 12000);
         document.getElementById(messageBlockId).appendChild(messageDiv);
     };
-    ActionManager.callUpdatePackageModal = function (packageElement, intervalData, changedSide, isDivide) {
+    ActionManager.prototype.callUpdatePackageModal = function (packageElement, intervalData, changedSide, isDivide) {
         if (changedSide === void 0) { changedSide = null; }
         if (isDivide === void 0) { isDivide = false; }
         var $updateForm = $('#concise_package_update');
         $updateForm.show();
         var modalAlertDiv = document.getElementById('package-modal-change-alert');
         modalAlertDiv.innerHTML = '';
-        var newIntervalData = ChessBoardManager.getPackageData(packageElement);
+        var newIntervalData = this.dataManager.chessBoardManager.getPackageData(packageElement);
         if (intervalData && changedSide) {
             var alertMessageData = ActionManager.getAlertData(changedSide, intervalData, newIntervalData);
             if (alertMessageData) {

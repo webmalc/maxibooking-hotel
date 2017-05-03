@@ -14,15 +14,16 @@
                     {{ results|first.nights }} {{ 'nights'|transchoice(results|first.nights) }} {{ 'from'|trans }}
                     <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> {{ 'to'|trans }} <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
                 </div>
+
                 {% if tariffResults|length > 0 %}
                     {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
                 {% endif %}
-
                 <div id="mbh-results-table-wrapper">
                     <table id="mbh-results-table">
                         <thead>
                         <tr>
                             <th id="mbh-results-table-th-roomType">{{ 'views.api.getResultsTable.room_type'|trans({}, 'MBHOnlineBundle') }}</th>
+                            <th id="mbh-results-table-th-room-cache-count">{{ 'views.api.getResultsTable.room_cache_count'|trans({}, 'MBHOnlineBundle') }}</th>
                             <th id="mbh-results-table-th-tourist">{{ 'views.api.getResultsTable.guests'|trans({}, 'MBHOnlineBundle') }}</th>
                             <th id="mbh-results-table-th-price">{{ 'views.api.getResultsTable.price'|trans({}, 'MBHOnlineBundle') }}</th>
                             <th id="mbh-results-table-th-amount">{{ 'views.api.getResultsTable.rooms_amount'|trans({}, 'MBHOnlineBundle') }}</th>
@@ -41,8 +42,8 @@
                                     {% endif %}
                                     <span class="mbh-results-roomType"
                                           data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle(app.request.locale) }}</span>
-                                    {% if hotels|length > 1 %}<span class="mbh-results-hotel"
-                                                                    data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>{% endif %}
+                                    <span class="mbh-results-hotel"
+                                                                    data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>
                                     {% if result.roomType.description is not empty %}
                                         <div class="mbh-results-roomType-description-wrappper">
                                             <a href="#" class="mbh-results-roomType-description-link"> <i
@@ -50,6 +51,9 @@
                                             </a>
                                         </div>
                                     {% endif %}
+                                </td>
+                                <td class="mbh-center">
+                                    {{ result.roomsCount }}
                                 </td>
                                 <td class="mbh-center">
                                     <select class="mbh-results-tourists-select select2 {% if result.prices|length == 1 %}hidden{% endif %}">
@@ -135,7 +139,7 @@
             {% else %}
                 {% if tariffResults|length > 0 %}
                     {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
-                {% endif %}
+                {% endif %} 
                 <div class="mbh-results-error"><i
                             class="fa fa-exclamation-circle"> </i> {{ 'views.api.getResultsTable.nothing_found_for_your_query'|trans({}, 'MBHOnlineBundle') }}
                 </div>

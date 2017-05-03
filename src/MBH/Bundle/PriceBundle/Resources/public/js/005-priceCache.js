@@ -5,13 +5,14 @@ $(document).ready(function () {
     var $displayedDateInput = $('#displayed-prices-date').eq(0);
     var $displayedTimeInput = $('#displayed-prices-time');
     var $irrelevantPricesAlert = $('#irrelevant-prices-alert');
+    var $irrelevantPricesAlertDate = $('#irrelevant-prices-alert-date');
     $displayedTimeInput.timepicker({
         showMeridian: false,
         minuteStep: 5
     });
     if ($displayedDateInput.val()) {
         $irrelevantPricesAlert.show();
-        $irrelevantPricesAlert.find('#irrelevant-prices-alert-date').text($displayedDateInput.val() + ' ' + $displayedTimeInput.val())
+        $irrelevantPricesAlertDate.text($displayedDateInput.val() + ' ' + $displayedTimeInput.val())
     } else {
         $displayedTimeInput.val('');
         $displayedTimeInput.attr('disabled', true);
@@ -24,7 +25,7 @@ $(document).ready(function () {
             $displayedTimeInput.attr('disabled', true);
         } else {
             $irrelevantPricesAlert.show();
-            $irrelevantPricesAlert.find('#irrelevant-prices-alert-date').text(this.value + ' ' + $displayedTimeInput.val())
+            $irrelevantPricesAlertDate.text(this.value + ' ' + $displayedTimeInput.val());
             $displayedTimeInput.removeAttr('disabled');
             if (!$displayedTimeInput.val()) {
                 $displayedTimeInput.val('00:00');
@@ -105,6 +106,7 @@ $(document).ready(function () {
         showTable();
     });
     $displayedTimeInput.on('hide.timepicker', function() {
+        $irrelevantPricesAlertDate.text($displayedDateInput.val() + ' ' + $displayedTimeInput.val());
         showTable();
     });
 

@@ -6,6 +6,7 @@ views.api.form.nights_amount: Количество ночей
 views.api.form.room_type: Тип номера
 views.api.form.adults: Взрослые
 views.api.form.children: Дети
+views.api.form.children_ages.label: Возраста детей
 views.api.form.find_room: Найти номер
 views.api.form.online_reservation_system: система онлайн бронирования
 views.api.getPaymentType.dates: "Даты:"
@@ -26,6 +27,7 @@ views.api.getPaymentType.reservate: Бронировать
 views.api.getPaymentType.reservation_error_try_again: Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.
 views.api.getResultsTable.hotel_rooms_for: Номера в отеле на
 views.api.getResultsTable.room_type: Тип номера
+views.api.getResultsTable.room_cache_count: Количество
 views.api.getResultsTable.guests: Гости
 views.api.getResultsTable.price: Цена
 views.api.getResultsTable.rooms_amount: Кол-во

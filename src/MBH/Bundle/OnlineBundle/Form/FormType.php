@@ -5,6 +5,7 @@ namespace MBH\Bundle\OnlineBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -74,6 +75,13 @@ class FormType extends AbstractType
                     'help' => 'form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date'
                 ]
             )
+            ->add('isDisplayChildrenAges', CheckboxType::class, [
+                'label' => 'form.formType.used_children_ages.label',
+                'group' => 'form.formType.parameters',
+                'value' => true,
+                'required' => false,
+                'help' => 'form.formType.used_children_ages.help'
+            ])
             ->add(
                 'paymentTypes',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                 [

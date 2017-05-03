@@ -1,6 +1,66 @@
 {% spaceless %}
 <div id="mbh-results-global-wrapper">
     {% if request.packages|length %}
+
+        <div id="mbh-package-info">
+            {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }}<strong>{{ request.begin }} - {{ request.end }}.</strong>
+            {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.days }}/<span id="mbh-package-info-nights">{{ request.nights }}</span></strong>.
+            {{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }}<strong>{{ request.packages|length }}</strong><br />
+            {{ 'views.api.getPaymentType.order_result'|trans({}, 'MBHOnlineBundle') }}<strong><span class="mbh-results-total-sum"><span id="mbh-package-info-total">{{ request.total }}</span>&nbsp;{{ currency().text }}</span></strong>&nbsp; {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }} <span class="mbh-results-total-sum"><span id="mbh-package-info-total-packages">{{ request.totalPackages }}</span>&nbsp;{{ currency().text }}</span>&nbsp; <span style="display: none;>{{ 'views.api.getPaymentType.services'|trans({}, 'MBHOnlineBundle') }} <span class="mbh-results-total-sum"><span id="mbh-package-info-total-services">{{ request.totalServices }}</span>&nbsp;{{ currency().text }}</span></span><br />
+            {% if request.tariff is defined %}
+                {{ 'views.api.getPaymentType.tariff'|trans({}, 'MBHOnlineBundle') }}<strong> {{ request.tariff.title }} </strong>
+            {% endif %}
+            {% for package in request.packages %}
+                <p>{{ package.hotel.title }} - {{ package.roomType.title }} ({{ package.adults }}+{{ package.children }}) {{ package.price|number_format(2) }}&nbsp;{{ currency().text }}</p>
+            {% endfor %}
+            <span id="mbh-package-info-total-hidden" style="display: none;">{{ request.total }}</span>
+        </div>
+
+            {% if services|length %}
+                <div id="mbh-results-services-wrapper">
+            <h3>Услуги</h3>
+            <div id="mbh-results-services-table-wrapper">
+            <table id="mbh-results-services-table">
+                <thead>
+                    <tr>
+                        {% if hotels|length > 1 %}
+                        <th id="mbh-results-table-services-th-hotel">{{ 'views.api.getResultsTable.hotel'|trans({}, 'MBHOnlineBundle') }}</th>
+                        {% endif %}
+                        <th id="mbh-results-table-services-th-service"> {{ 'views.api.getResultsTable.service_type'|trans({}, 'MBHOnlineBundle') }}</th>
+                        <th id="mbh-results-table-services-th-price">{{ 'views.api.getResultsTable.price'|trans({}, 'MBHOnlineBundle') }}</th>
+                        <th id="mbh-results-table-services-th-amount">{{ 'views.api.getResultsTable.amount'|trans({}, 'MBHOnlineBundle') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+
+                    {% for service in services %}
+                    <tr>
+                        {% if hotels|length > 1 %}
+                            <td class="mbh-left"><span class="mbh-results-services-hotel" data-id="{{ service.category.hotel.id }}">{{ service.category.hotel.fullTitle }}</span></td>
+                        {% endif %}
+                        <td class="mbh-left"><span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span></td>
+                        <td class="mbh-right">
+                            <span class="mbh-results-services-prices" data-value="{{ service.price }}">
+                                {{ service.price|number_format }} р.
+                            </span><br>
+                        </td>
+                        <td>
+                            <select class="mbh-results-services-count select2">
+                                <option value="0" selected="selected">0</option>
+                                {% for i in 1..100 %}
+                                <option value="{{ i }}">{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div> 
+        </div>
+        {% endif %}
+
         <div id="mbh-user-form">
             <h4>{{ 'views.api.getUserForm.enter_data_to_continue'|trans({}, 'MBHOnlineBundle') }}</h4>
             <form id="mbh-user-form-form">
