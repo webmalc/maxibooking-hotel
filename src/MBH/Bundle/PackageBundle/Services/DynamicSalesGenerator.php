@@ -3,6 +3,7 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\DynamicSales;
 use MBH\Bundle\PackageBundle\Lib\DynamicSalesDay;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -87,21 +88,17 @@ class DynamicSalesGenerator
             if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->disable('softdeleteable');
             }
-            $packagesAll[$i] = $this->dm->getRepository('MBHPackageBundle:Package')->getPackgesRoomTypes(new \DateTime($begin[$i]), new \DateTime($end[$i]), $roomTypesIds);
+            $packagesAll[$i] = $this->dm->getRepository('MBHPackageBundle:Package')->getPackgesRoomTypes(new \DateTime($begin[$i]), new \DateTime($end[$i]), $roomTypesIds)->toArray();
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
             }
-            $packagesAll[$i] = $packagesAll[$i]->toArray();
             $periods[$i] = new \DatePeriod(new \DateTime($begin[$i]), \DateInterval::createFromDateString('1 day'), new \DateTime($end[$i]));
-
         }
 
         $res = [];
 
         foreach ($roomTypes as $roomType) {
-
             $dynamicSale = new DynamicSales();
-
             $dynamicSale->setRoomType($roomType);
 
             foreach ($periods as $period => $valPeriod) {
@@ -110,6 +107,7 @@ class DynamicSalesGenerator
                 $countDay = 0;
                 $summary = new DynamicSalesDay();
 
+                /** @var \DateTime $day */
                 foreach ($valPeriod as $day) {
 
                     $infoDay = new DynamicSalesDay();
@@ -120,8 +118,8 @@ class DynamicSalesGenerator
                     $countDayPackage = 0;
                     $countRoom = 0;
 
-
                     foreach ($packagesAll as $packages) {
+                        /** @var Package $package */
                         foreach ($packages as $package) {
 
                             if ($package->getRoomType() == $roomType) {
@@ -188,7 +186,7 @@ class DynamicSalesGenerator
                     unset($day);
                 }
 
-                $summary->setAvaregeVolume($countDay != 0 ? $summary->getTotalSales() / $countDay : 1);
+                $summary->setAverageVolume($countDay != 0 ? $summary->getTotalSales() / $countDay : 1);
                 $summary->setAmountPackages(round($summary->getTotalAmountPackages() / (($countDay != 0) ? $countDay : 1)));
 
                 $resultPeriod['summ'] = $summary;
@@ -217,7 +215,6 @@ class DynamicSalesGenerator
             }
 
             $res[] = $dynamicSale;
-
         }
 
         //all rooms result
@@ -234,15 +231,16 @@ class DynamicSalesGenerator
                     $countDay = 0;
                     $amountDay = count($daySaleDays->getPeriods()[$i]);
 
+                    /** @var DynamicSalesDay $daySale */
                     foreach ($daySaleDays->getPeriods()[$i] as $daySale) {
                         isset($allResultPeriod[$i][$countDay]) ? $day = $allResultPeriod[$i][$countDay] : $day = new DynamicSalesDay();
 
                         $day->setDateSales($daySale->getDateSales());
                         $day->setTotalSales($day->getTotalSales() + $daySale->getTotalSales());
                         $day->setVolumeGrowth($day->getVolumeGrowth() + $daySale->getVolumeGrowth());
-                        $day->setAvaregeVolume($day->getAvaregeVolume() + $daySale->getAvaregeVolume());
-                        $day->setPersentDayVolume($day->getPersentDayVolume() + $daySale->getPersentDayVolume());
-                        $day->setPersentDayGrowth($day->getPersentDayGrowth() + $daySale->getPersentDayGrowth());
+                        $day->setAverageVolume($day->getAverageVolume() + $daySale->getAverageVolume());
+                        $day->setPercentDayVolume($day->getPercentDayVolume() + $daySale->getPercentDayVolume());
+                        $day->setPercentDayGrowth($day->getPercentDayGrowth() + $daySale->getPercentDayGrowth());
                         $day->setAmountPackages($day->getAmountPackages() + $daySale->getAmountPackages());
                         $day->setTotalAmountPackages($day->getTotalAmountPackages() + $daySale->getTotalAmountPackages());
                         $day->setPercentTotalAmountPackages($day->getPercentTotalAmountPackages() + $daySale->getPercentTotalAmountPackages());
@@ -278,11 +276,8 @@ class DynamicSalesGenerator
 
                         $allResultPeriod[$i][$countDay] = $day;
                         $countDay++;
-
                     }
-
                 }
-
             }
 
             foreach ($allResultPeriod as $allResPer) {
@@ -317,17 +312,17 @@ class DynamicSalesGenerator
     }
 
     /**
-     * @param $allMainPeriod
-     * @param $nextPeriod
+     * @param DynamicSalesDay $allMainPeriod
+     * @param DynamicSalesDay $nextPeriod
      * @return DynamicSalesDay
      */
     public static function generateComparisonDay($allMainPeriod, $nextPeriod)
     {
         $volumeDay = new DynamicSalesDay();
         $volumeDay->setTotalSales($allMainPeriod->getTotalSales() - $nextPeriod->getTotalSales());
-        $volumeDay->setPersentDayVolume(self::percentCalc($nextPeriod, $allMainPeriod, 'getTotalSales', $volumeDay->getTotalSales()));
-        $volumeDay->setAvaregeVolume($allMainPeriod->getvolumeGrowth() - $nextPeriod->getvolumeGrowth());
-        $volumeDay->setPersentDayGrowth(self::percentCalc($nextPeriod, $allMainPeriod, 'getvolumeGrowth', $volumeDay->getAvaregeVolume()));
+        $volumeDay->setPercentDayVolume(self::percentCalc($nextPeriod, $allMainPeriod, 'getTotalSales', $volumeDay->getTotalSales()));
+        $volumeDay->setAverageVolume($allMainPeriod->getvolumeGrowth() - $nextPeriod->getvolumeGrowth());
+        $volumeDay->setPercentDayGrowth(self::percentCalc($nextPeriod, $allMainPeriod, 'getvolumeGrowth', $volumeDay->getAverageVolume()));
         //comparison count package
         $volumeDay->setAmountPackages($allMainPeriod->getAmountPackages() - $nextPeriod->getAmountPackages());
         $volumeDay->setPercentAmountPackages(self::percentCalc($nextPeriod, $allMainPeriod, 'getAmountPackages', $volumeDay->getAmountPackages()));

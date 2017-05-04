@@ -4,6 +4,24 @@ namespace MBH\Bundle\PackageBundle\Lib;
 
 class DynamicSalesDay
 {
+    const DYNAMIC_SALES_SHOWN_OPTIONS = [
+        'sales-volume',
+        'period-volume',
+        'packages-sales',
+        'packages-growth',
+        'count-people',
+        'count-room',
+        'package-isPaid',
+        'package-isPaid-growth',
+        'package-delete',
+        'package-delete-price',
+        'package-delete-price-growth',
+        'package-delete-price-isPaid',
+        'package-isPaid-delete-package',
+        'count-people-day',
+        'count-room-day',
+    ];
+
     /**
      * @var \DateTime
      */
@@ -21,17 +39,17 @@ class DynamicSalesDay
     /**
      * @var float
      */
-    protected $avaregeVolume = 0;
+    protected $averageVolume = 0;
 
     /**
      * @var int
      */
-    protected $persentDayVolume = 0;
+    protected $percentDayVolume = 0;
 
     /**
      * @var int
      */
-    protected $persentDayGrowth = 0;
+    protected $percentDayGrowth = 0;
 
     /**
      * @var int
@@ -135,11 +153,11 @@ class DynamicSalesDay
     /**
      * @return int
      */
-    protected $percentComparisonIsPaidAndDelete =0;
+    protected $percentComparisonIsPaidAndDelete = 0;
     /**
      * @var int
      */
-    protected $countPeople =0;
+    protected $countPeople = 0;
     /**
      * @var int
      */
@@ -151,7 +169,10 @@ class DynamicSalesDay
     /**
      * @var int
      */
-    protected $percentCountNumbersDay=0;
+    protected $percentCountNumbersDay = 0;
+
+    private $isToArrayInit = false;
+    private $toArray;
 
     /**
      * @return int
@@ -266,7 +287,7 @@ class DynamicSalesDay
     }
 
     /**
-     * @return int
+     * @return float
      */
     public function getDeletePackageIsPaid(): float
     {
@@ -274,7 +295,7 @@ class DynamicSalesDay
     }
 
     /**
-     * @param int $deletePackageIsPaid
+     * @param float $deletePackageIsPaid
      */
     public function setDeletePackageIsPaid(float $deletePackageIsPaid)
     {
@@ -282,7 +303,7 @@ class DynamicSalesDay
     }
 
     /**
-     * @return int
+     * @return float
      */
     public function getPercentDeletePricePackageGrowth(): float
     {
@@ -444,9 +465,9 @@ class DynamicSalesDay
     /**
      * @return int
      */
-    public function getPersentDayGrowth(): int
+    public function getPercentDayGrowth(): int
     {
-        return $this->persentDayGrowth;
+        return $this->percentDayGrowth;
     }
 
     /**
@@ -522,7 +543,7 @@ class DynamicSalesDay
     }
 
     /**
-     * @param int $percentAmountPackage
+     * @param int $percentAmountPackages
      */
     public function setPercentAmountPackages(int $percentAmountPackages)
     {
@@ -578,45 +599,45 @@ class DynamicSalesDay
     }
 
     /**
-     * @param int $persentDayGrowth
+     * @param int $percentDayGrowth
      */
-    public function setPersentDayGrowth(int $persentDayGrowth)
+    public function setPercentDayGrowth(int $percentDayGrowth)
     {
-        $this->persentDayGrowth = $persentDayGrowth;
+        $this->percentDayGrowth = $percentDayGrowth;
     }
 
     /**
      * @return int
      */
-    public function getPersentDayVolume(): int
+    public function getPercentDayVolume(): int
     {
-        return $this->persentDayVolume;
+        return $this->percentDayVolume;
     }
 
     /**
-     * @param int $persentDayVolume
+     * @param int $percentDayVolume
      * @return DynamicSalesDay
      */
-    public function setPersentDayVolume(int $persentDayVolume): DynamicSalesDay
+    public function setPercentDayVolume(int $percentDayVolume): DynamicSalesDay
     {
-        $this->persentDayVolume = $persentDayVolume;
+        $this->percentDayVolume = $percentDayVolume;
         return $this;
     }
 
     /**
      * @return float
      */
-    public function getAvaregeVolume(): float
+    public function getAverageVolume(): float
     {
-        return $this->avaregeVolume;
+        return $this->averageVolume;
     }
 
     /**
-     * @param float $avaregeVolume
+     * @param float $averageVolume
      */
-    public function setAvaregeVolume(float $avaregeVolume)
+    public function setAverageVolume(float $averageVolume)
     {
-        $this->avaregeVolume = $avaregeVolume;
+        $this->averageVolume = $averageVolume;
     }
 
     /**
@@ -667,4 +688,37 @@ class DynamicSalesDay
         $this->volumeGrowth = $volumeGrowth;
     }
 
+    public function getSpecifiedValue($name, $isSummary = false)
+    {
+        $specifiedData = $this->__toArray()[$name];
+        $value = $isSummary ? $specifiedData['total'] : $specifiedData['dayValue'];
+
+        return $value;
+    }
+
+    public function __toArray()
+    {
+        if (!$this->isToArrayInit) {
+            $this->toArray = [
+                'sales-volume' => ['dayValue' => number_format($this->getTotalSales(), 2), 'total' => number_format($this->getAverageVolume(), 2)],
+                'period-volume' => ['dayValue' => number_format($this->getVolumeGrowth(), 2), 'total' => number_format($this->getTotalSales(), 2)],
+                'packages-sales' => ['dayValue' => $this->getAmountPackages(), 'total' => number_format($this->getAmountPackages(), 2)],
+                'packages-growth' => ['dayValue' => $this->getTotalAmountPackages(), 'total' => $this->getTotalAmountPackages()],
+                'count-people' => ['dayValue' => $this->getTotalCountPeople(), 'total' => $this->getTotalCountPeople()],
+                'count-room' => ['dayValue' => $this->getTotalCountNumbers(), 'total' => $this->getTotalCountNumbers()],
+                'package-isPaid' => ['dayValue' => $this->getPackageIsPaid(), 'total' => $this->getPackageIsPaid()],
+                'package-isPaid-growth' => ['dayValue' => $this->getPackageIsPaidGrowth(), 'total' => $this->getPackageIsPaidGrowth()],
+                'package-delete' => ['dayValue' => $this->getDeletePackages(), 'total' => $this->getDeletePackages()],
+                'package-delete-price' => ['dayValue' => $this->getDeletePricePackage(), 'total' => $this->getDeletePricePackage()],
+                'package-delete-price-growth' => ['dayValue' => $this->getDeletePackages(), 'total' => $this->getDeletePackages()],
+                'package-delete-price-isPaid' => ['dayValue' => $this->getDeletePackageIsPaid(), 'total' => $this->getDeletePackageIsPaid()],
+                'package-isPaid-delete-package' => ['dayValue' => $this->getComparisonIsPaidAndDelete(), 'total' => $this->getComparisonIsPaidAndDelete()],
+                'count-people-day' => ['dayValue' => $this->getCountPeople(), 'total' => $this->getCountPeople()],
+                'count-room-day' => ['dayValue' => $this->getCountNumbers(), 'total' => $this->getCountNumbers()]
+            ];
+            $this->isToArrayInit = true;
+        }
+
+        return $this->toArray;
+    }
 }

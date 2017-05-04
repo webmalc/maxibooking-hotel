@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\PackageBundle\Lib\DynamicSalesDay;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -11,9 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/dynamic/sales")
+ * @Route("/dynamic_sales")
  * @Method("GET")
- *
  */
 class DynamicSalesController extends Controller implements CheckHotelControllerInterface
 {
@@ -27,29 +27,9 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
      */
     public function indexAction()
     {
-        $permissions = $this->container->get('mbh.package.permissions');
-
-        $optionShowDynamicSales = [
-            'dynamic.sales.day.sales.volume' => 'sales-volume',
-            'dynamic.sales.period.sales.volume' => 'period-volume',
-            'dynamic.sales.day.packages' => 'packages-sales',
-            'dynamic.sales.day.packages.growth' => 'packages-growth',
-            'dynamic.sales.day.sales.count.people' => 'count-people',
-            'dynamic.sales.day.sales.count.room' => 'count-room',
-            'dynamic.sales.day.sales.package.is.paid' => 'package-isPaid',
-            'dynamic.sales.day.sales.package.is.paid.growth' => 'package-isPaid-growth',
-            'dynamic.sales.day.sales.package.delete' => 'package-delete',
-            'dynamic.sales.day.sales.package.delete.price' => 'package-delete-price',
-            'dynamic.sales.day.sales.package.delete.price.growth' => 'package-delete-price-growth',
-            'dynamic.sales.day.sales.package.delete.price.is.paid' => 'package-delete-price-isPaid',
-            'dynamic.sales.day.sales.package.is.paid.subtraction.deleted' => 'package-isPaid-delete-package',
-            'dynamic.sales.day.sales.count.people.day' => 'count-people-day',
-            'dynamic.sales.day.sales.count.room.day' => 'count-room-day',
-        ];
-
         return [
             'roomTypes' => $this->hotel->getRoomTypes(),
-            'optionsShowDynamicSales' => $optionShowDynamicSales
+            'optionsShowDynamicSales' => DynamicSalesDay::DYNAMIC_SALES_SHOWN_OPTIONS
         ];
     }
 
@@ -66,7 +46,7 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
     public function dynamicSalesTableAction(Request $request)
     {
         $hotel = $this->hotel;
-        $optionsShows = empty($request->get('optionsShow')) ? [] : $request->get('optionsShow');
+        $optionsShows = empty($request->get('optionsShow')) ? DynamicSalesDay::DYNAMIC_SALES_SHOWN_OPTIONS : $request->get('optionsShow');
 
         $dynamicSales = $this->get('mbh.package.dynamic.sales.generator')->generateDynamicSales($request, $hotel);
         $error = false;

@@ -49,8 +49,8 @@
                                                        id="dynamic-sales-show-filter-roomType"
                                                        class="dynamic-sale-filter-filter form-control input-sm">
                 <option></option>
-                {% for optionShowDynamicSales,value  in optionsShowDynamicSales %}
-                    <option value="{{ value }}">{{ optionShowDynamicSales|trans({},'MBHPackageBundle') }}</option>
+                {% for dynamicSalesShownOption in optionsShowDynamicSales %}
+                    <option value="{{ dynamicSalesShownOption }}">{{ ('dynamic.sales.day.' ~ dynamicSalesShownOption)|trans({},'MBHPackageBundle') }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -62,6 +62,6 @@
     </form>
     </div>
     </div>
-    <div id="dynamic-sales-table-wrapper" class="scrolling"></div>
+    <div id="dynamic-sales-table-wrapper" class=""></div>
 {% endblock %}
 

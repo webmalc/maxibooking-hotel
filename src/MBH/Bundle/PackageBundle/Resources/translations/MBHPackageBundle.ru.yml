@@ -457,25 +457,25 @@ dynamic.sales.error.day: дней
 
 dynamic.sales.day.periods: Периоды
 dynamic.sales.day.summary: Итого
-dynamic.sales.day.sales.volume: Объем броней за сутки/руб
-dynamic.sales.period.sales.volume: Объем броней за период/руб
-dynamic.sales.day.packages: Создано броней за сутки
-dynamic.sales.day.packages.growth: Создано броней за период
-dynamic.sales.day.sales.package.is.paid: Оплачено броней за сутки
-dynamic.sales.day.sales.package.is.paid.growth: Оплачено броней  на дату итого
-dynamic.sales.day.sales.package.delete: Аннулировано броней за сутки
-dynamic.sales.day.sales.package.delete.price: Аннулировано броней за сутки в рублях
-dynamic.sales.day.sales.package.delete.price.growth: Аннулировано броней за период в рублях
-dynamic.sales.day.sales.package.delete.price.is.paid: Аннулировано оплаченных броней за сутки в рублях
-dynamic.sales.day.sales.package.is.paid.subtraction.deleted: Оплачено броней  на дату итого минус аннулированные
+dynamic.sales.day.period-volume: Объем броней за сутки/руб
+dynamic.sales.day.sales-volume: Объем броней за период/руб
+dynamic.sales.day.packages-sales: Создано броней за сутки
+dynamic.sales.day.packages-growth: Создано броней за период
+dynamic.sales.day.package-isPaid: Оплачено броней за сутки
+dynamic.sales.day.package-isPaid-growth: Оплачено броней  на дату итого
+dynamic.sales.day.package-delete: Аннулировано броней за сутки
+dynamic.sales.day.package-delete-price: Аннулировано броней за сутки в рублях
+dynamic.sales.day.package-delete-price-growth: Аннулировано броней за период в рублях
+dynamic.sales.day.package-delete-price-isPaid: Аннулировано оплаченных броней за сутки в рублях
+dynamic.sales.day.package-isPaid-delete-package: Оплачено броней  на дату итого минус аннулированные
 dynamic.sales.day.sales.comparison: Сравнение
 dynamic.sales.day.sales.summ: Сумма
 dynamic.sales.day.sales.amounts: Кол-во
 dynamic.sales.day.sales.volume: Объем броней за сутки/руб
-dynamic.sales.day.sales.count.people: Брони в чел/днях за период
-dynamic.sales.day.sales.count.people.day: Брони в чел/днях за сутки
-dynamic.sales.day.sales.count.room: Брони в номеро/днях за период
-dynamic.sales.day.sales.count.room.day: Брони в номеро/днях за сутки
+dynamic.sales.day.count-people: Брони в чел/днях за период
+dynamic.sales.day.count-people-day: Брони в чел/днях за сутки
+dynamic.sales.day.count-room: Брони в номеро/днях за период
+dynamic.sales.day.count-room-day: Брони в номеро/днях за сутки
 
 dynamic.sales.dates: Даты
 dynamic.sales.show.title: Что показывать ?

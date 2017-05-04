@@ -2,9 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Lib;
 
-
 use MBH\Bundle\HotelBundle\Document\RoomType;
-
 
 class DynamicSales
 {

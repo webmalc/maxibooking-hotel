@@ -1,0 +1,38 @@
+#dynamic-sales-table-wrapper {
+  overflow-y: auto !important;
+  height: auto !important;
+  position: relative;
+  .line-name {
+    min-width: 150px;
+  }
+  .periods-cell {
+    min-width: 100px;
+  }
+  .table-cell {
+    min-width: 48px;
+    height: 51px;
+  }
+  .rightTable {
+    position: absolute;
+    background-color: #fff;
+    width: 250px;
+    z-index: 130;
+  }
+  #headerTable {
+    position: absolute;
+    background-color: #fff;
+    z-index: 150;
+    margin-bottom: 0;
+  }
+  .dynamic-sales-table {
+    margin-bottom: 0 !important;
+    //margin-left: 250px;
+    .left-offset-line {
+      min-width: 250px;
+    }
+    .room-type-title-string {
+      position: absolute;
+      padding-left: 5px;
+    }
+  }
+}
