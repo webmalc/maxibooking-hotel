@@ -960,7 +960,7 @@ class PackageRepository extends DocumentRepository
         $packages = $this->createQueryBuilder()
             ->select('numberWithPrefix')
             ->field('begin')->lte($day)
-            ->field('end')->gt($day)
+            ->field('end')->gte($day)
             ->field('roomType')->references($roomType)
             ->field('deletedAt')->equals(null)
             ->hydrate(false)

@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Command;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -48,6 +49,7 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
     {
         $path = $uploadedPath = $this->getContainer()->get('kernel')->getRootDir() . '/../protectedUpload/1C/1c_compare.xml';
         $helper = $this->getContainer()->get('mbh.helper');
+        /** @var DocumentManager $dm */
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
         if (!file_exists($path) || !is_readable($path)) {
@@ -128,12 +130,10 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                         $this->result[] = $entry;
                     } else {
                         $cache = $caches[$roomType->getId()][0][$date];
-
-                        if ($cache->getleftRooms() != $entry->remain) {
                             $entry->totalMB = $cache->getTotalRooms();
                             $entry->soldMB = $cache->getPackagesCount();
                             $entry->remainMB = $cache->getleftRooms();
-                            $this->result[] = $entry;
+
                             $entry->numbersMB = $dm->getRepository('MBHPackageBundle:Package')
                                 ->getNumbers($entry->date, $entry->roomType);
                             $entry->mb = array_diff($entry->numbersMB, $entry->numbers);
@@ -143,7 +143,8 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                             $entry->res = array_unique($entry->common);
                             $entry->non_oneC = $this ->sortOneC($entry->res,$entry->mb);
                             $entry->non_mb = $this ->sortOneC($entry->res,$entry->oneC);
-
+                        if (count($entry->oneC) || count($entry->mb)) {
+                            $this->result[] = $entry;
                         }
                     }
                 }
