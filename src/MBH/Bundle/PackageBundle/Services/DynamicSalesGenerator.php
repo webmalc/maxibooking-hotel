@@ -35,7 +35,6 @@ class DynamicSalesGenerator
         $this->container = $container;
     }
 
-
     /**
      * @param Request $request
      * @param Hotel $hotel
@@ -88,6 +87,7 @@ class DynamicSalesGenerator
             if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->disable('softdeleteable');
             }
+            //TODO: Заказ может быть удален, некоторые данные зависят от заказа
             $packagesAll[$i] = $this->dm->getRepository('MBHPackageBundle:Package')->getPackgesRoomTypes(new \DateTime($begin[$i]), new \DateTime($end[$i]), $roomTypesIds)->toArray();
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -294,15 +294,12 @@ class DynamicSalesGenerator
                             if ($indexMain == $index) {
                                 $volumeDay = self::generateComparisonDay($allMainPeriod, $nextPeriod);
                             }
-
                         }
-
                         $comparisonPeriod[] = $volumeDay;
                     }
                     $allRes->addComparison($comparisonPeriod);
                     unset($comparisonPeriod);
                 }
-
             }
 
             $res[] = $allRes;

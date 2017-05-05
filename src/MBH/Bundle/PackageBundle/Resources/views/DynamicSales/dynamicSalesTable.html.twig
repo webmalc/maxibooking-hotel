@@ -66,8 +66,28 @@
                         </td>
                         </tr>
                     {% endfor %}
-
                 {% endfor %}
+                {% if dynamicSaleTypeData.comparison is not null and (optionsShows|length > 0) %}
+                    <table class="table table-bordered table-condensed rightTable rightTable-comparison">
+                        <tbody>
+                        {% for shownOption in optionsShows %}
+                            <tr data-class="{{ shownOption ~ '-compare' }}">
+                                <td class="first-th line-name" rowspan="2">
+                                    <small>{{ ('dynamic.sales.day.' ~ shownOption)|trans({},'MBHPackageBundle') }}</small>
+                                </td>
+                                <td class="periods-cell" data-class="{{ shownOption ~ '-compare' }}">
+                                    <small>{{ 'dynamic.sales.day.sales.summ'|trans({},'MBHPackageBundle') }}</small>
+                                </td>
+                            </tr>
+                            <tr data-class="{{ shownOption ~ '-compare-percentage' }}">
+                                <td class="periods-cell">
+                                    %
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
                 </tbody>
             </table>
         {% endfor %}
@@ -78,12 +98,12 @@
                 <tbody>
                 <tr class="mbh-grid-header2 warning">
                     <td colspan="{{ maxCount +2 }}" style="text-align: left">
-                        <strong class="room-type-title-string">
-                        {% if (dynamicSaleTypeData.roomType is null ) %}
-                            {{ 'dynamic.sales.result'|trans({},'MBHPackageBundle') }}
-                        {% else %}
-                            {{ dynamicSaleTypeData.roomType.title }}
-                        {% endif %}
+                        <strong class="table-title">
+                            {% if (dynamicSaleTypeData.roomType is null ) %}
+                                {{ 'dynamic.sales.result'|trans({},'MBHPackageBundle') }}
+                            {% else %}
+                                {{ dynamicSaleTypeData.roomType.title }}
+                            {% endif %}
                         </strong>&nbsp;&nbsp;
                     </td>
                 </tr>
@@ -91,31 +111,68 @@
                 <tr data-class="{{ shownOption }}">
                     <td class="left-offset-line"></td>
                     {% for dynamicSalePeriod in dynamicSaleTypeData.periods %}
-                    {% set index = loop.index %}
-                    {% if  loop.index != 1 %}
-                        <tr data-class="{{ shownOption }}">
-                    {% endif %}
-
-                    {% for dynamicSaleDay in dynamicSalePeriod %}
-                        {% if loop.last %}
-                            {% if (maxCount - dynamicSaleTypeData.periods[index-1]|length) > 0 %}
-                                {% for i in 1..(maxCount - dynamicSaleTypeData.periods[index-1]|length) %}
-                                    <td>-</td>
-                                {% endfor %}
-                            {% endif %}
-                            <td class="text-right table-cell" style="text-align: right">
-                                <strong>{{ dynamicSaleDay.getSpecifiedValue(shownOption) }}</strong>
-                            </td>
-                        {% else %}
-                            <td class="table-cell">
-                                {{ dynamicSaleDay.getSpecifiedValue(shownOption) }}
-                            </td>
+                        {% set index = loop.index %}
+                        {% if  loop.index != 1 %}
+                            <tr data-class="{{ shownOption }}">
+                            <td class="left-offset-line"></td>
                         {% endif %}
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-                {% endfor %}
 
+                        {% for saleDatyIndex, dynamicSaleDay in dynamicSalePeriod %}
+                            {% set isSummary = (saleDatyIndex == 'summ') %}
+                            {% if loop.last %}
+                                {% if (maxCount - dynamicSaleTypeData.periods[index - 1]|length) > 0 %}
+                                    {% for i in 1..(maxCount - dynamicSaleTypeData.periods[index - 1]|length) %}
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="text-right table-cell" style="text-align: right">
+                                    <strong>{{ dynamicSaleDay.getSpecifiedValue(shownOption, isSummary) }}</strong>
+                                </td>
+                            {% else %}
+                                <td class="table-cell">
+                                    {{ dynamicSaleDay.getSpecifiedValue(shownOption, isSummary) }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+                {% if dynamicSaleTypeData.comparison is not null and optionsShows|length > 0 %}
+                    <tr class="info">
+                        <td class="comparison-cell text-left" rowspan="{{ periodsCount - 1 }}" colspan="{{ maxCount + 2 }}">
+                            <strong class="table-title">{{ 'dynamic.sales.day.sales.comparison'|trans({},'MBHPackageBundle') }} </strong>
+                        </td>
+                    </tr>
+                    {% for shownOption in optionsShows %}
+                        {% for comparisonPeriodData in dynamicSaleTypeData.comparison %}
+                            {% set index = loop.index %}
+                            <tr class="success" data-class="{{ shownOption ~ '-compare' }}">
+                                <td class="left-offset-line"></td>
+                                {% for comparisonDay in comparisonPeriodData %}
+                                    <td>
+                                        {% if loop.index < dynamicSaleTypeData.periods[index]|length and index > 0 %}
+                                            {{ comparisonDay.getComparisonData(shownOption) }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="warning" data-class="{{ shownOption ~ '-compare-percentage' }}">
+                                <td class="left-offset-line"></td>
+                                {% for comparisonDay in comparisonPeriodData %}
+                                    <td>
+                                        {% if loop.index < dynamicSaleTypeData.periods[index]|length and index > 0 %}
+                                            {{ comparisonDay.getComparisonData(shownOption, true) }}%
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                {% endif %}
                 </tbody>
             </table>
         {% endfor %}

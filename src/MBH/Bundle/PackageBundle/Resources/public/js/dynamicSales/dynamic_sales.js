@@ -52,32 +52,41 @@ $(document).ready(function ($) {
         var headerTable = document.getElementById('headerTable');
         var headerTableHeight = parseInt(getComputedStyle(headerTable).height, 10);
         $('.dynamic-sales-table:lt(1)').css('margin-top', headerTableHeight);
-        console.log(headerTableHeight);
         var lastTableHeight = 0;
         var lastTableTopOffset = headerTableHeight;
-        var $roomTypeTitleLines = $('.mbh-grid-header2');
+        var roomTypeTitleLineHeight = parseInt($('.mbh-grid-header2').first().css('height'), 10);
         $('.rightTable').each(function (index, element) {
-            var roomTypeTitleLineHeight = parseInt($roomTypeTitleLines.first().css('height'), 10);
-            var tableTopOffset = (lastTableTopOffset + lastTableHeight + roomTypeTitleLineHeight);
+            var tableTopOffset = lastTableTopOffset + lastTableHeight + roomTypeTitleLineHeight;
+            var isTableCompared = element.classList.contains('rightTable-comparison');
+            if (isTableCompared) {
+                //Убираю смещение бордера
+                tableTopOffset -= 1;
+            }
             element.style.top = tableTopOffset + 'px';
             lastTableTopOffset = tableTopOffset;
             lastTableHeight = parseInt(getComputedStyle(element).height, 10);
         });
 
-        var comparingDatesCount = $('#headerTable').find('tr').length;
-        if (comparingDatesCount === 1) {
-            $('.dynamic-sales-table').find('tr').each(function (index, element) {
-                var rightTableRowIdentifier = element.getAttribute('data-class');
-                var appropriateRow = $('[data-class = ' + rightTableRowIdentifier + ']:lt(1)');
-                element.style.height = appropriateRow.eq(0).css('height');
-            });
-        }
-
         $('.rightTableHeader').css('height', headerTableHeight);
-        $('.room-type-title-string').each(function (index, element) {
+        $('.table-title').each(function (index, element) {
             element.style.minWidth = getComputedStyle(element).width;
         });
+
+        $('.dynamic-sales-table').find('tr').each(function (index, element) {
+            var rightTableRowIdentifier = element.getAttribute('data-class');
+            var appropriateRow = $('.rightTable').find('[data-class = ' + rightTableRowIdentifier + ']');
+            element.style.height = appropriateRow.eq(0).css('height');
+        });
+        // setWrapperHeight();
     };
+
+    // var setWrapperHeight = function() {
+    //     var $wrapper = $('#dynamic-sales-table-wrapper');
+    //     var availableHeight = document.documentElement.clientHeight - $wrapper.offset().top;
+    //     var tableHeight = parseInt($wrapper.css('height'), 10);
+    //     var wrapperHeight = tableHeight > availableHeight ? availableHeight : tableHeight + 10;
+    //     $wrapper.css('height', wrapperHeight - 45);
+    // };
 
     var onTableScroll = function () {
         var tableWrapper = document.getElementById('dynamic-sales-table-wrapper');

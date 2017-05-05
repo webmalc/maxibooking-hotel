@@ -696,25 +696,108 @@ class DynamicSalesDay
         return $value;
     }
 
+    public function getComparisonData($name, $inPercent = false)
+    {
+        $specifiedData = $this->__toArray()[$name];
+        $value = $inPercent ? $specifiedData['percentage'] : $specifiedData['comparisonDayValue'];
+
+        return $value;
+    }
+
     public function __toArray()
     {
         if (!$this->isToArrayInit) {
             $this->toArray = [
-                'sales-volume' => ['dayValue' => number_format($this->getTotalSales(), 2), 'total' => number_format($this->getAverageVolume(), 2)],
-                'period-volume' => ['dayValue' => number_format($this->getVolumeGrowth(), 2), 'total' => number_format($this->getTotalSales(), 2)],
-                'packages-sales' => ['dayValue' => $this->getAmountPackages(), 'total' => number_format($this->getAmountPackages(), 2)],
-                'packages-growth' => ['dayValue' => $this->getTotalAmountPackages(), 'total' => $this->getTotalAmountPackages()],
-                'count-people' => ['dayValue' => $this->getTotalCountPeople(), 'total' => $this->getTotalCountPeople()],
-                'count-room' => ['dayValue' => $this->getTotalCountNumbers(), 'total' => $this->getTotalCountNumbers()],
-                'package-isPaid' => ['dayValue' => $this->getPackageIsPaid(), 'total' => $this->getPackageIsPaid()],
-                'package-isPaid-growth' => ['dayValue' => $this->getPackageIsPaidGrowth(), 'total' => $this->getPackageIsPaidGrowth()],
-                'package-delete' => ['dayValue' => $this->getDeletePackages(), 'total' => $this->getDeletePackages()],
-                'package-delete-price' => ['dayValue' => $this->getDeletePricePackage(), 'total' => $this->getDeletePricePackage()],
-                'package-delete-price-growth' => ['dayValue' => $this->getDeletePackages(), 'total' => $this->getDeletePackages()],
-                'package-delete-price-isPaid' => ['dayValue' => $this->getDeletePackageIsPaid(), 'total' => $this->getDeletePackageIsPaid()],
-                'package-isPaid-delete-package' => ['dayValue' => $this->getComparisonIsPaidAndDelete(), 'total' => $this->getComparisonIsPaidAndDelete()],
-                'count-people-day' => ['dayValue' => $this->getCountPeople(), 'total' => $this->getCountPeople()],
-                'count-room-day' => ['dayValue' => $this->getCountNumbers(), 'total' => $this->getCountNumbers()]
+                'sales-volume' => [
+                    'dayValue' => number_format($this->getTotalSales(), 2),
+                    'total' => number_format($this->getAverageVolume(), 2),
+                    'comparisonDayValue' => number_format($this->getTotalSales(), 2),
+                    'percentage' => $this->getPercentDayVolume()
+                ],
+                'period-volume' => [
+                    'dayValue' => number_format($this->getVolumeGrowth(), 2),
+                    'total' => number_format($this->getTotalSales(), 2),
+                    'comparisonDayValue' => number_format($this->getAverageVolume(), 2),
+                    'percentage' => $this->getPercentDayGrowth()
+                ],
+                'packages-sales' => [
+                    'dayValue' => $this->getAmountPackages(),
+                    'total' => number_format($this->getAmountPackages(), 2),
+                    'comparisonDayValue' => $this->getAmountPackages(),
+                    'percentage' => $this->getPercentAmountPackages()
+                ],
+                'packages-growth' => [
+                    'dayValue' => $this->getTotalAmountPackages(),
+                    'total' => $this->getTotalAmountPackages(),
+                    'comparisonDayValue' => $this->getTotalAmountPackages(),
+                    'percentage' => $this->getPercentTotalAmountPackages()
+                ],
+                'count-people' => [
+                    'dayValue' => $this->getTotalCountPeople(),
+                    'total' => $this->getTotalCountPeople(),
+                    'comparisonDayValue' => $this->getTotalCountPeople(),
+                    'percentage' => $this->getPercentCountPeople()
+                ],
+                'count-room' => [
+                    'dayValue' => $this->getTotalCountNumbers(),
+                    'total' => $this->getTotalCountNumbers(),
+                    'comparisonDayValue' => $this->getTotalCountNumbers(),
+                    'percentage' => $this->getPercentCountNumbers()
+                ],
+                'package-isPaid' => [
+                    'dayValue' => $this->getPackageIsPaid(),
+                    'total' => $this->getPackageIsPaid(),
+                    'comparisonDayValue' => $this->getPackageIsPaid(),
+                    'percentage' => $this->getPercentPackageIsPaid()
+                ],
+                'package-isPaid-growth' => [
+                    'dayValue' => $this->getPackageIsPaidGrowth(),
+                    'total' => $this->getPackageIsPaidGrowth(),
+                    'comparisonDayValue' => $this->getPackageIsPaidGrowth(),
+                    'percentage' => $this->getPercentPackageIsPaidGrowth()
+                ],
+                'package-delete' => [
+                    'dayValue' => $this->getDeletePackages(),
+                    'total' => $this->getDeletePackages(),
+                    'comparisonDayValue' => $this->getDeletePackages(),
+                    'percentage' => $this->getPercentDeletePackages()
+                ],
+                'package-delete-price' => [
+                    'dayValue' => $this->getDeletePricePackage(),
+                    'total' => $this->getDeletePricePackage(),
+                    'comparisonDayValue' => $this->getDeletePricePackage(),
+                    'percentage' => $this->getPercentDeletePackages()
+                ],
+                'package-delete-price-growth' => [
+                    'dayValue' => $this->getDeletePackages(),
+                    'total' => $this->getDeletePackages(),
+                    'comparisonDayValue' => $this->getDeletePricePackageGrowth(),
+                    'percentage' => $this->getPercentDeletePricePackageGrowth()
+                ],
+                'package-delete-price-isPaid' => [
+                    'dayValue' => $this->getDeletePackageIsPaid(),
+                    'total' => $this->getDeletePackageIsPaid(),
+                    'comparisonDayValue' => $this->getDeletePackageIsPaid(),
+                    'percentage' => $this->getPercentDeletePackageIsPaid()
+                ],
+                'package-isPaid-delete-package' => [
+                    'dayValue' => $this->getComparisonIsPaidAndDelete(),
+                    'total' => $this->getComparisonIsPaidAndDelete(),
+                    'comparisonDayValue' => $this->getComparisonIsPaidAndDelete(),
+                    'percentage' => $this->getPercentComparisonIsPaidAndDelete()
+                ],
+                'count-people-day' => [
+                    'dayValue' => $this->getCountPeople(),
+                    'total' => $this->getCountPeople(),
+                    'comparisonDayValue' => $this->getCountPeople(),
+                    'percentage' => $this->getPercentCountPeople()
+                ],
+                'count-room-day' => [
+                    'dayValue' => $this->getCountNumbers(),
+                    'total' => $this->getCountNumbers(),
+                    'comparisonDayValue' => $this->getCountNumbers(),
+                    'percentage' => $this->getPercentCountNumbersDay()
+                ]
             ];
             $this->isToArrayInit = true;
         }
