@@ -20,12 +20,13 @@ class RoomCacheCompare1CType extends AbstractType
                 ->add('file', FileType::class, array(
                     'label' => 'XML файл сверки',
                     'required' => true,
-                    'constraints' => [new NotBlank(), new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => ['text/plain', 'application/xml', 'text/xml']
-                    ]), new Callback([$this, 'checkFile'])],
-                ))
-        ;
+                    'constraints' => [
+                        new NotBlank(),
+                        new File([
+                            'maxSize' => '10M',
+                            'mimeTypes' => ['text/plain', 'application/xml', 'text/xml'] ] ),
+                        new Callback([$this, 'checkFile'])]
+                ));
     }
 
     public function checkFile(UploadedFile $data, ExecutionContextInterface $context)
