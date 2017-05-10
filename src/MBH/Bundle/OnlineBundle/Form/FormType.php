@@ -7,8 +7,11 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
 
 class FormType extends AbstractType
 {
@@ -50,21 +53,18 @@ class FormType extends AbstractType
                     'required' => false,
                     'help' => 'form.formType.should_we_use_room_type_field_in_online_form'
                 ]
-            );
-            $builder
-                ->add(
-                    'tourists',
-                    CheckboxType::class,
-                    [
+            )
+            ->add(
+                'tourists',
+                CheckboxType::class,
+                [
                         'label' => 'form.formType.are_there_guests',
                         'group' => 'form.formType.parameters',
                         'value' => true,
                         'required' => false,
                         'help' => 'form.formType.should_we_use_guests_amount_field_in_online_form'
                     ]
-                )
-            ;
-        $builder
+            )
             ->add(
                 'nights',
                 CheckboxType::class,
@@ -83,6 +83,12 @@ class FormType extends AbstractType
                 'required' => false,
                 'help' => 'form.formType.used_children_ages.help'
             ])
+            ->add('resultsUrl', TextType::class, [
+                'label' => 'form.formType.resultsUrl_label',
+                'group' => 'form.formType.parameters',
+                'required' => true,
+                'help' => 'form.formType.resultsUrl_help'
+            ])
             ->add(
                 'paymentTypes',
                 \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
@@ -100,8 +106,20 @@ class FormType extends AbstractType
                 [
                     'group' => 'form.formType.css',
                     'label' => 'form.formType.css_label',
+                    'required' => false,
                     'help' => 'form.formType.css_help',
                     'attr' => ['rows' => 60]
+                ]
+            )
+            ->add(
+                'theme',
+                ChoiceType::class,
+                [
+                    'group' => 'form.formType.css',
+                    'choices' => FormConfig::getThemes(),
+                    'required' => false,
+                    'label' => 'form.formType.theme_label',
+                    'help' => 'https://bootswatch.com'
                 ]
             )
         ;

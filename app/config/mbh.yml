@@ -179,16 +179,8 @@ parameters:
 
     #параметры онлайн формы
     mbh.online.form:
-          sites: "%online_form_sites%"
           packages_max: "%mbh_online_form_max_packages%"
           messages: true
-          form:
-            width: '300px'
-            height: 'auto'
-          result:
-            width: 'auto'
-            height: 'auto'
-            url: "%online_form_result_url%"
           payment_types:
             in_hotel: 'Оплата при заселении'
             online_full: 'Онлайн оплата (100%)'
