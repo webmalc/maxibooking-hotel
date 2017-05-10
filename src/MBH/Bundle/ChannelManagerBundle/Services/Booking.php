@@ -117,9 +117,7 @@ class Booking extends Base
         $response = $this->sendXml(static::BASE_URL . 'roomrates', $request);
 
         foreach ($response->room as $room) {
-
             foreach ($room->rates->rate as $rate) {
-
                 if (isset($result[(string)$rate['id']]['rooms'])) {
                     $rooms = $result[(string)$rate['id']]['rooms'];
                 } else {
@@ -170,7 +168,8 @@ class Booking extends Base
         }
         $xml = simplexml_load_string($response);
 
-        return count($xml->xpath('/ok')) ? true : false;;
+        return count($xml->xpath('/ok')) ? true : false;
+        ;
     }
 
     /**
@@ -184,7 +183,6 @@ class Booking extends Base
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
-
             $roomTypes = $this->getRoomTypes($config);
             $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
                 $begin,
@@ -238,7 +236,7 @@ class Booking extends Base
     /**
      * {@inheritDoc}
      */
-    public function  updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -247,7 +245,7 @@ class Booking extends Base
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             $roomTypes = $this->getRoomTypes($config);
-            $tariffs = $this->getTariffs($config);
+            $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
             $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
                 return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
@@ -263,13 +261,13 @@ class Booking extends Base
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
-
                 $roomTypeId = $this->getRoomTypeArray($roomTypeInfo['doc'])[0];
 
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
-                    foreach ($tariffs as $tariffId => $tariff) {
+                    foreach ($tariffs as $tariff) {
                         /** @var Tariff $tariffDocument */
                         $tariffDocument = $tariff['doc'];
+                        $tariffId = $tariffDocument->getId();
                         $tariffChildOptions = $tariffDocument->getChildOptions();
                         //Если тариф дочерний, берем данные о ценах по id родительского тарифа.
                         $syncPricesTariffId = ($tariffDocument->getParent() && $tariffChildOptions->isInheritPrices())
@@ -294,7 +292,6 @@ class Booking extends Base
                                 ) : null,
                                 'closed' => false
                             ];
-
                         } else {
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => null,
@@ -462,7 +459,6 @@ class Booking extends Base
         $result = true;
 
         foreach ($this->getConfig() as $config) {
-
             $request = $this->templating->render(
                 'MBHChannelManagerBundle:Booking:reservations.xml.twig',
                 ['config' => $config, 'params' => $this->params, 'lastChange' => false]
@@ -471,7 +467,6 @@ class Booking extends Base
             $this->log('Reservations count: ' . count($sendResult->reservation));
 
             foreach ($sendResult->reservation as $reservation) {
-
                 if ((string)$reservation->status == 'modified') {
                     if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->disable('softdeleteable');
@@ -509,7 +504,6 @@ class Booking extends Base
                     $this->dm->remove($order);
                     $this->dm->flush();
                     $result = true;
-
                 };
 
                 if (in_array((string)$reservation->status, ['modified', 'cancelled']) && !$order) {
@@ -535,8 +529,8 @@ class Booking extends Base
         \SimpleXMLElement $reservation,
         ChannelManagerConfigInterface $config,
         Order $order = null
-    )
-    {
+    ) {
+    
         $helper = $this->container->get('mbh.helper');
         $roomTypes = $this->getRoomTypes($config, true);
         $tariffs = $this->getTariffs($config, true);
@@ -605,7 +599,6 @@ class Booking extends Base
 
         //fee
         if (!empty((float)$reservation->commissionamount)) {
-
             $fee = new CashDocument();
             $fee->setIsConfirmed(false)
                 ->setIsPaid(false)
@@ -620,7 +613,6 @@ class Booking extends Base
 
         //packages
         foreach ($reservation->room as $room) {
-
             $corrupted = false;
             $errorMessage = '';
 
@@ -774,7 +766,6 @@ class Booking extends Base
         }
 
         $this->dm->flush();
-
     }
 
     /**

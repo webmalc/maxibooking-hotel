@@ -31,6 +31,9 @@ form.inviteType.type.twice: 'Двукратная (900 руб.)'
 form.formType.css_label: 'css'
 form.formType.css: 'Оформление'
 form.formType.css_help: 'Дополнительные css-стили для онлайн формы'
+form.formType.theme_label: 'Тема'
+form.formType.resultsUrl_label: 'Страница результатов' 
+form.formType.resultsUrl_help: 'URL страницы для вывода результатов поиска' 
 
 payment_types:
   in_hotel: 'Оплата при заселении'

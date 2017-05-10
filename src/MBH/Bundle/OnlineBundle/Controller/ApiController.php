@@ -47,8 +47,12 @@ class ApiController extends Controller
      */
     public function getFormResultsIframeAction($formId = null)
     {
+        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
+            ->findOneById($formId);
+
         return [
-            'formId' => $formId
+            'formId' => $formId,
+            'formConfig' => $formConfig
         ];
     }
 
@@ -56,13 +60,17 @@ class ApiController extends Controller
      * Online form iframe
      * @Route("/form/iframe/{formId}", name="online_form_iframe", defaults={"formId"=null})
      * @Method("GET")
-     * @Cache(expires="tomorrow", public=true)
+     * //// @Cache(expires="tomorrow", public=true)
      * @Template()
      */
     public function getFormIframeAction($formId = null)
     {
+        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
+            ->findOneById($formId);
+
         return [
-            'formId' => $formId
+            'formId' => $formId,
+            'formConfig' => $formConfig
         ];
     }
     
@@ -121,7 +129,7 @@ class ApiController extends Controller
      * Online form js
      * @Route("/form/{id}", name="online_form_get", defaults={"_format"="js", "id"=null})
      * @Method("GET")
-     * @Cache(expires="tomorrow", public=true)
+     * //// @Cache(expires="tomorrow", public=true)
      * @Template()
      */
     public function getFormAction($id = null)
@@ -316,7 +324,6 @@ class ApiController extends Controller
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
         $helper = $this->get('mbh.helper');
         $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
 
@@ -433,7 +440,6 @@ class ApiController extends Controller
             $this->setLocale($requestJson->locale);
         }
         $services = $hotels = [];
-        $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
         foreach ($requestJson->packages as $data) {
             $hotels[] = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneById($data->hotel->id);
@@ -466,7 +472,6 @@ class ApiController extends Controller
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
         }
-        $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
         $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
 
@@ -492,8 +497,6 @@ class ApiController extends Controller
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $requestJson = json_decode($request->getContent());
-
-        $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
         //Create packages
         $order = $this->createPackages($requestJson, $requestJson->paymentType != 'in_hotel');
