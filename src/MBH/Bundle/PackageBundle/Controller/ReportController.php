@@ -353,7 +353,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $allTotal = $default;
         foreach ($total as $i => $tData) {
             foreach ($tData as $k => $val) {
-                if ($k != 'date') {
+                if ($k != 'date' and is_numeric($val)) {
                     $allTotal[$k] += $val;
                 }
             }
