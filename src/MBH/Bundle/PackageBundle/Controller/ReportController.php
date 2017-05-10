@@ -277,7 +277,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         foreach ($packages as $package) {
             /** @var Package $package */
             if (empty($package->getOrder()->getChannelManagerType())
-                && $package->getOrder()->getSource()->getCode() != 'online'
+                && (is_null($package->getOrder()->getSource())
+                    || $package->getOrder()->getSource()->getCode() != 'online')
             ) {
                 $day = $package->getCreatedAt()->format('d.m.Y');
                 $user = $package->getCreatedBy();
