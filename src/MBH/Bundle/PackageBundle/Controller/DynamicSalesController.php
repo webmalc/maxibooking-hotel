@@ -4,7 +4,6 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\PackageBundle\Lib\DynamicSalesDay;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -17,6 +16,26 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DynamicSalesController extends Controller implements CheckHotelControllerInterface
 {
+    const DYNAMIC_SALES_SHOWN_OPTIONS = [
+        'sales-volume',
+        'period-volume',
+        'packages-sales',
+        'packages-growth',
+        'count-people',
+        'count-room',
+        'package-isPaid',
+        'package-isPaid-growth',
+        'package-delete',
+        'package-delete-price',
+        'package-delete-price-growth',
+        'package-delete-price-isPaid',
+        'package-isPaid-delete-package',
+        'count-people-day',
+        'count-room-day',
+        'sum-payed-for-period',
+        'sum-payed-for-period-for-removed'
+    ];
+
     /**
      * DynamicSales
      *
@@ -29,7 +48,7 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
     {
         return [
             'roomTypes' => $this->hotel->getRoomTypes(),
-            'optionsShowDynamicSales' => DynamicSalesDay::DYNAMIC_SALES_SHOWN_OPTIONS
+            'optionsShowDynamicSales' => self::DYNAMIC_SALES_SHOWN_OPTIONS
         ];
     }
 
@@ -46,7 +65,7 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
     public function dynamicSalesTableAction(Request $request)
     {
         $hotel = $this->hotel;
-        $optionsShows = empty($request->get('optionsShow')) ? DynamicSalesDay::DYNAMIC_SALES_SHOWN_OPTIONS : $request->get('optionsShow');
+        $optionsShows = empty($request->get('optionsShow')) ? self::DYNAMIC_SALES_SHOWN_OPTIONS : $request->get('optionsShow');
 
         $dynamicSales = $this->get('mbh.package.dynamic.sales.generator')->generateDynamicSales($request, $hotel);
         $error = false;

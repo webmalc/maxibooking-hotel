@@ -72,11 +72,19 @@ $(document).ready(function ($) {
             element.style.minWidth = getComputedStyle(element).width;
         });
 
-        $('.dynamic-sales-table').find('tr').each(function (index, element) {
+        var $dynamicSalesTables = $('.dynamic-sales-table');
+        var $dynamicSalesTableRows = $dynamicSalesTables.find('tr');
+        $dynamicSalesTableRows.each(function (index, element) {
             var rightTableRowIdentifier = element.getAttribute('data-class');
             var appropriateRow = $('.rightTable').find('[data-class = ' + rightTableRowIdentifier + ']');
             element.style.height = appropriateRow.eq(0).css('height');
         });
+
+        $('#headerTable').find('tr:lt(1)').eq(0).find('.date-td').each(function (cellNumber) {
+            var widestWidth = getWidestCellWidth(cellNumber, $dynamicSalesTables);
+            setWidestCellWidth(cellNumber, widestWidth, $(headerTable), $dynamicSalesTables);
+        });
+
         // setWrapperHeight();
     };
 
@@ -87,6 +95,26 @@ $(document).ready(function ($) {
     //     var wrapperHeight = tableHeight > availableHeight ? availableHeight : tableHeight + 10;
     //     $wrapper.css('height', wrapperHeight - 45);
     // };
+
+    var setWidestCellWidth = function (number, widestWidth, $headerTable, $dynamicSalesTables) {
+        $headerTable.find('tr:lt(1)').children().eq(number + 2).css('min-width', widestWidth);
+        $dynamicSalesTables.each(function (tableNumber, table) {
+            $(table).find('tr:lt(2)').eq(1).children().eq(number + 1).css('min-width', widestWidth);
+        });
+    };
+
+    var getWidestCellWidth = function(cellNumber, $dynamicSalesTables) {
+        var widestCellWidth = 0;
+        $dynamicSalesTables.each(function (tableNumber, table) {
+            var cellWidth = $(table).find('tr:lt(2)').eq(1).children().eq(cellNumber + 1).css('width');
+            var cellWidthInt = parseInt(cellWidth, 10);
+            if (widestCellWidth < cellWidthInt) {
+                widestCellWidth = cellWidthInt;
+            }
+        });
+
+        return widestCellWidth;
+    };
 
     var onTableScroll = function () {
         var tableWrapper = document.getElementById('dynamic-sales-table-wrapper');

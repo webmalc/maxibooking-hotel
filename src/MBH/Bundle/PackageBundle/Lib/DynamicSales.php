@@ -14,7 +14,7 @@ class DynamicSales
     /**
      * @var array
      */
-    protected $periods;
+    protected $periods = [];
 
     /**
      * @var array

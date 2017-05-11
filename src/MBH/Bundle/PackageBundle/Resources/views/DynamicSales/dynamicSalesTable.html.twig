@@ -25,7 +25,7 @@
                 {% endif %}
                 {% for dynamicSaleDay  in dynamicSalePeriod %}
                     {% if not loop.last %}
-                        <td class="header-td table-cell text-center {% if dynamicSaleDay.dateSales|date('N') >= 6 %} text-danger{% endif %}">
+                        <td class="date-td table-cell text-center {% if dynamicSaleDay.dateSales|date('N') >= 6 %} text-danger{% endif %}">
                             {{ dynamicSaleDay.dateSales|date('d.m') }}
                             <div class="text-muted text-center {% if dynamicSaleDay.dateSales|date('N') >= 6 %} text-danger{% endif %}">
                                 {{ weekdays[dynamicSaleDay.dateSales|date('N')]|lower }}
@@ -35,11 +35,11 @@
                 {% endfor %}
                 {% if (maxCount - commonDynamicSalesData.periods[index-1]|length) > 0 %}
                     {% for i in 1..(maxCount - commonDynamicSalesData.periods[index-1]|length) %}
-                        <td>-</td>
+                        <td class="date-td">-</td>
                     {% endfor %}
                 {% endif %}
                 {% if loop.index == 1 %}
-                    <td class="first-th table-cell" rowspan="{{ periodsCount }}">
+                    <td class="first-th table-cell date-td" rowspan="{{ periodsCount }}">
                         <small>{{ 'dynamic.sales.day.summary'|trans({},'MBHPackageBundle') }}</small>
                     </td>
                 {% endif %}
@@ -72,10 +72,10 @@
                         <tbody>
                         {% for shownOption in optionsShows %}
                             <tr data-class="{{ shownOption ~ '-compare' }}">
-                                <td class="first-th line-name" rowspan="2">
+                                <td class="first-th line-name text-center" rowspan="2">
                                     <small>{{ ('dynamic.sales.day.' ~ shownOption)|trans({},'MBHPackageBundle') }}</small>
                                 </td>
-                                <td class="periods-cell" data-class="{{ shownOption ~ '-compare' }}">
+                                <td class="periods-cell text-center" data-class="{{ shownOption ~ '-compare' }}">
                                     <small>{{ 'dynamic.sales.day.sales.summ'|trans({},'MBHPackageBundle') }}</small>
                                 </td>
                             </tr>

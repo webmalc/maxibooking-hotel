@@ -4,24 +4,6 @@ namespace MBH\Bundle\PackageBundle\Lib;
 
 class DynamicSalesDay
 {
-    const DYNAMIC_SALES_SHOWN_OPTIONS = [
-        'sales-volume',
-        'period-volume',
-        'packages-sales',
-        'packages-growth',
-        'count-people',
-        'count-room',
-        'package-isPaid',
-        'package-isPaid-growth',
-        'package-delete',
-        'package-delete-price',
-        'package-delete-price-growth',
-        'package-delete-price-isPaid',
-        'package-isPaid-delete-package',
-        'count-people-day',
-        'count-room-day',
-    ];
-
     /**
      * @var \DateTime
      */
@@ -171,8 +153,104 @@ class DynamicSalesDay
      */
     protected $percentCountNumbersDay = 0;
 
+    /**
+     * @var float
+     */
+    protected $sumPayedForPeriod = 0;
+
+    /**
+     * @var int
+     */
+    protected $sumPayedForPeriodRelative = 0;
+
+    /**
+     * @var float
+     */
+    protected $sumPayedForPeriodForRemoved = 0;
+
+    /**
+     * @var int
+     */
+    protected $sumPayedForPeriodForRemovedRelative = 0;
+
     private $isToArrayInit = false;
     private $toArray;
+
+    /**
+     * @return int
+     */
+    public function getSumPayedForPeriodRelative()
+    {
+        return $this->sumPayedForPeriodRelative;
+    }
+
+    /**
+     * @param int $sumPayedForPeriodRelative
+     * @return DynamicSalesDay
+     */
+    public function setSumPayedForPeriodRelative($sumPayedForPeriodRelative): DynamicSalesDay
+    {
+        $this->sumPayedForPeriodRelative = $sumPayedForPeriodRelative;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSumPayedForPeriodForRemovedRelative()
+    {
+        return $this->sumPayedForPeriodForRemovedRelative;
+    }
+
+    /**
+     * @param int $sumPayedForPeriodForRemovedRelative
+     * @return DynamicSalesDay
+     */
+    public function setSumPayedForPeriodForRemovedRelative($sumPayedForPeriodForRemovedRelative): DynamicSalesDay
+    {
+        $this->sumPayedForPeriodForRemovedRelative = $sumPayedForPeriodForRemovedRelative;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSumPayedForPeriod()
+    {
+        return $this->sumPayedForPeriod;
+    }
+
+    /**
+     * @param float $sumPayedForPeriod
+     * @return DynamicSalesDay
+     */
+    public function setSumPayedForPeriod($sumPayedForPeriod): DynamicSalesDay
+    {
+        $this->sumPayedForPeriod = $sumPayedForPeriod;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSumPayedForPeriodForRemoved()
+    {
+        return $this->sumPayedForPeriodForRemoved;
+    }
+
+    /**
+     * @param float $sumPayedForPeriodForRemoved
+     * @return DynamicSalesDay
+     */
+    public function setSumPayedForPeriodForRemoved($sumPayedForPeriodForRemoved): DynamicSalesDay
+    {
+        $this->sumPayedForPeriodForRemoved = $sumPayedForPeriodForRemoved;
+
+        return $this;
+    }
 
     /**
      * @return int
@@ -722,7 +800,7 @@ class DynamicSalesDay
                 ],
                 'packages-sales' => [
                     'dayValue' => $this->getAmountPackages(),
-                    'total' => number_format($this->getAmountPackages(), 2),
+                    'total' => $this->getAmountPackages(),
                     'comparisonDayValue' => $this->getAmountPackages(),
                     'percentage' => $this->getPercentAmountPackages()
                 ],
@@ -763,15 +841,15 @@ class DynamicSalesDay
                     'percentage' => $this->getPercentDeletePackages()
                 ],
                 'package-delete-price' => [
-                    'dayValue' => $this->getDeletePricePackage(),
-                    'total' => $this->getDeletePricePackage(),
-                    'comparisonDayValue' => $this->getDeletePricePackage(),
+                    'dayValue' => number_format($this->getDeletePricePackage(), 2),
+                    'total' => number_format($this->getDeletePricePackage(), 2),
+                    'comparisonDayValue' => number_format($this->getDeletePricePackage(), 2),
                     'percentage' => $this->getPercentDeletePackages()
                 ],
                 'package-delete-price-growth' => [
-                    'dayValue' => $this->getDeletePackages(),
-                    'total' => $this->getDeletePackages(),
-                    'comparisonDayValue' => $this->getDeletePricePackageGrowth(),
+                    'dayValue' => number_format($this->getDeletePricePackageGrowth(), 2),
+                    'total' => number_format($this->getDeletePricePackageGrowth(), 2),
+                    'comparisonDayValue' => number_format($this->getDeletePricePackageGrowth(), 2),
                     'percentage' => $this->getPercentDeletePricePackageGrowth()
                 ],
                 'package-delete-price-isPaid' => [
@@ -797,6 +875,18 @@ class DynamicSalesDay
                     'total' => $this->getCountNumbers(),
                     'comparisonDayValue' => $this->getCountNumbers(),
                     'percentage' => $this->getPercentCountNumbersDay()
+                ],
+                'sum-payed-for-period' => [
+                    'dayValue' => number_format($this->getSumPayedForPeriod(), 2),
+                    'total' => number_format($this->getSumPayedForPeriod(), 2),
+                    'comparisonDayValue' => number_format($this->getSumPayedForPeriod(), 2),
+                    'percentage' => $this->getSumPayedForPeriodRelative()
+                ],
+                'sum-payed-for-period-for-removed' => [
+                    'dayValue' => number_format($this->getSumPayedForPeriodForRemoved(), 2),
+                    'total' => number_format($this->getSumPayedForPeriodForRemoved(), 2),
+                    'comparisonDayValue' => number_format($this->getSumPayedForPeriodForRemoved(), 2),
+                    'percentage' => $this->getSumPayedForPeriodForRemovedRelative()
                 ]
             ];
             $this->isToArrayInit = true;

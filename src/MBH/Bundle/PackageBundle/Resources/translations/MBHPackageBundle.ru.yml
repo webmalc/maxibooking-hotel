@@ -476,6 +476,8 @@ dynamic.sales.day.count-people: Брони в чел/днях за период
 dynamic.sales.day.count-people-day: Брони в чел/днях за сутки
 dynamic.sales.day.count-room: Брони в номеро/днях за период
 dynamic.sales.day.count-room-day: Брони в номеро/днях за сутки
+dynamic.sales.day.sum-payed-for-period: А/Р броней за период
+dynamic.sales.day.sum-payed-for-period-for-removed: Оплата А/Р броней за период
 
 dynamic.sales.dates: Даты
 dynamic.sales.show.title: Что показывать ?
