@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\HttpFoundation\Request;
 
 class WindowsReportGenerator
@@ -82,6 +83,8 @@ class WindowsReportGenerator
      */
     private $countVirtualNumbers = [];
 
+    private $stat = [];
+
     public function __construct(Helper $helper, ManagerRegistry $dm)
     {
         $this->helper = $helper;
@@ -145,25 +148,16 @@ class WindowsReportGenerator
     }
 
     /**
-     * @param array $countNumbers
+     * @param Room $room
+     * @param \DateTime $day
+     * @internal param array $countNumbers
      */
-    public function addCountNumbers($room, $day)
+    public function addCountNumbers(Room $room, \DateTime $day)
     {
-        $roomCaches = $this->roomCaches;
-        
-        if (isset($roomCaches[$room->getroomType()->getId()])) {
-            $roomCache = isset($roomCaches[$room->getroomType()->getId()][0][$day->format('d.m.Y')]) ? $roomCaches[$room->getroomType()->getId()][0][$day->format('d.m.Y')] : null;
-        }else{
-            $roomCache = null;
-        }
+        $roomTypeId = $room->getRoomType()->getId();
+        $dayAsString = $day->format('d.m.Y');
 
-        (is_null($roomCache)) ? 0 : $roomCache->getTotalRooms();
-
-        if (is_null($roomCache)) {
-            (is_null($roomCache)) ? 0 : $roomCache->getTotalRooms();
-        }
-
-        $this->countNumbers[$room->getroomType()->getId()][$day->format('d.m.Y')] = $roomCache;
+        $this->countNumbers[$roomTypeId][$dayAsString] = $this->roomCaches[$roomTypeId][0][$dayAsString]??null;
     }
 
     /**
@@ -175,29 +169,27 @@ class WindowsReportGenerator
     }
 
     /**
-     * @param array $countVirtualNumbers
+     * @param \DateTime $to
+     * @return array
+     * @internal param array $countVirtualNumbers
      */
 
-    private function countVirtualNumbers($to)
+    private function countVirtualNumbers(\DateTime $to)
     {
         $packagesRoomTypes = $this->packages;
         $arr = [];
-        foreach ($this->roomTypes as $roomType) {
 
+        foreach ($this->roomTypes as $roomType) {
             foreach (new \DatePeriod($this->begin, \DateInterval::createFromDateString('1 day'), $to) as $day) {
                 $count = 0;
                 foreach ($packagesRoomTypes as $packagesRoomType) {
                     foreach ($packagesRoomType as $packageRoom) {
-
                         foreach ($packageRoom as $package) {
-
                             if ($day >= $package->getBegin() && $day < $package->getEnd()) {
                                 if ($package->getRoomType() == $roomType) {
                                     $package->getVirtualRoom() ? $count++ : null;
                                 }
-
                             }
-
                         }
 
                     }
@@ -205,8 +197,8 @@ class WindowsReportGenerator
                 }
                 $arr[$roomType->getId()][$day->format('d.m.Y')] = $count;
             }
-
         }
+
         return $arr;
     }
 
@@ -277,6 +269,7 @@ class WindowsReportGenerator
         if (isset($this->roomCaches[$roomType->getId()][0][$day->format('d.m.Y')])) {
             return $this->roomCaches[$roomType->getId()][0][$day->format('d.m.Y')]->getTotalRooms();
         }
+
         return 0;
     }
 
@@ -329,4 +322,91 @@ class WindowsReportGenerator
 
         return null;
     }
+
+    public function getStat()
+    {
+        if ($this->stat) {
+            return $this->stat;
+        }
+
+        $this->stat = $this->createStat();
+
+        return $this->stat;
+    }
+
+    private function createStat()
+    {
+        $stat = [];
+        foreach ($this->dates as $day) {
+            foreach ($this->roomTypes as $roomType) {
+                $roomTypeId = $roomType->getId();
+                $totalAmountRooms = count($this->rooms[$roomTypeId]);
+                $amountVirtualRooms = min(count($this->rooms[$roomTypeId]), $this->getMax($day, $roomType));
+                $roomsForSale = $this->getMax($day, $roomType);
+                $virtualRoomsBooked = $this->getPackagesCountByDay($roomType, $day, true);
+                $roomsBooked = $this->getPackagesCountByDay($roomType, $day, false);
+                $restVirtualRooms = $amountVirtualRooms - $virtualRoomsBooked;
+                $restRoomsForSale = $roomsForSale - $roomsBooked;
+                $dayAsString = $day->format('d.m.Y');
+
+                $stat[$roomTypeId]['package.window.amount.rooms'][$dayAsString] = $totalAmountRooms;
+                $stat[$roomTypeId]['package.window.amount.rooms.in.sale'][$dayAsString] = $roomsForSale;
+                $stat[$roomTypeId]['package.window.amount.rooms.virtual'][$dayAsString] = $amountVirtualRooms;
+                $stat[$roomTypeId]['package.window.count.rooms.virtual'][$dayAsString] = $virtualRoomsBooked;
+                $stat[$roomTypeId]['package.window.rooms.packages'][$dayAsString] = $roomsBooked;
+                $stat[$roomTypeId]['package.window.difference.packages.virtual'][$dayAsString] = abs($restVirtualRooms);
+                $stat[$roomTypeId]['package.window.difference.room.in.packages.sales'][$dayAsString] = abs($restRoomsForSale);
+                $stat[$roomTypeId]['package.window.difference.room.sale.package'][$dayAsString] = abs($roomsForSale - $amountVirtualRooms);
+                $stat[$roomTypeId]['package.window.difference.room.placed'][$dayAsString] = abs($roomsBooked - $virtualRoomsBooked);
+                $stat[$roomTypeId]['package.window.difference.room.rest'][$dayAsString] = abs($restVirtualRooms - $restRoomsForSale);
+
+            }
+        }
+
+        return $stat;
+    }
+
+
+    public function checkStatDanger(string $roomTypeId, string $statKey): bool
+    {
+        $result = false;
+        $stat = $this->getStat()[$roomTypeId];
+        $checkedStatKeys = [
+            'package.window.difference.room.sale.package',
+            'package.window.difference.room.placed',
+            'package.window.difference.room.rest'
+            ];
+
+        if (in_array($statKey, $checkedStatKeys)) {
+            $statDays = $stat[$statKey];
+            if (is_array($statDays)) {
+                foreach ($statDays as $statValue) {
+                    if ($statValue) {
+                        $result = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    private function getPackagesCountByDay(RoomType $roomType, \DateTime $day, bool $isVirtualRoomCount = false)
+    {
+        $result = 0;
+        $packages = $this->packages[$roomType->getId()]??[];
+        foreach ($packages as $package) {
+            $package = reset($package);
+            /** @var Package $package */
+            if ($package->getBegin() <= $day && $day < $package->getEnd()) {
+                if (!$isVirtualRoomCount || ($isVirtualRoomCount && $package->getVirtualRoom())) {
+                    $result++;
+                }
+            }
+        }
+
+        return $result;
+    }
+
 }
