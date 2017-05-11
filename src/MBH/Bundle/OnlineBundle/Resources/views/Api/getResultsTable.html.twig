@@ -4,7 +4,6 @@
         <div id="mbh-results-global-wrapper">
 
             {% if results|length %}
-                <div id="mbh-image-show-wrapper"></div>
                 <div id="mbh-results-duration">
                     <div id="mbh-result-response-info">
                         <span id="mbh-results-duration-days">{{ results|first.days }}</span>
@@ -36,16 +35,27 @@
                                 <td class="mbh-left">
                         <span class="mbh-results-tariff"
                               data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
+                                    <div id="mbh-results-image-wrapper">
                                     {% if result.roomType.getMainImage is not empty %}
-                                        <img class="mbh-roomType-image"
-                                             src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getMainImage.getWebPath }}">
+                                       {% set image = result.roomType.getMainImage %}
+                                        <a href="{{ asset(image.getPath()) | imagine_filter('scaler') }}"
+                                            class="fancybox" data-fancybox="group">
+                                        <img class="main" src="{{ asset(image.getPath()) | imagine_filter('thumb_155x155') }}">
+                                        </a>
                                     {% endif %}
+                                    {% for image in result.roomType.images if not image.isMain %}
+                                        <a href="{{ asset(image.getPath()) | imagine_filter('scaler') }}"
+                                        class="fancybox" data-fancybox="group">
+                                            <img src="{{ asset(image.getPath()) | imagine_filter('thumb_50x50') }}">
+                                        </a>
+                                    {% endfor %}
+                                    </div>
                                     <span class="mbh-results-roomType"
                                           data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle(app.request.locale) }}</span>
                                     <span class="mbh-results-hotel"
                                                                     data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>
                                         {% if result.roomType.facilities is not empty %}
-                                            <!-- <h3>{{ 'views.api.getResultsTable.facilities'|trans({}, 'MBHOnlineBundle') }}</h3> -->
+                                            <!-- <h3>{{ 'views.api.getresultstable.facilities'|trans({}, 'mbhonlinebundle') }}</h3> -->
                                             <ul class="inline-facility spacer-top">
                                                 {% for facility in result.roomType.facilities %}
                                                     <li><span class="fa fa-lg mbf-{{ facility }}" data-title="{% for key, val in facilityArray %}{% if key == facility %}{{ val }}{% endif %}{% endfor %}"></span></li>

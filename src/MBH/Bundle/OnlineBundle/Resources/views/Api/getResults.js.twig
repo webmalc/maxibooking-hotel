@@ -80,27 +80,26 @@ jQuery(document).ready(function() {
             success: function(data) {
                 wrapper.html('{{ styles|escape("js") }}' + data);
                 setSelect2();
-
                 //show full image
-                (function() {
-                    var wrapperImage = jQuery('#mbh-image-show-wrapper');
-                    jQuery('.mbh-roomType-image').each(function() {
-                        jQuery(this).hover(function(e) {
-                            var offset = {
-                                top: jQuery(this).offset().top + 15,
-                                left: jQuery(this).offset().left + jQuery(this).width() - 25
-                            };
-                            wrapperImage.offset(offset);
-                            wrapperImage.html('<img src="' + jQuery(this).attr('src') + '">');
-                            if (wrapperImage.find('img').width() > 100) {
-                                wrapperImage.css('visibility', "visible");
-                            }
-                        }, function() {
-                            wrapperImage.css('visibility', "hidden");
-                            wrapperImage.find('img').remove();
-                        })
-                    });
-                }());
+                // (function() {
+                //     var wrapperImage = jQuery('#mbh-image-show-wrapper');
+                //     jQuery('.mbh-roomType-image').each(function() {
+                //         jQuery(this).hover(function(e) {
+                //             var offset = {
+                //                 top: jQuery(this).offset().top + 15,
+                //                 left: jQuery(this).offset().left + jQuery(this).width() - 25
+                //             };
+                //             wrapperImage.offset(offset);
+                //             wrapperImage.html('<img src="' + jQuery(this).attr('src') + '">');
+                //             if (wrapperImage.find('img').width() > 100) {
+                //                 wrapperImage.css('visibility', "visible");
+                //             }
+                //         }, function() {
+                //             wrapperImage.css('visibility', "hidden");
+                //             wrapperImage.find('img').remove();
+                //         })
+                //     });
+                // }());
 
                 // remove border
                 (function() {
@@ -420,7 +419,7 @@ jQuery(document).ready(function() {
                                                 id = tr.find('span.mbh-results-services-name').attr('data-id');
                                             requestParams.services.push({
                                                 'id': id,
-                                                'amount': jQuery(this).val()
+                                                'amount': jQuer(this).val()
                                             });
                                         }
                                     });

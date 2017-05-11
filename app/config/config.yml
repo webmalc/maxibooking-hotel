@@ -206,28 +206,33 @@ liip_imagine:
                 data_root: "%kernel.root_dir%/../protectedUpload"
     filter_sets:
         cache: ~
+        thumb_50x50:
+            quality: 80
+            filters:
+                thumbnail: { size: [50, 50], mode: outbound, allow_upscale: true }
         thumb_100x100:
-            quality: 100
+            quality: 80
             filters:
                 thumbnail: { size: [100, 100], mode: outbound, allow_upscale: true }
+        thumb_155x155:
+            quality: 80
+            filters:
+                thumbnail: { size: [155, 155], mode: outbound, allow_upscale: true }
         thumb_130x110:
-            quality: 100
+            quality: 80
             filters:
               thumbnail: { size: [130, 110], mode: outbound, allow_upscale: true }
         thumb_95x80:
-            quality: 100
+            quality: 80
             filters:
               thumbnail: { size: [95, 80], mode: outbound, allow_upscale: true }
-
         stamp:
             data_loader: protected
-            quality: 100
+            quality: 80
             filters:
               thumbnail: { size: [10, 10], mode: outbound, allow_upscale: true }
-
-
         scaler:
-            quality: 100
+            quality: 80
             filters:
               relative_resize: { scale: 0.5, allow_upscale: true }
 
