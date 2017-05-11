@@ -442,9 +442,8 @@ class ApiController extends Controller
         $services = $hotels = [];
 
         foreach ($requestJson->packages as $data) {
-            $hotels[] = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneById($data->hotel->id);
+            $hotels[$data->hotel->id] = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneById($data->hotel->id);
         }
-
         foreach ($hotels as $hotel) {
             $services = array_merge($services, $hotel->getServices(true, true));
         }
@@ -542,9 +541,7 @@ class ApiController extends Controller
                             'MBHOnlineBundle'
                         )
                     ], $clientConfig->getFormData(
-                        $order->getCashDocuments()[0],
-                        $this->container->getParameter('online_form_result_url'),
-                        $this->generateUrl('online_form_check_order', [], UrlGeneratorInterface::ABSOLUTE_URL)
+                        $order->getCashDocuments()[0]
                     ))
                 ]
             );
