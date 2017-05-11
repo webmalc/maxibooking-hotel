@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\Translator;
 
 /**
@@ -169,6 +170,7 @@ class ApiController extends Controller
      */
     public function checkOrderAction(Request $request)
     {
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
@@ -288,9 +290,17 @@ class ApiController extends Controller
         $query->adults = (int)$request->get('adults');
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
+        $isViewTariff = false;
 
-        foreach ($formConfig->getHotels() as $h) {
-            foreach ($h->getRoomTypes() as $roomType) {
+        foreach ($formConfig->getHotels() as $hotel) {
+            if (is_null($query->tariff) && !$isViewTariff) {
+                $defaultTariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['hotel.id' => $hotel->getId(), 'isDefault' => true, 'isOnline' => true, 'isEnabled' => true]);
+                if (empty($defaultTariff)) {
+                    $query->tariff = $dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['hotel.id' => $hotel->getId(), 'isOnline' => true, 'isEnabled' => true]);
+                }
+                $isViewTariff = true;
+            }
+            foreach ($hotel->getRoomTypes() as $roomType) {
                 $query->addAvailableRoomType($roomType->getId());
             }
         }
@@ -352,6 +362,7 @@ class ApiController extends Controller
         }
 
         return [
+            'defaultTariff' => $defaultTariff,
             'facilityArray' => $facilityArray,
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
@@ -463,13 +474,13 @@ class ApiController extends Controller
 
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
-                    'data' => array_merge(['test' => false,
+                    'data' => array_merge(['test' => false, 'currency' => strtoupper($this->getParameter('locale.currency')),
                         'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
                             ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle')
                     ], $clientConfig->getFormData($order->getCashDocuments()[0],
                         $this->container->getParameter('online_form_result_url'),
-                        $this->generateUrl('online_form_check_order', [], true)))
+                        $this->generateUrl('online_form_check_order', [], UrlGeneratorInterface::ABSOLUTE_URL)))
                 ]
             );
         }
@@ -628,10 +639,10 @@ class ApiController extends Controller
         return [
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
             'urls' => [
-                'table' => $this->generateUrl('online_form_results_table', $params, true),
-                'user_form' => $this->generateUrl('online_form_user_form', [], true),
-                'payment_type' => $this->generateUrl('online_form_payment_type', $params, true),
-                'results' => $this->generateUrl('online_form_packages_create', [], true),
+                'table' => $this->generateUrl('online_form_results_table', $params, UrlGeneratorInterface::ABSOLUTE_URL),
+                'user_form' => $this->generateUrl('online_form_user_form', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                'payment_type' => $this->generateUrl('online_form_payment_type', $params, UrlGeneratorInterface::ABSOLUTE_URL),
+                'results' => $this->generateUrl('online_form_packages_create', [], UrlGeneratorInterface::ABSOLUTE_URL),
             ]
         ];
     }

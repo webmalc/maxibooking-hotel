@@ -65,8 +65,7 @@ class PackageRepository extends DocumentRepository
         bool $group = false,
         Package $exclude = null,
         Cache $cache = null
-    )
-    {
+    ) {
         if ($cache) {
             $cacheEntry = $cache->get('packages_with_virtual_rooms', func_get_args());
             if ($cacheEntry !== false) {
@@ -115,12 +114,10 @@ class PackageRepository extends DocumentRepository
     /**
      * @param PackageQueryCriteria $criteria
      * @return Package[]
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function findByQueryCriteria(PackageQueryCriteria $criteria)
     {
         return $this->queryCriteriaToBuilder($criteria)
-            ->limit(50)//todo move to args
             ->getQuery()->execute();
     }
 
@@ -177,8 +174,8 @@ class PackageRepository extends DocumentRepository
         }
 
         //roomType
-        if (isset($criteria->roomType)) {
-            $queryBuilder->field('roomType.id')->equals($criteria->roomType->getId());
+        if (count($criteria->getRoomTypeIds()) > 0) {
+            $queryBuilder->field('roomType.id')->in($criteria->getRoomTypeIds());
         }
 
         $dateFilterBy = $criteria->dateFilterBy ? $criteria->dateFilterBy : 'begin';
@@ -192,17 +189,21 @@ class PackageRepository extends DocumentRepository
             $queryBuilder->field($dateFilterBy)->lte($criteria->end);
         }
 
+        if (count($criteria->getAccommodations()) > 0) {
+            $queryBuilder->field('accommodations.id')->in($criteria->getAccommodations());
+        }
+
+        // without accommodation
+        if ($criteria->isWithoutAccommodation()) {
+            $queryBuilder->field('accommodations.0')->exists(false);
+        }
+
         // filter
         if (isset($criteria->filter)) {
             //live now
             if ($criteria->filter == 'live_now') {
                 $queryBuilder->field('begin')->lte($now);
                 $queryBuilder->field('end')->gte($now);
-            }
-            // without accommodation
-            if ($criteria->filter == 'without_accommodation') {
-                $queryBuilder->addOr($queryBuilder->expr()->field('accommodation')->exists(false));
-                $queryBuilder->addOr($queryBuilder->expr()->field('accommodation')->equals(null));
             }
 
             // live_between
@@ -296,51 +297,6 @@ class PackageRepository extends DocumentRepository
             ->limit(1)
             ->getQuery()->getSingleResult();
         return $package;
-    }
-
-    /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param null $rooms
-     * @param null $excludePackages
-     * @param boolean $departure
-     * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    public function fetchWithAccommodation(
-        \DateTime $begin = null,
-        \DateTime $end = null,
-        $rooms = null,
-        $excludePackages = null,
-        $departure = true
-    )
-    {
-        $qb = $this->createQueryBuilder('s');
-        $qb->field('accommodation')->exists(true)
-            ->field('accommodation')->notEqual(null);
-
-        if ($departure) {
-            $qb->addOr($qb->expr()->field('departureTime')->exists(false))
-                ->addOr($qb->expr()->field('departureTime')->equals(null));
-        }
-
-        if ($begin) {
-            $qb->field('end')->gte($begin);
-        }
-        if ($end) {
-            $qb->field('begin')->lte($end);
-        }
-        if ($rooms) {
-            is_array($rooms) ? $rooms : $rooms = [$rooms];
-            $qb->field('accommodation.id')->in($rooms);
-        }
-        if ($excludePackages) {
-            is_array($excludePackages) ? $excludePackages : $excludePackages = [$excludePackages];
-            $qb->field('id')->notIn($excludePackages);
-        }
-        $qb->sort('begin', 'asc');
-
-        return $qb->getQuery()->execute();
     }
 
     /**
@@ -582,8 +538,7 @@ class PackageRepository extends DocumentRepository
             }
             // without accommodation
             if ($data['filter'] == 'without_accommodation') {
-                $qb->addOr($qb->expr()->field('accommodation')->exists(false));
-                $qb->addOr($qb->expr()->field('accommodation')->equals(null));
+                $qb->field('accommodations.0')->exists(false);
             }
 
             // live_between
@@ -596,11 +551,8 @@ class PackageRepository extends DocumentRepository
 
         if (isset($data['createdBy']) && $data['createdBy'] != null) {
 //            $qb->field('createdBy')->equals($data['createdBy']);
-            $qb->addOr(
-                $qb->expr()
-                    ->field('createdBy')->equals($data['createdBy'])
-                    ->field('createdBy')->equals(null)
-            );
+            $qb->addOr($qb->expr()->field('createdBy')->equals($data['createdBy']));
+            $qb->addOr($qb->expr()->field('createdBy')->equals(null));
         }
 
         //query

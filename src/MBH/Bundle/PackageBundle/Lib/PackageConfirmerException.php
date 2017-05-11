@@ -1,6 +1,5 @@
 <?php
 
-
 namespace MBH\Bundle\PackageBundle\Lib;
 
 

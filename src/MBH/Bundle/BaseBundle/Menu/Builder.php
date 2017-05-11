@@ -94,7 +94,8 @@ class Builder implements ContainerAwareInterface
             'label' => 'Заезд/Выезд',
         ])
             ->setAttributes(['icon' => 'fa fa-exchange']);
-        $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
+
+        $menu['porter_links']->addChild('chessboard', ['route' => 'chess_board_home', 'label' => 'Шахматка'])
             ->setAttributes(['icon' => 'fa fa-table']);
 
         //Prices links
@@ -113,7 +114,7 @@ class Builder implements ContainerAwareInterface
         $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
 
         $taskAttributes = ['icon' => 'fa fa-tasks'];
-		
+
         if ($openTaskCount > 0) {
             $taskAttributes += [
                 'badge' => true,
@@ -181,8 +182,10 @@ class Builder implements ContainerAwareInterface
         }
         //$token = $this->container->get('security.token_storage')->getToken();
         //if ($token && $token->getUser() instanceof User && $token->getUser()->getIsEnabledWorkShift()) {
-        $menu['reports']->addChild('report_work_shift',
-            ['route' => 'report_work_shift', 'label' => 'Рабочие смены'])
+        $menu['reports']->addChild(
+            'report_work_shift',
+            ['route' => 'report_work_shift', 'label' => 'Рабочие смены']
+        )
             ->setAttributes(['icon' => 'fa fa-clock-o']);
         //}
 
@@ -225,7 +228,6 @@ class Builder implements ContainerAwareInterface
         }
 
         foreach ($menu->getChildren() as $child) {
-
             if (empty($child->getUri())) {
                 continue;
             }
@@ -243,9 +245,7 @@ class Builder implements ContainerAwareInterface
                 $rMethod = new \ReflectionMethod($controllerInfo[0], $controllerInfo[1]);
 
                 $metadata = $rMethod->getDocComment();
-
             } catch (\Exception $e) {
-
                 $menu->removeChild($child);
                 continue;
             }
@@ -257,7 +257,6 @@ class Builder implements ContainerAwareInterface
             }
 
             if (!$security->isGranted($roles[1])) {
-
                 $menu->removeChild($child);
             } elseif (empty($child->getAttribute('dropdown'))) {
                 $this->counter += 1;
@@ -338,9 +337,9 @@ class Builder implements ContainerAwareInterface
         $menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
             ->setAttributes(['icon' => 'fa fa-cog']);
 
-		// Warehouse link
+        // Warehouse link
         $menu['configs']->addChild('warehouse_category', ['route' => 'warehouse_category', 'label' => 'Склад'])
-			->setAttributes(['icon' => 'fa fa-book']) ;
+            ->setAttributes(['icon' => 'fa fa-book']) ;
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])
@@ -393,7 +392,8 @@ class Builder implements ContainerAwareInterface
             ->setAttribute('icon', 'fa fa-plus')
         ;
 
-        return $this->filter($menu, $factory, $options);;
+        return $this->filter($menu, $factory, $options);
+        ;
     }
 
 }

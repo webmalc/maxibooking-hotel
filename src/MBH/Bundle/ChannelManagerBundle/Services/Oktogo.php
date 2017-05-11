@@ -211,15 +211,18 @@ class Oktogo extends Base
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
-            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                $begin,
-                $end,
-                $config->getHotel(),
-                $this->getRoomTypeArray($roomType),
-                [],
-                true,
-                $this->roomManager->useCategories
-            );
+            $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                    $begin,
+                    $end,
+                    $config->getHotel(),
+                    $this->getRoomTypeArray($roomType),
+                    [],
+                    true,
+                    $this->roomManager->useCategories
+                );
+            };
+            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
@@ -370,14 +373,17 @@ class Oktogo extends Base
                 [],
                 true
             );
-            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                $begin,
-                $end,
-                $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
-                [],
-                true
-            );
+            $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                    $begin,
+                    $end,
+                    $config->getHotel(),
+                    $roomType ? [$roomType->getId()] : [],
+                    [],
+                    true
+                );
+            };
+            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {

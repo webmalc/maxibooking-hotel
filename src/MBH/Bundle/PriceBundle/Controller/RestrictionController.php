@@ -41,10 +41,17 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
     public function indexAction()
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $roomTypesCallback = function () use ($hotel) {
+            return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
+        };
+        $roomTypes = $this->helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         return [
-            'roomTypes' => $hotel->getRoomTypes(),
-            'tariffs' => $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'restrictions'),
+            'roomTypes' => $roomTypes,
+            'tariffs' => $this->dm->getRepository('MBHPriceBundle:Tariff')
+                ->fetchChildTariffs($this->hotel, 'restrictions'),
+            'displayDisabledRoomType' => !$isDisableableOn
         ];
     }
 
@@ -65,11 +72,11 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 
         //dates
         $begin = $helper->getDateFromString($request->get('begin'));
-        if(!$begin) {
+        if (!$begin) {
             $begin = new \DateTime('00:00');
         }
         $end = $helper->getDateFromString($request->get('end'));
-        if(!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
+        if (!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
             $end = clone $begin;
             $end->modify('+45 days');
         }
@@ -87,9 +94,12 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         ];
 
         //get roomTypes
-        $roomTypes = $dm->getRepository('MBHHotelBundle:RoomType')
-            ->fetch($hotel, $request->get('roomTypes'))
-        ;
+        $roomTypesCallback = function () use ($hotel, $request, $dm) {
+            return $dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
+        };
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => 'Типы номеров не найдены']);
         }
@@ -104,10 +114,13 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         //get restrictions
         $restrictions = $dm->getRepository('MBHPriceBundle:Restriction')
             ->fetch(
-                $begin, $end, $hotel,
+                $begin,
+                $end,
+                $hotel,
                 $request->get('roomTypes') ? $request->get('roomTypes') : [],
                 $request->get('tariffs') ? $request->get('tariffs') : [],
-                true)
+                true
+            )
         ;
 
         return array_merge($response, [
@@ -150,7 +163,6 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                     continue;
                 }
                 foreach ($tariffArray as $date => $values) {
-
                     if (empty(array_filter($values))) {
                         continue;
                     }
@@ -182,7 +194,6 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 
         //update
         foreach ($updateData as $restrictionId => $values) {
-
             $restriction = $dm->getRepository('MBHPriceBundle:Restriction')->find($restrictionId);
             if (!$restriction || $restriction->getHotel() != $hotel) {
                 continue;
@@ -237,10 +248,13 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $form = $this->createForm(
-            RestrictionGeneratorType::class, [], [
+            RestrictionGeneratorType::class,
+            [],
+            [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
-        ]);
+            ]
+        );
 
         return [
             'form' => $form->createView()
@@ -260,10 +274,13 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $form = $this->createForm(
-            RestrictionGeneratorType::class, [], [
+            RestrictionGeneratorType::class,
+            [],
+            [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
-        ]);
+            ]
+        );
 
         $form->handleRequest($request);
 
@@ -275,10 +292,23 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             $data = $form->getData();
 
             $this->get('mbh.restriction')->update(
-                $data['begin'], $data['end'], $hotel, $data['minStay'], $data['maxStay'],
-                $data['minStayArrival'], $data['maxStayArrival'], $data['minBeforeArrival'],
-                $data['maxBeforeArrival'], $data['maxGuest'], $data['minGuest'], $data['closedOnArrival'], $data['closedOnDeparture'], $data['closed'],
-                $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
+                $data['begin'],
+                $data['end'],
+                $hotel,
+                $data['minStay'],
+                $data['maxStay'],
+                $data['minStayArrival'],
+                $data['maxStayArrival'],
+                $data['minBeforeArrival'],
+                $data['maxBeforeArrival'],
+                $data['maxGuest'],
+                $data['minGuest'],
+                $data['closedOnArrival'],
+                $data['closedOnDeparture'],
+                $data['closed'],
+                $data['roomTypes']->toArray(),
+                $data['tariffs']->toArray(),
+                $data['weekdays']
             );
 
             $this->get('mbh.channelmanager')->updateRestrictionsInBackground();

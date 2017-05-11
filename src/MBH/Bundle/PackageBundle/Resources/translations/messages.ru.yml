@@ -26,7 +26,7 @@ form.packageAccommodationType.room_or_bed: Комната/койко-место
 form.packageAccommodationType.room: Комната
 form.packageAccommodationType.choose_placement: Информация о размещении
 form.packageAccommodationType.are_guests_checked_in: Гости заехали?
-form.packageAccommodationType.are_guests_checked_in_help: Заехал ли гости в номер?
+form.packageAccommodationType.are_guests_checked_in_help: Заехали ли гости в номер?
 form.packageAccommodationType.are_guests_checked_out: Гости выехали?
 form.packageAccommodationType.are_guests_checked_out_help: Выехали ли гости из номера?
 form.packageAccommodationType.help: Выехали ли гости из номера?
@@ -133,6 +133,11 @@ form.touristType.placeholder_phone: +7(925)3456512
 form.touristType.email: E-mail
 form.touristType.placeholder_email: mail@exapmple.com
 form.touristType.note: Примечание
+form.package_accommodation_type.check_in: Заезд
+form.package_accommodation_type.check_out: Выезд
+form.package_accommodation_type.check_in.help: Дата начала размещения
+form.package_accommodation_type.check_out.help: Дата окончания размещения
+form.package_accommodation_type.note: Комментарий
 controller.analyticsController.services_amount: 'Количество услуг'
 controller.analyticsController.proceeds: 'Выручка'
 controller.analyticsController.percentage: 'Процент'
@@ -157,6 +162,7 @@ controller.packageController.service_added_success: 'Услуга успешно
 controller.packageController.service_edit_success: 'Услуга успешно отредактирована.'
 controller.packageController.service_deleted_success: 'Услуга успешно удалена.'
 controller.packageController.placement_saved_success: 'Размещение успешно сохранено.'
+controller.packageController.placement_edited_success: 'Размещение успешно изменено.'
 controller.packageController.placement_deleted_success: 'Размещение успешно удалено.'
 controller.packageController.record_deleted_success: 'Запись успешно удалена.'
 controller.sourceController.record_created_success: 'Запись успешно создана.'
@@ -169,6 +175,8 @@ controller.packageController.record_edited_fail_accommodation: 'Ошибка п�
 controller.packageController.relocation_success: 'Создана новая бронь для переселения. Теперь можно выбрать новый номер размещения гостей'
 controller.packageController.relocation_dates_error: 'Ошибка переселения. Некорректная дата переселения'
 controller.packageController.relocation_accommodation_error: 'Ошибка переселения. Нет размещения'
+controller.packageController.accommodation_add.begin_equal_or_later_end_error: 'Ошибка создания размещения. Дата начала размещения равна или больше даты окончания размещения.'
+controller.packageController.accommodation_add.passed_only_one_date: 'Не может быть передано только одна из дат'
 
 # TaskType Controller
 controller.taskTypeController.record_created_success: 'Запись успешно создана.'
@@ -402,6 +410,84 @@ csv.form.modal_generate: Сгенерировать
 csv.form.countNight: Кол-во Ночей
 csv.form.countPersons: Кол-во Людей
 
+#chessBoard
+report.accommodation.chessBoard: "шахматка"
+form.chessBoard.begin.label: Заезд
+form.chessBoard.end.label: Отъезд
+form.chessBoard.roomType.label: Тип номера
+form.chessBoard.adults.label: Взрослых
+form.chessBoard.children.label: Детей
+form.chessBoard.accommodation.label: Комната
+form.chessBoard.tariff.label: Тариф
+form.chessBoard.price.label: Цена
+modal.chessBoard.close: Закрыть
+modal.chessBoard.delete: Удалить
+modal.chessBoard.edit: Редактировать
+modal.chessBoard.package_info: Информация о брони
+modal.chessBoard.package_source: Источник брони
+modal.chessBoard.package_update_info: Информация об изменении размещения
+modal.chessBoard.manager: Менеджер
+modal.chessBoard.booked: Забронировано
+modal.chessBoard.is_check_in: Заехали
+modal.chessBoard.is_check_out: Выехали
+modal.chessBoard.yes: Да
+modal.chessBoard.no: Нет
+modal.chessBoard.guests: Гости
+modal.chessBoard.package_note: Комментарий брони
+modal.chessBoard.order_note: Комментарий заказа
+modal.chessBoard.dates: Даты
+modal.chessBoard.registered: оформлено
+modal.chessBoard.not_specified: Не указаны
+modal.chessBoard.roomType: Тип номера
+modal.chessBoard.accommodation: Размещение
+modal.chessBoard.without_accommodation: Без размещения
+modal.chessBoard.services: Услуги
+modal.chessBoard.tariff: Тариф
+modal.chessBoard.price: Стоимость
+modal.chessBoard.serices_price: Стоимость услуг
+modal.chessBoard.payed: Оплачено
+modal.chessBoard.search_results: Варианты бронирования
+modal.chessBoard.package_info: Данные о брони
+modal.chessBoard.accommodation_info: Информация об изменяемом размещении
+modal.chessBoard.payer_name: Плательщик
+modal.chessBoard.package_begin_date: Дата начала брони
+modal.chessBoard.package_end_date: Дата окончания брони
+modal.chessBoard.room_name: Комната
+modal.chessBoard.room_type_name: Тип комнаты
+modal.chessBoard.begin: Дата заезда
+modal.chessBoard.end: Дата выезда
+controller.chessboard.package_create.success: Бронь успешно создана
+controller.chessboard.package_update.success: Бронь успешно обновлена
+controller.chessboard.package_remove.success: Бронь успешно удалена
+controller.chessboard.accommodation_update.success: Размещение успешно изменено
+controller.chessboard.accommodation_divide.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет размещена в номере %roomName%'
+controller.chessboard.accommodation_remove.success: 'Бронь "%packageId%" %payerInfo% c %begin% по %end% будет без размещения'
+controller.chessboard.accommodation_divide.error: Дата разделения размещение не может быть меньше начала размещения или больше конца размещения
+controller.chessboard.accommodation_divide.error.empty_date_string: Передана пустая строка даты разделения размещения
+controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: Ошибка! Недопустимо изменение промежуточного размещения
+controller.chessboard.payer: Плательщик
+
+#package accommodation manipulator service
+accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
+accommodation_manipulator.error.incorrect_acc_to_package_dates: Интервал дат размещения должен находиться между датами заезда и выезда брони
+accommodation_manipulator.error.intersect_with_other_accommodations: Размещение пересекается с другими размещениями брони.
+
+#accommodation.html.twig
+package.accommodation.rooms: Комнаты
+package.accommodation.room_type: Тип номера
+package.accommodation.dates: Даты
+package.accommodation.housing: Корпус
+package.accommodation.floor: Этаж
+package.accommodation.status: Статус
+package.accommodation.amenities: Удобства
+package.accommodation.deleting_record: Удаление записи
+package.accommodation.edit_record: Редактирование записи
+package.accommodation.choose_accommodation_on_dates: Выбор размещения на даты
+package.accommodation.place_in_room: Разместить в этом номере
+package.accommodation.rooms_not_found: Номера для размещения не найдены
+
 report.porter.note: 'Комментарий:'
 modal.form.delete.reasons.reason: Причина удаления
 modal.form.delete.delete_reason_package: Причина удаления брони
+
+windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'

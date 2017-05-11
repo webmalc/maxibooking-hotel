@@ -32,7 +32,7 @@ class RoomTypeTasksType extends AbstractType
                 'multiple' => true,
                 'group_by' => 'category',
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
-                'help' => 'Задачи, создаваемые при заезде гостя',
+                'help' => 'form.roomTypeTasks.checkIn.help',
                 'query_builder' => $queryBuilderFunction
             ])
             ->add('daily', CollectionType::class, [
@@ -49,7 +49,7 @@ class RoomTypeTasksType extends AbstractType
                 'multiple' => true,
                 'group_by' => 'category',
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
-                'help' => 'При выезде гостя',
+                'help' => 'form.roomTypeTasks.checkOut.help',
                 'query_builder' => $queryBuilderFunction
             ]);
     }

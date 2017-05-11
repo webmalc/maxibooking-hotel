@@ -81,7 +81,6 @@ class RoomController extends BaseController
         ];
     }
 
-
     /**
      * Create room.
      *
@@ -109,7 +108,7 @@ class RoomController extends BaseController
             $this->dm->persist($room);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $this->addFlash('success', 'controller.roomController.success_room_creation');
 
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('room_edit', ['id' => $room->getId()]));
@@ -253,7 +252,8 @@ class RoomController extends BaseController
                     ->setRoomType($entity)
                     ->setHousing(!empty($data['housing']) ? $data['housing'] : null)
                     ->setFloor(!empty($data['floor']) ? $data['floor'] : null)
-                    ->setHotel($this->hotel);
+                    ->setHotel($this->hotel)
+                    ->setIsSmoking(isset($data['isSmoking']) ? $data['isSmoking'] : false);
 
                 if (!count($this->get('validator')->validate(($room)))) {
                     $this->dm->persist($room);

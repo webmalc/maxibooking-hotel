@@ -3,7 +3,6 @@
 namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Lsw\MemcacheBundle\Cache\MemcacheInterface;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
@@ -92,12 +91,60 @@ class PriceCacheRepository extends DocumentRepository
         }
         $result = [];
         $method = $categories ? 'getRoomTypeCategory' : 'getRoomType';
+        /** @var PriceCache $cache */
         foreach ($caches as $cache) {
             $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
         }
 
         if ($memcached) {
             $memcached->set($result, 'price_caches_fetch', func_get_args());
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     * @param Hotel|null $hotel
+     * @param array $roomTypes
+     * @param array $tariffs
+     * @param bool $categories
+     * @param \DateTime|null $displayedDate
+     * @return array
+     */
+    public function fetchWithCancelDate(\DateTime $begin = null,
+        \DateTime $end = null,
+        Hotel $hotel = null,
+        array $roomTypes = [],
+        array $tariffs = [],
+        $categories = false,
+        \DateTime $displayedDate = null
+    ) {
+        $cachesQB = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories);
+        if (!is_null($displayedDate)) {
+            $cachesQB->field('createdAt')->lt($displayedDate);
+            $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->gt($displayedDate));
+        }
+        $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->equals(null));
+        $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->exists(false));
+        $caches = $cachesQB->getQuery()->execute()->toArray();
+
+        $result = [];
+        $method = $categories ? 'getRoomTypeCategory' : 'getRoomType';
+        /** @var PriceCache $cache */
+        foreach ($caches as $cache) {
+            if (!$cache->getCancelDate() || $cache->getCancelDate() > $displayedDate) {
+                if (isset($result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')])) {
+                    /** @var PriceCache $existedCache */
+                    $existedCache = $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')];
+                    if (!$existedCache->getCancelDate() || (!is_null($cache->getCancelDate()) && $existedCache->getCancelDate() > $cache->getCancelDate())) {
+                        $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
+                    }
+                } else {
+                    $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
+                }
+            }
         }
 
         return $result;

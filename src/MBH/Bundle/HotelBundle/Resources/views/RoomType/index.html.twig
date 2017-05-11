@@ -108,6 +108,9 @@
                             <ul class="nav navbar-nav navbar-right">
                                 <li id='list-export-add-{{ loop.index }}'></li>
                             </ul>
+                            <div style="float: right; margin-right: 5px; margin-top: 13px">
+                                {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'room_type'} %}
+                            </div>
                         </div>
                     </div>
                 {% else %}

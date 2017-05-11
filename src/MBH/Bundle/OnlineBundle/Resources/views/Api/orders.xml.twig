@@ -47,7 +47,7 @@
                 {% set accommodation = package.accommodation %}
                 <accommodation>
                     <roomtype id="{{ accommodation.roomType.id }}">{{ accommodation.roomType }}</roomtype>
-                    <room id="{{ accommodation.id }}">{{ accommodation }}</room>
+                    <room id="{{ accommodation.accommodation.id }}">{{ accommodation }}</room>
                     {% if package.arrivalTime %}
                         <begin>{{ package.arrivalTime|date('Y-m-d H:i') }}</begin>
                     {% else %}

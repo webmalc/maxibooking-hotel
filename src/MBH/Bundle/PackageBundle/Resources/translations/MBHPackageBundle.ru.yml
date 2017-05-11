@@ -81,6 +81,7 @@ package.accommodation.deleted: удалена
 package.accommodation.placement: 'Размещение:'
 package.accommodation.guests: гости
 package.accommodation.stopped: заехали
+
 package.accommodation.placement_not_specified: Размещение не указано
 package.actions: Действия
 package.actions.save_and_close: Сохранить и закрыть

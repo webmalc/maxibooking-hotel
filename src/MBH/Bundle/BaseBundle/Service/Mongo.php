@@ -65,6 +65,19 @@ class Mongo
     }
 
     /**
+      * @param $collection
+      * @param array $data
+      * @return null
+      */
+    public function insert($collection, array $data)
+    {
+        if (empty($data)) {
+            return null;
+        }
+        return $this->db->$collection->insert($data);
+    }
+
+    /**
      * @param $collection
      * @param array $data
      * @return null

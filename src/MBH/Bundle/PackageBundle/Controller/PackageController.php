@@ -11,6 +11,7 @@ use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\PackageBundle\Document\DeleteReason;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -19,7 +20,10 @@ use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\PackageAccommodationType;
 use MBH\Bundle\PackageBundle\Form\PackageCsvType;
 use MBH\Bundle\PackageBundle\Form\PackageMainType;
+use MBH\Bundle\PackageBundle\Form\PackageAccommodationRoomType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
+use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use MBH\Bundle\PackageBundle\Lib\PackageAccommodationException;
 use MBH\Bundle\PackageBundle\Services\CsvGenerate;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
 use MBH\Bundle\PackageBundle\Services\PackageCreationException;
@@ -29,6 +33,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -134,6 +139,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'count' => $count
         ];
     }
+
     /**
      * Lists all entities as json.
      *
@@ -238,6 +244,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'form' => $form->createView(),
         ];
     }
+
     /**
      * Lists all entities as json.
      *
@@ -349,7 +356,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * Displays a form to edit an existing entity.
      *
-     * @Route("/{id}/edit", name="package_edit")
+     * @Route("/{id}/edit", name="package_edit", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @Template()
@@ -362,12 +369,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
-//        $order = $package->getOrder();
-//        $package->setDeletedAt(null);
-//        $order->setDeletedAt(null);
-//        $this->dm->persist($package);
-//        $this->dm->persist($order);
-//        $this->dm->flush();
 
         /** @var AuthorizationChecker $authorizationChecker */
         $authorizationChecker = $this->get('security.authorization_checker');
@@ -419,7 +420,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $package->setTotalOverwrite(0);
         $package->getOrder()->setTotalOverwrite(0);
         $this->dm->flush();
-        $this->addFlash('success', $this->get('translator')->trans('controller.packageController.record_edited_success'));
+        $this->addFlash('success',
+            $this->get('translator')->trans('controller.packageController.record_edited_success'));
         return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
     }
 
@@ -567,6 +569,18 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             return [];
         }
 
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(json_encode([
+                'success' => [
+                    $this->get('translator')->trans('controller.chessboard.package_create.success')
+                ],
+                'errors' => [],
+                'data' => [
+                    'packageId' => $order->getPackages()[0]->getId()
+                ]
+            ]));
+        }
+
         $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.packageController.order_created_success'));
 
@@ -689,7 +703,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
 
         $form = $this->createForm(PackageServiceType::class, $packageService, [
-            'package' => $package, 'dm' => $this->dm
+            'package' => $package,
+            'dm' => $this->dm
         ]);
 
         if ($request->getMethod() == 'POST' &&
@@ -748,7 +763,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $form = $this->createForm(PackageServiceType::class, $service, [
-            'package' => $package, 'dm' => $this->dm
+            'package' => $package,
+            'dm' => $this->dm
         ]);
 
         if ($request->getMethod() == Request::METHOD_POST) {
@@ -812,6 +828,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @param Package $package
      * @param Room $room
      * @return RedirectResponse
+     * @deprecated
      */
     public function accommodationSetAction(Request $request, Package $package, Room $room)
     {
@@ -821,59 +838,168 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $availableRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
             $package->getBegin(), $package->getEnd(),
-            $this->hotel, null, null, $package->getId(), false
+            $this->hotel, null, null, $package, false
         );
         $flash = $request->getSession()->getFlashBag();
 
-        if(!in_array($room->getId(), $this->helper->toIds($availableRooms))) {
-            $flash->set('danger', $this->get('translator')->trans('controller.packageController.record_edited_fail_accommodation'));
+        if (!in_array($room->getId(), $this->helper->toIds($availableRooms))) {
+            $flash->set('danger',
+                $this->get('translator')->trans('controller.packageController.record_edited_fail_accommodation'));
         } else {
             $package->setAccommodation($room);
             $this->dm->persist($package);
             $this->dm->flush();
 
-            $flash->set('success', $this->get('translator')->trans('controller.packageController.placement_saved_success'));
+            $flash->set('success',
+                $this->get('translator')->trans('controller.packageController.placement_saved_success'));
         }
 
         return $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);
     }
 
+    /**
+     * @Route("/{id}/{room}/accommodation/new/", name="package_accommodation_new", options={"expose"=true})
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW'))")
+     * @ParamConverter("package", class="MBHPackageBundle:Package")
+     * @ParamConverter("room", class="MBHHotelBundle:Room", options={"id" = "room"})
+     * @Template("MBHPackageBundle:Package:accommodationForm.html.twig")
+     * @param Request $request
+     * @param $id
+     * @param Room $room
+     * @return array|Response
+     */
+    public function accommodationNewAction(Request $request, $id, Room $room)
+    {
+        if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
+
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
+        $accommodation = new PackageAccommodation();
+        $accommodation
+            ->setRoom($room)
+            ->setBegin($package->getLastEndAccommodation())
+            ->setEnd($package->getEnd())
+            ->setPackage($package);
+        $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $additionResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
+                ->addAccommodation($accommodation, $package);
+            if ($additionResult instanceof PackageAccommodation) {
+
+                $this->addFlash('success', 'controller.packageController.placement_saved_success');
+                if ($request->isXmlHttpRequest()) {
+                    return new Response('', 302);
+                }
+
+                $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);
+            }
+
+            $form->addError(new FormError($additionResult));
+        }
+
+        return [
+            'form' => $form->createView()
+        ];
+    }
 
     /**
-     * Package relocation (new accommodation)
-     *
-     * @Route("/{id}/relocation/{date}", name="package_relocation", options={"expose"=true})
-     * @Method("GET")
-     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
-     * @param Package $package
-     * @param \DateTime $date
-     * @return Response
+     * Accommodation edit
+     * @Route("/{id}/accommodation/edit", name="package_accommodation_edit", options={"expose"=true})
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', accommodation) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
+     * @Template("MBHPackageBundle:Package:accommodationForm.html.twig")
+     * @param Request $request
+     * @param PackageAccommodation $accommodation
+     * @return array|Response
      */
-    public function relocationAction(Package $package, \DateTime $date)
+    public function accommodationEditAction(Request $request, PackageAccommodation $accommodation)
     {
-        try {
-            $redirectPackage = $this->get('mbh.order_manager')->relocatePackage($package, $date);
-            $this->addFlash('success', 'controller.packageController.relocation_success');
-        } catch (Exception $e) {
-            $this->addFlash('danger', $e->getMessage());
-            $redirectPackage = $package;
+        if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
         }
-        return $this->redirectToRoute('package_accommodation', ['id' => $redirectPackage->getId()]);
+
+        $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $editResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
+                ->editAccommodation($accommodation);
+
+            if ($editResult instanceof PackageAccommodation) {
+                $this->addFlash('success', 'controller.packageController.placement_edited_success');
+                if ($request->isXmlHttpRequest()) {
+                    return new Response('', 302);
+                }
+
+                return $this->redirectToRoute('package_accommodation',
+                    ['id' => $accommodation->getPackage()->getId(), 'begin' => null, 'end' => null]);
+            }
+
+            $form->addError(new FormError($editResult));
+        }
+
+        return [
+            'form' => $form->createView()
+        ];
+    }
+
+    /**
+     * Accommodation delete
+     *
+     * @Route("/{id}/accommodation/delete", name="package_accommodation_delete")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
+     * @ParamConverter("entity", class="MBHPackageBundle:PackageAccommodation")
+     * @param Request $request
+     * @param PackageAccommodation $entity
+     * @return RedirectResponse
+     */
+    public function accommodationDeleteAction(Request $request, PackageAccommodation $entity)
+    {
+        $package = $entity->getPackage();
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
+            throw $this->createNotFoundException();
+        }
+        try {
+            $this->dm->remove($entity);
+            $this->dm->flush();
+            $this->addFlash('success',
+                $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
+        } catch (DeleteException $exception) {
+            $this->addFlash('error', $this->get('translator')->trans($exception->getMessage()));
+        }
+
+        return $this->redirect($this->generateUrl('package_accommodation', ['id' => $package->getId()]));
     }
 
     /**
      * Accommodation
      *
-     * @Route("/{id}/accommodation", name="package_accommodation")
+     * @Route("/{id}/accommodation/{begin}/{end}", name="package_accommodation", defaults={"begin" = null, "end" = null}, options={"expose"=true})
+     * @ParamConverter("begin", options={"format":"Y-m-d"})
+     * @ParamConverter("end", options={"format":"Y-m-d"})
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @Template()
      * @param Request $request
      * @param Package $package
+     * @param \DateTime $begin
+     * @param \DateTime $end
      * @return array
+     * @throws PackageAccommodationException
      */
-    public function accommodationAction(Request $request, Package $package)
-    {
+    public function accommodationAction(
+        Request $request,
+        Package $package,
+        \DateTime $begin = null,
+        \DateTime $end = null
+    ) {
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
@@ -884,14 +1010,34 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         /** @var RoomRepository $roomRepository */
         $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
-        $groupedRooms = $roomRepository->fetchAccommodationRooms($package->getBegin(), $package->getEnd(),
-            $this->hotel, null, null, $package->getId(), true
-        );
+
+        $pAccManipulator = $this->get('mbh_bundle_package.services.package_accommodation_manipulator');
+        $accIntervals = $pAccManipulator->getEmptyIntervals($package);
+        if (!is_null($begin) && !is_null($end)) {
+            $begin->setTime(0, 0, 0);
+            $end->setTime(0, 0, 0);
+        } elseif (!$begin && !$end) {
+            if ($accIntervals->first()) {
+                $begin = $accIntervals->first()['begin'];
+                $end = $accIntervals->first()['end'];
+            } else {
+                $begin = $package->getBegin();
+                $end = $package->getEnd();
+            }
+        } elseif ((!is_null($begin) && is_null($end)) || (!is_null($end) && is_null($begin))) {
+            throw new PackageAccommodationException($this->get('translator')
+                ->trans('controller.packageController.accommodation_add.passed_only_one_date'));
+        } elseif ($begin->getTimestamp() == $end->getTimestamp() || $begin->getTimestamp() > $end->getTimestamp()) {
+            throw new PackageAccommodationException($this->get('translator')
+                ->trans('controller.packageController.accommodation_add.begin_equal_or_later_end_error'));
+        }
+
+        $groupedRooms = $roomRepository->fetchAccommodationRooms($begin, $end, $this->hotel, null, null, null, true);
         $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
 
-        $name = $package->getRoomType()->getName();
-        uksort($optGroupRooms, function ($a, $b) use ($name) {
-            if ($a == $name) {
+        $roomTypeName = $package->getRoomType()->getName();
+        uksort($optGroupRooms, function ($a, $b) use ($roomTypeName) {
+            if ($a == $roomTypeName) {
                 return -1;
             }
 
@@ -910,9 +1056,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $hasEarlyCheckIn = false;
         $hasLateCheckOut = false;
-        foreach($package->getServices() as $service) {
+        foreach ($package->getServices() as $service) {
             $code = $service->getService()->getCode();
-            if($code == 'Early check-in') {
+            if ($code == 'Early check-in') {
                 $hasEarlyCheckIn = true;
             } elseif ($code == 'Late check-out') {
                 $hasLateCheckOut = true;
@@ -959,6 +1105,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $arrivalTime = $this->getParameter('mbh_package_arrival_time');
 
         return [
+            'periodBegin' => $begin,
+            'periodEnd' => $end,
+            'emptyIntervalsAccommodation' => $accIntervals,
             'package' => $package,
             'arrivalTime' => $arrivalTime,
             'earlyCheckInServiceIsEnabled' => $earlyCheckInServiceIsEnabled,
@@ -968,32 +1117,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'optGroupRooms' => $optGroupRooms,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
-
         ];
-    }
-
-    /**
-     * Accommodation delete
-     *
-     * @Route("/{id}/accommodation/delete", name="package_accommodation_delete")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     */
-    public function accommodationDeleteAction(Request $request, Package $entity)
-    {
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $entity->removeAccommodation();
-        $this->dm->persist($entity);
-        $this->dm->flush();
-
-        $request->getSession()->getFlashBag()
-            ->set('success', $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
-
-        return $this->redirect($this->generateUrl('package_accommodation', ['id' => $entity->getId()]));
     }
 
     /**
@@ -1006,7 +1130,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', id) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
      * @Template("@MBHPackage/Package/deleteModalContent.html.twig")
-     * @return array|RedirectResponse
+     * @return array|RedirectResponse|JsonResponse
      */
     public function deleteModalAction(Request $request, Package $entity)
     {
@@ -1024,8 +1148,17 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $this->dm->remove($entity);
             $this->dm->flush($entity);
 
+            if ($request->isXmlHttpRequest()) {
+                $messageFormatter = $this->get('mbh.chess_board.message_formatter');
+                $messageFormatter->addSuccessfulMessage('controller.chessboard.package_remove.success');
+
+                return new JsonResponse(json_encode($messageFormatter->getMessages()));
+            }
+
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+                ->set('success',
+                    $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+
 
             if (!empty($form->get('order')->getData())) {
                 return $this->redirect($this->generateUrl('package_order_edit',
@@ -1085,15 +1218,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$id) {
             return new JsonResponse([]);
         }
-        
         $result = [];
         $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
-        
+
         if ($package) {
-            $result = [
-                'id' => $package->getId(),
-                'text' => $package->getTitle(true,true)
-            ];
+            $result = ['id' => $package->getId(), 'text' => $package->getTitle(true, true)];
         }
 
         return new JsonResponse($result);
@@ -1101,6 +1230,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
 
     /**
+     * TODO: add Secure
      * @param Request $request
      * @return JsonResponse
      * @Route("/getPackageJsonSearch", name="getPackageJsonSearch", options={"expose"=true})
@@ -1111,7 +1241,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$request->get('query')) {
             return new JsonResponse([]);
         }
-        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByOrderOrRoom($request->get('query'), $this->helper);
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByOrderOrRoom($request->get('query'),
+            $this->helper);
         if (!$packages) {
             return new JsonResponse([
                 'results' => [[]]
@@ -1121,7 +1252,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             /** @var Package $item */
             $data[] = [
                 'id' => $item->getId(),
-                'text' => $item->getTitle(true,true)
+                'text' => $item->getTitle(true, true)
             ];
         }
 
