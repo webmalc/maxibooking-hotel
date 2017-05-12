@@ -847,7 +847,7 @@ $.fn.mbhSelect2OptionsFilter = function (filter, resetOptionsHtml) {
 
 var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
     $discountInput.TouchSpin({
-        min: 0.01,
+        min: -9999999999999999,
         max: 9999999999999999,
         step: 0.1,
         decimals: 2,
@@ -857,10 +857,10 @@ var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
 
     var discountInputUpdate = function (state) {
         if (state) { //$isPercentDiscountCheckbox.is(':checked')
-            $discountInput.trigger("touchspin.updatesettings", {max: 100});
+            $discountInput.trigger("touchspin.updatesettings", {max: 100, min: -1000});
             $discountTypeInputPostfix.html('%');
         } else {
-            $discountInput.trigger("touchspin.updatesettings", {max: 100000000});
+            $discountInput.trigger("touchspin.updatesettings", {max: 100000000, min: -100000000});
             $discountTypeInputPostfix.html('<i class="fa fa-money"></i>')
         }
     }

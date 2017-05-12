@@ -12,7 +12,6 @@ use MBH\Bundle\PriceBundle\Document\Traits\ConditionsTrait;
 use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 /**
  * @ODM\Document(collection="promotions")
  * @Gedmo\Loggable
@@ -74,7 +73,8 @@ class Promotion extends Base implements ConditionsInterface
     /**
      * @ODM\Field(type="float")
      * @var int
-     * @Assert\Range(min=0)
+     * @Assert\Range(min=-100000000)
+     * @Assert\Type(type="numeric")
      */
     protected $discount;
 
