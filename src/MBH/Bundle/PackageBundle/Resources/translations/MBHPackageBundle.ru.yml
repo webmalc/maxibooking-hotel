@@ -458,8 +458,8 @@ dynamic.sales.error.day: дней
 
 dynamic.sales.day.periods: Периоды
 dynamic.sales.day.summary: Итого
-dynamic.sales.day.period-volume: Объем броней за сутки/руб
-dynamic.sales.day.sales-volume: Объем броней за период/руб
+dynamic.sales.day.period-volume: Объем броней за период/руб
+dynamic.sales.day.sales-volume: Объем броней за сутки/руб
 dynamic.sales.day.packages-sales: Создано броней за сутки
 dynamic.sales.day.packages-growth: Создано броней за период
 dynamic.sales.day.package-isPaid: Оплачено броней за сутки

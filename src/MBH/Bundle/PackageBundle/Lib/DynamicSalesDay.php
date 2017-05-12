@@ -788,7 +788,7 @@ class DynamicSalesDay
             $this->toArray = [
                 'sales-volume' => [
                     'dayValue' => number_format($this->getTotalSales(), 2),
-                    'total' => number_format($this->getAverageVolume(), 2),
+                    'total' => number_format($this->getTotalSales(), 2),
                     'comparisonDayValue' => number_format($this->getTotalSales(), 2),
                     'percentage' => $this->getPercentDayVolume()
                 ],

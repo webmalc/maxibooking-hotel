@@ -4,6 +4,8 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -83,7 +85,30 @@ class DynamicSalesGenerator
         return $this->getDynamicSalesReportData($begin, $end, $roomTypes);
     }
 
-    public function generatePeriodData(\DatePeriod $datePeriod, array $packagesByRoomType)
+    /**
+     * @param Package[] $packages
+     * @return array
+     */
+    private function getCashDocumentsByPaidDate($packages)
+    {
+        $cashDocumentsByPaidDate = [];
+        foreach ($packages as $package) {
+            /** @var CashDocument $cashDocument */
+            foreach ($package->getOrder()->getCashDocuments() as $cashDocument) {
+                $cashDocumentsByPaidDate[$cashDocument->getPaidDate()->format('d.m.Y')][$cashDocument->getId()] = $cashDocument;
+            }
+        }
+
+        return $cashDocumentsByPaidDate;
+    }
+
+    /**
+     * @param \DatePeriod $datePeriod
+     * @param array $packagesByRoomType
+     * @param CashDocument[] $cashDocumentsByPaidDate
+     * @return array
+     */
+    public function generatePeriodData(\DatePeriod $datePeriod, array $packagesByRoomType, $cashDocumentsByPaidDate)
     {
         $summary = new DynamicSalesDay();
 
@@ -102,12 +127,22 @@ class DynamicSalesGenerator
                 $this->dm->getFilterCollection()->disable('softdeleteable');
             }
 
-            $packageByCreationDate = isset($packagesByRoomType[$day->format('d.m.Y')])
+            $dayString = $day->format('d.m.Y');
+
+            $cashDocuments = isset($cashDocumentsByPaidDate[$dayString]) ? $cashDocumentsByPaidDate[$dayString] : [];
+
+            /** @var CashDocument $cashDocument */
+            foreach ($cashDocuments as $cashDocument) {
+                if ($cashDocument->getOperation() == 'in') {
+                    $infoDay->setSumPayedForPeriod($cashDocument->getTotal() + );
+                }
+            }
+
+            $packagesByCreationDate = isset($packagesByRoomType[$dayString])
                 ? $packagesByRoomType[$day->format('d.m.Y')]
                 : [];
 
-            /** @var Package $package */
-            foreach ($packageByCreationDate as $package) {
+            foreach ($packagesByCreationDate as $package) {
                 //in case if order entirely removed from db
                 try {
                     if ($package->getIsPaid()) {
@@ -153,10 +188,8 @@ class DynamicSalesGenerator
             $infoDay->setPackageIsPaidGrowth($summary->getPackageIsPaid());
             $infoDay->setDeletePricePackageGrowth($summary->getDeletePricePackageGrowth());
             $infoDay->setComparisonIsPaidAndDelete($infoDay->getPackageIsPaid() - $infoDay->getDeletePackages());
-            $infoDay->setCountNumbers($countRoom * $countDayPackage);
             $infoDay->setCountPeople($countPeople * $countDayPackage);
-            $infoDay->setSumPayedForPeriod($summary->getSumPayedForPeriod());
-            $infoDay->setSumPayedForPeriodForRemoved($summary->getSumPayedForPeriodForRemoved());
+
             $infoDay->setTotalCountPeople($summary->getTotalCountPeople());
             $infoDay->setTotalCountNumbers($summary->getTotalCountNumbers());
 
@@ -196,8 +229,8 @@ class DynamicSalesGenerator
             if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->disable('softdeleteable');
             }
-            $packagesByPeriods[$i] = $this->dm->getRepository('MBHPackageBundle:Package')->getPackagesByCreationDatesAndRoomTypeIds(new \DateTime($begin[$i]),
-                new \DateTime($end[$i]), $roomTypesIds);
+            $packagesByPeriods[$i] = $this->dm->getRepository('MBHPackageBundle:Package')
+                ->getPackagesByCreationDatesAndRoomTypeIds(new \DateTime($begin[$i]), new \DateTime($end[$i]), $roomTypesIds);
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
             }
@@ -213,10 +246,11 @@ class DynamicSalesGenerator
             $dynamicSale->setRoomType($roomType);
 
             foreach ($periods as $periodNumber => $datePeriod) {
+                $cashDocumentsByPaidDate = $this->getCashDocumentsByPaidDate($packagesByPeriods[$periodNumber]);
                 $packagesByPeriodAndRoomType = isset($packagesByPeriods[$periodNumber][$roomType->getId()])
                     ? $packagesByPeriods[$periodNumber][$roomType->getId()]
                     : [];
-                $dynamicSale->addPeriods($this->generatePeriodData($datePeriod, $packagesByPeriodAndRoomType));
+                $dynamicSale->addPeriods($this->generatePeriodData($datePeriod, $packagesByPeriodAndRoomType, $cashDocumentsByPaidDate));
             }
 
             if (count($dynamicSale->getPeriods()) > 1) {
