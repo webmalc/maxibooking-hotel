@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SpecialsController extends BaseController
 {
-    const SPECIAL_MONTH_BEGIN = 4;
+    const SPECIAL_MONTH_BEGIN = 3;
     const SPECIAL_MONTH_END = 11;
     /**
      * @Route("/{id}", name="all_specials", defaults={"id":""})

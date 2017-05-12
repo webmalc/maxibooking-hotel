@@ -199,7 +199,8 @@ var callMonthSlider = function (month) {
         slideWidth: 360,
         slideMargin: 10,
         infiniteLoop:false,
-        pager: false
+        pager: false,
+        startSlide: 1
 
     });
 };
