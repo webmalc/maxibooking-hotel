@@ -138,6 +138,7 @@ services:
                   - '@mbh.helper'
                   - '@translator'
                   - '%mbh_dynamic_sale_period%'
+                  - '@service_container'
 
     mbh.acl_document_owner_maker:
         class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
@@ -163,5 +164,10 @@ services:
         shared: false
 
     task_notice_unpaid_order:
-      class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder
-      arguments:  ["@mbh.notice.unpaid"]
+        class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder
+        arguments:  ["@mbh.notice.unpaid"]
+
+    mbh.dynamic_sales_report.dynamic_sales_day:
+        class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
+        arguments: ['@doctrine.odm.mongodb.document_manager']
+        shared: false

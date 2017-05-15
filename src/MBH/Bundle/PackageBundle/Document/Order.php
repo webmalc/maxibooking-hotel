@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -255,8 +256,9 @@ class Order extends Base
 
     public function __construct()
     {
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->documents = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->packages = new ArrayCollection();
+        $this->documents = new ArrayCollection();
+        $this->cashDocuments = new ArrayCollection();
     }
 
     public static function getOnlinePaymentTypesList()

@@ -3,14 +3,16 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\DynamicSales;
-use MBH\Bundle\PackageBundle\Lib\DynamicSalesDay;
+use MBH\Bundle\PackageBundle\Lib\DynamicSalesPeriod;
+use MBH\Bundle\PackageBundle\Lib\DynamicSalesReportData;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -41,23 +43,29 @@ class DynamicSalesGenerator
      */
     private $dynamicSalesReportMaxDayRange;
 
+    /** @var  ContainerInterface */
+    private $container;
+
     /**
      * DynamicSalesGenerator constructor.
      * @param DocumentManager $dm
      * @param Helper $helper
      * @param TranslatorInterface $translator
      * @param $dynamicSalesReportMaxDayRange
+     * @param ContainerInterface $container
      */
     public function __construct(
         DocumentManager $dm,
         Helper $helper,
         TranslatorInterface $translator,
-        $dynamicSalesReportMaxDayRange
+        $dynamicSalesReportMaxDayRange,
+        ContainerInterface $container
     ) {
         $this->dm = $dm;
         $this->helper = $helper;
         $this->translator = $translator;
         $this->dynamicSalesReportMaxDayRange = $dynamicSalesReportMaxDayRange;
+        $this->container = $container;
     }
 
     /**
@@ -86,159 +94,131 @@ class DynamicSalesGenerator
     }
 
     /**
-     * @param Package[] $packages
+     * @param $packagesByPeriods
      * @return array
      */
-    private function getCashDocumentsByPaidDate($packages)
+    private function getCashDocumentsByPaidDate(array $packagesByPeriods)
     {
         $cashDocumentsByPaidDate = [];
-        foreach ($packages as $package) {
-            /** @var CashDocument $cashDocument */
-            foreach ($package->getOrder()->getCashDocuments() as $cashDocument) {
-                $cashDocumentsByPaidDate[$cashDocument->getPaidDate()->format('d.m.Y')][$cashDocument->getId()] = $cashDocument;
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
+        foreach ($packagesByPeriods as $packagesByPeriod) {
+            foreach ($packagesByPeriod as $packagesByDate) {
+                /** @var Package $package */
+                foreach ($packagesByDate as $package) {
+                    /** @var CashDocument $cashDocument */
+                    try {
+                        if (!is_null($package->getOrder()->getCashDocuments())) {
+                            foreach ($package->getOrder()->getCashDocuments() as $cashDocument) {
+                                if (is_null($cashDocument->getPaidDate())) {
+                                    $sdf =123;
+                                }
+                                //TODO: Решить здесь что делать
+//                                $cashDocumentsByPaidDate[$cashDocument->getPaidDate()->format('d.m.Y')][$cashDocument->getId()] = $cashDocument;
+                            }
+                        }
+                    } catch (DocumentNotFoundException $exception) {}
+                }
             }
+        }
+        if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
         }
 
         return $cashDocumentsByPaidDate;
     }
 
     /**
-     * @param \DatePeriod $datePeriod
-     * @param array $packagesByRoomType
-     * @param CashDocument[] $cashDocumentsByPaidDate
-     * @return array
+     * @param $packagesByCreationDates
+     * @return Package[]
      */
-    public function generatePeriodData(\DatePeriod $datePeriod, array $packagesByRoomType, $cashDocumentsByPaidDate)
+    private function getPackagesByCancellationDate($packagesByCreationDates)
     {
-        $summary = new DynamicSalesDay();
+        $packagesByCancellationDate = [];
+        /** @var Package $package */
+        foreach ($packagesByCreationDates as $package) {
+            if (!empty($package->getDeletedAt())) {
+                $cancellationDateString = $package->getDeletedAt()->format('d.m.Y');
+                $packagesByCancellationDate[$cancellationDateString] = $package;
+            }
+        }
+
+        return $packagesByCancellationDate;
+    }
+
+    /**
+     * @param DynamicSalesPeriod $salesPeriod
+     * @param array $packagesByCreationDates
+     * @param CashDocument[] $cashDocumentsByPaidDate
+     * @return DynamicSalesPeriod
+     */
+    private function fillDynamicSalesPeriodData(
+        DynamicSalesPeriod $salesPeriod,
+        array $packagesByCreationDates,
+        $cashDocumentsByPaidDate
+    ) {
+        $previousDayData = null;
 
         /** @var \DateTime $day */
-        foreach ($datePeriod as $dayNumber => $day) {
-
-            $infoDay = new DynamicSalesDay();
-            $infoDay->setDateSales($day);
-            $summary->setDateSales($day);
-
-            $countPeople = 0;
-            $countDayPackage = 0;
-            $countRoom = 0;
-
-            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-                $this->dm->getFilterCollection()->disable('softdeleteable');
-            }
-
+        foreach ($salesPeriod->getDatePeriod() as $dayNumber => $day) {
             $dayString = $day->format('d.m.Y');
 
             $cashDocuments = isset($cashDocumentsByPaidDate[$dayString]) ? $cashDocumentsByPaidDate[$dayString] : [];
 
-            /** @var CashDocument $cashDocument */
-            foreach ($cashDocuments as $cashDocument) {
-                if ($cashDocument->getOperation() == 'in') {
-                    $infoDay->setSumPayedForPeriod($cashDocument->getTotal() + );
-                }
-            }
-
-            $packagesByCreationDate = isset($packagesByRoomType[$dayString])
-                ? $packagesByRoomType[$day->format('d.m.Y')]
+            $packagesByCreationDate = isset($packagesByCreationDates[$dayString])
+                ? $packagesByCreationDates[$dayString]
                 : [];
 
-            foreach ($packagesByCreationDate as $package) {
-                //in case if order entirely removed from db
-                try {
-                    if ($package->getIsPaid()) {
-                        //check package on Paid
-                        $infoDay->setPackageIsPaid($infoDay->getPackageIsPaid() + 1);
-                    }
-                } catch (\Throwable $exception) {
-                }
+            $packagesByCancellationDate = $this->getPackagesByCancellationDate($packagesByCreationDate);
 
-                $infoDay->setAmountPackages($infoDay->getAmountPackages() + 1);
-                $infoDay->setTotalSales($infoDay->getTotalSales() + $package->getPrice());
-                if ($package->getIsPaid()) {
-                    $infoDay->setPackageIsPaid($infoDay->getPackageIsPaid() + 1);
-                }
-                if ($package->isDeleted()) {
-                    $infoDay->setDeletePackages($infoDay->getDeletePackages() + 1);
-                    $infoDay->setDeletePricePackage($infoDay->getDeletePricePackage() + $package->getPrice());
-                }
-
-                $countPeople += ($package->getAdults() + $package->getChildren());
-                $countDayPackage += $package->getDays();
-                $countRoom++;
-            }
-
-            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-                $this->dm->getFilterCollection()->enable('softdeleteable');
-            }
-
-            $summary->setTotalAmountPackages($summary->getTotalAmountPackages() + $infoDay->getAmountPackages());
-            $summary->setTotalSales($summary->getTotalSales() + $infoDay->getTotalSales());
-            $summary->setPackageIsPaid($summary->getPackageIsPaid() + $infoDay->getPackageIsPaid());
-            $summary->setDeletePricePackageGrowth($summary->getDeletePricePackageGrowth() + $infoDay->getDeletePricePackage());
-            $summary->setPackageIsPaidGrowth($summary->getPackageIsPaid() + $infoDay->getPackageIsPaid());
-            $summary->setDeletePackages($summary->getDeletePackages() + $infoDay->getDeletePackages());
-            $summary->setDeletePricePackageGrowth($summary->getDeletePricePackageGrowth() + $infoDay->getDeletePricePackageGrowth());
-            $summary->setDeletePricePackage($summary->getDeletePricePackage() + $infoDay->getDeletePricePackage());
-            $summary->setDeletePackageIsPaid($summary->getDeletePackageIsPaid() + $infoDay->getDeletePackageIsPaid());
-            $summary->setSumPayedForPeriod($summary->getSumPayedForPeriod() + $infoDay->getSumPayedForPeriod());
-            $summary->setSumPayedForPeriodForRemoved($summary->getSumPayedForPeriodForRemoved() + $infoDay->getSumPayedForPeriodForRemoved());
-
-            $infoDay->setVolumeGrowth($summary->getTotalSales());
-            $infoDay->setTotalAmountPackages($summary->getTotalAmountPackages());
-            $infoDay->setPackageIsPaidGrowth($summary->getPackageIsPaid());
-            $infoDay->setDeletePricePackageGrowth($summary->getDeletePricePackageGrowth());
-            $infoDay->setComparisonIsPaidAndDelete($infoDay->getPackageIsPaid() - $infoDay->getDeletePackages());
-            $infoDay->setCountPeople($countPeople * $countDayPackage);
-
-            $infoDay->setTotalCountPeople($summary->getTotalCountPeople());
-            $infoDay->setTotalCountNumbers($summary->getTotalCountNumbers());
-
-            $summary->setTotalCountPeople($summary->getTotalCountPeople() + $infoDay->getCountPeople());
-            $summary->setTotalCountNumbers($summary->getTotalCountNumbers() + $infoDay->getTotalCountNumbers());
-
-            $resultPeriod[] = $infoDay;
+            $infoDay = $this->container->get('mbh.dynamic_sales_report.dynamic_sales_day');
+            $infoDay->setDate($day);
+            $infoDay->setInitData($packagesByCreationDate, $packagesByCancellationDate, $cashDocuments, $previousDayData);
+            $salesPeriod->addDynamicSalesDay($infoDay);
+            $previousDayData = $infoDay;
         }
 
-        $resultPeriod['summ'] = $summary;
-
-        return $resultPeriod;
+        return $salesPeriod;
     }
 
     /**
-     * @param $begin
-     * @param $end
+     * @param $filterBeginDates
+     * @param $filterEndDates
      * @param $roomTypes
-     * @return array
+     * @return DynamicSalesReportData
      */
-    private function getDynamicSalesReportData($begin, $end, $roomTypes)
+    private function getDynamicSalesReportData($filterBeginDates, $filterEndDates, $roomTypes)
     {
         $roomTypesIds = $this->helper->toIds($roomTypes);
 
-        for ($i = 0; $i < count($begin); $i++) {
+        for ($i = 0; $i < count($filterBeginDates); $i++) {
 
-            $ends = new \DateTime($end[$i]);
-            $begins = new \DateTime($begin[$i]);
+            $periodBegin = \DateTime::createFromFormat('d.m.Y', $filterBeginDates[$i]);
+            $periodEnd = \DateTime::createFromFormat('d.m.Y', $filterEndDates[$i]);
+//
+//            if ($periodEnd->diff($periodBegin)->days > $this->dynamicSalesReportMaxDayRange) {
+//                return [
+//                    'error' => $this->translator
+//                        ->trans('dynamic.sales.range_is_over_error',
+//                            ['%numberOfDays%' => $this->dynamicSalesReportMaxDayRange],
+//                            'MBHPackageBundle')
+//                ];
+//            }
 
-            if ($ends->diff($begins)->days > $this->dynamicSalesReportMaxDayRange) {
-                return [
-                    'error' => $this->translator->trans('dynamic.sales.error.range', [],
-                            'MBHPackageBundle') . ' ' . $periodRange . ' ' . $this->translator->trans('dynamic.sales.error.day',
-                            [], 'MBHPackageBundle')
-                ];
-            }
             if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->disable('softdeleteable');
             }
             $packagesByPeriods[$i] = $this->dm->getRepository('MBHPackageBundle:Package')
-                ->getPackagesByCreationDatesAndRoomTypeIds(new \DateTime($begin[$i]), new \DateTime($end[$i]), $roomTypesIds);
+                ->getPackagesByCreationDatesAndRoomTypeIds($periodBegin, $periodEnd, $roomTypesIds);
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
             }
-            $periods[$i] = new \DatePeriod(new \DateTime($begin[$i]), \DateInterval::createFromDateString('1 day'),
-                new \DateTime($end[$i]));
+
+            $periods[$i] = new \DatePeriod($periodBegin, new \DateInterval('P1D'), $periodEnd);
         }
 
-        $resultData = [];
+        $dynamicSalesReportData = new DynamicSalesReportData();
 
         /** @var RoomType $roomType */
         foreach ($roomTypes as $roomType) {
@@ -250,204 +230,208 @@ class DynamicSalesGenerator
                 $packagesByPeriodAndRoomType = isset($packagesByPeriods[$periodNumber][$roomType->getId()])
                     ? $packagesByPeriods[$periodNumber][$roomType->getId()]
                     : [];
-                $dynamicSale->addPeriods($this->generatePeriodData($datePeriod, $packagesByPeriodAndRoomType, $cashDocumentsByPaidDate));
+
+                $dynamicSalesPeriod = new DynamicSalesPeriod();
+                $dynamicSalesPeriod->setDatePeriod($datePeriod);
+                $this->fillDynamicSalesPeriodData($dynamicSalesPeriod, $packagesByPeriodAndRoomType, $cashDocumentsByPaidDate);
+                $dynamicSale->addPeriods($dynamicSalesPeriod);
             }
 
-            if (count($dynamicSale->getPeriods()) > 1) {
+//            if (count($dynamicSale->getPeriods()) > 1) {
+//
+//                for ($i = 1; $i <= (count($dynamicSale->getPeriods()) - 1); $i++) {
+//                    $mainPeriod = $dynamicSale->getPeriods()[0];
+//                    array_pop($mainPeriod);
+//                    $volumePercentPeriod = [];
+//                    foreach ($mainPeriod as $itemSalesMain => $daySalesMain) {
+//                        foreach ($dynamicSale->getPeriods()[$i] as $itemSalesDay => $daySales) {
+//                            if ($itemSalesMain == $itemSalesDay && $itemSalesMain !== 'summ' && $itemSalesDay !== 'summ') {
+//                                $volumeDay = $this->generateComparisonDay($daySalesMain, $daySales);
+//                            }
+//                        }
+//                        $volumePercentPeriod[] = $volumeDay;
+//                    }
+//                    $dynamicSale->addComparison($volumePercentPeriod);
+//                }
+//            }
 
-                for ($i = 1; $i <= (count($dynamicSale->getPeriods()) - 1); $i++) {
-                    $mainPeriod = $dynamicSale->getPeriods()[0];
-                    array_pop($mainPeriod);
-                    $volumePercentPeriod = [];
-                    foreach ($mainPeriod as $itemSalesMain => $daySalesMain) {
-                        foreach ($dynamicSale->getPeriods()[$i] as $itemSalesDay => $daySales) {
-                            if ($itemSalesMain == $itemSalesDay && $itemSalesMain !== 'summ' && $itemSalesDay !== 'summ') {
-                                $volumeDay = $this->generateComparisonDay($daySalesMain, $daySales);
-                            }
-                        }
-                        $volumePercentPeriod[] = $volumeDay;
-                    }
-                    $dynamicSale->addComparison($volumePercentPeriod);
-                }
-            }
-
-            $resultData[] = $dynamicSale;
+            $dynamicSalesReportData->addDynamicSales($dynamicSale);
         }
+//
+//        //all rooms result
+//        if (count($roomTypes) > 1) {
+//            $totalSalesResult = new DynamicSales();
+//            $allResultPeriod = [];
+//
+//            /** @var DynamicSales $daySaleDays */
+//            foreach ($resultData as $daySaleDays) {
+//
+//                $countPeriods = count($daySaleDays->getPeriods());
+//
+//                for ($i = 0; $i < $countPeriods; $i++) {
+//
+//                    $countDay = 0;
+//                    $amountDay = count($daySaleDays->getPeriods()[$i]);
+//
+//                    /** @var DynamicSalesDay $daySale */
+//                    foreach ($daySaleDays->getPeriods()[$i] as $daySale) {
+//                        if (isset($allResultPeriod[$i][$countDay])) {
+//                            $day = $allResultPeriod[$i][$countDay];
+//                        } else {
+//                            $day = new DynamicSalesDay();
+//                            $day->setDate($daySale->getDateSales());
+//                        }
+//
+//                        $day->setTotalSales($day->getTotalSales() + $daySale->getTotalSales());
+//                        $day->setVolumeGrowth($day->getVolumeGrowth() + $daySale->getVolumeGrowth());
+//                        $day->setAverageVolume($day->getAverageVolume() + $daySale->getAverageVolume());
+//                        $day->setPercentDayVolume($day->getPercentDayVolume() + $daySale->getPercentDayVolume());
+//                        $day->setPercentDayGrowth($day->getPercentDayGrowth() + $daySale->getPercentDayGrowth());
+//                        $day->setAmountPackages($day->getAmountPackages() + $daySale->getAmountPackages());
+//                        $day->setTotalAmountPackages($day->getTotalAmountPackages() + $daySale->getTotalAmountPackages());
+//                        $day->setPercentTotalAmountPackages($day->getPercentTotalAmountPackages() + $daySale->getPercentTotalAmountPackages());
+//                        $day->setPercentCountPeople($day->getPercentCountPeople() + $daySale->getPercentCountPeople());
+//                        $day->setPercentCountNumbers($day->getPercentCountNumbers() + $daySale->getPercentCountNumbers());
+//                        $day->setTotalCountPeople($day->getTotalCountPeople() + $daySale->getTotalCountPeople());
+//                        $day->setTotalCountNumbers($day->getTotalCountNumbers() + $daySale->getTotalCountNumbers());
+//
+//                        $day->setPackageIsPaid($day->getPackageIsPaid() + $daySale->getPackageIsPaid());
+//                        $day->setPercentPackageIsPaid($day->getPercentPackageIsPaid() + $daySale->getPercentPackageIsPaid());
+//
+//                        //packages is paid growth
+//                        $day->setPackageIsPaidGrowth($day->getPackageIsPaidGrowth() + $daySale->getPackageIsPaidGrowth());
+//                        $day->setPercentPackageIsPaidGrowth($day->getPercentPackageIsPaidGrowth() + $daySale->getPercentPackageIsPaidGrowth());
+//                        //delete packages
+//                        $day->setDeletePackages($day->getDeletePackages() + $daySale->getDeletePackages());
+//                        //delete packages price
+//                        $day->setDeletePricePackage($day->getDeletePricePackage() + $daySale->getDeletePricePackage());
+//                        //delete packages price growth
+//                        $day->setDeletePricePackageGrowth($day->getDeletePricePackageGrowth() + $daySale->getDeletePricePackageGrowth());
+//                        // delete packages is paid
+//                        $day->setDeletePackageIsPaid($day->getDeletePackageIsPaid() + $daySale->getDeletePackageIsPaid());
+//
+//                        //comparison sum payed for period
+//                        $day->setSumPayedForPeriod($day->getSumPayedForPeriod() + $daySale->getSumPayedForPeriod());
+//                        $day->setSumPayedForPeriod($day->getSumPayedForPeriodRelative() + $daySale->getSumPayedForPeriodRelative());
+//                        //comparison sum payed for period for removed packages
+//                        $day->setSumPayedForPeriodForRemoved($day->getSumPayedForPeriodForRemoved() + $daySale->getSumPayedForPeriodForRemoved());
+//                        $day->setSumPayedForPeriodForRemovedRelative($day->getSumPayedForPeriodForRemovedRelative() + $daySale->getSumPayedForPeriodForRemovedRelative());
+//
+//                        $day->setComparisonIsPaidAndDelete($day->getComparisonIsPaidAndDelete() + $daySale->getComparisonIsPaidAndDelete());
+//
+//                        //count people
+//                        $day->setCountPeople($day->getCountPeople() + $daySale->getCountPeople());
+//                        //count numbers
+//                        $day->setCountNumbers($day->getCountNumbers() + $daySale->getCountNumbers());
+//
+//                        ($countDay == $amountDay - 1) ? $day->setAmountPackages(round($day->getTotalAmountPackages() / $countDay)) : null;
+//
+//                        $allResultPeriod[$i][$countDay] = $day;
+//                        $countDay++;
+//                    }
+//                }
+//            }
+//
+//            foreach ($allResultPeriod as $allResPer) {
+//                $totalSalesResult->addPeriods($allResPer);
+//            }
+//
+//            if ($countPeriods > 1) {
+//                for ($i = 1; $i <= $countPeriods - 1; $i++) {
+//                    $allMainPeriods = $allResultPeriod[0];
+//                    array_pop($allMainPeriods);
+//
+//                    foreach ($allMainPeriods as $indexMain => $allMainPeriod) {
+//                        foreach ($allResultPeriod[$i] as $index => $nextPeriod) {
+//                            if ($indexMain == $index) {
+//                                $volumeDay = $this->generateComparisonDay($allMainPeriod, $nextPeriod);
+//                            }
+//                        }
+//                        $comparisonPeriod[] = $volumeDay;
+//                    }
+//                    $totalSalesResult->addComparison($comparisonPeriod);
+//                    unset($comparisonPeriod);
+//                }
+//            }
+//
+//            $resultData[] = $totalSalesResult;
+//        }
 
-        //all rooms result
-        if (count($roomTypes) > 1) {
-            $totalSalesResult = new DynamicSales();
-            $allResultPeriod = [];
-
-            /** @var DynamicSales $daySaleDays */
-            foreach ($resultData as $daySaleDays) {
-
-                $countPeriods = count($daySaleDays->getPeriods());
-
-                for ($i = 0; $i < $countPeriods; $i++) {
-
-                    $countDay = 0;
-                    $amountDay = count($daySaleDays->getPeriods()[$i]);
-
-                    /** @var DynamicSalesDay $daySale */
-                    foreach ($daySaleDays->getPeriods()[$i] as $daySale) {
-                        if (isset($allResultPeriod[$i][$countDay])) {
-                            $day = $allResultPeriod[$i][$countDay];
-                        } else {
-                            $day = new DynamicSalesDay();
-                            $day->setDateSales($daySale->getDateSales());
-                        }
-
-                        $day->setTotalSales($day->getTotalSales() + $daySale->getTotalSales());
-                        $day->setVolumeGrowth($day->getVolumeGrowth() + $daySale->getVolumeGrowth());
-                        $day->setAverageVolume($day->getAverageVolume() + $daySale->getAverageVolume());
-                        $day->setPercentDayVolume($day->getPercentDayVolume() + $daySale->getPercentDayVolume());
-                        $day->setPercentDayGrowth($day->getPercentDayGrowth() + $daySale->getPercentDayGrowth());
-                        $day->setAmountPackages($day->getAmountPackages() + $daySale->getAmountPackages());
-                        $day->setTotalAmountPackages($day->getTotalAmountPackages() + $daySale->getTotalAmountPackages());
-                        $day->setPercentTotalAmountPackages($day->getPercentTotalAmountPackages() + $daySale->getPercentTotalAmountPackages());
-                        $day->setPercentCountPeople($day->getPercentCountPeople() + $daySale->getPercentCountPeople());
-                        $day->setPercentCountNumbers($day->getPercentCountNumbers() + $daySale->getPercentCountNumbers());
-                        $day->setTotalCountPeople($day->getTotalCountPeople() + $daySale->getTotalCountPeople());
-                        $day->setTotalCountNumbers($day->getTotalCountNumbers() + $daySale->getTotalCountNumbers());
-
-                        $day->setPackageIsPaid($day->getPackageIsPaid() + $daySale->getPackageIsPaid());
-                        $day->setPercentPackageIsPaid($day->getPercentPackageIsPaid() + $daySale->getPercentPackageIsPaid());
-
-                        //packages is paid growth
-                        $day->setPackageIsPaidGrowth($day->getPackageIsPaidGrowth() + $daySale->getPackageIsPaidGrowth());
-                        $day->setPercentPackageIsPaidGrowth($day->getPercentPackageIsPaidGrowth() + $daySale->getPercentPackageIsPaidGrowth());
-                        //delete packages
-                        $day->setDeletePackages($day->getDeletePackages() + $daySale->getDeletePackages());
-                        //delete packages price
-                        $day->setDeletePricePackage($day->getDeletePricePackage() + $daySale->getDeletePricePackage());
-                        //delete packages price growth
-                        $day->setDeletePricePackageGrowth($day->getDeletePricePackageGrowth() + $daySale->getDeletePricePackageGrowth());
-                        // delete packages is paid
-                        $day->setDeletePackageIsPaid($day->getDeletePackageIsPaid() + $daySale->getDeletePackageIsPaid());
-
-                        //comparison sum payed for period
-                        $day->setSumPayedForPeriod($day->getSumPayedForPeriod() + $daySale->getSumPayedForPeriod());
-                        $day->setSumPayedForPeriod($day->getSumPayedForPeriodRelative() + $daySale->getSumPayedForPeriodRelative());
-                        //comparison sum payed for period for removed packages
-                        $day->setSumPayedForPeriodForRemoved($day->getSumPayedForPeriodForRemoved() + $daySale->getSumPayedForPeriodForRemoved());
-                        $day->setSumPayedForPeriodForRemovedRelative($day->getSumPayedForPeriodForRemovedRelative() + $daySale->getSumPayedForPeriodForRemovedRelative());
-
-                        $day->setComparisonIsPaidAndDelete($day->getComparisonIsPaidAndDelete() + $daySale->getComparisonIsPaidAndDelete());
-
-                        //count people
-                        $day->setCountPeople($day->getCountPeople() + $daySale->getCountPeople());
-                        //count numbers
-                        $day->setCountNumbers($day->getCountNumbers() + $daySale->getCountNumbers());
-
-                        ($countDay == $amountDay - 1) ? $day->setAmountPackages(round($day->getTotalAmountPackages() / $countDay)) : null;
-
-                        $allResultPeriod[$i][$countDay] = $day;
-                        $countDay++;
-                    }
-                }
-            }
-
-            foreach ($allResultPeriod as $allResPer) {
-                $totalSalesResult->addPeriods($allResPer);
-            }
-
-            if ($countPeriods > 1) {
-                for ($i = 1; $i <= $countPeriods - 1; $i++) {
-                    $allMainPeriods = $allResultPeriod[0];
-                    array_pop($allMainPeriods);
-
-                    foreach ($allMainPeriods as $indexMain => $allMainPeriod) {
-                        foreach ($allResultPeriod[$i] as $index => $nextPeriod) {
-                            if ($indexMain == $index) {
-                                $volumeDay = $this->generateComparisonDay($allMainPeriod, $nextPeriod);
-                            }
-                        }
-                        $comparisonPeriod[] = $volumeDay;
-                    }
-                    $totalSalesResult->addComparison($comparisonPeriod);
-                    unset($comparisonPeriod);
-                }
-            }
-
-            $resultData[] = $totalSalesResult;
-        }
-
-        return $resultData;
+        return $dynamicSalesReportData;
     }
-
-    /**
-     * @param DynamicSalesDay $allMainPeriod
-     * @param DynamicSalesDay $nextPeriod
-     * @return DynamicSalesDay
-     */
-    private function generateComparisonDay($allMainPeriod, $nextPeriod)
-    {
-        $volumeDay = new DynamicSalesDay();
-        $volumeDay->setTotalSales($allMainPeriod->getTotalSales() - $nextPeriod->getTotalSales());
-        $volumeDay->setPercentDayVolume($this->percentCalc($nextPeriod, $allMainPeriod, 'getTotalSales',
-            $volumeDay->getTotalSales()));
-        $volumeDay->setAverageVolume($allMainPeriod->getvolumeGrowth() - $nextPeriod->getvolumeGrowth());
-        $volumeDay->setPercentDayGrowth($this->percentCalc($nextPeriod, $allMainPeriod, 'getvolumeGrowth',
-            $volumeDay->getAverageVolume()));
-        //comparison count package
-        $volumeDay->setAmountPackages($allMainPeriod->getAmountPackages() - $nextPeriod->getAmountPackages());
-        $volumeDay->setPercentAmountPackages($this->percentCalc($nextPeriod, $allMainPeriod, 'getAmountPackages',
-            $volumeDay->getAmountPackages()));
-        $volumeDay->setTotalAmountPackages($allMainPeriod->getTotalAmountPackages() - $nextPeriod->getTotalAmountPackages());
-        $volumeDay->setPercentTotalAmountPackages($this->percentCalc($nextPeriod, $allMainPeriod,
-            'getTotalAmountPackages', $volumeDay->getTotalAmountPackages()));
-        //comparison count People
-        $volumeDay->setTotalCountPeople($allMainPeriod->getTotalCountPeople() - $nextPeriod->getTotalCountPeople());
-        $volumeDay->setPercentCountPeople($this->percentCalc($nextPeriod, $allMainPeriod, 'getTotalCountPeople',
-            $volumeDay->getTotalCountPeople()));
-        //comparison count Numbers
-        $volumeDay->setTotalCountNumbers($allMainPeriod->getTotalCountNumbers() - $nextPeriod->getTotalCountNumbers());
-        $volumeDay->setPercentCountNumbers($this->percentCalc($nextPeriod, $allMainPeriod, 'getTotalCountNumbers',
-            $volumeDay->getTotalCountNumbers()));
-        //comparison package is Paid
-        $volumeDay->setPackageIsPaid($allMainPeriod->getPackageIsPaid() - $nextPeriod->getPackageIsPaid());
-        $volumeDay->setPercentPackageIsPaid($this->percentCalc($nextPeriod, $allMainPeriod, 'getPackageIsPaid',
-            $volumeDay->getPackageIsPaid()));
-        //comparison package is paid growth
-        $volumeDay->setPackageIsPaidGrowth($allMainPeriod->getPackageIsPaidGrowth() - $nextPeriod->getPackageIsPaidGrowth());
-        $volumeDay->setPercentPackageIsPaidGrowth($this->percentCalc($nextPeriod, $allMainPeriod,
-            'getPackageIsPaidGrowth', $volumeDay->getPackageIsPaidGrowth()));
-        //comparison delete packages
-        $volumeDay->setDeletePackages($allMainPeriod->getDeletePackages() - $nextPeriod->getDeletePackages());
-        $volumeDay->setPercentDeletePackages($this->percentCalc($nextPeriod, $allMainPeriod, 'getDeletePackages',
-            $volumeDay->getDeletePackages()));
-        //comparison delete packages price
-        $volumeDay->setDeletePricePackage($allMainPeriod->getDeletePricePackage() - $nextPeriod->getDeletePricePackage());
-        $volumeDay->setPercentDeletePackages($this->percentCalc($nextPeriod, $allMainPeriod, 'getDeletePricePackage',
-            $volumeDay->getDeletePricePackage()));
-        //comparison delete packages is paid
-        $volumeDay->setDeletePackageIsPaid($allMainPeriod->getDeletePackageIsPaid() - $nextPeriod->getDeletePackageIsPaid());
-        $volumeDay->setPercentDeletePackageIsPaid($this->percentCalc($nextPeriod, $allMainPeriod,
-            'getDeletePackageIsPaid', $volumeDay->getDeletePackageIsPaid()));
-        //comparison  packages is paid subtraction deleted packages
-        $volumeDay->setComparisonIsPaidAndDelete($allMainPeriod->getComparisonIsPaidAndDelete() - $nextPeriod->getComparisonIsPaidAndDelete());
-        $volumeDay->setPercentComparisonIsPaidAndDelete($this->percentCalc($nextPeriod, $allMainPeriod,
-            'getComparisonIsPaidAndDelete', $volumeDay->getComparisonIsPaidAndDelete()));
-        //comparison count people
-        $volumeDay->setCountPeople($allMainPeriod->getCountPeople() - $nextPeriod->getCountPeople());
-        $volumeDay->setPercentCountPeopleDay($this->percentCalc($nextPeriod, $allMainPeriod, 'getCountPeople',
-            $volumeDay->getCountPeople()));
-        //comparison count numbers
-        $volumeDay->setCountNumbers($allMainPeriod->getCountNumbers() - $nextPeriod->getCountNumbers());
-        $volumeDay->setPercentCountNumbersDay($this->percentCalc($nextPeriod, $allMainPeriod, 'getCountNumbers',
-            $volumeDay->getCountNumbers()));
-        //comparison sum payed for period
-        $volumeDay->setSumPayedForPeriod($allMainPeriod->getSumPayedForPeriod() - $nextPeriod->getSumPayedForPeriod());
-        $volumeDay->setSumPayedForPeriodRelative($this->percentCalc($nextPeriod, $allMainPeriod, 'getSumPayedForPeriod',
-            $volumeDay->getSumPayedForPeriod()));
-        //comparison sum payed for period for removed packages
-        $volumeDay->setSumPayedForPeriodForRemoved($allMainPeriod->getSumPayedForPeriodForRemoved() - $nextPeriod->getSumPayedForPeriodForRemoved());
-        $volumeDay->setSumPayedForPeriodForRemovedRelative($this->percentCalc($nextPeriod, $allMainPeriod,
-            'getSumPayedForPeriodForRemoved', $volumeDay->getSumPayedForPeriodForRemoved()));
-
-        return $volumeDay;
-    }
+//
+//    /**
+//     * @param DynamicSalesDay $allMainPeriod
+//     * @param DynamicSalesDay $nextPeriod
+//     * @return DynamicSalesDay
+//     */
+//    private function generateComparisonDay($allMainPeriod, $nextPeriod)
+//    {
+//        $volumeDay = new DynamicSalesDay();
+//        $volumeDay->setTotalSales($allMainPeriod->getTotalSales() - $nextPeriod->getTotalSales());
+//        $volumeDay->setPercentDayVolume($this->percentCalc($nextPeriod, $allMainPeriod, 'getTotalSales',
+//            $volumeDay->getTotalSales()));
+//        $volumeDay->setAverageVolume($allMainPeriod->getvolumeGrowth() - $nextPeriod->getvolumeGrowth());
+//        $volumeDay->setPercentDayGrowth($this->percentCalc($nextPeriod, $allMainPeriod, 'getvolumeGrowth',
+//            $volumeDay->getAverageVolume()));
+//        //comparison count package
+//        $volumeDay->setAmountPackages($allMainPeriod->getAmountPackages() - $nextPeriod->getAmountPackages());
+//        $volumeDay->setPercentAmountPackages($this->percentCalc($nextPeriod, $allMainPeriod, 'getAmountPackages',
+//            $volumeDay->getAmountPackages()));
+//        $volumeDay->setTotalAmountPackages($allMainPeriod->getTotalAmountPackages() - $nextPeriod->getTotalAmountPackages());
+//        $volumeDay->setPercentTotalAmountPackages($this->percentCalc($nextPeriod, $allMainPeriod,
+//            'getTotalAmountPackages', $volumeDay->getTotalAmountPackages()));
+//        //comparison count People
+//        $volumeDay->setTotalCountPeople($allMainPeriod->getTotalCountPeople() - $nextPeriod->getTotalCountPeople());
+//        $volumeDay->setPercentCountPeople($this->percentCalc($nextPeriod, $allMainPeriod, 'getTotalCountPeople',
+//            $volumeDay->getTotalCountPeople()));
+//        //comparison count Numbers
+//        $volumeDay->setTotalCountNumbers($allMainPeriod->getTotalCountNumbers() - $nextPeriod->getTotalCountNumbers());
+//        $volumeDay->setPercentCountNumbers($this->percentCalc($nextPeriod, $allMainPeriod, 'getTotalCountNumbers',
+//            $volumeDay->getTotalCountNumbers()));
+//        //comparison package is Paid
+//        $volumeDay->setPackageIsPaid($allMainPeriod->getPackageIsPaid() - $nextPeriod->getPackageIsPaid());
+//        $volumeDay->setPercentPackageIsPaid($this->percentCalc($nextPeriod, $allMainPeriod, 'getPackageIsPaid',
+//            $volumeDay->getPackageIsPaid()));
+//        //comparison package is paid growth
+//        $volumeDay->setPackageIsPaidGrowth($allMainPeriod->getPackageIsPaidGrowth() - $nextPeriod->getPackageIsPaidGrowth());
+//        $volumeDay->setPercentPackageIsPaidGrowth($this->percentCalc($nextPeriod, $allMainPeriod,
+//            'getPackageIsPaidGrowth', $volumeDay->getPackageIsPaidGrowth()));
+//        //comparison delete packages
+//        $volumeDay->setDeletePackages($allMainPeriod->getDeletePackages() - $nextPeriod->getDeletePackages());
+//        $volumeDay->setPercentDeletePackages($this->percentCalc($nextPeriod, $allMainPeriod, 'getDeletePackages',
+//            $volumeDay->getDeletePackages()));
+//        //comparison delete packages price
+//        $volumeDay->setDeletePricePackage($allMainPeriod->getDeletePricePackage() - $nextPeriod->getDeletePricePackage());
+//        $volumeDay->setPercentDeletePackages($this->percentCalc($nextPeriod, $allMainPeriod, 'getDeletePricePackage',
+//            $volumeDay->getDeletePricePackage()));
+//        //comparison delete packages is paid
+//        $volumeDay->setDeletePackageIsPaid($allMainPeriod->getDeletePackageIsPaid() - $nextPeriod->getDeletePackageIsPaid());
+//        $volumeDay->setPercentDeletePackageIsPaid($this->percentCalc($nextPeriod, $allMainPeriod,
+//            'getDeletePackageIsPaid', $volumeDay->getDeletePackageIsPaid()));
+//        //comparison  packages is paid subtraction deleted packages
+//        $volumeDay->setComparisonIsPaidAndDelete($allMainPeriod->getComparisonIsPaidAndDelete() - $nextPeriod->getComparisonIsPaidAndDelete());
+//        $volumeDay->setPercentComparisonIsPaidAndDelete($this->percentCalc($nextPeriod, $allMainPeriod,
+//            'getComparisonIsPaidAndDelete', $volumeDay->getComparisonIsPaidAndDelete()));
+//        //comparison count people
+//        $volumeDay->setCountPeople($allMainPeriod->getCountPeople() - $nextPeriod->getCountPeople());
+//        $volumeDay->setPercentCountPeopleDay($this->percentCalc($nextPeriod, $allMainPeriod, 'getCountPeople',
+//            $volumeDay->getCountPeople()));
+//        //comparison count numbers
+//        $volumeDay->setCountNumbers($allMainPeriod->getCountNumbers() - $nextPeriod->getCountNumbers());
+//        $volumeDay->setPercentCountNumbersDay($this->percentCalc($nextPeriod, $allMainPeriod, 'getCountNumbers',
+//            $volumeDay->getCountNumbers()));
+//        //comparison sum payed for period
+//        $volumeDay->setSumPayedForPeriod($allMainPeriod->getSumPayedForPeriod() - $nextPeriod->getSumPayedForPeriod());
+//        $volumeDay->setSumPayedForPeriodRelative($this->percentCalc($nextPeriod, $allMainPeriod, 'getSumPayedForPeriod',
+//            $volumeDay->getSumPayedForPeriod()));
+//        //comparison sum payed for period for removed packages
+//        $volumeDay->setSumPayedForPeriodForRemoved($allMainPeriod->getSumPayedForPeriodForRemoved() - $nextPeriod->getSumPayedForPeriodForRemoved());
+//        $volumeDay->setSumPayedForPeriodForRemovedRelative($this->percentCalc($nextPeriod, $allMainPeriod,
+//            'getSumPayedForPeriodForRemoved', $volumeDay->getSumPayedForPeriodForRemoved()));
+//
+//        return $volumeDay;
+//    }
 
     /**
      * @param $daySales

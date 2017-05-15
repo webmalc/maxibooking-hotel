@@ -2,896 +2,311 @@
 
 namespace MBH\Bundle\PackageBundle\Lib;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\PackageBundle\Document\Package;
+
 class DynamicSalesDay
 {
-    /**
-     * @var \DateTime
-     */
-    protected $dateSales;
-    /**
-     * @var float
-     */
-    protected $totalSales = 0;
+    /** @var  DocumentManager */
+    protected $dm;
 
-    /**
-     * @var float
-     */
-    protected $volumeGrowth = 0;
+    /** @var  \DateTime */
+    protected $date;
 
-    /**
-     * @var float
-     */
-    protected $averageVolume = 0;
+    /** @var  Package[] */
+    protected $createdPackages;
 
-    /**
-     * @var int
-     */
-    protected $percentDayVolume = 0;
+    /** @var  Package[] */
+    protected $cancelledPackages;
 
-    /**
-     * @var int
-     */
-    protected $percentDayGrowth = 0;
+    /** @var  CashDocument[] */
+    protected $cashDocuments;
 
-    /**
-     * @var int
-     */
-    protected $amountPackages = 0;
-    /**
-     * @var int
-     */
-    protected $percentAmountPackages = 0;
-    /**
-     * @var int
-     */
-    protected $totalAmountPackages = 0;
-    /**
-     * @var int
-     */
-    protected $percentTotalAmountPackages = 0;
+    /** @var  DynamicSalesDay */
+    protected $previousDay;
 
-    /**
-     * @var int
-     */
-    protected $percentCountPeople = 0;
+    protected $totalSalesPrice = 0;
 
-    /**
-     * @var int
-     */
-    protected $percentCountNumbers = 0;
+    protected $numberOfCreatedPackagesForPeriod = 0;
 
-    /**
-     * @var int
-     */
-    protected $totalCountPeople = 0;
+    protected $numberOfManDays = 0;
 
-    /**
-     * @var int
-     */
-    protected $totalCountNumbers = 0;
+    protected $numberOfPackageDays = 0;
 
-    /**
-     * @var int
-     */
-    protected $packageIsPaid = 0;
+    protected $numberOfPaidPackages = 0;
 
-    /**
-     * @var int
-     */
-    protected $packageIsPaidGrowth = 0;
+    protected $numberOfCancelled = 0;
 
-    /**
-     * @var int
-     */
-    protected $percentPackageIsPaid = 0;
-    /**
-     * @var int
-     */
-    protected $percentPackageIsPaidGrowth = 0;
+    protected $priceOfCancelled = 0;
 
-    /**
-     * @var int
-     */
-    protected $deletePackages = 0;
+    protected $priceOfCancelledForPeriod = 0;
 
-    /**
-     * @var int
-     */
-    protected $percentDeletePackages = 0;
+    protected $priceOfPaidCancelled = 0;
 
-    /**
-     * @var float
-     */
-    protected $deletePricePackage = 0;
-    /**
-     * @var int
-     */
-    protected $percentDeletePricePackage = 0;
-    /**
-     * @var float
-     */
-    protected $deletePricePackageGrowth = 0;
+    protected $sumOfPayment = 0;
 
-    /**
-     * @var int
-     */
-    protected $percentDeletePricePackageGrowth = 0;
+    protected $toArrayData;
 
-    /**
-     * @var float
-     */
-    protected $deletePackageIsPaid = 0;
+    private $isToArrayDataInit = false;
+    private $isTotalSalesPriceInit = false;
+    private $isNumberOfManDaysInit = false;
+    private $isNumberOfPackageDaysInit = false;
+    private $isPriceOfCancelledInit = false;
+    private $isPriceOfPaidCancelledInit = false;
+    private $isSumOfPaymentInit = false;
 
-    /**
-     * @var int
-     */
-    protected $percentDeletePackageIsPaid = 0;
-
-    /**
-     * @return int
-     */
-    protected $comparisonIsPaidAndDelete = 0;
-
-    /**
-     * @return int
-     */
-    protected $percentComparisonIsPaidAndDelete = 0;
-    /**
-     * @var int
-     */
-    protected $countPeople = 0;
-    /**
-     * @var int
-     */
-    protected $percentCountPeopleDay = 0;
-    /**
-     * @var int
-     */
-    protected $countNumbers = 0;
-    /**
-     * @var int
-     */
-    protected $percentCountNumbersDay = 0;
-
-    /**
-     * @var float
-     */
-    protected $sumPayedForPeriod = 0;
-
-    /**
-     * @var int
-     */
-    protected $sumPayedForPeriodRelative = 0;
-
-    /**
-     * @var float
-     */
-    protected $sumPayedForPeriodForRemoved = 0;
-
-    /**
-     * @var int
-     */
-    protected $sumPayedForPeriodForRemovedRelative = 0;
-
-    private $isToArrayInit = false;
-    private $toArray;
-
-    /**
-     * @return int
-     */
-    public function getSumPayedForPeriodRelative()
+    public function __construct(DocumentManager $dm)
     {
-        return $this->sumPayedForPeriodRelative;
+        $this->dm = $dm;
     }
 
     /**
-     * @param int $sumPayedForPeriodRelative
+     * @param Package[] $createdPackages
+     * @param Package[] $cancelledPackages
+     * @param CashDocument[] $cashDocuments
+     * @param DynamicSalesDay $previousDay
      * @return DynamicSalesDay
      */
-    public function setSumPayedForPeriodRelative($sumPayedForPeriodRelative): DynamicSalesDay
-    {
-        $this->sumPayedForPeriodRelative = $sumPayedForPeriodRelative;
+    public function setInitData(
+        array $createdPackages,
+        array $cancelledPackages,
+        array $cashDocuments,
+        ?DynamicSalesDay $previousDay = null
+    ) {
+        $this->createdPackages = $createdPackages;
+        $this->cancelledPackages = $cancelledPackages;
+        $this->cashDocuments = $cashDocuments;
+        $this->previousDay = $previousDay;
 
         return $this;
     }
 
     /**
-     * @return int
-     */
-    public function getSumPayedForPeriodForRemovedRelative()
-    {
-        return $this->sumPayedForPeriodForRemovedRelative;
-    }
-
-    /**
-     * @param int $sumPayedForPeriodForRemovedRelative
+     * @param \DateTime $date
      * @return DynamicSalesDay
      */
-    public function setSumPayedForPeriodForRemovedRelative($sumPayedForPeriodForRemovedRelative): DynamicSalesDay
+    public function setDate(\DateTime $date)
     {
-        $this->sumPayedForPeriodForRemovedRelative = $sumPayedForPeriodForRemovedRelative;
+        $this->date = $date;
 
         return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getSumPayedForPeriod()
-    {
-        return $this->sumPayedForPeriod;
-    }
-
-    /**
-     * @param float $sumPayedForPeriod
-     * @return DynamicSalesDay
-     */
-    public function setSumPayedForPeriod($sumPayedForPeriod): DynamicSalesDay
-    {
-        $this->sumPayedForPeriod = $sumPayedForPeriod;
-
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getSumPayedForPeriodForRemoved()
-    {
-        return $this->sumPayedForPeriodForRemoved;
-    }
-
-    /**
-     * @param float $sumPayedForPeriodForRemoved
-     * @return DynamicSalesDay
-     */
-    public function setSumPayedForPeriodForRemoved($sumPayedForPeriodForRemoved): DynamicSalesDay
-    {
-        $this->sumPayedForPeriodForRemoved = $sumPayedForPeriodForRemoved;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentCountNumbersDay(): int
-    {
-        return $this->percentCountNumbersDay;
-    }
-
-    /**
-     * @param int $percentCountNumbersDay
-     */
-    public function setPercentCountNumbersDay(int $percentCountNumbersDay)
-    {
-        $this->percentCountNumbersDay = $percentCountNumbersDay;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCountNumbers(): int
-    {
-        return $this->countNumbers;
-    }
-
-    /**
-     * @param int $countNumbers
-     */
-    public function setCountNumbers(int $countNumbers)
-    {
-        $this->countNumbers = $countNumbers;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentCountPeopleDay(): int
-    {
-        return $this->percentCountPeopleDay;
-    }
-
-    /**
-     * @param int $percentCountPeopleDay
-     */
-    public function setPercentCountPeopleDay(int $percentCountPeopleDay)
-    {
-        $this->percentCountPeopleDay = $percentCountPeopleDay;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCountPeople(): int
-    {
-        return $this->countPeople;
-    }
-
-    /**
-     * @param int $countPeople
-     */
-    public function setCountPeople(int $countPeople)
-    {
-        $this->countPeople = $countPeople;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentComparisonIsPaidAndDelete(): int
-    {
-        return $this->percentComparisonIsPaidAndDelete;
-    }
-
-    /**
-     * @param int $percentComparisonIsPaidAndDelete
-     */
-    public function setPercentComparisonIsPaidAndDelete(int $percentComparisonIsPaidAndDelete)
-    {
-        $this->percentComparisonIsPaidAndDelete = $percentComparisonIsPaidAndDelete;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getComparisonIsPaidAndDelete()
-    {
-        return $this->comparisonIsPaidAndDelete;
-    }
-
-    /**
-     * @param mixed $comparisonIsPaidAndDelete
-     */
-    public function setComparisonIsPaidAndDelete($comparisonIsPaidAndDelete)
-    {
-        $this->comparisonIsPaidAndDelete = $comparisonIsPaidAndDelete;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPercentDeletePackageIsPaid()
-    {
-        return $this->percentDeletePackageIsPaid;
-    }
-
-    /**
-     * @param mixed $percentDeletePackageIsPaid
-     */
-    public function setPercentDeletePackageIsPaid($percentDeletePackageIsPaid)
-    {
-        $this->percentDeletePackageIsPaid = $percentDeletePackageIsPaid;
-    }
-
-    /**
-     * @return float
-     */
-    public function getDeletePackageIsPaid(): float
-    {
-        return $this->deletePackageIsPaid;
-    }
-
-    /**
-     * @param float $deletePackageIsPaid
-     */
-    public function setDeletePackageIsPaid(float $deletePackageIsPaid)
-    {
-        $this->deletePackageIsPaid = $deletePackageIsPaid;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPercentDeletePricePackageGrowth(): float
-    {
-        return $this->percentDeletePricePackageGrowth;
-    }
-
-    /**
-     * @param float $percentDeletePricePackageGrowth
-     */
-    public function setPercentDeletePricePackageGrowth(float $percentDeletePricePackageGrowth)
-    {
-        $this->percentDeletePricePackageGrowth = $percentDeletePricePackageGrowth;
-    }
-
-    /**
-     * @return float
-     */
-    public function getDeletePricePackageGrowth(): float
-    {
-        return $this->deletePricePackageGrowth;
-    }
-
-    /**
-     * @param float $deletePricePackageGrowth
-     */
-    public function setDeletePricePackageGrowth(float $deletePricePackageGrowth)
-    {
-        $this->deletePricePackageGrowth = $deletePricePackageGrowth;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPercentDeletePricePackage(): float
-    {
-        return $this->percentDeletePricePackage;
-    }
-
-    /**
-     * @param float $percentDeletePricePackage
-     */
-    public function setPercentDeletePricePackage(float $percentDeletePricePackage)
-    {
-        $this->percentDeletePricePackage = $percentDeletePricePackage;
-    }
-
-    /**
-     * @return float
-     */
-    public function getDeletePricePackage(): float
-    {
-        return $this->deletePricePackage;
-    }
-
-    /**
-     * @param float $deletePricePackage
-     */
-    public function setDeletePricePackage(float $deletePricePackage)
-    {
-        $this->deletePricePackage = $deletePricePackage;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentDeletePackages(): int
-    {
-        return $this->percentDeletePackages;
-    }
-
-    /**
-     * @param int $percentDeletePackages
-     */
-    public function setPercentDeletePackages(int $percentDeletePackages)
-    {
-        $this->percentDeletePackages = $percentDeletePackages;
-    }
-
-    /**
-     * @return int
-     */
-    public function getDeletePackages(): int
-    {
-        return $this->deletePackages;
-    }
-
-    /**
-     * @param int $deletePackages
-     */
-    public function setDeletePackages(int $deletePackages)
-    {
-        $this->deletePackages = $deletePackages;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentPackageIsPaidGrowth(): int
-    {
-        return $this->percentPackageIsPaidGrowth;
-    }
-
-    /**
-     * @param int $percentPackageIsPaidGrowth
-     */
-    public function setPercentPackageIsPaidGrowth(int $percentPackageIsPaidGrowth)
-    {
-        $this->percentPackageIsPaidGrowth = $percentPackageIsPaidGrowth;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPackageIsPaidGrowth(): int
-    {
-        return $this->packageIsPaidGrowth;
-    }
-
-    /**
-     * @param int $packageIsPaidGrowth
-     */
-    public function setPackageIsPaidGrowth(int $packageIsPaidGrowth)
-    {
-        $this->packageIsPaidGrowth = $packageIsPaidGrowth;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentPackageIsPaid(): int
-    {
-        return $this->percentPackageIsPaid;
-    }
-
-    /**
-     * @param int $percentPackageIsPaid
-     */
-    public function setPercentPackageIsPaid(int $percentPackageIsPaid)
-    {
-        $this->percentPackageIsPaid = $percentPackageIsPaid;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPackageIsPaid():? int
-    {
-        return $this->packageIsPaid;
-    }
-
-    /**
-     * @param int $packageIsPaid
-     */
-    public function setPackageIsPaid(int $packageIsPaid)
-    {
-        $this->packageIsPaid = $packageIsPaid;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentDayGrowth(): int
-    {
-        return $this->percentDayGrowth;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalCountPeople(): int
-    {
-        return $this->totalCountPeople;
-    }
-
-    /**
-     * @param int $totalCountPeople
-     */
-    public function setTotalCountPeople(int $totalCountPeople)
-    {
-        $this->totalCountPeople = $totalCountPeople;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentCountPeople(): int
-    {
-        return $this->percentCountPeople;
-    }
-
-    /**
-     * @param int $percentCountPeople
-     */
-    public function setPercentCountPeople(int $percentCountPeople)
-    {
-        $this->percentCountPeople = $percentCountPeople;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentCountNumbers(): int
-    {
-        return $this->percentCountNumbers;
-    }
-
-    /**
-     * @param int $percentCountNumbers
-     */
-    public function setPercentCountNumbers(int $percentCountNumbers)
-    {
-        $this->percentCountNumbers = $percentCountNumbers;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentTotalAmountPackages(): int
-    {
-        return $this->percentTotalAmountPackages;
-    }
-
-    /**
-     * @param int $percentTotalAmountPackages
-     */
-    public function setPercentTotalAmountPackages(int $percentTotalAmountPackages)
-    {
-        $this->percentTotalAmountPackages = $percentTotalAmountPackages;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentAmountPackages(): int
-    {
-        return $this->percentAmountPackages;
-    }
-
-    /**
-     * @param int $percentAmountPackages
-     */
-    public function setPercentAmountPackages(int $percentAmountPackages)
-    {
-        $this->percentAmountPackages = $percentAmountPackages;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalCountNumbers(): int
-    {
-        return $this->totalCountNumbers;
-    }
-
-    /**
-     * @param int $totalCountNumbers
-     */
-    public function setTotalCountNumbers(int $totalCountNumbers)
-    {
-        $this->totalCountNumbers = $totalCountNumbers;
-    }
-
-    /**
-     * @return int
-     */
-    public function getAmountPackages(): int
-    {
-        return $this->amountPackages;
-    }
-
-    /**
-     * @param int $amountPackages
-     */
-    public function setAmountPackages(int $amountPackages)
-    {
-        $this->amountPackages = $amountPackages;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalAmountPackages(): int
-    {
-        return $this->totalAmountPackages;
-    }
-
-    /**
-     * @param int $totalAmountPackages
-     */
-    public function setTotalAmountPackages(int $totalAmountPackages)
-    {
-        $this->totalAmountPackages = $totalAmountPackages;
-    }
-
-    /**
-     * @param int $percentDayGrowth
-     */
-    public function setPercentDayGrowth(int $percentDayGrowth)
-    {
-        $this->percentDayGrowth = $percentDayGrowth;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPercentDayVolume(): int
-    {
-        return $this->percentDayVolume;
-    }
-
-    /**
-     * @param int $percentDayVolume
-     * @return DynamicSalesDay
-     */
-    public function setPercentDayVolume(int $percentDayVolume): DynamicSalesDay
-    {
-        $this->percentDayVolume = $percentDayVolume;
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getAverageVolume(): float
-    {
-        return $this->averageVolume;
-    }
-
-    /**
-     * @param float $averageVolume
-     */
-    public function setAverageVolume(float $averageVolume)
-    {
-        $this->averageVolume = $averageVolume;
     }
 
     /**
      * @return \DateTime
      */
-    public function getDateSales():? \DateTime
+    public function getDate()
     {
-        return $this->dateSales;
-    }
-
-    /**
-     * @param \DateTime $dateSales
-     */
-    public function setDateSales(\DateTime $dateSales)
-    {
-        $this->dateSales = $dateSales;
+        return $this->date;
     }
 
     /**
      * @return float
      */
-    public function getTotalSales(): float
+    public function getTotalSalesPrice()
     {
-        return $this->totalSales;
-    }
+        if (!$this->isTotalSalesPriceInit) {
+            foreach ($this->createdPackages as $package) {
+                $this->totalSalesPrice += $package->getPrice();
+            }
+            $this->isTotalSalesPriceInit = true;
+        }
 
-    /**
-     * @param float $totalSales
-     */
-    public function setTotalSales(float $totalSales)
-    {
-        $this->totalSales = $totalSales;
+        return $this->totalSalesPrice;
     }
 
     /**
      * @return float
      */
-    public function getVolumeGrowth(): float
+    public function getTotalSalesPriceForPeriod()
     {
-        return $this->volumeGrowth;
+        $previousDayValue = $this->previousDay ? $this->previousDay->getTotalSalesPriceForPeriod() : 0;
+
+        return $this->getTotalSalesPrice() + $previousDayValue;
     }
 
     /**
-     * @param float $volumeGrowth
+     * @return int
      */
-    public function setVolumeGrowth(float $volumeGrowth)
+    public function getNumberOfCreatedPackages()
     {
-        $this->volumeGrowth = $volumeGrowth;
+        return count($this->createdPackages);
     }
 
-    public function getSpecifiedValue($name, $isSummary = false)
+    /**
+     * @return int
+     */
+    public function getNumberOfCreatedPackagesForPeriod()
     {
-        $specifiedData = $this->__toArray()[$name];
-        $value = $isSummary ? $specifiedData['total'] : $specifiedData['dayValue'];
+        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getNumberOfCreatedPackagesForPeriod() : 0;
 
-        return $value;
+        return $this->getNumberOfCreatedPackages() + $previousDayValue;
+    }
+//TODO: Может быть замменить все ленивые загрузки на обычные, т.к. все получаем из массива сгенерированных данных
+    /**
+     * @return int
+     */
+    public function getNumberOfManDays()
+    {
+        if (!$this->isNumberOfManDaysInit) {
+            foreach ($this->createdPackages as $package) {
+                $this->numberOfManDays += ($package->getAdults() + $package->getChildren()) * $package->getNights();
+            }
+            $this->isNumberOfManDaysInit = true;
+        }
+
+        return $this->numberOfManDays;
     }
 
-    public function getComparisonData($name, $inPercent = false)
+    /**
+     * @return int
+     */
+    public function getNumberOfManDaysForPeriod()
     {
-        $specifiedData = $this->__toArray()[$name];
-        $value = $inPercent ? $specifiedData['percentage'] : $specifiedData['comparisonDayValue'];
+        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getNumberOfManDaysForPeriod() : 0;
 
-        return $value;
+        return $this->getNumberOfManDays() + $previousDayValue;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfPackageDays()
+    {
+        if (!$this->isNumberOfPackageDaysInit) {
+            //TODO: Что тут учитывать? Просто количество броней или количеество размещений?
+            $this->isNumberOfPackageDaysInit = true;
+        }
+
+        return $this->numberOfPackageDays;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfPackageDaysForPeriod()
+    {
+        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getNumberOfPackageDays() : 0;
+
+        return $this->getNumberOfPackageDays() + $previousDayValue;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfCancelled()
+    {
+        return count($this->cancelledPackages);
+    }
+
+    /**
+     * @return float
+     */
+    public function getPriceOfCancelled()
+    {
+        if (!$this->isPriceOfCancelledInit) {
+            foreach ($this->cancelledPackages as $package) {
+                $this->priceOfCancelled += $package->getPrice();
+            }
+            $this->isPriceOfCancelledInit = true;
+        }
+
+        return $this->priceOfCancelled;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPriceOfCancelledForPeriod()
+    {
+        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getPriceOfCancelledForPeriod() : 0;
+
+        return $this->getPriceOfCancelled() + $previousDayValue;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPriceOfPaidCancelled()
+    {
+        if (!$this->isPriceOfPaidCancelledInit) {
+            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+            }
+
+            foreach ($this->cancelledPackages as $cancelledPackage) {
+                //in case if order entirely removed from db
+                try {
+                    if ($cancelledPackage->getIsPaid()) {
+                        $this->priceOfPaidCancelled += $cancelledPackage->getPrice();
+                    }
+                } catch (DocumentNotFoundException $exception) {
+                }
+            }
+
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+            $this->isPriceOfPaidCancelledInit = true;
+        }
+
+        return $this->priceOfPaidCancelled;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSumOfPayment()
+    {
+        if (!$this->isSumOfPaymentInit) {
+            foreach ($this->cashDocuments as $cashDocument) {
+                if ($cashDocument->getOperation() == 'in') {
+                    $this->sumOfPayment += $cashDocument->getTotal();
+                }
+            }
+            $this->isSumOfPaymentInit = true;
+        }
+
+        return $this->sumOfPayment;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSumOfPaymentForPeriod()
+    {
+        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getSumOfPayment() : 0;
+
+        return $this->getSumOfPayment() + $previousDayValue;
+    }
+
+    public function getSpecifiedValue($option)
+    {
+        return $this->__toArray()[$option];
     }
 
     public function __toArray()
     {
-        if (!$this->isToArrayInit) {
-            $this->toArray = [
-                'sales-volume' => [
-                    'dayValue' => number_format($this->getTotalSales(), 2),
-                    'total' => number_format($this->getTotalSales(), 2),
-                    'comparisonDayValue' => number_format($this->getTotalSales(), 2),
-                    'percentage' => $this->getPercentDayVolume()
-                ],
-                'period-volume' => [
-                    'dayValue' => number_format($this->getVolumeGrowth(), 2),
-                    'total' => number_format($this->getTotalSales(), 2),
-                    'comparisonDayValue' => number_format($this->getAverageVolume(), 2),
-                    'percentage' => $this->getPercentDayGrowth()
-                ],
-                'packages-sales' => [
-                    'dayValue' => $this->getAmountPackages(),
-                    'total' => $this->getAmountPackages(),
-                    'comparisonDayValue' => $this->getAmountPackages(),
-                    'percentage' => $this->getPercentAmountPackages()
-                ],
-                'packages-growth' => [
-                    'dayValue' => $this->getTotalAmountPackages(),
-                    'total' => $this->getTotalAmountPackages(),
-                    'comparisonDayValue' => $this->getTotalAmountPackages(),
-                    'percentage' => $this->getPercentTotalAmountPackages()
-                ],
-                'count-people' => [
-                    'dayValue' => $this->getTotalCountPeople(),
-                    'total' => $this->getTotalCountPeople(),
-                    'comparisonDayValue' => $this->getTotalCountPeople(),
-                    'percentage' => $this->getPercentCountPeople()
-                ],
-                'count-room' => [
-                    'dayValue' => $this->getTotalCountNumbers(),
-                    'total' => $this->getTotalCountNumbers(),
-                    'comparisonDayValue' => $this->getTotalCountNumbers(),
-                    'percentage' => $this->getPercentCountNumbers()
-                ],
-                'package-isPaid' => [
-                    'dayValue' => $this->getPackageIsPaid(),
-                    'total' => $this->getPackageIsPaid(),
-                    'comparisonDayValue' => $this->getPackageIsPaid(),
-                    'percentage' => $this->getPercentPackageIsPaid()
-                ],
-                'package-isPaid-growth' => [
-                    'dayValue' => $this->getPackageIsPaidGrowth(),
-                    'total' => $this->getPackageIsPaidGrowth(),
-                    'comparisonDayValue' => $this->getPackageIsPaidGrowth(),
-                    'percentage' => $this->getPercentPackageIsPaidGrowth()
-                ],
-                'package-delete' => [
-                    'dayValue' => $this->getDeletePackages(),
-                    'total' => $this->getDeletePackages(),
-                    'comparisonDayValue' => $this->getDeletePackages(),
-                    'percentage' => $this->getPercentDeletePackages()
-                ],
-                'package-delete-price' => [
-                    'dayValue' => number_format($this->getDeletePricePackage(), 2),
-                    'total' => number_format($this->getDeletePricePackage(), 2),
-                    'comparisonDayValue' => number_format($this->getDeletePricePackage(), 2),
-                    'percentage' => $this->getPercentDeletePackages()
-                ],
-                'package-delete-price-growth' => [
-                    'dayValue' => number_format($this->getDeletePricePackageGrowth(), 2),
-                    'total' => number_format($this->getDeletePricePackageGrowth(), 2),
-                    'comparisonDayValue' => number_format($this->getDeletePricePackageGrowth(), 2),
-                    'percentage' => $this->getPercentDeletePricePackageGrowth()
-                ],
-                'package-delete-price-isPaid' => [
-                    'dayValue' => $this->getDeletePackageIsPaid(),
-                    'total' => $this->getDeletePackageIsPaid(),
-                    'comparisonDayValue' => $this->getDeletePackageIsPaid(),
-                    'percentage' => $this->getPercentDeletePackageIsPaid()
-                ],
-                'package-isPaid-delete-package' => [
-                    'dayValue' => $this->getComparisonIsPaidAndDelete(),
-                    'total' => $this->getComparisonIsPaidAndDelete(),
-                    'comparisonDayValue' => $this->getComparisonIsPaidAndDelete(),
-                    'percentage' => $this->getPercentComparisonIsPaidAndDelete()
-                ],
-                'count-people-day' => [
-                    'dayValue' => $this->getCountPeople(),
-                    'total' => $this->getCountPeople(),
-                    'comparisonDayValue' => $this->getCountPeople(),
-                    'percentage' => $this->getPercentCountPeople()
-                ],
-                'count-room-day' => [
-                    'dayValue' => $this->getCountNumbers(),
-                    'total' => $this->getCountNumbers(),
-                    'comparisonDayValue' => $this->getCountNumbers(),
-                    'percentage' => $this->getPercentCountNumbersDay()
-                ],
-                'sum-payed-for-period' => [
-                    'dayValue' => number_format($this->getSumPayedForPeriod(), 2),
-                    'total' => number_format($this->getSumPayedForPeriod(), 2),
-                    'comparisonDayValue' => number_format($this->getSumPayedForPeriod(), 2),
-                    'percentage' => $this->getSumPayedForPeriodRelative()
-                ],
-                'sum-payed-for-period-for-removed' => [
-                    'dayValue' => number_format($this->getSumPayedForPeriodForRemoved(), 2),
-                    'total' => number_format($this->getSumPayedForPeriodForRemoved(), 2),
-                    'comparisonDayValue' => number_format($this->getSumPayedForPeriodForRemoved(), 2),
-                    'percentage' => $this->getSumPayedForPeriodForRemovedRelative()
-                ]
+        if (!$this->isToArrayDataInit) {
+            $this->toArrayData = [
+                DynamicSales::TOTAL_SALES_PRICE_OPTION => $this->getTotalSalesPrice(),
+                DynamicSales::TOTAL_SALES_PRICE_FOR_PERIOD_OPTION => $this->getTotalSalesPriceForPeriod(),
+                DynamicSales::NUMBER_OF_CREATED_PACKAGES_OPTION => $this->getNumberOfCreatedPackages(),
+                DynamicSales::NUMBER_OF_CREATED_PACKAGES_FOR_PERIOD_OPTION => $this->getNumberOfCreatedPackagesForPeriod(),
+                DynamicSales::NUMBER_OF_MAN_DAYS_OPTION => $this->getNumberOfManDays(),
+                DynamicSales::NUMBER_OF_MAN_DAYS_FOR_PERIOD_OPTION => $this->getNumberOfManDaysForPeriod(),
+                DynamicSales::NUMBER_OF_PACKAGE_DAYS_OPTION => $this->getNumberOfPackageDays(),
+                DynamicSales::NUMBER_OF_PACKAGE_DAYS_FOR_PERIOD_OPTION => $this->getNumberOfPackageDaysForPeriod(),
+                DynamicSales::NUMBER_OF_CANCELLED_OPTION => $this->getNumberOfCancelled(),
+                DynamicSales::PRICE_OF_CANCELLED_OPTION => $this->getPriceOfCancelled(),
+                DynamicSales::PRICE_OF_PAID_CANCELLED_OPTION => $this->getPriceOfPaidCancelled(),
+                DynamicSales::PRICE_OF_CANCELLED_FOR_PERIOD_OPTION => $this->getPriceOfCancelledForPeriod(),
             ];
-            $this->isToArrayInit = true;
+            $this->isToArrayDataInit = true;
         }
 
-        return $this->toArray;
+        return $this->toArrayData;
     }
 }
