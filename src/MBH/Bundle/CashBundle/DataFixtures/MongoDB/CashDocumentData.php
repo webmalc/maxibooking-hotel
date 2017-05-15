@@ -47,7 +47,7 @@ class CashDocumentData extends AbstractFixture implements OrderedFixtureInterfac
     {
         foreach (self::CASH_DOCUMENTS_DATA as $cashDocumentData) {
             /** @var Order $order */
-            $order = $this->getReference($cashDocumentData['orderNumber']);
+            $order = $this->getReference('order' . $cashDocumentData['orderNumber']);
             $cashDocument = (new CashDocument())
                 ->setOrder($order)
                 ->setMethod($cashDocumentData['method'])
@@ -72,5 +72,13 @@ class CashDocumentData extends AbstractFixture implements OrderedFixtureInterfac
     public function getOrder()
     {
         return 6;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getEnvs(): array
+    {
+        return ['test'];
     }
 }

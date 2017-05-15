@@ -186,7 +186,6 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
         $touristKeys = array_keys(TouristData::TOURIST_DATA);
         $tourist = $this->getReference($touristKeys[array_rand($touristKeys, 1)]);
         $order = (new Order())
-            ->setNote($touristReference)
             ->setPaid($data['paid'])
             ->setStatus('offline')
             ->setTotalOverwrite($data['price'])
@@ -194,7 +193,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             ->setMainTourist($tourist)
             ->setCreatedAt((new \DateTime())->modify('-' . $data['regDayAgo'] . 'days'));
 
-        $this->setReference($data['number'], $order);
+        $this->setReference('order' . $data['number'], $order);
         $manager->persist($order);
         $manager->flush();
 

@@ -191,6 +191,7 @@ class DynamicSalesGenerator
     private function getDynamicSalesReportData($filterBeginDates, $filterEndDates, $roomTypes)
     {
         $roomTypesIds = $this->helper->toIds($roomTypes);
+        $periods = [];
 
         for ($i = 0; $i < count($filterBeginDates); $i++) {
 
