@@ -74,10 +74,10 @@ class ChessBoardController extends BaseController
             'roomTypesData' => $builder->getRoomTypeData(),
             'leftRoomsData' => $builder->getLeftRoomCounts(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
-            'packages' => json_encode($builder->getAccommodationIntervals()),
-            'noAccommodationIntervals' => json_encode($builder->getNoAccommodationPackageIntervals()),
-            'leftRoomsJsonData' => json_encode($builder->getLeftRoomCounts()),
-            'noAccommodationCounts' => json_encode($builder->getDayNoAccommodationPackageCounts()),
+            'packages' => addslashes(json_encode($builder->getAccommodationIntervals())),
+            'noAccommodationIntervals' => addslashes(json_encode($builder->getNoAccommodationPackageIntervals())),
+            'leftRoomsJsonData' => addslashes(json_encode($builder->getLeftRoomCounts())),
+            'noAccommodationCounts' => addslashes(json_encode($builder->getDayNoAccommodationPackageCounts())),
             'roomTypes' => $builder->getAvailableRoomTypes(),
             'housings' => $this->hotel->getHousings(),
             'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors(),
@@ -410,7 +410,7 @@ class ChessBoardController extends BaseController
         $data['leftRoomCounts'] = $builder->getLeftRoomCounts();
         $data['noAccommodationCounts'] = $builder->getDayNoAccommodationPackageCounts();
 
-        return json_encode($data);
+        return addslashes(json_encode($data));
     }
 
     /**
