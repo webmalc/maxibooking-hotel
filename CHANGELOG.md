@@ -1,3 +1,7 @@
+1.5.1
+=============
+* chessboard bug fixes
+
 1.5.0
 =============
 * online form in iframe (redmine #487) 
