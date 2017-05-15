@@ -119,9 +119,10 @@ class SearchMultipleDates implements SearchInterface
             $row = $this->search->search($q);
             $results = array_merge($results, $row);
 
-            if ($q->begin == $query->begin && $q->end == $query->end && !empty($row[0]) && $tariff && $row[0]->getTariff() == $tariff) {
-                break;
-            }
+            //Для азовского коммент этой строки для вывода всех результатов по доп датам.
+//            if ($q->begin == $query->begin && $q->end == $query->end && !empty($row[0]) && $tariff && $row[0]->getTariff() == $tariff) {
+//                break;
+//            }
 
             if (count($results) > self::MAX_RESULTS) {
                 return $results;
