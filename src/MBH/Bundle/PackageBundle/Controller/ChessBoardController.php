@@ -462,7 +462,7 @@ class ChessBoardController extends BaseController
         $data['leftRoomCounts'] = $builder->getLeftRoomCounts();
         $data['noAccommodationCounts'] = $builder->getDayNoAccommodationPackageCounts();
 
-        return addslashes(json_encode($data));
+        return json_encode($data);
     }
 
     /**
