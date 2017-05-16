@@ -14,7 +14,7 @@ $(document).ready(function ($) {
 
                 if($(this).val().length){
                     begin[i] = $(this).data('daterangepicker').startDate.format('DD.MM.YYYY');
-                    end[i] = $(this).data('daterangepicker').endDate.add(1, 'day').format('DD.MM.YYYY');
+                    end[i] = $(this).data('daterangepicker').endDate.format('DD.MM.YYYY');
                 }
 
             });

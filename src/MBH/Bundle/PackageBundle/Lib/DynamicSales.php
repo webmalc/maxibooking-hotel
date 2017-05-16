@@ -72,6 +72,8 @@ class DynamicSales
      */
     protected $periods = [];
 
+    private $comparisonData = [];
+
     /**
      * @return array
      */
@@ -108,5 +110,60 @@ class DynamicSales
         $this->roomType = $roomType;
 
         return $this;
+    }
+
+    /**
+     * @param $periodNumber
+     * @return DynamicSalesPeriod
+     */
+    private function getPeriodByNumber($periodNumber)
+    {
+        return $this->getPeriods()[$periodNumber];
+    }
+
+    public function hasBothPeriodsDayByNumber($firstPeriodNumber, $secondPeriodNumber, $dayNumber)
+    {
+        $firsPeriodDaysQuantity = count($this->getPeriodByNumber($firstPeriodNumber)->getDynamicSalesDays());
+        $secondPeriodDaysQuantity = count($this->getPeriodByNumber($secondPeriodNumber)->getDynamicSalesDays());
+
+        return ($firsPeriodDaysQuantity > $dayNumber) && ($secondPeriodDaysQuantity > $dayNumber);
+    }
+
+    private function getDayValue($comparedPeriodNumber, $dayNumber, $option)
+    {
+        /** @var DynamicSalesDay $specifiedDay */
+        $specifiedDay = $this->getPeriodByNumber($comparedPeriodNumber)->getDynamicSalesDays()[$dayNumber];
+
+        return $specifiedDay->getSpecifiedValue($option);
+    }
+
+    public function getComparisonData($comparedPeriodNumber, $dayNumber, $option)
+    {
+        if (isset($this->comparisonData[$comparedPeriodNumber][$option][$dayNumber])) {
+            $result = $this->comparisonData[$comparedPeriodNumber][$option][$dayNumber];
+        } else {
+            $mainPeriodData = $this->getDayValue(0, $dayNumber, $option);
+            $comparedPeriodData = $this->getDayValue($comparedPeriodNumber, $dayNumber, $option);
+            $result = $mainPeriodData - $comparedPeriodData;
+            $this->comparisonData[$comparedPeriodNumber][$option][$dayNumber] = $result;
+        }
+
+        return $result;
+    }
+
+    public function getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
+    {
+        $mainPeriodData = $this->getDayValue(0, $dayNumber, $option);
+        $comparedPeriodData = $this->getDayValue($comparedPeriodNumber, $dayNumber, $option);
+
+        if ($comparedPeriodData == 0 && $mainPeriodData != 0) {
+            return 100;
+        } elseif ($mainPeriodData == 0 && $comparedPeriodData != 0) {
+            return -100;
+        } elseif ($comparedPeriodData == 0 && $mainPeriodData == 0) {
+            return 0;
+        }
+
+        return round((($mainPeriodData - $comparedPeriodData) / $comparedPeriodData) * 100);
     }
 }

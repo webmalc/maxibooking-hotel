@@ -71,7 +71,7 @@ class DynamicSalesGenerator
     /**
      * @param Request $request
      * @param Hotel $hotel
-     * @return array
+     * @return DynamicSalesReportData
      */
     public function generateDynamicSales(Request $request, Hotel $hotel)
     {
@@ -192,6 +192,7 @@ class DynamicSalesGenerator
     {
         $roomTypesIds = $this->helper->toIds($roomTypes);
         $periods = [];
+        $packagesByPeriods = [];
 
         for ($i = 0; $i < count($filterBeginDates); $i++) {
 
@@ -210,13 +211,15 @@ class DynamicSalesGenerator
             if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->disable('softdeleteable');
             }
+
             $packagesByPeriods[$i] = $this->dm->getRepository('MBHPackageBundle:Package')
                 ->getPackagesByCreationDatesAndRoomTypeIds($periodBegin, $periodEnd, $roomTypesIds);
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
             }
 
-            $periods[$i] = new \DatePeriod($periodBegin, new \DateInterval('P1D'), $periodEnd);
+            $datePeriodEnd = (clone $periodEnd)->add(new \DateInterval('P1D'));
+            $periods[$i] = new \DatePeriod($periodBegin, new \DateInterval('P1D'), $datePeriodEnd);
         }
 
         $dynamicSalesReportData = new DynamicSalesReportData();
