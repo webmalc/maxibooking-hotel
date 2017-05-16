@@ -264,7 +264,8 @@ class Ostrovok extends Base
                                     $message = 'Ошибка получения цены для номера '.$roomType->getFullTitle(
                                         ).' для '.$adults.' вз.';
                                     $this->log('Error! '.$message);
-                                    throw new \Exception($message);
+                                    continue;
+                                    /*throw new \Exception($message);*/
                                 }
                                 $rna_request_data = array_merge_recursive(
                                     $rna_request_data,
