@@ -1,3 +1,8 @@
+1.5.2
+=============
+* fix rabbitmq consumer
+* minor fix ostrovok
+
 1.5.1
 =============
 * chessboard bug fixes
