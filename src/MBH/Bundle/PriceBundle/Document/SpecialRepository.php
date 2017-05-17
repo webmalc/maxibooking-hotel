@@ -104,7 +104,7 @@ class SpecialRepository extends DocumentRepository
     {
         $qb = $this->getFilteredQueryBuilder($filter);
         $qb->addAnd($qb->expr()->field('begin')->gt(new \DateTime("midnight")));
-
+        $qb->field('prices')->exists(true);
         return $qb->getQuery()->execute();
     }
 }

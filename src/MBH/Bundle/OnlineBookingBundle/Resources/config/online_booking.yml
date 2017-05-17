@@ -3,7 +3,7 @@ parameters:
         request_search_url: '/mbresults.php'
         payonlineurl: http://azovsky-billing.com/pay/
         use_charts: false
-        add_search_dates: 1
+        add_search_dates: 0
         show_all: false
         hotels_links:
             56fbd22174eb5383728b4567: 'http://azovsky.ru/azovsky/main/'
