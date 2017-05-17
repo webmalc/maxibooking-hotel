@@ -10,13 +10,12 @@ $(document).ready(function ($) {
             var wrapper = $('#dynamic-sales-table-wrapper'),
                 begin = [],
                 end = [];
-            $.each( $('.dynamic-sales-filter'),function (i, val) {
+            $.each( $('.dynamic-sales-filter'),function (i) {
 
                 if($(this).val().length){
                     begin[i] = $(this).data('daterangepicker').startDate.format('DD.MM.YYYY');
                     end[i] = $(this).data('daterangepicker').endDate.format('DD.MM.YYYY');
                 }
-
             });
 
             var data = {
@@ -76,8 +75,8 @@ $(document).ready(function ($) {
         var $dynamicSalesTableRows = $dynamicSalesTables.find('tr');
         $dynamicSalesTableRows.each(function (index, element) {
             var rightTableRowIdentifier = element.getAttribute('data-class');
-            var appropriateRow = $('.rightTable').find('[data-class = ' + rightTableRowIdentifier + ']');
-            element.style.height = appropriateRow.eq(0).css('height');
+                var $appropriateRow = $('.rightTable').find('[data-class = ' + rightTableRowIdentifier + ']').eq(0);
+                element.style.height = $appropriateRow.css('height');
         });
 
         $('#headerTable').find('tr:lt(1)').eq(0).find('.date-td').each(function (cellNumber) {
@@ -125,6 +124,7 @@ $(document).ready(function ($) {
         };
     };
 
+    //handle datepickers
     var firstRangePickerOptions = mbh.datarangepicker.options;
     firstRangePickerOptions.startDate = moment().subtract(45, 'days');
     firstRangePickerOptions.endDate = moment();

@@ -460,13 +460,13 @@ dynamic.sales.day.total-sales-price-for-period: Объем броней за п�
 dynamic.sales.day.total-sales-price: Объем броней за сутки/руб
 dynamic.sales.day.number-of-created-packages: Создано броней за сутки
 dynamic.sales.day.number-of-created-packages-for-period: Создано броней за период
-dynamic.sales.day.package-isPaid: Оплачено броней за сутки
-dynamic.sales.day.package-isPaid-growth: Оплачено броней  на дату итого
+dynamic.sales.day.number-of-paid: Оплачено броней за сутки
+dynamic.sales.day.number-of-paid-for-period: Оплачено броней на дату итого
 dynamic.sales.day.number-of-cancelled: Аннулировано броней за сутки
 dynamic.sales.day.price-of-cancelled: Аннулировано броней за сутки в рублях
 dynamic.sales.day.price-of-cancelled-for-period: Аннулировано броней за период в рублях
 dynamic.sales.day.price-of-paid-cancelled: Аннулировано оплаченных броней за сутки в рублях
-dynamic.sales.day.package-isPaid-delete-package: Оплачено броней  на дату итого минус аннулированные
+dynamic.sales.day.sum-of-paid-minus-cancelled: Оплачено броней на дату итого минус аннулированные
 dynamic.sales.day.sales.comparison: Сравнение
 dynamic.sales.day.sales.summ: Сумма
 dynamic.sales.day.sales.amounts: Кол-во
@@ -475,8 +475,8 @@ dynamic.sales.day.number-of-man-days-for-period: Брони в чел/днях �
 dynamic.sales.day.number-of-man-days: Брони в чел/днях за сутки
 dynamic.sales.day.number-of-package-days-for-period: Брони в номеро/днях за период
 dynamic.sales.day.number-of-package-days: Брони в номеро/днях за сутки
-dynamic.sales.day.sum-payed-for-period: А/Р броней за период
-dynamic.sales.day.sum-payed-for-period-for-removed: Оплата А/Р броней за период
+dynamic.sales.day.sum-of-paid-for-cancelled-for-period: А/Р броней за период
+dynamic.sales.day.sum-paid-to-clients-for-period-for-removed: Оплата А/Р броней за период
 
 dynamic.sales.dates: Даты
 dynamic.sales.show.title: Что показывать ?

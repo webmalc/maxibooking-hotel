@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Lib;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Services\DynamicSalesGenerator;
 
 class DynamicSales
 {
@@ -18,6 +19,11 @@ class DynamicSales
     const PRICE_OF_CANCELLED_OPTION = 'price-of-cancelled';
     const PRICE_OF_PAID_CANCELLED_OPTION = 'price-of-paid-cancelled';
     const PRICE_OF_CANCELLED_FOR_PERIOD_OPTION = 'price-of-cancelled-for-period';
+    const NUMBER_OF_PAID_OPTION = 'number-of-paid';
+    const NUMBER_OF_PAID_FOR_PERIOD_OPTION = 'number-of-paid-for-period';
+    const SUM_OF_PAID_MINUS_CANCELLED_OPTION = 'sum-of-paid-minus-cancelled';
+    const SUM_OF_PAID_FOR_CANCELLED_FOR_PERIOD_OPTION = 'sum-of-paid-for-cancelled-for-period';
+    const SUM_PAID_TO_CLIENTS_FOR_REMOVED_FOR_PERIOD_OPTION = 'sum-paid-to-clients-for-period-for-removed';
 
     const DYNAMIC_SALES_SHOWN_OPTIONS = [
         self::TOTAL_SALES_PRICE_OPTION,
@@ -27,16 +33,15 @@ class DynamicSales
         self::NUMBER_OF_MAN_DAYS_OPTION,
         self::NUMBER_OF_MAN_DAYS_FOR_PERIOD_OPTION,
         self::NUMBER_OF_PACKAGE_DAYS_OPTION,
-        self::NUMBER_OF_MAN_DAYS_FOR_PERIOD_OPTION,
+        self::NUMBER_OF_PACKAGE_DAYS_FOR_PERIOD_OPTION,
         self::NUMBER_OF_CANCELLED_OPTION,
         self::PRICE_OF_CANCELLED_OPTION,
         self::PRICE_OF_PAID_CANCELLED_OPTION,
         self::PRICE_OF_CANCELLED_FOR_PERIOD_OPTION,
-//        'package-isPaid-delete-package',
-//        'count-people-day',
-//        'count-room-day',
-//        'sum-payed-for-period',
-//        'sum-payed-for-period-for-removed'
+        self::NUMBER_OF_PAID_OPTION,
+        self::SUM_OF_PAID_MINUS_CANCELLED_OPTION,
+        self::SUM_OF_PAID_FOR_CANCELLED_FOR_PERIOD_OPTION,
+        self::SUM_PAID_TO_CLIENTS_FOR_REMOVED_FOR_PERIOD_OPTION
     ];
 
     const FOR_PERIOD_OPTIONS = [
@@ -45,8 +50,9 @@ class DynamicSales
         self::NUMBER_OF_MAN_DAYS_FOR_PERIOD_OPTION,
         self::NUMBER_OF_PACKAGE_DAYS_FOR_PERIOD_OPTION,
         self::PRICE_OF_CANCELLED_FOR_PERIOD_OPTION,
-        //        'sum-payed-for-period',
-//        'sum-payed-for-period-for-removed'
+        self::NUMBER_OF_PAID_FOR_PERIOD_OPTION,
+        self::SUM_OF_PAID_FOR_CANCELLED_FOR_PERIOD_OPTION,
+        self::SUM_PAID_TO_CLIENTS_FOR_REMOVED_FOR_PERIOD_OPTION
     ];
 
     const SINGLE_DAY_OPTIONS = [
@@ -57,9 +63,8 @@ class DynamicSales
         self::NUMBER_OF_CANCELLED_OPTION,
         self::PRICE_OF_CANCELLED_OPTION,
         self::PRICE_OF_PAID_CANCELLED_OPTION,
-//        'package-isPaid-delete-package',
-//        'count-people-day',
-//        'count-room-day',
+        self::NUMBER_OF_PAID_OPTION,
+        self::SUM_OF_PAID_MINUS_CANCELLED_OPTION
     ];
 
     /**
@@ -73,6 +78,7 @@ class DynamicSales
     protected $periods = [];
 
     private $comparisonData = [];
+    private $relativeComparisonData = [];
 
     /**
      * @return array
@@ -129,7 +135,7 @@ class DynamicSales
         return ($firsPeriodDaysQuantity > $dayNumber) && ($secondPeriodDaysQuantity > $dayNumber);
     }
 
-    private function getDayValue($comparedPeriodNumber, $dayNumber, $option)
+    public function getDayValue($comparedPeriodNumber, $dayNumber, $option)
     {
         /** @var DynamicSalesDay $specifiedDay */
         $specifiedDay = $this->getPeriodByNumber($comparedPeriodNumber)->getDynamicSalesDays()[$dayNumber];
@@ -153,17 +159,16 @@ class DynamicSales
 
     public function getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
     {
-        $mainPeriodData = $this->getDayValue(0, $dayNumber, $option);
-        $comparedPeriodData = $this->getDayValue($comparedPeriodNumber, $dayNumber, $option);
+        if (isset($this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber])) {
+            $result = $this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber];
+        } else {
+            $mainPeriodData = $this->getDayValue(0, $dayNumber, $option);
+            $comparedPeriodData = $this->getDayValue($comparedPeriodNumber, $dayNumber, $option);
 
-        if ($comparedPeriodData == 0 && $mainPeriodData != 0) {
-            return 100;
-        } elseif ($mainPeriodData == 0 && $comparedPeriodData != 0) {
-            return -100;
-        } elseif ($comparedPeriodData == 0 && $mainPeriodData == 0) {
-            return 0;
+            $result = DynamicSalesGenerator::getRelativeComparisonValue($comparedPeriodData, $mainPeriodData);
+            $this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber] = $result;
         }
 
-        return round((($mainPeriodData - $comparedPeriodData) / $comparedPeriodData) * 100);
+        return $result;
     }
 }
