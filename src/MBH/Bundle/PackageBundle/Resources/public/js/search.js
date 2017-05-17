@@ -285,7 +285,7 @@ $(document).ready(function () {
         });
 
         $('#package-search-special-wrapper').readmore({
-            moreLink: '<div class="more-link pull-right"><a href="#">'+$('#package-search-special-wrapper').attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
+            moreLink: '<div class="more-link"><a href="#">'+$('#package-search-special-wrapper').attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
             lessLink: '<div class="less-link"><a href="#">'+$('#package-search-special-wrapper').attr('data-less') +' <i class="fa fa-caret-up"></i></a></div>',
             collapsedHeight: 230
         });
