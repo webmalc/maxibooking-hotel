@@ -1,3 +1,9 @@
+1.5.3
+=============
+* docker redis port
+* chessboard bug fixes
+* fix package total (redmine #572)
+
 1.5.2
 =============
 * fix rabbitmq consumer
