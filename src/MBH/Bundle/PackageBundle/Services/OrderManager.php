@@ -206,7 +206,6 @@ class OrderManager
         $query->children = $package->getChildren();
         $query->addRoomType($newRoomType->getId());
         $query->forceRoomTypes = true;
-//        $query->forceBooking = $package->getIsForceBooking();
         $query->memcached = false;
 
         $searchResults = $this->container->get('mbh.package.search')->search($query);
