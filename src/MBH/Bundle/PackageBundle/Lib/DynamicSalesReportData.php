@@ -84,7 +84,6 @@ class DynamicSalesReportData
     {
         $result = 0;
         foreach ($this->relativeComparisonData[$comparedPeriodNumber][$option] as $dayComparisonValue) {
-            //TODO: Уточнить значение
             $result += $dayComparisonValue;
         }
 
@@ -93,11 +92,19 @@ class DynamicSalesReportData
 
     public function getTotalValue($periodNumber, $option)
     {
-        $result = 0;
-        foreach ($this->totalValues[$periodNumber][$option] as $dayTotalValue) {
-            $result += $dayTotalValue;
+        $periodData = $this->totalValues[$periodNumber][$option];
+
+        if (in_array($option, DynamicSales::SINGLE_DAY_OPTIONS)) {
+            $sum = 0;
+            foreach ($periodData as $dayTotalValue) {
+                $sum += $dayTotalValue;
+            }
+
+            return round($sum / count($periodData));
+        } elseif (in_array($option, DynamicSales::FOR_PERIOD_OPTIONS)) {
+            return  end($periodData);
         }
 
-        return $result;
+        throw new \Exception('Invalid option' . $option);
     }
 }

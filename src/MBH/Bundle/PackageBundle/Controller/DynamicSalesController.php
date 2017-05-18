@@ -47,6 +47,7 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
     {
         $hotel = $this->hotel;
         $optionsShows = empty($request->get('optionsShow')) ? DynamicSales::DYNAMIC_SALES_SHOWN_OPTIONS : $request->get('optionsShow');
+        $optionsShows = array_diff($optionsShows, ['']);
 
         $dynamicSalesReportData = $this->get('mbh.package.dynamic.sales.generator')->generateDynamicSales($request, $hotel);
         $error = false;

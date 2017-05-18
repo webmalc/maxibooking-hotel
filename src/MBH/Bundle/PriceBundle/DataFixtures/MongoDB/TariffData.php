@@ -23,7 +23,7 @@ class TariffData extends AbstractFixture implements OrderedFixtureInterface
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
-        foreach ($hotels as $hotel) {
+        foreach ($hotels as $hotelNumber => $hotel) {
             $baseTariff = $manager->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
 
             if ($baseTariff) {
@@ -39,7 +39,7 @@ class TariffData extends AbstractFixture implements OrderedFixtureInterface
             $manager->persist($tariff);
             
             $manager->flush();
-            $this->setReference('main-tariff', $tariff);
+            $this->setReference('main-tariff/' . $hotelNumber, $tariff);
 
             if ($this->getEnv() == 'test') {
                 $special = new Tariff();
@@ -51,7 +51,7 @@ class TariffData extends AbstractFixture implements OrderedFixtureInterface
                 $manager->persist($special);
 
                 $manager->flush();
-                $this->setReference('special-tariff', $special);
+                $this->setReference('special-tariff/' . $hotelNumber, $special);
             }
         }
     }

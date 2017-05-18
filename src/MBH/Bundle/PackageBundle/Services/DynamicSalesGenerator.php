@@ -111,7 +111,7 @@ class DynamicSalesGenerator
                     try {
                         if (!is_null($package->getOrder()->getCashDocuments())) {
                             foreach ($package->getOrder()->getCashDocuments() as $cashDocument) {
-                                if (is_null($cashDocument->getPaidDate())) {
+                                if (is_null($cashDocument->getDocumentDate())) {
                                     $sdf =123;
                                 }
                                 //TODO: Решить здесь что делать
@@ -188,7 +188,7 @@ class DynamicSalesGenerator
      * @param $roomTypes
      * @return DynamicSalesReportData
      */
-    private function getDynamicSalesReportData($filterBeginDates, $filterEndDates, $roomTypes)
+    public function getDynamicSalesReportData($filterBeginDates, $filterEndDates, $roomTypes)
     {
         $roomTypesIds = $this->helper->toIds($roomTypes);
         $periods = [];
