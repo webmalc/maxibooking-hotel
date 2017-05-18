@@ -49,9 +49,11 @@ class OnlineSearchHelper
         array $searchResults
     ) {
         $result = [];
-        foreach ($searchResults as $key => $sResults) {
-            //Тут можно фильтровать
-            $result = array_merge($result, $sResults);
+        if ($searchResults['common'] && $searchResults['special']) {
+            $result[] = array_shift($searchResults['special']);
+            $result = array_merge($result , $searchResults['common'] , $searchResults['special']);
+        } else {
+            $result = array_merge($searchResults['special'],$searchResults['common']);
         }
 
         return $result;

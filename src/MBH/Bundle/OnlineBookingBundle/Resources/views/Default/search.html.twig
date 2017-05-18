@@ -14,7 +14,6 @@
     </div>
     {% import _self as macro %}
     {% for onlineResult in searchResults %}
-        {#{{ dump(onlineResult.special.prices.toarray) }}#}
         {% include '@MBHOnlineBooking/Default/RoomTypes/'~onlineResult.type~'.roomType.html.twig' %}
     {% endfor %}
 

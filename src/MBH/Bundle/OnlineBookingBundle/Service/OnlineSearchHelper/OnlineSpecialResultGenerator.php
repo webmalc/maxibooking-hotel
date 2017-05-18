@@ -11,7 +11,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
 {
     protected const TYPE = 'special';
 
-    const SPECIAL_LIMIT = 3;
+    const SPECIAL_LIMIT = 0;
 
     protected function createOnlineResultInstance($roomType, $results, SearchQuery $searchQuery): OnlineResultInstance
     {
@@ -41,11 +41,16 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
             $specials = $this->search->searchStrictSpecials($searchQuery);
             $specials = $this->filterSpecials($specials->toArray());
             if (count($specials)) {
+                $count = 0;
                 foreach ($specials as $special) {
                     /** @var Special $special */
                     //Тут рекурсия
-                    $results = array_merge($results, $this->search($searchQuery, $special->getRoomTypes()->first(), $special));
-                    if (count($results) >= self::SPECIAL_LIMIT) {
+                    $searchResult = $this->search($searchQuery, $special->getRoomTypes()->first(), $special);
+                    if ($searchResult) {
+                        $results = array_merge($results, $searchResult);
+                        $count++;
+                    }
+                    if (self::SPECIAL_LIMIT && $count >= self::SPECIAL_LIMIT) {
                         break;
                     }
                 }
