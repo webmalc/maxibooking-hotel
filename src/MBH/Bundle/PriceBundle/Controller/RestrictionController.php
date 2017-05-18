@@ -94,8 +94,8 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         ];
 
         //get roomTypes
-        $roomTypesCallback = function () use ($hotel, $request) {
-            return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
+        $roomTypesCallback = function () use ($hotel, $request, $dm) {
+            return $dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
         };
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
         $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);

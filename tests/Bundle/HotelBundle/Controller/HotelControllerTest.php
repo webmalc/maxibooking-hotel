@@ -47,7 +47,7 @@ class HotelControllerTest extends WebTestCase
         $formName = 'mbhhotel_bundle_hotel_contact_information_type';
         $url = '/management/hotel/' . $hotel->getId() . '/edit/contact';
         $newValues = self::prepareFormValues($formName, [
-            'settlement' => 'Test settlement', 'longitude' => 33.2
+            'rating' => '4', 'checkinoutPolicy' => 'test policy'
         ]);
 
         $crawler = $this->client->request('GET', $url);

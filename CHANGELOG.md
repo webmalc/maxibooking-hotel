@@ -1,3 +1,7 @@
+1.5.4
+=============
+* new fixtures and tests
+
 1.5.3
 =============
 * docker redis port
