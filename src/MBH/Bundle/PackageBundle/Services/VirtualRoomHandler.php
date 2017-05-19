@@ -87,6 +87,7 @@ class VirtualRoomHandler
                     $this->setVirtualRoom($package, $movedPackagesData);
                 }
             }
+
             $this->dm->clear();
             $this->dm->flush();
         }
@@ -219,7 +220,7 @@ class VirtualRoomHandler
 
         /** @var Package $adjoiningPackage */
         foreach ($adjoiningPackages as $adjoiningPackage) {
-            if (!($adjoiningPackage->getBegin() == $package->getEnd() || $adjoiningPackage->getEnd() == $package->getBegin())) {
+            if (!($adjoiningPackage->getBegin() === $package->getEnd() || $adjoiningPackage->getEnd() === $package->getBegin())) {
                 $this->logger->info('incorrect attempt to set virtual room for package "'
                     . $package->getNumberWithPrefix() . '", in virtual room "' . $virtualRoom->getName() . '"');
                 return false;
@@ -253,9 +254,8 @@ class VirtualRoomHandler
                     "For package \"{$package->getTitle()}\" $previousVirtualRoomData set virtual room \"{$result->getVirtualRoom()->getName()}\", hotel name \"{$package->getHotel()->getName()}\""
                 );
                 $this->dm->flush();
+                $this->addPackageMovingData($package, $oldVirtualRoom, $movedPackagesData);
             }
-
-            $this->addPackageMovingData($package, $oldVirtualRoom, $movedPackagesData);
         }
     }
 
@@ -289,8 +289,8 @@ class VirtualRoomHandler
             $neighboringPackages = $sortedPackages[$package->getRoomType()->getId()][$package->getVirtualRoom()->getId()];
             /** @var Package $neighboringPackage */
             foreach ($neighboringPackages as $neighboringPackage) {
-                if ($neighboringPackage->getBegin() == $package->getEnd()
-                    || $neighboringPackage->getEnd() == $package->getBegin()
+                if ($neighboringPackage->getBegin() === $package->getEnd()
+                    || $neighboringPackage->getEnd() === $package->getBegin()
                 ) {
                     return true;
                 }
@@ -328,7 +328,7 @@ class VirtualRoomHandler
                     $current = $packagesByVirtualRoom[$i];
                     $previousPackageEndDate = $previous->getEnd();
                     $currentPackageBeginDate = $current->getBegin();
-                    if ($previousPackageEndDate != $currentPackageBeginDate) {
+                    if ($previousPackageEndDate !== $currentPackageBeginDate) {
                         $intervalString = $this->getPackageIntervalString($previous->getEnd(), $current->getBegin());
                         $emptyIntervals[$roomTypeId][$intervalString] = $current->getVirtualRoom();
                     }
