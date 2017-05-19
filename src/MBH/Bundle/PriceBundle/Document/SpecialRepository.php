@@ -67,7 +67,7 @@ class SpecialRepository extends DocumentRepository
             if ($filter->getExcludeSpecial()) {
                 $qb->addAnd($qb->expr()->addOr(
                     $qb->expr()->field('remain')->gte($filter->getRemain()),
-                    $qb->expr()->field('id')->gte($filter->getExcludeSpecial()->getId())
+                    $qb->expr()->field('id')->equals($filter->getExcludeSpecial()->getId())
                 ));
             } else {
                 $qb->field('remain')->gte($filter->getRemain());
