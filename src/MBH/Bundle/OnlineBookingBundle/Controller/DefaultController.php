@@ -285,12 +285,13 @@ class DefaultController extends BaseController
                 throw $this->createNotFoundException('Room type is not exists');
             }
 
-            $roomTypeCategory = null;
-            if ($this->get('mbh.hotel.room_type_manager')->useCategories && !$special) {
-                $roomTypeCategory = $roomType->getCategory();
-            } else {
-                $roomTypeCategory = $roomType;
-            }
+//            $roomTypeCategory = null;
+//            if ($this->get('mbh.hotel.room_type_manager')->useCategories && !$special) {
+//                $roomTypeCategory = $roomType->getCategory();
+//            } else {
+//            }
+
+            $roomTypeCategory = $roomType;
 
             /** @var Tariff $tariff */
             $tariff = $this->dm->getRepository(Tariff::class)->find($tariffID);

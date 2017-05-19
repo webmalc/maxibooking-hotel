@@ -16,7 +16,8 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
     protected function createOnlineResultInstance($roomType, $results, SearchQuery $searchQuery): OnlineResultInstance
     {
         $instance = parent::createOnlineResultInstance($roomType, $results, $searchQuery);
-        $instance->setSpecial($searchQuery->getSpecial());
+        $instance->setSpecial($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren())[0]->getSpecial());
+
 
         return $instance;
     }

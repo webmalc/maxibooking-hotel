@@ -58,9 +58,9 @@
                 <div>{{ roomType.hotel.fullTitle }}</div>
                 <div class="numtype">Тип номера</div>
                 {% if roomTypeCategory.category.descriptionUrl is defined and roomTypeCategory.category.descriptionUrl is not empty %}
-                <div><a class="room_link" href="{{ roomTypeCategory.category.descriptionUrl }}" target="_blank">{{ roomTypeCategory.category.name }}</a></div>
+                <div><a class="room_link" href="{{ roomTypeCategory.category.descriptionUrl }}" target="_blank">{{ roomTypeCategory.category.fullTitle }}</a></div>
                     {% else %}
-                        <div>{{ roomTypeCategory.category.name }}</div>
+                        <div>{{ roomTypeCategory.category.fullTitle }}</div>
                 {% endif %}
             </div>
         </div>
