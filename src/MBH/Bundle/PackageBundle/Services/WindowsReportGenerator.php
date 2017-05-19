@@ -4,11 +4,14 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PriceBundle\Document\Special;
+use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Symfony\Component\HttpFoundation\Request;
 
 class WindowsReportGenerator
@@ -85,6 +88,8 @@ class WindowsReportGenerator
 
     private $stat = [];
 
+    private $specials;
+
     public function __construct(Helper $helper, ManagerRegistry $dm)
     {
         $this->helper = $helper;
@@ -123,8 +128,13 @@ class WindowsReportGenerator
         $this->packages = $this->dm->getRepository('MBHPackageBundle:Package')
             ->fetchWithVirtualRooms($this->begin, $this->end, null, true);
 
+        $roomTypes = $request->get('roomType');
+        if ($roomTypes && !is_array($roomTypes)) {
+            $roomTypes = (array)$roomTypes;
+        }
+
         $this->roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
-            ->fetch($this->begin, $this->end, $this->hotel, $request->get('roomType') ? [$request->get('roomType')] : [], null, true);
+            ->fetch($this->begin, $this->end, $this->hotel, $roomTypes?:[], null, true);
 
         foreach ($rooms as $room) {
             $this->addRoomType($room->getRoomType());
@@ -136,7 +146,61 @@ class WindowsReportGenerator
         }
         $this->countVirtualNumbers = self::countVirtualNumbers($to);
 
+        //Specials
+        $specials = $this->getSpecials();
+        $this->specials = $this->prepareSpecials($specials);
+
         return $this;
+    }
+
+    public function getSpecialInDate(\DateTime $day, Room $room)
+    {
+        $result = null;
+        $roomTypeId = $room->getRoomType()->getId();
+        if (isset($this->specials[$roomTypeId][$day->format('d.m')][$room->getId()]['special'])) {
+            $result = $this->specials[$roomTypeId][$day->format('d.m')][$room->getId()]['special'];
+        }
+
+        return $result;
+
+    }
+
+    private function getSpecials()
+    {
+        $qb = $this->dm->getManager()->getRepository('MBHPriceBundle:Special')->createQueryBuilder();
+
+        $qb
+            ->field('isEnabled')->equals(true)
+            ->field('remain')->gte(1)
+            ->field('virtualRoom')->exists(true)
+            ->field('hotel')->references($this->hotel)
+            ->field('prices')->exists(true)
+        ;
+
+        return $qb->getQuery()->execute();
+    }
+
+    private function prepareSpecials($specials = null)
+    {
+        $result = [];
+        if ($specials && is_iterable($specials)) {
+            foreach ($specials as $special) {
+                if ($special instanceof Special && $special->getVirtualRoom()) {
+                    $roomTypes = $special->getRoomTypes();
+                    foreach ($roomTypes as $roomType) {
+                        /** @var RoomType $roomType */
+                        $sBegin = clone($special->getBegin());
+                        $sEnd = clone($special->getEnd());
+                        foreach (new \DatePeriod($sBegin, \DateInterval::createFromDateString('1 day'), $sEnd->modify('+ 1 day')) as $day) {
+                            $result[$roomType->getId()][$day->format('d.m')][$special->getVirtualRoom()->getId()]['special'][] = $special;
+
+                        }
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**

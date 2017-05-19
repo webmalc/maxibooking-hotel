@@ -1,6 +1,7 @@
 {% if error is defined and error is not empty %}
     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
 {% else %}
+
     {% if notVirtualRooms is defined and notVirtualRooms is not empty %}
         <div class="text-left margin-bottom descr">
             <small>{{ 'package.window.not.virtual.room'|trans({}, "MBHPackageBundle") }}:
@@ -43,16 +44,17 @@
                         </td>
                         {% for date in data.dates %}
                             {% set info = data.getInfo(date, room) %}
+                            {% set specials = data.specialInDate(date, room) %}
                             <td style="width:100% ;height:26px;" data-date="{{ date|date('d.m') }}"
 
                                 data-fulldate="{{ date|date('d.m.Y') }}"
                                 data-class="{{ date|date('N') in [6,7] ? 'text-red' }} {{ date|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-yellow' }} "
                                 data-room="{{ room }}"
                                 data-roomid="{{ room.id }}"
-                                class="mbh-graph-cell mbh-graph-cell-padding {{ info?'':'window ' }}{% if data.max(date, roomType) == 0 or rooms|length - data.max(date, roomType) >= loop.parent.loop.index %}mbh-graph-cell-danger{% endif %}">
+                                class="mbh-graph-cell mbh-graph-cell-padding {{ info?'':'window ' }}{% if data.max(date, roomType) == 0 or rooms|length - data.max(date, roomType) >= loop.parent.loop.index %}mbh-graph-cell-danger{% endif %} mbh-td-relative {{ specials?'specials':'' }} mbh-report-value">
                                 {% if info %}
                                     {% for entry in info %}
-                                        <a style="display: block; height: 100%; z-index:5;"
+                                        <a style="display: block; height: 100%; z-index:5; position: relative;"
                                            href="{{ path('package_edit', {'id': entry.package.id}) }}"
                                            class="windows-package-info-link bg-green {{ entry.begin ? 'pull-right window-end' }} {{ entry.end ? 'pull-left window-begin' }} {{ not entry.regular ? 'mbh-graph-div' }}"
                                             data-placement="top" data-html="true"
@@ -60,6 +62,17 @@
                                         </a>
                                     {% endfor %}
                                 {% endif %}
+                                {% if specials is not empty %}
+                                    {% for special in specials %}
+                                        <div title = "Спецпредложение" data-toggle="tooltip" class="special-hidden special-cell {{ special.begin == date?'special-cell-begin':'' }} {{ special.end == date?'special-cell-end':'' }}"
+                                             data-name="{{ special.name }}"
+                                             data-special="{{ special.id }}"
+                                        >
+
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+
                             </td>
                         {% endfor %}
                     </tr>

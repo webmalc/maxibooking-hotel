@@ -4,7 +4,6 @@ var PACKAGING_COMMAND_CALL_ERROR = 'При запуске команды упа�
 
 $(document).ready(function ($) {
     'use strict';
-
     var specialSwitch = $("[name='do_specials']").bootstrapSwitch(),
         specialRoomType = null,
         specialRoom = null,
@@ -17,7 +16,10 @@ $(document).ready(function ($) {
         specialBind = function () {
             $('.window, td:has(a.window-end, a.window-begin)')
                 .click(function (event) {
-                    if (!isSpecials()) {
+                    //Костыль. Не даем возможность нажать на создание спец предложений в стыке
+                    var isJoint = $(this).find('a').length === 2;
+                    // Ребро спецпредложения?
+                    if (!isSpecials() || isJoint) {
                         return false;
                     }
                     event.preventDefault();
@@ -40,7 +42,7 @@ $(document).ready(function ($) {
                             return false;
                         } else {
                             specialEnd = date;
-                            if($spec.index() < specBeginTd.index()) {
+                            if ($spec.index() < specBeginTd.index()) {
                                 var oldBegin = specialBegin;
                                 specialBegin = specialEnd;
                                 specialEnd = oldBegin;
@@ -61,8 +63,79 @@ $(document).ready(function ($) {
                             return false;
                         }
                     }
-                })
+                });
         };
+
+    //пока в ящик откладываем
+    var Special = function($cell) {
+        this.$cell = $cell;
+        this.specialId = $cell.data('special');
+
+    };
+    Special.prototype.edit = function() {
+
+    };
+    Special.prototype.bindHandler = function () {
+        var that = this;
+        console.log('bindhandlers');
+        this.$cell.hover(function(e) {
+            console.log('im in the hover');
+        })
+    };
+    Special.prototype.show = function () {
+        if(this.$cell.hasClass('special-hidden')) {
+            this.$cell.removeClass('special-hidden');
+        }
+    };
+
+    Special.prototype.hide = function () {
+        if(!this.$cell.hasClass('special-hidden')) {
+            this.$cell.addClass('special-hidden');
+        }
+    };
+
+    Special.prototype.checkVisible = function () {
+        if(isSpecials()) {
+            this.show();
+        } else {
+            this.hide();
+        }
+    };
+
+
+    var SpecialContainer = function () {
+        this.specials = [];
+    };
+
+    SpecialContainer.prototype.init = function () {
+        var that = this;
+        $.each($('div.special-cell'), function () {
+            var special = new Special($(this));
+            that.add(special);
+        });
+        this.checkVisible();
+    };
+    SpecialContainer.prototype.checkVisible = function () {
+        $.each(this.specials, function () {
+            this.checkVisible();
+        })
+    };
+    SpecialContainer.prototype.add = function (special) {
+        this.specials.push(special);
+    };
+
+
+    var specialsInit = function () {
+        var specContainer = new SpecialContainer();
+        specContainer.init();
+        specContainer.checkVisible();
+        $("[name='do_specials']").off('switchChange.bootstrapSwitch').on('switchChange.bootstrapSwitch', function () {
+            specContainer.checkVisible();
+        });
+    };
+
+
+
 
     var form = $('#windows-report-filter'),
         table = $('#windows-report-content'),
@@ -85,6 +158,7 @@ $(document).ready(function ($) {
                 data: data,
                 success: function (response) {
                     table.html(response);
+
                     $('tr').hover(function () {
                         $(this).children('td').each(function (index, elem) {
 
@@ -126,6 +200,7 @@ $(document).ready(function ($) {
                         collapsedHeight: 35
                     });
                     specialBind();
+                    specialsInit();
                 }
             });
         };

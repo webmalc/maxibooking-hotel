@@ -1,0 +1,21 @@
+.special-cell {
+  position: absolute;
+  width: 99%;
+  height: 90%;
+  top: 1px;
+  background-color: #ffe257;
+}
+.special-hidden {
+  display: none;
+}
+.mbh-td-relative {
+  position: relative;
+}
+.special-cell-begin {
+  width: 30%;
+  right: 0%;
+}
+.special-cell-end {
+  width: 30%;
+  left: 0;
+}

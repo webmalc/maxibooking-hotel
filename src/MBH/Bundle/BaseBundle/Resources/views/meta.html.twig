@@ -12,7 +12,7 @@
 
             {% block styles %}
 
-                {% stylesheets filter='cssrewrite, uglifycss'
+                {% stylesheets filter='cssrewrite, ?uglifycss'
                     'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
                     'assets/vendor/font-awesome/css/font-awesome.min.css'
                     'assets/vendor/select2/dist/css/select2.min.css'
@@ -33,7 +33,7 @@
                 <link rel="stylesheet" href="{{ asset_url }}"/>
                 {% endstylesheets %}
 
-                {% stylesheets filter='cssrewrite, uglifycss, scssphp'
+                {% stylesheets filter='cssrewrite, ?uglifycss, scssphp'
                     'assets/vendor/datatables-buttons/css/common.scss'
                     'assets/vendor/datatables-buttons/css/mixins.scss'
                     'assets/vendor/datatables-buttons/css/buttons.bootstrap.scss'
