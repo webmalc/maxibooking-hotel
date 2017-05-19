@@ -107,6 +107,8 @@ mailer.packageZip.subject: "Отчет Автообновления броней
 mailer.packageZip.text: "Автообновление броней"
 mailer.packageZip.error: "Ошибок"
 mailer.packageZip.amount: "Автообно броней"
+mailer.packageZip.content-text: Найдены брони, которые можно перенести в меньшую по вместимости комнату. Для получения подробной информации сгенерируйте отчет по ссылке.
+mailer.package_zip.button_lin_text: Сгенерировать отчет
 
 mailer.packaging.text: Упаковка броней
 mailer.packaging.subject: Отчет об упаковке броней
