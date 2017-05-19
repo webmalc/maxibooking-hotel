@@ -47,12 +47,15 @@ class VirtualRoomMovingCommand extends ContainerAwareCommand
             ->count();
 
         $startOffset = 0;
+        $logger = $container->get('mbh.virtual_room_handler.logger');
+        $logger->info('START VIRTUAL ROOM MOVING');
         $limitedCommandResultCode = $this->callLimitedCommand($beginDate, $endDate,
             self::HANDLED_PACKAGES_COUNT, $startOffset, $handledPackagesCount, $output);
 
         if ($limitedCommandResultCode != 0) {
             $output->writeln('An error with code ' . $limitedCommandResultCode . ' occurred');
         }
+        $logger->alert('Package moving completed');
 
         $output->writeln('Completed');
     }
@@ -78,15 +81,15 @@ class VirtualRoomMovingCommand extends ContainerAwareCommand
     ) {
         if ($offset < $handledPackagesCount) {
             $console = $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console ';
+            $env = $this->getContainer()->get('kernel')->getEnvironment();
             $command = 'nohup php ' . $console . 'mbh:limited_virtual_room_moving_command'
                 .' --begin='. $beginDate->format('d.m.Y') .' --end='. $endDate->format('d.m.Y')
-                . ' --limit=' . $limit . ' --offset=' . $offset;
+                . ' --limit=' . $limit . ' --offset=' . $offset . '--env=' . $env;
             $process = new Process($command);
             $process->setTimeout(null)->setIdleTimeout(null)->run();
 
             $currentIterationRightEdge = $offset + $limit;
             $output->writeln("Packages between $offset and $currentIterationRightEdge handled");
-            $output->writeln((memory_get_usage() / 1024) . " KB");
 
             return $this->callLimitedCommand($beginDate, $endDate, $limit, $offset + $limit,
                 $handledPackagesCount, $output, $result);
