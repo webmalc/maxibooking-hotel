@@ -1017,7 +1017,7 @@ class PackageRepository extends DocumentRepository
             ->field('end')->lte($end);
 
         if ($limit){
-            $queryBuilder->limit(50);
+            $queryBuilder->limit(500);
         }
         if($count){
             $queryBuilder->count();

@@ -78,7 +78,7 @@ class PackageZip
     }
 
     /**
-     * @return array
+     * @return bool
      */
     public function packagesZip()
     {
@@ -86,7 +86,7 @@ class PackageZip
         $roomTypeZipConfig = $this->dm->getRepository('MBHClientBundle:RoomTypeZip')->fetchConfig();
         $roomTypesByCategories = $this->roomTypeByCategories($roomTypeZipConfig);
 
-        $skip = 50;
+        $skip = 500;
         $info['amount'] = 0;
         $info['error'] = 0;
         $packagesCount = $this->getMaxAmountPackages($roomTypesByCategories);
@@ -97,38 +97,21 @@ class PackageZip
             /** @var Package $package */
             foreach ($packages as $package) {
                 $oldRoomType = $package->getRoomType();
-                try {
-                    if ($package->getCountPersons() < $package->getRoomType()->getTotalPlaces()
-                        && $package->getIsMovable()
-                        && $this->hasLessAvailability($package->getRoomType())) {
+                if ($package->getCountPersons() < $package->getRoomType()->getTotalPlaces()
+                    && $package->getIsMovable()
+                    && $this->hasLessAvailability($package->getRoomType())
+                    && empty($package->getAccommodation())) {
 
-                        $optimalRoomType = $this->getOptimalRoomType($package);
-                        if (!is_null($optimalRoomType) && $optimalRoomType->getId() !== $oldRoomType->getId()) {
-                            $result = $this->orderManager->changeRoomType($package, $optimalRoomType);
-
-                            if ($result) {
-                                $info['amount']++;
-                                $this->logPackage('PACKAGE ROOM TYPE CHANGED', $package, $oldRoomType);
-                            } else {
-                                $this->logPackage('FOUND ROOM TYPE NOT EMPTY', $package, $oldRoomType);
-                            }
-                        }
+                    $optimalRoomType = $this->getOptimalRoomType($package);
+                    if (!is_null($optimalRoomType) && $optimalRoomType->getId() !== $oldRoomType->getId()) {
+                        return true;
                     }
-                } catch (\Exception $e) {
-                    $info['error']++;
-                    $this->logPackage('ERROR: ' . $e->getMessage(), $package, $oldRoomType);
                 }
-                $this->dm->clear();
             }
-            $this->dm->flush();
-
+            $this->dm->clear();
         }
 
-        $this->logger->alert('Final TOTAL: ' . $info['amount'] . "\n");
-        $this->logger->alert('Final ERROR: ' . $info['error'] . "\n");
-        $this->logger->alert('---------END---------');
-
-        return $info;
+        return false;
     }
 
     /**
@@ -175,8 +158,9 @@ class PackageZip
 
             /** @var Package $package */
             foreach ($packages as $package) {
-                if ($package->getCountPersons() < $package->getRoomType()->getTotalPlaces() && $package->getIsMovable()) {
-
+                if ($package->getCountPersons() < $package->getRoomType()->getTotalPlaces()
+                    && $package->getIsMovable()
+                    && empty($package->getAccommodation())) {
                     $optimalRoomType = $this->getOptimalRoomType($package);
                     if (!is_null($optimalRoomType) && $optimalRoomType->getId() != $package->getRoomType()->getId()) {
                         $movingPackageData = (new MovingPackageData())
