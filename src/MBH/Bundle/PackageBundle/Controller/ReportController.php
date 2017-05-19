@@ -17,7 +17,6 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageMovingInfo;
 use MBH\Bundle\PackageBundle\Form\PackageVirtualRoomType;
-use MBH\Bundle\PackageBundle\Form\PackagingReportFilterType;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
