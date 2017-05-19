@@ -221,6 +221,22 @@ class OnlineResultInstance
         $this->special = $special;
     }
 
+    public function isSameVirtualRoomInSpec()
+    {
+        $result = false;
+        if (!empty($this->results) && !empty($this->special)) {
+            $specialVirtualRoom = $this->special->getVirtualRoom();
+            /** @var SearchResult $result */
+            $searchResult = $this->results->first();
+            $virtualRoom = $searchResult->getVirtualRoom();
+            if ($specialVirtualRoom && $virtualRoom && $specialVirtualRoom->getId() === $virtualRoom->getId()) {
+                $result = true;
+            }
+        }
+
+        return $result;
+    }
+
 
 
 }

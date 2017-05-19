@@ -94,9 +94,13 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         }
         if ($begin) {
             $entity->setBegin($begin);
+            $displayBegin = clone($begin);
+            $entity->setDisplayFrom($displayBegin->modify('-7 days'));
         }
         if ($end) {
             $entity->setEnd($end);
+            $dislayEnd = clone($end);
+            $entity->setDisplayTo($dislayEnd->modify('+ 7 days'));
         }
         $entity->setLimit(1);
         $entity

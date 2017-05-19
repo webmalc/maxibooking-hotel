@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultInstance;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSpecialResultGenerator;
 use MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
@@ -89,8 +90,10 @@ class SpecialHandler
         //Здесь используется уже готовый код для поиска в онлайн
         $searchForm = $this->getFormData($special);
         $searchResults = $this->specialSearchHelper->getResults($searchForm);
+        /** @var OnlineResultInstance $onlineSearchResult */
+        $onlineSearchResult = $searchResults->first();
         /** @var SearchResult $searchResult */
-        if (count($searchResults) && count($searchResults->first()->getResults())) {
+        if (count($searchResults) && count($onlineSearchResult->getResults()) && $onlineSearchResult->isSameVirtualRoomInSpec()) {
             $searchResult = $searchResults->first()->getResults()->first();
             $specialPrice = new SpecialPrice();
             $specialPrice
@@ -102,6 +105,9 @@ class SpecialHandler
             $this->addLogMessage('Найдены цены', $searchResult->getPrices(), $output);
         } else {
             $err = 'Нет подходящих вариантов для спецпредложения';
+            if (!$onlineSearchResult->isSameVirtualRoomInSpec()) {
+                $err.=' виртуальная комната занята';
+            }
             //Находит чем занята вирт комната.
 //            $packages = $this->getPackage($special->getBegin(), $special->getEnd(), $special->getVirtualRoom());
 //            if ($packages && count($packages)) {
@@ -150,14 +156,14 @@ class SpecialHandler
     private function getFormData(Special $special): OnlineSearchFormData
     {
         $roomType = $special->getVirtualRoom() ? $special->getVirtualRoom()->getRoomType() : null;
-        $data = $this->onlineSearchFormData;
+        $data = clone($this->onlineSearchFormData);
         $data->setSpecial($special);
         if ($roomType) {
             $data->setRoomType($roomType);
         }
         $data->setCache(false);
 
-        return $this->onlineSearchFormData;
+        return $data;
     }
 
     /**

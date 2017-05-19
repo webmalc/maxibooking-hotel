@@ -741,5 +741,17 @@ class Special extends Base
         $this->setError('');
     }
 
+    public function isDiffDates(): bool
+    {
+        $result = false;
+        $beginDiff = (int)$this->getBegin()->diff($this->getDisplayFrom())->format('%d');
+        $endDiff = (int)$this->getEnd()->diff($this->getDisplayTo())->format('%d');
+        if (7 < $beginDiff || 7 < $endDiff) {
+            $result = true;
+        }
+
+        return $result;
+    }
+
 
 }

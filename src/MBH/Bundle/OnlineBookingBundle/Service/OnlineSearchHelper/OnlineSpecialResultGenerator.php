@@ -11,7 +11,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
 {
     protected const TYPE = 'special';
 
-    const SPECIAL_LIMIT = 0;
+    const SPECIAL_LIMIT = 10;
 
     protected function createOnlineResultInstance($roomType, $results, SearchQuery $searchQuery): OnlineResultInstance
     {
