@@ -86,7 +86,7 @@ class PackageZip
         $roomTypeZipConfig = $this->dm->getRepository('MBHClientBundle:RoomTypeZip')->fetchConfig();
         $roomTypesByCategories = $this->roomTypeByCategories($roomTypeZipConfig);
 
-        $skip = 300;
+        $skip = 50;
         $info['amount'] = 0;
         $info['error'] = 0;
         $packagesCount = $this->getMaxAmountPackages($roomTypesByCategories);
@@ -102,8 +102,6 @@ class PackageZip
                         && $package->getIsMovable()
                         && $this->hasLessAvailability($package->getRoomType())) {
 
-                        $this->logPackage('---------BEGIN SEARCH OF OPTIMAL ROOM TYPE---------', $package, $package->getRoomType());
-
                         $optimalRoomType = $this->getOptimalRoomType($package);
                         if (!is_null($optimalRoomType) && $optimalRoomType->getId() !== $oldRoomType->getId()) {
                             $result = $this->orderManager->changeRoomType($package, $optimalRoomType);
@@ -114,18 +112,16 @@ class PackageZip
                             } else {
                                 $this->logPackage('FOUND ROOM TYPE NOT EMPTY', $package, $oldRoomType);
                             }
-                        } else {
-                            $this->logPackage('OPTIMAL ROOM TYPE NOT FOUND', $package, $oldRoomType);
                         }
                     }
                 } catch (\Exception $e) {
                     $info['error']++;
                     $this->logPackage('ERROR: ' . $e->getMessage(), $package, $oldRoomType);
                 }
-                $this->dm->clear($package);
+                $this->dm->clear();
             }
             $this->dm->flush();
-            $this->dm->clear();
+
         }
 
         $this->logger->alert('Final TOTAL: ' . $info['amount'] . "\n");
