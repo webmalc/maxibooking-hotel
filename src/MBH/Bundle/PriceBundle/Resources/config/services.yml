@@ -67,3 +67,7 @@ services:
   special_duplicate_search:
       class: MBH\Bundle\PriceBundle\Services\SpecialDuplicateSearch
       arguments: ['@doctrine_mongodb.odm.document_manager']
+
+  mbh.special_display_dates_mass_changer:
+    class: MBH\Bundle\PriceBundle\Services\SpecialDisplayDatesMassChanger
+    arguments: ['@doctrine_mongodb.odm.document_manager']

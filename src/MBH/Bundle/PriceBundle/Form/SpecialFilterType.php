@@ -85,6 +85,12 @@ class SpecialFilterType extends AbstractType
                 'value' => true,
                 'required' => false,
             ])
+            ->add('isStrict', CheckboxType::class, [
+                'label' => 'isStrict',
+                'group' => 'form.group.config',
+                'value' => true,
+                'required' => false
+            ])
         ;
     }
 

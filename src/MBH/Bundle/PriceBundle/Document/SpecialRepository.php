@@ -36,11 +36,20 @@ class SpecialRepository extends DocumentRepository
         $qb = $this->createQueryBuilder();
 
         if ($filter->getBegin()) {
-            $qb->field('end')->gte($filter->getBegin());
+            if ($filter->isStrict() && $filter->getEnd()) {
+                $qb->field('begin')->equals($filter->getBegin());
+            } else {
+                $qb->field('end')->gte($filter->getBegin());
+            }
         }
 
         if ($filter->getEnd()) {
-            $qb->field('begin')->lte($filter->getEnd());
+            if ($filter->isStrict() && $filter->getBegin()) {
+                $qb->field('end')->equals($filter->getEnd());
+            } else {
+                $qb->field('begin')->lte($filter->getEnd());
+            }
+
         }
 
         if ($filter->getDisplayFrom()) {

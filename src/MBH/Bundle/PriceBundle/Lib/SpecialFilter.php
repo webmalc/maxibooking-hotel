@@ -63,6 +63,10 @@ class SpecialFilter
     private $excludeSpecial;
 
     /**
+     * @var bool
+     */
+    private $isStrict;
+    /**
      * @return \DateTime
      */
     public function getBegin(): ?\DateTime
@@ -77,6 +81,7 @@ class SpecialFilter
     public function setBegin(\DateTime $begin = null): SpecialFilter
     {
         $this->begin = $begin;
+
         return $this;
     }
 
@@ -95,6 +100,7 @@ class SpecialFilter
     public function setEnd(\DateTime $end = null): SpecialFilter
     {
         $this->end = $end;
+
         return $this;
     }
 
@@ -113,6 +119,7 @@ class SpecialFilter
     public function setIsEnabled(bool $isEnabled = null): SpecialFilter
     {
         $this->isEnabled = $isEnabled;
+
         return $this;
     }
 
@@ -131,6 +138,7 @@ class SpecialFilter
     public function setTariff(Tariff $tariff = null): SpecialFilter
     {
         $this->tariff = $tariff;
+
         return $this;
     }
 
@@ -149,6 +157,7 @@ class SpecialFilter
     public function setRoomType(RoomType $roomType = null): SpecialFilter
     {
         $this->roomType = $roomType;
+
         return $this;
     }
 
@@ -167,6 +176,7 @@ class SpecialFilter
     public function setHotel(Hotel $hotel): SpecialFilter
     {
         $this->hotel = $hotel;
+
         return $this;
     }
 
@@ -185,6 +195,7 @@ class SpecialFilter
     public function setRemain(int $remain = null): SpecialFilter
     {
         $this->remain = $remain;
+
         return $this;
     }
 
@@ -203,6 +214,7 @@ class SpecialFilter
     public function setExcludeSpecial(Special $excludeSpecial = null): SpecialFilter
     {
         $this->excludeSpecial = $excludeSpecial;
+
         return $this;
     }
 
@@ -221,6 +233,7 @@ class SpecialFilter
     public function setDisplayFrom(\DateTime $displayFrom = null): SpecialFilter
     {
         $this->displayFrom = $displayFrom;
+
         return $this;
     }
 
@@ -239,8 +252,29 @@ class SpecialFilter
     public function setDisplayTo(\DateTime $displayTo = null): SpecialFilter
     {
         $this->displayTo = $displayTo;
+
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isStrict(): ?bool
+    {
+        return $this->isStrict;
+    }
+
+    /**
+     * @param bool $isStrict
+     * @return $this
+     */
+    public function setIsStrict(bool $isStrict)
+    {
+        $this->isStrict = $isStrict;
+
+        return $this;
+    }
+
 
 
 }

@@ -99,8 +99,9 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         }
         if ($end) {
             $entity->setEnd($end);
-            $dislayEnd = clone($end);
-            $entity->setDisplayTo($dislayEnd->modify('+ 7 days'));
+            //Не ошибка, меняем на период от даты действия спец предложения
+            $displayEnd = clone($begin);
+            $entity->setDisplayTo($displayEnd->modify('+ 7 days'));
         }
         $entity->setLimit(1);
         $entity

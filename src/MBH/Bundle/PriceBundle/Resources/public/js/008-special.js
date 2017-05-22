@@ -10,7 +10,10 @@ $(document).ready(function () {
 
     var specialFilterForm = $('#special-filter-form'),
         specialTable = $('#special-table'),
-        process = false;
+        process = false,
+        $isStrict = $('#isStrict'),
+        $begin = $('input#begin'),
+        $end = $('input#end');
 
     specialTable.dataTable({
         "processing": true,
@@ -32,9 +35,24 @@ $(document).ready(function () {
         }
     });
 
+    var isStrictCheck = function () {
+        var isBeginExist = $begin.datepicker("getDate");
+        var isEndExist = $end.datepicker("getDate");
+        if(!isBeginExist || !isEndExist) {
+            $isStrict.bootstrapSwitch("state", false);
+            $isStrict.bootstrapSwitch("disabled", true);
+        } else {
+            $isStrict.bootstrapSwitch("disabled", false)
+        }
+    };
     specialFilterForm.find('input, select').on('change switchChange.bootstrapSwitch', function () {
         if (!process) {
             specialTable.dataTable().fnDraw();
         }
     });
+    $begin.add($end).on('clearDate changeDate ', function () {
+        isStrictCheck();
+    });
+    isStrictCheck();
+
 });
