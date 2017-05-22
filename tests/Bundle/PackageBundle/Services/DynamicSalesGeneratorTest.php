@@ -21,6 +21,7 @@ class DynamicSalesGeneratorTest  extends WebTestCase
         /** @var Hotel $hotel */
         $hotel = $dm->getRepository('MBHHotelBundle:Hotel')
             ->findOneBy(['fullTitle' => 'Мой отель #1']);
+
         $roomTypes = $hotel->getRoomTypes();
         $beginDates = [(new \DateTime('-15 days'))->format('d.m.Y')];
         $endDates = [(new \DateTime('+5 days'))->format('d.m.Y')];
@@ -35,9 +36,15 @@ class DynamicSalesGeneratorTest  extends WebTestCase
         /** @var DynamicSalesPeriod $period */
         $period = $dynamicSales[0][0];
         $periodDays = $period->getDynamicSalesDays();
-        $this->assertEquals(count($period->getDynamicSalesDays()), 20);
-        $seventhDynamicSalesDay = $periodDays[6];
-        $this->assertEquals($seventhDynamicSalesDay->getTotalSalesPrice(), 14000);
-//        $this->asse
+        $this->assertEquals(count($period->getDynamicSalesDays()), 21);
+        $tenthDynamicSalesDay = $periodDays[9];
+        $this->assertEquals($tenthDynamicSalesDay->getTotalSalesPrice(), 10430);
+        $this->assertEquals($tenthDynamicSalesDay->getTotalSalesPriceForPeriod(), 42225);
+        $this->assertEquals($tenthDynamicSalesDay->getNumberOfCreatedPackages(), 3);
+        $this->assertEquals($tenthDynamicSalesDay->getNumberOfCreatedPackagesForPeriod(), 9);
+        $this->assertEquals($tenthDynamicSalesDay->getNumberOfManDays(), 5);
+        $this->assertEquaks($tenthDynamicSalesDay->getNumberOfManDaysForPeriod(), 21);
+        $this->assertEquals($tenthDynamicSalesDay->getNumberOfPackageDays(), 3);
+        $this->assertEquals($tenthDynamicSalesDay->getNumberOfPackageDaysForPeriod(), 3);
     }
 }

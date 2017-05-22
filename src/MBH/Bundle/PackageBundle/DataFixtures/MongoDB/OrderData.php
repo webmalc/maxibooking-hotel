@@ -59,8 +59,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
         ],
         [
             'number' => '5',
-            'adults' => '3',
-            'children' => '2',
+            'adults' => 3,
+            'children' => 2,
             'price' => '8000.0',
             'paid' => '8000',
             'regDayAgo' => 5,
@@ -99,8 +99,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
         ],
         [
             'number' => '9',
-            'adults' => 1,
-            'children' => 0,
+            'adults' => 2,
+            'children' => 1,
             'price' => 7000,
             'paid' => 50,
             'regDayAgo' => 6,
