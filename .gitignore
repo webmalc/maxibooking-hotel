@@ -16,6 +16,7 @@ scripts/deploy_to_test.sh
 !bin/symfony_requirements
 /composer.phar
 *.php~
+*.#*
 *.yml~
 nbproject/
 /web/css/

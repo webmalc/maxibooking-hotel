@@ -1,3 +1,7 @@
+1.5.5
+=============
+* online form fixes
+
 1.5.4
 =============
 * new fixtures and tests

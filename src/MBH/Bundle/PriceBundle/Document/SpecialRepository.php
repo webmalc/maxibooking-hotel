@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
-use  Doctrine\MongoDB\CursorInterface;
+use Doctrine\MongoDB\CursorInterface;
 
 class SpecialRepository extends DocumentRepository
 {
@@ -67,7 +67,7 @@ class SpecialRepository extends DocumentRepository
             if ($filter->getExcludeSpecial()) {
                 $qb->addAnd($qb->expr()->addOr(
                     $qb->expr()->field('remain')->gte($filter->getRemain()),
-                    $qb->expr()->field('id')->gte($filter->getExcludeSpecial()->getId())
+                    $qb->expr()->field('id')->equals($filter->getExcludeSpecial()->getId())
                 ));
             } else {
                 $qb->field('remain')->gte($filter->getRemain());
