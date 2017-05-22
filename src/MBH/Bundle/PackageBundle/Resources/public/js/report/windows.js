@@ -19,7 +19,7 @@ $(document).ready(function ($) {
                     //Костыль. Не даем возможность нажать на создание спец предложений в стыке
                     var isJoint = $(this).find('a').length === 2;
                     // Ребро спецпредложения?
-                    if (!isSpecials() || isJoint) {
+                    if (!isSpecials() || isJoint || !event.ctrlKey) {
                         return false;
                     }
                     event.preventDefault();
@@ -70,16 +70,19 @@ $(document).ready(function ($) {
     var Special = function($cell) {
         this.$cell = $cell;
         this.specialId = $cell.data('special');
+        this.url = Routing.generate('special_edit', {id: this.specialId});
 
     };
     Special.prototype.edit = function() {
 
     };
+    Special.prototype.init = function () {
+        this.bindHandler()
+    };
     Special.prototype.bindHandler = function () {
         var that = this;
-        console.log('bindhandlers');
-        this.$cell.hover(function(e) {
-            console.log('im in the hover');
+        this.$cell.click(function(e) {
+            window.open(that.url);
         })
     };
     Special.prototype.show = function () {
@@ -95,11 +98,7 @@ $(document).ready(function ($) {
     };
 
     Special.prototype.checkVisible = function () {
-        if(isSpecials()) {
-            this.show();
-        } else {
-            this.hide();
-        }
+        isSpecials()?this.show():this.hide();
     };
 
 
@@ -111,6 +110,7 @@ $(document).ready(function ($) {
         var that = this;
         $.each($('div.special-cell'), function () {
             var special = new Special($(this));
+            special.init();
             that.add(special);
         });
         this.checkVisible();
@@ -159,39 +159,43 @@ $(document).ready(function ($) {
                 success: function (response) {
                     table.html(response);
 
-                    $('tr').hover(function () {
-                        $(this).children('td').each(function (index, elem) {
+                    // $('tr').hover(function () {
+                    //     $(this).children('td').each(function (index, elem) {
+                    //
+                    //         var link = $(elem).find('a');
+                    //         if (link.length) {
+                    //             var cloneLink = link.clone();
+                    //         }
+                    //         if ($(this).attr('data-date') && !($(elem).find('.pos').length)) {
+                    //
+                    //             $(this).append("<div class='pos'></div>");
+                    //             $(this).find('.pos').prepend(cloneLink);
+                    //             link.remove();
+                    //             if (!($(this).find('.dates').length)) {
+                    //                 var str = "<div class='dates'><span class='" + $(this).attr('data-class') + "'>" + $(this).attr('data-date') + " </span><div class='text-muted'>" + $(this).attr('data-room') + "</div></div>";
+                    //                 $(this).find('a').length ? $(this).find('a').append(str) : $(this).find('.pos').append(str);
+                    //             }
+                    //             $(this).find("a.windows-package-info-link").on('click', function (event) {
+                    //                 processLinks(this, event);
+                    //             });
+                    //         }
+                    //
+                    //     });
+                    //
+                    //     $(this).find('a').tooltip();
+                    //
+                    // }, function () {
+                    //     $(this).children('td').each(function () {
+                    //         var linkOld = $(this).find('a').clone();
+                    //         $(this).find('a').tooltip('hide');
+                    //         $(this).find('.pos').remove();
+                    //         $(this).append(linkOld);
+                    //         $(this).find("a.windows-package-info-link").off('click');
+                    //     });
+                    // });
 
-                            var link = $(elem).find('a');
-                            if (link.length) {
-                                var cloneLink = link.clone();
-                            }
-                            if ($(this).attr('data-date') && !($(elem).find('.pos').length)) {
-
-                                $(this).append("<div class='pos'></div>");
-                                $(this).find('.pos').prepend(cloneLink);
-                                link.remove();
-                                if (!($(this).find('.dates').length)) {
-                                    var str = "<div class='dates'><span class='" + $(this).attr('data-class') + "'>" + $(this).attr('data-date') + " </span><div class='text-muted'>" + $(this).attr('data-room') + "</div></div>";
-                                    $(this).find('a').length ? $(this).find('a').append(str) : $(this).find('.pos').append(str);
-                                }
-                                $(this).find("a.windows-package-info-link").on('click', function (event) {
-                                    processLinks(this, event);
-                                });
-                            }
-
-                        });
-
-                        $(this).find('a').tooltip();
-
-                    }, function () {
-                        $(this).children('td').each(function () {
-                            var linkOld = $(this).find('a').clone();
-                            $(this).find('a').tooltip('hide');
-                            $(this).find('.pos').remove();
-                            $(this).append(linkOld);
-                            $(this).find("a.windows-package-info-link").off('click');
-                        });
+                    $(this).find("a.windows-package-info-link").on('click', function (event) {
+                        processLinks(this, event);
                     });
 
                     $('.descr').readmore({

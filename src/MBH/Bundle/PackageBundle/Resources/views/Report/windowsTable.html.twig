@@ -64,7 +64,7 @@
                                 {% endif %}
                                 {% if specials is not empty %}
                                     {% for special in specials %}
-                                        <div title = "Спецпредложение" data-toggle="tooltip" class="special-hidden special-cell {{ special.begin == date?'special-cell-begin':'' }} {{ special.end == date?'special-cell-end':'' }}"
+                                        <div title = "{{ special.fullTitle }}" data-toggle="tooltip" class="special-hidden special-cell {{ special.begin == date?'special-cell-begin':'' }} {{ special.end == date?'special-cell-end':'' }}"
                                              data-name="{{ special.name }}"
                                              data-special="{{ special.id }}"
                                         >
