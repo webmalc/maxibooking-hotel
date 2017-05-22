@@ -1,3 +1,4 @@
 invalid.ages: Возраст инфанта должен быть меньше возраста ребенка
 special.dates.error: Некорректно введены даты
 special.displayDates.error: Некорректно введены даты отображения спецпредложения
+document.already.virtualRoom.exists: Спец предложение с такими датами уже существует

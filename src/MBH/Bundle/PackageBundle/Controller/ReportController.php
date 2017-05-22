@@ -65,10 +65,14 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $notVirtualRooms = $this->dm->getRepository('MBHPackageBundle:Package')->getNotVirtualRoom(new \DateTime($request->get('begin')),
             new \DateTime($request->get('end')));
 
+        $duplicateSpecialSearcher = $this->get('special_duplicate_search');
+        $duplicateSpecials = $duplicateSpecialSearcher->search();
+
         return [
             'data' => $generator->generate($request, $this->hotel),
             'error' => $generator->getError(),
-            'notVirtualRooms' => $notVirtualRooms
+            'notVirtualRooms' => $notVirtualRooms,
+            'duplicateSpecials' => $duplicateSpecials
         ];
     }
 

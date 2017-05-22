@@ -63,3 +63,7 @@ services:
         arguments:  ["@mbh.hotel.selector"]
         tags:
                 - { name: form.type }
+
+  special_duplicate_search:
+      class: MBH\Bundle\PriceBundle\Services\SpecialDuplicateSearch
+      arguments: ['@doctrine_mongodb.odm.document_manager']

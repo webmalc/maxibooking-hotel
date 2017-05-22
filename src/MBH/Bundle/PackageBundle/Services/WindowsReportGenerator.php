@@ -171,10 +171,8 @@ class WindowsReportGenerator
 
         $qb
             ->field('isEnabled')->equals(true)
-            ->field('remain')->gte(1)
             ->field('virtualRoom')->exists(true)
             ->field('hotel')->references($this->hotel)
-            ->field('prices')->exists(true)
         ;
 
         return $qb->getQuery()->execute();
