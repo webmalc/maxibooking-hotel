@@ -149,6 +149,20 @@ class PackageMovingController extends BaseController
     }
 
     /**
+     * @Route("/update_report/{movingInfoId}", name="update_report", options={"expose" = true})
+     * @Security("is_granted('ROLE_PACKAGE_MOVING')")
+     * @ParamConverter("packageMovingInfo", class="MBHPackageBundle:PackageMovingInfo", options={"id" = "movingInfoId"})
+     * @param PackageMovingInfo $packageMovingInfo
+     * @return JsonResponse
+     */
+    public function updateReportAction(PackageMovingInfo $packageMovingInfo)
+    {
+        $this->get('mbh.package_moving')->updatePackageMovingInfo($packageMovingInfo);
+
+        return new JsonResponse(['success' => true]);
+    }
+
+    /**
      * @Template()
      * @Route("/report", name="package_moving_report")
      * @param Request $request

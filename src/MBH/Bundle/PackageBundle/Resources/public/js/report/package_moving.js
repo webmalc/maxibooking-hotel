@@ -11,6 +11,18 @@ $(document).ready(function ($) {
             location.href = Routing.generate('close_moving_report', {'movingInfoId': packageMovingInfoId});
         });
     });
+    $('#package-moving-report-update-button').click(function () {
+        showLoadingIndicator();
+        var href = Routing.generate("update_report", {'movingInfoId': packageMovingInfoId});
+        $.get(href, function (data) {
+            hideLoadingIndicator();
+            if (data.success === true) {
+                document.location.reload();
+            } else {
+                handleErrorResponse("Произошла непредвиденная ошибка");
+            }
+        })
+    });
     var reportStatus = document.getElementById('moving-info-status');
     if (reportStatus && reportStatus.value === 'preparing') {
         checkReportStatus(packageMovingInfoId);

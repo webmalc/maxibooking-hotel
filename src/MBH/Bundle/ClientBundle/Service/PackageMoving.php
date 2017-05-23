@@ -131,6 +131,24 @@ class PackageMoving
     }
 
     /**
+     * @param PackageMovingInfo $movingInfo
+     */
+    public function updatePackageMovingInfo(PackageMovingInfo $movingInfo)
+    {
+        foreach ($movingInfo->getMovingPackagesData() as $packageData) {
+            if (!$packageData->getPackage()->getIsMovable()) {
+                $movingInfo->removeMovingPackageData($packageData);
+            }
+            if (!$packageData->getIsMoved()) {
+                $optimalRoomType = $this->getOptimalRoomType($packageData->getPackage());
+                if (is_null(!$optimalRoomType)) {
+                    $movingInfo->removeMovingPackageData($packageData);
+                }
+            }
+        }
+    }
+
+    /**
      * @param PackageMovingInfo $packageMovingInfo
      * @return PackageMovingInfo
      */

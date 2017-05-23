@@ -213,6 +213,17 @@ class PackageMovingInfo
     }
 
     /**
+     * @param MovingPackageData $packageData
+     * @return PackageMovingInfo
+     */
+    public function removeMovingPackageData(MovingPackageData $packageData)
+    {
+        $this->movingPackagesData->remove($packageData);
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getId(): ?string
