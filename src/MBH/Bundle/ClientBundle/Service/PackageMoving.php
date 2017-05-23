@@ -138,11 +138,14 @@ class PackageMoving
         foreach ($movingInfo->getMovingPackagesData() as $packageData) {
             if (!$packageData->getPackage()->getIsMovable()) {
                 $movingInfo->removeMovingPackageData($packageData);
-            }
-            if (!$packageData->getIsMoved()) {
-                $optimalRoomType = $this->getOptimalRoomType($packageData->getPackage());
-                if (is_null(!$optimalRoomType)) {
-                    $movingInfo->removeMovingPackageData($packageData);
+            } else {
+                if (!$packageData->getIsMoved()) {
+                    $optimalRoomType = $this->getOptimalRoomType($packageData->getPackage());
+                    if (is_null($optimalRoomType)) {
+                        $movingInfo->removeMovingPackageData($packageData);
+                    } else {
+                        $packageData->setNewRoomType($optimalRoomType);
+                    }
                 }
             }
         }
