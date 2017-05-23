@@ -632,6 +632,11 @@ class Search implements SearchInterface
         $filter->setRemain(1)
             ->setDisplayFrom($query->begin)
             ->setDisplayTo($query->end);
+        if ($query->isSpecialStrict() && $query->begin && $query->end) {
+            $filter->setBegin($query->begin);
+            $filter->setEnd($query->end);
+            $filter->setIsStrict(true);
+        }
 
         return $filter;
     }

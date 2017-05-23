@@ -173,6 +173,8 @@ class SearchQuery
      */
     private $isShowNoVirtRoomFlash = false;
 
+    protected $isSpecialStrict = false;
+
     /**
      * @return bool
      */
@@ -353,6 +355,24 @@ class SearchQuery
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isSpecialStrict(): bool
+    {
+        return $this->isSpecialStrict;
+    }
+
+    /**
+     * @param bool $isSpecialStrict
+     */
+    public function setIsSpecialStrict(bool $isSpecialStrict)
+    {
+        $this->isSpecialStrict = $isSpecialStrict;
+    }
+
+
 
 
 }

@@ -131,6 +131,12 @@ class SearchType extends AbstractType
                 'label' => 'form.searchType.forceBooking',
                 'required' => false,
             ])
+            ->add('isSpecialStrict', CheckboxType::class, [
+                'label' => 'isSpecialStrict',
+                'group' => 'form.group.config',
+                'value' => true,
+                'required' => false
+            ])
             ->add('room', HiddenType::class, [
                 'required' => false
             ])
