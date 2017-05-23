@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SpecialDisplayDatesMassChanger extends ContainerAwareCommand
+class SpecialDisplayDatesMassChangerCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -33,14 +33,10 @@ class SpecialDisplayDatesMassChanger extends ContainerAwareCommand
             $output->writeln($message);
         };
         $helper = $this->getContainer()->get('mbh.helper');
-        $begin = null;
-        $end = null;
-        $period = null;
-        $roomType = null;
+        $begin = $end = $period = $roomType = null;
         if ($input->getOption('begin')) {
             $begin = $helper->getDateFromString($input->getOption('begin'));
         }
-
         if ($input->getOption('end')) {
             $end = $helper->getDateFromString($input->getOption('end'));
         }
