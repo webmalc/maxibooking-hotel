@@ -81,17 +81,17 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
 
     private function filterSpecials(array $specials)
     {
-        if (count($specials)) {
-            uasort(
-                $specials,
-                function ($a, $b) {
-                    $priceA = $a->getPrices()->toArray()[0]->getPrices();
-                    $priceB = $b->getPrices()->toArray()[0]->getPrices();
-
-                    return reset($priceA) <=> reset($priceB);
-                }
-            );
-        }
+//        if (count($specials)) {
+//            uasort(
+//                $specials,
+//                function ($a, $b) {
+//                    $priceA = $a->getPrices()->toArray()[0]->getPrices();
+//                    $priceB = $b->getPrices()->toArray()[0]->getPrices();
+//
+//                    return reset($priceA) <=> reset($priceB);
+//                }
+//            );
+//        }
 
         return $specials;
     }

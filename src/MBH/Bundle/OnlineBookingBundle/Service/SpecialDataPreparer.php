@@ -128,7 +128,7 @@ class SpecialDataPreparer
             'hotelId' => $roomType->getHotel()->getId(),
             'images' => $this->getImage($roomType),
             'hotelName' => $roomType->getHotel()->getName(),
-            'roomTypeName' => $roomType->getCategory()->getName(),
+            'roomTypeName' => $roomType->getCategory()->getFullTitle(),
             'eat' => '',
             'dates' => [
                 'begin' => $special->getBegin(),

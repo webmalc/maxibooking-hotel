@@ -95,6 +95,13 @@ class SpecialRepository extends DocumentRepository
             $qb->field('hotel')->references($filter->getHotel());
         }
 
+        $qb->sort(
+            [
+                'begin' => 'asc',
+            ]
+        );
+
+
         return $qb;
     }
 

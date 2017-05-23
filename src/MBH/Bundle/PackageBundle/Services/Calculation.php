@@ -144,7 +144,7 @@ class Calculation
         Special $special = null,
         $useDuration = true
     ) {
-    
+        $originTariff = $tariff;
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
         $places = $roomType->getPlaces();
@@ -362,7 +362,7 @@ class Calculation
                     $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
                 }
 
-                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $roomType, $special);
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $originTariff, $roomType, $special);
                 $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
 
