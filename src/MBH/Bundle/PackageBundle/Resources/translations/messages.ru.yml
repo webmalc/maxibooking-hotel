@@ -366,6 +366,7 @@ report.packaging.dates.title: Даты
 report.packaging.generate_report.button: Сгенерировать отчет
 
 report.package_moving.title: 'Перемещение'
+report.package_moving_report.title: Отчет по перемещениям
 report.package_moving.dates.title: Даты
 report.package_moving.generate_report.button: Сгенерировать отчет
 report.package_moving.room_type: Тип комнат

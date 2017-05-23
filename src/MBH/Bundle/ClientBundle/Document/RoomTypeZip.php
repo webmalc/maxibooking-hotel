@@ -93,7 +93,7 @@ class RoomTypeZip extends Base
     }
 
     /**
-     * @return RoomTypeCategory
+     * @return RoomTypeCategory[]|ArrayCollection
      */
     public function getCategories()
     {

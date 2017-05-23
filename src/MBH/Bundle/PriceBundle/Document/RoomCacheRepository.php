@@ -113,6 +113,22 @@ class RoomCacheRepository extends DocumentRepository
     }
 
     /**
+     * @param Hotel $hotel
+     * @return array|null|object
+     */
+    public function getLatestInYear(Hotel $hotel)
+    {
+        $qb = $this->createQueryBuilder();
+        return $qb
+            ->field('hotel.id')->equals($hotel->getId())
+            ->field('date')->lte(new \DateTime('Dec 31'))
+            ->limit(1)
+            ->sort('date', -1)
+            ->getQuery()
+            ->getSingleResult();
+    }
+
+    /**
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param Hotel $hotel

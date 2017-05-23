@@ -3,18 +3,18 @@
 namespace MBH\Bundle\PackageBundle\Task;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\ClientBundle\Service\PackageZip;
+use MBH\Bundle\ClientBundle\Service\PackageMoving;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class PreparePackageMovingReport implements ConsumerInterface
 {
-    /** @var  PackageZip $packageZip */
+    /** @var  PackageMoving $packageZip */
     private $packageZip;
     /** @var  DocumentManager $dm */
     private $dm;
 
-    public function __construct(PackageZip $packageZip, DocumentManager $dm)
+    public function __construct(PackageMoving $packageZip, DocumentManager $dm)
     {
         $this->packageZip = $packageZip;
         $this->dm = $dm;

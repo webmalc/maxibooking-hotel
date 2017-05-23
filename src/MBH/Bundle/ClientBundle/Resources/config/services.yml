@@ -6,8 +6,8 @@ services:
         class: MBH\Bundle\ClientBundle\Service\NoticeUnpaid
         arguments: ['@service_container','@doctrine_mongodb', '@mbh.notifier.mailer']
 
-    mbh_package_zip:
-          class: MBH\Bundle\ClientBundle\Service\PackageZip
+    mbh.package_moving:
+          class: MBH\Bundle\ClientBundle\Service\PackageMoving
           arguments:
               - '@doctrine.odm.mongodb.document_manager'
               - '@service_container'

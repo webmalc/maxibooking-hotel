@@ -64,20 +64,22 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
 
     /**
      * @param Hotel $hotel
-     * @param null $roomTypes
+     * @param null $categories
      * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function roomByCategories(Hotel $hotel = null, $categories = null)
+    public function getByCategories(Hotel $hotel = null, $categories = null)
     {
-        if ($categories){
-            $queryBuilder = $this->createQueryBuilder()
-                ->field('category.id')->in($categories)
-                ->getQuery()
-                ->execute();
+        $queryBuilder = $this->createQueryBuilder();
 
-            return $queryBuilder;
+        if ($categories){
+            $queryBuilder->field('category.id')->in($categories);
         }
+
+        if (!is_null($hotel)) {
+            $queryBuilder->field('hotel.id')->equals($hotel->getId());
+        }
+
+        return $queryBuilder->getQuery()->execute();
     }
 
 }

@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\UserBundle\Document\User;
 
 /**
  * @ODM\EmbeddedDocument()
@@ -50,6 +51,56 @@ class MovingPackageData
     private $oldAccommodation;
 
     /**
+     * @var \DateTime
+     * @ODM\Field(type="date")
+     */
+    private $dateOfMove;
+
+    /**
+     * @var User
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\UserBundle\Document\User")
+     */
+    private $movedUser;
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateOfMove(): ?\DateTime
+    {
+        return $this->dateOfMove;
+    }
+
+    /**
+     * @return User
+     */
+    public function getMovedUser(): ?User
+    {
+        return $this->movedUser;
+    }
+
+    /**
+     * @param User $movedUser
+     * @return MovingPackageData
+     */
+    public function setMovedUser(User $movedUser): MovingPackageData
+    {
+        $this->movedUser = $movedUser;
+
+        return $this;
+    }
+
+    /**
+     * @param \DateTime $dateOfMove
+     * @return MovingPackageData
+     */
+    public function setDateOfMove(\DateTime $dateOfMove): MovingPackageData
+    {
+        $this->dateOfMove = $dateOfMove;
+
+        return $this;
+    }
+
+    /**
      * @return Room
      */
     public function getOldAccommodation(): ?Room
@@ -93,6 +144,23 @@ class MovingPackageData
     public function getIsMoved(): bool
     {
         return $this->isMoved;
+    }
+
+    /**
+     * @param User $user
+     * @param bool $isMoved
+     * @param bool $isSetDate
+     * @return MovingPackageData
+     */
+    public function setMovingData(User $user, $isMoved = true, $isSetDate = true)
+    {
+        $this->movedUser = $user;
+        $this->setIsMoved($isMoved);
+        if ($isSetDate) {
+            $this->setDateOfMove(new \DateTime());
+        }
+
+        return $this;
     }
 
     /**
