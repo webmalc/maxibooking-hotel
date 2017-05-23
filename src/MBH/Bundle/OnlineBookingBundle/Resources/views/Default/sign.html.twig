@@ -38,7 +38,6 @@
     <input type="hidden" name="tariff" value="{{ app.request.get('tariff') }}">#}
     {{ form_end(form) }}
 </div>
-
 <div id="right-column" class="col-md-4">
     <div id="info">
         <div class="title">Детали бронирования</div>
@@ -68,7 +67,7 @@
             <div class="arrival col-xs-4">
                 <div>Заезд</div>
                 <div class="date">
-                    {{ data.begin }}
+                    {{ (special is defined and special is not empty)?special.begin|date('d.m.Y'):data.begin }}
                 </div>
                 <div class="date">
                     с 12:00
@@ -83,7 +82,8 @@
             <div class="departure col-xs-4">
                 <div>Выезд</div>
                 <div class="date">
-                    {{ data.end }}
+                    {{ (special is defined and special is not empty)?special.end|date('d.m.Y'):data.end }}
+
                 </div>
                 <div class="date">
                     до 12:00

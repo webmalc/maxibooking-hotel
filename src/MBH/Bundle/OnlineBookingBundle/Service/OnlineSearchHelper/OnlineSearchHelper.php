@@ -41,19 +41,28 @@ class OnlineSearchHelper
         foreach ($this->resultsGenerators as $generator) {
             $results[$generator->getType()] = $generator->getResults($formInstance)->toArray();
         }
+        if (count($results)) {
+            $results = $this->finishFilter($results);
+        }
 
-        return $this->finishFilter($results);
+        return $results;
     }
 
     private function finishFilter(
         array $searchResults
     ) {
         $result = [];
-        if ($searchResults['common'] && $searchResults['special']) {
+        $isCommon = isset($searchResults['common']);
+        $isSpecials = isset($searchResults['special']);
+        if ($isCommon && $isSpecials) {
             $result[] = array_shift($searchResults['special']);
             $result = array_merge($result , $searchResults['common'] , $searchResults['special']);
-        } else {
-            $result = array_merge($searchResults['special'],$searchResults['common']);
+
+            return $result;
+        }
+        foreach ($searchResults as $searchResult) {
+            $result = array_merge($result, $searchResult);
+
         }
 
         return $result;

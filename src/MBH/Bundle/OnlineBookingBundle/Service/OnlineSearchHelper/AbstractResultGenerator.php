@@ -11,6 +11,7 @@ use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\OnlineBookingSearchException;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PackageBundle\Services\Search\Search;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Special;
 
@@ -43,15 +44,9 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
 
     public function getResults(OnlineSearchFormData $formData): ArrayCollection
     {
-        $results = new ArrayCollection();
-        $searchQuery = $this->initSearchQuery($formData);
-        $searchResults = $this->search($searchQuery, $formData->getRoomType(), $formData->getSpecial());
-        if (!empty($searchResults)) {
-            foreach ($searchResults as $searchResult) {
-                $results->add($this->resultOnlineInstanceCreator($searchResult, $searchQuery));
-            }
-        }
-        $results = $this->resultsHandle($searchQuery, $results);
+        $result = [];
+        $results = $this->searchByFormData($formData);
+        $results = $this->resultsHandle($results);
 
         return $results;
     }
@@ -71,12 +66,30 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         return $instance;
     }
 
-    protected function search(SearchQuery $searchQuery, $roomType = null, Special $special = null)
+    protected function createOnlineResultInstance($roomType, array $results, SearchQuery $searchQuery): OnlineResultInstance
+    {
+        $instance = new OnlineResultInstance();
+        $instance->setType(static::TYPE);
+        if ($roomType instanceof RoomType || $roomType instanceof RoomTypeCategory) {
+            $instance->setRoomType($roomType);
+        }
+        foreach ($results as $searchResult) {
+            $instance->addResult($searchResult);
+        }
+        $instance->setQuery($searchQuery);
+
+        return $instance;
+    }
+
+
+    abstract protected function searchByFormData(OnlineSearchFormData $formData): ArrayCollection;
+
+    protected function search(SearchQuery $searchQuery)
     {
         return $this->search->search($searchQuery);
     }
 
-    private function initSearchQuery(OnlineSearchFormData $data): SearchQuery
+    protected function initSearchQuery(OnlineSearchFormData $data): SearchQuery
     {
         $searchQuery = new SearchQuery();
         $roomType = $data->getRoomType();
@@ -97,13 +110,16 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         if ($data->getChildrenAge()) {
             $searchQuery->setChildrenAges($data->getChildrenAge());
         };
+        if ($data->getSpecial()) {
+            $searchQuery->setSpecial($data->getSpecial());
+        }
 
         return $searchQuery;
     }
 
-    protected function resultsHandle(SearchQuery $searchQuery, ArrayCollection $results): ArrayCollection
+    protected function resultsHandle(ArrayCollection $results): ArrayCollection
     {
-        return $this->injectSearchQuery($searchQuery, $results);
+        return $results;
     }
 
     //Исходя из старого кода предполагалось что могут быть возвращены результаты для одной группы - несколько типов комнат.
@@ -208,18 +224,6 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         return static::TYPE;
     }
 
-    protected function createOnlineResultInstance($roomType, $results, SearchQuery $searchQuery): OnlineResultInstance
-    {
-        $instance = new OnlineResultInstance();
-        $instance->setType(static::TYPE);
-        if ($roomType instanceof RoomType || $roomType instanceof RoomTypeCategory) {
-            $instance->setRoomType($roomType);
-        }
-        foreach ($results as $searchResult) {
-            $instance->addResult($searchResult);
-        }
 
-        return $instance;
-    }
 
 }

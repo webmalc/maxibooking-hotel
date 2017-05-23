@@ -59,7 +59,7 @@ class SpecialDisplayDatesMassChanger
                     ->setDisplayFrom($displayFrom)
                     ->setDisplayTo($displayTo);
             }
-//            $this->dm->flush();
+            $this->dm->flush();
         }
     }
 

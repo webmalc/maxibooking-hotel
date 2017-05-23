@@ -41,7 +41,7 @@ class SpecialDisplayDatesMassChangerCommand extends ContainerAwareCommand
             $end = $helper->getDateFromString($input->getOption('end'));
         }
         if ($input->getOption('period')) {
-            $period = $input->getOption('pediod');
+            $period = $input->getOption('period');
         }
         if ($input->getOption('roomType')) {
             $roomType = $input->getOption('roomType');

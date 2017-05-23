@@ -202,6 +202,9 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         $errors = [];
         if (count($specialResult)) {
             $searchResult = $specialResult->first()->getResults()->first()??null;
+            if ($searchResult->getVirtualRoom() === null) {
+                $errors[] = 'Возможно спецпредложение уже не активно.';
+            }
         } else {
             $errors[] = 'Поиск не вернул результат, проверьте даты заезда-выезда, ограничения.';
         }

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PriceBundle\Document\Special;
 
@@ -10,23 +11,33 @@ class OnlineCommonResultGenerator extends AbstractResultGenerator
 {
     protected const TYPE = 'common';
 
-    protected function search(SearchQuery $searchQuery, $roomType = null, Special $special = null)
+    protected function searchByFormData(OnlineSearchFormData $formData): ArrayCollection
     {
-        if ($special) {
-            return [];
+        $result = new ArrayCollection();
+        if ($formData->getSpecial()) {
+            return new ArrayCollection();
         }
 
+        $searchQuery = $this->initSearchQuery($formData);
         if ($this->options['add_search_dates']) {
             $range = $this->options['add_search_dates'];
             $searchQuery->range = $range;
             $this->search->setAdditionalDates($range);
         }
         $this->search->setWithTariffs();
+        $searchResults = $this->search($searchQuery);
+        if (count($searchResults)) {
+            foreach ($searchResults as $searchResult) {
+                $onlineInstance = $this->resultOnlineInstanceCreator($searchResult, $searchQuery);
+                $result->add($onlineInstance);
+            }
+        }
 
-        return parent::search($searchQuery, $roomType, $special);
+        return $result;
+
     }
 
-    protected function createOnlineResultInstance($roomType, $results, SearchQuery $searchQuery): OnlineResultInstance
+    protected function createOnlineResultInstance($roomType, array $results, SearchQuery $searchQuery): OnlineResultInstance
     {
         $instance = parent::createOnlineResultInstance($roomType, $results, $searchQuery);
 
@@ -41,11 +52,15 @@ class OnlineCommonResultGenerator extends AbstractResultGenerator
         return $instance;
     }
 
-    protected function resultsHandle(SearchQuery $searchQuery, ArrayCollection $results): ArrayCollection
+    protected function resultsHandle(ArrayCollection $results): ArrayCollection
     {
-        $results = $this->separateByAdditionalDays($searchQuery, $results);
+        if (!$results->isEmpty()) {
+            $searchQuery = $results->first()->getQuery();
+            $results = $this->separateByAdditionalDays($searchQuery, $results);
+        }
+
         /*$this->filterByCapacity();*/
-        return parent::resultsHandle($searchQuery, $results);
+        return parent::resultsHandle($results);
     }
 
 

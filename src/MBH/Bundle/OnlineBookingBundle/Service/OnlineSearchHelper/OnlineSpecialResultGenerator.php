@@ -3,8 +3,11 @@
 namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Cursor;
+use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Special;
 
 class OnlineSpecialResultGenerator extends AbstractResultGenerator
@@ -13,32 +16,38 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
 
     const SPECIAL_LIMIT = 10;
 
-    protected function createOnlineResultInstance($roomType, $results, SearchQuery $searchQuery): OnlineResultInstance
+    protected function createOnlineResultInstance($roomType, array $results, SearchQuery $searchQuery): OnlineResultInstance
     {
         $instance = parent::createOnlineResultInstance($roomType, $results, $searchQuery);
-        $instance->setSpecial($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren())[0]->getSpecial());
-
+        $instance->setSpecial($searchQuery->getSpecial());
 
         return $instance;
     }
 
-    protected function search(SearchQuery $searchQuery, $roomType = null, Special $special = null)
+    protected function searchByFormData(OnlineSearchFormData $formData): ArrayCollection
     {
-        $results = [];
+        $results = new ArrayCollection();
+        $special = $formData->getSpecial();
+        $roomType = $formData->getRoomType();
+
         if ($special && $roomType) {
             if (!$special->getRemain() || !$special->getIsEnabled()) {
-                return [];
+                return new ArrayCollection();
             }
+            $searchQuery = $this->initSearchQuery($formData);
             $searchQuery->begin = $special->getBegin();
             $searchQuery->end = $special->getEnd();
-            $searchQuery->setSpecial($special);
-            $searchQuery->roomTypes = $this->helper->toIds([$roomType]);
             $searchQuery->forceRoomTypes = true;
             $searchQuery->setPreferredVirtualRoom($special->getVirtualRoom());
+            $searchResult = $this->search($searchQuery);
 
-            $results = array_merge(parent::search($searchQuery, $roomType, $special));
+            if ($searchResult && !$this->isVirtualRoomIsNull(reset($searchResult))) {
+                $onlineInstance = $this->resultOnlineInstanceCreator(reset($searchResult), $searchQuery);
+                $results->add($onlineInstance);
+            }
         } else {
             /** @var Cursor $specials */
+            $searchQuery = $this->initSearchQuery($formData);
             $specials = $this->search->searchStrictSpecials($searchQuery);
             $specials = $this->filterSpecials($specials->toArray());
             if (count($specials)) {
@@ -46,9 +55,12 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
                 foreach ($specials as $special) {
                     /** @var Special $special */
                     //Тут рекурсия
-                    $searchResult = $this->search($searchQuery, $special->getRoomTypes()->first(), $special);
-                    if ($searchResult) {
-                        $results = array_merge($results, $searchResult);
+                    $newFormData = clone $formData;
+                    $newFormData->setSpecial($special);
+                    $newFormData->setRoomType($special->getVirtualRoom()->getRoomType());
+                    $onlineInstance = $this->searchByFormData($newFormData)->first();
+                    if ($onlineInstance) {
+                        $results->add($onlineInstance);
                         $count++;
                     }
                     if (self::SPECIAL_LIMIT && $count >= self::SPECIAL_LIMIT) {
@@ -60,6 +72,11 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
         }
 
         return $results;
+    }
+
+    private function isVirtualRoomIsNull(SearchResult $searchResult)
+    {
+        return $searchResult->getVirtualRoom() === null ? true: false;
     }
 
     private function filterSpecials(array $specials)

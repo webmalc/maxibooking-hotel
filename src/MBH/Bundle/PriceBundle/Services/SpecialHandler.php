@@ -90,36 +90,42 @@ class SpecialHandler
         //Здесь используется уже готовый код для поиска в онлайн
         $searchForm = $this->getFormData($special);
         $searchResults = $this->specialSearchHelper->getResults($searchForm);
+        $err = '';
         /** @var OnlineResultInstance $onlineSearchResult */
-        $onlineSearchResult = $searchResults->first();
-        /** @var SearchResult $searchResult */
-        if (count($searchResults) && count($onlineSearchResult->getResults()) && $onlineSearchResult->isSameVirtualRoomInSpec()) {
-            $searchResult = $searchResults->first()->getResults()->first();
-            $specialPrice = new SpecialPrice();
-            $specialPrice
-                ->setTariff($searchResult->getTariff())
-                ->setRoomType($searchResult->getRoomType())
-                ->setPrices($searchResult->getPrices());
-            $special->addPrice($specialPrice);
-            $special->clearError();
-            $this->addLogMessage('Найдены цены', $searchResult->getPrices(), $output);
-        } else {
-            $err = 'Нет подходящих вариантов для спецпредложения';
-            if (!$onlineSearchResult->isSameVirtualRoomInSpec()) {
-                $err.=' виртуальная комната занята';
+        if (!$searchResults->isEmpty()) {
+            $onlineSearchResult = $searchResults->first();
+            /** @var SearchResult $searchResult */
+            if (count($onlineSearchResult->getResults()) && $onlineSearchResult->isSameVirtualRoomInSpec()) {
+                $searchResult = $searchResults->first()->getResults()->first();
+                $specialPrice = new SpecialPrice();
+                $specialPrice
+                    ->setTariff($searchResult->getTariff())
+                    ->setRoomType($searchResult->getRoomType())
+                    ->setPrices($searchResult->getPrices());
+                $special->addPrice($specialPrice);
+                $special->clearError();
+                $this->addLogMessage('Найдены цены', $searchResult->getPrices(), $output);
+            } else {
+                $err = 'Нет подходящих вариантов для спецпредложения';
+                if (!$onlineSearchResult->isSameVirtualRoomInSpec()) {
+                    $err.=' виртуальная комната занята';
+                }
+                $special->setError($err);
+
             }
-            //Находит чем занята вирт комната.
-//            $packages = $this->getPackage($special->getBegin(), $special->getEnd(), $special->getVirtualRoom());
-//            if ($packages && count($packages)) {
-//                $err .= ' Виртуальная комната занята заказом '.reset($packages)->getOrder()->getName();
-//            }
-            $special->setError($err);
+        } else {
+            $err = 'Поиск не вернул результат для спецпредложения';
+        }
+
+        if ($err) {
             $this->addLogMessage(
                 $err,
                 ['specialId' => $special->getId(), 'specialName' => $special->getName()],
                 $output
             );
         }
+
+
         $special->setNoRecalculation();
         $this->dm->flush();
         $this->dm->clear();
