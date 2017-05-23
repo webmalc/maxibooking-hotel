@@ -163,6 +163,24 @@ class PackageMovingController extends BaseController
     }
 
     /**
+     * @Security("is_granted('ROLE_PACKAGE_MOVING')")
+     * @ParamConverter("packageMovingInfo", class="MBHPackageBundle:PackageMovingInfo", options={"id" = "movingInfoId"})
+     * @Route("/mark_as_unmoving/{movingInfoId}/{movingPackageId}", name="mark_as_unmoving", options={"expose" = true})
+     * @param PackageMovingInfo $packageMovingInfo
+     * @param $movingPackageId
+     * @return JsonResponse
+     */
+    public function markAsUnmovingAction(PackageMovingInfo $packageMovingInfo, $movingPackageId)
+    {
+        $movingPackageData = $packageMovingInfo->getMovingPackageDataById($movingPackageId);
+        $packageMovingInfo->removeMovingPackageData($movingPackageData);
+        $movingPackageData->getPackage()->setIsMovable(false);
+        $this->dm->flush();
+
+        return new JsonResponse(['success' => true]);
+    }
+
+    /**
      * @Template()
      * @Route("/report", name="package_moving_report")
      * @param Request $request

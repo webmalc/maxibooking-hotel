@@ -141,7 +141,7 @@
                     <th class="td-md text-center">{{ 'report.packages_moving.old_room_type'|trans }}</th>
                     <th class="td-md text-center">{{ 'report.packages_moving.new_room_type'|trans }}</th>
                     <th class="td-md text-center">Отель</th>
-                    <th class="td-sm"></th>
+                    <th class="td-sm" style="min-width: 130px;"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -184,14 +184,17 @@
                                 {{ movingPackagesData.oldRoomType.hotel }}
                             </td>
                             <td class="table-actions-td text-center">
+                                <button class="btn btn-success btn-xs mark-as-unmoving-button" data-id="{{ movingPackagesData.id }}">
+                                    <i data-toggle="tooltip" class="fa fa-pencil-square-o" title="Отметить бронь как неперемещаемую">&nbsp;</i>
+                                </button>
                                 {% if movingPackagesData.isMoved == true %}
-                                    <button class="btn btn-sm btn-primary package-move-button disabled" type="button"
-                                            id="{{ movingPackagesData.id }}">
+                                    <button class="btn btn-xs btn-primary package-move-button disabled" type="button"
+                                            data-id="{{ movingPackagesData.id }}">
                                         Перемещено
                                     </button>
                                 {% else %}
-                                    <button class="btn btn-sm btn-primary package-move-button" type="button"
-                                            id="{{ movingPackagesData.id }}">
+                                    <button class="btn btn-xs btn-primary package-move-button" type="button"
+                                            data-id="{{ movingPackagesData.id }}">
                                         Переместить
                                     </button>
                                 {% endif %}
@@ -215,7 +218,7 @@
                             <li>
                                 <button id="package-moving-report-update-button" type="button"
                                         class="btn btn-success navbar-btn"><i
-                                            class="fa fa-search">&nbsp;</i>Обновить отчет
+                                            class="fa fa-pencil-square-o">&nbsp;</i>Обновить отчет
                                 </button>
                             </li>
                         {% endif %}
@@ -245,7 +248,7 @@
                                     class="btn btn-outline"><i
                                         id="report-close-button-icon" data-default="fa-trash-o"
                                         class="fa fa-times"></i>&nbsp;
-                                <span id="entity-delete-button-text">Закрыть отчет</span>
+                                <span id="report-close-button-text">Закрыть отчет</span>
                             </button>
                         </div>
                     </div>

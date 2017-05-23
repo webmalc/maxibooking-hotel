@@ -218,7 +218,7 @@ class PackageMovingInfo
      */
     public function removeMovingPackageData(MovingPackageData $packageData)
     {
-        $this->movingPackagesData->remove($packageData);
+        $this->movingPackagesData->removeElement($packageData);
 
         return $this;
     }
