@@ -10,8 +10,25 @@ $(document).ready(function ($) {
         reportCloseModal.find('#report-close-button').click(function () {
             location.href = Routing.generate('close_moving_report', {'movingInfoId': packageMovingInfoId});
         });
-    })
+    });
+    var reportStatus = document.getElementById('moving-info-status');
+    if (reportStatus && reportStatus.value === 'preparing') {
+        checkReportStatus(packageMovingInfoId);
+    }
 });
+
+function checkReportStatus(packageMovingInfoId) {
+    setTimeout(function () {
+        var href = Routing.generate("is_report_ready", {'movingInfoId': packageMovingInfoId});
+        $.get(href, function (data) {
+            var isReportReady = data.ready;
+            if (isReportReady === true) {
+                document.location.reload();
+            }
+        });
+        checkReportStatus(packageMovingInfoId);
+    }, 15000);
+}
 
 function onMoveButtonClickHandler(packageMovingInfoId) {
     $('.package-move-button').click(function () {

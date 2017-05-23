@@ -16,9 +16,8 @@ use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 /**
- * @ODM\Document(collection="Users")
+ * @ODM\Document(collection="Users", repositoryClass="MBH\Bundle\UserBundle\Document\UserRepository")
  * @Gedmo\Loggable
  * @MBHValidator\User
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)

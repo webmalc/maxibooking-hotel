@@ -1,0 +1,22 @@
+{% set menuItems = [
+    {
+    'route': 'package_moving',
+    'title': 'report.package_moving.title'|trans
+    },
+    {
+    'route': 'package_moving_report',
+    'title': 'report.package_moving_report.title'|trans
+    },
+]
+%}
+<ul class="nav nav-tabs" role="tablist">
+{% for menuItemNumber, menuItem in menuItems %}
+    <li {% if menuItemNumber == active %} class="active"{% endif %}>
+        <a href="{{ path(menuItem.route) }}">
+            <i class="fa fa-bed"></i>&nbsp;
+            {{ menuItem.title }}
+        </a>
+    </li>
+{% endfor %}
+</ul>
+<br>

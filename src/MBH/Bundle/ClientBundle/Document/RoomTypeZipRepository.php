@@ -27,5 +27,4 @@ class RoomTypeZipRepository extends DocumentRepository
 
         return $config;
     }
-
 }
