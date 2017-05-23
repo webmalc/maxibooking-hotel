@@ -186,7 +186,6 @@ class PackageMoving
                             ->setOldAccommodation($package->getAccommodation())
                             ->setPackage($package);
                         $packageMovingInfo->addMovingPackageData($movingPackageData);
-                        $this->logger->alert('Есть вариант перемещения');
                     }
                 }
             }
