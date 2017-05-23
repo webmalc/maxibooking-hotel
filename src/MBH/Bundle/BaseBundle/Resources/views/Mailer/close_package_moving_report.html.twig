@@ -1,4 +1,4 @@
-{#{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}#}
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
 
 {% block subject %}
     <div style="font-size: 1.25em">
@@ -6,8 +6,8 @@
             Результаты перемещений броней из отчета сформированного {{ movingInfo.startAt|date('d.m.Y H:i:s') }}
         </h2>
         <br>
-        {% if movingInfo.movingPackagesData|length == 0 %}
-            Ни 1 записи
+        {% if movingInfo.movingPackagesData|length == 0 or (movingInfo.movingPackagesData is null) %}
+            <h4 style="text-align: center; font-weight: bolder;">Вариантов перемещения нет</h4>
         {% else %}
             {% for hotelName, movingPackagesDataByHotel in movingInfo.getSortedMovingPackageDataByHotels %}
                 <h2 style="background-color: #bababa; padding: 0 5px; text-align: center">

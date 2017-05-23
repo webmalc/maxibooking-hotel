@@ -3,10 +3,10 @@
 namespace MBH\Bundle\ClientBundle\Command;
 
 use MBH\Bundle\ClientBundle\Document\RoomTypeZip;
+use MBH\Bundle\ClientBundle\Document\RoomTypeZipRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class UpdateRoomTypeZipCommand extends ContainerAwareCommand
 {
@@ -31,50 +31,19 @@ class UpdateRoomTypeZipCommand extends ContainerAwareCommand
         $todayTime = new \DateTime();
         $todayTime->format('H:i');
 
+        /** @var RoomTypeZipRepository $roomTypeZipRepository */
+        $roomTypeZipRepository = $this->dm->getRepository('MBHClientBundle:RoomTypeZip');
+
         /** @var RoomTypeZip $setting */
-        $setting = $this->dm->getRepository('MBHClientBundle:RoomTypeZip')->fetchConfig();
+        $setting = $roomTypeZipRepository->fetchConfig();
 
+        /** @var \DateTime $time */
         foreach ($setting->getTimeDataTimeType() as $time) {
-
             $diff = $todayTime->getTimestamp() - $time->getTimestamp();
-
             if (abs($diff) < self::MAX) {
-
-                $result = $this->getContainer()->get('mbh_package_zip')->packagesZip();
-
-                if ($result === true) {
-                    $this->sendMessage();
-                    $output->writeln('message sent');
-                }
-
+                $this->getContainer()->get('mbh.package_moving')->packagesZip();
                 $output->writeln(['completed']);
             }
         }
     }
-
-    private function sendMessage()
-    {
-        $container = $this->getContainer();
-        $notifier = $container->get('mbh.notifier.mailer');
-        $message = $notifier::createMessage();
-
-        $info['link'] = $container->get('router')->generate('package_moving', [], UrlGeneratorInterface::ABSOLUTE_URL);
-        $info['linkText'] = 'mailer.package_zip.button_lin_text';
-
-        $message
-            ->setText('mailer.packageZip.text')
-            ->setFrom('system')
-            ->setSubject('mailer.packageZip.subject')
-            ->setType('info')
-            ->setCategory('notification')
-            ->setTemplate('MBHBaseBundle:Mailer:packageZip.html.twig')
-            ->setAdditionalData($info)
-            ->setAutohide(false)
-            ->setEnd(new \DateTime('+1 minute'));
-
-        $notifier
-            ->setMessage($message)
-            ->notify();
-    }
-
 }

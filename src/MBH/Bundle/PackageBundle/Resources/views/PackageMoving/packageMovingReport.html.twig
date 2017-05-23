@@ -1,0 +1,120 @@
+{% extends 'MBHPackageBundle::layout.html.twig' %}
+
+{% set small_title = "report.package_moving.title"|trans %}
+{% set layout = "box" %}
+{% set title_url = path('package_moving_report') %}
+
+{% block content %}
+    {% include 'MBHPackageBundle:PackageMoving:tabs.html.twig' with {'active': 1} %}
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'analytics-filter-widget'} %}
+    <form id="analytics-filter" method="post" class="form-inline" role="form">
+        <div class="input">
+            <i class="fa fa-calendar"
+               title={{ 'report.package_moving.dates.title'|trans }} data-toggle='tooltip'></i>&nbsp
+            <input
+                    value="{{begin ? begin|date('d.m.Y') : "now"|date('d.m.Y') }}" type="text"
+                    name="begin"
+                    id="analytics-filter-begin"
+                    class="datepicker begin-datepicker analytics-filter form-control input-sm"
+                    data-date-format="dd.mm.yyyy">
+        </div>
+        <div class="input">
+            — &nbsp<input value="{{end ? end|date('d.m.Y') : "now"|date_modify("+3 month")|date('d.m.Y') }}" type="text"
+                          id="analytics-filter-end"
+                          class="datepicker end-datepicker analytics-filter form-control input-sm"
+                          name="end"
+                          data-date-format="dd.mm.yyyy">
+        </div>
+        <div class="input">
+            <i class="fa fa-home" title="Отели" data-toggle='tooltip'></i>&nbsp
+            <select
+                    data-placeholder="Отели" id="analytics-filter-hotel"
+                    multiple="multiple"
+                    name="hotel[]"
+                    class="analytics-filter form-control input-sm">
+                <option></option>
+                {% for hotel in hotels %}
+                    <option value="{{ hotel.id }}" {% if hotel in chosenHotels %}selected{% endif %}>{{ hotel.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input">
+            <i class="fa fa-user" title='Пользователь' data-toggle='tooltip'></i>&nbsp
+            <select  style="min-width: 200px;" name="user[]" multiple data-placeholder="Пользователь" id="users-report-filter-users" class="users-report-filter form-control input-sm">
+                <option></option>
+                {% for user in users %}
+                    <option value="{{ user.id }}" {% if user in chosenUsers %}selected{% endif %}>{{ user }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input">
+            <button type="submit" class="btn btn-primary" id="accommodation-report-submit-button">
+                <i class="fa fa-search"></i> Выбрать
+            </button>
+        </div>
+    </form>
+    </div></div>
+    <table class="table table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-md text-center">{{ 'report.packages_moving.package_name'|trans }}</th>
+            <th class="td-md text-center">Даты</th>
+            <th class="td-md text-center">Дата перемещения</th>
+            <th class="td-md text-center">Гости</th>
+            <th class="td-md text-center">{{ 'report.packages_moving.old_room_type'|trans }}</th>
+            <th class="td-md text-center">{{ 'report.packages_moving.new_room_type'|trans }}</th>
+            <th class="td-md text-center">Перенесено</th>
+            <th class="td-md text-center">Отель</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for movingPackageData in movingPackagesData %}
+            {% set package = movingPackageData.package %}
+            {% if package.isMovable %}
+                <tr>
+                    <td class="td-md text-center">
+                        <a href="{{ path('package_edit', { id : package.id}) }}" target="_blank">
+                            {{ package.numberWithPrefix }}
+                        </a>
+                    </td>
+                    <td class="td-md text-center">
+                        {{ package.begin|mbh_format }}
+                        - {{ package.end|mbh_format }}
+                    </td>
+                    <td class="td-md text-center">
+                        {{ movingPackageData.dateOfMove|mbh_format }}
+                    </td>
+                    <td class="text-center">
+                        <a data-toggle='tooltip'
+                           href='{{ path('package_order_tourist_edit', {'id': package.order.id, 'packageId': package.id}) }}'
+                           title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}'
+                           class='{{ package.order.payer ? '' : 'danger' }}'>{% if package.order.payer %}{{ package.order.payer.shortName }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
+                        <small>
+                            <br>{% if package.adults > 0 %}{{ package.adults }} вз.{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} рб.{% endif %}
+                            / оформлено: {{ package.tourists|length }}</small>
+                    </td>
+                    <td class="text-center">
+                        {{ movingPackageData.oldRoomType }}<br>
+                        <small><a target="_blank" data-toggle='tooltip'
+                                  title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}'
+                                  href='{{ path('package_accommodation', {'id': package.id}) }}'
+                                  class='{{ movingPackageData.oldAccommodation ? '' : 'danger' }}'>
+                                {% if movingPackageData.oldAccommodation and movingPackageData.oldAccommodation.roomType %}{{ movingPackageData.oldAccommodation.name(movingPackageData.oldRoomType.id == movingPackageData.oldAccommodation.roomType.id ? false : true) }}{% else %}&lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
+                        </small>
+                    </td>
+                    <td class="text-center">
+                        {{ movingPackageData.newRoomType }}
+                    </td>
+                    <td class="table-actions-td text-center">
+                        {{ movingPackageData.movedUser ? movingPackageData.movedUser.fullName : 'Не указано' }}
+                    </td>
+                    <td class="text-center">
+                        {{ movingPackageData.oldRoomType.hotel }}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

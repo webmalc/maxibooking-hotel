@@ -16,6 +16,7 @@
 {% endblock %}
 
 {% block content %}
+    {% include 'MBHPackageBundle:PackageMoving:tabs.html.twig' with {'active': 0} %}
     <div id="dimmer"></div>
     <div id="loading-indicator" style="position:fixed; display: none; z-index:500;">
         <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
@@ -23,6 +24,7 @@
     </div>
 
     {% if movingInfo is null %}
+
         {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'analytics-filter-widget'} %}
         <form id="analytics-filter" method="post" class="form-inline remember" role="form">
             <div class="input">
@@ -73,6 +75,8 @@
         </form>
 
     {% else %}
+        <input id="moving-info-id" type="hidden" value="{{ movingInfo.id }}">
+        <input type="hidden" value="{{ movingInfo.status }}" id="moving-info-status">
         <div class="box box-default box-solid">
 
             <div class="box-header with-border">
@@ -92,13 +96,19 @@
                             <tbody>
                             <tr>
                                 <td>Запустил</td>
-                                <td>Запущено</td>
+                                <td>Запущено в</td>
                                 <td>Даты</td>
                                 <td>Типы комнат</td>
                             </tr>
                             <tr>
-                                <td><a href="{{ path('user_edit', {'id': movingInfo.runningBy.id}) }}"
-                                       target="_blank">{{ movingInfo.runningBy }}</a></td>
+                                <td>
+                                    {% if movingInfo.runningBy %}
+                                        <a href="{{ path('user_edit', {'id': movingInfo.runningBy.id}) }}"
+                                           target="_blank">{{ movingInfo.runningBy }}</a>
+                                        {% else %}
+                                        Автоматически
+                                    {% endif %}
+                                </td>
                                 <td>{{ movingInfo.startAt|date('d.m.Y H:i:s') }}</td>
                                 <td>{{ movingInfo.begin|mbh_format }} - {{ movingInfo.end|mbh_format }}</td>
                                 <td>
@@ -113,16 +123,15 @@
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
         <br>
         {% if movingInfo.status == 'preparing' %}
-            <h3 class="text-center" style="padding-bottom: 30px">
+            <div class="alert alert-warning">
+                <i class="fa fa-spinner fa-spin"></i>
                 Идет формирование отчета, после генерации которого, Вам будет отправлено письмо.
-            </h3>
+            </div>
         {% elseif movingInfo.status == 'ready' %}
-            <input type="hidden" id="moving-info-id" value="{{ movingInfo.id }}">
             <table class="table table-striped table-hover table-condensed table-icons table-actions">
                 <thead>
                 <tr>
@@ -132,7 +141,7 @@
                     <th class="td-md text-center">{{ 'report.packages_moving.old_room_type'|trans }}</th>
                     <th class="td-md text-center">{{ 'report.packages_moving.new_room_type'|trans }}</th>
                     <th class="td-md text-center">Отель</th>
-                    <th class="td-sm"></th>
+                    <th class="td-sm" style="min-width: 130px;"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -175,14 +184,17 @@
                                 {{ movingPackagesData.oldRoomType.hotel }}
                             </td>
                             <td class="table-actions-td text-center">
+                                <button class="btn btn-success btn-xs mark-as-unmoving-button" data-id="{{ movingPackagesData.id }}">
+                                    <i data-toggle="tooltip" class="fa fa-pencil-square-o" title="Отметить бронь как неперемещаемую">&nbsp;</i>
+                                </button>
                                 {% if movingPackagesData.isMoved == true %}
-                                    <button class="btn btn-sm btn-primary package-move-button disabled" type="button"
-                                            id="{{ movingPackagesData.id }}">
+                                    <button class="btn btn-xs btn-primary package-move-button disabled" type="button"
+                                            data-id="{{ movingPackagesData.id }}">
                                         Перемещено
                                     </button>
                                 {% else %}
-                                    <button class="btn btn-sm btn-primary package-move-button" type="button"
-                                            id="{{ movingPackagesData.id }}">
+                                    <button class="btn btn-xs btn-primary package-move-button" type="button"
+                                            data-id="{{ movingPackagesData.id }}">
                                         Переместить
                                     </button>
                                 {% endif %}
@@ -201,6 +213,12 @@
                                 <button id="package-moving-report-close-button" type="button"
                                         class="btn btn-warning navbar-btn"><i
                                             class="fa fa-times">&nbsp;</i>{{ 'report.packages_moving.close_report' |trans }}
+                                </button>
+                            </li>
+                            <li>
+                                <button id="package-moving-report-update-button" type="button"
+                                        class="btn btn-success navbar-btn"><i
+                                            class="fa fa-pencil-square-o">&nbsp;</i>Обновить отчет
                                 </button>
                             </li>
                         {% endif %}
@@ -230,7 +248,7 @@
                                     class="btn btn-outline"><i
                                         id="report-close-button-icon" data-default="fa-trash-o"
                                         class="fa fa-times"></i>&nbsp;
-                                <span id="entity-delete-button-text">Закрыть отчет</span>
+                                <span id="report-close-button-text">Закрыть отчет</span>
                             </button>
                         </div>
                     </div>

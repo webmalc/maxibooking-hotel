@@ -1,24 +1,25 @@
 {% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+{% set link = url('package_moving') %}
 
 {% block subject %}
     <div>
         <p style="font-size: 1.35em">
-            {% if movingInfo.roomTypes|length == 0 %}
-                {% set roomTypeData = 'для всех типов комнат' %}
+            {% if movingInfo.movingPackagesData|length > 0 %}
+                {% if movingInfo.roomTypes|length == 0 %}
+                    {% set roomTypeData = 'для всех типов комнат' %}
+                {% else %}
+                    {% set roomTypeData = 'типов комнат: ' ~ movingInfo.roomTypes|join(', ') %}
+                {% endif %}
+                {{ 'mailer.package_moving_report.content'| trans({
+                    '%begin%' : movingInfo.begin|date('d.m.Y'),
+                    '%end%' : movingInfo.end|date('d.m.Y'),
+                    '%runningBy%': movingInfo.runningBy ? movingInfo.runningBy.fullName : 'автоматически',
+                    '%startAt%' : movingInfo.startAt|date('d.m.Y H:i'),
+                    '%roomTypeData%' : roomTypeData
+                }) }}
             {% else %}
-                {% set roomTypeData = 'типов комнат: ' ~ movingInfo.roomTypes|join(', ') %}
+                Отчет сгенерирован. Данных для перемещения не найдено.
             {% endif %}
-            {{ 'mailer.package_moving_report.content'| trans({
-                '%begin%' : movingInfo.begin|date('d.m.Y'),
-                '%end%' : movingInfo.end|date('d.m.Y'),
-                '%runningBy%': movingInfo.runningBy.fullName,
-                '%startAt%' : movingInfo.startAt|date('d.m.Y H:i'),
-                '%roomTypeData%' : roomTypeData
-            }) }}
-            <br>
-            <a href="{{ url('package_moving') }}" style="background-color:#649ae1;border-radius:5px;color:#ffffff;display:inline-block;font-family:'Cabin', Helvetica, Arial, sans-serif;font-size:14px;font-weight:bold;line-height:45px;text-align:center;text-decoration:none; padding-left: 20px; padding-right: 20px; -webkit-text-size-adjust:none;mso-hide:all;">
-                Посмотреть отчет
-            </a>
         </p>
     </div>
 {% endblock %}

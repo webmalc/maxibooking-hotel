@@ -150,5 +150,5 @@ services:
     mbh.task_prepare_package_moving_report:
         class: MBH\Bundle\PackageBundle\Task\PreparePackageMovingReport
         arguments:
-            - '@mbh_package_zip'
+            - '@mbh.package_moving'
             - '@doctrine_mongodb.odm.document_manager'

@@ -35,10 +35,16 @@ class PackageMovingInfo
     protected $runningBy;
 
     /**
-     * @var int
-     * @ODM\Field(type="string")
+     * @var \DateTime
+     * @ODM\Field(type="date")
      */
     protected $startAt;
+
+    /**
+     * @var \DateTime
+     * @ODM\Field(type="date")
+     */
+    protected $closedAt;
 
     /**
      * @var \DateTime
@@ -78,6 +84,25 @@ class PackageMovingInfo
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getClosedAt(): \DateTime
+    {
+        return $this->closedAt;
+    }
+
+    /**
+     * @param \DateTime $closedAt
+     * @return PackageMovingInfo
+     */
+    public function setClosedAt(\DateTime $closedAt): PackageMovingInfo
+    {
+        $this->closedAt = $closedAt;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getStatus(): string
@@ -87,11 +112,15 @@ class PackageMovingInfo
 
     /**
      * @param string $status
+     * @param bool $isSetClosedDate
      * @return PackageMovingInfo
      */
-    public function setStatus(string $status): PackageMovingInfo
+    public function setStatus(string $status, $isSetClosedDate = false): PackageMovingInfo
     {
         $this->status = $status;
+        if ($isSetClosedDate) {
+            $this->setClosedAt(new \DateTime());
+        }
 
         return $this;
     }
@@ -101,7 +130,7 @@ class PackageMovingInfo
      */
     public function getStartAt(): ?\DateTime
     {
-        return new \DateTime('@' . $this->startAt);
+        return $this->startAt;
     }
 
     /**
@@ -110,7 +139,7 @@ class PackageMovingInfo
      */
     public function setStartAt(\DateTime $startAt): PackageMovingInfo
     {
-        $this->startAt = $startAt->getTimestamp();
+        $this->startAt = $startAt;
 
         return $this;
     }
@@ -165,7 +194,7 @@ class PackageMovingInfo
      * @param RoomType $roomType
      * @return PackageMovingInfo
      */
-    public function addRoomTypeId(RoomType $roomType): PackageMovingInfo
+    public function addRoomType(RoomType $roomType): PackageMovingInfo
     {
         $this->roomTypes->add($roomType);
 
@@ -179,6 +208,17 @@ class PackageMovingInfo
     public function removeRoomType(RoomType $roomType): PackageMovingInfo
     {
         $this->roomTypes->remove($roomType);
+
+        return $this;
+    }
+
+    /**
+     * @param MovingPackageData $packageData
+     * @return PackageMovingInfo
+     */
+    public function removeMovingPackageData(MovingPackageData $packageData)
+    {
+        $this->movingPackagesData->removeElement($packageData);
 
         return $this;
     }
