@@ -34,8 +34,9 @@ form.vashotelType.vashotel_ru_settings_hotel_id: ID отеля в настрой
 form.vashotelType.breakfast: Завтрак?
 form.vashotelType.r0_or_BB: Какой тип питания использовать RO или BB?
 controller.bookingController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.bookingController.packages_sync_start: 'Синхронизация броней успешно запущена. Уведомление о новых бронях придет на email.'
 controller.ostrovokController.settings_saved_success: 'Настройки успешно сохранены.'
-controller.channelManagerController.sync_end: 'Синхронизация окончена.'
+controller.channelManagerController.sync_end: 'Синхронизация запущена. Обновление будет окончено в течении 1-2 минут.'
 controller.oktogoController.settings_saved_success: 'Настройки успешно сохранены.'
 controller.oktogoController.rooms_sync_success: 'Номера успешно синхронизированы.'
 controller.oktogoController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'

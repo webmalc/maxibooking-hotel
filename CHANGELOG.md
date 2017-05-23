@@ -1,3 +1,7 @@
+1.5.6
+=============
+* booking.com: pull old reservations (redmine #590)
+
 1.5.5
 =============
 * online form fixes

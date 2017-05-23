@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
@@ -21,7 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  *  ChannelManager service
  */
-class Booking extends Base
+class Booking extends Base implements ChannelManagerServiceInterface
 {
 
     /**
@@ -454,17 +455,16 @@ class Booking extends Base
     /**
      * {@inheritDoc}
      */
-    public function pullOrders()
+    public function pullOrders($old = false)
     {
         $result = true;
-
         foreach ($this->getConfig() as $config) {
             $request = $this->templating->render(
                 'MBHChannelManagerBundle:Booking:reservations.xml.twig',
-                ['config' => $config, 'params' => $this->params, 'lastChange' => false]
+                ['config' => $config, 'params' => $this->params, 'lastChange' => $old]
             );
             $sendResult = $this->sendXml(static::BASE_SECURE_URL . 'reservations', $request, null, true);
-            $this->log('Reservations count: ' . count($sendResult->reservation));
+            $this->log('Reservations: ' . $sendResult->asXml());
 
             foreach ($sendResult->reservation as $reservation) {
                 if ((string)$reservation->status == 'modified') {
