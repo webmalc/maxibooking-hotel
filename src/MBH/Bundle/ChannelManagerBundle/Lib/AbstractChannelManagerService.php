@@ -10,19 +10,18 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
-
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
 {
 
     /**
      * Test mode on/off
      */
-    CONST TEST = true;
+    const TEST = true;
 
     /**
      * Default period for room/prices upload
      */
-    CONST DEFAULT_PERIOD = 365;
+    const DEFAULT_PERIOD = 365;
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -66,6 +65,11 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     protected $currency;
 
     protected $roomManager;
+    
+    /**
+     * @var array
+     */
+    protected $errors = [];
 
     public function __construct(ContainerInterface $container)
     {
@@ -77,6 +81,23 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->logger = $container->get('mbh.channelmanager.logger');
         $this->currency = $container->get('mbh.currency');
         $this->roomManager = $container->get('mbh.hotel.room_type_manager');
+    }
+
+    /**
+     * {{ @inheritDoc }}
+     */
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+    
+    /**
+     * {{ @inheritDoc }}
+     */
+    public function addError(string $error): ChannelManagerServiceInterface
+    {
+        $this->errors[] = $error;
+        return $this;
     }
 
     /**
@@ -117,7 +138,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         foreach ($this->getConfig() as $config) {
             $check = $this->closeForConfig($config);
             $result ? $result = $check : $result;
-
         }
         $this->log('Abstract closeAll function end.');
 
@@ -179,7 +199,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
 
         $this->log('Abstract clearAllConfigs function end.');
-
     }
 
     /**
@@ -191,7 +210,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $rooms = $this->pullRooms($config);
         foreach ($config->getRooms() as $room) {
             if (!isset($rooms[$room->getRoomId()])) {
-
                 $config->removeRoom($room);
             }
         }
@@ -314,8 +332,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                     'doc' => $roomType
                 ];
             }
-
-
         }
 
         return $result;
@@ -487,7 +503,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setEnd(new \DateTime('+10 minute'));
 
             return $notifier->setMessage($message)->notify();
-
         } catch (\Exception $e) {
             return false;
         }
@@ -521,7 +536,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             }
 
             $message
-                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ',  $packages)], 'MBHChannelManagerBundle'))
+                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ', $packages)], 'MBHChannelManagerBundle'))
                 ->setFrom('channelmanager')
                 ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
                 ->setType($type == 'delete' ? 'danger' : 'info')
@@ -534,7 +549,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             ;
 
             $notifier->setMessage($message)->notify();
-
         } catch (\Exception $e) {
             return false;
         }
@@ -557,7 +571,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         } catch (Exception $e) {
             return $amount * $config->getCurrencyDefaultRatio();
         }
-
     }
 
     /**
@@ -577,6 +590,5 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         } catch (Exception $e) {
             return $amount / $config->getCurrencyDefaultRatio();
         }
-
     }
 }

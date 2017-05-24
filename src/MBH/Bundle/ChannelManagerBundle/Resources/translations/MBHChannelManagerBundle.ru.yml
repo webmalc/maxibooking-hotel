@@ -36,7 +36,7 @@ views.hundredOneHotels.layout.hundredOneHotels: "101 отель"
 views.hundredOneHotels.settings: "настройки"
 
 #channelManager
-services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
+services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking. Текст ошибки:'
 
 channelManager.booking.notification.subject.new: Новый заказ Booking.com
 channelManager.booking.notification.subject.edit: Изменен заказ Booking.com

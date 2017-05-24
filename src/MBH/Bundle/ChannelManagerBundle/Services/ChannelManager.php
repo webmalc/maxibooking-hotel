@@ -47,6 +47,7 @@ class ChannelManager
         $this->services = $this->getServices();
         $this->console = $container->get('kernel')->getRootDir() . '/../bin/console ';
         $this->env = $this->container->get('kernel')->getEnvironment();
+        $this->logger = $container->get('mbh.channelmanager.logger');
     }
 
     /**
@@ -205,11 +206,13 @@ class ChannelManager
                 }
 
                 if (!$noError) {
-                    $this->sendMessage($service);
+                    $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
 
@@ -235,11 +238,13 @@ class ChannelManager
                 $noError = $result[$service['key']]['result'] = $service['service']->updateRooms($begin, $end, $roomType);
 
                 if (!$noError) {
-                    $this->sendMessage($service);
+                    $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
 
@@ -265,11 +270,13 @@ class ChannelManager
                 $noError = $result[$service['key']]['result'] = $service['service']->updatePrices($begin, $end, $roomType);
 
                 if (!$noError) {
-                    $this->sendMessage($service);
+                    $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
 
@@ -295,11 +302,13 @@ class ChannelManager
                 $noError = $result[$service['key']]['result'] = $service['service']->updateRestrictions($begin, $end, $roomType);
 
                 if (!$noError) {
-                    $this->sendMessage($service);
+                    $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
 
@@ -316,6 +325,8 @@ class ChannelManager
             try {
                 return $service['service']->pushResponse($request);
             } catch (\Exception $e) {
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
 
@@ -340,27 +351,36 @@ class ChannelManager
             }
             try {
                 $noError = $result[$service['key']]['result'] = $service['service']->pullOrders($old);
-
                 if (!$noError) {
-                    $this->sendMessage($service);
+                    $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
         return $result;
     }
 
     /**
-     * @param $service
+     * @param string $service
+     * @param array $errors
      */
-    private function sendMessage($service)
+    private function sendMessage($service, array $errors = [])
     {
         $notifier = $this->container->get('mbh.notifier');
         $message = $notifier::createMessage();
+        $text = $service['title'] . $this->container->get('translator')->trans('services.channelManager.sync_error_check_interaction_settings');
+        if (count($errors)) {
+            $text .= '<br><br>' . htmlentities(implode('<br><br>', $errors));
+        }
+        foreach ($service['service']->getConfig() as $config) {
+            $text .= '<br>' . $config->getHotel();
+        }
         $message
-            ->setText($service['title'] . $this->container->get('translator')->trans('services.channelManager.sync_error_check_interaction_settings'))
+            ->setText($text)
             ->setFrom('system')
             ->setType('warning')
             ->setCategory('error')

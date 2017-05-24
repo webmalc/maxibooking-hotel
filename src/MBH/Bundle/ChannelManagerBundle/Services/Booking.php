@@ -168,9 +168,11 @@ class Booking extends Base implements ChannelManagerServiceInterface
             return false;
         }
         $xml = simplexml_load_string($response);
-
-        return count($xml->xpath('/ok')) ? true : false;
-        ;
+        if (count($xml->xpath('error')) || count($xml->xpath('fault'))) {
+            $this->addError($response);
+            return false;
+        }
+        return count($xml->xpath('/'. $params['element'] ?? 'ok')) ? true : false;
     }
 
     /**
@@ -466,6 +468,10 @@ class Booking extends Base implements ChannelManagerServiceInterface
             $sendResult = $this->sendXml(static::BASE_SECURE_URL . 'reservations', $request, null, true);
             $this->log('Reservations: ' . $sendResult->asXml());
 
+            if (!$this->checkResponse($sendResult->asXml(), ['element' => 'reservations'])) {
+                return false;
+            };
+
             foreach ($sendResult->reservation as $reservation) {
                 if ((string)$reservation->status == 'modified') {
                     if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
@@ -487,11 +493,11 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
                 //new
                 if ((string)$reservation->status == 'new' && !$order) {
-                    $result = $this->createPackage($reservation, $config, $order);
+                    $result = $this->createPackage($reservation, $config);
                     $this->notify($result, 'booking', 'new');
                 }
                 //edit
-                if ((string)$reservation->status == 'modified' && $order) {
+                if ((string)$reservation->status == 'modified') {
                     $result = $this->createPackage($reservation, $config, $order);
                     $this->notify($result, 'booking', 'edit');
                 }
