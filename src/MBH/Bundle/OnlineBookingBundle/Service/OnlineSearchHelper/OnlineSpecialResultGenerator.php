@@ -26,6 +26,9 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
 
     protected function searchByFormData(OnlineSearchFormData $formData): ArrayCollection
     {
+        if (!$this->options['show_specials']) {
+            return new ArrayCollection();
+        }
         $results = new ArrayCollection();
         $special = $formData->getSpecial();
         $roomType = $formData->getRoomType();

@@ -52,8 +52,8 @@ class OnlineSearchHelper
         array $searchResults
     ) {
         $result = [];
-        $isCommon = isset($searchResults['common']);
-        $isSpecials = isset($searchResults['special']);
+        $isCommon = isset($searchResults['common']) && !empty($searchResults['common']);
+        $isSpecials = isset($searchResults['special']) && !empty($searchResults['special']);
         if ($isCommon && $isSpecials) {
             $result[] = array_shift($searchResults['special']);
             $result = array_merge($result , $searchResults['common'] , $searchResults['special']);
