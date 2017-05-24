@@ -78,6 +78,27 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'length' => 3
         ],
         [
+            'number' => '16',
+            'adults' => 1,
+            'children' => 0,
+            'price' => 430,
+            'paid' => 560,
+            'regDayAgo' => 6,
+            'beginAfter' => 0,
+            'length' => 3,
+            'cancelledAgo' => 6
+        ],
+        [
+            'number' => '17',
+            'adults' =>2,
+            'children' => 0,
+            'price' => 14430,
+            'paid' => 14430,
+            'regDayAgo' => 6,
+            'beginAfter' => 0,
+            'length' => 3,
+        ],
+        [
             'number' => '7',
             'adults' => 1,
             'children' => 0,
@@ -115,7 +136,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 7500,
             'regDayAgo' => 7,
             'beginAfter' => 7,
-            'length' => 6
+            'length' => 6,
+            'cancelledAgo' => 7
         ],
         [
             'number' => 11,
@@ -209,6 +231,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
     {
         /** @var Tariff $tariff */
         $tariff = $this->getReference('main-tariff/0');
+        /** @var RoomType $roomType */
         $roomType = $this->getReference('roomtype-double/0');
 
         foreach (self::DATA as $packageData) {
@@ -218,7 +241,6 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             $dateOfCreation = new \DateTime('-' . $packageData['regDayAgo'] . 'days');
 
             $package = new Package();
-            /** @var RoomType $roomType */
             $package
                 ->setAdults($packageData['adults'])
                 ->setNumber(1)
@@ -232,6 +254,12 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
                 ->setCreatedAt($dateOfCreation)
                 ->setCreatedBy($this->getReference('user-admin'))
                 ->setEnd($endDate);
+
+            if (isset($packageData['cancelledAgo'])) {
+                $cancellationDate = (new \DateTime())->modify('-' . $packageData['cancelledAgo'] . 'days');
+                $package->setDeletedAt($cancellationDate);
+                $order->setDeletedAt($cancellationDate);
+            }
 
             $prices = [];
             for ($i = 0; $i < $package->getNights(); $i++) {

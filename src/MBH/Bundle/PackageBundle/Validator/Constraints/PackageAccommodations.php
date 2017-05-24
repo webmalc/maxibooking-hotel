@@ -17,6 +17,8 @@ class PackageAccommodations extends Constraint
 
     public $endLessOrEqualBegin = 'validator.accommodation.end_less_or_equal_begin';
 
+    public $packageIsCancelled = 'validator.accommodation.package_is_cancelled';
+
     /**
      * @return string
      */

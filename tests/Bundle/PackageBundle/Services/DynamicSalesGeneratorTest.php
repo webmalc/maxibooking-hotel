@@ -46,5 +46,7 @@ class DynamicSalesGeneratorTest  extends WebTestCase
         $this->assertEquaks($tenthDynamicSalesDay->getNumberOfManDaysForPeriod(), 21);
         $this->assertEquals($tenthDynamicSalesDay->getNumberOfPackageDays(), 3);
         $this->assertEquals($tenthDynamicSalesDay->getNumberOfPackageDaysForPeriod(), 3);
+        $this->assertEquals($tenthDynamicSalesDay->getNumberOfCancelled(), 1);
+        $this->assertEquals($tenthDynamicSalesDay->getPriceOfCancelled(), );
     }
 }

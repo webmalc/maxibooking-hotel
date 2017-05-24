@@ -11,19 +11,14 @@ class DynamicSalesDay
 {
     /** @var  DocumentManager */
     protected $dm;
-
     /** @var  \DateTime */
     protected $date;
-
     /** @var  Package[] */
     protected $createdPackages;
-
     /** @var  Package[] */
     protected $cancelledPackages;
-
     /** @var  CashDocument[] */
     protected $cashDocuments;
-
     /** @var  DynamicSalesDay */
     protected $previousDay;
 
