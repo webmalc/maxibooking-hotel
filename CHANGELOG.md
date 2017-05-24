@@ -1,6 +1,7 @@
 1.5.6
 =============
 * booking.com: pull old reservations (redmine #590)
+* booking.com: errors && logs (redmine #595)
 
 1.5.5
 =============
