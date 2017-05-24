@@ -182,7 +182,7 @@ class SpecialHandler
             $qb = $this->dm->getRepository('MBHPriceBundle:Special')->createQueryBuilder();
             $specials = $qb->field('id')->in($specialIds)->getQuery()->execute();
         } else {
-            $specials = $this->specialHepler->getSpecials();
+            $specials = $this->dm->getRepository('MBHPriceBundle:Special')->findAll();
         }
 
         return $specials;

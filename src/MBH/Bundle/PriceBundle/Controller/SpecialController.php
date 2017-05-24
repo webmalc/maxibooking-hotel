@@ -46,7 +46,7 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
 
         if ($request->isXmlHttpRequest()) {
             $form->submit($request->get('form'));
-            $entities = $this->dm->getRepository('MBHPriceBundle:Special')->getStrictBeginFiltered($filter);
+            $entities = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($filter);
 
             return $this->render(
                 'MBHPriceBundle:Special:list.json.twig',
