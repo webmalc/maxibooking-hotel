@@ -26,6 +26,8 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
     protected $helper;
     /** @var  array */
     protected $cache;
+    /** @var  OnlineSearchFormData */
+    protected $originalFormData;
 
     /**
      * AbstractResultGenerator constructor.
@@ -44,7 +46,7 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
 
     public function getResults(OnlineSearchFormData $formData): ArrayCollection
     {
-        $result = [];
+        $this->originalFormData = $formData;
         $results = $this->searchByFormData($formData);
         $results = $this->resultsHandle($results);
 

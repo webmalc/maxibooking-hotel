@@ -99,14 +99,13 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         }
         if ($end) {
             $entity->setEnd($end);
-            //Не ошибка, меняем на период от даты действия спец предложения
+            //Не ошибка, меняем на период от даты начала действия спец предложения
             $displayEnd = clone($begin);
             $entity->setDisplayTo($displayEnd->modify('+ 7 days'));
         }
         $entity->setLimit(1);
-        $entity
-            ->setFullTitle(
-                'Спец_'.($room ? $room->getName() : '').'_'.($begin ? $begin->format('d_m-Y') : '').'_'.($end ? $end->format('d_m_Y') : '') );
+        $specialName = $this->createSpecialName($room, $begin, $end, $virtual);
+        $entity->setFullTitle($specialName);
 
         $form = $this->createForm(SpecialType::class, $entity);
 
@@ -126,6 +125,16 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         ];
     }
 
+    private function createSpecialName(RoomType $roomType = null, \DateTime $begin = null, \DateTime $end = null, Room $virtualRoom)
+    {
+        $roomTypeName = str_replace(' ','_',($roomType ? $roomType->getName() : ''));
+        $beginAsString = $begin ? $begin->format('d_m-Y') : '';
+        $endAsString = $end ? $end->format('d_m_Y') : '';
+        $virtualName = $virtualRoom ? '_'.$virtualRoom->getName():'';
+        $specialName = "Спец_{$roomTypeName}_{$beginAsString}_{$endAsString}_{$virtualName}";
+
+        return $specialName;
+    }
     /**
      * Displays a form to edit an existing entity.
      *
