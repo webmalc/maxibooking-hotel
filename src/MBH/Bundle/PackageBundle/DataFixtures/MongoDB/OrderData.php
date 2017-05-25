@@ -83,18 +83,18 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'children' => 0,
             'price' => 430,
             'paid' => 560,
-            'regDayAgo' => 6,
+            'regDayAgo' => 5,
             'beginAfter' => 0,
             'length' => 3,
             'cancelledAgo' => 6
         ],
         [
             'number' => '17',
-            'adults' =>2,
+            'adults' => 2,
             'children' => 0,
             'price' => 14430,
             'paid' => 14430,
-            'regDayAgo' => 6,
+            'regDayAgo' => 5,
             'beginAfter' => 0,
             'length' => 3,
         ],
@@ -216,6 +216,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             ->setMainTourist($tourist)
             ->setCreatedBy($this->getReference('user-admin'))
             ->setCreatedAt((new \DateTime())->modify('-' . $data['regDayAgo'] . 'days'));
+        $order->checkPaid();
 
         $this->setReference('order' . $data['number'], $order);
         $manager->persist($order);
