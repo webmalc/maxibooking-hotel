@@ -135,21 +135,6 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 ];
             }
         }
-
-        return [
-            '123' => [
-                'title' => 'tariff 1',
-                'readonly' => false,
-                'is_child_rate' => false,
-                'rooms' => []
-            ],
-            '124' => [
-                'title' => 'tariff 2',
-                'readonly' => false,
-                'is_child_rate' => false,
-                'rooms' => []
-            ],
-        ];
         return $result;
     }
 
@@ -170,10 +155,6 @@ class Booking extends Base implements ChannelManagerServiceInterface
             $result[(string)$room['id']] = (string)$room;
         }
 
-        return [
-            '1234' => 'room 1',
-            '1235' => 'room 2',
-        ];
         return $result;
     }
 
