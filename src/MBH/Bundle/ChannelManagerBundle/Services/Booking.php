@@ -136,6 +136,20 @@ class Booking extends Base implements ChannelManagerServiceInterface
             }
         }
 
+        return [
+            '123' => [
+                'title' => 'tariff 1',
+                'readonly' => false,
+                'is_child_rate' => false,
+                'rooms' => []
+            ],
+            '124' => [
+                'title' => 'tariff 2',
+                'readonly' => false,
+                'is_child_rate' => false,
+                'rooms' => []
+            ],
+        ];
         return $result;
     }
 
@@ -150,13 +164,16 @@ class Booking extends Base implements ChannelManagerServiceInterface
             ['config' => $config, 'params' => $this->params]
         );
         $response = $this->sendXml(static::BASE_URL . 'rooms', $request);
-
         //$this->log($response->asXML());
 
         foreach ($response->xpath('room') as $room) {
             $result[(string)$room['id']] = (string)$room;
         }
 
+        return [
+            '1234' => 'room 1',
+            '1235' => 'room 2',
+        ];
         return $result;
     }
 
@@ -224,7 +241,6 @@ class Booking extends Base implements ChannelManagerServiceInterface
                     'data' => $data,
                 ]
             );
-
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
             if ($result) {
@@ -346,7 +362,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             $roomTypes = $this->getRoomTypes($config);
-            $tariffs = $this->getTariffs($config);
+            $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
             $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
                 $begin,
@@ -370,9 +386,10 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
-                    foreach ($tariffs as $tariffId => $tariff) {
+                    foreach ($tariffs as $tariff) {
                         /** @var Tariff $tariffDocument */
                         $tariffDocument = $tariff['doc'];
+                        $tariffId = $tariffDocument->getId();
                         $tariffChildOptions = $tariffDocument->getChildOptions();
                         //Если тариф дочерний, берем данные о ценах по id родительского тарифа.
                         $syncPricesTariffId = ($tariffDocument->getParent() && $tariffChildOptions->isInheritPrices())
