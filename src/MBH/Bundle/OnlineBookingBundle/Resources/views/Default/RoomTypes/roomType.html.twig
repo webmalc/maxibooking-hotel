@@ -1,6 +1,5 @@
 {% set roomType = onlineResult.roomType %}
 <section class="s_results">
-    {#<div class="oneblockinrdm room-type-row {{ (special or offerByRoomType.additional)?'additional':'' }}"#}
     <div class="oneblockinrdm room-type-row {% block add %}{% endblock %}"
          data-roomtype="{{ roomType.id }}"
          {% block data_row %}
@@ -8,7 +7,8 @@
     >
         <div class="leftrdm">
             <div class="imghotel"
-                 style="{% if onlineResult.mainimage %}background:url('{{ absolute_url(asset(onlineResult.mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;{% endif %}">
+                 style="{% if onlineResult.mainimage %}background:url('{{ absolute_url(asset(onlineResult.mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;{% endif %}"
+            >
                 {% block redbox %}
                 <p class="special-strip">
                     {% block redbox_message %}
@@ -16,7 +16,7 @@
                 </p>
                 {% endblock %}
                 <div class="inghotelline">
-                    {# Костыль для вывода главной фото первой в списке. Сделано до реализации очередности. #}
+                     Костыль для вывода главной фото первой в списке. Сделано до реализации очередности.
                     {% for image in onlineResult.images.images %}
                         {% if loop.first and not image.isMain %}
                             {{ macro.drawimage(onlineResult.mainimage, loop) }}
@@ -26,14 +26,6 @@
                             {{ macro.drawimage(image, loop) }}
                         {% endif %}
                     {% endfor %}
-                    {#Конец костыля#}
-                    {#Вернуть после убирания костыля#}
-                    {#{% for image in images %}
-                        <a style="{{ (loop.index > 1) ? 'display: none;':'' }}" class="fancybox" href="{{ absolute_url(asset(image.path)) }}"
-                           rel="cat{{ loop.parent.loop.index }}">
-                            <img src="{{ absolute_url(image.path|imagine_filter('thumb_275x210')) }}" alt="">
-                        </a>
-                    {% endfor %}#}
                 </div>
             </div>
         </div>
@@ -95,10 +87,10 @@
                 <p class="datesrdm">{{ onlineResult.dates.begin|date("d.m.Y") }} - {{ onlineResult.dates.end|date("d.m.Y") }}</p>
                 <p class="daysrdm">{{ onlineResult.firstResult.days }} {{ 'days'|transchoice(onlineResult.firstResult.days) }} / {{ onlineResult.firstResult.nights }} {{ 'nights'|transchoice(onlineResult.firstResult.nights) }}</p>
                 {% block remain %}
-                    {% set left_rooms = left_sale(onlineResult.remain, onlineResult.leftRoomKey) %}
-                    <p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>
+                    {#{% set left_rooms = left_sale(onlineResult.remain, onlineResult.leftRoomKey) %}#}
+                    {#<p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>#}
                 {% endblock remain %}
-                <p class="bronsrdm">{#забронировано сегодня 9 раз#}</p>{#TODO:Уточнить#}
+                <p class="bronsrdm"></p>
             </div>
             <div class="clear"></div>
         </div>

@@ -472,12 +472,12 @@ class DefaultController extends BaseController
                 ->setType('info')
                 ->setCategory('notification')
                 ->setOrder($order)
-                ->setAdditionalData(
-                    [
-                        'arrivalTime' => $arrival,
-                        'departureTime' => $departure,
-                    ]
-                )
+//                ->setAdditionalData(
+//                    [
+//                        'arrivalTime' => $arrival,
+//                        'departureTime' => $departure,
+//                    ]
+//                )
                 ->setHotel($hotel)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
