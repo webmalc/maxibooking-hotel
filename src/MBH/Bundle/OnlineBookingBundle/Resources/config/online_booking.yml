@@ -9,7 +9,7 @@ parameters:
             56fbd22174eb5383728b4567: 'http://azovsky.ru/azovsky/main/'
             5705190e74eb53461c8b4916: 'http://azovsky.ru/azovland/main/'
             eat: 'http://azovsky.ru/shvedskiy-stol/'
-        show_specials:
+        show_specials: true
 
 
     online_reservation_manager_email: "mail@azovsky.ru"
