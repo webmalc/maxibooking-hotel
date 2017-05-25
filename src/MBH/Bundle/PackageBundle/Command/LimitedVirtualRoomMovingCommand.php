@@ -44,7 +44,7 @@ class LimitedVirtualRoomMovingCommand extends ContainerAwareCommand
         $movedPackagesData = $virtualRoomHandler->setVirtualRooms($beginDate, $endDate, $limit, $offset);
         $rightEdge = $offset + $limit;
         $this->getContainer()->get('mbh.virtual_room_handler.logger')->alert("Packages between $offset and $rightEdge handled");
-        if (count($movedPackagesData) || $isLastPart) {
+        if (count($movedPackagesData) > 0 || $isLastPart) {
             $this->sendMessage($movedPackagesData);
         }
     }
