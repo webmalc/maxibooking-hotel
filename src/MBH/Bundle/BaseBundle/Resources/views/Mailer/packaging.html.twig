@@ -2,10 +2,10 @@
 
 {% block subject %}
     <div style="text-align: left">
-        <h2>
-            {{ 'virtual_room_moving_command.mail_message.first_line'|trans() ~ ' ' ~ "now"|date('d.m.Y H:i') }}
-        </h2>
-
+    <h2>
+        {{ 'virtual_room_moving_command.mail_message.first_line'|trans() ~ ' ' ~ "now"|date('d.m.Y H:i') }}
+    </h2>
+    {% if movedPackagesDataArray|length > 0 %}
         {% for hotelName, movedPackagesDataByHotel in movedPackagesDataArray %}
             <h2 style="text-align: center; background-color: #c0c0c0; padding: 8px;">{{ hotelName }}</h2>
             <p>
@@ -38,5 +38,8 @@
             </table>
             <br>
         {% endfor %}
-    </div>
+        </div>
+    {% else %}
+        <h2 style="text-align: center; background-color: #c0c0c0; padding: 8px;">Не перемещено ни 1 брони</h2>
+    {% endif %}
 {% endblock %}

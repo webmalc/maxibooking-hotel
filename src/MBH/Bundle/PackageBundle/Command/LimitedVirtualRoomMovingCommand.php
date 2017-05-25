@@ -24,6 +24,7 @@ class LimitedVirtualRoomMovingCommand extends ContainerAwareCommand
             ->addOption('begin', null, InputOption::VALUE_REQUIRED, 'Begin (date - d.m.Y)')
             ->addOption('end', null, InputOption::VALUE_REQUIRED, 'End (date - d.m.Y)')
             ->addOption('limit', null, InputOption::VALUE_REQUIRED)
+            ->addOption('isLastPart', null, InputOption::VALUE_OPTIONAL)
             ->addOption('offset', null, InputOption::VALUE_REQUIRED);
     }
 
@@ -35,15 +36,15 @@ class LimitedVirtualRoomMovingCommand extends ContainerAwareCommand
         $helper = $this->getContainer()->get('mbh.helper');
         $limit = $input->getOption('limit');
         $offset = $input->getOption('offset');
+        $isLastPart = $input->getOption('isLastPart') == 1;
         $beginDate = $helper->getDateFromString($input->getOption('begin'));
         $endDate = $helper->getDateFromString($input->getOption('end'));
 
         $virtualRoomHandler = $this->getContainer()->get('mbh.package.virtual_room_handler');
         $movedPackagesData = $virtualRoomHandler->setVirtualRooms($beginDate, $endDate, $limit, $offset);
-
         $rightEdge = $offset + $limit;
         $this->getContainer()->get('mbh.virtual_room_handler.logger')->alert("Packages between $offset and $rightEdge handled");
-        if (count($movedPackagesData) > 0) {
+        if (count($movedPackagesData) > 0 || $isLastPart) {
             $this->sendMessage($movedPackagesData);
         }
     }
