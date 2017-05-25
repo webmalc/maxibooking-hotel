@@ -183,7 +183,7 @@ class DynamicSalesDay
      */
     public function getNumberOfPackageDaysForPeriod()
     {
-        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getNumberOfPackageDays() : 0;
+        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getNumberOfPackageDaysForPeriod() : 0;
 
         return $this->getNumberOfPackageDays() + $previousDayValue;
     }
@@ -301,7 +301,7 @@ class DynamicSalesDay
 
     public function getNumberOfPaidForPeriod()
     {
-        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getNumberOfPaid() : 0;
+        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getNumberOfPaidForPeriod() : 0;
 
         return $this->getNumberOfPaid() + $previousDayValue;
     }

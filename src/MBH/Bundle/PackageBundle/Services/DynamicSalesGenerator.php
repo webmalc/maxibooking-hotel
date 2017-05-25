@@ -137,10 +137,12 @@ class DynamicSalesGenerator
     {
         $packagesByCancellationDate = [];
         /** @var Package $package */
-        foreach ($packagesByCreationDates as $package) {
-            if (!empty($package->getDeletedAt())) {
-                $cancellationDateString = $package->getDeletedAt()->format('d.m.Y');
-                $packagesByCancellationDate[$cancellationDateString] = $package;
+        foreach ($packagesByCreationDates as $packagesByDate) {
+            foreach ($packagesByDate as $package) {
+                if (!empty($package->getDeletedAt())) {
+                    $cancellationDateString = $package->getDeletedAt()->format('d.m.Y');
+                    $packagesByCancellationDate[$cancellationDateString][] = $package;
+                }
             }
         }
 
@@ -151,12 +153,14 @@ class DynamicSalesGenerator
      * @param DynamicSalesPeriod $salesPeriod
      * @param array $packagesByCreationDates
      * @param CashDocument[] $cashDocumentsByPaidDate
+     * @param $packagesByCancellationDates
      * @return DynamicSalesPeriod
      */
     private function fillDynamicSalesPeriodData(
         DynamicSalesPeriod $salesPeriod,
         array $packagesByCreationDates,
-        $cashDocumentsByPaidDate
+        $cashDocumentsByPaidDate,
+        $packagesByCancellationDates
     ) {
         $previousDayData = null;
 
@@ -170,7 +174,7 @@ class DynamicSalesGenerator
                 ? $packagesByCreationDates[$dayString]
                 : [];
 
-            $packagesByCancellationDate = $this->getPackagesByCancellationDate($packagesByCreationDate);
+            $packagesByCancellationDate = isset($packagesByCancellationDates[$dayString]) ? $packagesByCancellationDates[$dayString] : [];
 
             $infoDay = $this->container->get('mbh.dynamic_sales_report.dynamic_sales_day');
             $infoDay->setDate($day);
@@ -231,13 +235,14 @@ class DynamicSalesGenerator
 
             foreach ($periods as $periodNumber => $datePeriod) {
                 $cashDocumentsByPaidDate = $this->getCashDocumentsByPaidDate($packagesByPeriods[$periodNumber]);
-                $packagesByPeriodAndRoomType = isset($packagesByPeriods[$periodNumber][$roomType->getId()])
+                $packagesByCreationDates = isset($packagesByPeriods[$periodNumber][$roomType->getId()])
                     ? $packagesByPeriods[$periodNumber][$roomType->getId()]
                     : [];
+                $packagesByCancellationDates = $this->getPackagesByCancellationDate($packagesByCreationDates);
 
                 $dynamicSalesPeriod = new DynamicSalesPeriod();
                 $dynamicSalesPeriod->setDatePeriod($datePeriod);
-                $this->fillDynamicSalesPeriodData($dynamicSalesPeriod, $packagesByPeriodAndRoomType, $cashDocumentsByPaidDate);
+                $this->fillDynamicSalesPeriodData($dynamicSalesPeriod, $packagesByCreationDates, $cashDocumentsByPaidDate, $packagesByCancellationDates);
                 $dynamicSale->addPeriods($dynamicSalesPeriod);
             }
 

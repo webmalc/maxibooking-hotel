@@ -209,6 +209,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
         $touristKeys = array_keys(TouristData::TOURIST_DATA);
         $tourist = $this->getReference($touristKeys[array_rand($touristKeys, 1)]);
         $order = (new Order())
+            ->setPrice($data['price'])
             ->setPaid($data['paid'])
             ->setStatus('offline')
             ->setTotalOverwrite($data['price'])

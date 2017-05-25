@@ -18,17 +18,18 @@ class DynamicSalesGeneratorTest  extends WebTestCase
 {
     public static function setUpBeforeClass()
     {
-        self::baseFixtures();
+//        self::baseFixtures();
     }
 
     public static function tearDownAfterClass()
     {
-        self::clearDB();
+//        self::clearDB();
     }
 
     public function testSinglePeriodData()
     {
-        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+        $container = $this->getContainer();
+        $dm = $container->get('doctrine.odm.mongodb.document_manager');
         /** @var Hotel $hotel */
         $hotel = $dm->getRepository('MBHHotelBundle:Hotel')
             ->findOneBy(['fullTitle' => 'Мой отель #1']);
@@ -45,18 +46,18 @@ class DynamicSalesGeneratorTest  extends WebTestCase
         $this->assertEquals(count($dynamicSales), 2);
 
         /** @var DynamicSalesPeriod $period */
-        $period = $dynamicSales[0][0];
+        $period = $dynamicSales[0]->getPeriods()[0];
         $periodDays = $period->getDynamicSalesDays();
         $this->assertEquals(count($period->getDynamicSalesDays()), 21);
         $tenthDynamicSalesDay = $periodDays[9];
         $this->assertEquals($tenthDynamicSalesDay->getTotalSalesPrice(), 10430);
-        $this->assertEquals($tenthDynamicSalesDay->getTotalSalesPriceForPeriod(), 42225);
+        $this->assertEquals($tenthDynamicSalesDay->getTotalSalesPriceForPeriod(), 88930);
         $this->assertEquals($tenthDynamicSalesDay->getNumberOfCreatedPackages(), 3);
         $this->assertEquals($tenthDynamicSalesDay->getNumberOfCreatedPackagesForPeriod(), 9);
-        $this->assertEquals($tenthDynamicSalesDay->getNumberOfManDays(), 5);
-        $this->assertEquals($tenthDynamicSalesDay->getNumberOfManDaysForPeriod(), 21);
-        $this->assertEquals($tenthDynamicSalesDay->getNumberOfPackageDays(), 3);
-        $this->assertEquals($tenthDynamicSalesDay->getNumberOfPackageDaysForPeriod(), 3);
+        $this->assertEquals($tenthDynamicSalesDay->getNumberOfManDays(), 24);
+        $this->assertEquals($tenthDynamicSalesDay->getNumberOfManDaysForPeriod(), 143);
+        $this->assertEquals($tenthDynamicSalesDay->getNumberOfPackageDays(), 12);
+        $this->assertEquals($tenthDynamicSalesDay->getNumberOfPackageDaysForPeriod(), 58);
         $this->assertEquals($tenthDynamicSalesDay->getNumberOfCancelled(), 1);
         $this->assertEquals($tenthDynamicSalesDay->getPriceOfCancelled(), 430);
         $this->assertEquals($tenthDynamicSalesDay->getPriceOfCancelledForPeriod(), 7930);
@@ -95,14 +96,32 @@ class DynamicSalesGeneratorTest  extends WebTestCase
         $dynamicSales = $reportData->getDynamicSales();
         /** @var DynamicSales $doubleRoomTypeDynamicSales */
         $doubleRoomTypeDynamicSales = $dynamicSales[0];
-        /** @var DynamicSalesPeriod $firstPeriod */
         $firstPeriod = $doubleRoomTypeDynamicSales->getPeriods()[0];
         /** @var DynamicSalesPeriod $secondPeriod */
         $secondPeriod = $doubleRoomTypeDynamicSales->getPeriods()[1];
         $this->assertEquals(count($secondPeriod->getDynamicSalesDays()), 19);
-        $this->assertFalse($doubleRoomTypeDynamicSales->hasBothPeriodsDayByNumber($firstPeriod, $secondPeriod, 20));
+        $this->assertFalse($doubleRoomTypeDynamicSales->hasBothPeriodsDayByNumber(0, 1, 20));
 
-        $firstSalesDay = $secondPeriod->getDynamicSalesDays()[0];
-//        $this->assertEquals($firstSalesDay->getTotalSalesPrice(), );
+        $fourthSalesDay = $secondPeriod->getDynamicSalesDays()[3];
+        $this->assertEquals($fourthSalesDay->getTotalSalesPrice(), 16500);
+        $this->assertEquals($fourthSalesDay->getTotalSalesPriceForPeriod(), 78500);
+        $this->assertEquals($fourthSalesDay->getNumberOfCreatedPackages(), 2);
+        $this->assertEquals($fourthSalesDay->getNumberOfCreatedPackagesForPeriod(), 6);
+        $this->assertEquals($fourthSalesDay->getNumberOfManDays(), 24);
+        $this->assertEquals($fourthSalesDay->getNumberOfManDaysForPeriod(), 125);
+//        $this->assertEquals($fourthSalesDay->getNumberOfPackageDays(), 12);
+//        $this->assertEquals($fourthSalesDay->getNumberOfPackageDaysForPeriod(), 58);
+//        $this->assertEquals($fourthSalesDay->getNumberOfCancelled(), 1);
+//        $this->assertEquals($fourthSalesDay->getPriceOfCancelled(), 430);
+//        $this->assertEquals($fourthSalesDay->getPriceOfCancelledForPeriod(), 7930);
+//        $this->assertEquals($fourthSalesDay->getNumberOfPaid(), 1);
+//        $this->assertEquals($fourthSalesDay->getNumberOfPaidForPeriod(), 3);
+//        //TODO: Поменять впоследствии
+//        $this->assertEquals($fourthSalesDay->getPriceOfPaidCancelled(), 0);
+//        $this->assertEquals($fourthSalesDay->getSumOfPayment(), 0);
+//        $this->assertEquals($fourthSalesDay->getSumOfPaymentForPeriod(), 0);
+//        $this->assertEquals($fourthSalesDay->getSumOfPaidMinusCancelled(), 0);
+//        $this->assertEquals($fourthSalesDay->getSumOfPaidForCancelledForPeriod(), 0);
+//        $this->assertEquals($fourthSalesDay->getSumPaidToClientsForCancelledForPeriod(), 0);
     }
 }
