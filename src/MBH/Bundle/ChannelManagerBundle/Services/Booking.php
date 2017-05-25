@@ -82,6 +82,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
+        $tariffs = [];
         foreach ($this->pullTariffs($config) as $key => $tariff) {
             if (!$tariff['readonly'] || !$tariff['is_child_rate']) {
                 $tariffs[$key] = $tariff;
