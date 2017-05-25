@@ -16,7 +16,6 @@
                 </p>
                 {% endblock %}
                 <div class="inghotelline">
-                     Костыль для вывода главной фото первой в списке. Сделано до реализации очередности.
                     {% for image in onlineResult.images.images %}
                         {% if loop.first and not image.isMain %}
                             {{ macro.drawimage(onlineResult.mainimage, loop) }}
