@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\Search;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Special;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterface
 {
@@ -28,6 +29,8 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
     protected $cache;
     /** @var  OnlineSearchFormData */
     protected $originalFormData;
+    /** @var ContainerInterface */
+    protected $container;
 
     /**
      * AbstractResultGenerator constructor.
@@ -35,13 +38,15 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
      * @param array $options
      * @param Helper $helper
      * @param array $cache
+     * @param ContainerInterface $container
      */
-    public function __construct(SearchFactory $search, array $options, Helper $helper, array $cache)
+    public function __construct(SearchFactory $search, array $options, Helper $helper, array $cache, ContainerInterface $container)
     {
         $this->cache = $cache['is_enabled'];
         $this->search = $search;
         $this->options = $options;
         $this->helper = $helper;
+        $this->container = $container;
     }
 
     public function getResults(OnlineSearchFormData $formData): ArrayCollection
@@ -70,7 +75,8 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
 
     protected function createOnlineResultInstance($roomType, array $results, SearchQuery $searchQuery): OnlineResultInstance
     {
-        $instance = new OnlineResultInstance();
+        /** @var OnlineResultInstance $instance */
+        $instance = $this->container->get('mbh.online_result_instance');
         $instance->setType(static::TYPE);
         if ($roomType instanceof RoomType || $roomType instanceof RoomTypeCategory) {
             $instance->setRoomType($roomType);

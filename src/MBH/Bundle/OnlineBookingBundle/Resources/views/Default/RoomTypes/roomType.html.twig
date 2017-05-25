@@ -16,6 +16,7 @@
                 </p>
                 {% endblock %}
                 <div class="inghotelline">
+
                     {% for image in onlineResult.images.images %}
                         {% if loop.first and not image.isMain %}
                             {{ macro.drawimage(onlineResult.mainimage, loop) }}
@@ -72,7 +73,7 @@
                 <div class="clear"></div>
                 <p class="pricerdm">
                     {% block prices %}
-                        {% set prices = count_prices(onlineResult.results.toArray) %}
+                        {% set prices = onlineResult.getPrices %}
                         <span class="noneprice">
                             {% block oldPrice %}
                             {{ prices.old|number_format(0, thousandSep=' ') }}
@@ -86,8 +87,8 @@
                 <p class="datesrdm">{{ onlineResult.dates.begin|date("d.m.Y") }} - {{ onlineResult.dates.end|date("d.m.Y") }}</p>
                 <p class="daysrdm">{{ onlineResult.firstResult.days }} {{ 'days'|transchoice(onlineResult.firstResult.days) }} / {{ onlineResult.firstResult.nights }} {{ 'nights'|transchoice(onlineResult.firstResult.nights) }}</p>
                 {% block remain %}
-                    {#{% set left_rooms = left_sale(onlineResult.remain, onlineResult.leftRoomKey) %}#}
-                    {#<p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>#}
+                    {% set left_rooms = onlineResult.leftSale %}
+                    <p class="lastrdm">{{ 'left'|transchoice(left_rooms) }} {{ left_rooms }} {{ 'leftroom'|transchoice(left_rooms) }}</p>
                 {% endblock remain %}
                 <p class="bronsrdm"></p>
             </div>

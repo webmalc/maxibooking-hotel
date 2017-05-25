@@ -4,15 +4,31 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
+use MBH\Bundle\OnlineBookingBundle\Document\LeftRoom;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 
+/**
+ * Class OnlineResultInstance
+ * @package MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper
+ */
 class OnlineResultInstance
 {
+    const MIN_THRESHOLD = 3;
+
+    const MAX_THRESHOLD = 7;
+    /** @var  int */
+    protected $minThreshold;
+    /** @var  int */
+    protected $maxThreshold;
+    /** @var  DocumentManager */
+    private $dm;
     /** @var  RoomType */
     protected $roomType;
     /** @var  ArrayCollection */
@@ -30,10 +46,20 @@ class OnlineResultInstance
 
     /**
      * OnlineResultInstance constructor.
+     * @param DocumentManager $documentManager
+     * @param array|null $thresholds
      */
-    public function __construct()
+    public function __construct(DocumentManager $documentManager,  array $thresholds = null)
     {
         $this->results = new ArrayCollection();
+        $this->dm = $documentManager;
+        if (!$thresholds) {
+            $this->minThreshold = self::MIN_THRESHOLD;
+            $this->maxThreshold = self::MAX_THRESHOLD;
+        } else {
+            $this->minThreshold = $thresholds['min_threshold'];
+            $this->maxThreshold = $thresholds['max_threshold'];
+        }
     }
 
 
@@ -237,6 +263,80 @@ class OnlineResultInstance
         return $result;
     }
 
+    public function getPrices(): array
+    {
+        $searches = $this->results->toArray();
+        usort(
+            $searches,
+            function ($cmpA, $cmpB) {
+                /** @var $cmpA SearchResult */
+                return $cmpA->getPrice($cmpA->getAdults(), $cmpA->getChildren()) <=> $cmpB->getPrice( $cmpB->getAdults(), $cmpB->getChildren());
+            }
+        );
 
+        $oldPrice = $newPrice = $discount = null;
+        $firstSearch = reset($searches);
+        $newPrice = $firstSearch->getPrice($firstSearch->getAdults(), $firstSearch->getChildren());
+        foreach ($searches as $search) {
+            /** @var Promotion $promotion */
+            /** @var SearchResult $search */
+            $promotion = $search->getTariff()->getDefaultPromotion()??false;
+            if ($promotion && $promotion->getDiscount()??false) {
+                $discount = $promotion->getDiscount();
+                $currentSearchPrice = $search->getPrice($search->getAdults(), $search->getChildren());
+                $oldPrice = $currentSearchPrice * 100 /(100 - $discount);
+                break;
+            }
+        }
+
+        return [
+            'old' => $oldPrice,
+            'new' => $newPrice,
+        ];
+    }
+
+    public function getLeftSale()
+    {
+        $actualRoomsCount = $this->getRemain();
+        $leftRoomKey = $this->getLeftRoomKey();
+        if (!$actualRoomsCount || !$leftRoomKey) {
+            return 0;
+        }
+
+        $maxOutput = min($this->maxThreshold, $actualRoomsCount);
+        if ($maxOutput < $this->maxThreshold) {
+            return $maxOutput;
+        }
+
+        $leftRoom = $this->dm->getRepository('MBHOnlineBookingBundle:LeftRoom')->findOneBy(
+            [
+                'key' => $leftRoomKey,
+            ]
+        );
+
+        $now = new \DateTime("now");
+        $start = rand($this->minThreshold, $this->maxThreshold);
+        if (!$leftRoom) {
+            $leftRoom = new LeftRoom();
+            $leftRoom
+                ->setKey($leftRoomKey)
+                ->setDate($now)
+                ->setCount($start);
+        }
+
+        $interval = date_diff($now, $leftRoom->getDate(), true);
+
+        if (1 <= $interval->d){
+            if ($this->minThreshold <= $leftRoom->getCount()) {
+                $leftRoom->setCount($leftRoom->getCount() - 1);
+            } else {
+                $leftRoom->setCount($start);
+            }
+        }
+        $this->dm->persist($leftRoom);
+        $this->dm->flush($leftRoom);
+
+        return $leftRoom->getCount();
+    }
 
 }

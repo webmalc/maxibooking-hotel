@@ -24,13 +24,6 @@ services:
         class: MBH\Bundle\OnlineBookingBundle\Service\ChartDataFormer
         arguments: ["@mbh.calculation"]
 
-    mbh.online.left_sale.twig_extension:
-        class: MBH\Bundle\OnlineBookingBundle\Twig\OnlineBookingExtension
-        arguments: ["@doctrine_mongodb.odm.default_document_manager", "%online_left_rooms%"]
-        public: false
-        tags:
-            - { name: twig.extension }
-
     mbh.online.special_data_preparer:
         class: MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer
         arguments: ['@doctrine.odm.mongodb.document_manager', '%online_booking%']
@@ -42,7 +35,7 @@ services:
     mbh.online.abstract_result_generator:
         abstract: true
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\AbstractResultGenerator
-        arguments: ['@mbh.package.search', '%online_booking%', '@mbh.helper', '%mbh_cache%']
+        arguments: ['@mbh.package.search', '%online_booking%', '@mbh.helper', '%mbh_cache%', '@service_container']
 
     mbh.online.common_result_generator:
         parent: mbh.online.abstract_result_generator
@@ -58,3 +51,8 @@ services:
         calls:
             - [addGenerator, ['@mbh.online.special_result_generator']]
             - [addGenerator, ['@mbh.online.common_result_generator']]
+
+    mbh.online_result_instance:
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultInstance
+        shared: false
+        arguments: ['@doctrine_mongodb.odm.document_manager', '%online_left_rooms%']

@@ -10,6 +10,7 @@ use MBH\Bundle\OnlineBookingBundle\Form\SearchFormType;
 use MBH\Bundle\OnlineBookingBundle\Form\SignType;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineNotifyRecipient;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Services\OrderManager;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\PaymentType;
@@ -244,6 +245,7 @@ class DefaultController extends BaseController
 
             //Создаем бронь.
             try {
+                /** @var OrderManager $orderManger */
                 $order = $orderManger->createPackages($data, null, null, $cash);
             } catch (Exception $e) {
                 $text = 'Произошла ошибка при бронировании. Пожалуйста, позвоните нам.';
