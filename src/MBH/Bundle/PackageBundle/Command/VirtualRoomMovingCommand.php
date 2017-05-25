@@ -80,13 +80,14 @@ class VirtualRoomMovingCommand extends ContainerAwareCommand
         $result = 0
     ) {
         if ($offset < $handledPackagesCount) {
+            $isLastPart = ($handledPackagesCount - $offset) < self::HANDLED_PACKAGES_COUNT;
             $console = $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console ';
             $env = $this->getContainer()->get('kernel')->getEnvironment();
             $command = 'nohup php ' . $console . 'mbh:limited_virtual_room_moving_command'
                 .' --begin='. $beginDate->format('d.m.Y') .' --end='. $endDate->format('d.m.Y')
-                . ' --limit=' . $limit . ' --offset=' . $offset . '--env=' . $env;
+                . ' --limit=' . $limit . ' --offset=' . $offset . ' --isLastPart=' . ($isLastPart ? 1 : 0) . ' --env=' . $env;
             $process = new Process($command);
-            $process->setTimeout(null)->setIdleTimeout(null)->run();
+            $result = $process->setTimeout(null)->setIdleTimeout(null)->run();
 
             $currentIterationRightEdge = $offset + $limit;
             $output->writeln("Packages between $offset and $currentIterationRightEdge handled");
