@@ -108,13 +108,14 @@ Special.prototype.setLast = function () {
     }
 };
 
-var MonthSwitcher = function ($row) {
+var MonthSwitcher = function ($row, urlTool) {
     this.$row = $row;
     this.id = $row.attr('id');
     this.allSpecials = [];
     this.specials = [];
     this.isEnabled = false === $row.hasClass('disable-month');
     this.$neighbors = $row.parent().siblings().find('a');
+    this.urlTool = urlTool;
 };
 
 MonthSwitcher.prototype.init = function (specials) {
@@ -135,6 +136,7 @@ MonthSwitcher.prototype.bindHandlers = function () {
         event.stopPropagation();
         if (that.isEnabled) {
             that.showClickedSpecials();
+            that.urlTool.changeUrl(that.id);
         }
     });
 };
@@ -155,6 +157,7 @@ MonthSwitcher.prototype.showClickedSpecials = function () {
     this.specials[special].setLast();
     this.setActive()
 };
+
 
 var HotelSwitcher = function ($row) {
     this.$row = $row;
@@ -206,14 +209,25 @@ var callMonthSlider = function (monthSwitcherContainer) {
     });
 };
 
-var getDefaultMonth = function () {
+var UrlTool = function () {
+    this.url = window.location.href;
+    this.search = window.location.search;
+    this.pathName = window.location.pathname;
+};
+
+UrlTool.prototype.getDefaultMonth = function () {
     try {
-        var month = window.location.href.replace(/\//g, "").split("?")[1].replace("=","_");
+        var month = window.location.search.replace("=","_").replace('/','').replace('?','');
     } catch (err) {
         month = null;
     }
 
     return month || 'month_06';
+};
+UrlTool.prototype.changeUrl = function (month) {
+    var state = this.pathName + '?' + month;
+    window.history.pushState('', '', state);
+
 };
 
 var MonthSwitcherContainer = function() {
@@ -248,7 +262,6 @@ MonthSwitcherContainer.prototype.showFirstEnabledSwitcher = function (defaultMon
 };
 MonthSwitcherContainer.prototype.getActivePage = function() {
     if(!this.defaultSwitcher) {
-        console.log('nodefaultpage');
         return 1;
     }
     var perPage = 3,
@@ -256,16 +269,13 @@ MonthSwitcherContainer.prototype.getActivePage = function() {
         pages = Math.ceil(numsOfSwitchers / perPage),
         switcherIndex = this.switchers.indexOf(this.defaultSwitcher)+1,
         page = Math.ceil((switcherIndex) / pages);
-    console.table(this.switchers);
-    console.log('index' + switcherIndex);
-    console.log('pages' + pages);
-    console.log('page' + page);
 
     return page
 };
 
 $(function () {
-    var defaultMonth = getDefaultMonth();
+    var urlTool = new UrlTool();
+    var defaultMonth = urlTool.getDefaultMonth();
     var specials = [],
         hotelSwitchers = [],
         monthSwitcherContainer = new MonthSwitcherContainer();
@@ -275,7 +285,7 @@ $(function () {
         specials.push(special);
     });
     $.each($('.month-switcher>a'), function () {
-        var switcher = new MonthSwitcher($(this));
+        var switcher = new MonthSwitcher($(this), urlTool);
         switcher.init(specials);
         monthSwitcherContainer.addSwitcher(switcher);
     });
