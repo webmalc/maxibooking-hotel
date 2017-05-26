@@ -14,7 +14,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
 {
     protected const TYPE = 'special';
 
-    const SPECIAL_LIMIT = 10;
+    const SPECIAL_LIMIT = 0;
 
     protected function createOnlineResultInstance($roomType, array $results, SearchQuery $searchQuery): OnlineResultInstance
     {
@@ -26,7 +26,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
 
     protected function searchByFormData(OnlineSearchFormData $formData): ArrayCollection
     {
-        if (!$this->options['show_specials']) {
+        if (!$this->options['show_specials'] || $this->originalFormData->isAddDates()) {
             return new ArrayCollection();
         }
         $results = new ArrayCollection();
@@ -66,7 +66,10 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
                         $results->add($onlineInstance);
                         $count++;
                     }
-                    if (self::SPECIAL_LIMIT && $count >= self::SPECIAL_LIMIT) {
+
+                    $specialLimit = $this->options['show_special_restrict']??self::SPECIAL_LIMIT;
+
+                    if ($specialLimit && $count >= $specialLimit) {
                         break;
                     }
                 }

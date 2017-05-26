@@ -334,6 +334,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $data['createdBy'] = $this->getUser()->getUsername();
         }
 
+        $pRepos = $this->dm->getRepository('MBHPackageBundle:Package');
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
         $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
 

@@ -31,8 +31,10 @@ class OnlineSearchFormData
     protected $childrenAge;
     /** @var  Special */
     protected $special;
-
+    /** @var bool  */
     protected $cache = true;
+    /** @var bool */
+    protected $addDates = false;
 
     /**
      * OnlineSearchFormData constructor.
@@ -228,8 +230,23 @@ class OnlineSearchFormData
         $this->cache = $cache;
     }
 
+    /**
+     * @return bool
+     */
+    public function isAddDates(): bool
+    {
+        return $this->addDates;
+    }
 
+    /**
+     * @param bool $addDates
+     * @return $this
+     */
+    public function setAddDates(bool $addDates)
+    {
+        $this->addDates = $addDates;
 
-
+        return $this;
+    }
 
 }

@@ -7,7 +7,7 @@
     >
         <div class="leftrdm">
             <div class="imghotel"
-                 style="{% if onlineResult.mainimage %}background:url('{{ absolute_url(asset(onlineResult.mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;{% endif %}"
+                 {#style="{% if onlineResult.mainimage %}background:url('{{ absolute_url(asset(onlineResult.mainimage.path|imagine_filter('thumb_275x210'))) }}')no-repeat;background-size:cover;{% endif %}"#}
             >
                 {% block redbox %}
                 <p class="special-strip">
@@ -17,15 +17,15 @@
                 {% endblock %}
                 <div class="inghotelline">
 
-                    {% for image in onlineResult.images.images %}
-                        {% if loop.first and not image.isMain %}
-                            {{ macro.drawimage(onlineResult.mainimage, loop) }}
-                            {{ macro.drawimage(image, loop) }}
-                        {% elseif not loop.first and image.isMain %}
-                        {% else %}
-                            {{ macro.drawimage(image, loop) }}
-                        {% endif %}
-                    {% endfor %}
+                    {#{% for image in onlineResult.images.images %}#}
+                        {#{% if loop.first and not image.isMain %}#}
+                            {#{{ macro.drawimage(onlineResult.mainimage, loop) }}#}
+                            {#{{ macro.drawimage(image, loop) }}#}
+                        {#{% elseif not loop.first and image.isMain %}#}
+                        {#{% else %}#}
+                            {#{{ macro.drawimage(image, loop) }}#}
+                        {#{% endif %}#}
+                    {#{% endfor %}#}
                 </div>
             </div>
         </div>
