@@ -56,7 +56,7 @@ Special.prototype.recalculatePrice = function () {
 
     return {
         newPrice: price,
-        oldPrice: Math.round(price/(1-this.discount/100))
+        oldPrice: Math.round(price / (1 - this.discount / 100))
 
     };
 };
@@ -70,15 +70,15 @@ Special.prototype.reNewPrices = function () {
 Special.prototype.reNewHref = function () {
     var page = '/mbresults.php?',
         data = {
-        step: 1,
-        search_form: {
-            hotel: this.hotelId,
-            roomType: this.roomTypeId,
-            begin: this.begin,
-            end: this.end,
-            adults: this.activeAdults(),
-            children: this.activeChildren(),
-            special: this.specialId
+            step: 1,
+            search_form: {
+                hotel: this.hotelId,
+                roomType: this.roomTypeId,
+                begin: this.begin,
+                end: this.end,
+                adults: this.activeAdults(),
+                children: this.activeChildren(),
+                special: this.specialId
             }
         },
         href = page + $.param(data);
@@ -88,7 +88,7 @@ Special.prototype.reNewHref = function () {
 Special.prototype.show = function () {
     this.$row.removeClass('hide');
 };
-Special.prototype.hide = function() {
+Special.prototype.hide = function () {
     this.$row.addClass('hide');
 };
 Special.prototype.showHotel = function () {
@@ -98,12 +98,12 @@ Special.prototype.hideHotel = function () {
     this.$row.addClass('hotel-hide');
 };
 Special.prototype.removeLast = function () {
-    if(this.$row.hasClass('spec-last')) {
+    if (this.$row.hasClass('spec-last')) {
         this.$row.removeClass('spec-last')
     }
 };
 Special.prototype.setLast = function () {
-    if(!this.$row.hasClass('spec-last')) {
+    if (!this.$row.hasClass('spec-last')) {
         this.$row.addClass('spec-last')
     }
 };
@@ -117,26 +117,26 @@ var MonthSwitcher = function ($row) {
     this.$neighbors = $row.parent().siblings().find('a');
 };
 
-MonthSwitcher.prototype.init = function(specials) {
+MonthSwitcher.prototype.init = function (specials) {
     this.allSpecials = specials;
     var special;
     for (special in specials) {
-        if(specials[special].$row.hasClass(this.id)) {
+        if (specials[special].$row.hasClass(this.id)) {
             this.specials.push(specials[special])
         }
     }
     this.bindHandlers();
 };
 
-MonthSwitcher.prototype.bindHandlers = function() {
-        var that = this;
-        this.$row.on('click', function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            if (that.isEnabled) {
-                that.showClickedSpecials();
-            }
-        });
+MonthSwitcher.prototype.bindHandlers = function () {
+    var that = this;
+    this.$row.on('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (that.isEnabled) {
+            that.showClickedSpecials();
+        }
+    });
 };
 MonthSwitcher.prototype.setActive = function () {
     this.$neighbors.removeClass('spec-active');
@@ -166,7 +166,7 @@ HotelSwitcher.prototype.init = function (specials) {
     this.allSpecials = specials;
     var special;
     for (special in specials) {
-        if(specials[special].$row.data('hotelid') === (this.id)) {
+        if (specials[special].$row.data('hotelid') === (this.id)) {
             this.specials.push(specials[special])
         }
     }
@@ -191,39 +191,84 @@ HotelSwitcher.prototype.showClickedSpecials = function () {
     this.specials[special].setLast();
 };
 
-var callMonthSlider = function (month) {
+var callMonthSlider = function (monthSwitcherContainer) {
+    var page = monthSwitcherContainer.getActivePage();
     $('.bxslider').bxSlider({
 
         minSlides: 3,
         maxSlides: 3,
         slideWidth: 360,
         slideMargin: 10,
-        infiniteLoop:false,
+        infiniteLoop: false,
         pager: false,
-        startSlide: 1
+        startSlide: page-1
 
     });
 };
-var showFirstEnabledSwitcher = function (monthSwitchers, defaultMonth) {
-    var switcher, activeSwitcher;
 
+var getDefaultMonth = function () {
+    try {
+        var month = window.location.href.replace(/\//g, "").split("?")[1].replace("=","_");
+    } catch (err) {
+        month = null;
+    }
 
-    for (switcher in monthSwitchers.reverse()) {
-        if(monthSwitchers[switcher].isEnabled) {
-            activeSwitcher = monthSwitchers[switcher];
-            if(activeSwitcher.id === defaultMonth) {
+    return month || 'month_06';
+};
+
+var MonthSwitcherContainer = function() {
+    this.switchers = [];
+    this.defaultSwitcher = null;
+};
+MonthSwitcherContainer.prototype.addSwitcher = function (switcher) {
+    this.switchers.push(switcher);
+};
+
+MonthSwitcherContainer.prototype.defaultSwitcherDetermine = function(defaultMonth) {
+    var switcher, enabledSwitcher;
+    for (switcher in this.switchers) {
+        if (this.switchers[switcher].isEnabled) {
+            enabledSwitcher = this.switchers[switcher];
+            if (enabledSwitcher.id === defaultMonth) {
+                this.defaultSwitcher = enabledSwitcher;
                 break
             }
         }
     }
-    activeSwitcher.showClickedSpecials();
+    if(!this.defaultSwitcher) {
+        //Последний в списке
+        this.defaultSwitcher = enabledSwitcher;
+    }
+};
+MonthSwitcherContainer.prototype.showFirstEnabledSwitcher = function (defaultMonth) {
+    if(!this.defaultSwitcher) {
+        this.defaultSwitcherDetermine(defaultMonth);
+    }
+    this.defaultSwitcher.showClickedSpecials();
+};
+MonthSwitcherContainer.prototype.getActivePage = function() {
+    if(!this.defaultSwitcher) {
+        console.log('nodefaultpage');
+        return 1;
+    }
+    var perPage = 3,
+        numsOfSwitchers = this.switchers.length,
+        pages = Math.ceil(numsOfSwitchers / perPage),
+        switcherIndex = this.switchers.indexOf(this.defaultSwitcher)+1,
+        page = Math.ceil((switcherIndex) / pages);
+    console.table(this.switchers);
+    console.log('index' + switcherIndex);
+    console.log('pages' + pages);
+    console.log('page' + page);
+
+    return page
 };
 
 $(function () {
-    var defaultMonth = 'month_06';
+    var defaultMonth = getDefaultMonth();
     var specials = [],
-        monthSwitchers = [],
-        hotelSwitchers = [];
+        hotelSwitchers = [],
+        monthSwitcherContainer = new MonthSwitcherContainer();
     $.each($('.oneblockspec'), function () {
         var special = new Special($(this));
         special.init();
@@ -232,14 +277,14 @@ $(function () {
     $.each($('.month-switcher>a'), function () {
         var switcher = new MonthSwitcher($(this));
         switcher.init(specials);
-        monthSwitchers.push(switcher);
+        monthSwitcherContainer.addSwitcher(switcher);
     });
     $.each($('.hotel-switcher'), function () {
         var hotelSwitcher = new HotelSwitcher($(this));
         hotelSwitcher.init(specials);
         hotelSwitchers.push(hotelSwitcher);
     });
-    callMonthSlider();
-    showFirstEnabledSwitcher(monthSwitchers, defaultMonth);
+    monthSwitcherContainer.showFirstEnabledSwitcher(defaultMonth);
+    callMonthSlider(monthSwitcherContainer);
 
 });
