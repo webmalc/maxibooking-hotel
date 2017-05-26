@@ -125,7 +125,7 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         ];
     }
 
-    private function createSpecialName(RoomType $roomType = null, \DateTime $begin = null, \DateTime $end = null, Room $virtualRoom)
+    private function createSpecialName(RoomType $roomType = null, \DateTime $begin = null, \DateTime $end = null, Room $virtualRoom = null)
     {
         $roomTypeName = str_replace(' ','_',($roomType ? $roomType->getName() : ''));
         $beginAsString = $begin ? $begin->format('d_m-Y') : '';
