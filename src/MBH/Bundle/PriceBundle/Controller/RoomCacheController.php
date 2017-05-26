@@ -27,10 +27,17 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     public function indexAction()
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        //get roomTypes
+        $roomTypesCallback = function () use ($hotel) {
+            return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $hotel->getId()]);
+        };
+        $roomTypes = $this->helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         return [
-            'roomTypes' => $hotel->getRoomTypes(),
+            'roomTypes' => $roomTypes,
             'tariffs' => $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms'),
+            'displayDisabledRoomType' => !$isDisableableOn
         ];
     }
 
@@ -92,12 +99,16 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         ];
 
         //get roomTypes
-        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->fetch($hotel, $request->get('roomTypes'))
-        ;
+        $roomTypesCallback = function () use ($hotel, $request) {
+            return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
+        };
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => $this->container->get('translator')->trans('price.tariffcontroller.room_type_is_not_found')]);
         }
+
         //get tariffs
         if (!empty($request->get('tariffs'))) {
             $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
@@ -213,7 +224,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
         $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.tariffcontroller.update_successfully_saved'));
         $this->get('mbh.channelmanager')->updateRoomsInBackground();
-        $$this->get('mbh.cache')->clear('room_cache');
+        $this->get('mbh.cache')->clear('room_cache');
 
         return $this->redirectToRoute('room_cache_overview', [
             'begin' => $request->get('begin'),

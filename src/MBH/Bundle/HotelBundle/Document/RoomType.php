@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -10,22 +11,21 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
 
 /**
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="mbhhotelbundle.document.roomtype.takoy.tip.nomera.uzhe.sushchestvuyet")
- *
+ * @Disableable\Disableable
  * @ODM\HasLifecycleCallbacks
  */
 class RoomType extends Base implements RoomTypeInterface
 {
-
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -188,9 +188,22 @@ class RoomType extends Base implements RoomTypeInterface
      */
     protected $category;
 
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isSmoking = false;
+
+    /**
+     * @var array
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomViewType")
+     */
+    protected $roomViewsTypes;
+
     public function __construct()
     {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rooms = new ArrayCollection();
+        $this->roomViewsTypes = new ArrayCollection();
     }
 
     /**
@@ -350,7 +363,6 @@ class RoomType extends Base implements RoomTypeInterface
         $total = $children + $adults;
 
         for ($i = 1; $i <= $total; $i++) {
-
             if ($i > $this->getTotalPlaces()) {
                 break;
             }
@@ -651,6 +663,44 @@ class RoomType extends Base implements RoomTypeInterface
     public function setCategory(RoomTypeCategory $category = null)
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsSmoking(): ?bool
+    {
+        return $this->isSmoking;
+    }
+
+    /**
+     * @param bool $isSmoking
+     * @return RoomType
+     */
+    public function setIsSmoking(bool $isSmoking): RoomType
+    {
+        $this->isSmoking = $isSmoking;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoomViewsTypes()
+    {
+        return $this->roomViewsTypes;
+    }
+
+    /**
+     * @param array $roomViewsTypes
+     * @return RoomType
+     */
+    public function setRoomViewsTypes(array $roomViewsTypes): RoomType
+    {
+        $this->roomViewsTypes = $roomViewsTypes;
 
         return $this;
     }

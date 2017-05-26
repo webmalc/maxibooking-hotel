@@ -1,6 +1,8 @@
 validator.constraints.expense_greater_than_income: 'Сумма расхода по заказу не должна превышать приход. Сумма прихода: %total%'
 validator.constraints.payer: 'Не указан плательщик'
-validator.document.cashDocument.no_order_selected: 'Не выбран заказ'
-validator.document.cashDocument.wrong_tariff_type: 'Неверный тип тарифа.'
-validator.document.cashDocument.min_sum_less_1: 'Сумма не может быть меньше единицы'
-validator.document.cashDocument.wrong_valid_date: 'Дата платежа раньше, чем дата документа'
+validator.document.cashDocument.no_order_selected: Не выбран заказ
+validator.document.cashDocument.wrong_tariff_type: Неверный тип тарифа.
+validator.document.cashDocument.min_sum_less_1: Сумма не может быть меньше единицы
+validator.document.cashDocument.wrong_tariff_type: Неверный тип тарифа.
+validator.document.cashDocument.wrong_valid_date: Дата платежа раньше, чем дата документа
+validator.document.card_type.unique_constraint: Такой тип карты уже существует

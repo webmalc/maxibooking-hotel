@@ -32,6 +32,8 @@ class AppKernel extends Kernel
             new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
             new Phobetor\RabbitMqSupervisorBundle\RabbitMqSupervisorBundle(),
             new Lexik\Bundle\TranslationBundle\LexikTranslationBundle(),
+            new Vich\UploaderBundle\VichUploaderBundle(),
+            new Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle(),
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),

@@ -35,17 +35,16 @@
                     <h3 class="panel-title">{{ 'views.form.index.site_embed_form_code'|trans({}, 'MBHOnlineBundle') }}</h3>
                 </div>
                 <div class="panel-body">
-                    {% set code1  = '<div id="mbh-form-wrapper" style="overflow: hidden; width: ' ~ config.form.width ~'; height: ' ~ config.form.height ~';"><a href="http://maxi-booking.ru/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
-                    {% set code2  = '<script>window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"><\\/script>\')</script>' %}
-                    {% set code3  = '<script>$.isFunction($().datepicker) || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"><\\/script><link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css"/>\')</script>' %}
-                    {% set code4  = '<script type="text/javascript" src="' ~ url('online_form_get', {id: entity.id}) ~ '"></script>' %}
+                    {% set code1  = '<div id="mbh-form-wrapper"><a href="http://maxi-booking.ru/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
+                    {% set code2  = '<script>var mbh = {form_url: "' ~ url('online_form_iframe', {formId: entity.id}) ~ '", calendar_url: "' ~ url('online_form_calendar') ~ '"};</script>' %}
+                    {% set code3  = '<script src="' ~ absolute_url(asset('/bundles/mbhonline/js/online/load-form.js')) ~'"></script>' %}
                     <div class="row spacer-bottom">
                         <div class="col-md-3"><small>{{ 'views.form.index.to_form_place'|trans({}, 'MBHOnlineBundle') }}</small></div>
                         <div class="col-md-9"><span class="text-success">{{ code1 }}</span></div>
                     </div>
                     <div class="row">
                         <div class="col-md-3"><small>{{ 'views.form.index.before_closing_tag'|trans({}, 'MBHOnlineBundle') }}&lt;/body&gt;:</small></div>
-                        <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}{{ code4 }}</span></div>
+                        <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}</span></div>
                     </div>
                 </div>
             </div>
@@ -56,20 +55,17 @@
                 </div>
                 <div class="panel-body">
                     <div id="mbh-date-error" class="hide"><i class="fa fa-exclamation-circle"></i> {{ 'views.form.period_is_not_filled'|trans({}, 'MBHOnlineBundle') }}</div>
-                    {% set code0  = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">' %}
-                    {% set code1  = '<div id="mbh-results-wrapper" style="overflow: hidden; width: ' ~ config.result.width ~'; height: ' ~ config.result.height ~';"></div>' %}
-                    {% set code2  = '<script>window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"><\\/script>\')</script>' %}
-                    {% set code3  = '<script>$.isFunction($().select2) || document.write(\'<script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.min.js"><\\/script><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.css"/>\')</script>'%}
-                    {% set code4  = '<script>$.isFunction($().mask) || document.write(\'<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.min.js"><\\/script>\')</script>'%}
-                    {% set code5  = '<script>$.isFunction($().cookie) || document.write(\'<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"><\\/script>\')</script>'%}
-                    {% set code6  = '<script type="text/javascript" src="' ~ url('online_form_results', {id: entity.id}) ~ '"></script>' %}
+                    {% set code1  = '<div id="mbh-results-wrapper"><a href="http://maxi-booking.ru/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
+                    {% set code2  = '<script>var mbh = {results_url: "' ~ url('online_form_results_iframe', {formId: entity.id}) ~ '"};</script>' %}
+                    {% set code3  = '<script src="' ~ absolute_url(asset('/bundles/mbhonline/js/online/load-results.js')) ~'"></script>' %}
+
                     <div class="row spacer-bottom">
                         <div class="col-md-3"><small>{{ 'views.form.index.to_results_place'|trans({}, 'MBHOnlineBundle') }}</small></div>
-                        <div class="col-md-9"><span class="text-success">{{ code0 }}{{ code1 }}</span></div>
+                        <div class="col-md-9"><span class="text-success">{{ code1 }}</span></div>
                     </div>
                     <div class="row spacer-bottom">
                         <div class="col-md-3"><small>{{ 'views.form.index.before_closing_tag'|trans({}, 'MBHOnlineBundle') }}&lt;/body&gt;:</small></div>
-                        <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}{{ code4 }}{{ code5 }}{{ code6 }}</span></div>
+                        <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}</span></div>
                     </div>
                 </div>
             </div>

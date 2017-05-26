@@ -2,17 +2,17 @@
 namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 
 /**
- * Class TaskData
+ * Class HotelData
 
  */
-class HotelData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+class HotelData extends AbstractFixture implements OrderedFixtureInterface
 {
 
     /**
@@ -24,17 +24,15 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface, Cont
     {
         return [
             'hotel-one' => [
-                'title' => $this->container->get('translator')->trans('mbhhotelbundle.hotelData.hotelOne'),
+            'title' => $this->container->get('translator')->trans('mbhhotelbundle.hotelData.hotelOne'),
             'default' => true
-        ],
+            ],
             'hotel-two' => [
-                'title' => $this->container->get('translator')->trans('mbhhotelbundle.hotelData.hotelTwo'),
-                'default' => false
+            'title' => $this->container->get('translator')->trans('mbhhotelbundle.hotelData.hotelTwo'),
+            'default' => false
             ]
         ];
     }
-
-    use ContainerAwareTrait;
 
     /**
      * {@inheritDoc}
@@ -55,6 +53,10 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface, Cont
                 $manager->flush();
 
                 $this->setReference($key, $hotel);
+
+                if ($this->getEnv() != 'test') {
+                    break;
+                }
             }
         }
     }

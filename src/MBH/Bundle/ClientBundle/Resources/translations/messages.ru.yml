@@ -52,7 +52,9 @@ mailer.notice.unpaid.full_name: ФИО
 form.clientConfigType.search_tariffs: Количество тарифов
 form.clientConfigType.search_tariffs_desc: Количество тарифов выводимое по умолчанию при подборе
 form.clientConfigType.add_start_date: Начальная дата
-
+form.clientConfigType.is_book_without_payer.label: Бронировать без плательщика?
+form.clientConfigType.is_book_without_payer.help: Разрешено ли создавать заказы без указания плательщика?
+form.clientPaymentSystemType.payment_system_paypal_login: Логин
 form.documentTemplateType.hotel: Отель
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
 

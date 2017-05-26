@@ -16,3 +16,7 @@ phpstorm
 * **cli php interpreter**: {{project_dir}}/scripts/docker/php.sh
 * **phpunit**: {{project_dir}}/scripts/docker/phpunit.sh
 * **xdebug**: add directory mappings to server settings
+
+search ru text
+---------
+* **command**: grep -ri '[А-Яа-яЁё]' --exclude-dir={vendor,web,var,.git} *|grep -v "\.\(csv\|yml\|png\|gif\|jpg\)"

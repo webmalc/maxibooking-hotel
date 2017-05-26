@@ -30,7 +30,6 @@ class PackageVirtualRoomType extends AbstractType
                 },
                 'required' => false
             ]);
-
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -45,5 +44,4 @@ class PackageVirtualRoomType extends AbstractType
     {
         return 'mbh_bundle_packagebundle_package_virtual_room_type';
     }
-
 }

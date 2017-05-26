@@ -1,5 +1,5 @@
 /*global window, jQuery, document */
-jQuery(document).ready(function () {
+jQuery(document).ready(function() {
     var wrapper = jQuery('#mbh-form-wrapper');
     wrapper.html("{{ styles|escape('js') }}{{ text|escape('js') }}");
 
@@ -10,26 +10,69 @@ jQuery(document).ready(function () {
         children = jQuery('#mbh-form-children'),
         button = jQuery('#mbh-form-submit'),
         locale = jQuery('#mbh-form-locale'),
+        last = null,
         options = {
             minDate: 0
         };
 
+    var processMessage = function(e) {
+        if (e.data.type !== 'mbh') {
+            return;
+        }
+        if (e.data.date && last) {
+            last.val(e.data.date).trigger('change');
+            window.parent.postMessage({
+                type: 'mbh',
+                action: 'hideCalendar'
+            }, "*");
+        }
+    };
+
+    if (window.addEventListener) {
+        window.addEventListener("message", processMessage, false);
+    } else {
+        window.attachEvent("onmessage", processMessage);
+    }
+
+    var showCalendar = function() {
+        var el = $(this);
+        last = el;
+        window.parent.postMessage({
+            type: 'mbh',
+            action: 'showCalendar',
+            top: el.offset().top + el.outerHeight(),
+            left: el.offset().left,
+            date: el.val()
+        }, "*");
+    };
+
+    var hideCalendar = function(e, exception) {
+        if ((exception && !$(e.target).hasClass(exception)) || !exception) {
+            calendarIframe.css('display', 'none');
+        }
+    };
+
+    begin.on('focus', showCalendar);
+    end.on('focus', showCalendar);
+    $('html').click(function(e) {
+        if (!$(e.target).hasClass('mbh-calendar-input')) {
+            window.parent.postMessage({
+                type: 'mbh',
+                action: 'hideCalendar'
+            }, "*");
+        }
+    });
+
     var currentLocale = locale.val();
 
-    var datePickerDefaultOptions = {dateFormat: "dd.mm.yy", firstDay: 1, isRTL: false};
-    if (!currentLocale || currentLocale == 'ru') {
-        jQuery.datepicker.regional.ru = {closeText: "Закрыть", prevText: "&#x3c;Пред", nextText: "След&#x3e;", currentText: "Сегодня", monthNames: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"], monthNamesShort: ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"], dayNames: ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"], dayNamesShort: ["вск", "пнд", "втр", "срд", "чтв", "птн", "сбт"], dayNamesMin: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"]};
-        jQuery.datepicker.setDefaults(jQuery.datepicker.regional.ru)
-    }
-    jQuery.datepicker.setDefaults(datePickerDefaultOptions);
-
-    var setValue = function (field, val) {
-        if(val && field.length) {
+    var setValue = function(field, val) {
+        if (val && field.length) {
             field.val(val);
         }
-    }
-    var getUrlVars = function () {
-        var vars = [], hash;
+    };
+    var getUrlVars = function() {
+        var vars = [],
+            hash;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
         for (var i = 0; i < hashes.length; i++) {
             hash = hashes[i].split('=');
@@ -37,23 +80,22 @@ jQuery(document).ready(function () {
             vars[hash[0]] = hash[1];
         }
         return vars;
-    }
-    var query = getUrlVars()
-            ;
+    };
+    var query = getUrlVars();
     if (!begin.val() || !end.val()) {
         button.prop('disabled', true);
     }
-    begin.datepicker(options);
-    end.datepicker(options);
-
     // nights
     if (nights.length) {
         jQuery('#mbh-form-nights, #mbh-form-begin').change(function() {
 
-            var beginDate = begin.datepicker("getDate");
-            var endDate =  beginDate;
+            var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', begin.val());
+            if (!beginDate) {
+                return;
+            }
+            var endDate = beginDate;
             endDate.setDate(endDate.getDate() + parseInt(nights.val(), 10));
-            end.datepicker('setDate', endDate);
+            end.val(jQuery.datepicker.formatDate( "dd.mm.yy", endDate));
         });
 
     }
@@ -66,10 +108,10 @@ jQuery(document).ready(function () {
     setValue(children, query.children);
     setValue(nights, query.nights);
 
-    begin.change(function () {
-        var beginDate = begin.datepicker("getDate"),
-            endDate = end.datepicker("getDate")
-            ;
+    begin.change(function() {
+        var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', begin.val()),
+            endDate = jQuery.datepicker.parseDate('dd.mm.yy', end.val());
+
         if (!beginDate) {
             return false;
         }
@@ -77,19 +119,12 @@ jQuery(document).ready(function () {
         if (endDate < beginDate) {
             end.val(null);
         }
-        end.datepicker("option", {'minDate': beginDate});
-
-        if (!endDate) {
-            end.datepicker("option", {'minDate': beginDate});
-        }
-        //beginDate.setDate(beginDate.getDate() + 1);
-        //end.datepicker('setDate', beginDate);
     });
 
-    end.change(function () {
-        var beginDate = begin.datepicker("getDate"),
-            endDate = end.datepicker("getDate")
-            ;
+    end.change(function() {
+        var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', begin.val()),
+            endDate = jQuery.datepicker.parseDate('dd.mm.yy', end.val());
+
         if (!endDate) {
             return false;
         }
@@ -97,11 +132,10 @@ jQuery(document).ready(function () {
         if (beginDate > endDate) {
             begin.val(null);
         }
-        begin.datepicker("option", {'maxDate': endDate});
     });
 
     if (adults.length) {
-        adults.change(function () {
+        adults.change(function() {
             var val = parseInt(adults.val());
             if (isNaN(val)) {
                 adults.val(1);
@@ -111,23 +145,47 @@ jQuery(document).ready(function () {
         });
     }
     if (children.length) {
-        children.change(function () {
+        children.bind('keyup mouseup change', function() {
             var val = parseInt(children.val());
             if (isNaN(val)) {
                 children.val(0);
             } else {
+                setChildAgeForms(val);
                 children.val(val);
             }
         });
     }
 
-    jQuery('#mbh-form-begin, #mbh-form-end').change(function () {
+    jQuery('#mbh-form-begin, #mbh-form-end').change(function() {
         if (begin.val() && end.val()) {
             button.prop('disabled', false);
         } else {
             button.prop('disabled', true);
         }
     });
-})
+    setChildAgeForms(children.val());
+});
 
-
+function setChildAgeForms(childrenCount) {
+    var $childAgesBlock = $('.children-ages');
+    if (childrenCount > 0) {
+        $childAgesBlock.show();
+    } else if ($childAgesBlock) {
+        $childAgesBlock.hide();
+    }
+    var selectFormCount = $childAgesBlock.find('select').size();
+    var difference = childrenCount - selectFormCount;
+    if (difference > 0) {
+        for (var i = selectFormCount; i < childrenCount; i++) {
+            var childrenAgeForm = $('#children-age-1').clone();
+            var selectFormName = 'children-age-' + (i + 1);
+            childrenAgeForm.attr('id', selectFormName);
+            $childAgesBlock.append(childrenAgeForm);
+        }
+    } else if (difference < 0) {
+        while (childrenCount != selectFormCount && $childAgesBlock.find('select').size() > 1) {
+            $childAgesBlock.find('select').last().remove();
+            selectFormCount--;
+        }
+    }
+}

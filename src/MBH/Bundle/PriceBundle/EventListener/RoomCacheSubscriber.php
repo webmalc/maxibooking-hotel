@@ -8,11 +8,10 @@ use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 class RoomCacheSubscriber implements EventSubscriber
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface 
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
 
@@ -71,7 +70,6 @@ class RoomCacheSubscriber implements EventSubscriber
         $doc = $args->getDocument();
 
         if ($doc instanceof RoomCache && $doc->getPackagesCount() > 0) {
-
             throw new DeleteException($this->container->get('translator')->trans('roomCacheSubscriber.delete_exception_message.can_not_delete_room'));
         }
     }

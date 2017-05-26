@@ -35,6 +35,7 @@
                     <i class="fa fa-bar-chart" title='{{ 'price.resources.views.roomcache.graph'|trans }}' data-toggle='tooltip'></i>
                     &nbsp <input type="checkbox" id="room-cache-overview-filter-graph" class="room-cache-overview-filter" value="1"/>
                 </div>
+            {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'room_cache_overview'} %}
         </form>
     </div></div>
 

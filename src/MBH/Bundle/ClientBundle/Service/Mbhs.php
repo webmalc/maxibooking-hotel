@@ -83,7 +83,6 @@ class Mbhs
                 ]
             ]);
             $json = json_decode($response->getBody(), true);
-
         } catch (\Exception $e) {
             $result->error = true;
             $result->message = $e->getMessage();
@@ -170,8 +169,8 @@ class Mbhs
                         'url' => $this->getSchemeAndHttpHost(),
                         'key' => $this->config['key'],
                         'ip' => $ip
-                    ])]);
-
+                    ])]
+                );
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 dump($e->getMessage());
@@ -294,10 +293,11 @@ class Mbhs
                 ->post(
                     $uri,
                     ['json' => $requestData
-                    ]);
+                    ]
+                );
             ;
             $responseData = $this->container->get('serializer')->decode($response->getBody(true), 'json');
-            if(!$responseData['status']) {
+            if (!$responseData['status']) {
                 //throw new \MbhsResponseException();
             }
             return $responseData;

@@ -45,6 +45,7 @@ price.views.priceCache.index.rate: 'Тариф'
 price.views.priceCache.index.save: 'Сохранить'
 price.views.priceCache.index.random: 'Генератор цен'
 price.views.priceCache.index.cancel: 'Отмена'
+
 #/overview html
 price.views.overview.tabla.rooms: 'Номера в продаже'
 price.views.overview.tabla.tariff_rooms: 'Квоты по тарифам'

@@ -69,7 +69,9 @@ class OrderSubscriber implements EventSubscriber
                     $packageService->setDeletedAt(new \DateTime());
                     $dm->persist($packageService);
                 }
-
+                while ($lastAccommodation = $package->getLastAccommodation()) {
+                    $dm->remove($lastAccommodation);
+                }
                 $package->setServicesPrice(0);
                 $package->setDeletedAt(new \DateTime());
                 $dm->persist($package);

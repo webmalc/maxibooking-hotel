@@ -905,15 +905,18 @@ class Vashotel extends Base
             $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
             $roomTypes = $this->getRoomTypes($config);
             $configTariffs = $this->getTariffs($config, true);
-            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                $begin,
-                $end,
-                $config->getHotel(),
-                $this->getRoomTypeArray($filterRoomType),
-                [],
-                true,
-                $this->roomManager->useCategories
-            );
+            $priceCachesCallback = function () use ($begin, $end, $config, $filterRoomType) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                    $begin,
+                    $end,
+                    $config->getHotel(),
+                    $this->getRoomTypeArray($filterRoomType),
+                    [],
+                    true,
+                    $this->roomManager->useCategories
+                );
+            };
+            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             //iterate tariffs
             foreach ($this->pullTariffs($config) as $tariffId => $tariff) {

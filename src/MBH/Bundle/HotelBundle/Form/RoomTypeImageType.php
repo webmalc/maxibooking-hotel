@@ -18,7 +18,7 @@ class RoomTypeImageType extends AbstractType
         $builder->
             add('imageFile', FileType::class, ['label' => 'form.roomTypeType.image',
                 'required' => false,
-                'help' => $fileText,
+                'help' => 'form.roomTypeType.image.help',
                 'constraints' => [new Image(), new NotBlank()],
                 'attr' => ['multiple' => 'multiple']
             ]);

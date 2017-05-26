@@ -65,6 +65,7 @@ twig:
           7: 'Вс'
         environment: "%mbh.environment%"
         version: "%mbh.version%"
+        currency: "%locale.currency%"
 
 # Assetic Configuration
 assetic:
@@ -118,6 +119,9 @@ doctrine_mongodb:
                     hotelable:
                         class: MBH\Bundle\BaseBundle\Filter\HotelableFilter
                         enabled: false
+                    disableable:
+                        class: MBH\Bundle\BaseBundle\Lib\Disableable\Filter\ODM\DisableableFilter
+                        enabled: false
             mappings:
                 gedmo_loggable:
                     type: annotation
@@ -160,7 +164,7 @@ stof_doctrine_extensions:
             uploadable:     false
             tree:           false
             sortable:       false
-            
+
 # FOSUserBundle Configuration
 fos_user:
     db_driver: mongodb
@@ -202,28 +206,33 @@ liip_imagine:
                 data_root: "%kernel.root_dir%/../protectedUpload"
     filter_sets:
         cache: ~
+        thumb_50x50:
+            quality: 80
+            filters:
+                thumbnail: { size: [50, 50], mode: outbound, allow_upscale: true }
         thumb_100x100:
-            quality: 100
+            quality: 80
             filters:
                 thumbnail: { size: [100, 100], mode: outbound, allow_upscale: true }
+        thumb_155x155:
+            quality: 80
+            filters:
+                thumbnail: { size: [155, 155], mode: outbound, allow_upscale: true }
         thumb_130x110:
-            quality: 100
+            quality: 80
             filters:
               thumbnail: { size: [130, 110], mode: outbound, allow_upscale: true }
         thumb_95x80:
-            quality: 100
+            quality: 80
             filters:
               thumbnail: { size: [95, 80], mode: outbound, allow_upscale: true }
-
         stamp:
             data_loader: protected
-            quality: 100
+            quality: 80
             filters:
               thumbnail: { size: [10, 10], mode: outbound, allow_upscale: true }
-
-
         scaler:
-            quality: 100
+            quality: 80
             filters:
               relative_resize: { scale: 0.5, allow_upscale: true }
 
@@ -245,3 +254,16 @@ lexik_translation:
     managed_locales: [ru, en]
     storage:
         type: mongodb
+
+vich_uploader:
+    db_driver: mongodb
+    mappings:
+        upload_image:
+            uri_prefix:         /upload/images
+            upload_destination: '%kernel.root_dir%/../web/upload/images'
+
+bazinga_js_translation:
+    locale_fallback:      ru
+    default_domain:       front_messages
+    active_domains:
+            - front_messages

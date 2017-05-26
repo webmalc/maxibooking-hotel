@@ -7,11 +7,10 @@ use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 class TariffSubscriber implements EventSubscriber
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface 
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
 
@@ -53,7 +52,6 @@ class TariffSubscriber implements EventSubscriber
         $doc = $args->getDocument();
 
         if ($doc instanceof Tariff) {
-
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->container->get('doctrine_mongodb')->getManager();
 
@@ -61,6 +59,7 @@ class TariffSubscriber implements EventSubscriber
 
             if (!$baseTariff) {
                 $doc->setIsDefault(true);
+                $this->container->get('mbh.cache')->clear('room_cache');
             }
         }
     }

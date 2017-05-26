@@ -35,9 +35,8 @@ class HotelControllerTest extends WebTestCase
         ;
     }
 
-    public function testExtended()
+    public function testExtendedInformationForm()
     {
-
         $fixtures = $this->loadFixtures([
             'MBH\Bundle\UserBundle\DataFixtures\MongoDB\GroupsData',
             'MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData',
@@ -48,7 +47,7 @@ class HotelControllerTest extends WebTestCase
         $formName = 'mbh_bundle_hotelbundle_hotel_extended_type';
         $url = '/management/hotel/' . $hotel->getId() . '/edit/extended';
         $newValues = self::prepareFormValues($formName, [
-            'settlement' => 'Test settlement', 'longitude' => 33.2
+            'rating' => '4', 'checkinoutPolicy' => 'test policy'
         ]);
 
         $crawler = $this->client->request('GET', $url);

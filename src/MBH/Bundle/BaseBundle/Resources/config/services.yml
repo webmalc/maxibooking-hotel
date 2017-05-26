@@ -142,6 +142,11 @@ services:
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
+    mbh.event_listener.disable_listener:
+        class: MBH\Bundle\BaseBundle\Lib\Disableable\DisableableSubscriber
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
     mbh.event_listener.hotelable_listener:
         class: MBH\Bundle\BaseBundle\EventListener\HotelableListener
         arguments: ['@mbh.hotel.selector']
@@ -161,10 +166,16 @@ services:
         class: MBH\Bundle\BaseBundle\EventListener\GenerateInternationalListener
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
-
+ 
     mbh.cache:
-            class: MBH\Bundle\BaseBundle\Service\Cache
-            arguments: ['%mbh_cache%', '@doctrine_mongodb', '@validator']
+        class: MBH\Bundle\BaseBundle\Service\Cache
+        arguments:
+          - '%mbh_cache%'
+          - '%mbh_redis%'
+          - '@doctrine_mongodb'
+          - '@validator'
+          - '@mbh.cache.logger'
+          - '@mbh.mongo'
 
     mbh.task.logger:
         class:     Symfony\Bridge\Monolog\Logger
@@ -177,7 +188,7 @@ services:
         arguments: ["%kernel.logs_dir%/%kernel.environment%.task.log", 200]
 
 
-#Translation
+    #Translation
     mbh.base.command.translate:
         class:  MBH\Bundle\BaseBundle\Command\TranslatorCommand
         arguments: ['mbh:translation']
@@ -214,3 +225,13 @@ services:
     mbh.base.lib.services_translator:
         class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\ServicesTranslateConverter
         parent: mbh.base.lib.abstract_translator
+        
+    mbh.cache.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.cache.logger_handler']]
+
+    mbh.cache.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]

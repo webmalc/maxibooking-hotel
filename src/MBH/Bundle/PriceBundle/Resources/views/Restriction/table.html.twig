@@ -19,7 +19,7 @@
                 <input type="hidden" name="roomTypes[{{ roomType.id }}]" class="hidden" value="{{ roomType.id }}">
 
                 <tr class="mbh-grid-header2 warning">
-                    <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff }}</small></td>
+                    <td colspan="{{ period|length + 1 }}"><strong {% if not roomType.isEnabled %} class="disabled-room-type"{% endif %}>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff }}</small></td>
                 </tr>
 
                 <tr class="header" data-copy-row-id="{{ roomType.id }}">

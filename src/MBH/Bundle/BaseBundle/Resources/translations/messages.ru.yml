@@ -566,3 +566,5 @@ mbhbasebundle.view.navbar.profile: Профиль
 mbhbasebundle.view.navbar.output: Выйти
 
 mbhbasebundle.view.pdftemplates.individual.vid.platezha: Вид платежа
+hide: скрыть
+show.more: Показать еще

@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
 
@@ -508,5 +509,47 @@ class Helper
         }
 
         return $bundles;
+    }
+
+    /**
+     * Get filtered values for the specified filter
+     *
+     * @param DocumentManager $dm
+     * @param  $callback
+     * @param bool $isFilterOn
+     * @param string $filter
+     * @return mixed
+     */
+    public function getFilteredResult(DocumentManager $dm, $callback, $isFilterOn = true, $filter = 'disableable')
+    {
+        if ($isFilterOn && !$dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->enable($filter);
+        }
+        $result = $callback();
+
+        if ($isFilterOn && $dm->getFilterCollection()->isEnabled($filter)) {
+            $dm->getFilterCollection()->disable($filter);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $fieldData
+     * @return array
+     */
+    public function getDataFromMultipleSelectField($fieldData)
+    {
+        if (!empty($fieldData) && is_array($fieldData) && $fieldData[0] != '') {
+            foreach ($fieldData as $index => $singleValue) {
+                if ($singleValue === '') {
+                    unset($fieldData[$index]);
+                }
+            }
+
+            return $fieldData;
+        }
+
+        return [];
     }
 }

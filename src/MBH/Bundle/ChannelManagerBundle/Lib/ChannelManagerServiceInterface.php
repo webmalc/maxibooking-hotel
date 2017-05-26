@@ -9,13 +9,15 @@ use Symfony\Component\HttpFoundation\Request;
 interface ChannelManagerServiceInterface
 {
     /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param RoomType $roomType
-     * @return boolean
-     * @throw \Exception
+     * @return array
      */
-    public function update (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
+    public function getErrors(): array;
+
+    /**
+     * @param string $error
+     * @return self
+     */
+    public function addError(string $error): ChannelManagerServiceInterface;
 
     /**
      * @param \DateTime $begin
@@ -24,7 +26,7 @@ interface ChannelManagerServiceInterface
      * @return boolean
      * @throw \Exception
      */
-    public function updatePrices (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
+    public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
 
     /**
      * @param \DateTime $begin
@@ -33,7 +35,7 @@ interface ChannelManagerServiceInterface
      * @return boolean
      * @throw \Exception
      */
-    public function updateRooms (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
 
     /**
      * @param \DateTime $begin
@@ -42,7 +44,16 @@ interface ChannelManagerServiceInterface
      * @return boolean
      * @throw \Exception
      */
-    public function updateRestrictions (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @return boolean
+     * @throw \Exception
+     */
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
 
     /**
      * Create packages from service request

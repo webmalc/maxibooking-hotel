@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Maxibooking</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.css">
+    {% if formConfig and formConfig.theme %}
+        <link rel="stylesheet" href="{{ formConfig.theme }}">
+    {% endif %}
+</head>
+
+<body>
+    <div id="mbh-results-wrapper" style="overflow: hidden; width: auto; height: auto; padding: 10px 20px; overflow: visible;"></div>
+    {% if formConfig and formConfig.css %}
+        <style>
+         {{ formConfig.css }}
+        </style>  
+    {% endif %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.min.js"></script>
+    <script type="text/javascript" src="{{ url('online_form_results', {id: formId}) }}"></script>
+</body>
+
+</html>

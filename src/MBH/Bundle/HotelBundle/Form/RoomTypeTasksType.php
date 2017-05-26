@@ -10,7 +10,6 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-
 /**
  * Class RoomTypeTasksType
 
@@ -21,7 +20,7 @@ class RoomTypeTasksType extends AbstractType
     {
         $hotel = $options['hotel'];
 
-        $queryBuilderFunction = function(TaskTypeRepository $repository) use($hotel) {
+        $queryBuilderFunction = function (TaskTypeRepository $repository) use ($hotel) {
             return $repository->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
         };
 
@@ -32,7 +31,7 @@ class RoomTypeTasksType extends AbstractType
                 'multiple' => true,
                 'group_by' => 'category',
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
-                'help' => 'mbhhotelbundle.form.roomtypetaskstype.zadachi.sozdavayemyye.pri.zayezde.gostya',
+                'help' => 'form.roomTypeTasks.checkIn.help',
                 'query_builder' => $queryBuilderFunction
             ])
             ->add('daily', CollectionType::class, [
@@ -49,7 +48,7 @@ class RoomTypeTasksType extends AbstractType
                 'multiple' => true,
                 'group_by' => 'category',
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
-                'help' => 'mbhhotelbundle.form.roomtypetaskstype.pri.vyyezde.gostya',
+                'help' => 'form.roomTypeTasks.checkOut.help',
                 'query_builder' => $queryBuilderFunction
             ]);
     }
