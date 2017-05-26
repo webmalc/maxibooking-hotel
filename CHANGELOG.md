@@ -4,6 +4,7 @@
 * booking.com: errors && logs (redmine #595)
 * booking.com: auto tariffs fix (redmine #608)
 * booking.com: config validation (redmine #642)
+* booking.com: validation
 
 1.5.5
 =============
