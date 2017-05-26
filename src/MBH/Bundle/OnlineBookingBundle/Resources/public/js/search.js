@@ -33,7 +33,7 @@ RoomTypeRow.prototype.bindEventHandlers = function () {
     this.$bookingButtonAll.on('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        that.allTariffAction();
+        /*that.allTariffAction();*/
         $(this).off('click').find('.btmthree').removeClass('btmthree').addClass('btmthreeoff');
     });
     this.$showAllSpecialButton.on('click', function (e) {
@@ -306,8 +306,8 @@ var getChartRoomUrl = function (tariffRow) {
 };
 
 
-var init = function() {
-    $.each($('.room-type-row'),function () {
+var init = function ($block) {
+    $.each($('.room-type-row', $block), function () {
         var roomTypeRow = new RoomTypeRow($(this));
         roomTypeRow.init();
         //Графики - нужно будет перенести в методы
@@ -323,6 +323,63 @@ var init = function() {
     });
 };
 
+var AddingDates = function ($link) {
+    this.$link = $link;
+    this.$resultBlock = $("#online-booking-additional");
+    this.$loading = $(".loading");
+    this.$noResult = $("div#noResult");
+};
+AddingDates.prototype.isLoading = function () {
+    return this.$loading.hasClass('loading-v');
+};
+AddingDates.prototype.startLoading = function () {
+    this.$loading.addClass('loading-v');
+};
+AddingDates.prototype.stopLoading = function () {
+    this.$loading.removeClass('loading-v');
+};
+AddingDates.prototype.init = function () {
+    this.bindHandlers();
+};
+AddingDates.prototype.final = function () {
+    this.$noResult.remove();
+    this.$link.remove();
+};
+AddingDates.prototype.bindHandlers = function () {
+    var that = this,
+        formData = $("form#search-form").serialize();
+    formData = formData +
+        '&' + encodeURIComponent('search_form[addDates]') + '=' + 'true';
+    this.$link.on('click', function (e) {
+        e.preventDefault();
+        if(that.isLoading()) {
+            return false;
+        }
+        //TODO: Сделать затемнение?
+        var ajax = $.get({
+                url: Routing.generate('online_booking', {}, true),
+                data: formData,
+                beforeSend: function() {
+                    that.startLoading();
+                }
+            }
+        );
+        ajax.done(function (data) {
+            that.stopLoading();
+            that.final();
+            that.addDates(data);
+        });
+
+    });
+};
+AddingDates.prototype.addDates = function (html) {
+    this.$resultBlock.append(html).fadeIn('slow');
+    init(this.$resultBlock);
+};
+
 $(function () {
-    init();
+    init($('div#online-booking-search'));
+    var $link = $("#addDatesLink");
+    var addDates = new AddingDates($link);
+    addDates.init();
 });

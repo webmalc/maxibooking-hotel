@@ -5,6 +5,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Special;
 
 class OnlineCommonResultGenerator extends AbstractResultGenerator
@@ -19,7 +20,7 @@ class OnlineCommonResultGenerator extends AbstractResultGenerator
         }
 
         $searchQuery = $this->initSearchQuery($formData);
-        if ($this->options['add_search_dates']) {
+        if ($this->options['add_search_dates'] && $formData->isAddDates()) {
             $range = $this->options['add_search_dates'];
             $searchQuery->range = $range;
             $this->search->setAdditionalDates($range);
@@ -61,6 +62,58 @@ class OnlineCommonResultGenerator extends AbstractResultGenerator
 
         /*$this->filterByCapacity();*/
         return parent::resultsHandle($results);
+    }
+
+    /**
+     * Divide results to match and additional dates
+     * @param SearchQuery $searchQuery
+     * @param ArrayCollection $results
+     * @return ArrayCollection
+     */
+    protected function separateByAdditionalDays(SearchQuery $searchQuery, ArrayCollection $results): ArrayCollection
+    {
+
+        $result = [];
+        foreach ($results as $resultInstance) {
+            /** @var OnlineResultInstance $resultInstance */
+            $groups = [];
+
+            foreach ($resultInstance->getResults() as $keyNeedleInstance => $searchNeedleInstance) {
+                /** @var SearchResult $searchNeedleInstance */
+                $needle = $searchNeedleInstance->getBegin()->format('dmY').$searchNeedleInstance->getEnd()->format(
+                        'dmY'
+                    );
+                foreach ($resultInstance->getResults() as $searchKey => $searchInstance) {
+                    /** @var SearchResult $searchInstance */
+                    $hayStack = $searchInstance->getBegin()->format('dmY').$searchInstance->getEnd()->format('dmY');
+                    if ($needle == $hayStack) {
+                        $groups[$needle][$searchKey] = $searchInstance;
+                    }
+                }
+            }
+            foreach ($groups as $group) {
+                $instance = $this->createOnlineResultInstance($resultInstance->getRoomType(), array_values($group), $searchQuery);
+                //Грязных хак для показа только результатов с доп датами
+                if ($this->originalFormData->isAddDates() && $instance->getType() === 'common') {
+                    continue;
+                }
+                $result[] = $instance;
+            }
+        }
+
+        usort(
+            $result,
+            function ($resA, $resB) {
+                /** @var OnlineResultInstance $resA */
+                /** @var OnlineResultInstance $resB */
+                $priceA = $resA->getResults()->first()->getPrices();
+                $priceB = $resB->getResults()->first()->getPrices();
+
+                return reset($priceA) <=> reset($priceB);
+            }
+        );
+
+        return new ArrayCollection($result);
     }
 
 

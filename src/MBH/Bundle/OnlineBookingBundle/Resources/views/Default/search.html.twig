@@ -1,9 +1,11 @@
+{% if not isAdditional %}
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhbase/css/mbsuperfont/styles.css')) }}">
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/ssearch.css')) }}">
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/skins/square/_all.css">
+<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/search.js')) }}"></script>
+
 
 <div id="online-booking-search">
     <p class="restitle">Курортная сеть "Азовский": варианты размещения в выбранные объекты</p>
@@ -12,6 +14,7 @@
         <a href="http://azovsky.ru/putevka-v-Crimea/" target="_blank">Азовский</a>,
         <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a>
     </div>
+
     {% import _self as macro %}
     {% for onlineResult in searchResults %}
         {% include '@MBHOnlineBooking/Default/RoomTypes/'~onlineResult.type~'.roomType.html.twig' %}
@@ -25,7 +28,7 @@
 </div>
 
 {% if searchResults|length == 0 %}
-    <div style="background-color: #FFFFFF; padding: 15px">
+    <div id="noResult" style="background-color: #FFFFFF; padding: 15px">
         <strong><i class="fa fa-exclamation"></i> Варианты не найдены.</strong>
         <p>Пожалуйста, проверьте даты заезда и выезда.</p>
         <p>Или свяжитесь с нами: по телефону 8 (800) 775-15-41 (звонок бесплатный по всей России) или написав нам через
@@ -34,6 +37,18 @@
         <p>Спасибо, что выбираете Курортную сеть «Азовский»</p>
         <p><strong>Смотрите также: </strong><a href="http://azovsky.ru/specpredlojenia-dnia/">Спецпредложения</a></p>
     </div>
+{% endif %}
+
+<div class="addDates">
+    <a id="addDatesLink" href="#">Посмотреть еще варианты</a>
+</div>
+<div id="online-booking-additional" style="display: none">
+</div>
+{% else %}
+    {% import _self as macro %}
+    {% for onlineResult in searchResults %}
+        {% include '@MBHOnlineBooking/Default/RoomTypes/'~onlineResult.type~'.roomType.html.twig' %}
+    {% endfor %}
 {% endif %}
 
 {% macro drawimage(image, loop, showImages) %}
@@ -45,4 +60,3 @@
     {% endif %}
 {% endmacro %}
 
-<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/search.js')) }}"></script>

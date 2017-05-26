@@ -9,6 +9,7 @@ use MBH\Bundle\OnlineBookingBundle\Form\ReservationType;
 use MBH\Bundle\OnlineBookingBundle\Form\SearchFormType;
 use MBH\Bundle\OnlineBookingBundle\Form\SignType;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineNotifyRecipient;
+use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -92,14 +93,15 @@ class DefaultController extends BaseController
         $form->handleRequest($request);
         $searchResults = [];
         if ($form->isValid()) {
+            /** @var OnlineSearchFormData $data */
             $data = $form->getData();
             $resultGenerator = $this->get('mbh.online.search_helper');
             $searchResults = $resultGenerator->getResults($data);
         }
-
+        $html = '';
         $requestSearchUrl = $this->onlineOptions['request_search_url'];
+        $response = new Response();
         if ($request->get('getalltariff')) {
-            $html = '';
             if ($results = $searchResults[0]['results']??null) {
                 $html = $this->renderView(
                     '@MBHOnlineBooking/Default/allTariffRoomType.html.twig',
@@ -109,23 +111,28 @@ class DefaultController extends BaseController
                     ]
                 );
             }
-            $response = new Response();
-            $response->setContent($html);
-            $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
-
-            return $response;
+        } else {
+            $isAdditional = false;
+            if (isset($data) && $data->isAddDates()) {
+                $isAdditional = $data->isAddDates();
+            }
+            $html = $this->renderView(
+                'MBHOnlineBookingBundle:Default:search.html.twig',
+                [
+                    'searchResults' => $searchResults,
+                    'requestSearchUrl' => $requestSearchUrl,
+                    'useCharts' => $this->onlineOptions['use_charts'],
+                    'showAll' => $this->onlineOptions['show_all'],
+                    'hotelsLinks' => $this->onlineOptions['hotels_links'],
+                    'isAdditional' => $isAdditional
+                ]
+            );
         }
 
-        return $this->render(
-            'MBHOnlineBookingBundle:Default:search.html.twig',
-            [
-                'searchResults' => $searchResults,
-                'requestSearchUrl' => $requestSearchUrl,
-                'useCharts' => $this->onlineOptions['use_charts'],
-                'showAll' => $this->onlineOptions['show_all'],
-                'hotelsLinks' => $this->onlineOptions['hotels_links'],
-            ]
-        );
+        $response->setContent($html);
+        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+
+        return $response;
     }
 
 

@@ -11,9 +11,7 @@ use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\OnlineBookingSearchException;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
-use MBH\Bundle\PackageBundle\Services\Search\Search;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
-use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterface
@@ -178,49 +176,6 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
         }
 
         return $results;
-    }
-
-    /**
-     * Divide results to match and additional dates
-     */
-    protected function separateByAdditionalDays(SearchQuery $searchQuery, ArrayCollection $results): ArrayCollection
-    {
-
-        $result = [];
-        foreach ($results as $resultInstance) {
-            /** @var OnlineResultInstance $resultInstance */
-            $groups = [];
-
-            foreach ($resultInstance->getResults() as $keyNeedleInstance => $searchNeedleInstance) {
-                /** @var SearchResult $searchNeedleInstance */
-                $needle = $searchNeedleInstance->getBegin()->format('dmY').$searchNeedleInstance->getEnd()->format(
-                        'dmY'
-                    );
-                foreach ($resultInstance->getResults() as $searchKey => $searchInstance) {
-                    /** @var SearchResult $searchInstance */
-                    $hayStack = $searchInstance->getBegin()->format('dmY').$searchInstance->getEnd()->format('dmY');
-                    if ($needle == $hayStack) {
-                        $groups[$needle][$searchKey] = $searchInstance;
-                    }
-                }
-            }
-            foreach ($groups as $group) {
-                $instance = $this->createOnlineResultInstance($resultInstance->getRoomType(), array_values($group), $searchQuery);
-                $result[] = $instance;
-            }
-        }
-
-        usort(
-            $result,
-            function ($resA, $resB) {
-                $priceA = $resA->getResults()->first()->getPrices();
-                $priceB = $resB->getResults()->first()->getPrices();
-
-                return reset($priceA) <=> reset($priceB);
-            }
-        );
-
-        return new ArrayCollection($result);
     }
 
     public function getType(): string

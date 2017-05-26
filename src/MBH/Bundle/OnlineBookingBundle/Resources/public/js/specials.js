@@ -241,4 +241,5 @@ $(function () {
     });
     callMonthSlider();
     showFirstEnabledSwitcher(monthSwitchers, defaultMonth);
+
 });
