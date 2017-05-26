@@ -85,3 +85,11 @@ form.roomTypeTasks.checkIn.help: Задачи, создаваемые при з�
 form.roomTypeTasks.checkOut: При выезде
 form.roomTypeTasks.checkOut.help: При выезде гостя
 form.roomTypeTasks.daily: Каждые n дней проживания
+
+channelmanager.notifications.prices: "В разделе \"Цены\" указаны неподдерживаемые поля"
+channelmanager.notifications.restrictions: "В разделе \"Условия и ограничения\" указаны неподдерживаемые поля"
+channelmanager.notifications.prices.type.isPersonPrice: "Цена за человека"
+channelmanager.notifications.prices.type.additionalPrice: "Цена за взрослое доп. место"
+channelmanager.notifications.prices.type.additionalChildrenPrice: "Цена за детское доп. место"
+channelmanager.notifications.restrictions.type.minBeforeArrival: "Мин. дней до заезда"
+channelmanager.notifications.restrictions.type.maxBeforeArrival: "Макс. дней до заезда"

@@ -24,6 +24,16 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Booking extends Base implements ChannelManagerServiceInterface
 {
+    const UNAVAIBLE_PRICES = [
+        'isPersonPrice' => false,
+        'additionalChildrenPrice' => null,
+        'additionalPrice' => null,
+    ];
+
+    const UNAVAIBLE_RESTRICTIONS = [
+        'minBeforeArrival' => null,
+        'maxBeforeArrival' => null,
+    ];
 
     /**
      * Config class
@@ -88,7 +98,6 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 $tariffs[$key] = $tariff;
             }
         }
-
         $request = $this->templating->render(
             'MBHChannelManagerBundle:Booking:close.xml.twig',
             [
@@ -135,11 +144,15 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 ];
             }
         }
+        return [
+            'tariff_1_id' => ['title' => 'tariff one', 'readonly' => false, 'is_child_rate' => false, 'rooms' => []],
+            'tariff_2_id' => ['title' => 'tariff two', 'readonly' => false, 'is_child_rate' => false, 'rooms' => []],
+        ];
         return $result;
     }
 
     /**
-     * {@inheritDoc}
+     * {@ inheritDoc}
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
@@ -155,6 +168,10 @@ class Booking extends Base implements ChannelManagerServiceInterface
             $result[(string)$room['id']] = (string)$room;
         }
 
+        return [
+            'room_1_id' => 'room one',
+            'room_2_id' => 'room two',
+        ];
         return $result;
     }
 

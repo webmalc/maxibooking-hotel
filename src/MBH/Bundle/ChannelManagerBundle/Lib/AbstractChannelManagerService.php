@@ -9,6 +9,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInt
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Doctrine\ODM\MongoDB\Query\Builder;
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
 {
@@ -17,6 +18,10 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * Test mode on/off
      */
     const TEST = true;
+
+    const UNAVAIBLE_PRICES = [];
+    
+    const UNAVAIBLE_RESTRICTIONS = [];
 
     /**
      * Default period for room/prices upload
@@ -91,6 +96,33 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         return $this->errors;
     }
     
+    /**
+     * {{ @inheritDoc }}
+     */
+    public function getNotifications(ChannelManagerConfigInterface $config): array
+    {
+        $errors = [];
+        if (!$config->getIsEnabled()) {
+            return [];
+        }
+        $trans = $this->container->get('translator');
+        $getError = function (array $types, string $message, array &$errors, string $method) use ($config, $trans) {
+            
+            if (count($types) && $this->$method($config, $types)) {
+                $error = $trans->trans($message) . ': ';
+                $error .= implode(', ', array_map(function ($element) use ($trans, $message) {
+                    return $trans->trans($message . '.type.' . $element);
+                }, array_keys($types)));
+                $errors[] = $error;
+            }
+            return $errors;
+        };
+        $getError(static::UNAVAIBLE_PRICES, 'channelmanager.notifications.prices', $errors, 'countPrices');
+        $getError(static::UNAVAIBLE_RESTRICTIONS, 'channelmanager.notifications.restrictions', $errors, 'countRestrictions');
+
+        return $errors;
+    }
+
     /**
      * {{ @inheritDoc }}
      */
@@ -331,6 +363,110 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
 
         return $result;
+    }
+
+    /**
+     * Get roomTypeIds from config
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     */
+    private function getRoomTypeIdsFromConfig(ChannelManagerConfigInterface $config): array
+    {
+        return  array_unique(array_map(function ($element) {
+            return $element->getRoomType()->getId();
+        }, $config->getRooms()->toArray()));
+    }
+    
+    /**
+     * Get tariffIds from config
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     */
+    private function getTariffIdsFromConfig(ChannelManagerConfigInterface $config): array
+    {
+        return  array_unique(array_map(function ($element) {
+            return $element->getTariff()->getId();
+        }, $config->getTariffs()->toArray()));
+    }
+
+    /**
+     * Get restrictions by config
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @return Builder
+     */
+    protected function getRestrictionsByConfigQueryBuilder(ChannelManagerConfigInterface $config): Builder
+    {
+        $builder = $this->dm->getRepository('MBHPriceBundle:Restriction')->createQueryBuilder();
+
+        $tariffsIds = $this->getTariffIdsFromConfig($config);
+        $roomTypeIds = $this->getRoomTypeIdsFromConfig($config);
+
+        $builder->field('tariff.id')->in($tariffsIds)
+            ->field('roomType.id')->in($roomTypeIds)
+            ->field('date')->gte(new \DateTime('midnight'))
+        ;
+
+        return $builder;
+    }
+
+    /**
+     * Get priceCaches by config
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @return Builder
+     */
+    protected function getPricesByConfigQueryBuilder(ChannelManagerConfigInterface $config): Builder
+    {
+        $builder = $this->dm->getRepository('MBHPriceBundle:PriceCache')->createQueryBuilder();
+
+        $tariffsIds = $this->getTariffIdsFromConfig($config);
+        $roomTypeIds = $this->getRoomTypeIdsFromConfig($config);
+
+        $builder->field('tariff.id')->in($tariffsIds)
+            ->field('roomType.id')->in($roomTypeIds)
+            ->field('cancelDate')->equals(null)
+            ->field('date')->gte(new \DateTime('midnight'))
+        ;
+
+        return $builder;
+    }
+
+    /**
+     * Count restrictions by config and type
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @param array $types
+     * @return int
+     */
+    protected function countRestrictions(ChannelManagerConfigInterface $config, array $types = []): int
+    {
+        $builder = $this->getRestrictionsByConfigQueryBuilder($config);
+
+        foreach ($types as $type => $val) {
+            $builder->addOr($builder->expr()->field($type)->notEqual($val));
+        }
+        return $builder->getQuery()->count();
+    }
+    
+    /**
+     * Count prices by config and type
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @param array $types
+     * @return int
+     */
+    protected function countPrices(ChannelManagerConfigInterface $config, array $types = []): int
+    {
+        $builder = $this->getPricesByConfigQueryBuilder($config);
+
+        foreach ($types as $type => $val) {
+            $builder->addOr($builder->expr()->field($type)->notEqual($val));
+        }
+        
+        return $builder->getQuery()->count();
     }
 
     /**

@@ -11,6 +11,11 @@ interface ChannelManagerServiceInterface
     /**
      * @return array
      */
+    public function getNotifications(ChannelManagerConfigInterface $config): array;
+
+    /**
+     * @return array
+     */
     public function getErrors(): array;
 
     /**
