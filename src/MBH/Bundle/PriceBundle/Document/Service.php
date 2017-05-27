@@ -39,7 +39,7 @@ class Service extends Base
      */
     use BlameableDocument;
     use InternableDocument;
-    /** 
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="ServiceCategory", inversedBy="services")
      * @Assert\NotNull(message="Не выбрана категория")
@@ -123,7 +123,6 @@ class Service extends Base
     protected $code;
     
     /**
-     * @todo rename isSystem
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -131,6 +130,15 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     protected $system = false;
+    
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $recalcWithPackage = false;
     
     /**
      * @todo rename hasDate
@@ -465,8 +473,30 @@ class Service extends Base
      */
     public function preUpdate()
     {
-        if(!$this->internationalTitle && $this->fullTitle) {
+        if (!$this->internationalTitle && $this->fullTitle) {
             $this->internationalTitle = Helper::translateToLat($this->fullTitle);
         }
+    }
+    
+    /**
+     * Set recalcWithPackage
+     *
+     * @param bool $recalcWithPackage
+     * @return self
+     */
+    public function setRecalcWithPackage($recalcWithPackage): self
+    {
+        $this->recalcWithPackage = $recalcWithPackage;
+        return $this;
+    }
+
+    /**
+     * Get recalcWithPackage
+     *
+     * @return bool $recalcWithPackage
+     */
+    public function isRecalcWithPackage(): ?bool
+    {
+        return $this->recalcWithPackage;
     }
 }

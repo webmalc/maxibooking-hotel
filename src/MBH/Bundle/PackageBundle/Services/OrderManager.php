@@ -161,7 +161,7 @@ class OrderManager
      */
     private function recalculateServices(Package $package): Package
     {
-        $services = $package->getServices();
+        $services = $package->getServicesForRecalc();
         // Move services
         foreach ($services as $service) {
             $service->setBegin(null)->setEnd(null);
@@ -416,6 +416,9 @@ class OrderManager
                 ->setPersons($persons)
                 ->setNights($nights)
                 ->setPrice(0)
+                ->setRecalcWithPackage(
+                    $tariffService->getService()->isRecalcWithPackage()
+                )
                 ->setPackage($package)
                 ->setNote('Услуга по умолчанию');
 

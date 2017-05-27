@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -101,6 +102,14 @@ class PackageServiceType extends AbstractType
                 'label' => 'form.packageServiceType.comment',
                 'group' => 'form.packageServiceType.add_service',
                 'required' => false,
+            ])
+            ->add('recalcWithPackage', CheckboxType::class, [
+                'label' => 'Смещаемая?',
+                'value' => true,
+                'group' => 'form.packageServiceType.add_service',
+                'required' => false,
+                'help' => 'Смещать ли даты услуги при изменении дат брони?',
+                'attr' => ['class' => 'toggle-date'],
             ])
             ;
     }

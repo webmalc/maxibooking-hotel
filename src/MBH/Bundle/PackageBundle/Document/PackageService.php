@@ -68,6 +68,15 @@ class PackageService extends Base
     protected $price;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $recalcWithPackage = false;
+
+    /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Field(type="float")
@@ -559,5 +568,27 @@ class PackageService extends Base
     public function __toString()
     {
         return $this->service->getName();
+    }
+
+    /**
+     * Set recalcWithPackage
+     *
+     * @param bool $recalcWithPackage
+     * @return self
+     */
+    public function setRecalcWithPackage($recalcWithPackage): self
+    {
+        $this->recalcWithPackage = $recalcWithPackage;
+        return $this;
+    }
+
+    /**
+     * Get recalcWithPackage
+     *
+     * @return bool $recalcWithPackage
+     */
+    public function isRecalcWithPackage(): ?bool
+    {
+        return $this->recalcWithPackage;
     }
 }

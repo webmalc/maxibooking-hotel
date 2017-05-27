@@ -44,7 +44,7 @@
                         <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-md text-center">{{ "package.service.time"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-md text-right">{{ "package.service.price"|trans({}, "MBHPackageBundle") }}</th>
-                        <th class="td-sm">{{ "package.service.calculation_type"|trans({}, "MBHPackageBundle") }}</th>
+                        <th class="td-md">{{ "package.service.calculation_type"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-md text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
                         <th>{{ "package.service.comment"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-md text-center">{{ "package.service.creation_date"|trans({}, "MBHPackageBundle") }}</th>
@@ -74,7 +74,12 @@
                                 {{ service.service.time ? service.time|date('H:i') : ''  }}
                             </td>
                             <td class="text-right text-success">{{ service.price|number_format(2) }}</td>
-                            <td>{{ config.calcTypes[service.calcType] }}</td>
+                            <td>
+                                {{ config.calcTypes[service.calcType] }}
+                                {% if service.recalcWithPackage %}
+                                    <br><small>смещаемая</small>
+                                {% endif %}
+                            </td>
                             <td class="text-right text-success">{{ service.total|number_format(2) }}</td>
                             <td>{{ service.note }}</td>
                             <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
