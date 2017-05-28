@@ -6,6 +6,7 @@
 * booking.com: config validation (redmine #642)
 * booking.com: validation
 * services dates (redmine #49)
+* package main form: tariff field (redmine #602)
 
 1.5.5
 =============

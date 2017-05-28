@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -55,14 +56,14 @@ class OrderManager
     /**
      * @param Package $old
      * @param Package $new
+     * @param Tariff $updateTariff
      * @return Package|string
      */
-    public function updatePackage(Package $old, Package $new)
+    public function updatePackage(Package $old, Package $new, Tariff $updateTariff = null)
     {
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
         }
-
         //check changes
         if ($old->getBegin() == $new->getBegin() &&
             $old->getEnd() == $new->getEnd() &&
@@ -71,7 +72,8 @@ class OrderManager
             $old->getChildren() == $new->getChildren() &&
             $old->getPromotion() == $new->getPromotion() &&
             $old->getSpecial() == $new->getSpecial() &&
-            $old->getIsForceBooking() == $new->getIsForceBooking()
+            $old->getIsForceBooking() == $new->getIsForceBooking() &&
+            ($updateTariff == null || $updateTariff->getId() == $old->getTariff()->getId())
         ) {
             return $new;
         }
@@ -102,19 +104,23 @@ class OrderManager
         }
 
         //search for packages
+        $tariff = $updateTariff ?? $new->getTariff();
+        $promotion = $new->getPromotion() ? $new->getPromotion() : null;
+        $promotion = $promotion ?? $tariff->getDefaultPromotion();
         $oldEnd = clone $old->getEnd();
+
         $query = new SearchQuery();
         $query->begin = $new->getBegin();
         $query->end = $new->getEnd();
         $query->adults = $new->getAdults();
         $query->children = $new->getChildren();
-        $query->tariff = $new->getTariff();
+        $query->tariff = $tariff;
         $query->addRoomType($new->getRoomType()->getId());
         $query->addExcludeRoomType($old->getRoomType()->getId());
         $query->excludeBegin = $old->getBegin();
         $query->excludeEnd = $oldEnd->modify('-1 day');
         $query->forceRoomTypes = true;
-        $query->setPromotion($new->getPromotion() ? $new->getPromotion() : false);
+        $query->setPromotion($promotion);
         $query->forceBooking = $new->getIsForceBooking();
         $query->setSpecial($new->getSpecial());
         $query->memcached = false;
@@ -123,6 +129,9 @@ class OrderManager
         $results = $this->container->get('mbh.package.search')->search($query);
 
         if (count($results) == 1) {
+            $new->setTariff($results[0]->getTariff())
+                ->setPromotion($promotion)
+            ;
             //recalculate cache
             $this->container->get('mbh.room.cache')->recalculate(
                 $old->getBegin(),
@@ -308,7 +317,6 @@ class OrderManager
         $query = new SearchQuery();
         $query->begin = $this->helper->getDateFromString($data['begin']);
         $query->end = $this->helper->getDateFromString($data['end']);
-        ;
         $query->adults = (int)$data['adults'];
         $query->children = (int)$data['children'];
         $query->tariff = !empty($data['tariff']) ? $data['tariff'] : null;

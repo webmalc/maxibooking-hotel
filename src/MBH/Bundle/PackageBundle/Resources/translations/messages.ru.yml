@@ -504,3 +504,5 @@ modal.form.delete.delete_reason_package: Причина удаления бро�
 
 windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'
 controller.packageController.record_edited_success_services: 'Даты услуг измены вместе с бронью' 
+
+form.packageMainType.tariff: 'Тариф для пересчета'

@@ -465,7 +465,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form->handleRequest($request);
         if ($form->isValid() && !$package->getIsLocked()) {
             //check by search
-            $result = $this->container->get('mbh.order_manager')->updatePackage($oldPackage, $package);
+            $newTariff = $form->get('tariff')->getData();
+            $result = $this->container->get('mbh.order_manager')
+                ->updatePackage($oldPackage, $package, $newTariff);
             /** @var FlashBagInterface $flashBag */
             $flashBag = $request->getSession()->getFlashBag();
             if ($result instanceof Package) {
