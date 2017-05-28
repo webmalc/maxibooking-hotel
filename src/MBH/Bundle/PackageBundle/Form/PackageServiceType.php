@@ -69,6 +69,7 @@ class PackageServiceType extends AbstractType
             ->add('begin', DateType::class, [
                 'label' => 'Дата',
                 'group' => 'form.packageServiceType.add_service',
+                'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
@@ -76,6 +77,7 @@ class PackageServiceType extends AbstractType
             ->add('end', DateType::class, [
                 'label' => 'form.packageServiceType.end',
                 'group' => 'form.packageServiceType.add_service',
+                'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
@@ -109,6 +111,22 @@ class PackageServiceType extends AbstractType
                 'group' => 'form.packageServiceType.add_service',
                 'required' => false,
                 'help' => 'Смещать ли даты услуги при изменении дат брони?',
+                'attr' => ['class' => 'toggle-date'],
+            ])
+            ->add('includeArrival', CheckboxType::class, [
+                'label' => 'Учитывать заезд?',
+                'value' => true,
+                'group' => 'form.packageServiceType.add_service',
+                'required' => false,
+                'help' => 'Учитывать ли дату заезда брони?',
+                'attr' => ['class' => 'toggle-date'],
+            ])
+            ->add('includeDeparture', CheckboxType::class, [
+                'label' => 'Учитывать выезд?',
+                'value' => true,
+                'group' => 'form.packageServiceType.add_service',
+                'required' => false,
+                'help' => 'Учитывать ли дату выезда брони?',
                 'attr' => ['class' => 'toggle-date'],
             ])
             ;

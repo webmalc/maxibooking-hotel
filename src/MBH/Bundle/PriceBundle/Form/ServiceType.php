@@ -58,6 +58,22 @@ class ServiceType extends AbstractType
                 'help' => 'Смещать ли даты услуги при изменении дат брони?',
                 'attr' => ['class' => 'toggle-date'],
             ])
+            ->add('includeArrival', CheckboxType::class, [
+                'label' => 'Учитывать заезд?',
+                'value' => true,
+                'group' => 'Общая информация',
+                'required' => false,
+                'help' => 'Учитывать ли дату заезда брони?',
+                'attr' => ['class' => 'toggle-date'],
+            ])
+            ->add('includeDeparture', CheckboxType::class, [
+                'label' => 'Учитывать выезд?',
+                'value' => true,
+                'group' => 'Общая информация',
+                'required' => false,
+                'help' => 'Учитывать ли дату выезда брони?',
+                'attr' => ['class' => 'toggle-date'],
+            ])
             ->add('price', TextType::class, [
                 'label' => 'Цена',
                 'group' => 'Общая информация',

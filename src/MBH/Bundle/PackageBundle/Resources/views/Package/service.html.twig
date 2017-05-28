@@ -62,8 +62,8 @@
                             <td class="text-center">
                                 {% if service.calcType == 'per_stay' %}
                                     <small>
-                                    {{ service.begin|date('d.m.Y') }}
-                                    {{ service.end|date('d.m.Y') }}
+                                    {{ service.begin ? service.begin|date('d.m.Y') : '-' }}<br>
+                                    {{ service.end ? service.end|date('d.m.Y') : '-' }}
                                     </small>
 
                                 {% else %}
@@ -76,8 +76,14 @@
                             <td class="text-right text-success">{{ service.price|number_format(2) }}</td>
                             <td>
                                 {{ config.calcTypes[service.calcType] }}
-                                {% if service.recalcWithPackage %}
+                                {% if service.recalcWithPackage and service.calcType == 'per_stay' %}
                                     <br><small>смещаемая</small>
+                                {% endif %}
+                                {% if service.includeArrival and service.calcType == 'per_stay' %}
+                                    <br><small>заезд</small>
+                                {% endif %}
+                                {% if service.includeDeparture and service.calcType == 'per_stay' %}
+                                    <br><small>выезд</small>
                                 {% endif %}
                             </td>
                             <td class="text-right text-success">{{ service.total|number_format(2) }}</td>

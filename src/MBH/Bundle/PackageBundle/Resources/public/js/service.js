@@ -24,7 +24,9 @@ var docReadyServices = function() {
             timeInput = $('#mbh_bundle_packagebundle_package_service_type_time'),
             timeDiv = timeInput.closest('div.form-group'),
             recalcInput = $('#mbh_bundle_packagebundle_package_service_type_recalcWithPackage'),
-            recalcDiv = recalcInput.closest('div.form-group'),
+            arrivalInput = $('#mbh_bundle_packagebundle_package_service_type_includeArrival'),
+            departureInput = $('#mbh_bundle_packagebundle_package_service_type_includeDeparture'),
+            recalcDiv = $('.toggle-date').closest('div.form-group'),
             form = recalcInput.closest('form[name="mbh_bundle_packagebundle_package_service_type"]'),
 
             hide = function() {
@@ -89,7 +91,10 @@ var docReadyServices = function() {
                 if (serviceInput.val() !== null) {
                     var info = services[serviceInput.val()],
                         priceNew = info.price,
-                        recalcDefault = info.recalcWithPackage;
+                        recalcDefault = info.recalcWithPackage,
+                        arrivalDefault = info.includeArrival,
+                        departureDefault = info.includeDeparture
+                    ;
 
                     if (info.calcType === 'day_percent' && services.package_prices_by_date && dateInput.val()) {
                         var dayPrice = services.package_prices_by_date[dateInput.val()];
@@ -104,7 +109,13 @@ var docReadyServices = function() {
                     }
                     
                     if (!form.hasClass('package-service-edit')) {
+                        if (event && event.target.id !== dateInput.attr('id')) {
+                            dateInput.val(info.begin);
+                            endInput.val(info.end);
+                        }
                         recalcInput.prop('checked', parseInt(recalcDefault)).trigger('change');
+                        arrivalInput.prop('checked', parseInt(arrivalDefault)).trigger('change');
+                        departureInput.prop('checked', parseInt(departureDefault)).trigger('change');
                     }
                     show(info);
                 } else {

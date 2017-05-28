@@ -5,6 +5,7 @@
 * booking.com: auto tariffs fix (redmine #608)
 * booking.com: config validation (redmine #642)
 * booking.com: validation
+* services dates (redmine #49)
 
 1.5.5
 =============

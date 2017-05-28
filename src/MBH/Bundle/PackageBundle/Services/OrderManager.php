@@ -164,7 +164,7 @@ class OrderManager
         $services = $package->getServicesForRecalc();
         // Move services
         foreach ($services as $service) {
-            $service->setBegin(null)->setEnd(null);
+            $service->setBegin(null)->setEnd(null)->setUpdatedAt(new \DateTime());
             $this->dm->persist($service);
         }
         $this->dm->flush();
@@ -410,14 +410,17 @@ class OrderManager
 
             //transform TariffService to PackageService
             $packageService = new PackageService();
+            $defaultService = $tariffService->getService();
             $packageService
-                ->setService($tariffService->getService())
+                ->setService($defaultService)
                 ->setAmount($tariffService->getAmount())
                 ->setPersons($persons)
                 ->setNights($nights)
                 ->setPrice(0)
+                ->setIncludeArrival($defaultService->isIncludeArrival())
+                ->setIncludeDeparture($defaultService->isIncludeDeparture())
                 ->setRecalcWithPackage(
-                    $tariffService->getService()->isRecalcWithPackage()
+                    $defaultService->isRecalcWithPackage()
                 )
                 ->setPackage($package)
                 ->setNote('Услуга по умолчанию');

@@ -19,8 +19,12 @@
                 '{{ service.id}}': {
                     'date': {{ service.date ? 1 : 0}},
                     'time': {{ service.time ? 1 : 0}},
+                    'begin': '{{ service.includeArrival ? entity.begin|date('d.m.Y') : entity.begin|date_modify('+1 day')|date('d.m.Y') }}',
+                    'end': '{{ service.includeDeparture ? entity.end|date('d.m.Y') : entity.end|date_modify('-1 day')|date('d.m.Y') }}',
                     'calcType': '{{ service.calcType}}',
                     'recalcWithPackage': '{{ service.recalcWithPackage ? 1 : 0 }}',
+                    'includeArrival': '{{ service.includeArrival ? 1 : 0 }}',
+                    'includeDeparture': '{{ service.includeDeparture ? 1 : 0 }}',
                     'calcTypeStr': '{{ config.calcTypes[service.calcType]}}',
                     'price': {% if service.calcType == 'day_percent' %}{{ entity.oneDayPrice() }} * {{ service.price }} / 100 {% else %} {{ service.price}} {% endif %},
                 'priceRaw': {{ service.price }}

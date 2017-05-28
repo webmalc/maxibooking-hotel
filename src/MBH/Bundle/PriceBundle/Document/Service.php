@@ -141,7 +141,6 @@ class Service extends Base
     protected $recalcWithPackage = false;
     
     /**
-     * @todo rename hasDate
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -151,7 +150,6 @@ class Service extends Base
     protected $date = false;
 
     /**
-     * @todo rename hasTime
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -159,6 +157,24 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     protected $time = false;
+    
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $includeArrival;
+    
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $includeDeparture;
 
     /**
      * Set category
@@ -498,5 +514,51 @@ class Service extends Base
     public function isRecalcWithPackage(): ?bool
     {
         return $this->recalcWithPackage;
+    }
+
+    /**
+     * includeDeparture set
+     *
+     * @param bool $includeDeparture
+     * @return self
+     */
+    public function setIncludeDeparture(bool $includeDeparture): self
+    {
+        $this->includeDeparture = $includeDeparture;
+
+        return $this;
+    }
+
+    /**
+     * includeDeparture get
+     *
+     * @return bool
+     */
+    public function isIncludeDeparture(): ?bool
+    {
+        return $this->includeDeparture;
+    }
+    
+    /**
+     * includeArrival set
+     *
+     * @param bool $includeArrival
+     * @return self
+     */
+    public function setIncludeArrival(bool $includeArrival): self
+    {
+        $this->includeArrival = $includeArrival;
+
+        return $this;
+    }
+
+    /**
+     * includeArrival get
+     *
+     * @return bool
+     */
+    public function isIncludeArrival(): ?bool
+    {
+        return $this->includeArrival;
     }
 }
