@@ -34,7 +34,7 @@ class AccommodationMigrateCommand extends ContainerAwareCommand
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findBy(['accommodation' => ['$ne' => null]]);
         $iterator = 0;
-        foreach ($packages->toArray() as $package) {
+        foreach ($packages as $package) {
             $this->accommodationMigrate($package->getId());
             $iterator++;
         }
