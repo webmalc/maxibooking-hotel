@@ -22,6 +22,10 @@ class DynamicSalesReportData
 
     private $relativeComparisonData = [];
 
+    /**
+     * @param DynamicSales $dynamicSales
+     * @return $this
+     */
     public function addDynamicSales(DynamicSales $dynamicSales)
     {
         $this->dynamicSales[] = $dynamicSales;
@@ -29,11 +33,20 @@ class DynamicSalesReportData
         return $this;
     }
 
+    /**
+     * @return DynamicSales[]
+     */
     public function getDynamicSales()
     {
         return $this->dynamicSales;
     }
 
+    /**
+     * @param $dayNumber
+     * @param $option
+     * @param $periodNumber
+     * @return int|mixed
+     */
     public function getTotalValueByDay($dayNumber, $option, $periodNumber)
     {
         if (isset($this->totalValues[$periodNumber][$option][$dayNumber])) {
@@ -52,6 +65,12 @@ class DynamicSalesReportData
         return $result;
     }
 
+    /**
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @return int|mixed
+     */
     public function getComparisonData($comparedPeriodNumber, $dayNumber, $option)
     {
         if (isset($this->comparisonTotalValues[$comparedPeriodNumber][$option][$dayNumber])) {
@@ -66,6 +85,12 @@ class DynamicSalesReportData
         return $result;
     }
 
+    /**
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @return float|int
+     */
     public function getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
     {
         if (isset($this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber])) {
@@ -73,13 +98,18 @@ class DynamicSalesReportData
         } else {
             $mainPeriodData = $this->getTotalValueByDay($dayNumber, $option, 0);
             $comparedPeriodData = $this->getTotalValueByDay($dayNumber, $option, $comparedPeriodNumber);
-            $result = DynamicSalesGenerator::getRelativeComparisonValue($comparedPeriodData, $mainPeriodData);
+            $result = DynamicSalesGenerator::getRelativeComparativeValue($comparedPeriodData, $mainPeriodData);
             $this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber] = $result;
         }
 
         return $result;
     }
 
+    /**
+     * @param $comparedPeriodNumber
+     * @param $option
+     * @return int
+     */
     public function getTotalComparisonData($comparedPeriodNumber, $option)
     {
         $result = 0;
@@ -90,6 +120,12 @@ class DynamicSalesReportData
         return $result;
     }
 
+    /**
+     * @param $periodNumber
+     * @param $option
+     * @return float|mixed
+     * @throws \Exception
+     */
     public function getTotalValue($periodNumber, $option)
     {
         $periodData = $this->totalValues[$periodNumber][$option];

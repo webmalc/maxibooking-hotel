@@ -252,7 +252,12 @@ class DynamicSalesGenerator
         return $dynamicSalesReportData;
     }
 
-    public static function getRelativeComparisonValue($comparedPeriodData, $mainPeriodData)
+    /**
+     * @param $comparedPeriodData
+     * @param $mainPeriodData
+     * @return float|int
+     */
+    public static function getRelativeComparativeValue($comparedPeriodData, $mainPeriodData)
     {
         if ($comparedPeriodData == 0 && $mainPeriodData != 0) {
             return 100;

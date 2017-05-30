@@ -127,6 +127,12 @@ class DynamicSales
         return $this->getPeriods()[$periodNumber];
     }
 
+    /**
+     * @param $firstPeriodNumber
+     * @param $secondPeriodNumber
+     * @param $dayNumber
+     * @return bool
+     */
     public function hasBothPeriodsDayByNumber($firstPeriodNumber, $secondPeriodNumber, $dayNumber)
     {
         $firsPeriodDaysQuantity = count($this->getPeriodByNumber($firstPeriodNumber)->getDynamicSalesDays());
@@ -135,6 +141,12 @@ class DynamicSales
         return ($firsPeriodDaysQuantity > $dayNumber) && ($secondPeriodDaysQuantity > $dayNumber);
     }
 
+    /**
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @return mixed
+     */
     public function getDayValue($comparedPeriodNumber, $dayNumber, $option)
     {
         /** @var DynamicSalesDay $specifiedDay */
@@ -143,6 +155,14 @@ class DynamicSales
         return $specifiedDay->getSpecifiedValue($option);
     }
 
+    /**
+     * return absolute comparative value
+     *
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @return mixed
+     */
     public function getComparisonData($comparedPeriodNumber, $dayNumber, $option)
     {
         if (isset($this->comparisonData[$comparedPeriodNumber][$option][$dayNumber])) {
@@ -157,6 +177,14 @@ class DynamicSales
         return $result;
     }
 
+    /**
+     * Return relative data in percents
+     *
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @return float|int
+     */
     public function getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
     {
         if (isset($this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber])) {
@@ -165,7 +193,7 @@ class DynamicSales
             $mainPeriodData = $this->getDayValue(0, $dayNumber, $option);
             $comparedPeriodData = $this->getDayValue($comparedPeriodNumber, $dayNumber, $option);
 
-            $result = DynamicSalesGenerator::getRelativeComparisonValue($comparedPeriodData, $mainPeriodData);
+            $result = DynamicSalesGenerator::getRelativeComparativeValue($comparedPeriodData, $mainPeriodData);
             $this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber] = $result;
         }
 
