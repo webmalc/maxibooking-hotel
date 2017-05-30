@@ -65,12 +65,12 @@ class PackageSubscriber implements EventSubscriber
                 $dm->persist($package);
                 $dm->flush();
             } catch (\Exception $e) {
-
             }
         }
 
         //Calc package
         if ($entity instanceof Package) {
+            // If removed package, the following events are not invoked, they are duplicated in OrderSubscriber
             foreach ($entity->getServices() as $packageService) {
                 $packageService->setDeletedAt(new \DateTime());
                 $dm->persist($packageService);
@@ -94,7 +94,6 @@ class PackageSubscriber implements EventSubscriber
         $dm = $args->getDocumentManager();
 
         if ($package instanceof Package) {
-
             $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($package);
             if (isset($changeSet['special'])) {
                 foreach ($changeSet['special'] as $special) {
@@ -106,7 +105,10 @@ class PackageSubscriber implements EventSubscriber
 
             $end = clone $package->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
-                $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff()
+                $package->getBegin(),
+                $end->modify('-1 day'),
+                $package->getRoomType(),
+                $package->getTariff()
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($package->getBegin(), $package->getEnd());
 
@@ -160,7 +162,6 @@ class PackageSubscriber implements EventSubscriber
                     $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($package)), $package);
                     $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($order)), $order);
                 } catch (\Exception $e) {
-
                 }
             }
         }
@@ -171,7 +172,6 @@ class PackageSubscriber implements EventSubscriber
         $doc = $args->getEntity();
 
         if ($doc instanceof Package) {
-
             if ($doc->getSpecial()) {
                 $dm = $args->getDocumentManager();
                 $dm->getRepository('MBHPriceBundle:Special')->recalculate($doc->getSpecial(), $doc);
@@ -179,7 +179,11 @@ class PackageSubscriber implements EventSubscriber
 
             $end = clone $doc->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
-                $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff(), false
+                $doc->getBegin(),
+                $end->modify('-1 day'),
+                $doc->getRoomType(),
+                $doc->getTariff(),
+                false
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
             $this->_removeCache(clone $doc->getBegin(), clone $doc->getEnd());
@@ -257,7 +261,6 @@ class PackageSubscriber implements EventSubscriber
         $document = $args->getDocument();
         $dm = $args->getDocumentManager();
         if ($document instanceof Package) {
-
             $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($document);
             if (isset($changeSet['special'])) {
                 foreach ($changeSet['special'] as $special) {

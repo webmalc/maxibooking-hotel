@@ -124,7 +124,7 @@ $(document).ready(function () {
         this.$nightsInput.addClass('hide').attr('required', false);
         if(this.calcType == 'per_stay') { //за весь срок
             //this.$personsInput.val(this.$personsInput.val());// || services.package_guests);
-            this.$personsInput.removeClass('hide').attr('required', true);
+            this.$personsInput.removeClass('hide').attr('required', false);
         }
         if (this.calcType == 'per_night') { //за cутки
             //this.$nightsInput.val(this.$nightsInput.val());// || services.package_guests);

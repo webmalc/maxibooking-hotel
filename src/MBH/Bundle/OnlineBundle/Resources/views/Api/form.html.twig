@@ -1,33 +1,31 @@
 {% spaceless %}
 {% if hotels|length %}
-<form id="mbh-form" method="get" action="{{ config.result.url }}">
-
-    <h3>{{ 'views.api.form.rooms_reservation'|trans({}, 'MBHOnlineBundle') }}</h3>
+<form id="mbh-form" method="get" class="well" target="_parent" action="{{ formConfig.resultsUrl }}">
 
     {% if hotels|length > 1 %}
-    <div class="mbh-form-row">
+    <div class="mbh-form-row form-group">
         <label for="mbh-form-hotel">{{ 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>
-        <select name="hotel" id="mbh-form-hotel">
+        <select name="hotel" class="form-control input-sm" id="mbh-form-hotel">
             <option></option>
             {% for hotel in hotels %}<option value="{{ hotel.id }}">{{ hotel.localeTitle(app.request.locale) }}</option>{% endfor %}
         </select>
     </div>
     {% endif %}
 
-    <div class="mbh-form-row">
+    <div class="mbh-form-row form-group">
         <label for="mbh-form-begin"> {{ 'views.api.form.check_in_date'|trans({}, 'MBHOnlineBundle') }}</label>
-        <input type="text" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}">
+        <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}">
     </div>
 
-    <div class="mbh-form-row" {% if formConfig.nights %}style='display: none;'{% endif %}>
+    <div class="mbh-form-row form-group" {% if formConfig.nights %}style='display: none;'{% endif %}>
         <label for="mbh-form-end"> {{ 'views.api.form.check_out_date'|trans({}, 'MBHOnlineBundle') }}</label>
-        <input type="text" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
+        <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
     </div>
 
     {% if formConfig.nights %}
-    <div class="mbh-form-row">
+    <div class="mbh-form-row form-group">
         <label for="mbh-form-nights"> {{ 'views.api.form.nights_amount'|trans({}, 'MBHOnlineBundle') }}</label>
-        <select name="nights" id="mbh-form-nights" required>
+        <select name="nights" class="form-control input-sm" id="mbh-form-nights" required>
         {% for i in 1..100 %}
             <option value="{{ i }}">{{ i }}</option>
         {% endfor %}
@@ -36,9 +34,9 @@
     {% endif %}
 
     {% if formConfig.roomTypes and hotels|length <= 1 and hotels|first.roomTypes|length %}
-    <div class="mbh-form-row">
+    <div class="mbh-form-row form-group">
         <label for="mbh-form-roomType"> {{ 'views.api.form.room_type'|trans({}, 'MBHOnlineBundle') }}</label>
-        <select id="mbh-form-roomType" name="roomType">
+        <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
             <option></option>
             {% for roomType in hotels|first.roomTypes %}<option value="{{ roomType.id }}">{{ roomType.localeTitle(app.request.locale) }}</option>{% endfor %}
         </select>
@@ -47,21 +45,29 @@
 
     {% if formConfig.tourists %}
         <div id="mbh-form-adults-children-wrapper">
-            <div class="mbh-form-row">
+            <div class="mbh-form-row form-group">
                 <label for="mbh-form-adults"> {{ 'views.api.form.adults'|trans({}, 'MBHOnlineBundle') }}</label>
-                <input type="number" id="mbh-form-adults" name="adults"  value="1" min="1">
+                <input type="number" id="mbh-form-adults" class="form-control input-sm" name="adults"  value="1" min="1">
             </div>
 
-            <div class="mbh-form-row">
+            <div class="mbh-form-row form-group">
                 <label for="mbh-form-children"> {{ 'views.api.form.children'|trans({}, 'MBHOnlineBundle') }}</label>
-                <input type="number" id="mbh-form-children" name="children" value="0" min="0">
+                <input type="number" id="mbh-form-children" class="form-control input-sm" name="children" value="0" min="0">
+            </div>
+            <div class="mbh-form-row children-ages">
+                <label for="children-age-1"> {{ 'views.api.form.children_ages.label'|trans({}, 'MBHOnlineBundle') }}</label>
+                <select class="children-age-form form-control input-sm" id="children-age-1" name="children-ages[]">
+                    {% for childAge in 0..18 %}
+                        <option value="{{ childAge }}">{{ childAge }}</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
         <div id="mbh-form-adults-children-clear"></div>
     {% endif %}
 
     <div class="mbh-form-row" id="mbh-form-submit-wrapper">
-        <button type="submit" id="mbh-form-submit">{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}</button>
+        <button type="submit" class="btn btn-primary btn-sm" id="mbh-form-submit">{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}</button>
     </div>
 
     <div id="mbh-logo-link-wrapper">

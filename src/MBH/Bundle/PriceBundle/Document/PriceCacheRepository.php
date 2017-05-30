@@ -84,7 +84,8 @@ class PriceCacheRepository extends DocumentRepository
             }
         }
 
-        $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories)->getQuery()->execute();
+        $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs,
+            $categories)->getQuery()->execute();
 
         if (!$grouped) {
             return $caches;
@@ -113,7 +114,8 @@ class PriceCacheRepository extends DocumentRepository
      * @param \DateTime|null $displayedDate
      * @return array
      */
-    public function fetchWithCancelDate(\DateTime $begin = null,
+    public function fetchWithCancelDate(
+        \DateTime $begin = null,
         \DateTime $end = null,
         Hotel $hotel = null,
         array $roomTypes = [],
@@ -123,28 +125,25 @@ class PriceCacheRepository extends DocumentRepository
     ) {
         $cachesQB = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories);
         if (!is_null($displayedDate)) {
-            $cachesQB->field('createdAt')->lt($displayedDate);
-            $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->gt($displayedDate));
+            $cachesQB->addAnd($cachesQB->expr()
+                ->addOr($cachesQB->expr()->field('createdAt')->exists(false))
+                ->addOr($cachesQB->expr()->field('createdAt')->lt($displayedDate))
+            );
+            $cachesQB->addAnd($cachesQB->expr()
+                ->addOr($cachesQB->expr()->field('cancelDate')->gt($displayedDate))
+                ->addOr($cachesQB->expr()->field('cancelDate')->exists(false))
+                ->addOr($cachesQB->expr()->field('cancelDate')->equals(null))
+            );
+        } else {
+            $cachesQB->field('isEnabled')->equals(true);
         }
-        $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->equals(null));
-        $cachesQB->addOr($cachesQB->expr()->field('cancelDate')->exists(false));
         $caches = $cachesQB->getQuery()->execute()->toArray();
 
         $result = [];
         $method = $categories ? 'getRoomTypeCategory' : 'getRoomType';
         /** @var PriceCache $cache */
         foreach ($caches as $cache) {
-            if (!$cache->getCancelDate() || $cache->getCancelDate() > $displayedDate) {
-                if (isset($result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')])) {
-                    /** @var PriceCache $existedCache */
-                    $existedCache = $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')];
-                    if (!$existedCache->getCancelDate() || (!is_null($cache->getCancelDate()) && $existedCache->getCancelDate() > $cache->getCancelDate())) {
-                        $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
-                    }
-                } else {
-                    $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
-                }
-            }
+            $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
         }
 
         return $result;

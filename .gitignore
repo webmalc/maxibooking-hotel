@@ -1,5 +1,5 @@
 azovsky_remote/
-web/test
+/web/test
 scripts/deploy_to_test.sh
 /scripts/upload
 /web/bundles/
@@ -16,6 +16,7 @@ scripts/deploy_to_test.sh
 !bin/symfony_requirements
 /composer.phar
 *.php~
+*.#*
 *.yml~
 nbproject/
 /web/css/

@@ -42,13 +42,37 @@ class ServiceType extends AbstractType
                 'group' => 'Общая информация',
                 'help' => 'Описание услуги для онлайн бронирования'
             ])
-            ->add('calcType',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('calcType', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Тип расчета',
                 'group' => 'Общая информация',
                 'required' => true,
                 'placeholder' => '',
                 'multiple' => false,
                 'choices' => $options['calcTypes'],
+            ])
+            ->add('recalcWithPackage', CheckboxType::class, [
+                'label' => 'Смещаемая?',
+                'value' => true,
+                'group' => 'Общая информация',
+                'required' => false,
+                'help' => 'Смещать ли даты услуги при изменении дат брони?',
+                'attr' => ['class' => 'toggle-date'],
+            ])
+            ->add('includeArrival', CheckboxType::class, [
+                'label' => 'Учитывать заезд?',
+                'value' => true,
+                'group' => 'Общая информация',
+                'required' => false,
+                'help' => 'Учитывать ли дату заезда брони?',
+                'attr' => ['class' => 'toggle-date'],
+            ])
+            ->add('includeDeparture', CheckboxType::class, [
+                'label' => 'Учитывать выезд?',
+                'value' => true,
+                'group' => 'Общая информация',
+                'required' => false,
+                'help' => 'Учитывать ли дату выезда брони?',
+                'attr' => ['class' => 'toggle-date'],
             ])
             ->add('price', TextType::class, [
                 'label' => 'Цена',
@@ -98,5 +122,4 @@ class ServiceType extends AbstractType
     {
         return 'mbh_bundle_pricebundle_service_type';
     }
-
 }

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: webmalc
- * Date: 11/15/16
- * Time: 12:34 PM
- */
 
 namespace MBH\Bundle\BaseBundle\Document\Traits;
 

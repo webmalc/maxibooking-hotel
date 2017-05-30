@@ -53,6 +53,8 @@ class ChessBoardDataBuilder
     private $roomsByRoomTypeIds = [];
     private $isPackageAccommodationsInit = false;
     private $packageAccommodations = [];
+    private $isAvailableRoomTypesInit = false;
+    private $availableRoomTypes;
     const ROOM_COUNT_ON_PAGE = 30;
 
     /**
@@ -486,24 +488,29 @@ class ChessBoardDataBuilder
     }
 
     /**
+     * Lazy loading of available room types
+     *
      * @return RoomType[]
      */
     public function getAvailableRoomTypes()
     {
-        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
-        $filterCollection = $this->dm->getFilterCollection();
-        if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
-            $filterCollection->enable('disableable');
+        if (!$this->isAvailableRoomTypesInit) {
+            $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+            $filterCollection = $this->dm->getFilterCollection();
+            if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
+                $filterCollection->enable('disableable');
+            }
+
+            $this->availableRoomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+                ->fetch($this->hotel)->toArray();
+
+            if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
+                $filterCollection->disable('disableable');
+            }
+            $this->isAvailableRoomTypesInit = true;
         }
 
-        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->fetch($this->hotel, $this->roomTypeIds)->toArray();
-
-        if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
-            $filterCollection->disable('disableable');
-        }
-
-        return $roomTypes;
+        return $this->availableRoomTypes;
     }
 
     /**

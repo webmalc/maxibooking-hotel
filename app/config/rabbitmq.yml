@@ -1,3 +1,8 @@
+#rabbitmq-supervisor
+rabbit_mq_supervisor:
+    commands:
+        rabbitmq_consumer: rabbitmq:consumer -m 1 %%2$s
+
 #rabbitmq
 old_sound_rabbit_mq:
     connections:

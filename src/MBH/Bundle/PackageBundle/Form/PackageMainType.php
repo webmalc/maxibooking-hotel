@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use MBH\Bundle\PriceBundle\Lib\TariffFilter;
 
 /**
  * Class PackageMainType
@@ -68,20 +69,20 @@ class PackageMainType extends AbstractType
                 },
                 'required' => true
             ]);
-            if ($options['virtualRooms']) {
-                $builder
-                    ->add('virtualRoom', DocumentType::class, [
-                        'label' => 'Виртуальный номер',
-                        'class' => 'MBHHotelBundle:Room',
-                        'group' => 'Номер',
-                        'query_builder' => function (DocumentRepository $dr) use ($package) {
-                            return $dr->getVirtualRoomsForPackageQB($package);
-                        },
-                        'required' => false
-                    ]);
-            }
+        if ($options['virtualRooms']) {
             $builder
-            ->add('adults',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('virtualRoom', DocumentType::class, [
+                'label' => 'Виртуальный номер',
+                'class' => 'MBHHotelBundle:Room',
+                'group' => 'Номер',
+                'query_builder' => function (DocumentRepository $dr) use ($package) {
+                    return $dr->getVirtualRoomsForPackageQB($package);
+                },
+                'required' => false
+            ]);
+        }
+            $builder
+            ->add('adults', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Взрослых',
                 'group' => 'Номер',
                 'required' => true,
@@ -90,7 +91,7 @@ class PackageMainType extends AbstractType
                 'choices' => range(0, 12),
                 'attr' => array('class' => 'input-xxs plain-html'),
             ])
-            ->add('children',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('children', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'label' => 'Детей',
                 'group' => 'Номер',
                 'required' => true,
@@ -106,7 +107,7 @@ class PackageMainType extends AbstractType
             ]);
 
         if ($options['promotion']) {
-            if($package && $package->getPromotion() && !in_array($package->getPromotion(), $options['promotions'])) {
+            if ($package && $package->getPromotion() && !in_array($package->getPromotion(), $options['promotions'])) {
                 $options['promotions'][] = $package->getPromotion();
             }
             if (count($options['promotions'])) {
@@ -120,6 +121,23 @@ class PackageMainType extends AbstractType
                     ]);
             }
         }
+        $builder->add('tariff', DocumentType::class, [
+            'label' => 'form.packageMainType.tariff',
+            'class' => 'MBH\Bundle\PriceBundle\Document\Tariff',
+            'required' => false,
+            'data' => null,
+            'mapped' => false,
+            'query_builder' => function (DocumentRepository $dr) use ($package, $options) {
+                $filter = new TariffFilter();
+                $filter->setHotel($options['hotel'])
+                    ->setBegin(new \DateTime())
+                ;
+                return $dr->getFilteredQueryBuilder($filter)
+                    ->field('deletedAt')
+                    ->equals(null);
+            },
+            'group' => 'Цена',
+        ]);
         if (!$package->getTotalOverwrite() && $options['price']) {
             $builder->add('price', TextType::class, [
                 'label' => 'form.packageMainType.price',
@@ -133,7 +151,7 @@ class PackageMainType extends AbstractType
             ]);
         }
 
-        if($options['discount']) {
+        if ($options['discount']) {
             $builder
                 ->add('discount', TextType::class, [
                     'label' => 'form.packageMainType.discount',
@@ -146,7 +164,7 @@ class PackageMainType extends AbstractType
                     'group' => 'Скидка'
                 ]);
         }
-        if($options['special']) {
+        if ($options['special']) {
             $builder
                 ->add('special', DocumentType::class, [
                     'group' => 'Спецпредложение',
@@ -222,5 +240,4 @@ class PackageMainType extends AbstractType
     {
         return 'mbh_bundle_packagebundle_package_main_type';
     }
-
 }

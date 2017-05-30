@@ -306,3 +306,6 @@ specials.tariff: Тариф
 specials.discount: Скидка
 specials.sold: Продано
 special.apply: Применить
+
+restrictions: 'Условия и ограничения'
+prices: 'Цены'

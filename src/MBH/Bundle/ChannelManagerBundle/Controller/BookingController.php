@@ -34,7 +34,8 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         $config = $this->hotel->getBookingConfig();
 
         $form = $this->createForm(
-            BookingType::class, $config
+            BookingType::class,
+            $config
         );
 
         return [
@@ -44,6 +45,25 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         ];
     }
 
+    /**
+     * Sync old packages
+     * @Route("/packages/sync", name="booking_packages_sync")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_BOOKING')")
+     */
+    public function syncPackages()
+    {
+        $config = $this->hotel->getBookingConfig();
+        if ($config) {
+            $this->get('mbh.channelmanager')->pullOrders('booking', true);
+            $this->addFlash(
+                'warning',
+                $this->get('translator')->trans('controller.bookingController.packages_sync_start')
+            );
+        }
+        return $this->redirect($this->generateUrl('booking'));
+    }
+    
     /**
      * Main configuration save
      * @Route("/", name="booking_save")
@@ -63,12 +83,12 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $config->setHotel($hotel);
         }
         $form = $this->createForm(
-            BookingType::class, $config
+            BookingType::class,
+            $config
         );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($config);
@@ -78,8 +98,10 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                ->set(
+                    'success',
+                    $this->get('translator')->trans('controller.bookingController.settings_saved_success')
+                );
 
             return $this->redirect($this->generateUrl('booking'));
         }
@@ -130,8 +152,10 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                ->set(
+                    'success',
+                    $this->get('translator')->trans('controller.bookingController.settings_saved_success')
+                );
 
             return $this->redirect($this->generateUrl('booking_room'));
         }
@@ -182,8 +206,10 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                ->set(
+                    'success',
+                    $this->get('translator')->trans('controller.bookingController.settings_saved_success')
+                );
 
             return $this->redirect($this->generateUrl('booking_tariff'));
         }

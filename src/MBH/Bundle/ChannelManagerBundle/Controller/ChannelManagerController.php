@@ -40,7 +40,7 @@ class ChannelManagerController extends Controller
      * @Method({"GET", "POST"})
      * @return Response
      * @Template()
-     * @Security("is_granted('ROLE_LOGS')")
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function logsAction(Request $request)
     {
@@ -60,7 +60,6 @@ class ChannelManagerController extends Controller
                     );
 
                 return $this->redirect($this->generateUrl('channel_manager_logs'));
-
             }
 
             ob_start();
@@ -69,7 +68,11 @@ class ChannelManagerController extends Controller
         }
 
         return [
-            'content' => str_replace(PHP_EOL, '<br><br>', htmlentities($content))
+            'content' => str_replace(
+                PHP_EOL,
+                '<br><br>',
+                htmlentities(implode("\n", array_reverse(explode("\n", $content))))
+            )
         ];
     }
 

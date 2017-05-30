@@ -22,7 +22,6 @@ use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
-
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
  * @MBHValidator\Package
@@ -60,7 +59,7 @@ class Package extends Base implements \JsonSerializable
     /** @ODM\ReferenceMany(targetDocument="PackageService", mappedBy="package") */
     protected $services;
 
-    /** 
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      * @Assert\NotNull(message= "validator.document.package.tariff_not_selected")
@@ -68,7 +67,7 @@ class Package extends Base implements \JsonSerializable
      */
     protected $tariff;
     
-    /** 
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
      * @Assert\NotNull(message= "validator.document.package.room_type_not_selected")
@@ -95,7 +94,7 @@ class Package extends Base implements \JsonSerializable
      */
     protected $virtualRoom;
     
-    /** 
+    /**
      * @ODM\ReferenceMany(targetDocument="Tourist", inversedBy="packages")
      * @MBH\Versioned()
      */
@@ -411,7 +410,7 @@ class Package extends Base implements \JsonSerializable
      *
      * @return \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      */
-        public function getTariff()
+    public function getTariff()
     {
         return $this->tariff;
     }
@@ -623,7 +622,7 @@ class Package extends Base implements \JsonSerializable
     public function getPromotionTotal($calculate = false)
     {
         if ($calculate) {
-            if($this->getPromotion()) {
+            if ($this->getPromotion()) {
                 $promotion = $this->getPromotion();
                 $this->promotionTotal = $promotion->getisPercentDiscount() ?
                     $this->price * $promotion->getDiscount() / 100 :
@@ -889,7 +888,6 @@ class Package extends Base implements \JsonSerializable
             $title .= ' Плательщик: '.$name.'. ';
         }
         return $title;
-
     }
 
     /**
@@ -1002,6 +1000,25 @@ class Package extends Base implements \JsonSerializable
     public function getServices()
     {
         return $this->services;
+    }
+
+    
+    /**
+     * get services for recalculation
+     *
+     * @return array
+     */
+    public function getServicesForRecalc(): array
+    {
+        return array_filter($this->services->toArray(), function ($service) {
+            if (!$service->isRecalcWithPackage()) {
+                return false;
+            }
+            if ($service->getBegin() == $this->getBegin() && $service->getEnd() == $this->getEnd()) {
+                return false;
+            }
+            return true;
+        });
     }
 
     /**
@@ -1118,15 +1135,14 @@ class Package extends Base implements \JsonSerializable
 
         if (!$date || empty($this->pricesByDate[$date])) {
             return round($this->getPackagePrice()/$this->getNights(), 2);
-        }
-        else {
+        } else {
             return (float) $this->pricesByDate[$date];
         }
     }
 
     public function isEarlyCheckIn()
     {
-        foreach($this->getServices() as $service) {
+        foreach ($this->getServices() as $service) {
             if ($service->getService()->getCode() == 'Early check-in') {
                 return true;
             }
@@ -1137,7 +1153,7 @@ class Package extends Base implements \JsonSerializable
 
     public function isLateCheckOut()
     {
-        foreach($this->getServices() as $service) {
+        foreach ($this->getServices() as $service) {
             if ($service->getService()->getCode() == 'Late check-out') {
                 return true;
             }
@@ -1181,14 +1197,14 @@ class Package extends Base implements \JsonSerializable
         $result = [];
         $begin = null;
         $nights = 1;
-        for($i = 0; $i < count($prices); ++$i) {
+        for ($i = 0; $i < count($prices); ++$i) {
             $price = $prices[$i];
             $nextPrice = @$prices[$i+1];
             $date = $dates[$i];
             $nextDate = @$dates[$i+1];
-            if($nextPrice) {
-                if($price == $nextPrice) {
-                    if($begin == null) {
+            if ($nextPrice) {
+                if ($price == $nextPrice) {
+                    if ($begin == null) {
                         $begin = $date;
                     }
                     ++$nights;
@@ -1201,7 +1217,7 @@ class Package extends Base implements \JsonSerializable
                     $nights = 1;
                 }
             } else {
-                if(!$nextDate) {
+                if (!$nextDate) {
                     $nextDate = \DateTime::createFromFormat('d_m_Y', $date)->modify('+1 day')->format('d_m_Y');
                 }
                 $result[$begin.' - '.$nextDate] = [
@@ -1452,9 +1468,9 @@ class Package extends Base implements \JsonSerializable
                     return self::ROOM_STATUS_IN_TODAY;
                 } elseif ($this->getEnd() == $today) {
                     return self::ROOM_STATUS_OUT_TODAY;
-                } elseif($this->getEnd() == $tomorrow) {
+                } elseif ($this->getEnd() == $tomorrow) {
                     return self::ROOM_STATUS_OUT_TOMORROW;
-                } elseif($this->getEnd() <= new \DateTime('midnight +1 day')) {
+                } elseif ($this->getEnd() <= new \DateTime('midnight +1 day')) {
                     return self::ROOM_STATUS_NOT_OUT;
                 } else {
                     return self::ROOM_STATUS_WILL_OUT;
@@ -1699,6 +1715,5 @@ class Package extends Base implements \JsonSerializable
         });
 
         return $accommodation->first();
-
     }
 }

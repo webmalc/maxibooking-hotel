@@ -30,4 +30,5 @@ web/app_dev.php
 nbproject
 parameters.yml
 .idea
+docs/
 

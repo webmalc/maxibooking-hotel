@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -94,7 +93,6 @@ class PackageRepository extends DocumentRepository
             foreach ($packages as $package) {
                 $roomType = $package->getRoomType();
                 $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
-
             }
 
             if ($cache) {
@@ -407,8 +405,11 @@ class PackageRepository extends DocumentRepository
 
         if (!empty($packageResult[0])) {
             if (!empty($orderData[0])) {
-
-                return array_merge($packageResult[0], $orderData[0]);
+                $summary =  array_merge($packageResult[0], $orderData[0]);
+                if (isset($summary['paid'])) {
+                    $summary['debt'] = $summary['total'] - $summary['paid'];
+                }
+                return $summary;
             }
 
             return $packageResult[0];
@@ -468,7 +469,6 @@ class PackageRepository extends DocumentRepository
             }
 
             $qb->field('roomType.id')->in($roomTypesIds);
-
         }
         //order
         if (isset($data['packageOrder']) && !empty($data['packageOrder'])) {
@@ -508,15 +508,12 @@ class PackageRepository extends DocumentRepository
             if ($data['begin'] && $data['end']) {
                 $expr = $qb->expr();
                 $expr->addOr($qb->expr()
-                    ->field('begin')->gte($data['begin'])->lte($data['end'])
-                );
+                    ->field('begin')->gte($data['begin'])->lte($data['end']));
                 $expr->addOr($qb->expr()
-                    ->field('end')->gte($data['begin'])->lte($data['end'])
-                );
+                    ->field('end')->gte($data['begin'])->lte($data['end']));
                 $expr->addOr($qb->expr()
                     ->field('begin')->lte($data['begin'])
-                    ->field('end')->gte($data['end'])
-                );
+                    ->field('end')->gte($data['end']));
 
                 $qb->addAnd($expr);
             }
@@ -543,7 +540,6 @@ class PackageRepository extends DocumentRepository
 
             // live_between
             if ($data['filter'] == 'live_between' && isset($data['live_begin']) && isset($data['live_end'])) {
-
                 $qb->field('begin')->lte($data['live_end']);
                 $qb->field('end')->gte($data['live_begin']);
             }
@@ -674,13 +670,11 @@ class PackageRepository extends DocumentRepository
         $queryBuilder
             ->addOr($queryBuilder->expr()
                 ->field('begin')->gte(new \DateTime('midnight'))
-                ->field('begin')->lte(new \DateTime('midnight + 1 day'))
-            )
+                ->field('begin')->lte(new \DateTime('midnight + 1 day')))
             ->addOr($queryBuilder->expr()
                 ->field('begin')->lte(new \DateTime('midnight'))
                 ->field('begin')->gte(new \DateTime('midnight - ' . (int)$limit . ' days'))
-                ->field('isCheckIn')->equals(false)
-            );
+                ->field('isCheckIn')->equals(false));
         return $queryBuilder;
     }
 
@@ -706,13 +700,11 @@ class PackageRepository extends DocumentRepository
             ->field('isCheckIn')->equals(true)
             ->addOr($queryBuilder->expr()
                 ->field('end')->gte(new \DateTime('midnight'))
-                ->field('end')->lte(new \DateTime('midnight + 1 day'))
-            )
+                ->field('end')->lte(new \DateTime('midnight + 1 day')))
             ->addOr($queryBuilder->expr()
                 ->field('end')->lte(new \DateTime('midnight'))
                 ->field('end')->gte(new \DateTime('midnight - ' . (int)$limit . ' days'))
-                ->field('isCheckOut')->equals(false)
-            );
+                ->field('isCheckOut')->equals(false));
         return $queryBuilder;
     }
 

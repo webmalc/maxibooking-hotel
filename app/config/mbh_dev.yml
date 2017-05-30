@@ -29,7 +29,3 @@ parameters:
           service: 'mbh.channelmanager.oktogo'
           api_username: .maxiBooking_api
           api_password: qdcmBz9K
-
-    mbh.mbhs:
-          mbhs: 'aHR0cDovL21iaHMuaC9hcHBfZGV2LnBocC8=' #http://mbhs.h/app_dev.php/
-          key: 2743004999743693560727430049997436935607

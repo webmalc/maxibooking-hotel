@@ -10,6 +10,8 @@ form.formType.should_we_use_room_type_field_in_online_form: Использова
 form.formType.are_there_guests: Гости?
 form.formType.should_we_use_guests_amount_field_in_online_form: Использовать ли поле "Количестов гостей" в онлайн форме?
 form.formType.should_we_use_nights_field: Поле "ночи"?
+form.formType.used_children_ages.label: Возраста детей
+form.formType.used_children_ages.help: Показывать ли в онлайн форме поля возрастов детей
 form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: Использовать ли поле дату заезда и количестов ночей или дату заезда/выезда?
 form.formType.payment: Оплата
 form.formType.payment_type: Типы оплаты
@@ -26,6 +28,12 @@ controller.formController.settings_saved_success: 'Настройки успеш
 
 form.inviteType.type.single: 'Однократная (600 руб.)'
 form.inviteType.type.twice: 'Двукратная (900 руб.)'
+form.formType.css_label: 'css'
+form.formType.css: 'Оформление'
+form.formType.css_help: 'Дополнительные css-стили для онлайн формы'
+form.formType.theme_label: 'Тема'
+form.formType.resultsUrl_label: 'Страница результатов' 
+form.formType.resultsUrl_help: 'URL страницы для вывода результатов поиска' 
 
 payment_types:
   in_hotel: 'Оплата при заселении'

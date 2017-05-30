@@ -24,6 +24,11 @@ aciton_manager.modal.change_package_begin.confirmation: Вы действите�
 action_manager.modal.need_changepackage_begin.title: Для выполнения данного действия необходимо изменить дату заезда
 aciton_manager.modal.change_package_end.confirmation: Вы действительно хотите изменить дату выезда брони
 action_manager.modal.need_changepackage_end.title: Для выполнения данного действия необходимо изменить дату выезда
+action_manager.modal.book_button.title: 'Бронировать номер. Всего номеров %roomsCount%'
+action_manager.modal.disabled_book_button.title: Для создания брони необходимо указать плательщика
 
 action_manager.update_modal.without_accommodation: Без размещения
 action_manager.update_modal.not_specified: Не указан
+
+search.book_button.title: 'Бронировать номер. Всего номеров %roomsCount%'
+search.disabled_book_button.title: Для создания брони необходимо указать плательщика
