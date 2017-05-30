@@ -5,6 +5,8 @@ namespace MBH\Bundle\ChannelManagerBundle\Lib;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use Symfony\Component\HttpFoundation\Request;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerOverview;
 
 interface ChannelManagerServiceInterface
 {
@@ -23,6 +25,13 @@ interface ChannelManagerServiceInterface
      * @return self
      */
     public function addError(string $error): ChannelManagerServiceInterface;
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return ChannelManagerOverview
+     */
+    public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): ?ChannelManagerOverview;
 
     /**
      * @param \DateTime $begin

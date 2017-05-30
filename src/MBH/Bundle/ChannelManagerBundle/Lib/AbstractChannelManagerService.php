@@ -7,9 +7,12 @@ use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Doctrine\ODM\MongoDB\Query\Builder;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerOverview;
+use Doctrine\MongoDB\CursorInterface;
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
 {
@@ -96,6 +99,43 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         return $this->errors;
     }
     
+    /**
+     * {{ @inheritDoc }}
+     */
+    public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): ?ChannelManagerOverview
+    {
+        $method = 'get' . static::CONFIG;
+        $config = $hotel->$method();
+        if (!$config && !$config->getIsEnabled()) {
+            return null;
+        }
+        $trans = $this->container->get('translator');
+        $overview = new ChannelManagerOverview();
+        $overview->setBegin($begin)->setEnd($end);
+
+        $getError = function (array $types, string $prefix, ChannelManagerOverview &$overview, string $method) use ($config, $trans, $begin, $end) {
+            
+            $getMethod = 'get' . ucfirst($method);
+            foreach ($this->$getMethod($config, $begin, $end, $types) as $val) {
+                $message = $val->getDate()->format('d.m.Y') . ': ' . $val->getTariff();
+                $message .= ' - ' . $val->getRoomType() . ' - ';
+                $message .= implode(', ', array_filter(array_map(function ($element) use ($trans, $prefix, $val) {
+                    $typeMethod = 'get' . ucfirst($element);
+                    if ($val->$typeMethod()) {
+                        return $trans->trans($prefix . '.type.' . $element);
+                    }
+                }, array_keys($types))));
+            
+                $addMethod = 'add' . ucfirst($method);
+                $overview->$addMethod($val, $message);
+            }
+        };
+
+        $getError(static::UNAVAIBLE_PRICES, 'channelmanager.notifications.prices', $overview, 'prices');
+        $getError(static::UNAVAIBLE_RESTRICTIONS, 'channelmanager.notifications.restrictions', $overview, 'restrictions');
+        return $overview;
+    }
+
     /**
      * {{ @inheritDoc }}
      */
@@ -450,7 +490,49 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
         return $builder->getQuery()->count();
     }
+
+    /**
+     * Get restrictions by config and type
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @param array $types
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return CursorInterface
+     */
+    protected function getRestrictions(ChannelManagerConfigInterface $config, \DateTime $begin, \DateTime $end, array $types = []): CursorInterface
+    {
+        $builder = $this->getRestrictionsByConfigQueryBuilder($config);
+        $builder->field('date')->gte($begin)
+            ->field('date')->lte($end)
+            ->sort('date');
+        foreach ($types as $type => $val) {
+            $builder->addOr($builder->expr()->field($type)->notEqual($val));
+        }
+        return $builder->getQuery()->execute();
+    }
     
+    /**
+     * Get prices by config and type
+     *
+     * @param ChannelManagerConfigInterface $config
+     * @param array $types
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return CursorInterface
+     */
+    protected function getPrices(ChannelManagerConfigInterface $config, \DateTime $begin, \DateTime $end, array $types = []): CursorInterface
+    {
+        $builder = $this->getPricesByConfigQueryBuilder($config);
+        $builder->field('date')->gte($begin)
+            ->field('date')->lte($end)
+            ->sort('date');
+        foreach ($types as $type => $val) {
+            $builder->addOr($builder->expr()->field($type)->notEqual($val));
+        }
+        return $builder->getQuery()->execute();
+    }
+
     /**
      * Count prices by config and type
      *

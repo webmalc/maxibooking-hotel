@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -80,9 +81,9 @@ class ChannelManager
                     }
 
                     $services[] = [
-                        'service' => $service,
-                        'title'   => $info['title'],
-                        'key'     => $key
+                    'service' => $service,
+                    'title'   => $info['title'],
+                    'key'     => $key
                     ];
                 }
             } catch (\Exception $e) {
@@ -179,6 +180,31 @@ class ChannelManager
         $process->run();
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return array
+     */
+    public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): array
+    {
+        $results = [];
+        foreach ($this->services as $service) {
+            $result = $service['service']->getOverview($begin, $end, $hotel);
+            $results[$service['key']] = $result;
+            if ($result) {
+                $result->setName($service['title']);
+            }
+        }
+        foreach ($this->services as $service) {
+            $result = $service['service']->getOverview($begin, $end, $hotel);
+            $results[$service['key']] = $result;
+            if ($result) {
+                $result->setName($service['title']);
+            }
+        }
+        return $results;
+    }
+    
     /**
      * @param \DateTime $begin
      * @param \DateTime $end

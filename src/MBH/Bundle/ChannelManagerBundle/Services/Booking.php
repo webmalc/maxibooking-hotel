@@ -7,6 +7,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerOverview;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -18,6 +19,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  *  ChannelManager service
@@ -87,6 +89,14 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $this->params = $container->getParameter('mbh.channelmanager.services')['booking'];
     }
 
+    // /**
+    //  * {{ @inheritDoc }}
+    //  */
+    // public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): ?ChannelManagerOverview
+    // {
+    //     return null;
+    // }
+
     /**
      * {@inheritDoc}
      */
@@ -144,10 +154,6 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 ];
             }
         }
-        return [
-            'tariff_1_id' => ['title' => 'tariff one', 'readonly' => false, 'is_child_rate' => false, 'rooms' => []],
-            'tariff_2_id' => ['title' => 'tariff two', 'readonly' => false, 'is_child_rate' => false, 'rooms' => []],
-        ];
         return $result;
     }
 
@@ -167,11 +173,6 @@ class Booking extends Base implements ChannelManagerServiceInterface
         foreach ($response->xpath('room') as $room) {
             $result[(string)$room['id']] = (string)$room;
         }
-
-        return [
-            'room_1_id' => 'room one',
-            'room_2_id' => 'room two',
-        ];
         return $result;
     }
 

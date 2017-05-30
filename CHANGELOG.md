@@ -1,3 +1,7 @@
+1.5.7
+=============
+* channelManager: overview (redmine #667)
+
 1.5.6
 =============
 * booking.com: pull old reservations (redmine #590)

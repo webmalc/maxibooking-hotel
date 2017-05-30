@@ -49,11 +49,11 @@ class OverviewController extends Controller implements CheckHotelControllerInter
 
         //dates
         $begin = $helper->getDateFromString($request->get('begin'));
-        if(!$begin) {
+        if (!$begin) {
             $begin = new \DateTime('00:00');
         }
         $end = $helper->getDateFromString($request->get('end'));
-        if(!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
+        if (!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
             $end = clone $begin;
             $end->modify('+45 days');
         }
@@ -89,34 +89,54 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         //get roomCaches
         $roomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
-                $begin, $end, $hotel,
+                $begin,
+                $end,
+                $hotel,
                 $request->get('roomTypes') ? $request->get('roomTypes') : [],
-                null, true)
+                null,
+                true
+            )
         ;
         //get tariff roomCaches
         $tariffRoomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
-                $begin, $end, $hotel,
-                $request->get('roomTypes') && !$manager->useCategories ? $request->get('roomTypes') : [], [], true);
+                $begin,
+                $end,
+                $hotel,
+                $request->get('roomTypes') && !$manager->useCategories ? $request->get('roomTypes') : [],
+                [],
+                true
+            );
         
         //get priceCaches
         $priceCachesCallback = function () use ($dm, $begin, $end, $hotel, $request, $manager) {
             return $dm->getRepository('MBHPriceBundle:PriceCache')
                 ->fetch(
-                    $begin, $end, $hotel,
-                    $request->get('roomTypes') ? $request->get('roomTypes') : [], [], true, $manager->useCategories);
+                    $begin,
+                    $end,
+                    $hotel,
+                    $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                    [],
+                    true,
+                    $manager->useCategories
+                );
         };
         $priceCaches = $helper->getFilteredResult($dm, $priceCachesCallback);
         
         //get restrictions
         $restrictions = $dm->getRepository('MBHPriceBundle:Restriction')
             ->fetch(
-                $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [], [], true);
-
+                $begin,
+                $end,
+                $hotel,
+                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                [],
+                true
+            );
         return array_merge($response, [
             'roomTypes' => $roomTypes,
             'tariffs' => $tariffs,
+            'channelManager' => $this->get('mbh.channelmanager')->getOverview($begin, $end, $this->hotel),
             'roomCaches' => $roomCaches,
             'tariffRoomCaches' => $tariffRoomCaches,
             'priceCaches' => $priceCaches,
