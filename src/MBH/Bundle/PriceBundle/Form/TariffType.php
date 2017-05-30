@@ -12,15 +12,19 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\DataCollectorTranslator;
 
 class TariffType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(DataCollectorTranslator $translator)
+    {
+        $this->translator = $translator;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
-        $conditions = PromotionConditionFactory::getAvailableConditions();
-
         $builder
             ->add('fullTitle', TextType::class, [
                 'label' => 'mbhpricebundle.form.tarifftype.nazvaniye',
@@ -32,7 +36,7 @@ class TariffType extends AbstractType
                 'label' => 'mbhpricebundle.form.tarifftype.vnutrenneye.nazvaniye',
                 'group' => 'price.form.public_information',
                 'required' => false,
-                'attr' => ['placeholder' => 'price.form.public_summer' . ' ' . date('Y')],
+                'attr' => ['placeholder' => $this->translator->trans('price.form.public_summer') . ' ' . date('Y')],
                 'help' => 'price.form.nazvanie_dla_ispolzovania_vnutri'
             ])
             ->add('description', TextareaType::class, [
@@ -54,7 +58,7 @@ class TariffType extends AbstractType
                     'attr' => array(
                         'class' => 'datepicker begin-datepicker input-small',
                         'data-date-format' => 'dd.mm.yyyy',
-                        'placeholder' => 'mbhpricebundle.form.tarifftype.ne.ogranichen'
+                        'placeholder' => 'mbhpricebundle.form.tarifftype.neogranichen'
                     ),
                 )
             )
@@ -71,7 +75,7 @@ class TariffType extends AbstractType
                     'attr' => array(
                         'class' => 'datepicker end-datepicker input-small',
                         'data-date-format' => 'dd.mm.yyyy',
-                        'placeholder' => 'mbhpricebundle.form.tarifftype.ne.ogranichen'
+                        'placeholder' => 'mbhpricebundle.form.tarifftype.neogranichen'
                     ),
                 )
             );
@@ -157,10 +161,7 @@ class TariffType extends AbstractType
                 'group' => 'configuration',
                 'value' => true,
                 'required' => false,
-                'help' =>
-                    'price.form.use_combine_tariffs_in_transition_periods' .
-                    '<br>' .
-                    'price.form.silence_special_tariffs_combined_with_basic_tariff'
+                'help' => 'mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help'
             ])
             ->add('position', NumberType::class, [
                 'label' => 'position',

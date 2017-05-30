@@ -69,7 +69,7 @@ class Builder implements ContainerAwareInterface
                 'badge_class_left' => 'bg-red badge-sidebar-left badge-sidebar-margin',
                 'badge_id_left' => 'arrivals',
                 'badge_value_left' => $arrivals,
-                'badge_title_left' => 'basebundle.menu.number_unsettled_armor'
+                'badge_title_left' => $this->container->get('translator')->trans('basebundle.menu.number_unsettled_armor')
             ];
         }
         if ($out) {

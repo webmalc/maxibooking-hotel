@@ -9,17 +9,18 @@ price.views.restriction.table.maxBeforeArrival: 'Макс. дней до зае�
 price.views.restriction.table.closedOnArrival: 'Нет заезда'
 price.views.restriction.table.closedOnDeparture: 'Нет выезда'
 price.views.restriction.table.closed: 'Закрыто'
-#restruction/generator html
-price.views.restruction.generator.small_title: 'генератор'
-#restruction/layout html
-price.views.restruction.layout.small_title: 'Условия и ограничения'
-#restruction/index html
-price.views.restruction.index.small_title: 'обзор'
-price.views.restruction.index.date: 'Даты'
-price.views.restruction.index.type: 'Тип номера'
-price.views.restruction.index.save: 'Сохранить'
-price.views.restruction.index.random: 'Генератор условий и ограничений'
-price.views.restruction.index.cancel: 'Отмена'
+#restriction/generator html
+price.views.restriction.generator.small_title: 'генератор'
+#restriction/layout html
+price.views.restriction.layout.small_title: 'Условия и ограничения'
+#restriction/index html
+price.views.restriction.index.small_title: 'обзор'
+price.views.restriction.index.date: 'Даты'
+price.views.restriction.index.type: 'Тип номера'
+price.views.restriction.index.rate: Тариф
+price.views.restriction.index.save: 'Сохранить'
+price.views.restriction.index.random: 'Генератор условий и ограничений'
+price.views.restriction.index.cancel: 'Отмена'
 #promotion/ html
 price.views.promotion.edit.small_title: 'редактирование акции'
 price.views.promotion.layout.small_title: 'Акции'
@@ -61,7 +62,6 @@ price.views.overview.index.rate: 'Тариф'
 #/ tariff filter
 tariff.filter.status: Статус тарифа
 tariff.filter.state: Показывать выключенные?
-tariffs.filter.small_title: обзор
 
 #/ tariff-table
 tariff.table.name: Название

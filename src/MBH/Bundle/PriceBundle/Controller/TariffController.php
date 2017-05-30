@@ -140,8 +140,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $this->get('mbh.mongo')->copy('Restriction', $query, $update);
         $this->get('mbh.mongo')->copy('RoomCache', $query, $update);
 
-        $request->getSession()->getFlashBag()
-            ->set('success', $this->container->get('translator')->trans('price.tariffcontroller.tariff_successfully_copied'));
+        $this->addFlash('success', 'price.tariffcontroller.tariff_successfully_copied');
 
         return $this->redirect($this->generateUrl('tariff_edit', ['id' => $new->getId()]));
     }
@@ -184,8 +183,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->container->get('translator')->trans('price.tariffcontroller.tariff_successfully_created'));
+            $this->addFlash('success', 'price.tariffcontroller.tariff_successfully_created');
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
@@ -217,7 +215,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('price.tariffcontroller.entry_successfully_updated'));
+            $this->addFlash('success', 'price.tariffcontroller.entry_successfully_updated');
 
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
@@ -272,7 +270,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->persist($tariff);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('price.tariffcontroller.entry_successfully_updated'));
+            $this->addFlash('success','price.tariffcontroller.entry_successfully_updated');
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('tariff_promotions_edit', ['id' => $tariff->getId()]) :
@@ -312,7 +310,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->persist($tariff);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('price.tariffcontroller.entry_successfully_updated'));
+            $this->addFlash('success','price.tariffcontroller.entry_successfully_updated');
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('tariff_inheritance_edit', ['id' => $tariff->getId()]) :
@@ -348,7 +346,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->persist($tariff);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('price.tariffcontroller.entry_successfully_updated'));
+            $this->addFlash('success', 'price.tariffcontroller.entry_successfully_updated');
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('tariff_services_edit', ['id' => $tariff->getId()]) :

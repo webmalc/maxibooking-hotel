@@ -7,9 +7,15 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\DataCollectorTranslator;
 
 class ServiceCategoryType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(DataCollectorTranslator $translator) {
+        $this->translator = $translator;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -17,18 +23,18 @@ class ServiceCategoryType extends AbstractType
                 ->add('fullTitle', TextType::class, [
                     'label' => 'mbhpricebundle.form.servicecategorytype.nazvaniye',
                     'required' => true,
-                    'attr' => ['placeholder' => 'mbhpricebundle.form.servicecategorytype.osnovnyye.uslugi']
+                    'attr' => ['placeholder' => 'mbhpricebundle.form.servicecategorytype.osnovnyyeuslugi']
                 ])
                 ->add('title', TextType::class, [
-                    'label' => 'mbhpricebundle.form.servicecategorytype.vnutrenneye.nazvaniye',
+                    'label' => 'mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye',
                     'required' => false,
-                    'attr' => ['placeholder' => 'Основные услуги - лето ' . date('Y')],
-                    'help' => 'Название для использования внутри MaxiBooking'
+                    'attr' => ['placeholder' => $this->translator->trans('mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye.placeholder', ['%year%' => date('Y')])],
+                    'help' => 'mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye.help'
                 ])
                 ->add('description', TextareaType::class, [
                     'label' => 'mbhpricebundle.form.servicecategorytype.opisaniye',
                     'required' => false,
-                    'help' => 'mbhpricebundle.form.servicecategorytype.opisaniye.kategorii.uslug.dlya.onlayn.bronirovaniya'
+                    'help' => 'mbhpricebundle.form.servicecategorytype.opisaniyekategoriiuslugdlyaonlaynbronirovaniya'
                 ])
         ;
     }

@@ -49,3 +49,33 @@ services:
         arguments:  ["@mbh.hotel.selector"]
         tags:
                 - { name: form.type }
+
+  mbh.tariff_type:
+      class: MBH\Bundle\PriceBundle\Form\TariffType
+      arguments: ['@translator']
+      tags:
+          - {name : form.type}
+
+  mbh.price_cache_generator_type:
+      class: MBH\Bundle\PriceBundle\Form\PriceCacheGeneratorType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}
+
+  mbh.serice_category_type:
+      class: MBH\Bundle\PriceBundle\Form\ServiceCategoryType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}
+
+  mbh.promotion_type:
+      class: MBH\Bundle\PriceBundle\Form\PromotionType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}
+
+  mbh.tariff_services_type:
+      class: MBH\Bundle\PriceBundle\Form\TariffServicesType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}

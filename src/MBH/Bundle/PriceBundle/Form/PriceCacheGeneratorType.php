@@ -4,6 +4,10 @@ namespace MBH\Bundle\PriceBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
+use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -11,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\DataCollectorTranslator;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -22,11 +27,21 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class PriceCacheGeneratorType extends AbstractType
 {
+    /**
+     * @var DataCollectorTranslator
+     */
+    private $translator;
+
+    public function __construct(DataCollectorTranslator $translator) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $isIndividualAdditionalPrices = 0;
 
         if ($options['hotel']) {
+            /** @var RoomType $roomType */
             foreach ($options['hotel']->getRoomTypes() as $roomType) {
                 if ($options['useCategories']) {
                     if ($roomType->getCategory() && $roomType->getCategory()->getIsIndividualAdditionalPrices() && $roomType->getAdditionalPlaces() > $isIndividualAdditionalPrices) {
@@ -48,7 +63,7 @@ class PriceCacheGeneratorType extends AbstractType
 
         $builder
             ->add('begin', DateType::class, array(
-                'label' => 'mbhpricebundle.form.pricecachegeneratortype.nachalo.perioda',
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.nachaloperioda',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
@@ -61,7 +76,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('end', DateType::class, array(
-                'label' => 'mbhpricebundle.form.pricecachegeneratortype.konets.perioda',
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.konetsperioda',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
@@ -72,25 +87,26 @@ class PriceCacheGeneratorType extends AbstractType
                 ],
                 'constraints' => [new NotBlank(), new Date()],
             ))
-            ->add('weekdays',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'mbhpricebundle.form.pricecachegeneratortype.dni.nedeli',
+            ->add('weekdays',  InvertChoiceType::class, [
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.dninedeli',
                 'required' => false,
                 'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
                 'multiple' => true,
                 'choices' => $options['weekdays'],
-                'help' => 'mbhpricebundle.form.pricecachegeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.nalichiya.mest',
+                'help' => 'mbhpricebundle.form.pricecachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
                 'attr' => array('placeholder' => 'mbhpricebundle.form.pricecachegeneratortype.vse.dni.nedeli'),
             ])
             ->add('roomTypes', DocumentType::class, [
-                'label' => 'mbhpricebundle.form.pricecachegeneratortype.tipy.nomerov',
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.tipynomerov',
                 'required' => true,
                 'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
                 'multiple' => true,
                 'class' => $repo,
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
+                    /** @var RoomTypeRepository $dr */
                     return $dr->fetchQueryBuilder($options['hotel']);
                 },
-                'help' => 'mbhpricebundle.form.pricecachegeneratortype.tipy.nomerov.dlya.kotorykh.budet.proizvedena.generatsiya.tsen',
+                'help' => 'mbhpricebundle.form.pricecachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen',
                 'attr' => array('placeholder' => $options['hotel'] . ': mbhpricebundle.form.pricecachegeneratortype.vse.tipy.nomerov', 'class' => 'select-all'),
             ])
             ->add('tariffs', DocumentType::class, [
@@ -100,9 +116,10 @@ class PriceCacheGeneratorType extends AbstractType
                 'multiple' => true,
                 'class' => 'MBHPriceBundle:Tariff',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
+                    /** @var TariffRepository $dr */
                     return $dr->fetchChildTariffsQuery($options['hotel'], 'prices');
                 },
-                'help' => 'mbhpricebundle.form.pricecachegeneratortype.tarify.dlya.kotorykh.budet.proizvedena.generatsiya.tsen',
+                'help' => 'mbhpricebundle.form.pricecachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen',
                 'attr' => array('placeholder' => $options['hotel'] . ': mbhpricebundle.form.pricecachegeneratortype.vse.tarify', 'class' => 'select-all'),
             ])
             ->add('price', TextType::class, [
@@ -221,7 +238,7 @@ class PriceCacheGeneratorType extends AbstractType
                     ]);
                 $builder
                     ->add('additionalPriceFake' . $i, TextType::class, [
-                        'label' => 'mbhpricebundle.form.pricecachegeneratortype.price_adult_extra_places' . ' #' . ($i + 1),
+                        'label' => $this->translator->trans('mbhpricebundle.form.pricecachegeneratortype.price_adult_extra_places') . ' #' . ($i + 1),
                         'attr' => [
                             'class' => 'text-price',
                             'placeholder' => $pricePlaceHolder
@@ -240,7 +257,7 @@ class PriceCacheGeneratorType extends AbstractType
                     ]);
                 $builder
                     ->add('additionalChildrenPriceFake' . $i, TextType::class, [
-                        'label' => 'mbhpricebundle.form.pricecachegeneratortype.tcena_detskogo_dop_mesta' . ' #' . ($i + 1),
+                        'label' => $this->translator->trans('mbhpricebundle.form.pricecachegeneratortype.tcena_detskogo_dop_mesta') . ' #' . ($i + 1),
                         'attr' => [
                             'class' => 'text-price',
                             'placeholder' => $pricePlaceHolder

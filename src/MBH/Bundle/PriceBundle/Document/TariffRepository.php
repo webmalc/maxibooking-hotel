@@ -47,7 +47,7 @@ class TariffRepository extends DocumentRepository
 
     /**
      * @param Hotel $hotel
-     * @param array $type 'rooms', 'restrictions', 'prices'
+     * @param string $type 'rooms', 'restrictions', 'prices'
      * @param array $tariffs ids
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
@@ -75,7 +75,7 @@ class TariffRepository extends DocumentRepository
 
     /**
      * @param Hotel $hotel
-     * @param array $type 'rooms', 'restrictions', 'prices'
+     * @param string $type 'rooms', 'restrictions', 'prices'
      * @param array $tariffs ids
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException

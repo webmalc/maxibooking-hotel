@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -42,13 +43,13 @@ class UnwelcomeType extends AbstractType
         ];
 
         foreach($this->getCharacteristics() as $characteristic) {
-            $builder->add($characteristic, 'choice', [
+            $builder->add($characteristic, ChoiceType::class, [
                 'label' => 'form.unwelcomeType.'.$characteristic,
                 'group' => 'form.unwelcomeType.group.common',
                 'expanded' => true,
                 'placeholder' => null,
                 'choices' => $levels,
-                'choice_label' => function($key, $value){
+                'choice_label' => function($key){
                     return $key == 0 ? 'Нет' : $key;
                 },
                 'choice_attr' => function($key, $value) {

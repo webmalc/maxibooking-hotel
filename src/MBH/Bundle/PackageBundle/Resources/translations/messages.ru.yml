@@ -1,3 +1,24 @@
+form.orderTouristType.fio: ФИО
+form.orderTouristType.find_guest: Найти гостя
+form.orderTouristType.placeholder_fio: Иванов Иван Иванович
+form.orderTouristType.placeholder_surname: Иванов
+form.orderTouristType.surname: Фамилия
+form.orderTouristType.add_guest: Добавить гостя
+form.orderTouristType.min_name: Слишком короткое имя
+form.orderTouristType.max_name: Слишком длинное имя
+form.orderTouristType.name: Имя
+form.orderTouristType.placeholder_name: Иван
+form.orderTouristType.min_surname: Слишком короткая фамилия
+form.orderTouristType.max_surname: Слишком длинная фамилия
+form.orderTouristType.second_name: Отчество
+form.orderTouristType.placeholder_second_name: Иванович
+form.orderTouristType.min_second_name: Слишком короткое отчество
+form.orderTouristType.max_second_name: Слишком длинное отчество
+form.orderTouristType.birth_date: Дата рождения
+form.orderTouristType.add_to_package: Добавить как гостя?
+form.orderTouristType.phone: Телефон
+form.orderTouristType.phone: Телефон
+form.orderTouristType.email: E-mail
 mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu: 'Услуга по умолчанию'
 mbhpackagebundle.services.touristsmessenger.gost.ne.nayden: 'Гость не найден.'
 mbhpackagebundle.view.service.index.kategoriya: Категория
@@ -47,6 +68,10 @@ mbhpackagebundle.view.report.porterrows.vyyekhal: Выехал
 mbhpackagebundle.view.report.portersummary.broney: Броней
 mbhpackagebundle.view.report.portersummary.nochey: Ночей
 mbhpackagebundle.view.report.portersummary.gostey: Гостей
+mbhpackagebundle.view.report.portersummary.price: Цена
+mbhpackagebundle.view.report.portersummary.summa: Сумма
+mbhpackagebundle.view.report.portersummary.oplacheno: Оплачено
+mbhpackagebundle.view.report.portersummary.dolg: Долг
 mbhpackagebundle.view.documents.pdftemplates.confirmation.tsena: Цена
 mbhpackagebundle.view.documents.pdftemplates.confirmation.summa: Сумма
 csv.form.paids: Оплачено
@@ -119,10 +144,13 @@ mbhpackagebundle.view.documents.pdftemplates.registration_card.rasshifrovka.podp
 mbhpackagebundle.form.packageservicetype.data: Дата
 mbhpackagebundle.view.documents.pdftemplates.registration_card.razresheniye.na.poseleniye: 'Разрешение на поселение'
 mbhpackagebundle.form.unwelcometype.dostupen.tolʹko.dlya.vas.i.ne.peredayetsya.v.servis.nezhelatelʹnykh.gostey: 'Доступен только для вас и не передается в сервис нежелательных гостей'
-tourist.visa.type_type: Тип
+mbhpackagebundle.form.orderdocumenttype.tip: Тип
 mbhpackagebundle.form.orderdocumenttype.tip.skana: 'Тип скана'
+mbhpackagebundle.form.orderdocumenttype.client: Клиент
+mbhpackagebundle.form.orderdocumenttype.comment: Комментарий
 controller.documentsController.table_row_tourist: Клиент
 mbhpackagebundle.form.orderdocumenttype.zamenit.fayl: 'Заменить файл'
+mbhpackagebundle.form.orderdocumenttype.file: Файл
 form.unwelcomeType.comment: Комментарий
 mbhpackagebundle.form.packagecsvtype.kol.vo.nochey: 'Кол-во ночей'
 mbhpackagebundle.form.packagecsvtype.kol.vo.chelovek: 'Кол-во человек'

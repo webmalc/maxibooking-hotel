@@ -53,7 +53,7 @@ class TariffServiceType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'style' => 'width:80px',
-                    'placeholder' => 'mbhpricebundle.form.tariffservicetype.na.vsekh',
+                    'placeholder' => 'mbhpricebundle.form.tariffservicetype.navsekh',
                 ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
@@ -63,7 +63,7 @@ class TariffServiceType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'style' => 'width:80px',
-                    'placeholder' => 'mbhpricebundle.form.tariffservicetype.kol.vo',
+                    'placeholder' => 'mbhpricebundle.form.tariffservicetype.kol-vo',
                 ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,

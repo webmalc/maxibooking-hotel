@@ -4,6 +4,9 @@ namespace MBH\Bundle\PriceBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
+use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -41,7 +44,7 @@ class RestrictionGeneratorType extends AbstractType
                 'attr' => array('class' => 'datepicker end-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()],
             ))
-            ->add('weekdays',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('weekdays',  InvertChoiceType::class, [
                 'label' => 'mbhpricebundle.form.restrictiongeneratortype.dni.nedeli',
                 'required' => false,
                 'group' => 'mbhpricebundle.form.restrictiongeneratortype.setting',
@@ -57,6 +60,7 @@ class RestrictionGeneratorType extends AbstractType
                 'multiple' => true,
                 'class' => 'MBHHotelBundle:RoomType',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
+                    /** @var RoomTypeRepository $dr */
                     return $dr->fetchQueryBuilder($options['hotel']);
                 },
                 'help' => 'mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov.dlya.kotorykh.budet.proizvedena.generatsiya.tsen',
@@ -69,6 +73,7 @@ class RestrictionGeneratorType extends AbstractType
                 'multiple' => true,
                 'class' => 'MBHPriceBundle:Tariff',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
+                    /** @var TariffRepository $dr */
                     return $dr->fetchChildTariffsQuery($options['hotel'], 'restrictions');
                 },
                 'help' => 'mbhpricebundle.form.restrictiongeneratortype.tarify.dlya.kotorykh.budet.proizvedena.generatsiya.tsen',

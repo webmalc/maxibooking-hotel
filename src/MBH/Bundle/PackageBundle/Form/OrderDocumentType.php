@@ -60,7 +60,7 @@ class OrderDocumentType extends AbstractType
             DocumentType::class,
             [
                 'group' => $groupTitle,
-                'label' => 'mbhpackagebundle.form.orderdocumenttype.kliyent',
+                'label' => 'mbhpackagebundle.form.orderdocumenttype.client',
                 'class' => 'MBHPackageBundle:Tourist',
                 'required' => false,
                 'choice_label' => 'generateFullNameWithAge',
@@ -87,7 +87,7 @@ class OrderDocumentType extends AbstractType
             FileType::class,
             [
                 'group' => $groupTitle,
-                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'mbhpackagebundle.form.orderdocumenttype.zamenit.fayl' : 'Файл',
+                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'mbhpackagebundle.form.orderdocumenttype.zamenit.fayl' : 'mbhpackagebundle.form.orderdocumenttype.file',
                 'required' => $options['scenario'] == self::SCENARIO_ADD,
             ] + ($options['scenario'] == self::SCENARIO_EDIT ? ['help' => '<i class="fa '.(isset($typeIcons[strtolower($document->getExtension())]) ? $typeIcons[strtolower($document->getExtension())] : null).'"></i> '.$document->getOriginalName()] : [])
         );
@@ -97,7 +97,7 @@ class OrderDocumentType extends AbstractType
             TextareaType::class,
             [
                 'group' => $groupTitle,
-                'label' => 'mbhpackagebundle.form.orderdocumenttype.kommentariy',
+                'label' => 'mbhpackagebundle.form.orderdocumenttype.comment',
                 'required' => false,
                 'constraints' => [
                     new Length(['min' => 2, 'max' => 300])
