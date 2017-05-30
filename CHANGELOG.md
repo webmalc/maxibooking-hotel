@@ -1,6 +1,7 @@
 1.5.7
 =============
 * channelManager: overview (redmine #667)
+* add validation to package accommodation entity
 
 1.5.6
 =============
