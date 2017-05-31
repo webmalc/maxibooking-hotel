@@ -63,7 +63,7 @@ class LimitedVirtualRoomMovingCommand extends ContainerAwareCommand
             ->setFrom('system')
             ->setSubject('mailer.packaging.subject')
             ->setType('info')
-            ->setCategory('notification')
+            ->setCategory('report')
             ->setTemplate('MBHBaseBundle:Mailer:packaging.html.twig')
             ->setAdditionalData([
                 'movedPackagesDataArray' => $movedPackagesData,
