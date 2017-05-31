@@ -26,6 +26,7 @@ class DynamicSalesGeneratorTest  extends WebTestCase
 //        self::clearDB();
     }
 
+
     public function testSinglePeriodData()
     {
         $container = $this->getContainer();
@@ -96,7 +97,6 @@ class DynamicSalesGeneratorTest  extends WebTestCase
         $dynamicSales = $reportData->getDynamicSales();
         /** @var DynamicSales $doubleRoomTypeDynamicSales */
         $doubleRoomTypeDynamicSales = $dynamicSales[0];
-        $firstPeriod = $doubleRoomTypeDynamicSales->getPeriods()[0];
         /** @var DynamicSalesPeriod $secondPeriod */
         $secondPeriod = $doubleRoomTypeDynamicSales->getPeriods()[1];
         $this->assertEquals(count($secondPeriod->getDynamicSalesDays()), 19);
@@ -104,24 +104,31 @@ class DynamicSalesGeneratorTest  extends WebTestCase
 
         $fourthSalesDay = $secondPeriod->getDynamicSalesDays()[3];
         $this->assertEquals($fourthSalesDay->getTotalSalesPrice(), 16500);
-        $this->assertEquals($fourthSalesDay->getTotalSalesPriceForPeriod(), 78500);
+        $this->assertEquals($fourthSalesDay->getTotalSalesPriceForPeriod(), 64500);
         $this->assertEquals($fourthSalesDay->getNumberOfCreatedPackages(), 2);
-        $this->assertEquals($fourthSalesDay->getNumberOfCreatedPackagesForPeriod(), 6);
+        $this->assertEquals($fourthSalesDay->getNumberOfCreatedPackagesForPeriod(), 5);
         $this->assertEquals($fourthSalesDay->getNumberOfManDays(), 24);
-        $this->assertEquals($fourthSalesDay->getNumberOfManDaysForPeriod(), 125);
-//        $this->assertEquals($fourthSalesDay->getNumberOfPackageDays(), 12);
-//        $this->assertEquals($fourthSalesDay->getNumberOfPackageDaysForPeriod(), 58);
-//        $this->assertEquals($fourthSalesDay->getNumberOfCancelled(), 1);
-//        $this->assertEquals($fourthSalesDay->getPriceOfCancelled(), 430);
-//        $this->assertEquals($fourthSalesDay->getPriceOfCancelledForPeriod(), 7930);
-//        $this->assertEquals($fourthSalesDay->getNumberOfPaid(), 1);
-//        $this->assertEquals($fourthSalesDay->getNumberOfPaidForPeriod(), 3);
-//        //TODO: Поменять впоследствии
-//        $this->assertEquals($fourthSalesDay->getPriceOfPaidCancelled(), 0);
-//        $this->assertEquals($fourthSalesDay->getSumOfPayment(), 0);
-//        $this->assertEquals($fourthSalesDay->getSumOfPaymentForPeriod(), 0);
-//        $this->assertEquals($fourthSalesDay->getSumOfPaidMinusCancelled(), 0);
-//        $this->assertEquals($fourthSalesDay->getSumOfPaidForCancelledForPeriod(), 0);
-//        $this->assertEquals($fourthSalesDay->getSumPaidToClientsForCancelledForPeriod(), 0);
+        $this->assertEquals($fourthSalesDay->getNumberOfManDaysForPeriod(), 98);
+        $this->assertEquals($fourthSalesDay->getNumberOfPackageDays(), 12);
+        $this->assertEquals($fourthSalesDay->getNumberOfPackageDaysForPeriod(), 39);
+        $this->assertEquals($fourthSalesDay->getNumberOfCancelled(), 1);
+        $this->assertEquals($fourthSalesDay->getPriceOfCancelled(), 7500);
+        $this->assertEquals($fourthSalesDay->getPriceOfCancelledForPeriod(), 7500);
+        $this->assertEquals($fourthSalesDay->getNumberOfPaid(), 1);
+        $this->assertEquals($fourthSalesDay->getNumberOfPaidForPeriod(), 1);
+        //TODO: Поменять впоследствии
+        $this->assertEquals($fourthSalesDay->getPriceOfPaidCancelled(), 0);
+        $this->assertEquals($fourthSalesDay->getSumOfPayment(), 0);
+        $this->assertEquals($fourthSalesDay->getSumOfPaymentForPeriod(), 0);
+        $this->assertEquals($fourthSalesDay->getSumOfPaidMinusCancelled(), 0);
+        $this->assertEquals($fourthSalesDay->getSumOfPaidForCancelledForPeriod(), 0);
+        $this->assertEquals($fourthSalesDay->getSumPaidToClientsForCancelledForPeriod(), 0);
+
+        $this->assertEquals($doubleRoomTypeDynamicSales->getComparativeData(1, 4, 'total-sales-price'), 3570);
+        $this->assertEquals($doubleRoomTypeDynamicSales->getComparativeData(1, 4, 'total-sales-price', true), 34);
+
+        $this->assertEquals($doubleRoomTypeDynamicSales->getComparativeTotalData(1, 'total-sales-price', true), 34);
+
+
     }
 }

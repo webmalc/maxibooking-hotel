@@ -67,7 +67,8 @@ class DynamicSalesDay
         array $cancelledPackages,
         array $cashDocuments,
         ?DynamicSalesDay $previousDay = null
-    ) {
+    )
+    {
         $this->createdPackages = $createdPackages;
         $this->cancelledPackages = $cancelledPackages;
         $this->cashDocuments = $cashDocuments;
@@ -107,7 +108,7 @@ class DynamicSalesDay
             $this->isTotalSalesPriceInit = true;
         }
 
-        return $this->totalSalesPrice;
+        return round($this->totalSalesPrice, 2);
     }
 
     /**
@@ -117,7 +118,7 @@ class DynamicSalesDay
     {
         $previousDayValue = $this->previousDay ? $this->previousDay->getTotalSalesPriceForPeriod() : 0;
 
-        return $this->getTotalSalesPrice() + $previousDayValue;
+        return round($this->getTotalSalesPrice() + $previousDayValue, 2);
     }
 
     /**
@@ -208,7 +209,7 @@ class DynamicSalesDay
             $this->isPriceOfCancelledInit = true;
         }
 
-        return $this->priceOfCancelled;
+        return round($this->priceOfCancelled, 2);
     }
 
     /**
@@ -218,7 +219,7 @@ class DynamicSalesDay
     {
         $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getPriceOfCancelledForPeriod() : 0;
 
-        return $this->getPriceOfCancelled() + $previousDayValue;
+        return round($this->getPriceOfCancelled() + $previousDayValue, 2);
     }
 
     /**

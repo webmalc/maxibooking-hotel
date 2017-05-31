@@ -156,6 +156,20 @@ class DynamicSales
     }
 
     /**
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @param bool $isRelative
+     * @return float|int|mixed
+     */
+    public function getComparativeData($comparedPeriodNumber, $dayNumber, $option, $isRelative = false)
+    {
+        return $isRelative
+            ? $this->getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
+            : $this->getAbsoluteComparativeData($comparedPeriodNumber, $dayNumber, $option);
+    }
+
+    /**
      * return absolute comparative value
      *
      * @param $comparedPeriodNumber
@@ -163,7 +177,7 @@ class DynamicSales
      * @param $option
      * @return mixed
      */
-    public function getComparisonData($comparedPeriodNumber, $dayNumber, $option)
+    private function getAbsoluteComparativeData($comparedPeriodNumber, $dayNumber, $option)
     {
         if (isset($this->comparisonData[$comparedPeriodNumber][$option][$dayNumber])) {
             $result = $this->comparisonData[$comparedPeriodNumber][$option][$dayNumber];
@@ -185,7 +199,7 @@ class DynamicSales
      * @param $option
      * @return float|int
      */
-    public function getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
+    private function getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
     {
         if (isset($this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber])) {
             $result = $this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber];
@@ -198,5 +212,51 @@ class DynamicSales
         }
 
         return $result;
+    }
+
+    /**
+     * @param $comparedPeriodNumber
+     * @param $option
+     * @param bool $isRelative
+     * @return float|int
+     * @throws \Exception
+     */
+    public function getComparativeTotalData($comparedPeriodNumber, $option, $isRelative = false)
+    {
+        /** @var DynamicSalesPeriod $period */
+        $period = $this->getPeriods()[$comparedPeriodNumber];
+        $periodTotalValue = $period->getTotalValue($option);
+        /** @var DynamicSalesPeriod $mainPeriod */
+        $mainPeriod = $this->getPeriods()[0];
+        $mainPeriodTotalValue = $mainPeriod->getTotalValue($option);
+
+        if ($isRelative) {
+            $result = DynamicSalesGenerator::getRelativeComparativeValue($periodTotalValue, $mainPeriodTotalValue);
+        } else {
+            $result = $mainPeriodTotalValue - $periodTotalValue;
+        }
+
+        return DynamicSales::getRoundedValue($result, $option);
+    }
+
+    /**
+     * @param $value
+     * @param $option
+     * @return bool
+     */
+    public static function getRoundedValue($value, $option)
+    {
+        $isPriceOption = in_array($option, [
+            self::TOTAL_SALES_PRICE_OPTION,
+            self::TOTAL_SALES_PRICE_FOR_PERIOD_OPTION,
+            self::SUM_PAID_TO_CLIENTS_FOR_REMOVED_FOR_PERIOD_OPTION,
+            self::PRICE_OF_CANCELLED_FOR_PERIOD_OPTION,
+            self::PRICE_OF_CANCELLED_OPTION,
+            self::PRICE_OF_PAID_CANCELLED_OPTION
+        ]);
+
+        $precision = $isPriceOption ? 2 : 0;
+
+        return round($value, $precision);
     }
 }

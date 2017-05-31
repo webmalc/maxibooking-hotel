@@ -108,16 +108,25 @@ class DynamicSalesReportData
     /**
      * @param $comparedPeriodNumber
      * @param $option
-     * @return int
+     * @param bool $isRelative
+     * @return float|int
      */
-    public function getTotalComparisonData($comparedPeriodNumber, $option)
+    public function getComparativeTotalData($comparedPeriodNumber, $option, $isRelative = false)
     {
-        $result = 0;
-        foreach ($this->relativeComparisonData[$comparedPeriodNumber][$option] as $dayComparisonValue) {
-            $result += $dayComparisonValue;
+        $mainPeriodsSum = 0;
+        $comparedPeriodSum = 0;
+        foreach ($this->getDynamicSales() as $dynamicSale) {
+            /** @var DynamicSalesPeriod $mainPeriod */
+            $mainPeriod = $dynamicSale->getPeriods()[0];
+            /** @var DynamicSalesPeriod $comparedPeriod */
+            $comparedPeriod = $dynamicSale->getPeriods()[$comparedPeriodNumber];
+            $mainPeriodsSum += $mainPeriod->getTotalValue($option);
+            $comparedPeriodSum += $comparedPeriod->getTotalValue($option);
         }
 
-        return $result;
+        return $isRelative
+            ? DynamicSalesGenerator::getRelativeComparativeValue($comparedPeriodSum,  $mainPeriodsSum)
+            : ($mainPeriodsSum - $comparedPeriodSum);
     }
 
     /**
@@ -136,9 +145,9 @@ class DynamicSalesReportData
                 $sum += $dayTotalValue;
             }
 
-            return round($sum / count($periodData));
+            return DynamicSales::getRoundedValue($sum / count($periodData), $option);
         } elseif (in_array($option, DynamicSales::FOR_PERIOD_OPTIONS)) {
-            return  end($periodData);
+            return DynamicSales::getRoundedValue(end($periodData), $option);
         }
 
         throw new \Exception('Invalid option' . $option);

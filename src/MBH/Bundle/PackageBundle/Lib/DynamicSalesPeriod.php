@@ -67,12 +67,10 @@ class DynamicSalesPeriod
             foreach ($this->dynamicSalesDays as $dynamicSalesDay) {
                 $sum += $dynamicSalesDay->getSpecifiedValue($option);
             }
-
-            return round($sum / count($this->dynamicSalesDays));
+            return DynamicSales::getRoundedValue($sum / count($this->dynamicSalesDays), $option);
         } elseif (in_array($option, DynamicSales::FOR_PERIOD_OPTIONS)) {
             $lastDayData = end($this->dynamicSalesDays);
-
-            return $lastDayData->getSpecifiedValue($option);
+            return DynamicSales::getRoundedValue($lastDayData->getSpecifiedValue($option), $option);
         }
 
         throw new \Exception('Invalid option' . $option);
