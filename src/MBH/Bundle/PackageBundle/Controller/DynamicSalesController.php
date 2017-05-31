@@ -46,8 +46,12 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
     public function dynamicSalesTableAction(Request $request)
     {
         $hotel = $this->hotel;
-        $optionsShows = empty($request->get('optionsShow')) ? DynamicSales::DYNAMIC_SALES_SHOWN_OPTIONS : $request->get('optionsShow');
-        $optionsShows = array_diff($optionsShows, ['']);
+        $requestOptions = $request->get('optionsShow');
+        if (empty($requestOptions) || !is_array($requestOptions) || $requestOptions[0] == '') {
+            $displayedOptions = DynamicSales::DYNAMIC_SALES_SHOWN_OPTIONS;
+        } else {
+            $displayedOptions = $requestOptions;
+        }
 
         $dynamicSalesReportData = $this->get('mbh.package.dynamic.sales.generator')->generateDynamicSales($request, $hotel);
         $error = false;
@@ -57,7 +61,7 @@ class DynamicSalesController extends Controller implements CheckHotelControllerI
         return [
             'dynamicSalesData' => $dynamicSalesReportData,
             'error' => $error,
-            'optionsShows' => $optionsShows,
+            'optionsShows' => $displayedOptions,
         ];
     }
 }

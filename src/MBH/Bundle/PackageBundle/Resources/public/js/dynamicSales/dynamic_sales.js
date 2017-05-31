@@ -67,9 +67,6 @@ $(document).ready(function ($) {
         });
 
         $('.rightTableHeader').css('height', headerTableHeight);
-        $('.table-title').each(function (index, element) {
-            element.style.minWidth = getComputedStyle(element).width;
-        });
 
         var $dynamicSalesTables = $('.dynamic-sales-table');
         var $dynamicSalesTableRows = $dynamicSalesTables.find('tr');
@@ -79,11 +76,14 @@ $(document).ready(function ($) {
                 element.style.height = $appropriateRow.css('height');
         });
 
-        $('#headerTable').find('tr:lt(1)').eq(0).find('.date-td').each(function (cellNumber) {
-            var widestWidth = getWidestCellWidth(cellNumber, $dynamicSalesTables);
-            setWidestCellWidth(cellNumber, widestWidth, $(headerTable), $dynamicSalesTables);
+        var $headerTable = $(headerTable);
+        $headerTable.find('tr:lt(1)').eq(0).find('.date-td').each(function (cellNumber) {
+            var widestWidth = getWidestCellWidth(cellNumber, $dynamicSalesTables, $headerTable);
+            setWidestCellWidth(cellNumber, widestWidth, $headerTable, $dynamicSalesTables);
         });
-
+        $('.table-title').each(function (index, element) {
+            element.style.minWidth = parseInt(getComputedStyle(element).width, 10) + 40 + 'px';
+        });
         // setWrapperHeight();
     };
 
@@ -96,14 +96,15 @@ $(document).ready(function ($) {
     // };
 
     var setWidestCellWidth = function (number, widestWidth, $headerTable, $dynamicSalesTables) {
-        $headerTable.find('tr:lt(1)').children().eq(number + 2).css('min-width', widestWidth);
+        $headerTable.find('tr:lt(1)').children().eq(number + 1).css('min-width', widestWidth);
         $dynamicSalesTables.each(function (tableNumber, table) {
             $(table).find('tr:lt(2)').eq(1).children().eq(number + 1).css('min-width', widestWidth);
         });
     };
 
-    var getWidestCellWidth = function(cellNumber, $dynamicSalesTables) {
-        var widestCellWidth = 0;
+    var getWidestCellWidth = function(cellNumber, $dynamicSalesTables, $headerTable) {
+        var widestCellWidth = parseInt($headerTable.find('tr:lt(1)').children().eq(cellNumber + 1).css('width'), 10);
+
         $dynamicSalesTables.each(function (tableNumber, table) {
             var cellWidth = $(table).find('tr:lt(2)').eq(1).children().eq(cellNumber + 1).css('width');
             var cellWidthInt = parseInt(cellWidth, 10);
@@ -118,9 +119,12 @@ $(document).ready(function ($) {
     var onTableScroll = function () {
         var tableWrapper = document.getElementById('dynamic-sales-table-wrapper');
         tableWrapper.onscroll = function () {
-            $('.room-type-title-string').css('left', tableWrapper.scrollLeft);
+            $('.table-title').css('left', tableWrapper.scrollLeft);
             $('#headerTable').css('top', tableWrapper.scrollTop);
             $('.rightTable').css('left', tableWrapper.scrollLeft);
+            var $leftTopPanel = $('#left-top-scrollable');
+            $leftTopPanel.css('top', tableWrapper.scrollTop);
+            $leftTopPanel.css('left', tableWrapper.scrollLeft);
         };
     };
 
