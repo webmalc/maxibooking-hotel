@@ -224,8 +224,13 @@ $(document).ready(function () {
             return null;
         }
         var h = function () {
+            var isActionsPanelExists = $('#actions').length > 0;
+            if (!isActionsPanelExists) {
+                document.body.style.paddingBottom = 0;
+            }
+            var bottomOffset = isActionsPanelExists ? 85 : 45;
             $('.scrolling').height(function () {
-                return $(window).height() - $(this).offset().top - 90;
+                return $(window).height() - $(this).offset().top - bottomOffset;
             });
         };
         h();

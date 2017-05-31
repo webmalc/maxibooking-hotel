@@ -1,3 +1,4 @@
+{% set dateCellHeight = 41 %}
 {% if error is defined and error is not empty and error %}
     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
 {% else %}
@@ -13,8 +14,8 @@
             {% endif %}
         {% endfor %}
         <div id="left-top-scrollable">
-            {% set leftTopScrollableCellWidth = 51 * periodsCount - 1 %}
-            {% set topOffset = 17 * periodsCount %}
+            {% set leftTopScrollableCellWidth = dateCellHeight * periodsCount - 1 %}
+            {% set topOffset = 12 * periodsCount %}
             <div style="height: {{ topOffset }}px;"></div>
             <div class="cell first-cell" style="height: {{ leftTopScrollableCellWidth - topOffset }}px;">&nbsp;</div>
             <div class="cell second-cell" style="height: {{ leftTopScrollableCellWidth - topOffset }}px;">
