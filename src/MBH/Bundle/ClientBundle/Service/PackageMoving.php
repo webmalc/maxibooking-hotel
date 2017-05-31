@@ -258,7 +258,7 @@ class PackageMoving
             ->setFrom('system')
             ->setSubject($subject)
             ->setType('info')
-            ->setCategory('notification')
+            ->setCategory('report')
             ->setTemplate($template)
             ->setAdditionalData([
                 'movingInfo' => $packageMovingInfo,
