@@ -4,7 +4,6 @@ namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -17,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class OverviewController extends Controller implements CheckHotelControllerInterface
 {
-
     /**
      * @Route("/", name="room_overview")
      * @Method("GET")
@@ -26,9 +24,17 @@ class OverviewController extends Controller implements CheckHotelControllerInter
      */
     public function indexAction()
     {
+        $roomTypeManager = $this->get('mbh.hotel.room_type_manager');
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $getRoomTypeCallback = function () use ($roomTypeManager) {
+            return $roomTypeManager->getRooms($this->hotel);
+        };
+        $roomTypes = $this->helper->getFilteredResult($this->dm, $getRoomTypeCallback, $isDisableableOn);
+
         return [
-            'roomTypes' => $this->hotel->getRoomTypes(),
+            'roomTypes' => $roomTypes,
             'tariffs' => $this->hotel->getTariffs(),
+            'displayDisabledRoomType' => !$isDisableableOn
         ];
     }
 
@@ -71,10 +77,17 @@ class OverviewController extends Controller implements CheckHotelControllerInter
             'hotel' => $hotel
         ];
 
-        //get roomTypes
-        $roomTypes = $dm->getRepository('MBHHotelBundle:RoomType')
-            ->fetch($hotel, $request->get('roomTypes'))
-        ;
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $inputRoomTypeIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
+        $roomTypeManager = $this->get('mbh.hotel.room_type_manager');
+        $roomTypesCallback = function () use ($inputRoomTypeIds, $roomTypeManager) {
+            return $roomTypeManager->getRooms($this->hotel, $inputRoomTypeIds);
+        };
+
+        $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
+        if (empty($roomTypeIds = $inputRoomTypeIds)) {
+            $roomTypeIds = $helper->toIds($roomTypes);
+        }
 
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => $this->container->get('translator')->trans('price.overviewcontroller.room_type_is_not_found')]);
@@ -91,7 +104,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         $roomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
                 $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                $roomTypeIds,
                 null, true)
         ;
         //get tariff roomCaches
@@ -107,7 +120,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
                     $begin, $end, $hotel,
                     $request->get('roomTypes') ? $request->get('roomTypes') : [], [], true, $manager->useCategories);
         };
-        $priceCaches = $helper->getFilteredResult($dm, $priceCachesCallback);
+        $priceCaches = $helper->getFilteredResult($this->dm, $priceCachesCallback);
         
         //get restrictions
         $restrictions = $dm->getRepository('MBHPriceBundle:Restriction')

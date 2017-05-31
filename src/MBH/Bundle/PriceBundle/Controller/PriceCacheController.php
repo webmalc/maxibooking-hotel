@@ -93,7 +93,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
         $inputRoomTypeIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
-        $roomTypesCallback = function () use ($request, $inputRoomTypeIds) {
+        $roomTypesCallback = function () use ($inputRoomTypeIds) {
             return $this->manager->getRooms($this->hotel, $inputRoomTypeIds);
         };
 

@@ -24,7 +24,6 @@ var ChessBoardManager = (function () {
         var wrapper = $('#calendarWrapper');
         var self = this;
         var chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
-        this.setChessboardContentHeight(chessBoardContentBlock);
         this.setContentWidth(chessBoardContentBlock);
         $('.sidebar-toggle').click(function () {
             setTimeout(function () {
@@ -140,13 +139,6 @@ var ChessBoardManager = (function () {
                 wrapper.append(newPackage);
             });
         }
-    };
-    ChessBoardManager.prototype.setChessboardContentHeight = function (chessBoardContentBlock) {
-        var $cb = $(chessBoardContentBlock);
-        var availableHeight = document.documentElement.clientHeight - $cb.offset().top;
-        var chessboardHeight = parseInt(getComputedStyle(chessBoardContentBlock).height, 10);
-        var chessboardContentBlockHeight = chessboardHeight > availableHeight ? availableHeight : chessboardHeight + 10;
-        $cb.css('height', chessboardContentBlockHeight);
     };
     ChessBoardManager.getTableStartDate = function () {
         return moment(document.getElementById('accommodation-report-begin').value, "DD.MM.YYYY");

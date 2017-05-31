@@ -4,7 +4,6 @@ namespace MBH\Bundle\PriceBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -79,9 +78,9 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
                 if (empty($category)) {
                     $category = new ServiceCategory();
                     $category->setSystem(true)
-                        ->setIsEnabled(true)
                         ->setFullTitle($catName)
                         ->setHotel($hotel)
+                        ->setIsEnabled(true)
                     ;
                     $manager->persist($category);
                     $manager->flush();
@@ -97,10 +96,12 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
 
                     if (empty($service)) {
                         $service = new Service();
+                        $titleId = $info['name'];
+                        $title = $titleId == 'WiFi' ? $titleId : $this->container->get('translator')->trans($titleId);
                         $service->setCode($code)
                             ->setSystem(true)
                             ->setIsEnabled($info['enabled'])
-                            ->setFullTitle($info['name'])
+                            ->setFullTitle($title)
                             ->setPrice(0)
                             ->setCalcType($info['calcType'])
                             ->setDate(!empty($info['date']) ? $info['date'] : null)

@@ -26,13 +26,13 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
     {
         return [
             'roomtype-double' => [
-                'title' => $this->container->get('translator')->trans('mbhhotelbundle.roomTypeData.two.place'),
+                'title' => 'mbhhotelbundle.roomTypeData.two.place',
                 'places' => 2,
                 'additionalPlaces' => 1,
                 'color' => '#b50e2c'
             ],
             'hotel-triple' => [
-                'title' => $this->container->get('translator')->trans('mbhhotelbundle.roomTypeData.three.place'),
+                'title' => 'mbhhotelbundle.roomTypeData.three.place',
                 'places' => 3,
                 'additionalPlaces' => 2,
                 'color' => '#008000'
@@ -57,7 +57,7 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
                 $roomType = new RoomType();
                 $roomType
                     ->setHotel($hotel)
-                    ->setFullTitle($data['title'])
+                    ->setFullTitle($this->container->get('translator')->trans($data['title']))
                     ->setPlaces($data['places'])
                     ->setAdditionalPlaces($data['additionalPlaces'])
                 ;

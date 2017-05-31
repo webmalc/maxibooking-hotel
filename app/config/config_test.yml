@@ -12,8 +12,8 @@ swiftmailer:
     disable_delivery: true
 
 parameters:
-    mongodb_url: 'mongodb://mbh-mongo:27017/db_test'
-    mongodb_database: db_test
+    mongodb_url: 'mongodb://mbh-mongo:27017/db_test_1'
+    mongodb_database: db_test_1
 
 security:
     firewalls:
