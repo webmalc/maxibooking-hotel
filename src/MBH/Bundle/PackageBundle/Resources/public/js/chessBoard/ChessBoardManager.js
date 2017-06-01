@@ -460,7 +460,7 @@ var ChessBoardManager = (function () {
                     };
                     var accommodationElement_1 = _this.parentNode.parentNode;
                     var accommodationWidth_1 = parseInt(accommodationElement_1.style.width, 10);
-                    var tableCellWidth_1 = styleConfigs[_this.currentSizeConfigNumber].tableCellWidth;
+                    var tableCellWidth_1 = styleConfigs[self.currentSizeConfigNumber].tableCellWidth;
                     if (accommodationWidth_1 == tableCellWidth_1 * 2) {
                         $('.divide-package-button').tooltip('hide');
                         self.divide(accommodationElement_1, accommodationWidth_1 / 2);
@@ -469,15 +469,15 @@ var ChessBoardManager = (function () {
                         var packageLeftCoordinate_1 = accommodationElement_1.getBoundingClientRect().left;
                         var line_1 = document.createElement('div');
                         line_1.classList.add('dividing-line');
+                        accommodationElement_1.appendChild(line_1);
                         var accommodationElementWidth = parseInt(getComputedStyle(accommodationElement_1).width, 10);
                         var isAccommodationAbroadTable_1 = (accommodationElementWidth % tableCellWidth_1) != 0
                             && ((accommodationElementWidth + 1) % tableCellWidth_1) != 0;
-                        var packageToMiddayOffset_1 = _this.getPackageToMiddayOffset();
+                        var packageToMiddayOffset_1 = self.getPackageToMiddayOffset();
                         var defaultLeftValue_1 = isAccommodationAbroadTable_1
                             ? tableCellWidth_1 + packageToMiddayOffset_1
                             : tableCellWidth_1;
                         line_1.style.left = defaultLeftValue_1 + 'px';
-                        accommodationElement_1.appendChild(line_1);
                         accommodationElement_1.onmousemove = function (event) {
                             var offset = event.clientX - packageLeftCoordinate_1;
                             var griddedOffset;

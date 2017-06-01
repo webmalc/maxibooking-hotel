@@ -41,6 +41,7 @@ class ChessBoardManager {
         this.templateRemoveButton = ChessBoardManager.getTemplateRemoveButton();
         this.tableStartDate = ChessBoardManager.getTableStartDate();
         this.tableEndDate = ChessBoardManager.getTableEndDate();
+
     }
 
     public hangHandlers() {
@@ -548,7 +549,7 @@ class ChessBoardManager {
                     };
                     let accommodationElement = this.parentNode.parentNode;
                     let accommodationWidth = parseInt(accommodationElement.style.width, 10);
-                    let tableCellWidth = styleConfigs[this.currentSizeConfigNumber].tableCellWidth;
+                    let tableCellWidth = styleConfigs[self.currentSizeConfigNumber].tableCellWidth;
                     if (accommodationWidth == tableCellWidth * 2) {
                         $('.divide-package-button').tooltip('hide');
                         self.divide(accommodationElement, accommodationWidth / 2);
@@ -556,16 +557,16 @@ class ChessBoardManager {
                         let packageLeftCoordinate = accommodationElement.getBoundingClientRect().left;
                         let line: HTMLElement = document.createElement('div');
                         line.classList.add('dividing-line');
+                        accommodationElement.appendChild(line);
 
                         let accommodationElementWidth = parseInt(getComputedStyle(accommodationElement).width, 10);
                         let isAccommodationAbroadTable = (accommodationElementWidth % tableCellWidth) != 0
                             && ((accommodationElementWidth + 1) % tableCellWidth) != 0;
-                        let packageToMiddayOffset = this.getPackageToMiddayOffset();
+                        let packageToMiddayOffset = self.getPackageToMiddayOffset();
                         let defaultLeftValue = isAccommodationAbroadTable
                             ? tableCellWidth + packageToMiddayOffset
                             : tableCellWidth;
                         line.style.left = defaultLeftValue + 'px';
-                        accommodationElement.appendChild(line);
 
                         accommodationElement.onmousemove = function (event) {
                             let offset = event.clientX - packageLeftCoordinate;
