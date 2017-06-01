@@ -10,11 +10,14 @@ error_reporting(E_ALL);
 /** @var \Composer\Autoload\ClassLoader $loader */
 $loader = require __DIR__.'/../app/autoload.php';
 Debug::enable();
-$kernel = new AppKernel('dev', true);
+$request = Request::createFromGlobals();
+$client = $request->server->get('MBCLIENT');
+
+$kernel = new AppKernel('dev', true, $client);
 if (PHP_VERSION_ID < 70000) {
     $kernel->loadClassCache();
 }
-$request = Request::createFromGlobals();
+
 $response = $kernel->handle($request);
 $response->send();
 $kernel->terminate($request, $response);

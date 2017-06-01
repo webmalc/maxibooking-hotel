@@ -5,6 +5,15 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
+    /** @var  string */
+    protected $client;
+
+    public function __construct($environment, $debug, $client = null)
+    {
+        $this->client = $client;
+        parent::__construct($environment, $debug);
+    }
+
     public function registerBundles()
     {
         $bundles = array(
@@ -66,16 +75,26 @@ class AppKernel extends Kernel
     {
         return __DIR__;
     }
+
     public function getCacheDir()
     {
-        return dirname(__DIR__).'/var/cache/'.$this->getEnvironment();
+        return dirname(
+                __DIR__
+            ).'/var/'.($this->client ? 'clients/'.$this->client.'/' : '').'cache/'.$this->getEnvironment();
     }
+
     public function getLogDir()
     {
-        return dirname(__DIR__).'/var/logs';
+        return dirname(__DIR__).'/var/'.($this->client ? 'clients/'.$this->client.'/' : '').'logs';
     }
+
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
+        if ($this->client) {
+            $loader->load($this->getRootDir().'/config/clients/parameters_'.$this->client.'.yml');
+        } else {
+            $loader->load($this->getRootDir().'/config/parameters.yml');
+        }
     }
 }

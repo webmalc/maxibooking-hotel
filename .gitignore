@@ -4,9 +4,12 @@ scripts/deploy_to_test.sh
 /scripts/upload
 /web/bundles/
 /app/config/parameters.yml
+/app/config/clients/
 /var/bootstrap.php.cache
 /var/cache/*
 /var/logs/*
+/var/clients/
+
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 /build/
