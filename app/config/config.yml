@@ -237,14 +237,6 @@ liip_imagine:
               relative_resize: { scale: 0.5, allow_upscale: true }
 
 
-jms_translation:
-    configs:
-        app:
-            dirs: ["%kernel.root_dir%", "%kernel.root_dir%/../src"]
-            output_dir: "%kernel.root_dir%/Resources/translations"
-            excluded_dirs: ["%kernel.root_dir%/../var/cache", "%kernel.root_dir%/../var/logs"]
-            excluded_names: ["*TestCase.php", "*Test.php"]
-
 # GravatarBundle
 ornicar_gravatar:
   rating: g
@@ -255,6 +247,13 @@ ornicar_gravatar:
 parameters:
     knp_menu.renderer.twig.options:
         currentClass: active
+
+# Lexik translation bundle
+lexik_translation:
+    fallback_locale: [ru]         # (required) default locale(s) to use
+    managed_locales: [ru, en]
+    storage:
+        type: mongodb
 
 vich_uploader:
     db_driver: mongodb

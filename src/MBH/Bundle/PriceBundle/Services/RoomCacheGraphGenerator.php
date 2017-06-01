@@ -9,6 +9,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class RoomCacheGraphGenerator
 {
@@ -67,8 +68,11 @@ class RoomCacheGraphGenerator
      */
     private $tariff;
 
-    public function __construct(Helper $helper, ManagerRegistry $dm)
+    private $container;
+
+    public function __construct(Helper $helper, ManagerRegistry $dm, ContainerInterface $container)
     {
+        $this->container = $container;
         $this->helper = $helper;
         $this->dm = $dm;
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
@@ -115,7 +119,7 @@ class RoomCacheGraphGenerator
             ->fetch($hotel, $request->get('roomTypes'))
         ;
         if (!count($roomTypes)) {
-            $this->error = 'Типы номеров не найдены';
+            $this->error = $this->container->get('translator')->trans('price.services.roomcachegraphgenerator.room_type_is_not_found');
 
             return $this;
         }

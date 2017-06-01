@@ -6,12 +6,12 @@
             <i class="fa fa-bed"></i>
         </th>
         <th class="td-xs text-center">
-            <i class="fa fa-tasks" title="Статус комнаты" data-toggle="tooltip"></i>
+            <i class="fa fa-tasks" title="{{ 'mbhpackagebundle.view.report.roomtypestable.status.komnaty'|trans }} " data-toggle="tooltip"></i>
         </th>
         <th class="td-xs text-center">#</th>
-        <th>Гости</th>
-        <th class="td-md">Даты</th>
-        <th class="td-md hidden-xs hidden-sm">Оплата</th>
+        <th>{{ 'mbhpackagebundle.view.report.roomtypestable.gosti'|trans }} </th>
+        <th class="td-md">{{ 'mbhpackagebundle.view.report.roomtypestable.daty'|trans }} </th>
+        <th class="td-md hidden-xs hidden-sm">{{ 'mbhpackagebundle.view.report.roomtypestable.oplata'|trans }} </th>
         <th class="td-md">
             Статус
         </th>
@@ -21,7 +21,7 @@
     {% if result.dataTable is empty %}
         <tr class="danger text-cente">
             <td colspan="8">
-                Ничего не найдено
+                {{ 'mbhpackagebundle.views.nichego_ne_naideno'|trans }}
             </td>
         </tr>
     {% endif %}
@@ -34,7 +34,7 @@
                     {% if client_config().useRoomTypeCategory() and roomType.category %}
                         {{ roomType.category }} -
                     {% endif %}
-                    мест: {{ roomType.places }}{% if roomType.additionalPlaces > 0 %}(+{{ roomType.additionalPlaces }}){% endif %}
+                    {{ 'mbhpackagebundle.view.report.roomtypestable.mest'|trans }} : {{ roomType.places }}{% if roomType.additionalPlaces > 0 %}(+{{ roomType.additionalPlaces }}){% endif %}
                     - {{ roomType.hotel }}
                 </small>
                 <div class="pull-right">
@@ -106,7 +106,7 @@
                     <div class="text-center">
                         <small>
                             {{ room.housing }}{% if room.housing and room.floor %},{% endif %}
-                            {% if room.floor %} эт. {{ room.floor }} {% endif %}
+                            {% if room.floor %} {{ 'mbhpackagebundle.views.et'|trans }}. {{ room.floor }} {% endif %}
                         </small>
                     </div>
                 </td>
@@ -149,24 +149,24 @@
                     {% if package and not settle %}
                         <a data-id="{{ package.id }}" href="javascript:void(0)" class="btn btn-xs btn-{{ style }}"
                             style="cursor: pointer;" data-html="true" data-container="body" data-toggle="popover" data-placement="top" data-content="
-                            <b>Заказ:</b> #12
+                            <b>{{ 'mbhpackagebundle.view.report.roomtypestable.zakaz'|trans }} :</b> #12
                            {% if package.isPaid %}
                                 <small class='text-success'><i class='fa fa-check'></i> {{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }}</small>
                             {% else %}
                                 <small class='text-danger'><i class='fa fa-times'></i> {{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
                             {% endif %}
                             </small><br>
-                            <b>Даты:</b> {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}<br>
-                            <b>Заехали:</b> {{ package.isCheckIn ? 'да' : 'нет' }}<br>
-                            <b>Выехали:</b> {{ package.isCheckOut ? 'да' : 'нет' }}<br>
-                            <b>Гости:</b> {{ package.adults }}+{{ package.children }}<br>
-                            <b>Стоимость:</b> {{ package.order.price }} {{ currency().text }}<br>
-                            <b>Долг:</b> {{ package.order.debt }} {{ currency().text }}<br>
+                            <b>{{ 'mbhpackagebundle.view.report.roomtypestable.daty'|trans }} :</b> {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}<br>
+                            <b>{{ 'mbhpackagebundle.views.zaekhali'|trans }}:</b> {{ package.isCheckIn ? 'mbhpackagebundle.views.da'|trans : 'mbhpackagebundle.views.net'|trans }}<br>
+                            <b>{{ 'mbhpackagebundle.views.viehali'|trans }}:</b> {{ package.isCheckOut ? 'mbhpackagebundle.views.da'|trans : 'mbhpackagebundle.views.net'|trans }}<br>
+                            <b>{{ 'mbhpackagebundle.views.gosti'|trans }}:</b> {{ package.adults }}+{{ package.children }}<br>
+                            <b>{{ 'mbhpackagebundle.views.stoimost'|trans }}:</b> {{ package.order.price }} {{ currency().text }}<br>
+                            <b>{{ 'mbhpackagebundle.views.dolg'|trans }}:</b> {{ package.order.debt }} {{ currency().text }}<br>
                             {% if package.services is not empty %}
-                                <b>Услуги:</b>
+                                <b>{{ 'mbhpackagebundle.views.uslugi'|trans }}:</b>
                                 {{ package.services|join(', ') }}
                             {% elseif is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW')) %}
-                                <div class='text-center'><small><a target='_blanck' href='{{ path('package_edit', {'id': package.id}) }}'>перейти к записи</a></small></div>
+                                <div class='text-center'><small><a target='_blanck' href='{{ path('package_edit', {'id': package.id}) }}'>{{ 'mbhpackagebundle.view.report.roomtypestable.pereyti.k.zapisi'|trans }} </a></small></div>
                             {% endif %}
                             ">
                             {{ package.numberWithPrefix }}
@@ -191,13 +191,13 @@
                                 {{ package.mainTourist.citizenship }} /
                             {% endif %}
                             {% if package.adults > 0 %}
-                                {{ package.adults }} вз.
+                                {{ package.adults }} {{ 'mbhpackagebundle.views.vz'|trans }}.
                             {% endif %}
                             {% if package.adults > 0 and package.children > 0 %}
                                 +
                             {% endif %}
                             {% if package.children > 0 %}
-                                {{ package.children }} рб.
+                                {{ package.children }} {{ 'mbhpackagebundle.views.rb'|trans }}.
                             {% endif %}
                             / оформлено: {{ package.tourists|length }}
                         </small>
@@ -278,9 +278,9 @@
 </table>
 
 <div class="text-center bg-gray color-palette alert" id="package-summary">
-    <span class="package-summary-row"><b>Номеров: </b><span>{{ result.total.rooms }}</span></span>
-    <span class="package-summary-row"><b>Свободно: </b><span>{{ result.total.open }}</span></span>
-    <span class="package-summary-row"><b>Занято: </b><span>{{ result.total.reserve }}</span></span>
-    <span class="package-summary-row"><b>Гостей в брони: </b><span>{{ result.total.guests }}</span></span>
-    <span class="package-summary-row"><b>Гостей оформлено: </b><span>{{ result.total.tourists }}</span></span>
+    <span class="package-summary-row"><b>{{ 'mbhpackagebundle.views.nomerov'|trans }}: </b><span>{{ result.total.rooms }}</span></span>
+    <span class="package-summary-row"><b>{{ 'mbhpackagebundle.views.svobodno'|trans }}: </b><span>{{ result.total.open }}</span></span>
+    <span class="package-summary-row"><b>{{ 'mbhpackagebundle.views.zaniato'|trans }}: </b><span>{{ result.total.reserve }}</span></span>
+    <span class="package-summary-row"><b>{{ 'mbhpackagebundle.views.gostei_v_broni'|trans }}: </b><span>{{ result.total.guests }}</span></span>
+    <span class="package-summary-row"><b>{{ 'mbhpackage.views.gostei_oformleno'|trans }}: </b><span>{{ result.total.tourists }}</span></span>
 </div>

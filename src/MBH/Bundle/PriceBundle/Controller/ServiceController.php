@@ -73,7 +73,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $this->dm->flush();
         };
 
-        $request->getSession()->getFlashBag()->set('success', 'Цены успешно сохранены.');
+        $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('price.controller.servicecontroller.price_successful_saved'));
 
         return $this->redirectToRoute('price_service_category');
     }
@@ -137,7 +137,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($entry);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.controller.servicecontroller.entry_successful_saved'));
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('price_service_category_entry_edit', ['id' => $entry->getId()]) :
@@ -201,7 +201,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($entry);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.controller.servicecontroller.entry_successfully_updated'));
 
             if ($request->get('save') !== null) {
                 return $this->redirectToRoute('price_service_category_entry_edit', ['id' => $entry->getId()]);
@@ -257,7 +257,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.controller.servicecontroller.entry_successful_saved'));
 
             return $this->afterSaveRedirect('price_service_category', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -314,7 +314,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.controller.servicecontroller.entry_successfully_updated'));
 
             return $this->afterSaveRedirect('price_service_category', $entity->getId(), ['tab' => $entity->getId()]);
         }

@@ -1,3 +1,5 @@
+mbhuserbundle.document.group.takaya.gruppa.uzhe.sushchestvuyet: 'Такая группа уже существует'
+mbhuserbundle.document.user.takoy.login.uzhe.zaregistrirovan: 'Такой логин уже зарегистрирован'
 fos_user.username.already_used: 'Логин уже используется'
 fos_user.username.blank: 'Пожалуйста, укажите логин'
 fos_user.username.short: '[-Inf,Inf]Логин слишком короткий'

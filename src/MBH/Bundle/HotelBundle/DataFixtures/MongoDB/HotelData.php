@@ -1,4 +1,5 @@
 <?php
+
 namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
@@ -10,17 +11,22 @@ use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 
 /**
  * Class HotelData
-
  */
 class HotelData extends AbstractFixture implements OrderedFixtureInterface
 {
-    const HOTELS = [
+
+    /**
+     * Get hotel data
+     *
+     * @return array
+     */
+    const HOTELS_DATA = [
         'hotel-one' => [
-            'title' => 'Мой отель #1',
+            'title' => 'mbhhotelbundle.hotelData.hotelOne',
             'default' => true
         ],
         'hotel-two' => [
-            'title' => 'Мой отель #2',
+            'title' => 'mbhhotelbundle.hotelData.hotelTwo',
             'default' => false
         ]
     ];
@@ -33,12 +39,11 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface
         $repo = $manager->getRepository('MBHHotelBundle:Hotel');
 
         if (!count($repo->findAll())) {
-            foreach (self::HOTELS as $key => $hotelData) {
+            foreach (self::HOTELS_DATA as $key => $hotelData) {
                 $hotel = new Hotel();
                 $hotel
-                    ->setFullTitle($hotelData['title'])
-                    ->setIsDefault($hotelData['default'])
-                ;
+                    ->setFullTitle($this->container->get('translator')->trans($hotelData['title']))
+                    ->setIsDefault($hotelData['default']);
 
                 $manager->persist($hotel);
                 $manager->flush();

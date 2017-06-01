@@ -53,7 +53,7 @@ class BaseControllerTest extends WebTestCase
             return !$route->getMethods() || in_array('GET', $route->getMethods());
         });
 
-        return array_map(function($route) {
+        return array_map(function ($route) {
             return [$route->getPath()];
         }, $routers);
     }

@@ -38,7 +38,6 @@
     "ob/highcharts-bundle": "*@stable",
     "knplabs/knp-snappy-bundle": "*@stable",
     "liip/imagine-bundle": "*@stable",
-    "jms/translation-bundle": "*@stable",
     "jms/di-extra-bundle": "*@stable",
     "liuggio/excelbundle": "^2.0@dev",
     "ornicar/gravatar-bundle": "^1.1@dev",
@@ -52,6 +51,7 @@
     "guzzlehttp/guzzle": "^6.2",
     "php-amqplib/rabbitmq-bundle": "^1.12",
     "phobetor/rabbitmq-supervisor-bundle": "^1.5",
+    "lexik/translation-bundle": "^4.0",
     "willdurand/js-translation-bundle": "^2.6",
     "vich/uploader-bundle": "^1.4"
   },

@@ -24,9 +24,9 @@
                 <td>{{ reason.createdAt|date('d.m.Y') }}</td>
                 <th class="text-center">
                     {% if reason.isDefault %}
-                        <span class="label label-success">Да</span>
+                        <span class="label label-success">{{ 'mbhpackagebundle.view.deletereasons.index.da'|trans }} </span>
                     {% else %}
-                        <span class="label label-default">Нет</span>
+                        <span class="label label-default">{{ 'mbhpackagebundle.view.deletereasons.index.net'|trans }} </span>
                     {% endif %}
                 </th>
                 <td class="table-actions-td text-center">

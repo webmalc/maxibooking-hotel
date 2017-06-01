@@ -22,3 +22,5 @@ views.partials.entityInfo.no_changes_made: Изменений не произв�
 views.partials.entityInfo.date: Дата
 views.partials.entityInfo.user: Пользователь
 views.partials.entityInfo.changes: Изменения
+
+app.resources.twigBundle.translations.occured.error: Произошла ошибка

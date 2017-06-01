@@ -1,3 +1,4 @@
+mbhchannelmanagerbundle.services.ostrovok.net.ogranicheniy.dlya.sinkhronizatsii: 'Нет ограничений для синхронизации'
 form.bookingType.is_included: Включен?
 form.bookingType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
 form.bookingType.login: Логин

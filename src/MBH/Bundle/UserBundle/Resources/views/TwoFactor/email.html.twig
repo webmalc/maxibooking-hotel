@@ -5,7 +5,7 @@
 <form class="form" action="{{ path('_welcome') }}" method="post"  class="form login-form" role="form"
       method="post" accept-charset="UTF-8" autocomplete="off">
 
-    <p>Вам на почту выслан код для входа</p>
+    <p>{{ 'mbhuserbundle.view.twofactor.email.vam.na.pochtu.vyslan.kod.dlya.vkhoda'|trans }} </p>
 
     <div class="form-group has-feedback">
         <input type="text" name="_auth_code" class="form-control" placeholder="{{ 'security.two_factor.code'|trans() }}" required>

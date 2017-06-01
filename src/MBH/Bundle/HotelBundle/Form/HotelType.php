@@ -16,9 +16,9 @@ class HotelType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $logoHelp = 'Загрузите файл';
+        $logoHelp = 'views.hotel.form.hotelType.upload_file';
         if($options['imageUrl']) {
-            $logoHelp = '<a href="'.$options['imageUrl'].'" class="fancybox">Просмотреть изображение</a></br><a class="text-danger" href="'.$options['removeImageUrl'].'"><i class="fa fa-trash-o"></i> Удалить</a>';
+            $logoHelp = '<a href="'.$options['imageUrl'].'" class="fancybox">' . 'views.hotel.form.hotelType.see_image' . '</a></br><a class="text-danger" href="'.$options['removeImageUrl'].'"><i class="fa fa-trash-o"></i> ' . 'views.hotel.form.hotelType.delete' . '</a>';
         }
 
         $builder

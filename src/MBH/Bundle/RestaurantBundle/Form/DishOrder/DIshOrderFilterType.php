@@ -35,8 +35,8 @@ class DIshOrderFilterType extends AbstractType
             ->add('is_freezed',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'required' => false,
                 'choices' => [
-                    DishOrderCriteria::ORDER_PAID => 'Оплачено',
-                    DishOrderCriteria::ORDER_NOT_PAID => 'Не оплачено'
+                    DishOrderCriteria::ORDER_PAID => 'restaurantbundle.form.paid',
+                    DishOrderCriteria::ORDER_NOT_PAID => 'restaurantbundle.form.not_paid'
                 ],
                 'attr' => [
                     'class' => 'form-control'
