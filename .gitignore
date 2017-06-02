@@ -7,6 +7,9 @@ scripts/deploy_to_test.sh
 /var/bootstrap.php.cache
 /var/cache/*
 /var/logs/*
+/var/clients/
+/web/az/
+
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 /build/

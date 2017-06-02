@@ -142,6 +142,7 @@ $(document).ready(function ($) {
         modal = $('#package-info-modal'),
 
         processLinks = function (element, event) {
+
             event.preventDefault();
             if (isSpecials()) {
                 return false;
@@ -194,9 +195,10 @@ $(document).ready(function ($) {
                     //     });
                     // });
 
-                    $(this).find("a.windows-package-info-link").on('click', function (event) {
+                    table.find("a.windows-package-info-link").on('click', function (event) {
                         processLinks(this, event);
                     });
+
 
                     $('.descr').readmore({
                         moreLink: '<div class="more-link"><a href="#">' + $('#expand-window').text() + ' <i class="fa fa-caret-right"></i></a></div>',
