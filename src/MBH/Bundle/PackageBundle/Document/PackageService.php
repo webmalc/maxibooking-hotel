@@ -68,13 +68,39 @@ class PackageService extends Base
     protected $price;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $recalcWithPackage = false;
+    
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $includeArrival;
+    
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $includeDeparture;
+
+    /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      */
     protected $total;
-
 
     /**
      * @var int
@@ -444,16 +470,47 @@ class PackageService extends Base
             $this->setEnd($end);
         } else {
             if (!$this->getBegin()) {
-                $this->setBegin($this->getPackage()->getBegin());
+                $this->setBegin($this->calcBegin());
             }
             if (!$this->getEnd()) {
-                $this->setEnd($this->getPackage()->getEnd());
+                $this->setEnd($this->calcEnd());
+            }
+            if ($this->getBegin() > $this->getEnd()) {
+                $this->setBegin(null)->setEnd(null);
             }
         }
 
         $this->total = $this->calcTotal();
     }
+
+    /**
+     * calcEnd
+     *
+     * @return \DateTime
+     */
+    public function calcEnd(): \DateTime
+    {
+        $end = clone $this->getPackage()->getEnd();
+        if (!$this->isIncludeDeparture()) {
+            $end->modify('-1 day');
+        }
+        return $end;
+    }
     
+    /**
+     * calcBegin
+     *
+     * @return \DateTime
+     */
+    public function calcBegin(): \DateTime
+    {
+        $begin = clone $this->getPackage()->getBegin();
+        if (!$this->isIncludeArrival()) {
+            $begin->modify('+1 day');
+        }
+        return $begin;
+    }
+
     /**
      * @return \DateTime $begin
      */
@@ -559,5 +616,73 @@ class PackageService extends Base
     public function __toString()
     {
         return $this->service->getName();
+    }
+
+    /**
+     * Set recalcWithPackage
+     *
+     * @param bool $recalcWithPackage
+     * @return self
+     */
+    public function setRecalcWithPackage($recalcWithPackage): self
+    {
+        $this->recalcWithPackage = $recalcWithPackage;
+        return $this;
+    }
+
+    /**
+     * Get recalcWithPackage
+     *
+     * @return bool $recalcWithPackage
+     */
+    public function isRecalcWithPackage(): ?bool
+    {
+        return $this->recalcWithPackage;
+    }
+
+    /**
+     * includeDeparture set
+     *
+     * @param bool $includeDeparture
+     * @return self
+     */
+    public function setIncludeDeparture(bool $includeDeparture): self
+    {
+        $this->includeDeparture = $includeDeparture;
+
+        return $this;
+    }
+
+    /**
+     * includeDeparture get
+     *
+     * @return bool
+     */
+    public function isIncludeDeparture(): ?bool
+    {
+        return $this->includeDeparture;
+    }
+    
+    /**
+     * includeArrival set
+     *
+     * @param bool $includeArrival
+     * @return self
+     */
+    public function setIncludeArrival(bool $includeArrival): self
+    {
+        $this->includeArrival = $includeArrival;
+
+        return $this;
+    }
+
+    /**
+     * includeArrival get
+     *
+     * @return bool
+     */
+    public function isIncludeArrival(): ?bool
+    {
+        return $this->includeArrival;
     }
 }

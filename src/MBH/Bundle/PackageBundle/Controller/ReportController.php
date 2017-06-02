@@ -26,6 +26,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 /**
  * @Route("/report")
@@ -650,25 +653,25 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         return $this->createFormBuilder(null, [
             'method' => Request::METHOD_GET
         ])
-            ->add('user', 'document', [
-                'empty_value' => '',
+            ->add('user', DocumentType::class, [
+                'empty_data' => '',
                 'class' => 'MBH\Bundle\UserBundle\Document\User',
                 'query_builder' => function (DocumentRepository $repository) {
                     $repository->createQueryBuilder()->field('isEnabledWorkShift')->equals(true);
                 }
             ])
-            ->add('begin', 'date', [
+            ->add('begin', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy'],
             ])
-            ->add('end', 'date', [
+            ->add('end', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy'],
             ])
-            ->add('status', 'choice', [
-                'empty_value' => '',
+            ->add('status', ChoiceType::class, [
+                'empty_data' => '',
                 'choices' => array_combine(WorkShift::getAvailableStatuses(), WorkShift::getAvailableStatuses()),
                 'choice_label' => function ($label) {
                     return 'workShift.statuses.' . $label;

@@ -1,3 +1,14 @@
+mbhhotelbundle.form.dailytasktype.dney: Дней
+mbhhotelbundle.form.dailytasktype.vyberite.uslugu: 'Выберите услугу'
+mbhhotelbundle.form.roomtypetaskstype.zadachi.sozdavayemyye.pri.zayezde.gostya: 'Задачи, создаваемые при заезде гостя'
+mbhhotelbundle.form.roomtypetaskstype.pri.vyyezde.gostya: 'При выезде гостя'
+mbhhotelbundle.view.roomtypecategory.index.da: Да
+mbhhotelbundle.view.roomtype.editimages.glavnaya.fotografiya: 'Главная фотография'
+form.roomTypeCategory.name: Название
+mbhhotelbundle.view.roomtypecategory.index.nazvaniye: Название
+mbhhotelbundle.view.roomtypecategory.index.vklyuchena: Включена
+mbhhotelbundle.view.roomtypecategory.index.tipy.nomerov: 'Типы номеров'
+mbhhotelbundle.view.roomtypecategory.index.net: нет
 form.hotelExtendedType.city: Город
 form.hotelExtendedType.settlement: Населенный пункт
 form.hotelExtendedType.street: Улица
@@ -141,6 +152,8 @@ form.roomTypeType.facilities: Удобства
 form.roomTypeType.is_room_included_in_search: Используется ли тип номера в поиске?
 form.roomTypeType.room_space: Площадь номера (м2)
 form.roomTypeType.help.empty_facilities: Используются удобства из отеля
+views.hotel.form.RoomTypeType.name_form_using_within: Название для использования внутри
+views.hotel.form.RoomTypeType.image_type_number_for_online_booking: Изображние типа номера для онлайн бронирования
 
 controller.hotelController.record_created_success: 'Запись успешно создана.'
 
@@ -237,5 +250,58 @@ technical: Техника
 mailer.new_task.subject: 'Вам назначена новая задача'
 mailer.new_task.text: 'Вам назначили задачу "%taskType%"'
 
+mbhhotelbundle.hotelData.hotelOne: 'Мой отель #1'
+mbhhotelbundle.hotelData.hotelTwo: 'Мой отель #2'
 
+mbhhotelbundle.roomTypeData.two.place: Двухместный
+mbhhotelbundle.roomTypeData.three.place: Трехместный
 
+mbhhotelbundle.taskData.repair: Ремонт
+mbhhotelbundle.taskData.cleaning: Уборка
+mbhhotelbundle.taskData.reserve: Резерв
+mbhhotelbundle.taskData.other: Другое
+mbhhotelbundle.taskData.place_cleaning: 'Уборка помещений'
+mbhhotelbundle.taskData.clean_room: 'Убрать комнату'
+mbhhotelbundle.taskData.entity_was_cleaned: 'Запись успешно создана.'
+
+mbhhotelbundle.roomTypeController.entity_was_created_successfully: 'Запись успешно создана.'
+mbhhotelbundle.roomTypeController.image_was_deleded_successfully: 'Изображение успешно удалено.'
+mbhhotelbundle.roomTypeController.photo_was_change_default_successfully: 'Фотография успешно была сделана главной.'
+mbhhotelbundle.roomTypeController.photo_was_created_successfully: 'Фотография успешно создана.'
+
+views.task.index.ne_zadano: Не задано
+views.task.index.entity_was_deleted: Запись удалена
+views.task.index.vse: все
+views.task.index.in_work: В работе
+views.task.index.before: до
+
+views.task.index.delete_recording: Запись удалена
+views.task.index.before: до
+views.task.index.record_was_delete: Запись удалена
+views.task.index.before_two: до
+
+views.hotel.notFound.error: ошибка
+views.hotel.new.creating: создание
+views.hotel.index.list: список
+
+views.hotel.roomType.editAutoTasks.add: Добавить
+
+views.hotel.roomType.editTabs.public_information_and_setting: Общая информация и настройки
+views.hotel.roomType.editTabs.photo: Фотографии
+views.hotel.roomType.editTabs.tasks: Задачи
+
+views.hotel.roomType.editImages.do_default: Задачи
+views.hotel.roomType.editImages.delete_picture: Удалить картинку
+
+views.hotel.roomType.new.public_information_and_setting: Общая информация и настройки
+views.hotel.roomType.new.photo: Фотографии
+
+views.hotel.roomType.index.list: список
+views.hotel.roomType.index.group_not_change: группа не указана
+
+views.hotel.TaskType.index.edit_category_types_task: Редактировать категорию типов задач
+views.hotel.TaskType.index.delete_category_types_task: Удалить категорию типов задач
+
+views.hotel.form.hotelType.upload_file: Загрузите файл
+views.hotel.form.hotelType.see_image: Просмотреть изображение
+views.hotel.form.hotelType.delete: Удалить

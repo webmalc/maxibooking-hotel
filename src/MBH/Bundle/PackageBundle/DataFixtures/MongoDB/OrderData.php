@@ -2,7 +2,7 @@
 namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\DataFixtures\AbstractFixture;
+use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Promise\Tests\Thing1;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -16,10 +16,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 /**
  * Class OrderData
  */
-class OrderData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+class OrderData extends AbstractFixture implements OrderedFixtureInterface
 {
-    use ContainerAwareTrait;
-
     const DATA = [
         [ 'adults' => '1', 'number' => '1', 'children' => '0', 'price' => '2000.0', 'paid' => '2001', 'regDayAgo' => '1'],
         [ 'adults' => '1', 'number' => '2', 'children' => '0', 'price' => '800.0', 'paid' => '10', 'regDayAgo' => '10'],
@@ -47,7 +45,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface, Cont
     /**
      * {@inheritDoc}
      */
-    public function load(ObjectManager $manager)
+    public function doLoad(ObjectManager $manager)
     {
         $this->persistPackage($manager);
     }
@@ -60,7 +58,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface, Cont
      */
     public function generator($array) : string
     {
-        $random_number = rand(0,count($array)-1);
+        $random_number = rand(0, count($array)-1);
 
         return $array[$random_number];
     }
@@ -135,5 +133,13 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface, Cont
     public function getOrder()
     {
         return 5;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getEnvs(): array
+    {
+        return ['test'];
     }
 }

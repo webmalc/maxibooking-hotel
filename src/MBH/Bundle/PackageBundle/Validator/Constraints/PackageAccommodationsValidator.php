@@ -24,6 +24,9 @@ class PackageAccommodationsValidator extends ConstraintValidator
     {
         /** @var PackageAccommodation $packageAccommodation */
         $package = $packageAccommodation->getPackage();
+        if (is_null($package) || !empty($package->getDeletedAt())) {
+            $this->context->buildViolation($constraint->packageIsCancelled)->addViolation();
+        }
         //Check PackageAccommodation by Package
         if ($packageAccommodation->getBegin() < $package->getBegin() || $packageAccommodation->getEnd() > $package->getEnd()) {
             $this->context->buildViolation($constraint->wrongStartOrEndMessage)->addViolation();

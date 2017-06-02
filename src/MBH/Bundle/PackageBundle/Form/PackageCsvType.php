@@ -75,13 +75,13 @@ class PackageCsvType extends AbstractType
                 'group' => 'csv.form.group',
             ])
             ->add('countNight', CheckboxType::class, [
-                'label' => 'Кол-во ночей',
+                'label' => 'mbhpackagebundle.form.packagecsvtype.kol.vo.nochey',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',
             ])
             ->add('countPersons', CheckboxType::class, [
-                'label' => 'Кол-во человек',
+                'label' => 'mbhpackagebundle.form.packagecsvtype.kol.vo.chelovek',
                 'required' => false,
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',

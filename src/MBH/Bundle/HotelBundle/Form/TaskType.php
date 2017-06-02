@@ -5,8 +5,11 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -27,10 +30,16 @@ class TaskType extends AbstractType
      */
     protected $dm;
 
+    /** @var  Helper */
+    private $helper;
+
+    public function __construct(Helper $helper, DocumentManager $dm) {
+        $this->helper = $helper;
+        $this->dm = $dm;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $this->dm = $options['dm'];
-
         if($options['scenario'] == self::SCENARIO_NEW) {
             $generalGroup = 'form.task.group.general_add';
         } elseif($options['scenario'] == self::SCENARIO_EDIT) {
@@ -41,12 +50,12 @@ class TaskType extends AbstractType
         /** @var Hotel $hotel */
         $hotel = $options['hotel'];
 
-
         $queryBuilderSelectedHotelOnly = function(DocumentRepository $repository) use($hotel) {
             $queryBuilder = $repository->createQueryBuilder();
             $queryBuilder->field('hotel.id')->equals($hotel->getId());
             return $queryBuilder;
         };
+
         $builder
             ->add('type', DocumentType::class, [
                 'label' => 'form.task.type',
@@ -56,7 +65,7 @@ class TaskType extends AbstractType
                 'required' => true,
                 'query_builder' => $queryBuilderSelectedHotelOnly
             ])
-            ->add('priority',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('priority',  InvertChoiceType::class, [
                 'label' => 'form.task.priority',
                 'group' => $generalGroup,
                 'choices' => $options['priorities'],
@@ -88,7 +97,7 @@ class TaskType extends AbstractType
                 }
             ]);
             $floors = $this->dm->getRepository('MBHHotelBundle:Room')->getFloorsByHotel($hotel);
-            $builder->add('floor',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            $builder->add('floor',  InvertChoiceType::class, [
                 'label' => 'form.task.floor',
                 'group' => $generalGroup,
                 'required' => false,
@@ -100,6 +109,17 @@ class TaskType extends AbstractType
                 'label' => 'form.task.rooms',
                 'group' => $generalGroup,
                 'class' => 'MBH\Bundle\HotelBundle\Document\Room',
+                'query_builder' => function(RoomRepository $repository) use ($hotel) {
+                    $qb = $repository->createQueryBuilder();
+                    $qb
+                        ->field('roomType.id')->in($this->getResolvedRoomTypeIds($hotel));
+
+                    return $qb;
+                },
+                'group_by' => function($room) {
+                    /** @var Room $room */
+                    return mb_substr($room->getRoomType(), 0, 50);
+                },
                 'required' => true,
                 'multiple' => true,
                 'mapped' => false,
@@ -115,7 +135,17 @@ class TaskType extends AbstractType
             $builder->add('room', DocumentType::class, [
                 'label' => 'form.task.room',
                 'group' => $generalGroup,
-                'group_by' => 'roomType',
+                'query_builder' => function(RoomRepository $repository) use ($hotel) {
+                    $qb = $repository->createQueryBuilder();
+                    $qb
+                        ->field('roomType.id')->in($this->getResolvedRoomTypeIds($hotel));
+
+                    return $qb;
+                },
+                'group_by' => function($room) {
+                    /** @var Room $room */
+                    return mb_substr($room->getRoomType(), 0, 50);
+                },
                 'class' => 'MBH\Bundle\HotelBundle\Document\Room',
                 'required' => true,
             ]);
@@ -141,7 +171,7 @@ class TaskType extends AbstractType
                 'group' => 'form.task.group.settings',
                 'required' => false,
             ])
-            ->add('status',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('status',  InvertChoiceType::class, [
                 'label' => 'form.task.status',
                 'group' => 'form.task.group.settings',
                 'required' => true,
@@ -151,6 +181,22 @@ class TaskType extends AbstractType
         ;
     }
 
+    /**
+     * @param Hotel $hotel
+     * @return array
+     */
+    private function getResolvedRoomTypeIds(Hotel $hotel)
+    {
+        $qb = $this->dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder();
+        $qb
+            ->addOr($qb->expr()->field('deletedAt')->equals(null))
+            ->addOr($qb->expr()->field('deletedAt')->exists(false))
+            ->field('hotel.id')->equals($hotel->getId());
+        $resolvedRoomTypes = $qb->getQuery()->execute()->toArray();
+
+        return $this->helper->toIds($resolvedRoomTypes);
+    }
+
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
@@ -158,8 +204,7 @@ class TaskType extends AbstractType
             'priorities' => [],
             'statuses' => [],
             'scenario' => self::SCENARIO_NEW,
-            'hotel' => null,
-            'dm' => null
+            'hotel' => null
         ]);
     }
 

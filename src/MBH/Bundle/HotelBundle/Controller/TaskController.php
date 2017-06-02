@@ -120,7 +120,6 @@ class TaskController extends Controller
             $recordsTotal = $taskRepository->getCountByCriteria($queryCriteria);
         }
 
-
         return [
             'roomTypes' => $this->hotel->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.task.statuses'),
@@ -211,9 +210,7 @@ class TaskController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()
-                    ->set('success',
-                        $this->get('translator')->trans('controller.taskTypeController.record_edited_success'));
+                $this->addFlash('success', 'controller.taskTypeController.record_edited_success');
 
                 return $this->afterSaveRedirect('task', $entity->getId());
             }
@@ -277,7 +274,6 @@ class TaskController extends Controller
             'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
             'priorities' => $priorities,
             'hotel' => $this->hotel,
-            'dm' => $this->dm
         ];
     }
 

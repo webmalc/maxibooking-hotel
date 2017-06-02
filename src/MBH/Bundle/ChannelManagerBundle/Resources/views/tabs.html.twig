@@ -23,6 +23,18 @@
     </div>
 {% endif %}
 
+{%  set notifications = mbh_channelmanager_get_notifications(entity) %}
+{% if notifications|length %}
+    <div class="alert alert-warning">
+        {% for entry in notifications %}
+            <p>
+                <i class="fa fa-exclamation-circle"></i>&nbsp;
+                {{ entry|trans }}
+            </p>
+        {% endfor %}
+    </div>
+{% endif %}
+
 <ul class="nav nav-tabs" role="tablist">
 {% for item in menu %}
     {% if (entity is null or not entity.isEnabled) and loop.index != 1 %}

@@ -30,7 +30,7 @@ mbh-redis:
   image: redis:latest
   container_name: mbh-redis
   ports:
-     - "6379:6379"
+     - "6378:6379"
 
 mbh-mongo:
   image: mongo:latest

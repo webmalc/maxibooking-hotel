@@ -4,7 +4,7 @@
 {% set layout = 'box' %}
 
 {% block content %}
-    {{ form_start(form, {'action': path('package_service_edit', {'id': package.id, 'serviceId': service.id}),  'attr': {'class': 'form-horizontal' }}) }}
+    {{ form_start(form, {'action': path('package_service_edit', {'id': package.id, 'serviceId': service.id}),  'attr': {'class': 'form-horizontal package-service-edit' }}) }}
     {{ form_widget(form) }}
     {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_SERVICES'} %}
     {{ form_end(form) }}

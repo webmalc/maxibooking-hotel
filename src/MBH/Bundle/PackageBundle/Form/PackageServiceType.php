@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -66,8 +67,9 @@ class PackageServiceType extends AbstractType
                 'attr' => ['class' => 'spinner sm']
             ])
             ->add('begin', DateType::class, [
-                'label' => 'Дата',
+                'label' => 'mbhpackagebundle.form.packageservicetype.data',
                 'group' => 'form.packageServiceType.add_service',
+                'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
@@ -75,6 +77,7 @@ class PackageServiceType extends AbstractType
             ->add('end', DateType::class, [
                 'label' => 'form.packageServiceType.end',
                 'group' => 'form.packageServiceType.add_service',
+                'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
@@ -101,6 +104,30 @@ class PackageServiceType extends AbstractType
                 'label' => 'form.packageServiceType.comment',
                 'group' => 'form.packageServiceType.add_service',
                 'required' => false,
+            ])
+            ->add('recalcWithPackage', CheckboxType::class, [
+                'label' => 'Смещаемая?',
+                'value' => true,
+                'group' => 'form.packageServiceType.add_service',
+                'required' => false,
+                'help' => 'Смещать ли даты услуги при изменении дат брони?',
+                'attr' => ['class' => 'toggle-date'],
+            ])
+            ->add('includeArrival', CheckboxType::class, [
+                'label' => 'Учитывать заезд?',
+                'value' => true,
+                'group' => 'form.packageServiceType.add_service',
+                'required' => false,
+                'help' => 'Учитывать ли дату заезда брони?',
+                'attr' => ['class' => 'toggle-date'],
+            ])
+            ->add('includeDeparture', CheckboxType::class, [
+                'label' => 'Учитывать выезд?',
+                'value' => true,
+                'group' => 'form.packageServiceType.add_service',
+                'required' => false,
+                'help' => 'Учитывать ли дату выезда брони?',
+                'attr' => ['class' => 'toggle-date'],
             ])
             ;
     }

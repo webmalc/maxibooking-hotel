@@ -88,7 +88,7 @@ class Mbhs
             $result->message = $e->getMessage();
             $result->code = $e->getCode();
 
-            $this->sendMessage('sms', 'Sms не отправлено. Ошибка: ' . $result->message . ' (' . $result->code . ')');
+            $this->sendMessage('sms', $this->container->get('translator')->trans('clientbundle.service.mbhs.sms_not_send') .' ' . $result->message . ' (' . $result->code . ')');
             return $result;
         }
 
@@ -97,7 +97,7 @@ class Mbhs
             $result->message = $json['message'];
             $result->code = $json['code'];
 
-            $this->sendMessage('sms', 'Sms не отправлено. Ошибка: ' . $result->message . ' (' . $result->code . ')');
+            $this->sendMessage('sms', $this->container->get('translator')->trans('clientbundle.service.mbhs.sms_not_send') . ' ' . $result->message . ' (' . $result->code . ')');
             return $result;
         };
 

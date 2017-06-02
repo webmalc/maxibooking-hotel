@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Translation\DataCollectorTranslator;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -190,8 +191,9 @@ class ChessBoardDataBuilder
         foreach ($this->getRoomTypeIds() as $roomTypeId) {
             $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
         }
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
 
-        return $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
+        return $packages;
     }
 
     /**

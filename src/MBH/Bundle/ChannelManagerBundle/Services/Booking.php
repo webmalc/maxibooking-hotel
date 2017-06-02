@@ -5,7 +5,9 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerOverview;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -17,12 +19,23 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  *  ChannelManager service
  */
-class Booking extends Base
+class Booking extends Base implements ChannelManagerServiceInterface
 {
+    const UNAVAIBLE_PRICES = [
+        'isPersonPrice' => false,
+        'additionalChildrenPrice' => null,
+        'additionalPrice' => null,
+    ];
+
+    const UNAVAIBLE_RESTRICTIONS = [
+        'minBeforeArrival' => null,
+        'maxBeforeArrival' => null,
+    ];
 
     /**
      * Config class
@@ -76,17 +89,25 @@ class Booking extends Base
         $this->params = $container->getParameter('mbh.channelmanager.services')['booking'];
     }
 
+    // /**
+    //  * {{ @inheritDoc }}
+    //  */
+    // public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): ?ChannelManagerOverview
+    // {
+    //     return null;
+    // }
+
     /**
      * {@inheritDoc}
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
+        $tariffs = [];
         foreach ($this->pullTariffs($config) as $key => $tariff) {
             if (!$tariff['readonly'] || !$tariff['is_child_rate']) {
                 $tariffs[$key] = $tariff;
             }
         }
-
         $request = $this->templating->render(
             'MBHChannelManagerBundle:Booking:close.xml.twig',
             [
@@ -133,12 +154,11 @@ class Booking extends Base
                 ];
             }
         }
-
         return $result;
     }
 
     /**
-     * {@inheritDoc}
+     * {@ inheritDoc}
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
@@ -148,13 +168,11 @@ class Booking extends Base
             ['config' => $config, 'params' => $this->params]
         );
         $response = $this->sendXml(static::BASE_URL . 'rooms', $request);
-
         //$this->log($response->asXML());
 
         foreach ($response->xpath('room') as $room) {
             $result[(string)$room['id']] = (string)$room;
         }
-
         return $result;
     }
 
@@ -167,9 +185,11 @@ class Booking extends Base
             return false;
         }
         $xml = simplexml_load_string($response);
-
-        return count($xml->xpath('/ok')) ? true : false;
-        ;
+        if (count($xml->xpath('error')) || count($xml->xpath('fault'))) {
+            $this->addError($response);
+            return false;
+        }
+        return count($xml->xpath('/'. $params['element'] ?? 'ok')) ? true : false;
     }
 
     /**
@@ -220,7 +240,6 @@ class Booking extends Base
                     'data' => $data,
                 ]
             );
-
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
             if ($result) {
@@ -342,7 +361,7 @@ class Booking extends Base
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             $roomTypes = $this->getRoomTypes($config);
-            $tariffs = $this->getTariffs($config);
+            $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
             $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
                 $begin,
@@ -366,9 +385,10 @@ class Booking extends Base
 
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
-                    foreach ($tariffs as $tariffId => $tariff) {
+                    foreach ($tariffs as $tariff) {
                         /** @var Tariff $tariffDocument */
                         $tariffDocument = $tariff['doc'];
+                        $tariffId = $tariffDocument->getId();
                         $tariffChildOptions = $tariffDocument->getChildOptions();
                         //Если тариф дочерний, берем данные о ценах по id родительского тарифа.
                         $syncPricesTariffId = ($tariffDocument->getParent() && $tariffChildOptions->isInheritPrices())
@@ -454,17 +474,20 @@ class Booking extends Base
     /**
      * {@inheritDoc}
      */
-    public function pullOrders()
+    public function pullOrders($old = false)
     {
         $result = true;
-
         foreach ($this->getConfig() as $config) {
             $request = $this->templating->render(
                 'MBHChannelManagerBundle:Booking:reservations.xml.twig',
-                ['config' => $config, 'params' => $this->params, 'lastChange' => false]
+                ['config' => $config, 'params' => $this->params, 'lastChange' => $old]
             );
             $sendResult = $this->sendXml(static::BASE_SECURE_URL . 'reservations', $request, null, true);
-            $this->log('Reservations count: ' . count($sendResult->reservation));
+            $this->log('Reservations: ' . $sendResult->asXml());
+
+            if (!$this->checkResponse($sendResult->asXml(), ['element' => 'reservations'])) {
+                return false;
+            };
 
             foreach ($sendResult->reservation as $reservation) {
                 if ((string)$reservation->status == 'modified') {
@@ -487,11 +510,11 @@ class Booking extends Base
 
                 //new
                 if ((string)$reservation->status == 'new' && !$order) {
-                    $result = $this->createPackage($reservation, $config, $order);
+                    $result = $this->createPackage($reservation, $config);
                     $this->notify($result, 'booking', 'new');
                 }
                 //edit
-                if ((string)$reservation->status == 'modified' && $order) {
+                if ((string)$reservation->status == 'modified') {
                     $result = $this->createPackage($reservation, $config, $order);
                     $this->notify($result, 'booking', 'edit');
                 }

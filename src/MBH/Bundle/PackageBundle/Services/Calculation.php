@@ -144,7 +144,7 @@ class Calculation
         Special $special = null,
         $useDuration = true
     ) {
-    
+        $originTariff = $tariff;
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
         $places = $roomType->getPlaces();
@@ -200,15 +200,15 @@ class Calculation
 
             $mergingTariffCallback = function () use ($begin, $end, $hotel, $roomTypeId, $ids, $memcached) {
                 return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                        $begin,
-                        $end,
-                        $hotel,
-                        [$roomTypeId],
-                        $ids,
-                        true,
-                        $this->manager->useCategories,
-                        $memcached
-                    );
+                    $begin,
+                    $end,
+                    $hotel,
+                    [$roomTypeId],
+                    $ids,
+                    true,
+                    $this->manager->useCategories,
+                    $memcached
+                );
             };
             $mergingTariff = $this->helper->getFilteredResult($this->dm, $mergingTariffCallback);
 
@@ -372,7 +372,7 @@ class Calculation
                     $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
                 }
 
-                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $roomType, $special);
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $originTariff, $roomType, $special);
                 $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
 

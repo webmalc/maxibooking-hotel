@@ -25,7 +25,7 @@ window.onload = function() {
     var urlIndex = window.location.href.indexOf('?');
     var url = urlIndex !== -1 ? window.location.href.slice(urlIndex) : '';
     formWrapper.innerHTML = '<iframe id="mbh-form-iframe" scrolling="no" frameborder="0" width="300" height="400" src="' + mbh.form_url + url +'"></iframe>';
-    document.body.innerHTML += '<iframe id="mbh-form-calendar" style="display: none; position: absolute; top: 0px;" scrolling="no" frameborder="0" width="310" height="250" src="' + mbh.calendar_url + '"></iframe>';
+    document.body.innerHTML += '<iframe id="mbh-form-calendar" style="display: none; position: absolute; top: 0px;" scrolling="no" frameborder="0" width="310" height="270" src="' + mbh.calendar_url + '"></iframe>';
 
     var formIframe = document.getElementById('mbh-form-iframe');
     var formCalendar = document.getElementById('mbh-form-calendar');

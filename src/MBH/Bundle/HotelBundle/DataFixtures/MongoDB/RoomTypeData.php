@@ -16,21 +16,30 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  */
 class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
-    const DATA = [
-        'roomtype-double' => [
-            'title' => 'Двухместный',
-            'places' => 2,
-            'additionalPlaces' => 1,
-            'color' => '#b50e2c'
-        ],
-        'hotel-triple' => [
-            'title' => 'Трехместный',
-            'places' => 3,
-            'additionalPlaces' => 2,
-            'color' => '#008000'
-        ]
-    ];
-    
+
+    /**
+     * Get roomType data
+     *
+     * @return array
+     */
+    public function data()
+    {
+        return [
+            'roomtype-double' => [
+                'title' => 'mbhhotelbundle.roomTypeData.two.place',
+                'places' => 2,
+                'additionalPlaces' => 1,
+                'color' => '#b50e2c'
+            ],
+            'hotel-triple' => [
+                'title' => 'mbhhotelbundle.roomTypeData.three.place',
+                'places' => 3,
+                'additionalPlaces' => 2,
+                'color' => '#008000'
+            ]
+        ];
+    }
+
     use ContainerAwareTrait;
 
     /**
@@ -44,11 +53,11 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
         foreach ($hotels as $hotel) {
-            foreach (self::DATA as $key => $data) {
+            foreach ($this->data() as $key => $data) {
                 $roomType = new RoomType();
                 $roomType
                     ->setHotel($hotel)
-                    ->setFullTitle($data['title'])
+                    ->setFullTitle($this->container->get('translator')->trans($data['title']))
                     ->setPlaces($data['places'])
                     ->setAdditionalPlaces($data['additionalPlaces'])
                 ;

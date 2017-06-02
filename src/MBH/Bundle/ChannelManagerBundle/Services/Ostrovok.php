@@ -22,7 +22,6 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 
-
 /**
  *  ChannelManager service
  */
@@ -126,7 +125,6 @@ class Ostrovok extends Base
                     );
                 }
             }
-
         }
 
         //Ограничения
@@ -232,7 +230,6 @@ class Ostrovok extends Base
                 /** @var RoomType $roomType */
                 $roomTypeId = $roomType->getId();
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
-
                     foreach ($ostrovokTariffs as $ostrovokTariffId => $tariffInfo) {
                         /** @var Tariff $tariff */
                         if ($serviceTariffs[$ostrovokTariffId]['is_child_rate']) {
@@ -262,9 +259,10 @@ class Ostrovok extends Base
                                 $price = $price[$adults.'_'.$children]['total']??null;
                                 if (!$price) {
                                     $message = 'Ошибка получения цены для номера '.$roomType->getFullTitle(
-                                        ).' для '.$adults.' вз.';
+                                    ).' для '.$adults.' вз.';
                                     $this->log('Error! '.$message);
-                                    throw new \Exception($message);
+                                    continue;
+                                    /*throw new \Exception($message);*/
                                 }
                                 $rna_request_data = array_merge_recursive(
                                     $rna_request_data,
@@ -278,10 +276,7 @@ class Ostrovok extends Base
                                         $config->getHotelId()
                                     )
                                 );
-
-
                             }
-
                         } else {
                             foreach ($ostrovokRatePlans[$ostrovokTariffId]['possible_occupancies'] as $occupancyId) {
                                 if ($occupancies[$occupancyId]['room_category'] !== $ostrovokRoomTypeId) {
@@ -303,9 +298,7 @@ class Ostrovok extends Base
                             }
                         }
                     }
-
                 }
-
             }
         }
 
@@ -324,7 +317,6 @@ class Ostrovok extends Base
         // iterate hotels
         $rna_request_data = [];
         foreach ($this->getConfig() as $config) {
-
             //First update Tariff restriction
             $tariffs = $this->getTariffs($config, true);
             $ratePlans = $this->getRatePlansArray($config->getHotelId());
@@ -360,7 +352,6 @@ class Ostrovok extends Base
             foreach ($tariffs as $ostrovokTariffId => $tariffDoc) {
                 foreach ($roomTypeRestrictions as $roomTypeId => $tariffId) {
                     continue;
-
                 }
             }
 
@@ -419,9 +410,7 @@ class Ostrovok extends Base
                                 $end
                             )
                         );
-
                     }
-
                 }
             }
         }
@@ -453,7 +442,6 @@ class Ostrovok extends Base
         $date = (new \DateTime('now midnight'))->format('Y-m-d');
         /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
-
             $bookings = $this->apiBrowser->getBookings([
                 'hotel' => $config->getHotelId(),
                 'modified_at_start_at' => $date
@@ -495,20 +483,18 @@ class Ostrovok extends Base
                     $result = $this->createPackage($reservation, $config);
                     $this->notify($result, 'ostrovok', 'new');
                     $this->log('Order '.$order->getId().'was created.');
-
                 }
 
                 //If modified
                 if ((string)$reservation['status'] === 'normal' && $order && $isModified) {
                     if (new \DateTime($order->getChannelManagerEditDateTime()) != new \DateTime(
-                            $reservation['modified_at']
-                        )
+                        $reservation['modified_at']
+                    )
                     ) {
                         $order->setChannelManagerEditDateTime($reservation['modified_at']);
                         $result = $this->createPackage($reservation, $config, $order);
                         $this->notify($result, 'ostrovok', 'edit');
                         $this->log('Order '.$order->getId().'was changed.');
-
                     }
                 }
                 //If Cancelled
@@ -536,7 +522,6 @@ class Ostrovok extends Base
         }
 
         return $result;
-
     }
 
 
@@ -678,7 +663,6 @@ class Ostrovok extends Base
         if (isset($ratePlans[$reservation['rate_plan']])) {
             $ratePlan = $ratePlans[$reservation['rate_plan']];
             if ($ratePlan['meal_plan_available']) {
-
                 $isMealPlanIncluded = $ratePlan['meal_plan_included'];
                 $mealPlanCost = $ratePlan['meal_plan_cost'];
                 $mealPlanId = $ratePlan['meal_plan'];
@@ -706,7 +690,6 @@ class Ostrovok extends Base
         }
 
         return $order;
-
     }
 
     /**
@@ -756,7 +739,6 @@ class Ostrovok extends Base
         $rooms = [];
         foreach ($room_categories as $room_category) {
             $rooms[$room_category['id']] = $room_category['name'];
-
         }
 
         return $rooms;
@@ -794,7 +776,6 @@ class Ostrovok extends Base
      */
     public function pushResponse(Request $request)
     {
-
     }
 
     private function getRatePlansArray($hotelId)
@@ -820,7 +801,6 @@ class Ostrovok extends Base
                 $result = true;
                 $this->log('Ostrovok '.$action.' empty $rna_request_data!');
             }
-
         } catch (OstrovokApiServiceException $exception) {
             $result = false;
             $this->log('Ostrovok '.$action.' error '.$exception->getMessage());
@@ -829,5 +809,4 @@ class Ostrovok extends Base
 
         return $result;
     }
-
 }

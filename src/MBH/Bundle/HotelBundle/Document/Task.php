@@ -38,7 +38,7 @@ class Task extends Base
 
     const DAY_DEAL_LINE = 3;
 
-    const AUTO_CREATE = 'Автоматически созданная задача';
+    const AUTO_CREATE = 'validator.document.task.auto_created_task';
 
     /**
      * @var string
