@@ -35,7 +35,7 @@
                 <i class="fa fa-plug" title='{{ "package.service.index.filter"|trans({}, "MBHPackageBundle") }}'
                                   data-toggle='tooltip'></i>&nbsp
 
-                <select name="category" id="select-category" id="filter" data-placeholder="Категория">
+                <select name="category" id="select-category" id="filter" data-placeholder="{{ 'service.index.category'|trans }}">
                     <option></option>
                     {% for group, catsList in categories %}
                         <optgroup label="{{ group }}">
@@ -49,7 +49,7 @@
 
             <div class="input">
                 - &nbsp
-                <select name="service" id="select-service" id="filter" data-placeholder="Все услуги">
+                <select name="service" id="select-service" id="filter" data-placeholder="{{ 'service.index.all_categories'|trans }}">
                     <option></option>
                     {% for key, service in services %}
                         <option value="{{ key }}" data-category="{{ service.category.id }}">{{ service }}</option>

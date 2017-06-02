@@ -4,7 +4,11 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\HotelBundle\Document\RoomRepository;
+use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PriceBundle\Document\SpecialRepository;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -27,8 +31,8 @@ class PackageMainType extends AbstractType
 
         $builder
             ->add('begin', DateType::class, [
-                'label' => 'Заезд',
-                'group' => 'Заезд/отъезд',
+                'label' => 'form.packageMainType.begin',
+                'group' => 'form.packageMainType.begin_end_group',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => true,
@@ -39,8 +43,8 @@ class PackageMainType extends AbstractType
                 )
             ])
             ->add('end', DateType::class, [
-                'label' => 'Отъезд',
-                'group' => 'Заезд/отъезд',
+                'label' => 'form.packageMainType.end',
+                'group' => 'form.packageMainType.begin_end_group',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => true,
@@ -51,17 +55,17 @@ class PackageMainType extends AbstractType
                 )
             ])
             ->add('isForceBooking', CheckboxType::class, [
-                'label' => 'Принудительное бронирование?',
+                'label' => 'form.packageMainType.is_force_booking',
                 'required' => false,
-                'group' => 'Заезд/отъезд',
-                'help' => 'Игнорировать условия и ограничения при поиске доступного номера?'
+                'group' => 'form.packageMainType.begin_end_group',
+                'help' => 'form.packageMainType.is_force_booking.help'
             ])
             ->add('roomType', DocumentType::class, [
-                'label' => 'Тип номера',
+                'label' => 'form.packageMainType.room_type',
                 'class' => 'MBHHotelBundle:RoomType',
-                'group' => 'Номер',
-                'query_builder' => function (DocumentRepository $dr) use ($options) {
-                    return $dr->createQueryBuilder('q')
+                'group' => 'form.packageMainType.room_group',
+                'query_builder' => function (RoomTypeRepository $dr) use ($options) {
+                    return $dr->createQueryBuilder()
                         ->field('hotel.id')->equals($options['hotel']->getId())
                         ->field('deletedAt')->equals(null)
                         ->sort(['fullTitle' => 'asc', 'title' => 'asc']);
@@ -71,38 +75,36 @@ class PackageMainType extends AbstractType
             if ($options['virtualRooms']) {
                 $builder
                     ->add('virtualRoom', DocumentType::class, [
-                        'label' => 'Виртуальный номер',
+                        'label' => 'form.packageMainType.virtual_room',
                         'class' => 'MBHHotelBundle:Room',
-                        'group' => 'Номер',
-                        'query_builder' => function (DocumentRepository $dr) use ($package) {
+                        'group' => 'form.packageMainType.room_group',
+                        'query_builder' => function (RoomRepository $dr) use ($package) {
                             return $dr->getVirtualRoomsForPackageQB($package);
                         },
                         'required' => false
                     ]);
             }
             $builder
-            ->add('adults',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Взрослых',
-                'group' => 'Номер',
+            ->add('adults',  InvertChoiceType::class, [
+                'label' => 'form.packageMainType.adults',
+                'group' => 'form.packageMainType.room_group',
                 'required' => true,
-                'group' => 'Номер',
                 'multiple' => false,
                 'choices' => range(0, 12),
                 'attr' => array('class' => 'input-xxs plain-html'),
             ])
-            ->add('children',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Детей',
-                'group' => 'Номер',
+            ->add('children',  InvertChoiceType::class, [
+                'label' => 'form.packageMainType.children',
+                'group' => 'form.packageMainType.room_group',
                 'required' => true,
-                'group' => 'Номер',
                 'multiple' => false,
                 'choices' => range(0, 10),
                 'attr' => array('class' => 'input-xxs plain-html'),
             ])
             ->add('isSmoking', CheckboxType::class, [
-                'label' => 'Курящий?',
+                'label' => 'form.packageMainType.is_smoking',
                 'required' => false,
-                'group' => 'Номер',
+                'group' => 'form.packageMainType.room_group',
             ]);
 
         if ($options['promotion']) {
@@ -115,7 +117,7 @@ class PackageMainType extends AbstractType
                         'label' => 'form.packageMainType.promotion',
                         'class' => 'MBH\Bundle\PriceBundle\Document\Promotion',
                         'required' => false,
-                        'group' => 'Акция',
+                        'group' => 'form.packageMainType.promotion_group',
                         'choices' => $options['promotions']
                     ]);
             }
@@ -153,8 +155,7 @@ class PackageMainType extends AbstractType
                     'label' => 'form.packageMainType.special',
                     'class' => 'MBH\Bundle\PriceBundle\Document\Special',
                     'required' => false,
-                    'group' => 'Спецпредложение',
-                    'query_builder' => function (DocumentRepository $dr) use ($package) {
+                    'query_builder' => function (SpecialRepository $dr) use ($package) {
                         $filter = new SpecialFilter();
                         $filter->setHotel($package->getHotel())
                             ->setTariff($package->getTariff())

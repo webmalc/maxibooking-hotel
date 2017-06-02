@@ -8,18 +8,18 @@
                     {% if client_config().useRoomTypeCategory() and roomType.category %}
                         {{ roomType.category }} -
                     {% endif %}
-                    мест: {{ roomType.places }}{% if roomType.additionalPlaces > 0 %}(+{{ roomType.additionalPlaces }}){% endif %}
+                    {{ 'report.filling.filling_table.number_of_places'|trans }}: {{ roomType.places }}{% if roomType.additionalPlaces > 0 %}(+{{ roomType.additionalPlaces }}){% endif %}
                     - {{ roomType.hotel }}
                 </small>
             </td>
         </tr>
 
         <tr class="header">
-            <td>Даты</td>
+            <td>{{ 'report.filling.filling_table.dates'|trans }}</td>
             {% for date in rangeDateList %}
                 <td>{{ date|mbh_format }}</td>
             {% endfor %}
-            <td>Итог</td>
+            <td>{{ 'report.filling.filling_table.total'|trans }}</td>
         </tr>
 
         {% set tableData = (tableDataByRoomType[roomType.id] is defined ? tableDataByRoomType[roomType.id] : null) %}
@@ -29,16 +29,16 @@
     {% if tableDataByRoomType|length > 1 %}
         <tr class="mbh-grid-header1 info">
             <td colspan=" {{ rangeDateList|length + 2 }}  ">
-                <strong>Итог</strong>
+                <strong>{{ 'report.filling.filling_table.total'|trans }}</strong>
             </td>
         </tr>
 
         <tr class="header">
-            <td>Даты</td>
+            <td>{{ 'report.filling.filling_table.dates'|trans }}</td>
             {% for date in rangeDateList %}
                 <td>{{ date|mbh_format }}</td>
             {% endfor %}
-            <td>Итог</td>
+            <td>{{ 'report.filling.filling_table.total'|trans }}</td>
         </tr>
 
         {% include 'MBHPackageBundle:Report:fillingTableRows.html.twig' with {tableData: totalTableData} %}

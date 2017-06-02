@@ -417,7 +417,7 @@ class OrderManager
                 ->setNights($nights)
                 ->setPrice(0)
                 ->setPackage($package)
-                ->setNote('Услуга по умолчанию');
+                ->setNote($this->container->get('translator')->trans('order_manager.package_service_comment.default_service'));
 
             $package->addService($packageService);
             $this->dm->persist($packageService);

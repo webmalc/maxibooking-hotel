@@ -94,13 +94,13 @@
                             <div class="col-md-12 text-right btn-list">
                                 <a href="{{ path('tourist_edit_unwelcome', {'id': order.mainTourist.id }) }}"
                                         class="btn btn-info btn-sm" title="" data-toggle="tooltip"
-                                        data-original-title="Добавить плательщика в черный список">
+                                        data-original-title="{{ 'order.tourist_edit.add_payer_to_black_list'|trans }}">
                                         <i class="fa fa-user-secret"></i>
                                     </a>
                                 {% if package.deletedAt is empty and is_granted('ROLE_TOURIST_EDIT') %}
                                     <a href="{{ path('tourist_edit', {'id': order.mainTourist.id }) }}"
                                         class="btn btn-success btn-sm" title="" data-toggle="tooltip"
-                                        data-original-title="Редактирование записи">
+                                        data-original-title="{{ 'order.tourist_edit.edit_entry'|trans }}">
                                         <i class="fa fa-pencil-square-o"></i>
                                     </a>
                                 {% endif %}

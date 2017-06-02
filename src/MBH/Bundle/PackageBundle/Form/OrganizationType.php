@@ -2,11 +2,11 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\PackageBundle\Document\Organization;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -15,7 +15,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\DataCollectorTranslator;
 use Symfony\Component\Validator\Constraints\Date as ConstrainDate;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Length;
 
 /**
@@ -25,6 +27,13 @@ use Symfony\Component\Validator\Constraints\Length;
  */
 class OrganizationType extends AbstractType
 {
+    /** @var  DataCollectorTranslator */
+    private $translator;
+
+    public function __construct(DataCollectorTranslator $translator) {
+        $this->translator = $translator;
+    }
+
     const SCENARIO_NEW = 'new';
     const SCENARIO_EDIT = 'edit';
 
@@ -50,7 +59,7 @@ class OrganizationType extends AbstractType
         }
 
         if($options['imageUrl']) {
-            $logoHelp = '<br><a href="'.$options['imageUrl'].'" class="fancybox">Просмотреть изображение</a>';
+            $logoHelp = '<br><a href="'.$options['imageUrl'].'" class="fancybox">'. $this->translator->trans('form.organizationType.view_image') .'</a>';
         } else {
             $logoHelp = '';
         }
@@ -223,7 +232,7 @@ class OrganizationType extends AbstractType
 
         if ($isFull) {
             if ($scenario == self::SCENARIO_NEW) {
-                $builder->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+                $builder->add('type',  InvertChoiceType::class, [
                     'group' => $isFull ? $additionalGroup : $addGroup,
                     'label' => 'form.organizationType.type',
                     'choices' => $options['typeList'],
@@ -247,6 +256,7 @@ class OrganizationType extends AbstractType
 
                     $organizations = $queryBuilder->getQuery()->execute();
                     $exceptHotelIDs = [];
+                    /** @var Organization $organization */
                     foreach ($organizations as $organization) {
                         if (count($organization->getHotels())) {
                             foreach ($organization->getHotels() as $hotel) {
@@ -284,14 +294,14 @@ class OrganizationType extends AbstractType
                 'label' => 'form.organizationType.stamp',
                 'required' => false,
                 'constraints' => [
-                    new \Symfony\Component\Validator\Constraints\Image([
+                    new Image([
                         /*'minWidth' => 400,
                         'maxWidth' => 400,
                         'maxHeight' => 200,
                         'minHeight' => 200,*/
                     ])
                 ],
-                'help' => 'Скан печати для генерации документов (400x200 пикселей)' . $logoHelp
+                'help' => $this->translator->trans('form.organization_type.scan', ['%size%' => '400x200']) . $logoHelp
             ]);
         }
     }

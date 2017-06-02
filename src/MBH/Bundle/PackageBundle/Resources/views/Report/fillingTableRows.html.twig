@@ -1,6 +1,6 @@
 <tr>
     <td>
-        <small>Номеров в продаже</small>
+        <small>{{ 'report.filling_table_rows.rooms_at_sale'|trans }}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -16,7 +16,7 @@
 </tr>
 <tr>
     <td>
-        <small>Номерной фонд</small>
+        <small>{{ 'report.filling_table_rows.number_of_rooms'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -32,7 +32,7 @@
 </tr>
 <tr>
     <td>
-        <small>Забронировано номеров</small>
+        <small>{{ 'report.filling_table_rows.number_of_busy_rooms'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -48,7 +48,7 @@
 </tr>
 <tr>
     <td>
-        <small>Остаток (в продаже)</small>
+        <small>{{ 'report.filling_table_rows.balance_on_sale'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -64,7 +64,7 @@
 </tr>
 <tr>
     <td>
-        <small>Остаток (номерной фонд)</small>
+        <small>{{ 'report.filling_table_rows.balanse_number_of_rooms'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -80,7 +80,7 @@
 </tr>
 <tr>
     <td>
-        <small>Забронировано номеров %</small>
+        <small>{{ 'report.filling_table_rows.reserved_rooms'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -97,7 +97,7 @@
 
 <tr>
     <td>
-        <small>Номера без оплаты (брони)</small>
+        <small>{{ 'report.filling_table_rows.number_of_rooms_without_payment'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -114,7 +114,7 @@
 
 <tr>
     <td>
-        <small>Гостей всего</small>
+        <small>{{ 'report.filling_table_rows.total_number_of_guests'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -130,7 +130,7 @@
 </tr>
 <tr>
     <td>
-        <small>Гостей на 1 номер</small>
+        <small>{{ 'report.filling_table_rows.guests_per_room'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -147,7 +147,7 @@
 
 <tr class="info">
     <td>
-        <small>Стоимость проживания</small>
+        <small>{{ 'report.filling_table_rows.cost_of_living'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -163,7 +163,7 @@
 </tr>
 <tr class="info">
     <td>
-        <small>Стоимость услуг</small>
+        <small>{{ 'report.filling_table_rows.cost_of_services'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -179,7 +179,7 @@
 </tr>
 <tr class="info">
     <td>
-        <small>Общая стоимость</small>
+        <small>{{ 'report.filling_table_rows.total_cost'|trans }}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -195,7 +195,7 @@
 </tr>
 <tr class="success">
     <td>
-        <small>Получено фактически</small>
+        <small>{{ 'report.filling_table_rows.received_in_fact'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -211,7 +211,7 @@
 </tr>
 <tr class="success">
     <td>
-        <small>Получено фактически %</small>
+        <small>{{ 'report.filling_table_rows.received_in_fact_in_percents'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -227,7 +227,7 @@
 </tr>
 <tr class="danger">
     <td>
-        <small>Долг</small>
+        <small>{{ 'report.filling_table_rows.debt'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -243,7 +243,7 @@
 </tr>
 <tr class="warning">
     <td>
-        <small>Макс. возм. выручка за прож.</small>
+        <small>{{ 'report.filling_table_rows.max_proceeds'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -259,7 +259,7 @@
 </tr>
 <tr class="warning">
     <td>
-        <small>Тек. стоим. прожив. от макс. возм. %</small>
+        <small>{{ 'report.filling_table_rows.current_cost_of_living_relative'|trans}}</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}

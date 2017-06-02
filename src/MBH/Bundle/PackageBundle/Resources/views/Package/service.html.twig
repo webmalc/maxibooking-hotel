@@ -20,7 +20,7 @@
 
             <div class="bg-gray color-palette alert">
                 <i class="{{ currency().icon }}"></i>
-                Цена: {{ package.price|number_format(2) }}
+                {{ 'package.service.price'|trans}}: {{ package.price|number_format(2) }}
                 &nbsp;
                 {% if package.isPaid %}
                     <small class="text-success"><i class="fa fa-check"> </i> {{ "package.service.paid"|trans({}, "MBHPackageBundle") }}</small>
@@ -29,7 +29,7 @@
                 {% endif %}
                 &nbsp;
                 <i class="fa fa-plug"></i>
-                Цена услуг: {{ package.servicesPrice|number_format(2) }}
+                {{ 'package.service.services_price'|trans}}: {{ package.servicesPrice|number_format(2) }}
             </div>
 
             {% if package.services|length > 0 %}
@@ -37,7 +37,7 @@
                     <thead>
                     <tr>
                         <th class="td-xs"></th>
-                        <th>Название</th>
+                        <th>{{ 'package.service.service_name'|trans}}</th>
                         <th class="td-sm text-center">{{ "package.service.nights"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-sm text-center">{{ "package.service.guests"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-xs text-center">{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}</th>

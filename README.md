@@ -19,4 +19,4 @@ phpstorm
 
 search ru text
 ---------
-* **command**: grep -ri '[А-Яа-яЁё]' --exclude-dir={vendor,web,var,.git} *|grep -v "\.\(csv\|yml\|png\|gif\|jpg\)"
+* **command**: grep -ri '[А-Яа-яЁё]' --exclude-dir={vendor,web,var,.git,docs,pdfTemplates,PdfTemplates,Oktogo} *|grep -v "\.\(csv\|yml\|png\|gif\|jpg\)"

@@ -10,16 +10,16 @@
         {% block content %}
             {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'work-shift-report-form'}}) }}
             <div class="form-group">
-                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                <label><i class="fa fa-calendar" title='{{ 'report.work_shift.dates'|trans }}' data-toggle='tooltip'></i></label>
                 {{ form_widget(form.begin, {attr: {class: 'datepicker'}}) }} —
                 {{ form_widget(form.end, {attr: {class: 'datepicker'}}) }}
             </div>
             <div class="form-group">
-                <label><i class="fa fa-user" title='Пользователь' data-toggle='tooltip'></i></label>
+                <label><i class="fa fa-user" title='{{ 'report.work_shift.users'|trans }}' data-toggle='tooltip'></i></label>
                 {{ form_widget(form.user) }}
             </div>
             <div class="form-group">
-                <label><i class="fa fa-star-o" title='Статус' data-toggle='tooltip'></i></label>
+                <label><i class="fa fa-star-o" title='{{ 'report.work_shift.status'|trans }}' data-toggle='tooltip'></i></label>
                 {{ form_widget(form.status) }}
             </div>
             {{ form_end(form) }}
@@ -27,7 +27,7 @@
     {% endembed %}
 
     <div id="work-shift-detail-header">
-        <a class="btn btn-info" href="#" id="come-back-to-list"><i class="fa fa-arrow-left"></i> Вернуться к списку</a>
+        <a class="btn btn-info" href="#" id="come-back-to-list"><i class="fa fa-arrow-left"></i> {{ 'report.work_shift.return_to_list'|trans }}</a>
         <div class="header"></div>
     </div>
 
@@ -35,7 +35,7 @@
     <div class="box box-default box-solid">
         <div class="box-header">
             <h3 class="box-title">
-                Рабочие смены
+                {{ 'report.work_shift.work_shifts'|trans}}
             </h3>
             <div class="box-tools pull-right">
                 <button class="btn btn-box-tool form-group-collapse" id="work-shift-table-wrapper-collapse" data-widget="collapse"><i class="fa fa-minus"></i></button>

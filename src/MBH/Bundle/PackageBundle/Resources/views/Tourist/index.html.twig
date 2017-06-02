@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
 
-{% set small_title = "список клиентов" %}    
+{% set small_title = "tourist.index.small_title"|trans %}
 {% set layout = 'box' %}
 
 {% block content %}
@@ -9,7 +9,7 @@
         {% block content %}
             {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'tourist-form'}}) }}
             <div class="form-group">
-                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                <label><i class="fa fa-calendar" title='{{ 'tourist.index.dates'|trans }}' data-toggle='tooltip'></i></label>
                 {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
                 {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
             </div>
@@ -17,7 +17,7 @@
                 {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
             </div>
             <div class="form-group">
-                <label><i class="fa fa-male" title="Иностранные граждане" data-toggle="tooltip"></i></label>
+                <label><i class="fa fa-male" title="{{ 'tourist.index.foreign_citizens'|trans }}" data-toggle="tooltip"></i></label>
                 {{ form_widget(form.citizenship) }}
                 {{ form_widget(form._token) }}
                 {{ form_rest(form.search) }}
@@ -32,19 +32,17 @@
         <tr>
             <th class="td-xxs"></th>
             <th class="td-xxs text-center">#</th>
-            <th>ФИО</th>
-            <th class="td-md show-on-print">Основной документ</th>
-            <th class="td-md show-on-print">Виза</th>
-            <th class="td-md show-on-print">Миграционная карта</th>
-            <th class="td-xxs hide-on-print"><i title="Документы" class="fa fa-book"></i></th>
-            {#<th class="td-md">№ паспорта</th>
-            <th class="td-md">Виза</th>#}
-            <th class="td-md">Даты</th>
-            <th class="td-xs">Комната</th>
-            <th class="td-md show-on-print">Цель приезда</th>
-            <th class="td-md show-on-print">Адрес</th>
-            <th class="td-md hide-on-print">Дата рождения</th>
-            <th class="td-md">Контакты</th>
+            <th>{{ 'tourist.index.fio'|trans}}</th>
+            <th class="td-md show-on-print">{{ 'tourist.index.main_document'|trans}}</th>
+            <th class="td-md show-on-print">{{ 'tourist.index.visa'|trans}}</th>
+            <th class="td-md show-on-print">{{ 'tourist.index.migration_card'|trans}}</th>
+            <th class="td-xxs hide-on-print"><i title="{{ 'tourist.index.documents'|trans }}" class="fa fa-book"></i></th>
+            <th class="td-md">{{ 'tourist.index.dates'|trans}}</th>
+            <th class="td-xs">{{ 'tourist.index.room'|trans}}</th>
+            <th class="td-md show-on-print">{{ 'tourist.index.purpose_of_arrival'|trans}}</th>
+            <th class="td-md show-on-print">{{ 'tourist.index.address'|trans}}</th>
+            <th class="td-md hide-on-print">{{ 'tourist.index.date_of_birth'|trans}}</th>
+            <th class="td-md">{{ 'tourist.index.contacts'|trans}}</th>
             <th class="td-sm"></th>
         </tr>
         </thead>

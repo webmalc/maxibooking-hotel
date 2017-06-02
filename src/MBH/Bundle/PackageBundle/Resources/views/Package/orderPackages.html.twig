@@ -6,11 +6,11 @@
 
     <div class="panel panel-default order-packages-panel">
         <div class="panel-heading">
-            <a class="panel-title" href="#">Заказ #{{ entity.order.id }} ({{ packages|length  }})
+            <a class="panel-title" href="#">{{ 'package.order_packages.order_number'|trans}}{{ entity.order.id }} ({{ packages|length  }})
                 &nbsp;<i class="fa fa-caret-up"></i></a>
 
             <div class="pull-right">
-                <i class="fa fa-trash-o" title='Удаленные?' data-toggle='tooltip'></i>&nbsp
+                <i class="fa fa-trash-o" title='{{ 'package.order_packages.is_removed'|trans }}?' data-toggle='tooltip'></i>&nbsp
                 <input type="checkbox" id="order-packages-panel-filter-deleted" class="package-filter" {{ deleted ? 'checked' }} value="1" />
             </div>
         </div>
@@ -42,7 +42,7 @@
                             {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br><small>{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
                         </td>
                         <td>
-                            {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='{{ 'order.packages.go_to_placement'|trans({}, 'MBHPackageBundle') }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;не размещено&gt;{% endif %}</a></small>
+                            {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='{{ 'order.packages.go_to_placement'|trans({}, 'MBHPackageBundle') }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ 'package.order_packages.not_accommodate'|trans}}&gt;{% endif %}</a></small>
                         </td>
                         <td class="text-center">
                             {{ package.adults }} + {{ package.children }}<br>
@@ -53,7 +53,7 @@
                             <div class='text-right'><span class='{% if package.order.isPaid %}text-success'{% elseif package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}>{{ package.price|number_format(2) }}</span><br><small><i class='fa fa-sliders'> </i> {{ package.tariff.name }}</small></div>
                         </td>
                         <td>
-                            {% if 'now'|date('d.m.Y') == package.createdAt|date('d.m.Y') %}Сегодня, {{ package.createdAt|date('H:i') }}{% else %}{{ package.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ package.createdBy }}</small>
+                            {% if 'now'|date('d.m.Y') == package.createdAt|date('d.m.Y') %}{{ 'package.order_packages.today'|trans}}, {{ package.createdAt|date('H:i') }}{% else %}{{ package.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ package.createdBy }}</small>
                         </td>
                         <td>
                             <div class='btn-list text-right'>

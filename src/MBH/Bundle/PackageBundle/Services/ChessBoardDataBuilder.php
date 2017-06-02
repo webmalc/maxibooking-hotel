@@ -141,7 +141,7 @@ class ChessBoardDataBuilder
     }
 
     /**
-     * Получение массива данныых о количестве свободных комнат, разделенных по дням
+     * Getting data of the number of available rooms, separated by day
      *
      * @return array
      */
@@ -195,9 +195,6 @@ class ChessBoardDataBuilder
     }
 
     /**
-     * Возвращает данные о периодах без размещения броней, имеющих неполное размещение,
-     * ...то есть имеющих данные о размещении, но дата окончания последнего размещения меньше даты выезда брони
-     *
      * @return array
      */
     private function getDateIntervalsWithoutAccommodation()
@@ -257,7 +254,7 @@ class ChessBoardDataBuilder
                     ->fetchWithAccommodation(
                         $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
                     );
-                //сортируем по датам начала размещения
+
                 $this->packageAccommodations = $this->accommodationManipulator
                     ->sortAccommodationsByBeginDate($accommodations->toArray())->toArray();
 
@@ -302,8 +299,6 @@ class ChessBoardDataBuilder
         foreach ($this->getRoomTypes() as $roomType) {
 
             if (isset($roomCaches[$roomType->getId()])) {
-                //Данные о комнатах могут быть получены либо для всех тарифов, и массив, содержащий их будет иметь индекс 0,
-                // либо для одного и будет иметь индекс тарифа, для которого искали данные
                 $roomCachesByDates = current($roomCaches[$roomType->getId()]);
                 foreach (new \DatePeriod($this->beginDate, new \DateInterval('P1D'), $endDate) as $day) {
                     /** @var \DateTime $day */
@@ -528,7 +523,7 @@ class ChessBoardDataBuilder
     }
 
     /**
-     * Ленивая загрузка массива объектов RoomType, используемых в данном запросе
+     * Lazy loading of room types, used in the request
      * @return RoomType[]
      */
     private function getRoomTypes()

@@ -64,3 +64,4 @@ validator.accommodation.wrong.start.end: Размещение выходит з�
 validator.accommodation.end_less_or_equal_begin: Дата окончания размещения не может быть меньше или равна началу размещения.
 validator.package.special_message: Некорректное спецпредложение
 validator.service.wrong_dates: 'Некорректные даты услуги'
+validator.document.Unwelcome.need_feel_at_least_one_characteristic: Оцените хотя бы одну характеристику гостя

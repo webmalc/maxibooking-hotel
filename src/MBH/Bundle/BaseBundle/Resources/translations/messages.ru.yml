@@ -360,9 +360,11 @@ menu.label.reports.managers: Менеджеры
 menu.label.reports.invite: Визовые приглашения
 menu.label.reports.analystics: Аналитика
 menu.label.reports.polls: Оценки
+menu.label.reports.windows: Окна
 menu.label.reports.work_shift: Рабочие смены
 menu.label.reports.fms: Для ФМС
 
+menu.settings.label.header: Настройки
 menu.settings.label.hotels: Отели
 menu.settings.label.housing: Корпуса
 menu.settings.label.room_types: Номерной фонд
@@ -372,12 +374,13 @@ menu.room_type_category: Группы номеров
 menu.settings.label.restaurant: Ресторан
 menu.settings.label.restaurant.ingredients: Ингредиенты
 menu.settings.label.restaurant.dishmenu: Меню блюд
-menu.settings.label.restaurant.tables: Управление столиками
+menu.settings.label.restaurant.tables: Столы
 
 menu.configs.config: Настройки
 menu.configs.users: Пользователи
 menu.configs.groups: Группы
 menu.configs.sources: Источники
+menu.configs.delete_reasons: Причины удаления
 menu.configs.templates: Шаблоны документов
 menu.configs.parameters: Параметры
 menu.configs.tasktype: Типы задач
@@ -385,7 +388,7 @@ menu.configs.warehouse: Склад
 
 menu.communication.label: Взаимодействие
 menu.communication.label.advanced: Дополнительные каналы
-menu.communication.label.yh: ВашОтель
+menu.communication.label.your_hotel: ВашОтель
 menu.communication.label.onlineform: Онлайн форма
 menu.communication.label.polls: Оценки
 menu.communication.label.invite: Визовое приглашение
