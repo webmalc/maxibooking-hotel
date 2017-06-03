@@ -17,6 +17,8 @@ use MBH\Bundle\RestaurantBundle\Document\DishMenuItem;
 use MBH\Bundle\RestaurantBundle\Document\Ingredient;
 use MBH\Bundle\RestaurantBundle\Document\IngredientCategory;
 use MBH\Bundle\RestaurantBundle\Document\Table;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -25,12 +27,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class RestaurantSubscriber implements EventSubscriber
 {
-
     /**
      * @var ContainerInterface
      */
     private $container;
-
 
     /**
      * RestaurantSubscriber constructor.
@@ -82,8 +82,9 @@ class RestaurantSubscriber implements EventSubscriber
             if ($query->count()) {
                 $router = $this->container->get('router');
                 $route = $router->generate('restaurant_dishmenu_item_edit', ['id' => $doc->getId()]);
-                $message = 'Невозможно удалить блюдо, т.к. оно фигурирует в заказах. Вы всегда можете его скрыть в <a href="'.$route.'"> меню редактирования'.'</a>';
-                throw new DeleteException($message);
+
+                $message = $this->container->get('translator')->trans('exception.ingredient_relation_delete.message.dish', ['%hrefTagStart%' => '<a href="'.$route.'">']);
+                throw new DeleteException($message . '</a>');
             }
         }
     }

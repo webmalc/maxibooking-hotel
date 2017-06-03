@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
 class Table extends Constraint
 {
 
-    public $messageError = 'Всего стол может иметь 20 стульев';
+    public $messageError = 'validator.document.table.table_can_have_less_chairs';
 
     /**
      * {@inheritDoc}
@@ -21,7 +21,6 @@ class Table extends Constraint
 
     public function validatedBy()
     {
-
         return 'mbh.table.validator';
     }
 }

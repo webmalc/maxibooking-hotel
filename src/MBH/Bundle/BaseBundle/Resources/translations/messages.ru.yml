@@ -211,6 +211,8 @@ mailer.reportArrival.not_paid: 'Без оплаты'
 mailer.reportArrival.pure_payment: 'Частичная опл.'
 mailer.reportArrival.transfer: Трансфер
 mailer.reportArrival.guests: Гостей
+mailer.reportArrival.number_of_adults: вз.
+mailer.reportArrival.number_of_children: рб.
 mailer.order.duty: Долг
 mailer.order.date: Дата
 mailer.order.cost: Стоимость
@@ -334,6 +336,7 @@ exception.vegaState_relation_delete.message.touristCitizenship: 'Невозмо�
 exception.vegaState_relation_delete.message.touristBirthplace: 'Невозможно удалить данные о стране, так как существуют клиенты, рожденный в ней (%total%).'
 exception.housing_relation_delete.message.room: 'Невозможно удалить корпус, так как существуют комнаты, относящиеся к нему (%total%).'
 exception.ingredient_relation_delete.message.dishIngredient: 'Невозможно удалить ингредиент, так как он используется в блюдах (%total%).'
+exception.ingredient_relation_delete.message.dish: 'Невозможно удалить блюдо, т.к. оно фигурирует в заказах. Вы всегда можете его скрыть в %hrefTagStart% меню редактирования'
 exception.special_relation_delete.message.package: 'Невозможно удалить спецпредложение, так как существуют брони, относящиеся к нему (%total%).'
 
 subscriber.cannot_delete_room_in_sale_error: Невозможно удалить комнату, так как она находится в продаже.
@@ -572,3 +575,9 @@ mbhbasebundle.view.pdftemplates.individual.vid.platezha: Вид платежа
 hide: скрыть
 show.more: Показать еще
 errors: Ошибки
+
+controllers.export_controller.yes: 'Да'
+controllers.export_controller.no: Нет
+
+views.partials.disable_button.show_disabled_room_types: 'Показывать отключенные типы комнат'
+views.partials.disable_button.entity_delete_form.remove: Удалить

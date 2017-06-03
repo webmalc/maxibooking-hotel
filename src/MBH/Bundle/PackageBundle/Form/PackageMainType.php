@@ -126,7 +126,7 @@ class PackageMainType extends AbstractType
             $builder->add('price', TextType::class, [
                 'label' => 'form.packageMainType.price',
                 'required' => true,
-                'group' => 'Цена',
+                'group' => 'form.packageMainType.price_group',
                 'error_bubbling' => true,
                 'property_path' => 'packagePrice',
                 'attr' => [
@@ -140,18 +140,18 @@ class PackageMainType extends AbstractType
                 ->add('discount', TextType::class, [
                     'label' => 'form.packageMainType.discount',
                     'required' => false,
-                    'group' => 'Скидка'
+                    'group' => 'form.packageMainType.discount_group'
                 ])
                 ->add('isPercentDiscount', CheckboxType::class, [
                     'label' => 'form.packageMainType.isPercentDiscount',
                     'required' => false,
-                    'group' => 'Скидка'
+                    'group' => 'form.packageMainType.discount_group'
                 ]);
         }
         if($options['special']) {
             $builder
                 ->add('special', DocumentType::class, [
-                    'group' => 'Спецпредложение',
+                    'group' => 'form.packageMainType.special_group',
                     'label' => 'form.packageMainType.special',
                     'class' => 'MBH\Bundle\PriceBundle\Document\Special',
                     'required' => false,
@@ -168,13 +168,13 @@ class PackageMainType extends AbstractType
         }
         $builder
             ->add('numberWithPrefix', TextType::class, [
-                'label' => 'Номер брони',
-                'group' => 'Информация',
+                'label' => 'form.packageMainType.package_number',
+                'group' => 'form.packageMainType.information_group',
                 'required' => true,
             ])
             ->add('note', TextareaType::class, [
                 'label' => 'form.packageMainType.comment',
-                'group' => 'Информация',
+                'group' => 'form.packageMainType.information_group',
                 'required' => false,
             ]);
         if ($package->isDeleted()) {
@@ -195,10 +195,10 @@ class PackageMainType extends AbstractType
         if ($options['corrupted']) {
             $builder
                 ->add('corrupted', CheckboxType::class, [
-                    'label' => 'Повреждена?',
+                    'label' => 'form.packageMainType.is_corrupted',
                     'required' => false,
-                    'group' => 'Информация',
-                    'help' => 'Бронь с поврежденной информацией. Подробности в комментарии к брони.'
+                    'group' => 'form.packageMainType.information_group',
+                    'help' => 'form.packageMainType.is_corrupted.help'
                 ]);
         }
     }
@@ -218,6 +218,7 @@ class PackageMainType extends AbstractType
             'virtualRooms'=> false
          ]);
     }
+
 
     public function getBlockPrefix()
     {

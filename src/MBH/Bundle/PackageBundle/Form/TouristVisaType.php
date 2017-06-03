@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -18,14 +19,14 @@ class TouristVisaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('type',  InvertChoiceType::class, [
                 'label' => 'tourist.visa.type_type',
                 'group' => 'visa',
                 'placeholder' => '',
                 'choices' => [
-                    'visa' => 'Виза',
-                    'residence' => 'Вид на жительство',
-                    'temporary_residence_permit' => 'Разрешение на временное проживание'
+                    'visa' => 'tourist.visa.choices.visa',
+                    'residence' => 'tourist.visa.choices.residence',
+                    'temporary_residence_permit' => 'tourist.visa.choices.temporary_residence_permit'
                 ],
                 'required' => false,
             ])

@@ -84,8 +84,8 @@ $(document).on('ready', function () {
         var $row = $this.closest('tr');
         var id = $row.data('id');
         var electronicCashIncomeTotal = $row.data('electronicCashIncomeTotal');
-        var confirmText = 'Завершить смену' + (electronicCashIncomeTotal ? ' и подтвердить N платежей на сумму '+electronicCashIncomeTotal : '') + '?';
-        mbh.alert.show(null, 'Завершить смену?', confirmText, 'Принять смену', 'fa fa-check', 'success', function() {
+        var confirmText = Translator.trans('work_shift.close_work_shift') + (electronicCashIncomeTotal ? ' ' + Translator.trans('work_shift.and_confirm_payments') + ' ' + electronicCashIncomeTotal : '') + '?';
+        mbh.alert.show(null, Translator.trans('work_shift.close_work_shift') + '?', confirmText, Translator.trans('work_shift.take_shift'), 'fa fa-check', 'success', function() {
             mbh.alert.hide();
             $.ajax(Routing.generate('work_shift_ajax_close'), {
                 data: {id: id},

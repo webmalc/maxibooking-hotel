@@ -32,3 +32,101 @@ action_manager.update_modal.not_specified: Не указан
 
 search.book_button.title: 'Бронировать номер. Всего номеров %roomsCount%'
 search.disabled_book_button.title: Для создания брони необходимо указать плательщика
+
+unwelcome.levels.minor: 'Незначительная'
+unwelcome.levels.low: 'Низкая'
+unwelcome.levels.middle: 'Средняя'
+unwelcome.levels.high: 'Высокая'
+unwelcome.levels.very_high: 'Очень высокая'
+
+work_shift.close_work_shift: 'Завершить смену'
+work_shift.take_shift: Принять смену
+work_shift.and_confirm_payments: и подтвердить N платежей на сумму
+
+tourist.make_a_choice: Сделайте выбор
+tourist.inn: ИНН
+
+service.service_for_addtition_to_package: Услуга для добавления к броне
+service.price_for_amount: 'за  %amount%  шт.'
+service.for_one_man: за 1 человека
+
+list.sProcessing: "Подождите"
+list.sLengthMenu: "Показать %menu% записей"
+list.sZeroRecords: "Записи отсутствуют."
+list.sInfo: "Записи с %start% до %end% из %total% записей"
+list.sInfoEmpty: "Записи с 0 до 0 из 0 записей"
+list.sInfoFiltered: "отфильтровано из %max% записей"
+list.sEmptyTable: "Ничего не найдено"
+list.sSearch: "Поиск"
+list.sFirst: "Первая"
+list.sPrevious: "Назад"
+list.sNext: "Вперед"
+list.sLast: "Последняя"
+list.sSortAscending: "активировать для сортировки столбца по возрастанию"
+list.sSortDescending: "активировать для сортировки столбцов по убыванию"
+
+package.order_is_not_paid: 'Заказ не оплачен'
+package.confirmation: Подтверждение
+package.continue: 'Продолжить'
+package.yes: да
+package.no: нет
+package.processing: Подождите
+
+analytics.months.jan_abbr: 'Янв'
+analytics.months.feb_abbr: 'Фев'
+analytics.months.mar_abbr: 'Мар'
+analytics.months.apr_abbr: 'Апр'
+analytics.months.may_abbr: 'Май'
+analytics.months.jun_abbr: 'Июн'
+analytics.months.jul_abbr: 'Июл'
+analytics.months.aug_abbr: 'Авг'
+analytics.months.sep_abbr: 'Сен'
+analytics.months.okt_abbr: 'Окт'
+analytics.months.nov_abbr: 'Ноя'
+analytics.months.dec_abbr: 'Дек'
+
+analytics.months.jan: 'Январь'
+analytics.months.feb: 'Февраль'
+analytics.months.mar: 'Март'
+analytics.months.apr: 'Апрель'
+analytics.months.may: 'Май'
+analytics.months.jun: 'Июнь'
+analytics.months.jul: 'Июль'
+analytics.months.aug: 'Август'
+analytics.months.sep: 'Сентябрь'
+analytics.months.okt: 'Октябрь'
+analytics.months.nov: 'Ноябрь'
+analytics.months.dec: 'Декабрь'
+
+analytics.days_of_week.sun: 'Воскресенье'
+analytics.days_of_week.mon: 'Понедельник'
+analytics.days_of_week.tue: 'Вторник'
+analytics.days_of_week.wed: 'Среда'
+analytics.days_of_week.thu: 'Четверг'
+analytics.days_of_week.fri: 'Пятница'
+analytics.days_of_week.sat: 'Суббота'
+
+analytics.downloadJPEG: "Сохранить как JPEG"
+analytics.downloadPNG: "Сохранить как PNG"
+analytics.downloadPDF: "Сохранить как PDF"
+analytics.downloadSVG: "Сохранить как SVG"
+analytics.loading: "Загрузка"
+analytics.printChart: "Версия для печати"
+analytics.resetZoom: "Сбросить приближение"
+analytics.resetZoomTitle: "Размер 1:1"
+analytics.error_occurred: 'Произошла ошибка при постороении отчета'
+
+polls_user_script.disgusting: 'Отвратительно'
+polls_user_script.terribble: 'Ужасно'
+polls_user_script.bad: 'Плохо'
+polls_user_script.bad_enogh: 'Достаточно плохо'
+polls_user_script.passably: 'Удовлетворительно'
+polls_user_script.acceptable: 'Приемлемо'
+polls_user_script.good_enough: 'Достаточно хорошо'
+polls_user_script.good: 'Хорошо'
+polls_user_script.very_good: 'Очень хорошо'
+polls_user_script.excellent: 'Превосходно'
+polls_user_script.reset_rating: Сбросить оценку
+polls_user_script.no_answer: Без ответа
+polls_user_script.please_set_rating: Пожалуйста, выставите вашу оценку по крайней мере по 5 пунктам!
+polls_user_script.many_thanks: Большое спасибо

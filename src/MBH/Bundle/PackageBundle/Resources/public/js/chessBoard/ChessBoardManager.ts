@@ -530,35 +530,34 @@ class ChessBoardManager {
             $element.find('.remove-package-button').click(function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
             });
-            $element.find('.divide-package-button').click(() => {
+            $element.find('.divide-package-button').click((event) => {
                 self.canMoveAccommodation = false;
+                let scissorIcon = event.target;
                 if (intervalData.viewPackage) {
-                    let scissorsElement = this.childNodes[0];
-                    scissorsElement.onclick = function () {
+                    scissorIcon.onclick = function () {
                         self.updatePackagesData();
                     };
-                    let accommodationElement = this.parentNode.parentNode;
-                    let accommodationWidth = parseInt(accommodationElement.style.width, 10);
-                    let tableCellWidth = styleConfigs[this.currentSizeConfigNumber].tableCellWidth;
+                    let accommodationWidth = parseInt(element.style.width, 10);
+                    let tableCellWidth = styleConfigs[self.currentSizeConfigNumber].tableCellWidth;
                     if (accommodationWidth == tableCellWidth * 2) {
                         $('.divide-package-button').tooltip('hide');
-                        self.divide(accommodationElement, accommodationWidth / 2);
+                        self.divide(element, accommodationWidth / 2);
                     } else {
-                        let packageLeftCoordinate = accommodationElement.getBoundingClientRect().left;
+                        let packageLeftCoordinate = element.getBoundingClientRect().left;
                         let line: HTMLElement = document.createElement('div');
                         line.classList.add('dividing-line');
 
-                        let accommodationElementWidth = parseInt(getComputedStyle(accommodationElement).width, 10);
+                        let accommodationElementWidth = parseInt(getComputedStyle(element).width, 10);
                         let isAccommodationAbroadTable = (accommodationElementWidth % tableCellWidth) != 0
                             && ((accommodationElementWidth + 1) % tableCellWidth) != 0;
-                        let packageToMiddayOffset = this.getPackageToMiddayOffset();
+                        let packageToMiddayOffset = self.getPackageToMiddayOffset();
                         let defaultLeftValue = isAccommodationAbroadTable
                             ? tableCellWidth + packageToMiddayOffset
                             : tableCellWidth;
                         line.style.left = defaultLeftValue + 'px';
-                        accommodationElement.appendChild(line);
+                        element.appendChild(line);
 
-                        accommodationElement.onmousemove = function (event) {
+                        element.onmousemove = function (event) {
                             let offset = event.clientX - packageLeftCoordinate;
                             let griddedOffset;
                             if (isAccommodationAbroadTable) {
@@ -577,9 +576,9 @@ class ChessBoardManager {
                             }
 
                             line.style.left = griddedOffset + 'px';
-                            accommodationElement.onclick = function () {
-                                accommodationElement.onmousemove = null;
-                                accommodationElement.removeChild(line);
+                            element.onclick = function () {
+                                element.onmousemove = null;
+                                element.removeChild(line);
                                 self.divide(this, griddedOffset);
                             }
                         };
@@ -766,7 +765,7 @@ class ChessBoardManager {
     }
 
     private getGriddedHeightValue(height) {
-        //1 - бордер
+        //1px - border
         let packageElementHeight = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1;
 
         return Math.floor(height / packageElementHeight) * packageElementHeight - 1;
@@ -781,7 +780,7 @@ class ChessBoardManager {
     }
 
     /**
-     * Получение строки, содержащей первые буквы сторон, в которые можно расширять бронь.(e - east, w - west)
+     * Getting the line, containing first letters of sides in which enable widening (e - east, w - west)
      * @param intervalData
      * @returns {string}
      */

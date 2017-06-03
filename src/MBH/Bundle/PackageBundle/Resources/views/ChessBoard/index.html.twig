@@ -28,7 +28,7 @@
     '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
 
     <script type="text/javascript" src="{{ asset_url }}"></script>
-    {# Передаем данные о бронях для обработки на клиенте #}
+    {# pass package data for processing on client-side #}
     <script>
         var packages = JSON.parse('{{ packages|raw }}');
         var leftRoomsData = JSON.parse('{{ leftRoomsJsonData|raw }}');
@@ -205,17 +205,20 @@
                                 <li class="tile tile-not-selected tile-free both not-standard-tile"
                                     style="width:{{ headerWidth }}px;">
                                     <div class="title-sub">
-                                        {# Настройка названий комнат и тултипов к ним #}
                                         {% set toolTip = '' %}
-                                        {% if roomData.name|length > 20 %} {% set toolTip =  roomData.name ~ "<br>" %}{% endif %}
-                                        {% if roomData.houseDetails %} {% set toolTip = toolTip ~ roomData.houseDetails %}{% endif %}
-
-                                        {% set roomShortInfo = roomData.name %}
-                                        {% if roomData.name|length < 4 and roomData.houseDetails %}
-                                            {% set roomShortInfo = roomShortInfo ~  ' (' ~ roomData.houseDetails[0:16] ~ ')' %}
+                                        {% if roomData.room.housing %}
+                                            {% set toolTip = 'chessboard.index.housing'|trans ~ ' "' ~ roomData.room.housing.name ~'"' %}
+                                        {% endif %}
+                                        {% if roomData.room.floor %}
+                                            {% set floorText = "chessboard.index.floor"|trans ~ " " ~ roomData.room.floor %}
+                                            {% if toolTip is empty %}
+                                                {% set toolTip = floorText %}
+                                            {% else %}
+                                                {% set toolTip = toolTip ~ '<br>' ~ floorText %}
+                                            {% endif %}
                                         {% endif %}
 
-                                        <a {% if toolTip != '' %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ toolTip }}" {% endif %}>{{ roomShortInfo[0:20] }}</a>
+                                        <a {% if toolTip != '' %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ toolTip }}" {% endif %}>{{ roomData.name[0:20] }}</a>
 
                                         <div class="text-right">
                                             {% if roomData.statuses is iterable and roomData.statuses is not empty %}

@@ -279,3 +279,20 @@ restaurantbundle.controller.attention_not_all_parameter_successful_saved: 'Вн�
 
 restaurantbundle.form.paid: Оплачено
 restaurantbundle.form.not_paid: Не оплачено
+dish_order.index.dates_filter: Даты
+dish_order.index.prices_filter: Цены
+dish_order.index.paid: Оплачен
+
+views.form.amount.add: Добавить
+
+fixtures.dish_menu_category_data.categories.hot_dishes: Горячие блюда
+fixtures.dish_menu_category_data.categories.beverages: Напитки
+fixtures.dish_menu_category_data.categories.salads: Салаты
+fixtures.dish_menu_category_data.categories.bar: Бар
+fixtures.dish_menu_category_data.categories.bread: Хлеб
+
+fixtures.ingredients_category_data.categories.vegetables: Овощи
+fixtures.ingredients_category_data.categories.fruit: Фрукты
+fixtures.ingredients_category_data.categories.beverages: Напитки
+
+fixtures.table_type_data.categories.main: Основной

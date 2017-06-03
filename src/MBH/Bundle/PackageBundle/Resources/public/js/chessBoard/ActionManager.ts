@@ -454,7 +454,8 @@ class ActionManager {
         let modal = $('#packageModal');
         let payerText;
         let payerName = modal.find('#modal-package-payer').text();
-        if (payerName != 'Не указан') {
+
+        if (payerName != Translator.trans('action_manager.update_modal.not_specified')) {
             payerText = payerName;
         } else {
             payerText = modal.find('#modal-package-payer').text();

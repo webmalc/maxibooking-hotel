@@ -405,6 +405,17 @@ poll.question.hotel_food: 'Качество и разнообразие пита
 poll.question.hotel_entertainment: 'Качество и разнообразие мест отдыха и развлечений'
 poll.controller.save_success: 'Спасибо! Ваша оценка успешно сохранена!'
 
+views.list.hotel_management_system: Система управления отелем
+views.list.rate_please: Пожалуйста, оцените
+views.list.your_review_wishes: Ваш отзыв или пожелание
+views.list.your_review_sentences_or_wishes: Ваш отзыв, предложения или пожелания
+views.list.not_necessary: необязательно
+views.list.send: ОТПРАВИТЬ
+views.list.based_on_technologies_mb: Основано на технологиях MAXIBOOKING LLC
+views.list.review_comiled: Отзыв по этому заказу уже оставлен!
+views.list.we_were_glad_to_recieve_you: Мы были рады принимать вас и надеемся, что ваше пребывание в нашем отеле было комфортным и приятным
+views.list.please_fill_questionnaire: Пожалуйста, заполните небольшую анкету гостя, ваша оценка поможет нам развиваться и улучшать наш сервис. Мы будем рады видеть Вас снова!
+
 report.poll.small_title: 'Оценки'
 report.poll.invite: 'Визовые приглашения'
 report.poll.small_title_order: 'Оценки заказа '

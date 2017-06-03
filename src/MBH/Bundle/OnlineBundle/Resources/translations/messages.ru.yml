@@ -3,6 +3,8 @@ mbhonlinebundle.form.triproutetype.gorod: Город
 mbhonlinebundle.form.invitedtouristtype.imya: Имя
 mbhonlinebundle.form.invitedtouristtype.familiya: Фамилия
 mbhonlinebundle.form.invitedtouristtype.obrashcheniye: Обращение
+mbhonlinebundle.form.invitedtouristtype.mister: Господин
+mbhonlinebundle.form.invitedtouristtype.mistress: Госпожа
 mbhonlinebundle.form.invitedtouristtype.data.rozhdeniya: 'Дата рождения'
 mbhonlinebundle.form.invitedtouristtype.mesto.rozhdeniya: 'Место рождения'
 mbhonlinebundle.form.invitedtouristtype.grazhdanstvo: Гражданство
@@ -59,3 +61,28 @@ onlinebundle.resources.views.on: Включена
 onlinebundle.resources.views.all_hotels: Все отели
 onlinebundle.resources.da: Да
 onlinebundle.resources.net: Нет
+
+invite.form.info_about_guests_and_visa: Информация о гостях и визе
+invite.form.places_to_visit: Места посещения
+invite.form.payment: Оплата заявки
+invite.form.receiving_of_invitation: Получение приглашения
+invite.form.dates_of_trip: Даты поездки
+invite.form.number_of_days: '%number_of_days% дней'
+invite.form.visa_type: Тип визы
+invite.form.persons_information: Сведения о персонах
+invite.form.number_of_persons: '%number_of_persons% персона'
+invite.form.add: Добавить
+invite.form.route_of_trip: Маршрут поездки
+invite.form.city: город
+invite.form.back: Назад
+invite.form.continue: Продолжить
+invite.form.tab: вкладка
+invite.form.person: персона
+views.api.getResultsTable.number_of_adults: вз.
+views.api.getResultsTable.number_of_children: рб.
+
+views.api.get_form_iframe.online_booking_system: система онлайн бронирования
+views.api.notification: 'Новые брони из онлайн-формы'
+
+views.api.get_user_form.default_name: Иван
+views.api.get_user_form.services: Услуги

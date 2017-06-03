@@ -46,6 +46,7 @@ controller.vashotelController.rooms_sync_success: 'Номера успешно �
 controller.vashotelController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
 controller.vashotelController.rooms_sync_success: 'Тарифы успешно синхронизированы.'
 controller.vashotelController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.channel_manager_controller.logs_clear_successful: 'Логи успешно очищены.'
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
 roomtype.placeholder: 'тип номера соответствия номеру в канале'
 tarifftype.placeholder: 'тариф соответствия тарифу в канале'
@@ -79,7 +80,15 @@ form.myallocatorType.should_we_use_in_channel_manager: Использовать 
 form.myallocatorType.hotels: Отели
 controller.myallocatorController.settings_saved_success: Настройки успешно сохранены
 controller.myallocatorController.invalid_credentials: Неверные логин/пароль для от личного кабинета
-
+view.myallocator.tariff.need_fill_main_settings: Необходимо сначала заполнить основные настройки.
+view.myallocator.tariff.need_bind_to_mb: Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".
+view.myallocator.layout.additional_channels: Дополнительные каналы
+view.myallocator.index.cm_bind_tomb: Сhannelmanager успешно привязан к MaxiBooking
+view.myallocator.index.remove_user: Удалить пользователя
+view.myallocator.index.choose_hotel: Выберите соотвествующий отель на форме ниже для ассоциации с MaxiBooking
+view.myallocator.index.enter_login_and_pass: Введите логи и пароль от кабинета для первичной привязки channelmanager`а к MaxiBooking
+view.myallocator.room.need_fill_main_settings: Необходимо сначала заполнить основные настройки.
+view.myallocator.room.need_bind_to_mb: Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".
 
 form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkIn.help: Задачи, создаваемые при заезде гостя
@@ -94,3 +103,7 @@ channelmanager.notifications.prices.type.additionalPrice: "Цена за взр�
 channelmanager.notifications.prices.type.additionalChildrenPrice: "Цена за детское доп. место"
 channelmanager.notifications.restrictions.type.minBeforeArrival: "Мин. дней до заезда"
 channelmanager.notifications.restrictions.type.maxBeforeArrival: "Макс. дней до заезда"
+channel_manager.logs.no_entries_in_file: Нет записей в файле логов.
+channel_manager.logs.small_title: логи
+channel_manager.logs.clear: Очистить
+channel_manager.push_link.link_to_push_notifications: Ссылка для push уведомлений

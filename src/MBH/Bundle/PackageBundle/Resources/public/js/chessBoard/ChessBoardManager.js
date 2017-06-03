@@ -431,7 +431,6 @@ var ChessBoardManager = (function () {
         var self = this;
         this.addDraggable(jQueryObj);
         jQueryObj.each(function (index, element) {
-            var _this = this;
             var intervalData = self.dataManager.getAccommodationIntervalById(this.id);
             var $element = $(element);
             self.addResizable($element, intervalData);
@@ -443,34 +442,33 @@ var ChessBoardManager = (function () {
             $element.find('.remove-package-button').click(function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
             });
-            $element.find('.divide-package-button').click(function () {
+            $element.find('.divide-package-button').click(function (event) {
                 self.canMoveAccommodation = false;
+                var scissorIcon = event.target;
                 if (intervalData.viewPackage) {
-                    var scissorsElement = _this.childNodes[0];
-                    scissorsElement.onclick = function () {
+                    scissorIcon.onclick = function () {
                         self.updatePackagesData();
                     };
-                    var accommodationElement_1 = _this.parentNode.parentNode;
-                    var accommodationWidth_1 = parseInt(accommodationElement_1.style.width, 10);
-                    var tableCellWidth_1 = styleConfigs[_this.currentSizeConfigNumber].tableCellWidth;
+                    var accommodationWidth_1 = parseInt(element.style.width, 10);
+                    var tableCellWidth_1 = styleConfigs[self.currentSizeConfigNumber].tableCellWidth;
                     if (accommodationWidth_1 == tableCellWidth_1 * 2) {
                         $('.divide-package-button').tooltip('hide');
-                        self.divide(accommodationElement_1, accommodationWidth_1 / 2);
+                        self.divide(element, accommodationWidth_1 / 2);
                     }
                     else {
-                        var packageLeftCoordinate_1 = accommodationElement_1.getBoundingClientRect().left;
+                        var packageLeftCoordinate_1 = element.getBoundingClientRect().left;
                         var line_1 = document.createElement('div');
                         line_1.classList.add('dividing-line');
-                        var accommodationElementWidth = parseInt(getComputedStyle(accommodationElement_1).width, 10);
+                        var accommodationElementWidth = parseInt(getComputedStyle(element).width, 10);
                         var isAccommodationAbroadTable_1 = (accommodationElementWidth % tableCellWidth_1) != 0
                             && ((accommodationElementWidth + 1) % tableCellWidth_1) != 0;
-                        var packageToMiddayOffset_1 = _this.getPackageToMiddayOffset();
+                        var packageToMiddayOffset_1 = self.getPackageToMiddayOffset();
                         var defaultLeftValue_1 = isAccommodationAbroadTable_1
                             ? tableCellWidth_1 + packageToMiddayOffset_1
                             : tableCellWidth_1;
                         line_1.style.left = defaultLeftValue_1 + 'px';
-                        accommodationElement_1.appendChild(line_1);
-                        accommodationElement_1.onmousemove = function (event) {
+                        element.appendChild(line_1);
+                        element.onmousemove = function (event) {
                             var offset = event.clientX - packageLeftCoordinate_1;
                             var griddedOffset;
                             if (isAccommodationAbroadTable_1) {
@@ -489,9 +487,9 @@ var ChessBoardManager = (function () {
                                 griddedOffset -= tableCellWidth_1;
                             }
                             line_1.style.left = griddedOffset + 'px';
-                            accommodationElement_1.onclick = function () {
-                                accommodationElement_1.onmousemove = null;
-                                accommodationElement_1.removeChild(line_1);
+                            element.onclick = function () {
+                                element.onmousemove = null;
+                                element.removeChild(line_1);
                                 self.divide(this, griddedOffset);
                             };
                         };
@@ -665,7 +663,7 @@ var ChessBoardManager = (function () {
         });
     };
     ChessBoardManager.prototype.getGriddedHeightValue = function (height) {
-        //1 - бордер
+        //1px - border
         var packageElementHeight = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1;
         return Math.floor(height / packageElementHeight) * packageElementHeight - 1;
     };
@@ -676,7 +674,7 @@ var ChessBoardManager = (function () {
         return intervalMomentEnd.isAfter(this.tableEndDate);
     };
     /**
-     * Получение строки, содержащей первые буквы сторон, в которые можно расширять бронь.(e - east, w - west)
+     * Getting the line, containing first letters of sides in which enable widening (e - east, w - west)
      * @param intervalData
      * @returns {string}
      */

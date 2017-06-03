@@ -121,7 +121,7 @@ var initAccommodationTab = function () {
         if (!confirmed) {
             var text = [];
             if ($checkOut.is(':checked') && Package.debt > 0) {
-                text.push('Заказ не оплачен');
+                text.push(Translator.trans("package.order_is_not_paid"));
             }
             var confirmText = getConfirmText();
             if (confirmText) {
@@ -129,7 +129,7 @@ var initAccommodationTab = function () {
             }
             if (text.length > 0) {
                 e.preventDefault();
-                mbh.alert.show(null, 'Подтверждение', text.join('<br>'), 'Продолжить', null, 'danger', function () {
+                mbh.alert.show(null, Translator.trans("package.confirmation"), text.join('<br>'), Translator.trans("package.continue"), null, 'danger', function () {
                     mbh.alert.hide();
                     confirmed = true;
                     $('button[type=submit][name=save]').trigger('click');
@@ -275,8 +275,8 @@ var docReadyPackages = function () {
                             $modal.find('input[type=checkbox]').bootstrapSwitch({
                                 'size': 'mini',
                                 'onColor' : 'success',
-                                'onText': 'да',
-                                'offText': 'нет'
+                                'onText': Translator.trans("package.yes"),
+                                'offText': Translator.trans("package.no")
                             });
                             var form = $modal.find("form");
 
@@ -460,8 +460,8 @@ var docReadyPackages = function () {
                 if (!response.error) {
                     $body.find("input[type=checkbox]").bootstrapSwitch({
                         'size': 'small',
-                        'onText': 'да',
-                        'offText': 'нет',
+                        'onText': Translator.trans("package.yes"),
+                        'offText': Translator.trans("package.no"),
                         'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>'
                     });
                     $body.find("select").select2();
@@ -494,7 +494,7 @@ $(document).ready(function () {
         }
         tabs.find('li > a').click(function (e) {
             e.preventDefault();
-            $('.tab-pane').html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            $('.tab-pane').html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>' + Translator.trans("package.processing") + '...</div>');
             tabs.find('li').removeClass('active');
             $(this).closest('li').addClass('active');
             var href = $(this).attr('href');

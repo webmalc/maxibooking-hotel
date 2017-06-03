@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Controller\ChessBoardController;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
@@ -260,7 +261,6 @@ class ChessBoardDataBuilder
                 $this->packageAccommodations = $this->accommodationManipulator
                     ->sortAccommodationsByBeginDate($accommodations->toArray())->toArray();
 
-                //сортируем по id брони
                 usort($this->packageAccommodations, function ($a, $b) {
                     /** @var PackageAccommodation $a */
                     /** @var PackageAccommodation $b */
@@ -464,19 +464,11 @@ class ChessBoardDataBuilder
 
             foreach ($roomsByRoomType as $room) {
                 /** @var Room $room */
-                //TODO: Переделать
-                $houseDetails = '';
-                if ($room->getHousing()) {
-                    $houseDetails .= "Корпус \"" . $room->getHousing()->getName() . "\"<br>";
-                }
-                if ($room->getFloor()) {
-                    $houseDetails .= 'Этаж ' . $room->getFloor();
-                }
 
                 $roomsData[$room->getId()] = [
                     'name' => $room->getName(),
                     'statuses' => $room->getStatus()->toArray(),
-                    'houseDetails' => $houseDetails
+                    'room' => $room
                 ];
             }
         }

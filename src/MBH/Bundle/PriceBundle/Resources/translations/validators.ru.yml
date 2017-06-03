@@ -19,3 +19,17 @@ mbhpricebundle.form.restrictiongeneratortype.nachalo_perioda_dolzhno_bit_menshe_
 mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_bolshe_goda: 'Период не может быть больше года.'
 mbhpricebundle.form.restrictiongeneratortype.minimalnoe_kolichestvo_gostey_ne_mozhet_bit_bolshe_maximalnogo_kolichestva_gostey: 'Минимальное количество гостей не может быть больше максимального количества гостей'
 mbhpricebundle.promotion_type.fill_specified_fields: 'Заполните поля "%first_field%" или "%second_field%" или "%third_field%"'
+document.service_category.hotel.hotel_not_chosen: "Не выбран отель"
+document.service_category.full_title.too_short: 'Слишком короткое имя'
+document.service_category.full_title.too_long: 'Слишком длинное имя'
+document.service_category.title.too_long: 'Слишком короткое имя'
+document.service_category.title.too_long: 'Слишком длинное имя'
+document.service_category.description.too_short: 'Слишком короткое описание'
+document.service_category.description.too_long: 'Слишком длинное описание'
+document.tariff.hotel.hotel_not_chosen: "Не выбран отель"
+document.tariff.full_title.too_short: 'Слишком короткое имя'
+document.tariff.full_title.too_long: 'Слишком длинное имя'
+document.tariff.title.too_long: 'Слишком короткое имя'
+document.tariff.title.too_long: 'Слишком длинное имя'
+document.tariff.description.too_short: 'Слишком короткое описание'
+document.tariff.description.too_long: 'Слишком длинное описание'

@@ -413,7 +413,7 @@ var ActionManager = (function () {
         var modal = $('#packageModal');
         var payerText;
         var payerName = modal.find('#modal-package-payer').text();
-        if (payerName != 'Не указан') {
+        if (payerName != Translator.trans('action_manager.update_modal.not_specified')) {
             payerText = payerName;
         }
         else {

@@ -63,7 +63,6 @@ jQuery(document).ready(function() {
                 });
             },
             query = getUrlVars();
-        //var errorHtml = '<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>';
         var errorHtml = jQuery('#mbh-date-error').clone().removeClass('hide').attr('id', '');
         if (!query.begin || !query.end) {
             wrapper.html(errorHtml);
