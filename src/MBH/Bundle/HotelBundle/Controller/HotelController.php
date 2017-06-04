@@ -117,7 +117,8 @@ class HotelController extends Controller
 
             //todo: create services
             $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-            $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &');
+            $client = $this->container->getParameter('client');
+            $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &', null, ['MBCLIENT' => $client]);
             $process->run();
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
@@ -217,7 +218,7 @@ class HotelController extends Controller
      * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template()
      * @param Hotel $entity
-     * @return Response
+     * @return array
      */
     public function extendedAction(Hotel $entity)
     {

@@ -11,6 +11,7 @@ use Symfony\Component\Process\Process;
  */
 class ConsoleAutoTaskCreator extends AutoTaskCreator
 {
+
     protected function getPathConsole()
     {
         $rootDir = $this->container->get('kernel')->getRootDir();
@@ -23,14 +24,14 @@ class ConsoleAutoTaskCreator extends AutoTaskCreator
      */
     public function createDailyTasks()
     {
-        $process = new Process('nohup php ' . $this->getPathConsole() .' mbh:task:auto --no-debug');
+        $process = new Process('nohup php ' . $this->getPathConsole() .' mbh:task:auto --no-debug', null, ['MBCLIENT' => $this->client]);
         return $process->run();
     }
 
     protected function createCheck($check, Package $package)
     {
         $command = 'nohup php ' . $this->getPathConsole() .' mbh:task:auto '.$check.' '.$package->getId().' --no-debug';
-        $process = new Process($command);
+        $process = new Process($command, null, ['MBCLIENT' => $this->client]);
         return $process->run();
     }
 

@@ -1,7 +1,19 @@
-#rabbitmq-supervisor
+#rabbitmq-supervisor-setup
 rabbit_mq_supervisor:
+    worker_count:                       1 # number of workers per queue
+    supervisor_instance_identifier:     "%supervisor_instance_name%"
+    paths:
+        workspace_directory:            '%supervisor_workspace_directory%'
+        configuration_file:             '%supervisor_configuration_file%'
+        pid_file:                       '%supervisor_pid_file%'
+        sock_file:                      '%supervisor_sock_file%'
+        log_file:                       '%supervisor_log_file%'
+        worker_configuration_directory: '%supervisor_worker_configuration_directory%'
+        worker_output_log_file:         '%supervisor_worker_output_log_file%'
+        worker_error_log_file:          '%supervisor_worker_error_log_file%'
     commands:
         rabbitmq_consumer: rabbitmq:consumer -m 1 %%2$s
+        rabbitmq_multiple_consumer:     user-specific-command:multiple-consumer -m %%1$d %%2$s
 
 #rabbitmq
 old_sound_rabbit_mq:

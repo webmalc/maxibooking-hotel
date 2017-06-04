@@ -71,3 +71,16 @@ parameters:
 
   mbh_modules:
     tasks: true
+
+  #client name for env
+  client: null
+  #Supervisor
+  supervisor_instance_name: supervisor_default
+  supervisor_workspace_directory:    '%kernel.root_dir%/supervisor/%kernel.environment%/'
+  supervisor_configuration_file:     '%kernel.root_dir%/supervisor/%kernel.environment%/supervisord.conf'
+  supervisor_pid_file:               '%kernel.root_dir%/supervisor/%kernel.environment%/supervisor.pid'
+  supervisor_sock_file:              '%kernel.root_dir%/supervisor/%kernel.environment%/supervisor.sock'
+  supervisor_log_file:                        '%kernel.root_dir%/supervisor/%kernel.environment%/supervisord.log'
+  supervisor_worker_configuration_directory:  '%kernel.root_dir%/supervisor/%kernel.environment%/worker/'
+  supervisor_worker_output_log_file:          '%kernel.root_dir%/supervisor/%kernel.environment%/logs/stdout.log'
+  supervisor_worker_error_log_file:           '%kernel.root_dir%/supervisor/%kernel.environment%/logs/stderr.log'
