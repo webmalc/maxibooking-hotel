@@ -4,22 +4,24 @@ namespace MBH\Bundle\PriceBundle\Services;
 
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\HotelBundle\Document\Room;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultInstance;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSpecialResultGenerator;
 use MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
-use MBH\Bundle\PackageBundle\Services\Calculation;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\SpecialPrice;
-use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Monolog\Logger;
 
+/**
+ * Class SpecialHandler
+ * @package MBH\Bundle\PriceBundle\Services
+ */
 class SpecialHandler
 {
     /** @var SearchFactory $search */
@@ -32,6 +34,10 @@ class SpecialHandler
     private $specialSearchHelper;
     /** @var  OnlineSearchFormData */
     private $onlineSearchFormData;
+    /** @var Notifier */
+    private $mailer;
+    /** @var array */
+    private $disabledSpecials = [];
 
     /**
      * SpecialHandler constructor.
@@ -41,6 +47,7 @@ class SpecialHandler
      * @param SpecialDataPreparer $specialHelper
      * @param OnlineSpecialResultGenerator $specialSearchHelper
      * @param OnlineSearchFormData $onlineSearchFormData
+     * @param Notifier $mailer
      */
     public function __construct(
         SearchFactory $search,
@@ -48,7 +55,9 @@ class SpecialHandler
         Logger $logger,
         SpecialDataPreparer $specialHelper,
         OnlineSpecialResultGenerator $specialSearchHelper,
-        OnlineSearchFormData $onlineSearchFormData
+        OnlineSearchFormData $onlineSearchFormData,
+        Notifier $mailer
+
     ) {
         $this->dm = $dm;
         $this->search = $search;
@@ -56,6 +65,8 @@ class SpecialHandler
         $this->specialHepler = $specialHelper;
         $this->specialSearchHelper = $specialSearchHelper;
         $this->onlineSearchFormData = $onlineSearchFormData;
+        $this->mailer = $mailer;
+
     }
 
 
@@ -71,8 +82,14 @@ class SpecialHandler
         foreach ($specials as $special) {
             $this->calculateSpecial($special->getId(), $output);
         }
+
+        $this->notify();
     }
 
+    /**
+     * @param string $specialId
+     * @param callable|null $output
+     */
     private function calculateSpecial(string $specialId, callable $output = null): void
     {
         $special = $this->dm->find('MBHPriceBundle:Special', ['id' => $specialId]);
@@ -110,21 +127,23 @@ class SpecialHandler
                 if (!$onlineSearchResult->isSameVirtualRoomInSpec()) {
                     $err.=' виртуальная комната занята';
                 }
-                $special->setError($err);
-
             }
         } else {
             $err = 'Поиск не вернул результат для спецпредложения';
         }
 
         if ($err) {
+
+            $special->setError($err);
+            $special->setIsEnabled(false);
+
+            $this->disabledSpecials[] = $special;
             $this->addLogMessage(
                 $err,
                 ['specialId' => $special->getId(), 'specialName' => $special->getName()],
                 $output
             );
         }
-
 
         $special->setNoRecalculation();
         $this->dm->flush();
@@ -134,8 +153,17 @@ class SpecialHandler
             ['specialId' => $special->getId(), 'specialName' => $special->getName()],
             $output
         );
+
     }
 
+    //Задумывал выводить какая бронь перекрывает спецпредолжение. Пока не надо.
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param Room $virtualRoom
+     * @return array|\MBH\Bundle\PackageBundle\Document\Package[]
+     */
     private function getPackage(\DateTime $begin, \DateTime $end, Room $virtualRoom)
     {
         $criteria = new PackageQueryCriteria();
@@ -151,6 +179,11 @@ class SpecialHandler
         return $packages;
     }
 
+    /**
+     * @param string $message
+     * @param array $context
+     * @param callable|null $output
+     */
     private function addLogMessage(string $message, array $context, callable $output = null)
     {
         $this->logger->addInfo($message, $context);
@@ -159,6 +192,10 @@ class SpecialHandler
         }
     }
 
+    /**
+     * @param Special $special
+     * @return OnlineSearchFormData
+     */
     private function getFormData(Special $special): OnlineSearchFormData
     {
         $roomType = $special->getVirtualRoom() ? $special->getVirtualRoom()->getRoomType() : null;
@@ -182,9 +219,34 @@ class SpecialHandler
             $qb = $this->dm->getRepository('MBHPriceBundle:Special')->createQueryBuilder();
             $specials = $qb->field('id')->in($specialIds)->getQuery()->execute();
         } else {
-            $specials = $this->dm->getRepository('MBHPriceBundle:Special')->findAll();
+            $specialFilter = new SpecialFilter();
+
+            $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($specialFilter);
         }
 
         return $specials;
+    }
+
+
+    private function notify()
+    {
+        if (count($this->disabledSpecials)) {
+            $message = $this->mailer::createMessage();
+            $message
+                ->setText('special.auto.disable')
+                ->setFrom('system')
+                ->setSubject('special.disable')
+                ->setType('info')
+                ->setTemplate('MBHBaseBundle:Mailer:specials.autoDisable.html.twig')
+                ->setAdditionalData([
+                    'disabledSpecials' => $this->disabledSpecials,
+                ])
+                ->setAutohide(false)
+                ->setEnd(new \DateTime('+1 minute'));
+
+            $this->mailer
+                ->setMessage($message)
+                ->notify();
+        }
     }
 }

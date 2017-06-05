@@ -115,3 +115,6 @@ mailer.base.rate.perfect: Perfect
 
 to: to
 from: from
+
+special.disable: Автоотключение спец. предложений.
+special.auto.disable: Перечисленные спец. предложения отключены.

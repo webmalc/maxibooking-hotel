@@ -1,0 +1,22 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+{% set link = '' %}
+{#{% set link = url('package_moving') %}#}
+
+{% block subject %}
+    {% if disabledSpecials is not empty %}
+    <div>
+        <p style="font-size: 1.35em">
+            Список отключенных спецпредложений
+        </p>
+        {% for special in disabledSpecials %}
+            <p style="font-size: 0.75em">
+                <a href="{{ url('special_edit', {id: special.id}) }}">{{ special.fullTitle }}</a>
+            </p>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div>
+            <p>Это письмо не должно было приходить</p>
+        </div>
+    {% endif %}
+{% endblock %}
