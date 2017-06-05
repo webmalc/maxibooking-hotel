@@ -1,4 +1,5 @@
-/*global document, window, $, alert */
+/*global document, window, $, alert, Translator */
+
 $(document).ready(function () {
     'use strict';
     var $hints = [

@@ -130,3 +130,74 @@ polls_user_script.reset_rating: Сбросить оценку
 polls_user_script.no_answer: Без ответа
 polls_user_script.please_set_rating: Пожалуйста, выставите вашу оценку по крайней мере по 5 пунктам!
 polls_user_script.many_thanks: Большое спасибо
+
+late_early_date_checker.guests_arrived_earlier: 'Гости заехали раньше назначенного времени'
+late_early_date_checker.guests_departured_earlier: 'Гости выезжают позже назначенного времени'
+late_early_date_checker.guests_check_in_earlier: 'Гости заехали раньше и выехали позже назначенного времени.'
+
+search.upon_arrival: 'при заезде'
+
+020_user.bad: Плохой
+020_user.normal: Обычный
+020_user.good: "Хороший"
+020_user.excellent: "Отличный"
+020_user.super: "Супер"
+020_user.make_a_choice: "Сделайте выбор"
+
+003-task.chose_all: Выбрать все
+003-task.clear: Очистить
+003-task.take_to_work: Взять в работу
+003-task.complete: Завершить
+api.get_results.price_for: "{1} Цена за человека|]1,19] Цена за %number_of_tourist% человек"
+
+online.online-calendar.close: Закрыть
+online.online-calendar.prev_abbr: Пред
+online.online-calendar.next_abbr: След
+online.online-calendar.today: Сегодня
+online.online-calendar.sun_abbr: "вск"
+online.online-calendar.mon_abbr: "пнд"
+online.online-calendar.tue_abbr: 'втр'
+online.online-calendar.wed_abbr: 'срд'
+online.online-calendar.thu_abbr: 'чтв'
+online.online-calendar.fri_abbr: 'птн'
+online.online-calendar.sat_abbr: 'сбт'
+online.online-calendar.sun_abbr_min: "Вс"
+online.online-calendar.mon_abbr_min: "Пн"
+online.online-calendar.tue_abbr_min: 'Вт'
+online.online-calendar.wed_abbr_min: 'Ср'
+online.online-calendar.thu_abbr_min: 'Чт'
+online.online-calendar.fri_abbr_min: 'Пт'
+online.online-calendar.sat_abbr_min: 'Сб'
+
+cash.not_confirmed: Не подтверждено
+
+010-app.error_occured: Произошла ошибка во время запроса. Попробуйте еще раз
+010-app.shift_lock: Блокирование смены
+010-app.sure_block_shift: 'Вы уверены, что хотите блокировать текущую смену'
+010-app.block: 'Блокировать'
+010-app.work_shift_not_closed: 'Рабочая смена не закрыта'
+010-app.go_out: 'Выйти'
+
+020-forms.chose_organization: 'Выберите организацию'
+020-forms.inn: ИНН
+020-forms.chose_all: выбрать всё
+020-forms.yes: да
+020-forms.no: нет
+020-forms.make_choice: "Сделайте выбор"
+020-forms.select_city: 'Выберите город'
+020-forms.select_package: 'Выберите бронь'
+020-forms.select_guest: 'Выберите гостя'
+
+004-roomCache.days_will_be_removed: Дни будет удалены
+005-priceCache.price_will_be_removed: Цена будет удалена
+
+008-special.hide_packages: скрыть брони
+008-special.show_packages: показать брони
+
+060-restriction.price_will_be_removed: 'Цена будет удалена'
+
+004-calculate-orderprice.make_a_choice: "Сделайте выбор"
+
+001-add_dish_item.first_add_dishes: 'Сначала добавьте блюда в %hrefTagStart% соответствующем разделе'
+
+views.task.index.before: до

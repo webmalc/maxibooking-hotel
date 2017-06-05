@@ -69,6 +69,7 @@ services.hundredOneHotels.nor_one_room_type: 'В данном отеле не с
 services.hundredOneHotels.nor_one_tariff: 'В данном отеле не существует ни одного тарифа'
 controller.hundredOneHotelsController.settings_saved_success: 'Настройки успешно сохранены.'
 services.hundredOneHotels.cash_document_not_paid: 'Безналичный платеж не подтвержден'
+services.ostrovok.error_getting_price_for_number: 'Ошибка получения цены для номера %roomTypeName% для %numberOfAdults% вз.'
 
 #myAllocator
 form.myallocatorType.username: Логин

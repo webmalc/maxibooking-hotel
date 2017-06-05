@@ -86,3 +86,5 @@ views.api.notification: 'Новые брони из онлайн-формы'
 
 views.api.get_user_form.default_name: Иван
 views.api.get_user_form.services: Услуги
+
+views.poll.config.voting_code: Код голосования для вставки на сайт

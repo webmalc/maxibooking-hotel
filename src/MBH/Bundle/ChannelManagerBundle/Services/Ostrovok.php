@@ -258,8 +258,10 @@ class Ostrovok extends Base
                                 );
                                 $price = $price[$adults.'_'.$children]['total']??null;
                                 if (!$price) {
-                                    $message = 'Ошибка получения цены для номера '.$roomType->getFullTitle(
-                                    ).' для '.$adults.' вз.';
+                                    $message = $this->container->get('translator')->trans('services.ostrovok.error_getting_price_for_number', [
+                                        '%roomTypeName%' => $roomType->getFullTitle(),
+                                        '%numberOfAdults%' => $adults
+                                    ]);
                                     $this->log('Error! '.$message);
                                     continue;
                                     /*throw new \Exception($message);*/

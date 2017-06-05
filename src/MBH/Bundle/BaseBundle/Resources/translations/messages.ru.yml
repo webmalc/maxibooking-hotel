@@ -5,7 +5,8 @@ mbhbasebundle.service.helper.dvesti: двести
 mbhbasebundle.service.helper.trista: триста
 mbhbasebundle.service.helper.chetyresta: четыреста
 mbhbasebundle.service.helper.miliarda: милиарда
-mbhbasebundle.service.helper.odna: Один
+mbhbasebundle.service.helper.one: Один
+mbhbasebundle.service.helper.odna: Одна
 mbhbasebundle.service.helper.dve: Два
 mbhbasebundle.service.helper.tri: Три
 mbhbasebundle.service.helper.chetire: Четыре
@@ -25,7 +26,10 @@ mbhbasebundle.service.helper.seventeen: Семнадцать
 mbhbasebundle.service.helper.eighteen: Восемнадцать
 mbhbasebundle.service.helper.nineteen: Девятнадцать
 mbhbasebundle.service.helper.million: миллион
+mbhbasebundle.service.helper.millionа: миллиона
+mbhbasebundle.service.helper.millionov: миллионов
 mbhbasebundle.service.helper.milliard: миллиард
+mbhbasebundle.service.helper.milliardov: миллиардов
 mbhbasebundle.view.partials.datepickerperiodselect.period: Период
 mbhbasebundle.view.pdftemplates.individual.izveshcheniye: Извещение
 mbhbasebundle.view.pdftemplates.individual.kassir: Кассир
@@ -392,7 +396,7 @@ menu.label.nomandprice.prices: Цены
 menu.label.nomandprice.restriction: Условия и ограничения
 menu.label.nomandprice.services: Услуги
 menu.label.nomandprice.promotions: Акции
-menu.label.task:  Задачи
+menu.label.task: Задачи
 menu.label.cash: Касса
 menu.label.warehouse: Склад
 menu.label.restaurant: Ресторан
@@ -581,3 +585,7 @@ controllers.export_controller.no: Нет
 
 views.partials.disable_button.show_disabled_room_types: 'Показывать отключенные типы комнат'
 views.partials.disable_button.entity_delete_form.remove: Удалить
+
+twig.extensiion.day_abbr: 'д.'
+twig.extensiion.hour_abbr: 'ч.'
+twig.extensiion.minute_abbr: 'мин.'

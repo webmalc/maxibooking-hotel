@@ -37,6 +37,9 @@ restaurant:
       title:              редактирование категории ингредиентов
 
   ingredient:
+    editIngredient:
+      small_title:        "редактирование ингредиента в категории <%categoryName%>"
+    name:                 Название
     price:                цена
     costprice:            себестоимость
     output:               выход
@@ -136,6 +139,8 @@ restaurant:
         margin:
           label:          Процент маржи
           disabled:       Установлена маржа, цена формируется автоматически.
+        is_marging:
+          label:          Маржа
         amount:
           help:           Количество
           placeholder:    Количество ингредиента

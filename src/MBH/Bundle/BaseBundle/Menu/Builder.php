@@ -187,9 +187,6 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-clock-o']);
         //}
 
-        /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
-            ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
-
         return $this->filter($menu, $factory, $options);
     }
 

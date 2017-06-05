@@ -49,8 +49,12 @@ class MailerCommand extends ContainerAwareCommand
             ->getQuery()
             ->execute();
         ;
+
+        $translatedTransferCategory = $this->getContainer()->get('translator')
+            ->trans('price.datafixtures.mongodb.servicedata.transfer');
+
         $transferCategories = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->findBy([
-           '$or' => [['fullTitle' => 'Трансфер'], ['title' => 'Трансфер']],
+           '$or' => [['fullTitle' => $translatedTransferCategory], ['title' => $translatedTransferCategory]],
            'isEnabled' => true
         ]);
         $transferServices = $this->dm->getRepository('MBHPriceBundle:Service')->findBy([

@@ -78,7 +78,7 @@ $(document).ready(function () {
         }
 
         hideFilters();
-        wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>' + Translator.trans("package.processing") + '...</div>');
+        wrapper.html(mbh.loader.html);
         $.ajax({
             url: Routing.generate('analytics_choose'),
             data: $('#analytics-filter').serialize(),
