@@ -23,6 +23,7 @@
     </div>
 {% endif %}
 
+{% if entity %}
 {%  set notifications = mbh_channelmanager_get_notifications(entity) %}
 {% if notifications|length %}
     <div class="alert alert-warning">
@@ -33,6 +34,7 @@
             </p>
         {% endfor %}
     </div>
+{% endif %}
 {% endif %}
 
 <ul class="nav nav-tabs" role="tablist">
