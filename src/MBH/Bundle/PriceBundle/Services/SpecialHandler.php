@@ -64,8 +64,8 @@ class SpecialHandler
         SpecialDataPreparer $specialHelper,
         OnlineSpecialResultGenerator $specialSearchHelper,
         OnlineSearchFormData $onlineSearchFormData,
-        Notifier $mailer,
-        DataCollectingValidator $validator
+        Notifier $mailer
+//        DataCollectingValidator $validator
 
     ) {
         $this->dm = $dm;
@@ -75,7 +75,7 @@ class SpecialHandler
         $this->specialSearchHelper = $specialSearchHelper;
         $this->onlineSearchFormData = $onlineSearchFormData;
         $this->mailer = $mailer;
-        $this->validator = $validator;
+//        $this->validator = $validator;
 
     }
 
@@ -166,12 +166,13 @@ class SpecialHandler
             );
         }
         $special->setNoRecalculation();
-        $errors = $this->validator->validate($special);
-        if (!count($errors)) {
-            $this->dm->flush();
-        } else {
-            $this->addLogMessage('Ошибка сохранения спецпредложения!', ['specialName' => $special->getName], $output);
-        }
+//        $errors = $this->validator->validate($special);
+//        if (!count($errors)) {
+//            $this->dm->flush();
+//        } else {
+//            $this->addLogMessage('Ошибка сохранения спецпредложения!', ['specialName' => $special->getName], $output);
+//        }
+        $this->dm->flush();
 
         $this->dm->clear();
         $this->addLogMessage(
