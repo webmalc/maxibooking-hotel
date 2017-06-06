@@ -228,6 +228,11 @@ class OrderHandler
         return $adultAndChildrenCounts;
     }
 
+    /**
+     * @param $combination
+     * @param Tariff $tariff
+     * @return array
+     */
     public function getAdultsChildrenCounts($combination, Tariff $tariff)
     {
         $adultsCount = $combination['adults'];

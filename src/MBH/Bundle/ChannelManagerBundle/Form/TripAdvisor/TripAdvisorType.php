@@ -32,7 +32,6 @@ class TripAdvisorType extends AbstractType
                 'hotelId', TextType::class, [
                     'label' => 'form.trip_advisor_type.hotel_id',
                     'required' => true,
-//                    'attr' => ['placeholder' => ''],
                     'help' => 'form.trip_advisor_type.hotel_id_in_trip_advisor',
                 ]
             )
@@ -72,6 +71,13 @@ class TripAdvisorType extends AbstractType
             ->add('termsAndConditions', TextareaType::class, [
                 'label' => 'form.trip_advisor_type.terms_and_confitions.label',
                 'help' => 'form.trip_advisor_type.terms_and_confitions.help'
+            ])
+            ->add('child_policy', TextareaType::class, [
+                'label' => 'form.trip_advisor_type.child_policy.label',
+                'attr' => [
+                    'placeholder' => 'form.trip_advisor_type.child_policy.placeholder'
+                ],
+                'required' => false
             ])
             ->add('paymentType', InvertChoiceType::class, [
                 'label' => 'form.trip_advisor_type.payment_type.label',

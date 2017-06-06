@@ -116,10 +116,35 @@ class TripAdvisorConfig extends Base
      */
     protected $rooms;
 
+    /**
+     * @var string
+     * @ODM\Field(type="string", nullable=true)
+     */
+    protected $childPolicy;
+
     public function __construct()
     {
         $this->tariffs = new ArrayCollection();
         $this->rooms = new ArrayCollection();
+    }
+
+    /**
+     * @return string
+     */
+    public function getChildPolicy(): ?string
+    {
+        return $this->childPolicy;
+    }
+
+    /**
+     * @param string $childPolicy
+     * @return TripAdvisorConfig
+     */
+    public function setChildPolicy(?string $childPolicy): TripAdvisorConfig
+    {
+        $this->childPolicy = $childPolicy;
+
+        return $this;
     }
 
     /**

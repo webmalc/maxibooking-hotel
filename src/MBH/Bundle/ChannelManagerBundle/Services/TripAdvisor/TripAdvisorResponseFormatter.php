@@ -870,7 +870,7 @@ class TripAdvisorResponseFormatter
                 'number_of_children' => $roomType->getTotalPlaces() - 1
             ],
             'bed_configurations' => [$this->getBedConfiguration($roomType)],
-            'extra_bed_configurations' => [],
+            'extra_bed_configurations' => [$this->getBedConfiguration($roomType)],
             'room_smoking_policy' => $roomType->getIsSmoking() ? 'smoking' : 'non_smoking',
             'room_view_type' => $this->getRoomViewTypes($roomType)
         ];
@@ -1026,7 +1026,7 @@ class TripAdvisorResponseFormatter
 
     private function getRateMealPlanes(Tariff $tariff)
     {
-        $rateMealPlanes = ['custom' => []];
+        $rateMealPlanes = ['custom' => [], 'standard' => []];
         foreach ($tariff->getDefaultServices() as $service) {
             /** @var TariffService $service */
             $serviceCode = $service->getService()->getCode();
