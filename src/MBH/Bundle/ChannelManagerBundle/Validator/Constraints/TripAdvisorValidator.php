@@ -30,7 +30,7 @@ class TripAdvisorValidator extends ConstraintValidator
             if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
                 foreach ($document->getHotel()->getTripAdvisorConfig()->getTariffs() as $tariff) {
                     /** @var TripAdvisorTariff $tariff */
-                    if ($tariff->getTariff() == $document && $tariff->getIsEnabled()) {
+                    if ($tariff->getTariff() === $document && $tariff->getIsEnabled()) {
                         $unfilledFields = TripAdvisorHelper::getTariffRequiredUnfilledFields($document);
                     }
                 }
@@ -39,7 +39,7 @@ class TripAdvisorValidator extends ConstraintValidator
             if ($this->isTripAdvisorConfigEnabled($document->getHotel())) {
                 foreach ($document->getHotel()->getTripAdvisorConfig()->getRooms() as $room) {
                     /** @var TripAdvisorRoomType $room */
-                    if ($room->getRoomType() == $document && $room->getIsEnabled()) {
+                    if ($room->getRoomType() === $document && $room->getIsEnabled()) {
                         $unfilledFields = TripAdvisorHelper::getRoomTypeRequiredUnfilledFields($document);
                     }
                 }
