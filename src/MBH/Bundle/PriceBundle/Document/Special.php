@@ -167,6 +167,7 @@ class Special extends Base
     /**
      * @var Room
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
+     * @Assert\NotNull()
      */
     protected $virtualRoom;
 

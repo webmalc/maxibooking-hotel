@@ -13,10 +13,19 @@
                 <a href="{{ url('special_edit', {id: special.id}) }}">{{ special.fullTitle }}</a>
             </p>
         {% endfor %}
+
     </div>
-    {% else %}
+    {% endif %}
+    {% if enabledSpecials is not empty %}
         <div>
-            <p>Это письмо не должно было приходить</p>
+            <p style="font-size: 1.35em">
+                Список повторно включенных спецпредложений
+            </p>
+            {% for special in enabledSpecials %}
+                <p style="font-size: 0.75em">
+                    <a href="{{ url('special_edit', {id: special.id}) }}">{{ special.fullTitle }}</a>
+                </p>
+            {% endfor %}
         </div>
     {% endif %}
 {% endblock %}

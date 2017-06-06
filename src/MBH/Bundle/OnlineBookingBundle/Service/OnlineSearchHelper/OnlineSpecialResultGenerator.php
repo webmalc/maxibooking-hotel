@@ -34,7 +34,7 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
         $roomType = $formData->getRoomType();
 
         if ($special && $roomType) {
-            if (!$special->getRemain() || !$special->getIsEnabled()) {
+            if (!$special->getRemain() || (!$special->getIsEnabled() && !$formData->isForceSearchDisabledSpecial())) {
                 return new ArrayCollection();
             }
             $searchQuery = $this->initSearchQuery($formData);

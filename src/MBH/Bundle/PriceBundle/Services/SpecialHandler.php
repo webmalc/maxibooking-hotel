@@ -4,8 +4,10 @@ namespace MBH\Bundle\PriceBundle\Services;
 
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Liip\FunctionalTestBundle\Validator\DataCollectingValidator;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultInstance;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSpecialResultGenerator;
@@ -15,6 +17,7 @@ use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\SpecialPrice;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Monolog\Logger;
 
@@ -38,6 +41,10 @@ class SpecialHandler
     private $mailer;
     /** @var array */
     private $disabledSpecials = [];
+    /** @var array */
+    private $enabledSpecials = [];
+
+    private $validator;
 
     /**
      * SpecialHandler constructor.
@@ -48,6 +55,7 @@ class SpecialHandler
      * @param OnlineSpecialResultGenerator $specialSearchHelper
      * @param OnlineSearchFormData $onlineSearchFormData
      * @param Notifier $mailer
+     * @param DataCollectingValidator $validator
      */
     public function __construct(
         SearchFactory $search,
@@ -56,7 +64,8 @@ class SpecialHandler
         SpecialDataPreparer $specialHelper,
         OnlineSpecialResultGenerator $specialSearchHelper,
         OnlineSearchFormData $onlineSearchFormData,
-        Notifier $mailer
+        Notifier $mailer,
+        DataCollectingValidator $validator
 
     ) {
         $this->dm = $dm;
@@ -66,6 +75,7 @@ class SpecialHandler
         $this->specialSearchHelper = $specialSearchHelper;
         $this->onlineSearchFormData = $onlineSearchFormData;
         $this->mailer = $mailer;
+        $this->validator = $validator;
 
     }
 
@@ -92,13 +102,17 @@ class SpecialHandler
      */
     private function calculateSpecial(string $specialId, callable $output = null): void
     {
-        $special = $this->dm->find('MBHPriceBundle:Special', ['id' => $specialId]);
+        $special = $this->getSpecial($specialId);
+
         if (!$special) {
             return;
         }
+
         $special->setRecalculation();
         $this->dm->flush();
+
         $special->removeAllPrices();
+
         $this->addLogMessage(
             'Start calculate for special',
             ['specialId' => $special->getId(), 'specialName' => $special->getName()],
@@ -107,46 +121,58 @@ class SpecialHandler
         //Здесь используется уже готовый код для поиска в онлайн
         $searchForm = $this->getFormData($special);
         $searchResults = $this->specialSearchHelper->getResults($searchForm);
-        $err = '';
+        $error = '';
         /** @var OnlineResultInstance $onlineSearchResult */
-        if (!$searchResults->isEmpty()) {
+        if ($searchResults->isEmpty()) {
+            $error = 'Поиск не вернул результат для спецпредложения';
+        } elseif (!$searchResults->isEmpty()) {
             $onlineSearchResult = $searchResults->first();
             /** @var SearchResult $searchResult */
+
             if (count($onlineSearchResult->getResults()) && $onlineSearchResult->isSameVirtualRoomInSpec()) {
                 $searchResult = $searchResults->first()->getResults()->first();
-                $specialPrice = new SpecialPrice();
-                $specialPrice
-                    ->setTariff($searchResult->getTariff())
-                    ->setRoomType($searchResult->getRoomType())
-                    ->setPrices($searchResult->getPrices());
+                $specialPrice = $this->createSpecialPrice(
+                    $searchResult->getTariff(),
+                    $searchResult->getRoomType(),
+                    $searchResult->getPrices()
+                );
                 $special->addPrice($specialPrice);
                 $special->clearError();
                 $this->addLogMessage('Найдены цены', $searchResult->getPrices(), $output);
             } else {
-                $err = 'Нет подходящих вариантов для спецпредложения';
+                $error = 'Нет подходящих вариантов для спецпредложения';
                 if (!$onlineSearchResult->isSameVirtualRoomInSpec()) {
-                    $err.=' виртуальная комната занята';
+                    $error.=' виртуальная комната занята';
                 }
             }
-        } else {
-            $err = 'Поиск не вернул результат для спецпредложения';
         }
 
-        if ($err) {
-
-            $special->setError($err);
+        if ($error && $special->getIsEnabled()) {
+            $special->setError($error);
             $special->setIsEnabled(false);
-
             $this->disabledSpecials[] = $special;
             $this->addLogMessage(
-                $err,
+                $error,
+                ['specialId' => $special->getId(), 'specialName' => $special->getName()],
+                $output
+            );
+        } elseif (!$error && !$special->getIsEnabled()){
+            $special->setIsEnabled(true);
+            $this->enabledSpecials[] = $special;
+            $this->addLogMessage(
+                'Повторное включение спецпредложения',
                 ['specialId' => $special->getId(), 'specialName' => $special->getName()],
                 $output
             );
         }
-
         $special->setNoRecalculation();
-        $this->dm->flush();
+        $errors = $this->validator->validate($special);
+        if (!count($errors)) {
+            $this->dm->flush();
+        } else {
+            $this->addLogMessage('Ошибка сохранения спецпредложения!', ['specialName' => $special->getName], $output);
+        }
+
         $this->dm->clear();
         $this->addLogMessage(
             'End recalculate for special',
@@ -156,8 +182,27 @@ class SpecialHandler
 
     }
 
-    //Задумывал выводить какая бронь перекрывает спецпредолжение. Пока не надо.
+    private function createSpecialPrice(Tariff $tariff, RoomType $roomType, array $prices)
+    {
+        $specialPrice = new SpecialPrice();
+        $specialPrice
+            ->setTariff($tariff)
+            ->setRoomType($roomType)
+            ->setPrices($prices);
 
+        return $specialPrice;
+    }
+
+
+    private function getSpecial(string $specialId) {
+        $special = $this->dm->find('MBHPriceBundle:Special', ['id' => $specialId]);
+
+        return $special;
+    }
+
+
+
+    //Задумывал выводить какая бронь перекрывает спецпредолжение. Пока не надо.
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -204,6 +249,7 @@ class SpecialHandler
         if ($roomType) {
             $data->setRoomType($roomType);
         }
+        $data->setForceSearchDisabledSpecial(true);
         $data->setCache(false);
 
         return $data;
@@ -220,6 +266,11 @@ class SpecialHandler
             $specials = $qb->field('id')->in($specialIds)->getQuery()->execute();
         } else {
             $specialFilter = new SpecialFilter();
+            $filterBegin = new \DateTime('midnight');
+            $specialFilter
+                ->setBegin($filterBegin)
+                ->setIsEnabled(true)
+                ->setRemain(1);
 
             $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($specialFilter);
         }
@@ -230,7 +281,7 @@ class SpecialHandler
 
     private function notify()
     {
-        if (count($this->disabledSpecials)) {
+        if (count($this->disabledSpecials) || count($this->enabledSpecials)) {
             $message = $this->mailer::createMessage();
             $message
                 ->setText('special.auto.disable')
@@ -240,6 +291,7 @@ class SpecialHandler
                 ->setTemplate('MBHBaseBundle:Mailer:specials.autoDisable.html.twig')
                 ->setAdditionalData([
                     'disabledSpecials' => $this->disabledSpecials,
+                    'enabledSpecials' => $this->enabledSpecials
                 ])
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+1 minute'));

@@ -35,6 +35,8 @@ class OnlineSearchFormData
     protected $cache = true;
     /** @var bool */
     protected $addDates = false;
+    /** @var bool */
+    protected $forceSearchDisabledSpecial = false;
 
     /**
      * OnlineSearchFormData constructor.
@@ -248,5 +250,23 @@ class OnlineSearchFormData
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isForceSearchDisabledSpecial(): bool
+    {
+        return $this->forceSearchDisabledSpecial;
+    }
+
+    /**
+     * @param bool $forceSearchDisabledSpecial
+     */
+    public function setForceSearchDisabledSpecial(bool $forceSearchDisabledSpecial)
+    {
+        $this->forceSearchDisabledSpecial = $forceSearchDisabledSpecial;
+    }
+
+
 
 }
