@@ -43,7 +43,7 @@ class SpecialHandler
     private $disabledSpecials = [];
     /** @var array */
     private $enabledSpecials = [];
-
+    /** @var DataCollectingValidator  */
     private $validator;
 
     /**
