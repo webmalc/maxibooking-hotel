@@ -24,8 +24,8 @@ class SpecialControllerTest extends WebTestCase
         parent::setUp();
         $this
             ->setFormName('mbh_bundle_pricebundle_special_type')
-            ->setNewTitle('Test special')
-            ->setEditTitle('Test special edited')
+            ->setNewTitle('Special from test')
+            ->setEditTitle('Special from test edited')
             ->setNewUrl('/price/management/special/new')
             ->setListUrl('/price/management/special/')
             ->setAjaxList()
@@ -43,7 +43,7 @@ class SpecialControllerTest extends WebTestCase
                 'data.displayTo', 'data.limit', 'data.fullTitle'
             ])
             ->setEditFormValues(['fullTitle' => $this->getEditTitle()])
-            ->setListItemsCount(0)
+            ->setListItemsCount(3)
         ;
     }
 }

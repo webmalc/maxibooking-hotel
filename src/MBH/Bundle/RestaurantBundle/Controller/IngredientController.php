@@ -87,7 +87,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('restaurantbundle.controller.entity_successful_created'));
 
             return $this->afterSaveRedirect('restaurant_ingredient_category', $entity->getId(), ['tab' => $entity->getId()]);
 
@@ -146,7 +146,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('restaurantbundle.controller.entry_successfully_edited'));
 
             return $this->afterSaveRedirect('restaurant_ingredient_category', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -228,7 +228,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
             $this->dm->persist($ingredient);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('restaurantbundle.controller.entity_successful_created'));
 
             return $this->afterSaveRedirect('restaurant_ingredient', $ingredient->getId(), ['tab' => $category->getId()]);
 
@@ -295,7 +295,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
             $this->dm->persist($ingredient);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('restaurantbundle.controller.entry_successfully_edited'));
 
             return $this->afterSaveRedirect('restaurant_ingredient', $ingredient->getId(), ['tab' => $ingredient->getCategory()->getId()]);
         }
@@ -364,8 +364,8 @@ class IngredientController extends BaseController implements CheckHotelControlle
         $flashBag = $request->getSession()->getFlashBag();
 
         $success ?
-            $flashBag->set('success', 'Цены успешно сохранены.'):
-            $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
+            $flashBag->set('success', $this->container->get('translator')->trans('restaurantbundle.controller.price_successfully_saved')):
+            $flashBag->set('danger', $this->container->get('translator')->trans('restaurantbundle.controller.attention_not_all_parameter_successful_saved'));
 
         $activetab = $request->get('activetab')?:null;
 

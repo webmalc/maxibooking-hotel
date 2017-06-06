@@ -109,7 +109,7 @@
                     <table style="margin-top:5px;width: 445px" class="center">
                         <tr>
                             <td style="width: 33%"></td>
-                            <td style="width: 33%;font-size:16px;">АНКЕТА</td>
+                            <td style="width: 33%;font-size:16px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa'|trans }} </td>
                             <td style="width: 33%;font-size:16px;">
                                 Форма №5
                             </td>
@@ -123,7 +123,7 @@
                                     {{ hotel.name }}
                                 </div>
                                 <div class="center" style="font-size: 9px">
-                                    (Наименование гостиницы, санатория, дома отдыха и пр.)
+                                    {{ 'package.resources.views.hotel_name_sanatory'|trans }}
                                 </div>
                             </div>
 
@@ -133,11 +133,11 @@
                                     {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.address %}
                                         {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
                                     {% elseif entity.roomType.hotel.region and entity.roomType.hotel.city %}
-                                        {{ entity.roomType.hotel.region }} г. {{ entity.roomType.hotel.city }}{% if entity.roomType.hotel.street  %}, {{ entity.roomType.hotel.street }}{% endif %}{% if entity.roomType.hotel.house %}, д. {{ entity.roomType.hotel.house }}{% if entity.roomType.hotel.house %}, кор. {{ entity.roomType.hotel.corpus }}{% endif %}{% endif %}
+                                        {{ entity.roomType.hotel.region }} {{ 'package.resources.views.g'|trans }}. {{ entity.roomType.hotel.city }}{% if entity.roomType.hotel.street  %}, {{ entity.roomType.hotel.street }}{% endif %}{% if entity.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ entity.roomType.hotel.house }}{% if entity.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ entity.roomType.hotel.corpus }}{% endif %}{% endif %}
                                     {% endif %}
                                 </div>
                                 <div class="center" style="font-size: 9px">
-                                    адрес (регион, район, город, населенный пункт)
+                                    {{ 'package.resources.views.adres_region_ltc'|trans }}
                                 </div>
                             </div>
                         </div>
@@ -150,7 +150,7 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title">
-                                            1. Фамилия
+                                            1. {{ 'package.resources.views.familiya'|trans }}
                                         </div>
                                         <div class="area">&nbsp{% if tourist %}{{ tourist.lastName }}{% endif %}</div>
                                     </div>
@@ -158,7 +158,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title">
-                                            Комната №
+                                            {{ 'package.resources.views.room'|trans }} №
                                         </div>
                                         <div class="area">&nbsp{% if entity and entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
                                     </div>
@@ -168,7 +168,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title">
-                                            2. Имя
+                                            2. {{ 'package.resources.views.name'|trans }}
                                         </div>
                                         <div class="area">&nbsp{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
                                     </div>
@@ -178,7 +178,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title">
-                                            3. Отчество
+                                            3. {{ 'package.resources.views.secondname'|trans }}
                                         </div>
                                         <div class="area">&nbsp{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
                                     </div>
@@ -188,7 +188,7 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title" style="width : 110px;">
-                                            4. Дата рождения
+                                            4. {{ 'package.resources.views.birthday'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 110px">&nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
@@ -197,7 +197,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width : 45px;">
-                                            5. Пол.
+                                            5. {{ 'package.resources.views.pol'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 45px;">&nbsp{% if tourist %} {{ ('form.touristType.sex_' ~ tourist.sex)|trans }} {% endif %}</div>
                                     </div>
@@ -207,7 +207,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width : 130px;">
-                                            6. Место рождения
+                                            6. {{ 'package.resources.views.birthday_place'|trans }}
                                         </div>
                                         &nbsp{% if tourist and tourist.birthplace %}<!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
                                     </div>
@@ -217,7 +217,7 @@
                                 <td colspan="3">
                                     <div class="field" style="margin-left: 30px">
                                         <div class="title" style="width: 70px">
-                                            Область
+                                            {{ 'package.resources.views.oblast'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion }}{% endif %}</div>
                                     </div>
@@ -227,7 +227,7 @@
                                 <td colspan="3">
                                     <div class="field" style="margin-left: 30px">
                                         <div class="title" style="width: 70px">
-                                            Район
+                                            {{ 'package.resources.views.raion'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district }}{% endif %}</div>
                                     </div>
@@ -237,7 +237,7 @@
                                 <td colspan="3">
                                     <div class="field" style="margin-left: 30px">
                                         <div class="title" style="width: 70px">
-                                            Город
+                                            {{ 'package.resources.views.city'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.city }}{% endif %}</div>
                                     </div>
@@ -247,7 +247,7 @@
                                 <td colspan="3">
                                     <div class="field" style="margin-left: 30px">
                                         <div class="title" style="width: 70px">
-                                            Нас. пункт
+                                            {{ 'package.resources.views.nas_punkt'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.settlement }}{% endif %}</div>
                                     </div>
@@ -257,7 +257,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 120px">
-                                            7. Гражданство
+                                            7. {{ 'package.resources.views.grazhdanstvo'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 121px">&nbsp{{ tourist.citizenship }}</div>
                                     </div>
@@ -267,7 +267,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 280px;">
-                                            8. Документ, удостоверяющий личность
+                                            8. {{ 'package.resources.views.document'|trans }}
                                         </div>
                                         <!--<div class="area" style="margin-left: 240px">&nbsp</div>-->
                                     </div>
@@ -289,7 +289,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 45px">
-                                            Серия
+                                            {{ 'package.resources.views.seria'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 45px">&nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.series }} {% endif %}</div>
@@ -307,7 +307,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 45px">
-                                            Выдан
+                                            {{ 'package.resources.views.vidan'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 45px">
                                             &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
@@ -319,7 +319,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 200px">
-                                            орган, выдавший документ
+                                            {{ 'package.resources.views.organ_vidaushiy_document'|trans }}
                                         </div>
                                     </div>
                                 </td>
@@ -337,7 +337,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 215px">
-                                            9. Адрес места жительства: &nbsp&nbsp Страна
+                                            9. {{ 'package.resources.views.adres_mesta_zhitelstva'|trans }}: &nbsp&nbsp {{ 'package.resources.views.country'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
@@ -348,7 +348,7 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title" style="width: 30px;">
-                                            Обл.
+                                            {{ 'package.resources.views.obl'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.region %} {{ tourist.addressObjectDecomposed.region.name }} {% endif %}</div>
@@ -357,7 +357,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 40px">
-                                            Город
+                                            {{ 'package.resources.views.city'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
@@ -368,7 +368,7 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title" style="width: 40px;">
-                                            Район
+                                            {{ 'package.resources.views.raion'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district }} {% endif %}</div>
@@ -377,7 +377,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 65px;">
-                                            Нас. пункт
+                                            {{ 'package.resources.views.nas_punkt'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 66px">&nbsp{% if tourist and tourist.addressObjectDecomposed %}{{ tourist.addressObjectDecomposed.settlement }}{% endif %}</div>
@@ -388,7 +388,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 40px;">
-                                            Улица
+                                            {{ 'package.resources.views.street'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 41px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
@@ -399,7 +399,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 30px;">
-                                            Дом
+                                            {{ 'package.resources.views.home'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 31px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.house }} {% endif %}</div>
@@ -408,7 +408,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 30px;">
-                                            Кор.
+                                            {{ 'package.resources.views.kor'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 31px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.corpus }} {% endif %}</div>
@@ -417,7 +417,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 25px;">
-                                            Кв.
+                                            {{ 'package.resources.views.kv'|trans }}
                                         </div>
                                         <div class="area"
                                              style="margin-left: 25px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.flat }} {% endif %}</div>
@@ -428,13 +428,13 @@
                                 <td colspan="3">
                                     <div class="field ib" style="width:49%">
                                         <div class="title" style="width: 70px">
-                                           10. Прибыл
+                                           10. {{ 'package.resources.views.pribil'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 71px">&nbsp{{ arrival }}</div>
                                     </div>
                                     <div class="field ib" style="width:50%">
                                         <div class="title" style="width:45px">
-                                            Выбыл
+                                            {{ 'package.resources.views.vibil'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 46px;">&nbsp{{ departure }}</div>
                                     </div>
@@ -444,7 +444,7 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title" style="width: 125px">
-                                            11. Зарегистрировал
+                                            11. {{ 'package.resources.views.registrationed'|trans }}
                                         </div>
                                         <div class="area" style="margin-left: 126px">&nbsp{{ arrival }}</div>
                                     </div>
@@ -452,7 +452,7 @@
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 60px;">
-                                            Подпись
+                                            {{ 'package.resources.views.signature'|trans }}
                                         </div>
                                         <div style="margin-left: 61px" class="area">&nbsp</div>
                                     </div>
@@ -482,7 +482,7 @@
                         <div style="clear: both"></div>
                     </div>
 
-                    <div style="margin-left: 20px; font-size: 12px;">Блок машиночитаемых данных</div>
+                    <div style="margin-left: 20px; font-size: 12px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.blok.mashinochitayemykh.dannykh'|trans }} </div>
                     <div class="block">
 
                     </div>
@@ -496,9 +496,9 @@
                         <table style="margin-top:5px;width: 445px;" class="center">
                             <tr>
                                 <td style="width: 33%"></td>
-                                <td style="width: 33%;font-size:16px;">АНКЕТА</td>
+                                <td style="width: 33%;font-size:16px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa'|trans }} </td>
                                 <td style="width: 33%;font-size:16px;">
-                                    Форма №5
+                                    {{ 'package.resources.views.form'|trans }} №5
                                 </td>
                             </tr>
                         </table>
@@ -510,7 +510,7 @@
                                         {{ hotel.name }}
                                     </div>
                                     <div class="center" style="font-size: 9px">
-                                        (Наименование гостиницы, санатория, дома отдыха и пр.)
+                                        {{ 'package.resources.views.name_hotel_sanatory_home_relax'|trans }}
                                     </div>
                                 </div>
 
@@ -520,11 +520,11 @@
                                         {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.address %}
                                             {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
                                         {% elseif entity.roomType.hotel.region and entity.roomType.hotel.city %}
-                                            {{ entity.roomType.hotel.region }} г. {{ entity.roomType.hotel.city }}{% if entity.roomType.hotel.street  %}, {{ entity.roomType.hotel.street }}{% endif %}{% if entity.roomType.hotel.house %}, д. {{ entity.roomType.hotel.house }}{% if entity.roomType.hotel.house %}, кор. {{ entity.roomType.hotel.corpus }}{% endif %}{% endif %}
+                                            {{ entity.roomType.hotel.region }} {{ 'package.resources.views.g'|trans }} {{ entity.roomType.hotel.city }}{% if entity.roomType.hotel.street  %}, {{ entity.roomType.hotel.street }}{% endif %}{% if entity.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ entity.roomType.hotel.house }}{% if entity.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ entity.roomType.hotel.corpus }}{% endif %}{% endif %}
                                         {% endif %}
                                     </div>
                                     <div class="center" style="font-size: 9px">
-                                        адрес (регион, район, город, населенный пункт)
+                                        {{ 'package.resources.views.adres_region_ltc'|trans }}
                                     </div>
                                 </div>
                             </div>
@@ -537,7 +537,7 @@
                                     <td colspan="2">
                                         <div class="field">
                                             <div class="title">
-                                                1. Фамилия
+                                                1. {{ 'package.resources.views.familiya'|trans }}
                                             </div>
                                             <div class="area">&nbsp{% if tourist %}{{ tourist.lastName }}{% endif %}</div>
                                         </div>
@@ -545,7 +545,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title">
-                                                Комната №
+                                                {{ 'package.resources.views.room'|trans }} №
                                             </div>
                                             <div class="area">&nbsp{% if entity and entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
                                         </div>
@@ -555,7 +555,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title">
-                                                2. Имя
+                                                2. {{ 'package.resources.views.name'|trans }}
                                             </div>
                                             <div class="area">&nbsp{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
                                         </div>
@@ -565,7 +565,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title">
-                                                3. Отчество
+                                                3. {{ 'package.resources.views.secondname'|trans }}
                                             </div>
                                             <div class="area">&nbsp{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
                                         </div>
@@ -575,7 +575,7 @@
                                     <td colspan="2">
                                         <div class="field">
                                             <div class="title" style="width : 110px;">
-                                                4. Дата рождения
+                                                4. {{ 'package.resources.views.birthday'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 110px">&nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
@@ -584,7 +584,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width : 45px;">
-                                                5. Пол.
+                                                5. {{ 'package.resources.views.pol'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 45px;">&nbsp{% if tourist %} {{ ('form.touristType.sex_' ~ tourist.sex)|trans }} {% endif %}</div>
                                         </div>
@@ -594,7 +594,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width : 130px;">
-                                                6. Место рождения
+                                                6. {{ 'package.resources.views.birthday_place'|trans }}
                                             </div>
                                             &nbsp{% if tourist and tourist.birthplace %}<!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
                                         </div>
@@ -604,7 +604,7 @@
                                     <td colspan="3">
                                         <div class="field" style="margin-left: 30px">
                                             <div class="title" style="width: 70px">
-                                                Область
+                                                {{ 'package.resources.views.oblast'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion }}{% endif %}</div>
                                         </div>
@@ -614,7 +614,7 @@
                                     <td colspan="3">
                                         <div class="field" style="margin-left: 30px">
                                             <div class="title" style="width: 70px">
-                                                Район
+                                                {{ 'package.resources.views.raion'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district }}{% endif %}</div>
                                         </div>
@@ -624,7 +624,7 @@
                                     <td colspan="3">
                                         <div class="field" style="margin-left: 30px">
                                             <div class="title" style="width: 70px">
-                                                Город
+                                                {{ 'package.resources.views.city'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.city }}{% endif %}</div>
                                         </div>
@@ -634,7 +634,7 @@
                                     <td colspan="3">
                                         <div class="field" style="margin-left: 30px">
                                             <div class="title" style="width: 70px">
-                                                Нас. пункт
+                                                {{ 'package.resources.views.nas_punkt'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.settlement }}{% endif %}</div>
                                         </div>
@@ -644,7 +644,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width: 120px">
-                                                7. Гражданство
+                                                7. {{ 'package.resources.views.grazhdanstvo'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 121px">&nbsp{{ tourist.citizenship }}</div>
                                         </div>
@@ -654,7 +654,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width: 280px;">
-                                                8. Документ, удостоверяющий личность
+                                                8. {{ 'package.resources.views.document'|trans }}
                                             </div>
                                             <!--<div class="area" style="margin-left: 240px">&nbsp</div>-->
                                         </div>
@@ -676,7 +676,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 45px">
-                                                Серия
+                                                {{ 'package.resources.views.seria'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 45px">&nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.series }} {% endif %}</div>
@@ -694,7 +694,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 45px">
-                                                Выдан
+                                                {{ 'package.resources.views.vidan'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 45px">
                                                 &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
@@ -706,7 +706,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width: 200px">
-                                                орган, выдавший документ
+                                                {{ 'package.resources.views.organ_vidaushiy_document'|trans }}
                                             </div>
                                         </div>
                                     </td>
@@ -724,7 +724,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width: 215px">
-                                                9. Адрес места жительства: &nbsp&nbsp Страна
+                                                9. {{ 'package.resources.views.adres_mesta_zhitelstva'|trans }}: &nbsp&nbsp {{ 'package.resources.views.country'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
@@ -735,7 +735,7 @@
                                     <td colspan="2">
                                         <div class="field">
                                             <div class="title" style="width: 30px;">
-                                                Обл.
+                                                {{ 'package.resources.views.obl'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.region %} {{ tourist.addressObjectDecomposed.region.name }} {% endif %}</div>
@@ -744,7 +744,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 40px">
-                                                Город
+                                                {{ 'package.resources.views.city'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
@@ -755,7 +755,7 @@
                                     <td colspan="2">
                                         <div class="field">
                                             <div class="title" style="width: 40px;">
-                                                Район
+                                                {{ 'package.resources.views.raion'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district }} {% endif %}</div>
@@ -764,7 +764,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 65px;">
-                                                Нас. пункт
+                                                {{ 'package.resources.views.nas_punkt'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 66px">&nbsp{% if tourist and tourist.addressObjectDecomposed %}{{ tourist.addressObjectDecomposed.settlement }}{% endif %}</div>
@@ -775,7 +775,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="title" style="width: 40px;">
-                                                Улица
+                                                {{ 'package.resources.views.street'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 41px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
@@ -786,7 +786,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 30px;">
-                                                Дом
+                                                {{ 'package.resources.views.home'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 31px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.house }} {% endif %}</div>
@@ -795,7 +795,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 30px;">
-                                                Кор.
+                                                {{ 'package.resources.views.kor'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 31px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.corpus }} {% endif %}</div>
@@ -804,7 +804,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 25px;">
-                                                Кв.
+                                                {{ 'package.resources.views.kv'|trans }}
                                             </div>
                                             <div class="area"
                                                  style="margin-left: 25px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.flat }} {% endif %}</div>
@@ -815,13 +815,13 @@
                                     <td colspan="3">
                                         <div class="field ib" style="width:49%">
                                             <div class="title" style="width: 70px">
-                                                10. Прибыл
+                                                10. {{ 'package.resources.views.pribil'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 71px">&nbsp{{ arrival }}</div>
                                         </div>
                                         <div class="field ib" style="width:50%">
                                             <div class="title" style="width:45px">
-                                                Выбыл
+                                                {{ 'package.resources.views.vibil'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 46px;">&nbsp{{ departure }}</div>
                                         </div>
@@ -831,7 +831,7 @@
                                     <td colspan="2">
                                         <div class="field">
                                             <div class="title" style="width: 125px">
-                                                11. Зарегистрировал
+                                                11. {{ 'package.resources.views.registrationed'|trans }}
                                             </div>
                                             <div class="area" style="margin-left: 126px">&nbsp{{ arrival }}</div>
                                         </div>
@@ -839,7 +839,7 @@
                                     <td>
                                         <div class="field">
                                             <div class="title" style="width: 60px;">
-                                                Подпись
+                                                {{ 'package.resources.views.signature'|trans }}
                                             </div>
                                             <div style="margin-left: 61px" class="area">&nbsp</div>
                                         </div>

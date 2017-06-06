@@ -3,11 +3,6 @@ mbh_warehouse:
     type:     annotation
     prefix:   /
 
-JMSTranslationBundle_ui:
-    resource: "@JMSTranslationBundle/Controller/"
-    type:     annotation
-    prefix:   /_trans
-
 mbh_client:
     resource: "@MBHClientBundle/Controller/"
     type:     annotation

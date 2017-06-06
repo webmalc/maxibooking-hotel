@@ -10,7 +10,7 @@
         {% block content %}
             {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'work-shift-report-form'}}) }}
             <div class="form-group">
-                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                <label><i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.report.workshift.daty'|trans }} ' data-toggle='tooltip'></i></label>
                 {{ form_widget(form.begin, {attr: {class: 'datepicker'}}) }} —
                 {{ form_widget(form.end, {attr: {class: 'datepicker'}}) }}
             </div>
@@ -19,7 +19,7 @@
                 {{ form_widget(form.user) }}
             </div>
             <div class="form-group">
-                <label><i class="fa fa-star-o" title='Статус' data-toggle='tooltip'></i></label>
+                <label><i class="fa fa-star-o" title='{{ 'mbhpackagebundle.view.report.workshift.status'|trans }} ' data-toggle='tooltip'></i></label>
                 {{ form_widget(form.status) }}
             </div>
             {{ form_end(form) }}

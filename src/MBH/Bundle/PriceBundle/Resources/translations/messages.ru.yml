@@ -1,6 +1,94 @@
-mbhpricebundle.form.tariffservicetype.vyberiteuslugu: Выберите услугу
-mbhpricebundle.form.tariffservicetype.vesʹsrok: Весь срок
-mbhpricebundle.form.tariffservicetype.navsekh: На всех
+mbhpricebundle.form.restrictiongeneratortype.nachalo.perioda: Начало периода
+mbhpricebundle.form.restrictiongeneratortype.konets.perioda: Конец периода
+mbhpricebundle.form.restrictiongeneratortype.dni.nedeli: Дни недели
+mbhpricebundle.form.restrictiongeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.nalichiya.mest: Дни недели для которых будет произведена генерация наличия мест
+mbhpricebundle.form.restrictiongeneratortype.vse.dni.nedeli: все дни недели
+mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov: Типы номеров
+mbhpricebundle.form.restrictiongeneratortype.setting: Настройки
+mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov.dlya.kotorykh.budet.proizvedena.generatsiya.tsen: 'Типы номеров для которых будет произведена генерация цен'
+mbhpricebundle.form.restrictiongeneratortype.vse.tipy.nomerov: все типы номеров
+mbhpricebundle.form.restrictiongeneratortype.tarify: Тарифы
+mbhpricebundle.form.restrictiongeneratortype.tarify.dlya.kotorykh.budet.proizvedena.generatsiya.tsen: Тарифы для которых будет произведена генерация цен
+mbhpricebundle.form.restrictiongeneratortype.vse.tarify: 'все тарифы'
+mbhpricebundle.form.restrictiongeneratortype.min_dlina: 'Мин. длина'
+mbhpricebundle.form.restrictiongeneratortype.max_dlina: 'Макс. длина'
+mbhpricebundle.form.restrictiongeneratortype.dlina_broni: 'Длина брони (заезд)'
+mbhpricebundle.form.restrictiongeneratortype.dlina_broni_skvosnoe: 'Длина брони (сквозное)'
+mbhpricebundle.form.restrictiongeneratortype.dannyye.budut.udaleny: данные будут удалены
+mbhpricebundle.form.restrictiongeneratortype.max_dney_do_zaezda: Макс. дней до заезда
+mbhpricebundle.form.restrictiongeneratortype.rannee_posdnee_bronirovanie: Раннее/позднее бронирование
+mbhpricebundle.form.restrictiongeneratortype.net_zaezda: 'Нет заезда?'
+mbhpricebundle.form.restrictiongeneratortype.ogranichenie_zaezda_viezda: Ограничение заезда/выезда
+mbhpricebundle.form.restrictiongeneratortype.net_viezda: 'Нет выезда?'
+mbhpricebundle.form.restrictiongeneratortype.zakrito: 'Закрыто?'
+mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey: 'Макс. количество гостей'
+mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey: 'Мин. количество гостей'
+mbhpricebundle.form.restrictiongeneratortype.ogranichenie_po_kolichestvu_gostey: Ограничение по количеству гостей
+form.promotionType.label.fullTitle: Название
+mbhpricebundle.view.tariff.index.osnovnoy: Основной
+form.promotionType.label.title: 'Внутреннее название'
+mbhpricebundle.form.servicetype.opisaniye: Описание
+mbhpricebundle.form.tarifftype.opisaniyetarifadlyaonlaynbronirovaniya: 'Описание тарифа для онлайн бронирования'
+mbhpricebundle.form.tarifftype.nachalo: Начало
+mbhpricebundle.form.tarifftype.neogranichen: 'Не ограничен'
+mbhpricebundle.form.tarifftype.konets: Конец
+mbhpricebundle.form.tarifftype.rebenokdo: 'Ребенок до'
+mbhpricebundle.form.tarifftype.infantdo: 'Инфант до'
+mbhpricebundle.form.tariffservicetype.vyberiteuslugu: 'Выберите услугу'
+mbhpricebundle.form.tariffservicetype.navsekh: 'На всех'
+mbhpricebundle.form.tariffservicetype.kol-vo: Кол-во
+mbhpricebundle.form.tariffservicetype.common_group_name: Общая информация
+mbhpricebundle.form.roomcachegeneratortype.nachaloperioda: 'Начало периода'
+mbhpricebundle.form.roomcachegeneratortype.konetsperioda: 'Конец периода'
+mbhpricebundle.form.roomcachegeneratortype.dninedeli: 'Дни недели'
+mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest: 'Дни недели для которых будет произведена генерация наличия мест'
+mbhpricebundle.form.pricecachegeneratortype.vsedninedeli: 'все дни недели'
+special.roomTypes: 'Типы номеров'
+mbhpricebundle.form.pricecachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: 'Типы номеров для которых будет произведена генерация цен'
+mbhpricebundle.form.restrictiongeneratortype.vse.tipy.nomerov: 'все типы номеров'
+special.tariffs: Тарифы
+mbhpricebundle.form.pricecachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen: 'Тарифы для которых будет произведена генерация цен'
+mbhpricebundle.form.restrictiongeneratortype.vse.tarify: 'все тарифы'
+mbhpricebundle.view.service.index.tsena: Цена
+mbhpricebundle.view.pricecache.layout.tseny: Цены
+form.tariffType.conditions_and_restrictions: 'Условия и ограничения'
+mbhpricebundle.form.tariffinheritancetype.nasledovatliusloviyaiogranicheniyaotroditelskogotarifa: 'Наследовать ли условия и ограничения от родительского тарифа'
+mbhpricebundle.form.tariffinheritancetype.kvoty: Квоты
+mbhpricebundle.form.tariffinheritancetype.nasledovatlikvotynomerovotroditelskogotarif: 'Наследовать ли квоты номеров от родительского тариф'
+mbhpricebundle.form.tariffservicestype.vseuslugi: 'Все услуги'
+mbhpricebundle.form.tariffservicestype.uslugipoumolchaniyu: 'Услуги по умолчанию'
+mbhpricebundle.form.roomcachegeneratortype.vsedninedeli: 'Все дни недели'
+mbhpricebundle.form.roomcachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyanalichiyamest: 'Типы номеров для которых будет произведена генерация наличия мест'
+mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot: 'Тарифы для которых будет произведена генерация квот'
+mbhpricebundle.form.roomcachegeneratortype.kvotynebudutsgenerirovany: 'Квоты не будут сгенерированы'
+mbhpricebundle.form.roomcachegeneratortype.kolichestvo.mest: 'Количество мест'
+mbhpricebundle.form.restrictiongeneratortype.dannyyebudutudaleny: 'данные будут удалены'
+mbhpricebundle.form.servicecategorytype.osnovnyyeuslugi: 'Основные услуги'
+mbhpricebundle.form.servicecategorytype.opisaniyekategoriiuslugdlyaonlaynbronirovaniya: 'Описание категории услуг для онлайн бронирования'
+mbhpricebundle.form.servicetype.seyf: Сейф
+mbhpricebundle.form.servicetype.mezhdunarodnoyenazvaniye: 'Международное название'
+mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya: 'Описание услуги для онлайн бронирования'
+mbhpricebundle.form.servicetype.tiprascheta: 'Тип расчета'
+special.group.dates: Даты
+mbhpricebundle.view.roomcache.index.tipnomera: 'Тип номера'
+mbhpricebundle.view.roomcache.index.kvotypotarifam: 'Квоты по тарифам.'
+mbhpricebundle.view.roomcache.index.generatornalichiyamest: 'Генератор наличия мест'
+mbhpricebundle.view.pricecache.index.otmena: Отмена
+mbhpricebundle.view.roomcache.graph.zabronirovano: забронировано
+mbhpricebundle.view.roomcache.graph.netdannykh: 'нет данных'
+mbhpricebundle.view.service.index.novayakategoriyauslug: 'Новая категория услуг'
+mbhpricebundle.view.service.index.redaktirovat.kategoriyu.uslug: 'Редактировать категорию услуг '
+specials.title: Название
+mbhpricebundle.view.pricecache.table.tsena: Цена
+mbhpricebundle.view.service.index.tiprascheta: 'Тип расчета'
+mbhpricebundle.view.service.index.data: Дата
+mbhpricebundle.view.service.index.vklyuchena: Включена
+mbhpricebundle.view.promotion.index.redaktirovaniyezapisi: 'Редактирование записи'
+mbhpricebundle.view.promotion.index.udaleniyezapisi: 'Удаление записи'
+specials.tariff: Тариф
+mbhpricebundle.form.tariffservicetype.vyberiteuslugu: 'Выберите услугу'
+mbhpricebundle.form.tariffservicetype.vesʹsrok: 'Весь срок'
+mbhpricebundle.form.tariffservicetype.navsekh: 'На всех'
 mbhpricebundle.form.tariffservicetype.kol-vo: Кол-во
 mbhpricebundle.form.tariffpromotionstype.dostupnyyeaktsii: Доступные акции
 mbhpricebundle.form.tariffpromotionstype.osnovnoy: Основной
@@ -8,28 +96,32 @@ mbhpricebundle.form.tariffpromotionstype.aktsiipoumolchaniyu: Акции по у
 mbhpricebundle.form.servicecategorytype.nazvaniye: Название
 mbhpricebundle.form.servicecategorytype.osnovnyyeuslugi: Основные услуги
 mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye: Внутреннее название
+mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye.help: Название для использования внутри MaxiBooking
+mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye.placeholder: 'Основные услуги - лето %year%'
 mbhpricebundle.form.servicecategorytype.opisaniye: Описание
 mbhpricebundle.form.servicecategorytype.opisaniyekategoriiuslugdlyaonlaynbronirovaniya: Описание категории услуг для онлайн бронирования
 mbhpricebundle.form.tarifftype.nazvaniye: Название
 mbhpricebundle.form.tarifftype.osnovnoy: Основной
 mbhpricebundle.form.tarifftype.vnutrenneyenazvaniye: Внутреннее название
-mbhpricebundle.form.tarifftype.nazvaniyedlyaispolʹzovaniyavnutri: Название для использования внутри 
+mbhpricebundle.form.tarifftype.nazvaniyedlyaispolzovaniyavnutri: Название для использования внутри
 mbhpricebundle.form.tarifftype.opisaniye: Описание
 mbhpricebundle.form.tarifftype.opisaniyetarifadlyaonlaynbronirovaniya: Описание тарифа для онлайн бронирования
 mbhpricebundle.form.tarifftype.nachalo: Начало
-mbhpricebundle.form.tarifftype.skakogochislaispolʹzuyetsyatarif?: С какого числа используется тариф?
+mbhpricebundle.form.tarifftype.skakogochislaispolzuyetsyatarif: С какого числа используется тариф?
 mbhpricebundle.form.tarifftype.neogranichen: Не ограничен
 mbhpricebundle.form.tarifftype.konets: Конец
-mbhpricebundle.form.tarifftype.pokakoyechisloispolʹzuyetsyatarif?: По какое число используется тариф?
-mbhpricebundle.form.tarifftype.onlayn?: Онлайн?
-mbhpricebundle.form.tarifftype.ispolʹzovatʹlitarifvonlaynbronirovanii?: Использовать ли тариф в онлайн бронировании?
+mbhpricebundle.form.tarifftype.pokakoyechisloispolzuyetsyatarif: По какое число используется тариф?
+mbhpricebundle.form.tarifftype.onlayn: Онлайн?
+mbhpricebundle.form.tarifftype.ispolzovatlitarifvonlaynbronirovanii: Использовать ли тариф в онлайн бронировании?
 mbhpricebundle.form.tarifftype.rebenokdo: Ребенок до
-mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyarebenkom?: До какого возраста клиент считается ребенком?
+mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyarebenkom: До какого возраста клиент считается ребенком?
 mbhpricebundle.form.tarifftype.infantdo: Инфант до
-mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyainfantom?: До какого возраста клиент считается инфантом?
-mbhpricebundle.form.tarifftype.ispolʹzovatʹdlyakombinirovaniya?: Использовать для комбинирования?
-mbhpricebundle.form.tarifftype.vklyuchen?: Включен?
-mbhpricebundle.form.tarifftype.ispolʹzuyetsyalitarifvpoiske?: Используется ли тариф в поиске?
+mbhpricebundle.form.tarifftype.dokakogovozrastakliyentschitayetsyainfantom: До какого возраста клиент считается инфантом?
+mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya: Использовать для комбинирования?
+mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help: Использовать для комбинирования тарифов в переходных периодах? <br> По-молчанию спец. тарифы комбинируются с основным тарифом
+mbhpricebundle.form.tarifftype.vklyuchen: Включен?
+mbhpricebundle.form.tarifftype.ispolzuyetsyalitarifvpoiske: Используется ли тариф в поиске?
+mbhpricebundle.form.tarifftype.promotions.common_info.group_name: Общая информация
 mbhpricebundle.form.servicetype.nazvaniye: Название
 mbhpricebundle.form.servicetype.seyf: Сейф
 mbhpricebundle.form.servicetype.vnutrenneyenazvaniye: Внутреннее название
@@ -38,15 +130,15 @@ mbhpricebundle.form.servicetype.opisaniye: Описание
 mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya: Описание услуги для онлайн бронирования
 mbhpricebundle.form.servicetype.tiprascheta: Тип расчета
 mbhpricebundle.form.servicetype.tsena: Цена
-mbhpricebundle.form.servicetype.usluganeispolʹzuyetsya: Услуга не используется
-mbhpricebundle.form.servicetype.data?: Дата?
-mbhpricebundle.form.servicetype.ispolʹzovatʹlidatupridobavleniiuslugikbroni?: Использовать ли дату при добавлении услуги к брони?
-mbhpricebundle.form.servicetype.vremya?: Время?
-mbhpricebundle.form.servicetype.ispolʹzovatʹlivremyapridobavleniiuslugikbroni?: Использовать ли время при добавлении услуги к брони?
-mbhpricebundle.form.servicetype.onlayn?: Онлайн?
-mbhpricebundle.form.servicetype.ispolʹzovatʹliusluguvonlaynbronirovanii?: Использовать ли услугу в онлайн бронировании?
-mbhpricebundle.form.servicetype.vklyuchena?: Включена?
-mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi?: Доступна ли услуга для продажи?
+mbhpricebundle.form.servicetype.usluganeispolzuyetsya: Услуга не используется
+mbhpricebundle.form.servicetype.data: Дата?
+mbhpricebundle.form.servicetype.ispolzovatlidatupridobavleniiuslugikbroni: Использовать ли дату при добавлении услуги к брони?
+mbhpricebundle.form.servicetype.vremya: Время?
+mbhpricebundle.form.servicetype.ispolzovatlivremyapridobavleniiuslugikbroni: Использовать ли время при добавлении услуги к брони?
+mbhpricebundle.form.servicetype.onlayn: Онлайн?
+mbhpricebundle.form.servicetype.ispolzovatliusluguvonlaynbronirovanii: Использовать ли услугу в онлайн бронировании?
+mbhpricebundle.form.servicetype.vklyuchena: Включена?
+mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi: Доступна ли услуга для продажи?
 mbhpricebundle.form.restrictiongeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.restrictiongeneratortype.konetsperioda: Конец периода
 mbhpricebundle.form.restrictiongeneratortype.dninedeli: Дни недели
@@ -61,11 +153,10 @@ mbhpricebundle.form.restrictiongeneratortype.dannyyebudutudaleny: данные �
 mbhpricebundle.form.restrictiongeneratortype.maks.dlina: Макс. длина
 mbhpricebundle.form.restrictiongeneratortype.min.dneydozayezda: Мин. дней до заезда
 mbhpricebundle.form.restrictiongeneratortype.maks.dneydozayezda: Макс. дней до заезда
-mbhpricebundle.form.restrictiongeneratortype.netzayezda?: Нет заезда?
-mbhpricebundle.form.restrictiongeneratortype.netvyyezda?: Нет выезда?
-mbhpricebundle.form.restrictiongeneratortype.zakryto?: Закрыто?
+mbhpricebundle.form.restrictiongeneratortype.netzayezda: Нет заезда?
+mbhpricebundle.form.restrictiongeneratortype.netvyyezda: Нет выезда?
+mbhpricebundle.form.restrictiongeneratortype.zakryto: Закрыто?
 mbhpricebundle.form.tariffservicestype.dostupnyyeuslugi: Доступные услуги
-mbhpricebundle.form.tariffservicestype.vseuslugi : Все услуги
 mbhpricebundle.form.tariffservicestype.uslugipoumolchaniyu: Услуги по умолчанию
 mbhpricebundle.form.pricecachegeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.pricecachegeneratortype.konetsperioda: Конец периода
@@ -75,15 +166,31 @@ mbhpricebundle.form.pricecachegeneratortype.vsedninedeli: все дни неде
 mbhpricebundle.form.pricecachegeneratortype.tipynomerov: Типы номеров
 mbhpricebundle.form.pricecachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: Типы номеров для которых будет произведена генерация цен
 mbhpricebundle.form.pricecachegeneratortype.tarify: Тарифы
+
+mbhpricebundle.form.pricecachegeneratortype.price_for_people_or_number: 'Цена за человека или за номер?'
+mbhpricebundle.form.pricecachegeneratortype.price_for_people: 'Цена за человека?'
+mbhpricebundle.form.pricecachegeneratortype.price_for_children_defaulp_place: 'Цена за детское осн. место'
+mbhpricebundle.form.pricecachegeneratortype.settings: Настройки
+mbhpricebundle.form.pricecachegeneratortype.price: Цены
+mbhpricebundle.form.pricecachegeneratortype.change_sum_or_percent: 'Укажите сумму или процент (15%) от цены'
+mbhpricebundle.form.pricecachegeneratortype.price_for_single_accommodation: 'Цена 1-местного размещения'
+mbhpricebundle.form.pricecachegeneratortype.price_for_single_room_bookings: 'Цена при бронировании номера на одного человека.'
+mbhpricebundle.form.pricecachegeneratortype.tcena_detskogo_dop_mesta: 'Цена детского доп. места'
+mbhpricebundle.form.pricecachegeneratortype.price_one_place_accomodation: 'Цена 1-местного размещения'
+mbhpricebundle.form.pricecachegeneratortype.remember: 'Запомнить?'
+mbhpricebundle.form.pricecachegeneratortype.remember_to_reuse: 'Запомнить для повторного использования'
+mbhpricebundle.form.pricecachegeneratortype.beginning_period_should_be_less_than_end_period: 'Начало периода должно быть меньше конца периода.'
+mbhpricebundle.form.pricecachegeneratortype.period_can_not_be_more_than_year: 'Период не может быть больше года.'
+mbhpricebundle.form.pricecachegeneratortype.price_adult_extra_places: 'Цена взрослого доп. места'
 mbhpricebundle.form.pricecachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen: Тарифы для которых будет произведена генерация цен
 mbhpricebundle.form.pricecachegeneratortype.tsena: Цена
-mbhpricebundle.form.pricecachegeneratortype.tsenazacheloveka?: Цена за человека?
-mbhpricebundle.form.pricecachegeneratortype.tsenazachelovekailizanomer?: Цена за человека или за номер?
-mbhpricebundle.form.pricecachegeneratortype.tsenapribronirovaniinomeranaodnogocheloveka.: Цена при бронировании номера на одного человека.
+mbhpricebundle.form.pricecachegeneratortype.tsenazacheloveka: Цена за человека?
+mbhpricebundle.form.pricecachegeneratortype.tsenazachelovekailizanomer: Цена за человека или за номер?
+mbhpricebundle.form.pricecachegeneratortype.tsenapribronirovaniinomeranaodnogocheloveka: Цена при бронировании номера на одного человека.
 mbhpricebundle.form.pricecachegeneratortype.tsenazadetskoyeosn.mesto: Цена за детское осн. место
 mbhpricebundle.form.pricecachegeneratortype.tsenavzroslogodop.mesta: Цена взрослого доп. места
 mbhpricebundle.form.pricecachegeneratortype.tsenadetskogodop.mesta: Цена детского доп. места
-mbhpricebundle.form.pricecachegeneratortype.zapomnitʹ?: Запомнить?
+mbhpricebundle.form.pricecachegeneratortype.zapomnit: Запомнить?
 mbhpricebundle.form.roomcachegeneratortype.nachaloperioda: Начало периода
 mbhpricebundle.form.roomcachegeneratortype.konetsperioda: Конец периода
 mbhpricebundle.form.roomcachegeneratortype.dninedeli: Дни недели
@@ -91,29 +198,29 @@ mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedena
 mbhpricebundle.form.roomcachegeneratortype.vsedninedeli: Все дни недели
 mbhpricebundle.form.roomcachegeneratortype.tipynomerov: Типы номеров
 mbhpricebundle.form.roomcachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyanalichiyamest: Типы номеров для которых будет произведена генерация наличия мест
-mbhpricebundle.form.roomcachegeneratortype.ustanovitʹkvoty?: Установить квоты?
-mbhpricebundle.form.roomcachegeneratortype.ustanovitʹkvotynomerovpotarifam?: Установить квоты номеров по тарифам?
+mbhpricebundle.form.roomcachegeneratortype.ustanovitkvoty: Установить квоты?
+mbhpricebundle.form.roomcachegeneratortype.ustanovitkvotynomerovpotarifam: Установить квоты номеров по тарифам?
 mbhpricebundle.form.roomcachegeneratortype.tarify: Тарифы
 mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot: Тарифы для которых будет произведена генерация квот
 mbhpricebundle.form.roomcachegeneratortype.kvotynebudutsgenerirovany: Квоты не будут сгенерированы
 mbhpricebundle.form.roomcachegeneratortype.kolichestvomest: Количество мест, доступных в выбранные сроки. Минус один (-1) для удаления дней'
-mbhpricebundle.form.roomcachegeneratortype.zakryto?: Закрыто?
+mbhpricebundle.form.roomcachegeneratortype.zakryto: Закрыто?
 mbhpricebundle.form.tariffinheritancetype.tseny: Цены
-mbhpricebundle.form.tariffinheritancetype.nasledovatʹlitsenyotroditelʹskogotarifa: Наследовать ли цены от родительского тарифа
+mbhpricebundle.form.tariffinheritancetype.nasledovatlitsenyotroditelskogotarifa: Наследовать ли цены от родительского тарифа
 mbhpricebundle.form.tariffinheritancetype.usloviyaiogranicheniya: Условия и ограничения
-mbhpricebundle.form.tariffinheritancetype.nasledovatʹliusloviyaiogranicheniyaotroditelʹskogotarifa: Наследовать ли условия и ограничения от родительского тарифа
+mbhpricebundle.form.tariffinheritancetype.nasledovatliusloviyaiogranicheniyaotroditelskogotarifa: Наследовать ли условия и ограничения от родительского тарифа
 mbhpricebundle.form.tariffinheritancetype.kvoty: Квоты
-mbhpricebundle.form.tariffinheritancetype.nasledovatʹlikvotynomerovotroditelʹskogotarif: Наследовать ли квоты номеров от родительского тариф
-mbhpricebundle.view.roomcache.table.ostalosʹ: Осталось
+mbhpricebundle.form.tariffinheritancetype.nasledovatlikvotynomerovotroditelskogotarif: Наследовать ли квоты номеров от родительского тариф
+mbhpricebundle.view.roomcache.table.ostalos: Осталось
 mbhpricebundle.view.pricecache.table.tsenazacheloveka: Цена за человека
 mbhpricebundle.view.pricecache.table.tsenaOdnoMestnogo: Цена 1-местного размещения
 mbhpricebundle.view.pricecache.table.tsenazadetskoyedop: Цена за детское доп. место
-mbhpricebundle.view.service.index.redaktirovatʹ: Редактировать
-mbhpricebundle.view.service.index.dobavitʹuslugu: Добавить услугу
-mbhpricebundle.view.service.index.udalitʹ: Удалить
-mbhpricebundle.view.roomcache.table.kvotypotarifam: Квоты по тарифам 
+mbhpricebundle.view.service.index.redaktirovat: Редактировать
+mbhpricebundle.view.service.index.dobavituslugu: Добавить услугу
+mbhpricebundle.view.service.index.udalit: Удалить
+mbhpricebundle.view.roomcache.table.kvotypotarifam: Квоты по тарифам
 mbhpricebundle.view.roomcache.table.zabronirovano: Забронировано в
-mbhpricebundle.view.overview.index.obzor: обзор
+mbhpricebundle.view.overview.index.obzor: Обзор
 mbhpricebundle.view.overview.index.daty: Даты
 mbhpricebundle.view.overview.index.tipnomera: Тип номера
 mbhpricebundle.view.overview.index.tarif: Тариф
@@ -122,11 +229,10 @@ mbhpricebundle.view.overview.table.nomeravprodazhe: Номера в продаж
 mbhpricebundle.view.overview.table.kvotypotarifam: Квоты по тарифам
 mbhpricebundle.view.overview.table.tseny: Цены
 mbhpricebundle.view.overview.table.usloviyaiogranicheniya: Условия и ограничения
-mbhpricebundle.view.restriction.index.obzor: обзор
 mbhpricebundle.view.restriction.index.daty: Даты
 mbhpricebundle.view.restriction.index.tipnomera: Тип номера
 mbhpricebundle.view.restriction.index.tarif: Тариф
-mbhpricebundle.view.restriction.index.sokhranitʹ: Сохранить
+price.views.restruction.index.save: Сохранить
 mbhpricebundle.view.restriction.index.generatorusloviyiogranicheniy: Генератор условий и ограничений
 mbhpricebundle.view.restriction.index.otmena: Отмена
 mbhpricebundle.view.restriction.layout.usloviyaiogranicheniya: Условия и ограничения
@@ -140,7 +246,6 @@ mbhpricebundle.view.restriction.table.maksDlinaBroniZaezd: Макс. длина 
 mbhpricebundle.view.restriction.table.netzayezda: Нет заезда
 mbhpricebundle.view.restriction.table.netvyyezda: Нет выезда
 mbhpricebundle.view.restriction.table.zakryto: Закрыто
-mbhpricebundle.view.pricecache.index.obzor: обзор
 mbhpricebundle.view.pricecache.index.daty: Даты
 mbhpricebundle.view.pricecache.index.tipnomera: Тип номера
 mbhpricebundle.view.pricecache.index.tarif: Тариф
@@ -158,28 +263,28 @@ price.views.priceCache.index.warning_displayed_irrelevant_prices: 'Указан�
 
 mbhpricebundle.view.service.index.spisok: список
 mbhpricebundle.view.service.index.novayakategoriyauslug: Новая категория услуг
-mbhpricebundle.view.service.index.redaktirovatʹkategoriyuuslug: Редактировать категорию услуг 
-mbhpricebundle.view.service.index.sozdatʹusluguvkategorii: Создать услугу в категории 
-mbhpricebundle.view.service.index.udalitʹkategoriyuuslug: Удалить категорию услуг 
+mbhpricebundle.view.service.index.redaktirovatkategoriyuuslug: Редактировать категорию услуг
+mbhpricebundle.view.service.index.sozdatusluguvkategorii: Создать услугу в категории
+mbhpricebundle.view.service.index.udalitkategoriyuuslug: Удалить категорию услуг
 mbhpricebundle.view.service.index.nazvaniye: Название
 mbhpricebundle.view.service.index.tsena: Цена
 mbhpricebundle.view.service.index.tiprascheta: Тип расчета
 mbhpricebundle.view.service.index.data: Дата
 mbhpricebundle.view.service.index.vklyuchena: Включена
-mbhpricebundle.view.service.index.usluganeispolʹzuyetsya: Услуга не используется
+mbhpricebundle.view.service.index.usluganeispolzuyetsya: Услуга не используется
 mbhpricebundle.view.service.index.shtuka: Штука
 mbhpricebundle.view.service.index.redaktirovaniyezapisi: Редактирование записи
 mbhpricebundle.view.service.index.udaleniyezapisi: Удаление записи
 mbhpricebundle.view.service.index.vetoykategoriinetniodnoyuslugi: В этой категории нет ни одной услуги
-mbhpricebundle.view.service.index.sokhranitʹizmeneniya: Сохранить изменения
+mbhpricebundle.view.service.index.sokhranitizmeneniya: Сохранить изменения
 mbhpricebundle.view.service.index.dobavitʹnovuyukategoriyu: Добавить новую категорию
-mbhpricebundle.view.service.newentry.sozdaniyeuslugivkategorii: создание услуги в категории 
-mbhpricebundle.view.service.editentry.redaktirovaniyeuslugivkategorii: редактирование услуги в категории 
+mbhpricebundle.view.service.newentry.sozdaniyeuslugivkategorii: создание услуги в категории
+mbhpricebundle.view.service.editentry.redaktirovaniyeuslugivkategorii: редактирование услуги в категории
 mbhpricebundle.view.service.layout.uslugi: Услуги
 mbhpricebundle.view.service.new.sozdaniyekategoriiuslug: создание категории услуг
-mbhpricebundle.view.service.edit.redaktirovaniyekategoriiuslug: редактирование категории услуг 
-mbhpricebundle.view.tariff.editinheritance.redaktirovaniye: редактирование 
-mbhpricebundle.view.tariff.editpromotions.redaktirovaniye: редактирование 
+mbhpricebundle.view.service.edit.redaktirovaniyekategoriiuslug: редактирование категории услуг
+mbhpricebundle.view.tariff.editinheritance.redaktirovaniye: редактирование
+mbhpricebundle.view.tariff.editpromotions.redaktirovaniye: редактирование
 mbhpricebundle.view.tariff.index.spisok: список
 mbhpricebundle.view.tariff.index.nazvaniye: Название
 mbhpricebundle.view.tariff.index.baza: База
@@ -190,18 +295,18 @@ mbhpricebundle.view.tariff.index.osnovnoy: Основной
 mbhpricebundle.view.tariff.index.onlayn: Онлайн
 mbhpricebundle.view.tariff.index.da: Да
 mbhpricebundle.view.tariff.index.net: Нет
-mbhpricebundle.view.tariff.index.sozdatʹdocherniytarif: Создать дочерний тариф
+mbhpricebundle.view.tariff.index.sozdatdocherniytarif: Создать дочерний тариф
 mbhpricebundle.view.tariff.layout.tarify: Тарифы
-mbhpricebundle.view.tariff.editservices.redaktirovaniye: редактирование 
-mbhpricebundle.view.tariff.editservices.dobavitʹ: Добавить
+mbhpricebundle.view.tariff.editservices.redaktirovaniye: редактирование
+mbhpricebundle.view.tariff.editservices.dobavit: Добавить
 mbhpricebundle.view.tariff.new.sozdaniye: Создание
-mbhpricebundle.view.tariff.edit.redaktirovaniye: редактирование 
+mbhpricebundle.view.tariff.edit.redaktirovaniye: редактирование
 mbhpricebundle.view.tariff.edittabs.obshchayainformatsiya: Общая информация
 mbhpricebundle.view.tariff.edittabs.aktsii: Акции
 mbhpricebundle.view.tariff.edittabs.uslugi: Услуги
 mbhpricebundle.view.tariff.edittabs.nasledovaniye: Наследование
 mbhpricebundle.view.promotion.index.nazvaniye: Название
-mbhpricebundle.view.promotion.index.individualʹnaya: Индивидуальная
+mbhpricebundle.view.promotion.index.individualnaya: Индивидуальная
 mbhpricebundle.view.promotion.index.skidka: Скидка
 mbhpricebundle.view.promotion.index.vzroslyyebesplatno: Взрослые бесплатно
 mbhpricebundle.view.promotion.index.detibesplatno: Дети бесплатно
@@ -211,18 +316,17 @@ mbhpricebundle.view.promotion.index.udaleniyezapisi: Удаление запис
 mbhpricebundle.view.promotion.layout.aktsii: Акции
 mbhpricebundle.view.promotion.new.sozdaniyeaktsii: создание акции
 mbhpricebundle.view.promotion.edit.redaktirovaniyeaktsii: редактирование акции
-mbhpricebundle.view.roomcache.index.obzor: обзор
 mbhpricebundle.view.roomcache.index.daty: Даты
 mbhpricebundle.view.roomcache.index.tipnomera: Тип номера
 mbhpricebundle.view.roomcache.index.kvotypotarifam: Квоты по тарифам
 mbhpricebundle.view.roomcache.index.grafik: График
-mbhpricebundle.view.roomcache.index.sokhranitʹ: Сохранить
+mbhpricebundle.view.roomcache.index.sokhranit: Сохранить
 mbhpricebundle.view.roomcache.index.generatornalichiyamest: Генератор наличия мест
 mbhpricebundle.view.roomcache.index.otmena: Отмена
 mbhpricebundle.view.roomcache.layout.nomeravprodazhe: Номера в продаже
 mbhpricebundle.view.roomcache.generator.generator: генератор
 mbhpricebundle.view.roomcache.graph.zabronirovano: забронировано
-mbhpricebundle.view.roomcache.graph.ostalosʹ: осталось
+mbhpricebundle.view.roomcache.graph.ostalos: осталось
 mbhpricebundle.view.roomcache.graph.netdannykh: нет данных
 mbhpricebundle.view.roomcache.table.nomeravprodazhe: Номера в продаже
 mbhpricebundle.view.roomcache.table.vprodazhe: В продаже
@@ -306,3 +410,129 @@ specials.tariff: Тариф
 specials.discount: Скидка
 specials.sold: Продано
 special.apply: Применить
+
+price.datafixtures.mongodb.servicedata.eat: Питание
+price.datafixtures.mongodb.servicedata.breakfast: Завтрак
+price.datafixtures.mongodb.servicedata.breakfast.continental_breakfast: Континентальный завтрак
+price.datafixtures.mongodb.servicedata.breakfast.american_breakfast: Американский завтрак
+price.datafixtures.mongodb.servicedata.breakfast.breakfast_buffet: Завтрак-буфет
+price.datafixtures.mongodb.servicedata.breakfast.full_english_breakfast: Полный английский завтрак
+price.datafixtures.mongodb.servicedata.dinner: Обед
+price.datafixtures.mongodb.servicedata.uzhit: Ужин
+price.datafixtures.mongodb.servicedata.polupansion: Полупансион
+price.datafixtures.mongodb.servicedata.breakfast_and_dinner: Завтрак и обед
+price.datafixtures.mongodb.servicedata.full_pansion: Полный пансион
+price.datafixtures.mongodb.servicedata.obed_i_uzhin: Обуд и ужин
+price.datafixtures.mongodb.servicedata.children_breakfast: Детский завтрак
+price.datafixtures.mongodb.servicedata.children_continental_breakfast: Детский континентальный завтрак
+price.datafixtures.mongodb.servicedata.children_american_breakfast: Детский американский завтрак
+price.datafixtures.mongodb.servicedata.children_breakfast_buffet: Детский завтрак-буфет
+price.datafixtures.mongodb.servicedata.children_full_english_breakfast: Детский полный английский завтрак
+price.datafixtures.mongodb.servicedata.children_dinner: Детский обед
+price.datafixtures.mongodb.servicedata.children_uzhin: Детский ужин
+price.datafixtures.mongodb.servicedata.children_polupansion: Детский полупансион
+price.datafixtures.mongodb.servicedata.children_full_pansion: Детский полный пансион
+price.datafixtures.mongodb.servicedata.all_inclusive: Все включено
+price.datafixtures.mongodb.servicedata.extra_bed: Дополнительная кровать
+price.datafixtures.mongodb.servicedata.infant: Инфант
+price.datafixtures.mongodb.servicedata.early_check-in: Ранний заезд
+price.datafixtures.mongodb.servicedata.late_check-out: Поздний выезд
+price.datafixtures.mongodb.servicedata.internet: Интернет
+price.datafixtures.mongodb.servicedata.parking: Парковка
+price.datafixtures.mongodb.servicedata.children_bed: Детская кровать
+price.datafixtures.mongodb.servicedata.transfer: Трансфер
+price.datafixtures.mongodb.servicedata.accomodation: Размещение
+price.datafixtures.mongodb.servicedata.options: Опции
+price.datafixtures.mongodb.servicedata.transfer: Трансфер
+price.datafixtures.mongodb.servicedata.default_tariff: 'Основной тариф'
+
+price.services.roomcachegraphgenerator.room_type_is_not_found: Типы номеров не найдены
+price.roomcachecontroller.room_type_is_not_found: Типы номеров не найдены
+price.roomcachecontroller.tariffs_is_not_found: 'Тарифы не найдены'
+price.roomcachecontroller.change_successfully_saved: 'Изменения успешно сохранены.'
+price.roomcachecontroller.data_successfully_generate: 'Данные успешно сгенерированы.'
+
+price.tariffcontroller.children_tariff: дочерний тариф
+price.tariffcontroller.children_tariff_successfully_created: 'Дочерний тариф успешно создан.'
+price.tariffcontroller.tariff_successfully_copied: 'Тариф успешно скопирован.'
+price.tariffcontroller.tariff_successfully_created: 'Тариф успешно создан. Теперь необходимо заполнить цены.'
+price.tariffcontroller.entry_successfully_updated: 'Запись успешно отредактирована.'
+price.tariffcontroller.room_type_is_not_found: 'Типы номеров не найдены'
+price.tariffcontroller.update_successfully_saved: 'Изменения успешно сохранены.'
+price.tariffcontroller.data_successfully_generated: 'Данные успешно сгенерированы.'
+
+price.overviewcontroller.room_type_is_not_found: 'Типы номеров не найдены'
+price.overviewcontroller.tariffs_is_not_found: 'Тарифы не найдены'
+
+price.controller.restrictioncontroller.room_types_not_found: 'Типы номеров не найдены'
+price.controller.restrictioncontroller.tariffs_not_found: 'Тарифы не найдены'
+price.controller.restrictioncontroller.data_successful_generate: 'Данные успешно сгенерированы.'
+price.controller.restrictioncontroller.change_successful_saved: 'Изменения успешно сохранены.'
+
+price.controller.servicecontroller.price_successful_saved: 'Цены успешно сохранены.'
+price.controller.servicecontroller.entry_successful_saved: 'Запись успешно создана.'
+price.controller.servicecontroller.entry_successfully_updated: 'Запись успешно отредактирована.'
+
+price.resources.views.roomcache.number_on_sales: Номера в продаже
+price.resources.views.quotas_for_tariffs: Квоты по тарифам
+price.resources.views.roomcache.in_sales: В продаже
+price.resources.views.booking: Забронировано
+price.resources.views.booking_in_percents: Забронировано в %
+price.resources.views.left: Осталось
+price.resources.views.closet: Закрыто
+
+price.resources.views.roomcache.generator: генератор
+price.resources.views.roomcache.view: Обзор
+price.resources.views.roomcache.graph: 'График?'
+price.resources.views.roomcache.save: Сохранить
+price.resources.views.roomcache.left: осталось
+price.resources.views.roomcache.number_in_sell: Номера в продаже
+price.resources.views.roomcache.edit_category_of_services: редактирование категории услуг
+
+price.form.public_information: Общая информация
+price.form.public_summer: Основной - лето
+price.form.nazvanie_dla_ispolzovania_vnutri: Название для использования внутри MaxiBooking
+price.form.s_kakogo_chisla_ispolzuetsa_tarif: С какого числа используется тариф?
+price.form.po_kakoe_chislo_ispolzuetsa_tarif: 'По какое число используется тариф?'
+price.form.online: 'Онлайн?'
+price.form.using_tariff_in_online_booking: 'Использовать ли тариф в онлайн бронировании?'
+price.form.what_age_is_client_considered_child: 'До какого возраста клиент считается ребенком?'
+price.form.what_age_is_client_considered_infant: 'До какого возраста клиент считается инфантом?'
+price.form.use_combine_tariffs_in_transition_periods: 'Использовать для комбинирования тарифов в переходных периодах?'
+price.form.silence_special_tariffs_combined_with_basic_tariff: 'По-молчанию спец. тарифы комбинируются с основным тарифом'
+price.form.on: 'Включен?'
+price.form.tariff_used_search: 'Используется ли тариф в поиске?'
+price.form.use_combination: 'Использовать для комбинирования?'
+
+price.form.public_information: Общая информация
+price.form.save_summer: 'Сейф - лето'
+price.form.name_for_using_inside_maxibooking: 'Название для использования внутри MaxiBooking'
+price.form.service_not_use: Услуга не используется
+price.form.use_date_when_adding_service_reservation: 'Использовать ли дату при добавлении услуги к брони?'
+price.form.should_i_use_time_when_i_add_service_my_reservation: 'Использовать ли время при добавлении услуги к брони?'
+price.form.date: 'Дата?'
+price.form.setting: Настройки
+price.form.time: 'Время?'
+price.form.she_on: 'Включена?'
+price.form.should_i_use_service_online_booking: 'Использовать ли услугу в онлайн бронировании?'
+price.form.is_service_available_sale: 'Доступна ли услуга для продажи?'
+pricebundle.resources.views.public_info: Общая информация
+pricebundle.resources.views.actions: Акции
+pricebundle.resources.views.services: Услуги
+pricebundle.resources.views.inheritage: Наследование
+mbhpricebundle.view.roomcache.graph.net.dannykh: Нет данных
+
+mbhpricebundle.view.roomcache.index.tip.nomera: Тип номера
+mbhpricebundle.view.roomcache.index.kvoty.po.tarifam: Квоты по тарифам
+mbhpricebundle.view.service.index.novaya.kategoriya.uslug: Новая категория услуг
+mbhpricebundle.view.service.index.tip.rascheta: Тип расчета
+
+mbhpricebundle.view.special.index.tarif: Тариф
+mbhpricebundle.view.special.index.tip.nomera: Тип номера
+mbhpricebundle.view.tariff.index.daty: Даты
+
+mbhpricebundle.form.tarifftype.vnutrenneye.nazvaniye: Внутреннее название
+mbhpricebundle.form.tarifftype.rebenok.do: Ребенок до
+mbhpricebundle.form.tarifftype.infant.do: Инфант до
+price.form.public_summer: Основной - лето
+mbhpricebundle.form.tarifftype.opisaniye.tarifa.dlya.onlayn.bronirovaniya: Описание тарифа для онлайн бронирования

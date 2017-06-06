@@ -37,14 +37,14 @@
                     <thead>
                     <tr>
                         <th class="td-xs"></th>
-                        <th>Название</th>
+                        <th>{{ 'mbhpackagebundle.view.package.service.nazvaniye'|trans }} </th>
                         <th class="td-sm text-center">{{ "package.service.nights"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-sm text-center">{{ "package.service.guests"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-xs text-center">{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-md text-center">{{ "package.service.time"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-md text-right">{{ "package.service.price"|trans({}, "MBHPackageBundle") }}</th>
-                        <th class="td-sm">{{ "package.service.calculation_type"|trans({}, "MBHPackageBundle") }}</th>
+                        <th class="td-md">{{ "package.service.calculation_type"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-md text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
                         <th>{{ "package.service.comment"|trans({}, "MBHPackageBundle") }}</th>
                         <th class="td-md text-center">{{ "package.service.creation_date"|trans({}, "MBHPackageBundle") }}</th>
@@ -62,8 +62,8 @@
                             <td class="text-center">
                                 {% if service.calcType == 'per_stay' %}
                                     <small>
-                                    {{ service.begin|date('d.m.Y') }}
-                                    {{ service.end|date('d.m.Y') }}
+                                    {{ service.begin ? service.begin|date('d.m.Y') : '-' }}<br>
+                                    {{ service.end ? service.end|date('d.m.Y') : '-' }}
                                     </small>
 
                                 {% else %}
@@ -74,7 +74,18 @@
                                 {{ service.service.time ? service.time|date('H:i') : ''  }}
                             </td>
                             <td class="text-right text-success">{{ service.price|number_format(2) }}</td>
-                            <td>{{ config.calcTypes[service.calcType] }}</td>
+                            <td>
+                                {{ config.calcTypes[service.calcType] }}
+                                {% if service.recalcWithPackage and service.calcType == 'per_stay' %}
+                                    <br><small>смещаемая</small>
+                                {% endif %}
+                                {% if service.includeArrival and service.calcType == 'per_stay' %}
+                                    <br><small>заезд</small>
+                                {% endif %}
+                                {% if service.includeDeparture and service.calcType == 'per_stay' %}
+                                    <br><small>выезд</small>
+                                {% endif %}
+                            </td>
                             <td class="text-right text-success">{{ service.total|number_format(2) }}</td>
                             <td>{{ service.note }}</td>
                             <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>

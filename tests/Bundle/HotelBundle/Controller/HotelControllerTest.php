@@ -35,7 +35,7 @@ class HotelControllerTest extends WebTestCase
         ;
     }
 
-    public function testContactInformationForm()
+    public function testExtendedInformationForm()
     {
         $fixtures = $this->loadFixtures([
             'MBH\Bundle\UserBundle\DataFixtures\MongoDB\GroupsData',
@@ -44,10 +44,10 @@ class HotelControllerTest extends WebTestCase
         ], null, 'doctrine_mongodb')->getReferenceRepository();
 
         $hotel = $fixtures->getReference('hotel-one');
-        $formName = 'mbhhotel_bundle_hotel_contact_information_type';
-        $url = '/management/hotel/' . $hotel->getId() . '/edit/contact';
+        $formName = 'mbh_bundle_hotelbundle_hotel_extended_type';
+        $url = '/management/hotel/' . $hotel->getId() . '/edit/extended';
         $newValues = self::prepareFormValues($formName, [
-            'settlement' => 'Test settlement', 'longitude' => 33.2
+            'rating' => '4', 'checkinoutPolicy' => 'test policy'
         ]);
 
         $crawler = $this->client->request('GET', $url);

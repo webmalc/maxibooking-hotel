@@ -39,10 +39,10 @@ class Service extends Base
      */
     use BlameableDocument;
     use InternableDocument;
-    /** 
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="ServiceCategory", inversedBy="services")
-     * @Assert\NotNull(message="Не выбрана категория")
+     * @Assert\NotNull(message="mbhpricebundle.document.service.ne.vybrana.kategoriya")
      */
     protected $category;
 
@@ -53,9 +53,9 @@ class Service extends Base
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="mbhpricebundle.document.so_short_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="mbhpricebundle.document.name_is_too_long"
      * )
      */
     protected $fullTitle;
@@ -66,9 +66,9 @@ class Service extends Base
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="mbhpricebundle.document.so_short_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="mbhpricebundle.document.name_is_too_long"
      * )
      */
     protected $title;
@@ -79,9 +79,9 @@ class Service extends Base
      * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое описание",
+     *      minMessage="mbhpricebundle.document.so_short_description",
      *      max=300,
-     *      maxMessage="Слишком длинное описание"
+     *      maxMessage="mbhpricebundle.document.description_is_too_long"
      * )
      */
     protected $description;
@@ -92,7 +92,7 @@ class Service extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Цена не может быть меньше нуля"
+     *      minMessage="mbhpricebundle.document.price_can_not_be_less_than_zero"
      * )
      */
     protected $price = 0;
@@ -123,7 +123,6 @@ class Service extends Base
     protected $code;
     
     /**
-     * @todo rename isSystem
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -133,7 +132,15 @@ class Service extends Base
     protected $system = false;
     
     /**
-     * @todo rename hasDate
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $recalcWithPackage = false;
+    
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -143,7 +150,6 @@ class Service extends Base
     protected $date = false;
 
     /**
-     * @todo rename hasTime
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -151,6 +157,24 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     protected $time = false;
+    
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $includeArrival;
+    
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $includeDeparture;
 
     /**
      * Set category
@@ -465,8 +489,76 @@ class Service extends Base
      */
     public function preUpdate()
     {
-        if(!$this->internationalTitle && $this->fullTitle) {
+        if (!$this->internationalTitle && $this->fullTitle) {
             $this->internationalTitle = Helper::translateToLat($this->fullTitle);
         }
+    }
+    
+    /**
+     * Set recalcWithPackage
+     *
+     * @param bool $recalcWithPackage
+     * @return self
+     */
+    public function setRecalcWithPackage($recalcWithPackage): self
+    {
+        $this->recalcWithPackage = $recalcWithPackage;
+        return $this;
+    }
+
+    /**
+     * Get recalcWithPackage
+     *
+     * @return bool $recalcWithPackage
+     */
+    public function isRecalcWithPackage(): ?bool
+    {
+        return $this->recalcWithPackage;
+    }
+
+    /**
+     * includeDeparture set
+     *
+     * @param bool $includeDeparture
+     * @return self
+     */
+    public function setIncludeDeparture(bool $includeDeparture): self
+    {
+        $this->includeDeparture = $includeDeparture;
+
+        return $this;
+    }
+
+    /**
+     * includeDeparture get
+     *
+     * @return bool
+     */
+    public function isIncludeDeparture(): ?bool
+    {
+        return $this->includeDeparture;
+    }
+    
+    /**
+     * includeArrival set
+     *
+     * @param bool $includeArrival
+     * @return self
+     */
+    public function setIncludeArrival(bool $includeArrival): self
+    {
+        $this->includeArrival = $includeArrival;
+
+        return $this;
+    }
+
+    /**
+     * includeArrival get
+     *
+     * @return bool
+     */
+    public function isIncludeArrival(): ?bool
+    {
+        return $this->includeArrival;
     }
 }

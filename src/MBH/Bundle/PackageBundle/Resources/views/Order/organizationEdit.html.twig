@@ -97,7 +97,7 @@
                                 {% if is_granted('ROLE_ORGANIZATION_PAYER') %}
                                 <a href="{{ path('organization_edit', {id: entity.organization.id }) }}"
                                    class="btn btn-success btn-sm" title="" data-toggle="tooltip"
-                                   data-original-title="Редактирование записи"><i class="fa fa-pencil-square-o"></i></a>
+                                   data-original-title="{{ 'mbhpackagebundle.view.order.organizationedit.redaktirovaniye.zapisi'|trans }} "><i class="fa fa-pencil-square-o"></i></a>
                                 {% endif %}
 
                                 {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}

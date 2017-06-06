@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Form\RestrictionGeneratorType;
@@ -94,21 +95,21 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         ];
 
         //get roomTypes
-        $roomTypesCallback = function () use ($hotel, $request) {
-            return $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
+        $roomTypesCallback = function () use ($hotel, $request, $dm) {
+            return $dm->getRepository('MBHHotelBundle:RoomType')->fetch($hotel, $request->get('roomTypes'));
         };
         $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
         $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         if (!count($roomTypes)) {
-            return array_merge($response, ['error' => 'Типы номеров не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.controller.restrictioncontroller.room_types_not_found')]);
         }
         //get tariffs
         $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
             ->fetchChildTariffs($hotel, 'restrictions', $request->get('tariffs'))
         ;
         if (!count($tariffs)) {
-            return array_merge($response, ['error' => 'Тарифы не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.controller.restrictioncontroller.tariffs_not_found')]);
         }
 
         //get restrictions
@@ -136,11 +137,11 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
      * @Security("is_granted('ROLE_RESTRICTION_EDIT')")
      * @Template("MBHPriceBundle:Restriction:index.html.twig")
      * @param Request $request
-     * @return array
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function saveAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /** @var DocumentManager $dm */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
         $helper = $this->get('mbh.helper');
@@ -225,9 +226,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
         $this->get('mbh.cache')->clear('restriction');
 
-        $request->getSession()->getFlashBag()
-            ->set('success', 'Изменения успешно сохранены.')
-        ;
+        $this->addFlash('success', 'price.controller.restrictioncontroller.change_successful_saved');
 
         return $this->redirect($this->generateUrl('restriction_overview', [
             'begin' => $request->get('begin'),
@@ -267,7 +266,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
      * @Security("is_granted('ROLE_RESTRICTION_EDIT')")
      * @Template("MBHPriceBundle:Restriction:generator.html.twig")
      * @param Request $request
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function generatorSaveAction(Request $request)
     {
@@ -285,8 +284,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $request->getSession()->getFlashBag()
-                ->set('success', 'Данные успешно сгенерированы.')
+            $this->addFlash('success', 'price.controller.restrictioncontroller.data_successful_generate')
             ;
 
             $data = $form->getData();

@@ -32,7 +32,7 @@ class TariffControllerTest extends WebTestCase
             ->setNewFormValues(['fullTitle' => $this->getNewTitle()])
             ->setNewFormErrors(['data.fullTitle'])
             ->setEditFormValues(['fullTitle' => $this->getEditTitle()])
-            ->setListItemsCount(1)
+            ->setListItemsCount(2)
         ;
     }
 }

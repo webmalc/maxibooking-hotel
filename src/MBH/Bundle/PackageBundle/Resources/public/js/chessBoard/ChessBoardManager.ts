@@ -47,7 +47,6 @@ class ChessBoardManager {
         let wrapper = $('#calendarWrapper');
         let self = this;
         let chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
-        this.setChessboardContentHeight(chessBoardContentBlock);
         this.setContentWidth(chessBoardContentBlock);
         $('.sidebar-toggle').click(function () {
             setTimeout(function () {
@@ -176,14 +175,6 @@ class ChessBoardManager {
                 wrapper.append(newPackage);
             });
         }
-    }
-
-    private setChessboardContentHeight(chessBoardContentBlock) {
-        let $cb = $(chessBoardContentBlock);
-        let availableHeight = document.documentElement.clientHeight - $cb.offset().top;
-        let chessboardHeight = parseInt(getComputedStyle(chessBoardContentBlock).height, 10);
-        let chessboardContentBlockHeight = chessboardHeight > availableHeight ? availableHeight : chessboardHeight + 10;
-        $cb.css('height', chessboardContentBlockHeight);
     }
 
     public static getTableStartDate() {

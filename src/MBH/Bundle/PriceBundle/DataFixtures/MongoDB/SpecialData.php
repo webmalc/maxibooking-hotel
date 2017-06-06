@@ -2,8 +2,8 @@
 namespace MBH\Bundle\PriceBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -12,19 +12,17 @@ use MBH\Bundle\PriceBundle\Document\Special;
 /**
  * Class SpecialData
  */
-class SpecialData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+class SpecialData extends AbstractFixture implements OrderedFixtureInterface
 {
     /**
      * number of entries for generation
      */
     const NUM_OF_ENTRIES = 3;
 
-    use ContainerAwareTrait;
-
     /**
      * {@inheritDoc}
      */
-    public function load(ObjectManager $manager)
+    public function doLoad(ObjectManager $manager)
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
         $begin = new \DateTime('midnight -3 months');
@@ -52,5 +50,13 @@ class SpecialData extends AbstractFixture implements OrderedFixtureInterface, Co
     public function getOrder()
     {
         return 999;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    protected function getEnvs(): array
+    {
+        return ['test'];
     }
 }
