@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -193,24 +194,32 @@ class ChessBoardDataBuilder
             $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
         }
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
-        $accommodationIds = [];
         $orderIds = [];
+        $touristIds = [];
         /** @var Package $package */
         foreach ($packages as $package) {
-            $orderIds[] = $package->getOrder()->getId();
-            if ($package->getAccommodation()) {
-                $accommodationIds[] = $package->getAccommodation()->getId();
+            $tourists = $package->getTourists();
+            /** @var ArrayCollection $tourists */
+            if ($tourists->isInitialized()) {
+                $ids = $tourists->map(function($user) {
+                    return $user->getId();
+                })->toArray();
+            } else {
+                $ids = array_map(function($dbRef) {
+                    /* this depends on reference type */
+                    return (string) $dbRef['$id'];
+                }, $tourists->getMongoData());
             }
+            $orderIds[] = $package->getOrder()->getId();
         }
 
-        $accommodations = $this->dm
-            ->getRepository('MBHPackageBundle:PackageAccommodation')
+        $tourists = $this->dm
+            ->getRepository('MBHPackageBundle:Tourist')
             ->createQueryBuilder()
-            ->field('id')->in($accommodationIds)
+            ->field('id')->in($touristIds)
             ->getQuery()
-            ->execute()
-            ->toArray()
-        ;
+            ->execute();
+
         $orders = $this->dm
             ->getRepository('MBHPackageBundle:Order')
             ->createQueryBuilder()
