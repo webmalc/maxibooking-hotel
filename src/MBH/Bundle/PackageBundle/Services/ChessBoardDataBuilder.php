@@ -199,7 +199,6 @@ class ChessBoardDataBuilder
         /** @var Package $package */
         foreach ($packages as $package) {
             $tourists = $package->getTourists();
-            /** @var ArrayCollection $tourists */
             if ($tourists->isInitialized()) {
                 $ids = $tourists->map(function($user) {
                     return $user->getId();
@@ -210,6 +209,7 @@ class ChessBoardDataBuilder
                     return (string) $dbRef['$id'];
                 }, $tourists->getMongoData());
             }
+            $touristIds = array_merge($touristIds, $ids);
             $orderIds[] = $package->getOrder()->getId();
         }
 
@@ -218,7 +218,8 @@ class ChessBoardDataBuilder
             ->createQueryBuilder()
             ->field('id')->in($touristIds)
             ->getQuery()
-            ->execute();
+            ->execute()
+            ->toArray();
 
         $orders = $this->dm
             ->getRepository('MBHPackageBundle:Order')
