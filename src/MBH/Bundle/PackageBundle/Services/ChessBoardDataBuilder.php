@@ -198,19 +198,8 @@ class ChessBoardDataBuilder
         /** @var Package $package */
         foreach ($packages as $package) {
             $orderIds[] = $package->getOrder()->getId();
-            if ($package->getAccommodation()) {
-                $accommodationIds[] = $package->getAccommodation()->getId();
-            }
         }
 
-        $accommodations = $this->dm
-            ->getRepository('MBHPackageBundle:PackageAccommodation')
-            ->createQueryBuilder()
-            ->field('id')->in($accommodationIds)
-            ->getQuery()
-            ->execute()
-            ->toArray()
-        ;
         $orders = $this->dm
             ->getRepository('MBHPackageBundle:Order')
             ->createQueryBuilder()
