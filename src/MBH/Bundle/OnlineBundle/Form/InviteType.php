@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\OnlineBundle\Form;
 
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\OnlineBundle\Document\Invite;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -18,35 +19,36 @@ class InviteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('arrival', DateType::class, [
+            ->add('arrival', new DateType(), [
                 'widget' => 'single_text',
                 //'format' => 'yyyy-MM-dd',
                 'required' => false,
             ])
-            ->add('departure', DateType::class, [
+            ->add('departure', new DateType(), [
                 'widget' => 'single_text',
                 'format' => 'yyyy-MM-dd',
                 'required' => false,
             ])
-            ->add('type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('type', InvertChoiceType::class, [
                 'expanded' => true,
                 'choices' => [
                     Invite::TYPE_SINGLE => 'form.inviteType.type.single',
                     Invite::TYPE_TWICE => 'form.inviteType.type.twice',
                 ],
                 'required' => false,
-                'placeholder' => null,
+                'empty_value' => null,
             ])
             ->add('guests', CollectionType::class, [
-                'entry_type' => InvitedTouristType::class,
+                'type' => new InvitedTouristType(),
                 'allow_add' => true,
                 'prototype' => true
             ])
             ->add('tripRoutes', CollectionType::class, [
-                'entry_type' => TripRouteType::class,
+                'type' => new TripRouteType(),
                 'allow_add' => true,
                 'prototype' => true
             ])
+            //->add('agree', 'checkbox')
         ;
     }
 

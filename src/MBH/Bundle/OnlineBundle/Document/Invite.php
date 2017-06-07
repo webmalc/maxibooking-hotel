@@ -3,14 +3,14 @@
 namespace MBH\Bundle\OnlineBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use MBH\Bundle\OnlineBundle\Form\InvitedCityType;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class Invite

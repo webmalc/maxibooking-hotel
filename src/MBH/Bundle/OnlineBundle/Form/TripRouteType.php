@@ -19,14 +19,14 @@ class TripRouteType extends AbstractType
         $builder
             ->add('hotel', TextType::class, [
                 'required' => false,
-                'label' => 'mbhonlinebundle.form.triproutetype.gostinitsa',
+                'label' => 'Гостиница',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
             ->add('address', TextType::class, [
                 'required' => false,
-                'label' => 'mbhonlinebundle.form.triproutetype.gorod',
+                'label' => 'Город',
                 'constraints' => [
                     new NotBlank()
                 ],
