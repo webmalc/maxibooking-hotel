@@ -8,6 +8,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
@@ -192,6 +193,20 @@ class ChessBoardDataBuilder
             $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
         }
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
+        $accommodationIds = [];
+        $orderIds = [];
+        /** @var Package $package */
+        foreach ($packages as $package) {
+            $orderIds[] = $package->getOrder()->getId();
+        }
+
+        $orders = $this->dm
+            ->getRepository('MBHPackageBundle:Order')
+            ->createQueryBuilder()
+            ->field('id')->in($orderIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
 
         return $packages;
     }
