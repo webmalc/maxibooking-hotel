@@ -1,3 +1,9 @@
+1.5.8
+=============
+* booking.com: fix (redmine #717)
+* chessboard: fix
+* merged translations
+
 1.5.7
 =============
 * channelManager: overview (redmine #667)
