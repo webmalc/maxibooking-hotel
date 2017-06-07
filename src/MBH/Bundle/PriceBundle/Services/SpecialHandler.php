@@ -55,7 +55,6 @@ class SpecialHandler
      * @param OnlineSpecialResultGenerator $specialSearchHelper
      * @param OnlineSearchFormData $onlineSearchFormData
      * @param Notifier $mailer
-     * @param DataCollectingValidator $validator
      */
     public function __construct(
         SearchFactory $search,
@@ -87,6 +86,7 @@ class SpecialHandler
      */
     public function calculatePrices(array $specialIds = [], array $roomTypeIds = [], callable $output = null): void
     {
+//        $specials = $this->getSpecials(['58f8a4d5cd572259776e96b1']);
         $specials = $this->getSpecials($specialIds);
         /** @var Special $special */
         foreach ($specials as $special) {
@@ -122,14 +122,21 @@ class SpecialHandler
         $searchForm = $this->getFormData($special);
         $searchResults = $this->specialSearchHelper->getResults($searchForm);
         $error = '';
+
         /** @var OnlineResultInstance $onlineSearchResult */
         if ($searchResults->isEmpty()) {
-            $error = 'Поиск не вернул результат для спецпредложения';
-        } elseif (!$searchResults->isEmpty()) {
+            if ($special->getSold() === 0) {
+                $error = 'Поиск не вернул результат для спецпредложения';
+            }
+
+        }
+
+        if (!$searchResults->isEmpty()) {
             $onlineSearchResult = $searchResults->first();
             /** @var SearchResult $searchResult */
 
-            if (count($onlineSearchResult->getResults()) && $onlineSearchResult->isSameVirtualRoomInSpec()) {
+            if (count($onlineSearchResult->getResults())) {
+
                 $searchResult = $searchResults->first()->getResults()->first();
                 $specialPrice = $this->createSpecialPrice(
                     $searchResult->getTariff(),
@@ -137,14 +144,13 @@ class SpecialHandler
                     $searchResult->getPrices()
                 );
                 $special->addPrice($specialPrice);
-                $special->clearError();
                 $this->addLogMessage('Найдены цены', $searchResult->getPrices(), $output);
-            } else {
-                $error = 'Нет подходящих вариантов для спецпредложения';
+
                 if (!$onlineSearchResult->isSameVirtualRoomInSpec()) {
-                    $error.=' виртуальная комната занята';
+                    $error ='Виртуальная комната занята';
                 }
             }
+
         }
 
         if ($error && $special->getIsEnabled()) {
@@ -156,8 +162,11 @@ class SpecialHandler
                 ['specialId' => $special->getId(), 'specialName' => $special->getName()],
                 $output
             );
-        } elseif (!$error && !$special->getIsEnabled()){
+        }
+
+        if (!$error && !$special->getIsEnabled()){
             $special->setIsEnabled(true);
+            $special->clearError();
             $this->enabledSpecials[] = $special;
             $this->addLogMessage(
                 'Повторное включение спецпредложения',
@@ -165,6 +174,7 @@ class SpecialHandler
                 $output
             );
         }
+
         $special->setNoRecalculation();
 //        $errors = $this->validator->validate($special);
 //        if (!count($errors)) {
@@ -173,8 +183,8 @@ class SpecialHandler
 //            $this->addLogMessage('Ошибка сохранения спецпредложения!', ['specialName' => $special->getName], $output);
 //        }
         $this->dm->flush();
-
         $this->dm->clear();
+
         $this->addLogMessage(
             'End recalculate for special',
             ['specialId' => $special->getId(), 'specialName' => $special->getName()],
@@ -270,8 +280,8 @@ class SpecialHandler
             $filterBegin = new \DateTime('midnight');
             $specialFilter
                 ->setBegin($filterBegin)
-                ->setIsEnabled(true)
-                ->setRemain(1);
+                ->setIsEnabled(true);
+
 
             $specials = $this->dm->getRepository('MBHPriceBundle:Special')->getFiltered($specialFilter);
         }
