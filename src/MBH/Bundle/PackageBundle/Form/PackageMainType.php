@@ -136,7 +136,7 @@ class PackageMainType extends AbstractType
                     ->field('deletedAt')
                     ->equals(null);
             },
-            'group' => 'Цена',
+            'group' => 'mbhpackagebundle.form.packagemaintype.cena',
         ]);
         if (!$package->getTotalOverwrite() && $options['price']) {
             $builder->add('price', TextType::class, [

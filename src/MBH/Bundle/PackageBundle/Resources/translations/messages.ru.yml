@@ -102,6 +102,7 @@ form.packageGuestType.birth_date: 'Дата рождения'
 mbhpackagebundle.view.tourist.index.kontakty: Контакты
 mbhpackagebundle.view.package.late.early.check.modal.net: Нет
 form.packageMainType.promotion: Акция
+form.packageMainType.tariff: Тариф
 form.packageServiceType.amount: Количество
 mbhpackagebundle.view.package.accommodation.otmena: Отмена
 form.organizationType.name: Название
