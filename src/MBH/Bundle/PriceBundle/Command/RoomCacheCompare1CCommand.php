@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,6 +19,9 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
         2 => 'Пансионат АзовЛенд',
         3 => 'Парк - отель "РИО"'
     ];
+
+    //Грязный хак
+    const MOVED = '_переезд';
 
     private $result = [];
 
@@ -87,7 +91,7 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
 
             if (!$hotel) {
                 $this->sendMessage([
-                    'error' => 'Не найден отель <' + $hotelXml->TITLE + '>.'
+                    'error' => 'Не найден отель <' . $hotelXml->TITLE . '>.'
                 ]);
 
                 return false;
@@ -103,7 +107,7 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
 
                 if (!$roomType) {
                     $this->sendMessage([
-                        'error' => 'Не найден тип номера <' + $roomXml->TITLE + '>.'
+                        'error' => 'Не найден тип номера <' . $roomXml->TITLE . '>.'
                     ]);
                 }
 
@@ -129,6 +133,7 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                         $entry->remainMB = 0;
                         $this->result[] = $entry;
                     } else {
+                        /** @var RoomCache $cache */
                         $cache = $caches[$roomType->getId()][0][$date];
                             $entry->totalMB = $cache->getTotalRooms();
                             $entry->soldMB = $cache->getPackagesCount();
@@ -136,6 +141,8 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
 
                             $entry->numbersMB = $dm->getRepository('MBHPackageBundle:Package')
                                 ->getNumbers($entry->date, $entry->roomType);
+                            //Грязный хак тут
+                            $entry->numbersMB = str_replace(self::MOVED, '', $entry->numbersMB);
                             $entry->mb = array_diff($entry->numbersMB, $entry->numbers);
                             $entry->oneC = array_diff($entry->numbers, $entry->numbersMB);
                             $entry->common = array_merge($entry->mb, $entry->oneC);
@@ -143,6 +150,7 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                             $entry->res = array_unique($entry->common);
                             $entry->non_oneC = $this ->sortOneC($entry->res,$entry->mb);
                             $entry->non_mb = $this ->sortOneC($entry->res,$entry->oneC);
+
                         if (count($entry->oneC) || count($entry->mb)) {
                             $this->result[] = $entry;
                         }
