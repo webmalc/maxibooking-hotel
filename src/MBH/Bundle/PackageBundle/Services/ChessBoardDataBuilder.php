@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -198,16 +199,11 @@ class ChessBoardDataBuilder
         $touristIds = [];
         /** @var Package $package */
         foreach ($packages as $package) {
+            /** @var PersistentCollection $tourists */
             $tourists = $package->getTourists();
-            if ($tourists->isInitialized()) {
-                $ids = $tourists->map(function($user) {
-                    return $user->getId();
-                })->toArray();
-            } else {
-                $ids = array_map(function($dbRef) {
-                    /* this depends on reference type */
-                    return (string) $dbRef['$id'];
-                }, $tourists->getMongoData());
+            $ids = [];
+            foreach ($tourists->getMongoData() as $touristData) {
+                $ids[] = $touristData['$id'];
             }
             $touristIds = array_merge($touristIds, $ids);
             $orderIds[] = $package->getOrder()->getId();
