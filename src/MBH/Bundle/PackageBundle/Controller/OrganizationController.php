@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Class OrganizationController
@@ -148,7 +149,7 @@ class OrganizationController extends Controller
      */
     public function editAction(Organization $organization, Request $request)
     {
-        $imageUrl = $organization->getStamp() ? $this->generateUrl('stamp', ['id' => $organization->getId()]) : null;
+        $imageUrl = $organization->getStamp() ? $this->generateUrl('stamp', ['id' => $organization->getId()], UrlGeneratorInterface::ABSOLUTE_URL) : null;
 
         $form = $this->createForm(OrganizationType::class, $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
