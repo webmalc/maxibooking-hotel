@@ -428,7 +428,7 @@ class ChessBoardDataBuilder
 
             $roomsByRoomTypeIds = $this->dm->getRepository('MBHHotelBundle:Room')
                 ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, $skipValue,
-                    self::ROOM_COUNT_ON_PAGE, true, null);
+                    self::ROOM_COUNT_ON_PAGE, true, true);
 
             $sortedRoomsByRoomTypeIds = [];
             foreach ($roomsByRoomTypeIds as $roomTypeId => $roomsByRoomTypeId) {
