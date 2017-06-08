@@ -34,7 +34,7 @@ class CashDocumentType extends AbstractType
             $text = $payer->getName();
             if ($payer instanceof Organization) {
                 $prefix = 'org';
-                $text .= ' (ИНН ' . $payer->getInn() . ') ' . $payer->getDirectorFio();
+                $text .= ' (' . 'form.cashDocumentType.inn' . ' ' . $payer->getInn() . ') ' . $payer->getDirectorFio();
             } elseif ($payer instanceof Tourist) {
                 $prefix = 'tourist';
                 $text .= $payer->getBirthday() ? ' ' . $payer->getBirthday()->format('d.m.Y') : '';

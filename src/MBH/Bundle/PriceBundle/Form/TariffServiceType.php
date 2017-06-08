@@ -29,7 +29,7 @@ class TariffServiceType extends AbstractType
                 'placeholder' => '',
                 'attr' => [
                     'style' => 'width:250px',
-                    'placeholder' => 'Выберите услугу',
+                    'placeholder' => 'mbhpricebundle.form.tariffservicetype.vyberite.uslugu',
                 ],
                 'choice_attr' => function(Service $service) {
                     return ['data-type' => $service->getCalcType()];
@@ -53,7 +53,7 @@ class TariffServiceType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'style' => 'width:80px',
-                    'placeholder' => 'На всех',
+                    'placeholder' => 'mbhpricebundle.form.tariffservicetype.navsekh',
                 ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
@@ -63,7 +63,7 @@ class TariffServiceType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'style' => 'width:80px',
-                    'placeholder' => 'Кол-во',
+                    'placeholder' => 'mbhpricebundle.form.tariffservicetype.kol-vo',
                 ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,

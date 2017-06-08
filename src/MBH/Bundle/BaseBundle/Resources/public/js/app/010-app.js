@@ -223,13 +223,18 @@ $(document).ready(function () {
         if (!$('.scrolling').length) {
             return null;
         }
-        var h = function () {
+        var height = function () {
+            var isActionsPanelExists = $('#actions').length > 0;
+            if (!isActionsPanelExists) {
+                document.body.style.paddingBottom = 0;
+            }
+            var bottomOffset = isActionsPanelExists ? 85 : 45;
             $('.scrolling').height(function () {
-                return $(window).height() - $(this).offset().top - 90;
+                return $(window).height() - $(this).offset().top - bottomOffset;
             });
         };
-        h();
-        setInterval(h, 500);
+        height();
+        setInterval(height, 500);
     }());
 
     //Tooltips configuration
@@ -259,9 +264,9 @@ $(document).ready(function () {
 
         $('.sidebar-toggle').click(function () {
             if ($('body').hasClass('sidebar-collapse')) {
-                localStorage.setItem('sidebar-collapse', 'close');
-            } else {
                 localStorage.setItem('sidebar-collapse', 'open');
+            } else {
+                localStorage.setItem('sidebar-collapse', 'close');
             }
         });
     }());

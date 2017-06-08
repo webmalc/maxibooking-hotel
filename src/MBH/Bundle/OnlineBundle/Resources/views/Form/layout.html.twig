@@ -2,3 +2,39 @@
 
 {% set title = 'views.form.layout.online_form'|trans({}, 'MBHOnlineBundle') %}
 {% set title_url = path('online_form') %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendor/codemirror/lib/codemirror.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/css/css.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/addon/display/fullscreen.js') }}"></script>
+    <script>
+        if (document.getElementById('mbh_bundle_onlinebundle_form_type_css')) {
+            CodeMirror.fromTextArea(document.getElementById('mbh_bundle_onlinebundle_form_type_css'), {
+                lineNumbers: true,
+                mode: 'css',
+                extraKeys: {
+                    "F11": function(cm) {
+                        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                    },
+                    "Esc": function(cm) {
+                        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/codemirror/lib/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/codemirror/addon/display/fullscreen.css') }}">
+    <style>
+        .CodeMirror-fullscreen {
+            top: 60px;
+            left: 60px;
+            bottom: 60px;
+        }
+    </style>
+{% endblock %}

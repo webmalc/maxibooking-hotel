@@ -82,7 +82,6 @@ services:
       tags:
               - { name: form.type }
 
-
     mbh.channelmanager.myallocator_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\MyallocatorType
       arguments: ['@mbh.channelmanager.myallocator', '@mbh.currency']
@@ -118,3 +117,9 @@ services:
 
     mbh.channelmanager.ostrovok.data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator
+
+    mbh.twig.channelmanager.extension:
+        class: MBH\Bundle\ChannelManagerBundle\Twig\Extension
+        arguments: ['@service_container', '@doctrine_mongodb', '%mbh.channelmanager.services%']
+        tags:
+            - { name: twig.extension }

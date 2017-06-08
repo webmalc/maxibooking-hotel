@@ -162,8 +162,8 @@ class ChessBoardUnit implements \JsonSerializable
     private function hasUpdateAccommodationRights(PackageAccommodation $accommodation)
     {
         return ($this->rightsChecker->isGranted('ROLE_PACKAGE_ACCOMMODATION')
-        && ($this->rightsChecker->isGranted('EDIT', $accommodation)
-            || $this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')) ? true : false);
+        && ($this->rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
+            || $this->rightsChecker->isGranted('EDIT', $accommodation)) ? true : false);
     }
 
     private function hasUpdatePackageRights(Package $package)
@@ -176,8 +176,9 @@ class ChessBoardUnit implements \JsonSerializable
     private function hasRemovePackageRights(Package $package)
     {
         return ($this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE')
-        && ($this->rightsChecker->isGranted('DELETE', $package)
-            || $this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE_ALL')) ? true : false);
+        && ($this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE_ALL')
+            || $this->rightsChecker->isGranted('DELETE', $package)
+            ) ? true : false);
     }
 
     private function hasViewPackageRights(Package $package)

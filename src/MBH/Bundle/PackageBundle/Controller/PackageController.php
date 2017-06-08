@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
-
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 use MBH\Bundle\BaseBundle\Lib\Exception;
@@ -78,8 +77,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'dates' => 'begin',
                 'checkOut' => false,
                 'checkIn' => false
-            ], $data)
-        );
+            ], $data));
         //begin tomorrow count
         $count['begin_tomorrow'] = $repository->fetch(array_merge([
                 'begin' => $tomorrow->format('d.m.Y'),
@@ -87,51 +85,43 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'dates' => 'begin',
                 'checkOut' => false,
                 'checkIn' => false
-            ], $data)
-        );
+            ], $data));
         //live now count
         $count['live_now'] = $repository->fetch(array_merge([
                 'filter' => 'live_now',
                 'checkOut' => false,
                 'checkIn' => true
-            ], $data)
-        );
+            ], $data));
         //without-approval count
         $count['without_approval'] = $repository->fetch(array_merge([
                 'confirmed' => '0'
-            ], $data)
-        );
+            ], $data));
         //without_accommodation count
         $count['without_accommodation'] = $repository->fetch(array_merge([
                 'filter' => 'without_accommodation',
                 'end' => $now->format('d.m.Y'),
                 'dates' => 'begin'
-            ], $data)
-        );
+            ], $data));
         //not_paid count
         $count['not_paid'] = $repository->fetch(array_merge([
                 'paid' => 'not_paid'
-            ], $data)
-        );
+            ], $data));
         //not_paid time count
         $count['not_paid_time'] = $repository->fetch(array_merge([
                 'paid' => 'not_paid',
                 'end' => new \DateTime($this->container->getParameter('mbh.package.notpaid.time')),
                 'dates' => 'createdAt'
-            ], $data)
-        );
+            ], $data));
         //created_by count
         $count['created_by'] = $repository->fetch(array_merge([
                 'createdBy' => $this->getUser()->getUsername()
-            ], $data)
-        );
+            ], $data));
         //checkIn count
         $count['not_check_in'] = $repository->fetch(array_merge([
                 'checkIn' => false,
                 'end' => $now->format('d.m.Y'),
                 'dates' => 'begin'
-            ], $data)
-        );
+            ], $data));
 
         return [
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
@@ -154,7 +144,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-
             $formData = $form->getData();
 
             $data = [
@@ -420,8 +409,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $package->setTotalOverwrite(0);
         $package->getOrder()->setTotalOverwrite(0);
         $this->dm->flush();
-        $this->addFlash('success',
-            $this->get('translator')->trans('controller.packageController.record_edited_success'));
+        $this->addFlash(
+            'success',
+            $this->get('translator')->trans('controller.packageController.record_edited_success')
+        );
         return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
     }
 
@@ -474,15 +465,19 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form->handleRequest($request);
         if ($form->isValid() && !$package->getIsLocked()) {
             //check by search
-            $result = $this->container->get('mbh.order_manager')->updatePackage($oldPackage, $package);
+            $newTariff = $form->get('tariff')->getData();
+            $result = $this->container->get('mbh.order_manager')
+                ->updatePackage($oldPackage, $package, $newTariff);
             /** @var FlashBagInterface $flashBag */
             $flashBag = $request->getSession()->getFlashBag();
             if ($result instanceof Package) {
                 $this->dm->persist($package);
                 $this->dm->flush();
 
-                $flashBag->set('success',
-                    $this->get('translator')->trans('controller.packageController.record_edited_success'));
+                $flashBag->set(
+                    'success',
+                    $this->get('translator')->trans('controller.packageController.record_edited_success')
+                );
 
                 return $this->afterSaveRedirect('package', $package->getId());
             } else {
@@ -621,11 +616,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-
                 $data = $form->getData();
                 $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-                    $data['lastName'], $data['firstName'], $data['patronymic'], $data['birthday'], $data['email'],
-                    $data['phone'], $data['communicationLanguage']
+                    $data['lastName'],
+                    $data['firstName'],
+                    $data['patronymic'],
+                    $data['birthday'],
+                    $data['email'],
+                    $data['phone'],
+                    $data['communicationLanguage']
                 );
                 $package->addTourist($tourist);
 
@@ -698,6 +697,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $packageService = new PackageService();
         $packageService
             ->setBegin($package->getBegin())
+            ->setEnd($package->getEnd())
             ->setTime($package->getBegin())
             ->setPackage($package);
 
@@ -720,7 +720,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $this->dm->persist($packageService);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success',
+                $request->getSession()->getFlashBag()->set(
+                    'success',
                     $this->get('translator')->trans('controller.packageController.service_added_success')
                 );
 
@@ -773,13 +774,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $this->dm->persist($service);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success',
+                $request->getSession()->getFlashBag()->set(
+                    'success',
                     $this->get('translator')->trans('controller.packageController.service_edit_success')
                 );
 
                 return $request->get('save') !== null ?
-                    $this->redirectToRoute('package_service_edit',
-                        ['id' => $package->getId(), 'serviceId' => $service->getId()]) :
+                    $this->redirectToRoute(
+                        'package_service_edit',
+                        ['id' => $package->getId(), 'serviceId' => $service->getId()]
+                    ) :
                     $this->redirectToRoute('package_service', ['id' => $package->getId()]);
             }
         }
@@ -837,21 +841,30 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $availableRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
-            $package->getBegin(), $package->getEnd(),
-            $this->hotel, null, null, $package, false
+            $package->getBegin(),
+            $package->getEnd(),
+            $this->hotel,
+            null,
+            null,
+            $package,
+            false
         );
         $flash = $request->getSession()->getFlashBag();
 
         if (!in_array($room->getId(), $this->helper->toIds($availableRooms))) {
-            $flash->set('danger',
-                $this->get('translator')->trans('controller.packageController.record_edited_fail_accommodation'));
+            $flash->set(
+                'danger',
+                $this->get('translator')->trans('controller.packageController.record_edited_fail_accommodation')
+            );
         } else {
             $package->setAccommodation($room);
             $this->dm->persist($package);
             $this->dm->flush();
 
-            $flash->set('success',
-                $this->get('translator')->trans('controller.packageController.placement_saved_success'));
+            $flash->set(
+                'success',
+                $this->get('translator')->trans('controller.packageController.placement_saved_success')
+            );
         }
 
         return $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);
@@ -886,11 +899,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $additionResult = $this->get('mbh_bundle_package.services.package_accommodation_manipulator')
                 ->addAccommodation($accommodation, $package);
             if ($additionResult instanceof PackageAccommodation) {
-
                 $this->addFlash('success', 'controller.packageController.placement_saved_success');
                 if ($request->isXmlHttpRequest()) {
                     return new Response('', 302);
@@ -937,8 +948,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     return new Response('', 302);
                 }
 
-                return $this->redirectToRoute('package_accommodation',
-                    ['id' => $accommodation->getPackage()->getId(), 'begin' => null, 'end' => null]);
+                return $this->redirectToRoute(
+                    'package_accommodation',
+                    ['id' => $accommodation->getPackage()->getId(), 'begin' => null, 'end' => null]
+                );
             }
 
             $form->addError(new FormError($editResult));
@@ -969,8 +982,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         try {
             $this->dm->remove($entity);
             $this->dm->flush();
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
+            $this->addFlash(
+                'success',
+                $this->get('translator')->trans('controller.packageController.placement_deleted_success')
+            );
         } catch (DeleteException $exception) {
             $this->addFlash('error', $this->get('translator')->trans($exception->getMessage()));
         }
@@ -1095,8 +1110,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $this->dm->persist($package);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success',
-                    $this->get('translator')->trans('controller.packageController.placement_saved_success'));
+                $request->getSession()->getFlashBag()->set(
+                    'success',
+                    $this->get('translator')->trans('controller.packageController.placement_saved_success')
+                );
 
                 return $this->afterSaveRedirect('package', $package->getId(), [], '_accommodation');
             }
@@ -1142,7 +1159,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         if ($form->isValid()) {
-
             $orderId = $entity->getOrder()->getId();
             $this->dm->persist($entity);
             $this->dm->remove($entity);
@@ -1156,13 +1172,17 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             }
 
             $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.packageController.record_deleted_success'));
+                ->set(
+                    'success',
+                    $this->get('translator')->trans('controller.packageController.record_deleted_success')
+                );
 
 
             if (!empty($form->get('order')->getData())) {
-                return $this->redirect($this->generateUrl('package_order_edit',
-                    ['id' => $orderId, 'packageId' => $entity->getId()]));
+                return $this->redirect($this->generateUrl(
+                    'package_order_edit',
+                    ['id' => $orderId, 'packageId' => $entity->getId()]
+                ));
             }
 
             return $this->redirectToRoute('package');
@@ -1241,8 +1261,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$request->get('query')) {
             return new JsonResponse([]);
         }
-        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByOrderOrRoom($request->get('query'),
-            $this->helper);
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByOrderOrRoom(
+            $request->get('query'),
+            $this->helper
+        );
         if (!$packages) {
             return new JsonResponse([
                 'results' => [[]]
@@ -1258,5 +1280,4 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         return new JsonResponse(['results' => $data]);
     }
-
 }

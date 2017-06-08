@@ -64,7 +64,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $tourist->getDocumentRelation()->setType('vega_russian_passport');
 
-
         return [
             'form' => $form->createView(),
             'touristForm' => $this->createForm(TouristType::class, null,

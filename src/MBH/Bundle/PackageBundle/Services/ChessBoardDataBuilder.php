@@ -8,14 +8,20 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Translation\DataCollectorTranslator;
 use Symfony\Component\Translation\TranslatorInterface;
 
+/**
+ * Class ChessBoardDataBuilder
+ * @package MBH\Bundle\PackageBundle\Services
+ */
 class ChessBoardDataBuilder
 {
     /** @var DocumentManager $dm */
@@ -49,6 +55,8 @@ class ChessBoardDataBuilder
     private $roomsByRoomTypeIds = [];
     private $isPackageAccommodationsInit = false;
     private $packageAccommodations = [];
+    private $isAvailableRoomTypesInit = false;
+    private $availableRoomTypes;
     const ROOM_COUNT_ON_PAGE = 30;
 
     /**
@@ -105,6 +113,9 @@ class ChessBoardDataBuilder
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getAccommodationData()
     {
         $accommodationData = [];
@@ -116,13 +127,15 @@ class ChessBoardDataBuilder
         return $this->getAccommodationIntervals();
     }
 
+    /**
+     * @return array
+     */
     public function getNoAccommodationPackageIntervals()
     {
         $noAccommodationIntervals = [];
         foreach ($this->getPackagesWithoutAccommodation() as $package) {
             /** @var Package $package */
-            $intervalData = $this->container
-                ->get('mbh.chess_board_unit')->setInitData($package);
+            $intervalData = $this->container->get('mbh.chess_board_unit')->setInitData($package);
             $noAccommodationIntervals[$intervalData->getId()] = $intervalData;
         }
 
@@ -164,6 +177,9 @@ class ChessBoardDataBuilder
         return $counts;
     }
 
+    /**
+     * @return Package[]
+     */
     public function getPackagesWithoutAccommodation()
     {
         $packageQueryCriteria = new PackageQueryCriteria();
@@ -173,13 +189,26 @@ class ChessBoardDataBuilder
         $packageQueryCriteria->liveBegin = $this->beginDate;
         $packageQueryCriteria->setIsWithoutAccommodation(true);
         $packageQueryCriteria->liveEnd = $this->endDate;
-        if (count($this->roomTypeIds) > 0) {
-            foreach ($this->roomTypeIds as $roomTypeId) {
-                $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
-            }
+        foreach ($this->getRoomTypeIds() as $roomTypeId) {
+            $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
+        }
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
+        $accommodationIds = [];
+        $orderIds = [];
+        /** @var Package $package */
+        foreach ($packages as $package) {
+            $orderIds[] = $package->getOrder()->getId();
         }
 
-        return $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
+        $orders = $this->dm
+            ->getRepository('MBHPackageBundle:Order')
+            ->createQueryBuilder()
+            ->field('id')->in($orderIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        return $packages;
     }
 
     /**
@@ -209,6 +238,9 @@ class ChessBoardDataBuilder
         return $dateIntervalsWithoutAccommodation;
     }
 
+    /**
+     * @return array
+     */
     public function getAccommodationIntervals()
     {
         $accommodationIntervals = [];
@@ -225,6 +257,9 @@ class ChessBoardDataBuilder
         return $accommodationIntervals;
     }
 
+    /**
+     * @return array
+     */
     private function getPackageAccommodations()
     {
         if (!$this->isPackageAccommodationsInit) {
@@ -274,7 +309,7 @@ class ChessBoardDataBuilder
             ->fetch($this->beginDate,
                 $this->endDate,
                 $this->hotel,
-                $this->roomTypeIds,
+                $this->getRoomTypeIds(),
                 $this->tariff === null ? [] : [$this->tariff],
                 true
             );
@@ -303,7 +338,9 @@ class ChessBoardDataBuilder
         return $roomCacheData;
     }
 
-
+    /**
+     * @return array
+     */
     public function getCalendarData()
     {
         $calendarData = [];
@@ -326,6 +363,9 @@ class ChessBoardDataBuilder
         return $calendarData;
     }
 
+    /**
+     * @return array
+     */
     public function getDaysArray()
     {
         $days = [];
@@ -339,6 +379,9 @@ class ChessBoardDataBuilder
         return $days;
     }
 
+    /**
+     * @return array
+     */
     public function getRoomTypeData()
     {
         $roomTypeData = [];
@@ -349,6 +392,7 @@ class ChessBoardDataBuilder
 
             /** @var RoomType $roomType */
             $roomTypeData[$roomType->getId()] = [
+                'isEnabled' => $roomType->getIsEnabled(),
                 'name' => $roomType->getName(),
                 'rooms' => $this->getRoomsData($roomsByRoomTypeIds, $roomType)
             ];
@@ -357,7 +401,9 @@ class ChessBoardDataBuilder
         return $roomTypeData;
     }
 
-
+    /**
+     * @return array
+     */
     public function getRoomsByRoomTypeIds()
     {
         if (!$this->isRoomsByRoomTypeIdsInit) {
@@ -365,9 +411,33 @@ class ChessBoardDataBuilder
             $roomTypes = $this->getRoomTypeIds();
             $skipValue = ($this->pageNumber - 1) * self::ROOM_COUNT_ON_PAGE;
 
-            $this->roomsByRoomTypeIds = $this->dm->getRepository('MBHHotelBundle:Room')
+            $roomsByRoomTypeIds = $this->dm->getRepository('MBHHotelBundle:Room')
                 ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, $skipValue,
-                    self::ROOM_COUNT_ON_PAGE, true);
+                    self::ROOM_COUNT_ON_PAGE, true, null);
+
+            $sortedRoomsByRoomTypeIds = [];
+            foreach ($roomsByRoomTypeIds as $roomTypeId => $roomsByRoomTypeId) {
+                $rooms = $roomsByRoomTypeId;
+                usort($rooms, function ($first, $second) {
+                    /** @var Room $first */
+                    /** @var Room $second */
+                    $firstRoomIntName = intval($first->getName());
+                    $secondRoomIntName = intval($second->getName());
+
+                    if (!$firstRoomIntName && is_numeric($secondRoomIntName)) {
+                        return 1;
+                    } elseif (is_numeric($firstRoomIntName) && !$secondRoomIntName) {
+                        return -1;
+                    } elseif (!$firstRoomIntName && !$secondRoomIntName) {
+                        return $first->getName() > $second->getName() ? 1 : -1;
+                    }
+
+                    return $firstRoomIntName > $secondRoomIntName ? 1 : -1;
+                });
+                $sortedRoomsByRoomTypeIds[$roomTypeId] = $rooms;
+
+                $this->roomsByRoomTypeIds = $sortedRoomsByRoomTypeIds;
+            }
 
             $this->isRoomsByRoomTypeIdsInit = true;
         }
@@ -375,17 +445,29 @@ class ChessBoardDataBuilder
         return $this->roomsByRoomTypeIds;
     }
 
+    /**
+     * @return int
+     */
     public function getRoomCount()
     {
         $roomTypes = $this->getRoomTypeIds();
 
-        return $this->dm->getRepository('MBHHotelBundle:Room')->fetchQuery(
-            $this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null, null, true)->getQuery()->count();
+        return $this->dm->getRepository('MBHHotelBundle:Room')
+            ->fetchQuery($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null, null, true)
+            ->getQuery()
+            ->count();
     }
 
+    /**
+     * @return array
+     */
     private function getRoomTypeIds()
     {
-        return count($this->roomTypeIds) > 0 ? $this->roomTypeIds : null;
+        if (count($this->roomTypeIds) > 0) {
+            return array_intersect($this->roomTypeIds, $this->getAvailableRoomTypeIds());
+        }
+
+        return $this->getAvailableRoomTypeIds();
     }
 
     /**
@@ -423,6 +505,46 @@ class ChessBoardDataBuilder
     }
 
     /**
+     * Lazy loading of available room types
+     *
+     * @return RoomType[]
+     */
+    public function getAvailableRoomTypes()
+    {
+        if (!$this->isAvailableRoomTypesInit) {
+            $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+            $filterCollection = $this->dm->getFilterCollection();
+            if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
+                $filterCollection->enable('disableable');
+            }
+
+            $this->availableRoomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+                ->fetch($this->hotel)->toArray();
+
+            if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
+                $filterCollection->disable('disableable');
+            }
+            $this->isAvailableRoomTypesInit = true;
+        }
+
+        return $this->availableRoomTypes;
+    }
+
+    /**
+     * @return array
+     */
+    private function getAvailableRoomTypeIds()
+    {
+        $roomTypeIds = [];
+        /** @var RoomType $roomType */
+        foreach ($this->getAvailableRoomTypes() as $roomType) {
+            $roomTypeIds[] = $roomType->getId();
+        }
+
+        return $roomTypeIds;
+    }
+
+    /**
      * Ленивая загрузка массива объектов RoomType, используемых в данном запросе
      * @return RoomType[]
      */
@@ -431,7 +553,7 @@ class ChessBoardDataBuilder
         if (!$this->isRoomTypesInit) {
 
             $this->roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-                ->fetch($this->hotel, $this->roomTypeIds)->toArray();
+                ->fetch($this->hotel, $this->getRoomTypeIds())->toArray();
 
             $this->isRoomTypesInit = true;
         }

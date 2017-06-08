@@ -19,6 +19,167 @@ form.orderTouristType.add_to_package: Добавить как гостя?
 form.orderTouristType.phone: Телефон
 form.orderTouristType.phone: Телефон
 form.orderTouristType.email: E-mail
+mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu: 'Услуга по умолчанию'
+mbhpackagebundle.services.touristsmessenger.gost.ne.nayden: 'Гость не найден.'
+mbhpackagebundle.view.service.index.kategoriya: Категория
+mbhpackagebundle.view.service.index.vse.uslugi: 'Все услуги'
+mbhpackagebundle.view.package.index.daty: Даты
+csv.type.tariffType: 'Тип номера'
+mbhpackagebundle.view.report.accommodationtablepackage.zayekhali: Заехали
+mbhpackagebundle.view.report.accommodationtablepackage.vyyekhali: Выехали
+form.packageCopyType.packageCopyType: Гости
+csv.form.rest: Долг
+form.packageCopyType.services: Услуги
+mbhpackagebundle.view.report.roomtypestable.pereyti.k.zapisi: 'перейти к записи'
+mbhpackagebundle.view.report.invite.period: Период
+mbhpackagebundle.view.report.invite.kliyenty: Клиенты
+mbhpackagebundle.view.report.invite.tip.vizy: 'Тип визы'
+mbhpackagebundle.view.report.roomtypestable.mest: мест
+mbhpackagebundle.view.report.fillingtable.itog: Итог
+form.AddressObjectDecomposedType.corpus: Корпус
+mbhpackagebundle.view.package.accommodation.etazh: Этаж
+mbhpackagebundle.view.package.index.status.oplaty: 'Статус оплаты'
+mbhpackagebundle.view.report.usertable.itogo: Итого
+mbhpackagebundle.view.report.usertable.vse.polʹzovateli: 'Все пользователи'
+mbhpackagebundle.view.package.accommodation.status: Статус
+csv.form.tariff: Тариф
+tourist.migration.type_number: Номер
+form.packageServiceType.price: Цена
+csv.form.tariffAccomodation: Размещение
+form.organizationType.comment: Комментарий
+mbhpackagebundle.view.report.accommodation.nayti: Найти
+mbhpackagebundle.view.report.workshiftlist.sotrudnik: Сотрудник
+mbhpackagebundle.view.report.workshiftlist.kassa: Касса
+mbhpackagebundle.view.report.workshiftlist.na.nachalo.smeny: 'На начало смены'
+mbhpackagebundle.view.report.workshiftlist.na.konets.smeny: 'На конец смены'
+mbhpackagebundle.view.report.workshiftlist.zayekhavshikh: Заехавших
+mbhpackagebundle.view.report.workshiftlist.ne.zayekhavshikh: 'Не заехавших'
+mbhpackagebundle.view.report.workshiftlist.vyyekhavshikh: Выехавших
+mbhpackagebundle.view.report.workshiftlist.ne.vyyekhavshikh: 'Не выехавших'
+mbhpackagebundle.view.report.workshiftlist.prinyato: Принято
+mbhpackagebundle.view.report.workshiftlist.vydano: Выдано
+mbhpackagebundle.view.report.fillingtablerows.nomerov.v.prodazhe: 'Номеров в продаже'
+mbhpackagebundle.view.report.fillingtablerows.nomernoy.fond: 'Номерной фонд'
+mbhpackagebundle.view.report.fillingtablerows.zabronirovano.nomerov: 'Забронировано номеров'
+mbhpackagebundle.view.report.fillingtablerows.gostey.vsego: 'Гостей всего'
+mbhpackagebundle.view.report.fillingtablerows.polucheno.fakticheski: 'Получено фактически'
+mbhpackagebundle.view.report.porterrows.zayekhal: Заехал
+mbhpackagebundle.view.report.porterrows.vyyekhal: Выехал
+mbhpackagebundle.view.report.portersummary.broney: Броней
+mbhpackagebundle.view.report.portersummary.nochey: Ночей
+mbhpackagebundle.view.report.portersummary.gostey: Гостей
+mbhpackagebundle.view.report.portersummary.price: Цена
+mbhpackagebundle.view.report.portersummary.summa: Сумма
+mbhpackagebundle.view.report.portersummary.oplacheno: Оплачено
+mbhpackagebundle.view.report.portersummary.dolg: Долг
+mbhpackagebundle.view.documents.pdftemplates.confirmation.tsena: Цена
+mbhpackagebundle.view.documents.pdftemplates.confirmation.summa: Сумма
+csv.form.paids: Оплачено
+mbhpackagebundle.view.tourist.jsonbuttons.redaktirovaniye.zapisi: 'Редактирование записи'
+mbhpackagebundle.view.package.accommodation.da: Да
+mbhpackagebundle.view.report.workshifttable.prikhod: Приход
+mbhpackagebundle.view.report.workshifttable.raskhod: Расход
+mbhpackagebundle.view.report.roomtypestable.status.komnaty: 'Статус комнаты'
+mbhpackagebundle.view.report.roomtypestable.oplata: Оплата
+mbhpackagebundle.view.report.roomtypestable.zakaz: Заказ
+mbhpackagebundle.view.order.tabs.net: нет
+mbhpackagebundle.view.search.index.dobavleniye.gostya: 'Добавление гостя'
+mbhpackagebundle.view.tourist.editunwelcome.zhaloby.drugikh.oteley: 'Жалобы других отелей'
+mbhpackagebundle.view.tourist.editunwelcome.period.prozhivaniya: 'Период проживания'
+mbhpackagebundle.view.tourist.editunwelcome.otsenki: Оценки
+mbhpackagebundle.view.tourist.editunwelcome.grazhdanstvo.gostya: 'Гражданство гостя'
+mbhpackagebundle.view.tourist.editunwelcome.dobavleno: Добавлено
+mbhpackagebundle.view.package.accommodation.udaleniye.zapisi: 'Удаление записи'
+mbhpackagebundle.view.tourist.index.inostrannyye.grazhdane: 'Иностранные граждане'
+form.packageGuestType.fio: ФИО
+form.DocumentRelation.main: 'Основной документ'
+mbhpackagebundle.view.tourist.index.migratsionnaya.karta: 'Миграционная карта'
+mbhpackagebundle.view.tourist.index.dokumenty: Документы
+mbhpackagebundle.view.tourist.index.viza: Виза
+form.packageAccommodationType.room: Комната
+form.organizationType.address: Адрес
+form.packageGuestType.birth_date: 'Дата рождения'
+mbhpackagebundle.view.tourist.index.kontakty: Контакты
+mbhpackagebundle.view.package.late.early.check.modal.net: Нет
+form.packageMainType.promotion: Акция
+form.packageServiceType.amount: Количество
+mbhpackagebundle.view.package.accommodation.otmena: Отмена
+form.organizationType.name: Название
+mbhpackagebundle.view.package.accommodation.data.pereyezda: 'Дата переезда'
+mbhpackagebundle.view.package.accommodation.vybor.razmeshcheniya: 'Выбор размещения'
+mbhpackagebundle.view.package.accommodation.udobstva: Удобства
+mbhpackagebundle.view.package.guest.kliyent.v.chernom.spiske: 'Клиент в черном списке'
+mbhpackagebundle.view.package.guest.kliyent.ne.v.chernom.spiske: 'Клиент не в черном списке'
+mbhpackagebundle.view.package.orderpackages.ne.razmeshcheno: 'не размещено'
+csv.form.type: 'Тип брони'
+mbhpackagebundle.view.documents.documentformmodal.generatsiya.dokumenta: 'Генерация документа '
+mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa: АНКЕТА
+mbhpackagebundle.view.documents.pdftemplates.fms_form_5.blok.mashinochitayemykh.dannykh: 'Блок машиночитаемых данных'
+form.DocumentRelation.birthplace: 'Место рождения'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.vydan: выдан
+mbhpackagebundle.view.documents.pdftemplates.form_1_g.indeks.poseleniya: 'Индекс поселения'
+mbhpackagebundle.view.documents.pdftemplates.evidence.data.vydachi: 'дата выдачи'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.data.rozhdeniya: 'дата рождения'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.adres: адрес
+mbhpackagebundle.view.documents.pdftemplates.confirmation.tip.dokumenta: 'тип документа'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.seriya: серия
+mbhpackagebundle.view.documents.pdftemplates.confirmation.naimenovaniye.uslug: 'Наименование услуг'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.zakazchik: Заказчик
+templateDocument.type.receipt: Расписка
+mbhpackagebundle.view.documents.pdftemplates.registration_card.registratsionnaya.kartochka: 'Регистрационная Карточка'
+form.packageGuestType.surname: Фамилия
+form.touristType.name: Имя
+form.packageGuestType.second_name: Отчество
+form.DocumentRelation.citizenship: Гражданство
+form.touristType.gender: Пол
+mbhpackagebundle.view.documents.pdftemplates.registration_card.firma: Фирма
+mbhpackagebundle.view.documents.pdftemplates.registration_card.vydan: Выдан
+form.AddressObjectDecomposedType.country: Страна
+form.organizationType.index: Индекс
+form.AddressObjectDecomposedType.city: Город
+form.AddressObjectDecomposedType.street: Улица
+mbhpackagebundle.view.documents.pdftemplates.registration_card.pribytiye: Прибытие
+form.organizationType.type: Тип
+mbhpackagebundle.view.documents.pdftemplates.registration_card.rasshifrovka.podpisi: 'Расшифровка подписи'
+mbhpackagebundle.form.packageservicetype.data: Дата
+mbhpackagebundle.view.documents.pdftemplates.registration_card.razresheniye.na.poseleniye: 'Разрешение на поселение'
+mbhpackagebundle.form.unwelcometype.dostupen.tolʹko.dlya.vas.i.ne.peredayetsya.v.servis.nezhelatelʹnykh.gostey: 'Доступен только для вас и не передается в сервис нежелательных гостей'
+mbhpackagebundle.form.orderdocumenttype.tip: Тип
+mbhpackagebundle.form.orderdocumenttype.tip.skana: 'Тип скана'
+mbhpackagebundle.form.orderdocumenttype.client: Клиент
+mbhpackagebundle.form.orderdocumenttype.comment: Комментарий
+controller.documentsController.table_row_tourist: Клиент
+mbhpackagebundle.form.orderdocumenttype.zamenit.fayl: 'Заменить файл'
+mbhpackagebundle.form.orderdocumenttype.file: Файл
+form.unwelcomeType.comment: Комментарий
+mbhpackagebundle.form.packagecsvtype.kol.vo.nochey: 'Кол-во ночей'
+mbhpackagebundle.form.packagecsvtype.kol.vo.chelovek: 'Кол-во человек'
+form.searchType.check_in: Заезд
+csv.form.tariffType: 'Тип номера'
+csv.type.adults: Взрослых
+csv.type.children: Детей
+mbhpackagebundle.form.packagemaintype.nomer.broni: 'Номер брони'
+tourist.visa.type_number: Номер
+form.packageGuestType.fio: ФИО
+form.packageGuestType.find_guest: 'Найти гостя'
+form.packageGuestType.placeholder_fio: 'Иванов Иван Иванович'
+form.touristType.placeholder_surname: Иванов
+form.touristType.surname: Фамилия
+form.packageGuestType.add_guest: 'Добавить гостя'
+form.packageGuestType.min_name: 'Слишком короткое имя'
+form.packageGuestType.max_name: 'Слишком длинное имя'
+controller.documentsController.table_row_name: Имя
+form.touristType.placeholder_name: Иван
+form.packageGuestType.min_surname: 'Слишком короткая фамилия'
+form.packageGuestType.max_surname: 'Слишком длинная фамилия'
+form.touristType.second_name: Отчество
+form.touristType.placeholder_second_name: Иванович
+form.packageGuestType.min_second_name: 'Слишком короткое отчество'
+form.packageGuestType.max_second_name: 'Слишком длинное отчество'
+form.touristType.birth_date: 'Дата рождения'
+form.orderTouristType.add_to_package: 'Добавить как гостя?'
+form.organizationType.phone: Телефон
+form.organizationType.email: E-mail
 form.orderType.source: Источник
 form.orderType.comment: Комментарий
 form.orderType.is_confirmed: Подтвержден?
@@ -74,6 +235,7 @@ form.packageServiceType.service: Услуга
 form.packageServiceType.add_service: 'Добавить услугу'
 form.packageServiceType.edit_service: 'Редактирование услуги'
 form.packageServiceType.reservation_add_service: Услуга для добавления к броне
+form.packageServiceType.end: Дата конца
 form.packageServiceType.price: Цена
 form.packageServiceType.nights_amount: Количество суток
 form.packageServiceType.guests_amount: Количество гостей
@@ -267,6 +429,7 @@ templateDocument.type.act: Акт
 templateDocument.type.xls_notice: Уведомление о прибытии ИГ
 
 
+
 form.TouristExtendedType.group.person: Персональные данные
 form.TouristExtendedType.group.documentRelation: Удостоверение личности
 form.TouristExtendedType.group.liveAddress: Место проживания
@@ -423,6 +586,9 @@ form.chessBoard.children.label: Детей
 form.chessBoard.accommodation.label: Комната
 form.chessBoard.tariff.label: Тариф
 form.chessBoard.price.label: Цена
+modal.chessBoard.cancel: Отмена
+modal.chessBoard.save: Сохранить
+modal.chessBoard.button.yes_text: Да
 modal.chessBoard.close: Закрыть
 modal.chessBoard.delete: Удалить
 modal.chessBoard.edit: Редактировать
@@ -459,6 +625,7 @@ modal.chessBoard.room_name: Комната
 modal.chessBoard.room_type_name: Тип комнаты
 modal.chessBoard.begin: Дата заезда
 modal.chessBoard.end: Дата выезда
+modal.chessBoard.payer: Плательщик
 controller.chessboard.package_create.success: Бронь успешно создана
 controller.chessboard.package_update.success: Бронь успешно обновлена
 controller.chessboard.package_remove.success: Бронь успешно удалена
@@ -469,6 +636,13 @@ controller.chessboard.accommodation_divide.error: Дата разделения 
 controller.chessboard.accommodation_divide.error.empty_date_string: Передана пустая строка даты разделения размещения
 controller.chessboard.accommodation_update.not_first_or_last_accommodation_change: Ошибка! Недопустимо изменение промежуточного размещения
 controller.chessboard.payer: Плательщик
+chessboard_manager.dates.title: Даты
+chessboard_manager.size_slider.title: Масштаб
+chessboard_manager.room_type.title: Тип номера
+chessboard_manager.housing.title: Корпус
+chessboard_manager.floor.title: Этаж
+chessboard_manager.filter.button.text: Выбрать
+chessboard_manager.without_accommodation.tile.text: Без размещения
 
 #package accommodation manipulator service
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
@@ -492,3 +666,346 @@ package.accommodation.rooms_not_found: Номера для размещения 
 report.porter.note: 'Комментарий:'
 modal.form.delete.reasons.reason: Причина удаления
 modal.form.delete.delete_reason_package: Причина удаления брони
+
+package.resources.views.adres_region_ltc: 'адрес (регион, район, город, населенный пункт)'
+package.resources.views.familiya: Фамилия
+package.resources.views.room: Комната
+package.resources.views.name: Имя
+package.resources.views.secondname: Отчество
+package.resources.views.birthday: Дата рождения
+package.resources.views.pol: 'Пол.'
+package.resources.views.birthday_place: Место рождения
+package.resources.views.hotel_name_sanatory: '(Наименование гостиницы, санатория, дома отдыха и пр.)'
+package.resources.views.oblast: Область
+package.resources.views.raion: Район
+package.resources.views.city: Город
+package.resources.views.nas_punkt: 'Нас. пункт'
+package.resources.views.grazhdanstvo: Гражданство
+package.resources.views.document: 'Документ, удостоверяющий личность'
+package.resources.views.seria: Серия
+package.resources.views.vidan: Выдан
+package.resources.views.organ_vidaushiy_document: 'орган, выдавший документ'
+package.resources.views.adres_mesta_zhitelstva: Адрес места жительства
+package.resources.views.country: Страна
+package.resources.views.obl: 'Обл.'
+package.resources.views.raion: Район
+package.resources.views.nas_punkt: 'Нас. пункт'
+package.resources.views.street: Улица
+package.resources.views.home: Дом
+package.resources.views.kor: 'Кор.'
+package.resources.views.kv: 'Кв.'
+package.resources.views.pribil: Прибыл
+package.resources.views.vibil: Выбыл
+package.resources.views.registrationed: Зарегистрировал
+package.resources.views.signature: Подпись
+package.resources.views.form: Форма
+package.resources.views.name_hotel_sanatory_home_relax: '(Наименование гостиницы, санатория, дома отдыха и пр.)'
+package.resources.views.g: 'г.'
+package.resources.views.d: 'д.'
+package.resources.views.kor: 'кор.'
+package.services.first_day_live_in_booking_rooms: Первые сутки проживания в забронированных номерах
+package.services.percent_of_price_liveing: Процент от стоимости проживания
+package.services.fixed_price_for_all_booking_room: Фиксированная стоимость за каждый забронированный номер
+package.services.breakfast_sweden_table: Завтрак "Шведский стол"
+package.services.continental_breakfast: Завтрак "Континентальный"
+package.services.dinner: Обед
+
+mbhpackagebundle.view.documents.pdftemplates.receipt.raspiska: Расписка
+package.resources.views.i: Я
+package.resources.views.g: 'г.'
+package.resources.views.document_view: Вид документа
+package.resources.views.series: серия
+package.resources.views.number: номер
+package.resources.views.issued: выданный
+package.resources.views.place_of_birth: Место рождения
+package.resources.views.citizenship: Гражданоство
+package.resources.views.permanent_residence: постоянное место жительства
+package.resources.views.g_obl_kr_ul_d: 'г. обл/кр ул. д.'
+package.resources.period_live: 'за период проживания с'
+package.resources.g_po: 'г. по'
+package.resources.gg: г
+package.resources.my_appartment_at: в предоставленной мне квартире по адресу
+package.resources.ul_d_korp_kv: 'ул. д. корп. кв.'
+package.resources.undertake: Обязуюсь
+package.resources.not_produce_noise: не производить шум позднее 23-ч часов
+package.resources.do_not_poll_entrances_and_surrounding_territory: не загрязнять подъезды и прилегающую у дому территорию
+package.resources.do_not_disturb_neighbors: не беспокоить соседей
+package.resources.do_not_spoil_objects_of_everyday_life_and_interior: не портить предметы обихода и интерьера
+package.resources.do_not_reshuffle_furniture: не производить перестановку мебели
+package.resources.do_not_store_or_use_explosive_or_flammable_objects: не хранить и не использовать взрыво и огнеопасные предметы
+package.resources.for_everything_that_happens_in_the_apartment_i_have_provided_for_the_period_of_residence_i_am_carrying:  За все происходящее в предоставленной мне квартире на период проживания я несу полную ответственность. В случае нарушения данных обязательств согласен на досрочное выселение безвозврата залога и внесенной предоплаты, с возмещением возникшего материального ущерба
+packages.rewources.kv: кв
+paclages.resources.signature: подпись
+
+mbhpackagebundle.form.packagemaintype.zayezd: Заезд
+mbhpackagebundle.form.packagemaintype.viezd: Отъезд
+mbhpackagebundle.form.packagemaintype.zaezd_viezd: Заезд/отъезд
+mbhpackagebundle.form.packagemaintype.prinuditelnoe_bronirovanie: 'Принудительное бронирование?'
+mbhpackagebundle.form.packagemaintype.ignorirovat_uslovia_i_ogranichenia_pri_poiske_dostupnogo_nomera: 'Игнорировать условия и ограничения при поиске доступного номера?'
+mbhpackagebundle.form.packagemaintype.number: Номер
+mbhpackagebundle.form.packagemaintype.virtualnii_nomer: Виртуальный номер
+mbhpackagebundle.form.packagemaintype.kurashii: 'Курящий?'
+mbhpackagebundle.form.packagemaintype.akcia: Акция
+mbhpackagebundle.form.packagemaintype.cena: Цена
+mbhpackagebundle.form.packagemaintype.skidka: Скидка
+mbhpackagebundle.form.packagemaintype.specpredlozhenie: Спецпредложение
+mbhpackagebundle.form.packagemaintype.information: Информация
+mbhpackagebundle.form.packagemaintype.povrezhdena: 'Повреждена?'
+mbhpackagebundle.form.packagemaintype.bron_s_povrezhdennoi_informaciei: 'Бронь с поврежденной информацией. Подробности в комментарии к брони.'
+mbhpackagebundle.form.packagemaintype.vzroslykh: Взрослых
+mbhpackagebundle.form.packagemaintype.detey: Детей
+mbhpackagebundle.form.packagemaintype.tip.nomera: Тип номера
+form.packageMainType.promotion: Акция
+
+package.resources.views.nenaiden_ni_odin_kassovii_document: Не найден ни один кассовый документ
+package.resources.views.ne_naidena_ni_odna_bron: Не найдена ни одна бронь
+mbhpackagebundle.view.report.workshifttable.redaktirovaniye.zapisi: Редактирование записи
+mbhpackagebundle.view.report.workshifttable.da: Да
+mbhpackagebundle.views.izmenennie_broni: Измененные брони
+mbhpackagebundle.views.udalennie_broni: Удаленные брони
+mbhpackagebundle.views.zaezd: Заезд
+mbhpackagebundle.views.viezd: Выезд
+mbhpackagebundle.views.ne_naidena_ni_odna_smena: Не найдена ни одна смена
+mbhpackagebundle.views.sozdanie_broni: Созданные брони
+
+
+mbhpackagebundle.view.report.roomtypestable.gosti: Гости
+mbhpackagebundle.view.report.roomtypestable.daty: Даты
+mbhpackagebundle.views.nichego_ne_naideno: Ничего не найдено
+mbhpackagebundle.views.et: эт
+mbhpackagebundle.views.da: Да
+mbhpackagebundle.views.net: Нет
+mbhpackagebundle.views.zaekhali: Заехали
+mbhpackagebundle.views.viehali: Выехали
+mbhpackagebundle.views.gosti: Гости
+mbhpackagebundle.views.stoimost: Стоимость
+mbhpackagebundle.views.dolg: Долг
+mbhpackagebundle.views.uslugi: Услуги
+mbhpackagebundle.views.vz: вз
+mbhpackagebundle.views.rb: рб
+mbhpackagebundle.views.nomerov: Номеров
+mbhpackagebundle.views.svobodno: Свободно
+mbhpackagebundle.views.zaniato: Занято
+mbhpackagebundle.views.gostei_v_broni: Гостей в брони
+mbhpackage.views.gostei_oformleno: Гостей оформлено
+
+mbhpackagebundle.views.utverzhdena: Утверждена
+mbhpackagebundle.views.prikazom_ministerstava_finansov: Приказом Министерства финансов
+mbhpackagebundle.views.rossiiskoi_federacii: Российской Федерации
+mbhpackagebundle.views.ot_data_g: от 13 декабря 1993 г. № 121
+mbhpackagebundle.views.forma_g: Форма № 1-Г
+mbhpackagebundle.views.anketa: АНКЕТА № 3
+mbhpackagebundle.views.zakaz: Заказ
+mbhpackagebundle.views.auto: Авто
+mbhpackagebundle.views.scheta: счета
+mbhpackagebundle.views.familia: Фамилия
+mbhpackagebundle.views.imia: Имя
+mbhpackagebundle.views.otchestvo: Отчество
+mbhpackagebundle.views.data_rozhdenia: Дата рождения
+mbhpackagebundle.views.g: г
+mbhpackagebundle.views.ul: ул
+mbhpackagebundle.views.d: д
+mbhpackagebundle.views.korp: кор
+mbhpackagebundle.views.ul: кв
+mbhpackagebundle.view.documents.pdftemplates.form_1_g.mesto.rozhdeniya: Место рождения
+mbhpackagebundle.views.seria: серия
+mbhpackagebundle.view.documents.pdftemplates.form_1_g.vydan: Выдан
+mbhpackagebundle.views.kogda: когда
+mbhpackagebundle.views.komnata: Комната
+mbhpackagebundle.views.pribil: Прибыл
+mbhpackagebundle.views.data_chasi: дата, часы
+mbhpackagebundle.views.vibil: Выбыл
+mbhpackagebundle.views.naimenovanie_organa_vnutrennih_del_vidavshego_document: наименования органа внутренних дел, выдавшего документ
+mbhpackagebundle.views.adres_postoyannogo_mesta_zhitelstva: Адрес постоянного места жительства
+mbhpackagebundle.views.respublika_krai_oblast_okrug_raion_gorod_pgr_selo: республика, край, область, округ, район, город, пгт, село, деревня, аул, улица, дом, корпус, квартира
+mbhpackagebundle.views.cel_priezda: Цель приезда
+mbhpackagebundle.views.srok_prozhivania_do: Срок проживания до
+mbhpackagebundle.views.prodlenie_prozhivania: Продление проживания
+mbhpackagebundle.views.s_pamiatkoi_o_pravilakh_pozharnoi_bezopasnosti_oznakomlen: С памяткой о правилах пожарной безопасности ознакомлен
+mbhpackagebundle.views.podpis: Подпись
+mbhpackagebundle.views.litca_pribivshego_v_gostinnicu: лица, прибывшего в гостиницу
+mbhpackagebundle.views.obratnaya_storona: Обратная сторона Ф. № 1-Г
+mbhpackagebundle.views.poselena: Поселен(а)
+mbhpackagebundle.views.gorod_selenie: город (селение)
+mbhpackagebundle.views.gostinica: гостиница
+mbhpackagebundle.views.na_dopolnitelnoe_mesto_v_nomere_soglasen: На дополнительное место в номере согласен(а)
+mbhpackagebundle.views.podpis_lica_pribivshego_v_gostinicu: подпись лица, прибывшего в гостиницу
+mbhpackagebundle.views.soglasen_na_prozhivanie_v_nomere_s_oplatoi_vseh_mest: Согласен(а) на проживание в номере с оплатой всех мест
+mbhpackagebundle.views.podpis_lica_pribivshego_v_gostinicu: подпись лица, прибывшего в гостиницу
+mbhpackagebundle.views.podpis_otvetstvennogo_lica: Подпись ответственного лица
+
+mbhpackagebundle.view.documents.pdftemplates.registration_card.familiya: Фамилия
+mbhpackagebundle.view.documents.pdftemplates.registration_card.imya: Имя
+mbhpackagebundle.view.documents.pdftemplates.registration_card.otchestvo: Отчество
+mbhpackagebundle.view.documents.pdftemplates.registration_card.grazhdanstvo: Гражданство
+mbhpackagebundle.view.documents.pdftemplates.registration_card.pol: Пол
+mbhpackagebundle.view.documents.pdftemplates.registration_card.data.rozhdeniya: Дата рождения
+mbhpackagebundle.view.documents.pdftemplates.registration_card.mesto.rozhdeniya: Место рождения
+mbhpackagebundle.view.documents.pdftemplates.registration_card.strana: Страна
+mbhpackagebundle.view.documents.pdftemplates.registration_card.indeks: Индекс
+mbhpackagebundle.view.documents.pdftemplates.registration_card.gorod: Город
+mbhpackagebundle.view.documents.pdftemplates.registration_card.ulitsa: Улица
+mbhpackagebundle.view.documents.pdftemplates.registration_card.tarif: Тариф
+mbhpackagebundle.view.documents.pdftemplates.registration_card.tip: Тип
+mbhpackagebundle.view.documents.pdftemplates.registration_card.nomer: Номер
+mbhpackagebundle.view.documents.pdftemplates.registration_card.data: Дата
+mbhpackagebundle.view.documents.pdftemplates.registration_card.subekt-rf: Субъект РФ
+mbhpackagebundle.view.documents.pdftemplates.registration_card.otezd: Отъезд
+mbhpackagebundle.view.documents.pdftemplates.registration_card.kol_gostey: Кол. гостей
+mbhpackagebundle.view.documents.pdftemplates.registration_card.oplacheno: Оплачено
+mbhpackagebundle.view.documents.pdftemplates.registration_card.nasha_gostinica_predostavlaet_uslugi_etc: Наша гостиница предоставляет услуги, перечень которых Вы найдете в своем номере
+mbhpackagebundle.view.documents.pdftemplates.registration_card.viezd_gostey_ne_pozdnee_etc: Выезд гостей не позднее - 12:00, заселение гостей с 14:00
+mbhpackagebundle.view.documents.pdftemplates.registration_card.kurenie_v_nashey_gostinice_zapresheno_etc: Курение в нашей гостинице запрещено. Разрешается только в специально отведенных для этого местах
+mbhpackagebundle.view.documents.pdftemplates.registration_card.za_sohranenie_deneg_i_cennih_veshey_ne_sdannih_na_hranenie_etc: За сохранность денег и ценных вещей, не сданных на хранение, администрация гостиницы ответственности не несет
+mbhpackagebundle.view.documents.pdftemplates.registration_card.postoronnie_lica_po_prosbe_prozhivaushih_etc: Посторонние лица по просьбе проживающих, с ведома администрации, могут находиться в гостинице с 9 до 23 часов
+mbhpackagebundle.view.documents.pdftemplates.registration_card.v_sluchae_porchi_ili_uteri_imushestva_etc: В случае порчи или утери имущества гостиницы проживающий возмещает ущерб
+mbhpackagebundle.view.documents.pdftemplates.registration_card.vozvrat_denezhnih_sredstv_proizvodica_etc: Возврат денежных средств производится только при наличии кассового чека подтверждающего оплату
+mbhpackagebundle.view.documents.pdftemplates.registration_card.s_usloviyami_oplati_vozvrata_i_etc: С условиями оплаты, возврата и проживания согласен
+mbhpackagebundle.view.documents.pdftemplates.registration_card.podpis: Подпись
+mbhpackagebundle.view.documents.pdftemplates.registration_card.otcestvo: Отчество
+
+mbhpackagebundle.view.documents.pdftemplates.act: Акт
+mbhpackagebundle.view.documents.pdftemplates.ot: от
+mbhpackagebundle.view.documents.pdftemplates.itogo: Итого
+mbhpackagebundle.view.documents.pdftemplates.ht: шт
+mbhpackagebundle.view.documents.pdftemplates.v_tom_chisle_nds: В том числе НДС
+mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug: Всего оказано услуг
+mbhpackagebundle.view.documents.pdftemplates.na_summu: на сумму
+
+mbhpackagebundle.view.documents.pdftemplates.zakazanno: Заказано
+mbhpackagebundle.view.documents.pdftemplates.na_summu: на сумму
+mbhpackagebundle.view.documents.pdftemplates.oplacheno: Оплачено
+mbhpackagebundle.view.documents.pdftemplates.itog: Итог
+mbhpackagebundle.view.documents.pdftemplates.dezhurniy_administrator: Дежурный администратор
+mbhpackagebundle.view.documents.pdftemplates.schet: Счёт
+mbhpackagebundle.view.documents.pdftemplates.ot: от
+
+mbhpackagebundle.view.documents.pdftemplates.form: Форма
+mbhpackagebundle.view.documents.pdftemplates.svidetelstvo: Свидетельство
+mbhpackagebundle.view.documents.pdftemplates.o_registracii_po_mestu_prebivania: о регистрации по месту пребывания
+mbhpackagebundle.view.documents.pdftemplates.vidano: Выдано
+mbhpackagebundle.view.documents.pdftemplates.g: г
+mbhpackagebundle.view.documents.pdftemplates.d: д
+mbhpackagebundle.view.documents.pdftemplates.r: р
+mbhpackagebundle.view.documents.pdftemplates.po: по
+mbhpackagebundle.view.documents.pdftemplates.kor: кор
+mbhpackagebundle.view.documents.pdftemplates.kv: кв
+mbhpackagebundle.view.documents.pdftemplates.o_nizhesleduushem: о нижеследующем
+mbhpackagebundle.view.documents.pdftemplates.otel_garantirovanno_broniruet_dlia_zakazchika_sleduushie_uslugi: Отель гарантированно бронирует для Заказчика следующие услуги
+mbhpackagebundle.view.documents.pdftemplates.ul: ул
+mbhpackagebundle.view.documents.pdftemplates.na_srok_s: на срок с
+mbhpackagebundle.view.documents.pdftemplates.vid: вид
+mbhpackagebundle.view.documents.pdftemplates.seria: серия
+mbhpackagebundle.view.documents.pdftemplates.podpis: подпись
+mbhpackagebundle.view.documents.pdftemplates.familia: фамилия
+mbhpackagebundle.view.documents.pdftemplates.MM: М
+mbhpackagebundle.view.documents.pdftemplates.PP: П
+mbhpackagebundle.view.documents.pdftemplates.podtverzhdenie: Подтверждение
+mbhpackagebundle.view.documents.pdftemplates.zakaza: заказа
+mbhpackagebundle.view.documents.pdftemplates.ot: от
+mbhpackagebundle.view.documents.pdftemplates.do: до
+mbhpackagebundle.view.documents.pdftemplates.PPodpis: Подпись
+mbhpackagebundle.view.documents.pdftemplates.broni: брони
+mbhpackagebundle.view.documents.pdftemplates.passport: Паспорт
+mbhpackagebundle.view.documents.pdftemplates.fio: 'Ф.И.О'
+mbhpackagebundle.view.documents.pdftemplates.otel: Отель
+mbhpackagebundle.view.documents.pdftemplates.primechanie_v_sluchae_nesvoevremennogo_otkaza_etc: 'Примечание: в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание компенсации из внесенной предоплаты.'
+mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_registracionnogo_ucheta: 'наименование органа регистрационного учета'
+mbhpackagebundle.view.documents.pdftemplates.nachalnik_rukovoditel_organa_registracionnogo_ucheta: 'Начальник (руководитель) органа регистрационного учета'
+mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vidavshego_document: 'наименование органа, учреждения, выдавшего документ'
+mbhpackagebundle.view.documents.pdftemplates.svidetelstvo_vidano_k_documentu_udostoveraushemu_lichnost: 'Свидетельство выдано к документу, удостоверяющему личность'
+mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc: 'республика, край, область, округ, район, город, пгт, село, деревня, аул, улица, дом, корпус, квартира'
+mbhpackagebundle.view.documents.pdftemplates.fio_god_i_mesto_rozhdenia: 'Ф.И.О., год и место рождения'
+mbhpackagebundle.view.documents.pdftemplates.o_tom_chto_on_zaregistrirovan_po_mestu_prebivania: 'о том, что он(а) зарегистрирован(а) по месту пребывания по адресу'
+
+mbhpackagebundle.view.report.ostatok_v_prodashe: Остаток (в продаже)
+mbhpackagebundle.view.report.ostatok_nomernoy_fond: Остаток (номерной фонд)
+mbhpackagebundle.view.report.zabronirovano_nomerov: Забронировано номеров
+mbhpackagebundle.view.report.nomera_bez_oplaty: Номера без оплаты (брони)
+mbhpackagebundle.view.report.gostey_na_odin_nomer: Гостей на 1 номер
+mbhpackagebundle.view.report.stoimost_prozhivania: Стоимость проживания
+mbhpackagebundle.view.report.stoimost_uslug: Стоимость услуг
+mbhpackagebundle.view.report.obshaya_stoimost: Общая стоимость
+mbhpackagebundle.view.report.polucheno_fakticheski: Получено фактически
+mbhpackagebundle.view.report.fillingtablerows.dolg: Долг
+mbhpackagebundle.view.report.fillingtablerows.max_vozm_viruchka_za_prozh: 'Макс. возм. выручка за прож'
+mbhpackagebundle.view.report.tek_stoim_prozhiv_ot_max_vozm: 'Тек. стоим. прожив. от макс. возм.'
+
+mbhpackagebundle.view.deletereasons.index.da: Да
+mbhpackagebundle.view.deletereasons.index.net: Нет
+
+mbhpackagebundle.view.documents.pdftemplates.close: Закрыть
+mbhpackagebundle.view.documents.pdftemplates.generate: Сгенерировать
+mbhpackagebundle.view.order.organizationedit.redaktirovaniye.zapisi: Редактирование записи
+mbhpackagebundle.view.order.touristedit.redaktirovaniye.zapisi: Редактирование записи
+mbhpackagebundle.view.package.accommodation.tip.nomera: Тип номера
+mbhpackagebundle.view.package.accommodation.korpus: Корпус
+mbhpackagebundle.view.package.accomodation.nomera_dly_rezmesheniya_ne_naideny: Номера для размещения не найдены.
+mbhpackagebundle.view.package.edit.tarif: Тариф
+mbhpackagebundle.view.package.edit.aktsiya: Акция
+
+mbhpackagebundle.view.package.guest.fio: ФИО
+mbhpackagebundle.view.package.guest.dobavleno_maksimalnoe_kolichestvo_gostey: Добавлено максимальное количество гостей.
+mbhpackagebundle.view.package.guest.dobavit_eshe: Добавить ещё
+
+mbhpackagebundle.view.package.index.tip.nomera: Тип номера
+mbhpackagebundle.view.package.index.tip.broni: Тип брони
+
+mbhpackagebundle.view.package.late.early.check.modal.kolichestvo: Количество
+mbhpackagebundle.view.package.late.early.check.modal.otmena: Отмена
+mbhpackagebundle.view.package.late.early.check.modal.da: Да
+mbhpackagebundle.view.package.service.nazvaniye: Название
+
+mbhpackagebundle.view.report.accommodation.daty: Даты
+mbhpackagebundle.view.report.accommodation.tip.nomera: Номера
+mbhpackagebundle.view.report.accommodation.korpus: Корпус
+mbhpackagebundle.view.report.accommodation.etazh: Этаж
+
+mbhpackagebundle.view.report.filling.daty: Даты
+mbhpackagebundle.view.report.filling.tip.nomera: Тип номера
+
+mbhpackagebundle.view.report.fillingtable.mest: мест
+mbhpackagebundle.view.report.fillingtable.daty: Даты
+
+mbhpackagebundle.view.report.roomtypes.tip.nomera: Тип номера
+mbhpackagebundle.view.report.roomtypes.korpus: Корпус
+mbhpackagebundle.view.report.roomtypes.etazh: Этаж
+mbhpackagebundle.view.report.roomtypes.status.oplaty: Статус оплаты
+
+mbhpackagebundle.view.report.user.tip.nomera: Тип номера
+mbhpackagebundle.view.report.user.tarif: Тариф
+mbhpackagebundle.view.report.user.polzovatel: Пользователь
+mbhpackagebundle.view.report.user.daty: Даты
+
+mbhpackagebundle.view.report.windowpackage.daty: Даты
+mbhpackagebundle.view.report.windowpackage.tarif: Тариф
+mbhpackagebundle.view.report.windowpackage.nomer: Номер
+mbhpackagebundle.view.report.windowpackage.gosti: Гости
+mbhpackagebundle.view.report.windowpackage.tsena: Цена
+mbhpackagebundle.view.report.windowpackage.razmeshcheniye: Размещение
+mbhpackagebundle.view.report.windowpackage.kommentariy: Комментарии
+
+mbhpackagebundle.view.report.windows.daty: Даты
+mbhpackagebundle.view.report.windows.tip.nomera: Тип номера
+
+mbhpackagebundle.view.report.workshift.daty: Даты
+mbhpackagebundle.view.report.workshift.status: Статус
+mbhpackagebundle.view.report.workshiftlist.daty: Даты
+mbhpackagebundle.view.report.workshiftlist.gosti: Гости
+mbhpackagebundle.view.report.workshiftlist.status: Статус
+mbhpackagebundle.view.report.workshiftlist.ne_naydeno_ni_odnoy_rabochey_smeny: Не найдено ни одной рабочей смены
+mbhpackagebundle.view.report.workshiftlist.rabochaya_smena: Рабочая смена
+
+mbhpackagebundle.view.tourist.index.daty: Даты
+mbhpackagebundle.view.tourist.index.fio: ФИО
+mbhpackagebundle.view.tourist.index.osnovnoy.dokument: Основной документ
+mbhpackagebundle.view.tourist.index.komnata: Комната
+mbhpackagebundle.view.tourist.index.adres: Адрес
+mbhpackagebundle.view.tourist.index.data.rozhdeniya: Дата рождения
+mbhpackagebundle.view.tourist.jsonbuttons.udaleniye.zapisi: Удаленные записи
+windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'
+controller.packageController.record_edited_success_services: 'Даты услуг измены вместе с бронью' 
+
+mbh.package_bundle.fixtures.delete_reason_data.denial: Отказ
+mbh.package_bundle.fixtures.delete_reason_data.error: Ошибка
+mbh.package_bundle.fixtures.delete_reason_data.rebooking: Перебронирование

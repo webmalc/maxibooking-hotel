@@ -22,7 +22,7 @@ class PackageVirtualRoomType extends AbstractType
 
         $builder
             ->add('virtualRoom', DocumentType::class, [
-                'label' => 'Номер',
+                'label' => 'mbhpackagebundle.form.packagevirtualroomtype.nomer',
                 'class' => 'MBHHotelBundle:Room',
                 'group' => 'Виртуальный номер',
                 'query_builder' => function (DocumentRepository $dr) use ($package) {
@@ -30,7 +30,6 @@ class PackageVirtualRoomType extends AbstractType
                 },
                 'required' => false
             ]);
-
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -45,5 +44,4 @@ class PackageVirtualRoomType extends AbstractType
     {
         return 'mbh_bundle_packagebundle_package_virtual_room_type';
     }
-
 }

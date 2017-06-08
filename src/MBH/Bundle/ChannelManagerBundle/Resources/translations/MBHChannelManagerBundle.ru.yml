@@ -8,6 +8,8 @@ views.booking.room.booking_com_sync: "Синхронизироваться с Bo
 views.booking.service.service: Сервис
 views.booking.service.code: Код
 views.booking.service.cancel: Отмена
+views.booking.actions.sync_old: Брони
+views.booking.actions.sync_old_desc:  "Получить все брони за 2 недели"
 views.booking.tariff.cancel: Отмена
 views.channnelmanager.settings: "настройки"
 views.oktogo.room.save: Сохранить
@@ -34,7 +36,7 @@ views.hundredOneHotels.layout.hundredOneHotels: "101 отель"
 views.hundredOneHotels.settings: "настройки"
 
 #channelManager
-services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
+services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking. Текст ошибки:'
 
 channelManager.booking.notification.subject.new: Новый заказ Booking.com
 channelManager.booking.notification.subject.edit: Изменен заказ Booking.com

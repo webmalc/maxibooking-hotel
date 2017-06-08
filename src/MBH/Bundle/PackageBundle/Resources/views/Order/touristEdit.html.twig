@@ -100,7 +100,7 @@
                                 {% if package.deletedAt is empty and is_granted('ROLE_TOURIST_EDIT') %}
                                     <a href="{{ path('tourist_edit', {'id': order.mainTourist.id }) }}"
                                         class="btn btn-success btn-sm" title="" data-toggle="tooltip"
-                                        data-original-title="Редактирование записи">
+                                        data-original-title="{{ 'mbhpackagebundle.view.order.touristedit.redaktirovaniye.zapisi'|trans }} ">
                                         <i class="fa fa-pencil-square-o"></i>
                                     </a>
                                 {% endif %}

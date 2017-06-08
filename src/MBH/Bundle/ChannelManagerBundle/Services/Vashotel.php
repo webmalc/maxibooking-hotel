@@ -32,11 +32,14 @@ class Vashotel extends Base
     /**
      * Config class
      */
-    const CANCEL_CONDITIONS = [
-        1 => 'Первые сутки проживания в забронированных номерах',
-        2 => 'Процент от стоимости проживания',
-        3 => 'Фиксированная стоимость за каждый забронированный номер'
-    ];
+    private function cancelConditions()
+    {
+        return [
+            1 => $this->container->get('translator')->trans('package.services.first_day_live_in_booking_rooms'),
+            2 => $this->container->get('translator')->trans('package.services.percent_of_price_liveing'),
+            3 => $this->container->get('translator')->trans('package.services.fixed_price_for_all_booking_room')
+        ];
+    }
 
     const SERVICES = [
         'Завтрак "Шведский стол"' => 'Buffet breakfast',
@@ -428,7 +431,7 @@ class Vashotel extends Base
                 $comment .= 'Время заезда: ' . (string) $reservation->time_arrival . ". \n";
             }
             $cancelConditions = $reservation->cancel_conditions;
-            $cancelTypes = static::CANCEL_CONDITIONS;
+            $cancelTypes = $this->cancelConditions();
             if (!empty($cancelConditions) && !empty($cancelConditions->fine_type)) {
                 $comment .= 'Тип штрафа при аннуляции: ' . $cancelTypes[(int)$cancelConditions->fine_type] . ". \n";
                 if (!empty($cancelConditions->fine_cost)) {
@@ -902,15 +905,18 @@ class Vashotel extends Base
             $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
             $roomTypes = $this->getRoomTypes($config);
             $configTariffs = $this->getTariffs($config, true);
-            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                $begin,
-                $end,
-                $config->getHotel(),
-                $this->getRoomTypeArray($filterRoomType),
-                [],
-                true,
-                $this->roomManager->useCategories
-            );
+            $priceCachesCallback = function () use ($begin, $end, $config, $filterRoomType) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                    $begin,
+                    $end,
+                    $config->getHotel(),
+                    $this->getRoomTypeArray($filterRoomType),
+                    [],
+                    true,
+                    $this->roomManager->useCategories
+                );
+            };
+            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             //iterate tariffs
             foreach ($this->pullTariffs($config) as $tariffId => $tariff) {

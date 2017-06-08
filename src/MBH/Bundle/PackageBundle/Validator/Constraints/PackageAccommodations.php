@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Validator\Constraints;
 
-
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -17,6 +16,8 @@ class PackageAccommodations extends Constraint
 
     public $endLessOrEqualBegin = 'validator.accommodation.end_less_or_equal_begin';
 
+    public $packageIsCancelled = 'validator.accommodation.package_is_cancelled';
+
     /**
      * @return string
      */
@@ -24,6 +25,4 @@ class PackageAccommodations extends Constraint
     {
         return self::CLASS_CONSTRAINT;
     }
-
-
 }

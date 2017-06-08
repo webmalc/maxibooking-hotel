@@ -1,7 +1,8 @@
 {% extends "MBHBaseBundle::page.html.twig" %}
 {% block print_hotel_logo %}{% endblock %}
 
-{% set title = 'Ошибка' %}
+{% set title = 'app.resources.twigBundle.translations.error'|trans({}, 'MBHBaseBundle') %}
+
 {% set title_url = path('_welcome') %}
 {% set small_title = status_code %}
 
@@ -29,6 +30,6 @@
 
 {% block content %}
     <div class="alert alert-danger">
-        <i class="fa fa-exclamation-circle"></i> Произошла ошибка #{{ status_code }}: {{ status_text|trans }}
+        <i class="fa fa-exclamation-circle"></i> {{ 'app.resources.twigBundle.translations.occured.error'|trans({}, 'MBHBaseBundle') }} #{{ status_code }}: {{ status_text|trans }}
     </div>
 {% endblock %}

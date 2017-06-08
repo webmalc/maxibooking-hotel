@@ -1,6 +1,19 @@
 <div class="spacer-top">
+    {% if app.session.flashbag.has('search') %}
+        <div class="autohide bg-gray color-palette disabled alert alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <div id="search-flashbag" data-less="{{ 'hide'|trans }}" data-more="{{ 'show'|trans }}">
+                {% for message in app.session.flashbag.get('search') %}
+                    <p class="text-danger">
+                        <small>{{ message }}</small>
+                    </p>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 
     {% if specials is not empty %}
+        <div id="package-search-special-wrapper" data-less="{{ 'hide'|trans }}" data-more="{{ 'show.more'|trans }}">
         <table class="package-search-special-table table table-striped table-hover table-condensed table-icons table-actions">
             <thead>
             <tr class="warning">
@@ -11,8 +24,8 @@
             <tr>
                 <th class="td-xxs"></th>
                 <th>{{ "specials.title"|trans }}</th>
-                <th class="td-md">{{ "specials.dates"|trans }}</th>
-                <th class="td-md">{{ "specials.roomTypes"|trans }}</th>
+                <th class="td-md">{{ "special.group.dates"|trans }}</th>
+                <th class="td-md">{{ "mbhpricebundle.view.roomcache.index.tipnomera"|trans }}</th>
                 <th class="td-md">{{ "specials.tariff"|trans }}</th>
                 <th class="td-sm">{{ "specials.discount"|trans }}</th>
                 <th class="td-sm text-center">{{ "specials.sold"|trans }}</th>
@@ -43,6 +56,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     {% if results is not empty %}

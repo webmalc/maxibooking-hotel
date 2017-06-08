@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\Document(collection="Organizations", repositoryClass="MBH\Bundle\PackageBundle\Document\OrganizationRepository")
  * @Gedmo\Loggable
  * @ODM\HasLifecycleCallbacks
- * @MongoDBUnique(fields="inn", message="Такой ИНН уже существует")
+ * @MongoDBUnique(fields="inn", message="mbhpackagebundle.document.organization.takoy.inn.uzhe.sushchestvuyet")
  */
 class Organization implements PayerInterface, RecipientInterface, AddressInterface
 {

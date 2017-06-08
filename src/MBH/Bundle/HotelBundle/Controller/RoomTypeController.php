@@ -16,6 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/roomtype")
@@ -32,18 +33,29 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function indexAction()
     {
+        $isDisableableOn = $this->dm->getRepository('MBHClientBundle:ClientConfig')->isDisableableOn();
+        $filterCollection = $this->dm->getFilterCollection();
+        if ($isDisableableOn && !$filterCollection->isEnabled('disableable')) {
+            $filterCollection->enable('disableable');
+        }
+
         $entities = $this->dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder('s')
             ->field('hotel.id')->equals($this->hotel->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
+        if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
+            $filterCollection->disable('disableable');
+        }
 
         if (!$entities->count()) {
             return $this->redirectToRoute('room_type_new');
         }
 
         return [
-            'entities' => $entities
+            'entities' => $entities,
+            'displayDisabledRoomType' =>
+                !$this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->isIsDisableableOn()
         ];
     }
 
@@ -126,7 +138,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $this->addFlash('success', 'controller.TaskTypeController.success_delete_photo');
 
         return $this->redirectToRoute('room_type_image_edit', ['id' => $id, 'imageTab' => 'active']);
-
     }
 
     /**
@@ -184,8 +195,10 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success',
-                $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
+            $request->getSession()->getFlashBag()->set(
+                'success',
+                $this->get('translator')->trans('controller.roomTypeController.record_edited_success')
+            );
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -211,20 +224,22 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function editAutoTasksAction(Request $request, RoomType $roomType)
     {
-        if(!$roomType->getTaskSettings()) {
+        if (!$roomType->getTaskSettings()) {
             $roomType->setTaskSettings(new TaskSettings());
         }
         $form = $this->createForm(RoomTypeTasksType::class, $roomType->getTaskSettings(), ['hotel' => $roomType->getHotel()]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
             $form->handleRequest($request);
-            if($form->isValid()) {
+            if ($form->isValid()) {
                 //$this->dm->persist($entity);
                 $this->dm->persist($roomType->getTaskSettings());
                 $this->dm->flush();
 
-                $this->ad('success',
-                    $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
+                $this->ad(
+                    'success',
+                    $this->get('translator')->trans('controller.roomTypeController.record_edited_success')
+                );
 
                 return $this->afterSaveRedirect('room_type', $roomType->getId(), [], '_task_edit');
             }

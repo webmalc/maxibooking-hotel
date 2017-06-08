@@ -1,3 +1,6 @@
+mbhhotelbundle.document.roomtype.takoy.tip.nomera.uzhe.sushchestvuyet: 'Такой тип номера уже существует'
+mbhhotelbundle.document.housing.takoy.korpus.uzhe.sushchestvuyet: 'Такой корпус уже существует'
+mbhhotelbundle.document.room.takoy.nomer.uzhe.sushchestvuyet: 'Такой номер уже существует'
 validator.document.city.country_not_selected: Не выбрана страна
 validator.document.city.region_not_selected: Не выбран регион
 validator.document.city.min_name: Слишком короткое имя
@@ -5,6 +8,7 @@ validator.document.city.max_name: Слишком длинное имя
 validator.document.country.min_name: Слишком короткое имя
 validator.document.country.max_name: Слишком длинное имя
 validator.document.hotel.min_name: Слишком короткое имя
+validator.document.hotel.hotel_is_exist: Такой отель уже существует
 validator.document.hotel.max_name: Слишком длинное имя
 validator.document.hotel.min_prefix: Слишком короткий префикс
 validator.document.hotel.max_prefix: Слишком длинный префикс
@@ -33,6 +37,8 @@ validator.document.roomType.max_hex_code: HEX-код цвета должен б�
 validator.document.roomType.min_places_amount: Количество мест не может быть меньше одного
 validator.document.roomType.places_amount_less_zero: Количество мест не может быть меньше нуля
 validator.document.roomType.internationalTitle.only_english: Международное название должно быть только на английском
+validator.document.roomType.hotel_in_not_select: Не выбран отель
+
 validator.document.contact_info.phone_number.to_short: Слишком короткий номер телефона
 validator.document.contact_info.phone_number.too_long: Номер телефона должен содержать не более 50 символов
 validator.document.contact_info.email.to_short: Слишком коротки адрес электронной почты
@@ -40,6 +46,7 @@ validator.document.contact_info.email.too_long: Слишком длинный а
 
 validator.document.task.title_no_selected: Не выбрана задача
 validator.document.task.taskType_no_selected: Не выбран тип задачи
+validator.document.task.auto_created_task: Автоматически созданная задача
 validator.document.task.min_description: Слишком короткое описание
 validator.document.task.max_description: Слишком длинное описание
 validator.document.taskType.min_title: Слишком короткий заголовок
@@ -51,3 +58,4 @@ validator.task.assignment: 'Группа или исполнитель долж�
 form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: Первый номер должен быть меньше второго номера
 form.roomTypeGenerateRoomsType.too_many_generation_numbers: Слишком большой промежуток для генерации. Разница между номерами должна быть не больше 500
 
+validator.document.roomTypeImage.image_size_5_mb: 'Размер изображения не должен превышать 5MB.'

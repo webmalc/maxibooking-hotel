@@ -847,7 +847,7 @@ $.fn.mbhSelect2OptionsFilter = function (filter, resetOptionsHtml) {
 
 var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
     $discountInput.TouchSpin({
-        min: 0.01,
+        min: -9999999999999999,
         max: 9999999999999999,
         step: 0.1,
         decimals: 2,
@@ -857,10 +857,10 @@ var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
 
     var discountInputUpdate = function (state) {
         if (state) { //$isPercentDiscountCheckbox.is(':checked')
-            $discountInput.trigger("touchspin.updatesettings", {max: 100});
+            $discountInput.trigger("touchspin.updatesettings", {max: 100, min: -1000});
             $discountTypeInputPostfix.html('%');
         } else {
-            $discountInput.trigger("touchspin.updatesettings", {max: 100000000});
+            $discountInput.trigger("touchspin.updatesettings", {max: 100000000, min: -100000000});
             $discountTypeInputPostfix.html('<i class="fa fa-money"></i>')
         }
     }
@@ -913,7 +913,6 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
 var mbhStartDate = function (e) {
     if ($('form').is('.mbh-start-date')) {
         if (!($('.begin-datepicker').val()) && !($('.end-datepicker').val())) {
-            console.log('loaded');
             $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
             $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
             $('.begin-datepicker').val($('.daterangepicker-input').data('daterangepicker').startDate.format('DD.MM.YYYY'));
@@ -922,11 +921,21 @@ var mbhStartDate = function (e) {
     }
 };
 
+var disableCheckboxListen = function () {
+    var $disableCheckBox = $('#mbh-disable');
+    $disableCheckBox.is(':checked');
+    $disableCheckBox.on('switchChange.bootstrapSwitch', function () {
+        var disableMode = !$disableCheckBox.bootstrapSwitch('state') ? 'true' : 'false';
+        var routeName = $disableCheckBox.attr('data-route-name');
+        window.location.href = Routing.generate('change_room_type_enableable_mode', {disableMode: disableMode, route : routeName});
+    });
+};
+
 
 $(document).ready(function () {
     'use strict';
-
     docReadyForms();
 
     mbhStartDate();
+    disableCheckboxListen();
 });

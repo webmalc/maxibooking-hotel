@@ -1,69 +1,77 @@
-warehouse:
-    common:
-        title: Склад
-        subtitle: список
-        edit: Редактировать
-        del: Удалить
-        included: Включен
-        savechanges: Сохранить изменения
-        info: Общая информация
-        settings: Настройки
-    rec:
-        edit: Редактирование записи
-        del: Удаление записи
-    field:
-        price: Цена
-        unit: Ед. изм.
-        unitPlaceholder: шт., литр…
-    cat:
-        title: Категория
-        edit: редактирование категории
-        new: создание категории товара
-        newcattitle: Новая категория товара
-        del: Удалить категорию товара
-        nogoods: В этой категории нет ни одного товара.
-        addnew: Добавить новую категорию
-        newSuccess: Категория успешно создана
-        editSuccess: Категория успешно отредактирована   
-    items:
-        title: Товар
-        edit: редактирование товара в категории
-        edit1: Редактировать категорию товара
-        new: создание товара в категории
-        new1: Создать товар в категории
-        add: Добавить товар
-        notused: Товар не используется
-        staple: Основные товары
-        placeholder: Основные товары
-        placeholderShort: Мыло
-        maxiTitle: Название для использования внутри MaxiBooking
-        saveSuccess: Изменения успешно сохранены
-        newSuccess: Товар успешно создан
-        editSuccess: Товар успешно отредактирован
-        delSuccess: Товар успешно удалён
-        price: Цена за единицу
-    record:
-        new: создание новой записи
-        newSuccess: Новая запись успешно создана
-        generalInfo: Данные
-        quantity: Количество
-        operation: Операция
-        edit: редактирование записи
-        editSuccess: Запись успешно отредактирована
-        amount: Сумма
-        recordDate: Дата
-        title: Наименование
-        hotel: Отель
-        hotels: Отели
-        goods: Товары
-        in: приход
-        out: расход
-        list: список приходов-расходов
-        inventory: остатки
-        tabs:
-            list: Записи
-            inventory: Остатки
-        th:
-          quantity: Кол-во
-          price: Цена
-
+mbhwarehousebundle.form.recordfiltertype.po: по
+warehouse.common.title: Склад
+warehouse.common.subtitle: список
+warehouse.common.edit: Редактировать
+warehouse.common.del: Удалить
+warehouse.common.included: Включен
+warehouse.common.savechanges: 'Сохранить изменения'
+warehouse.common.info: 'Общая информация'
+warehouse.common.settings: Настройки
+warehouse.rec.edit: 'Редактирование записи'
+warehouse.rec.del: 'Удаление записи'
+warehouse.record.th.price: Цена
+warehouse.field.unit: 'Ед. изм.'
+warehouse.field.unitPlaceholder: 'шт., литр…'
+warehouse.cat.title: Категория
+warehouse.cat.edit: 'редактирование категории'
+warehouse.cat.new: 'создание категории товара'
+warehouse.cat.newcattitle: 'Новая категория товара'
+warehouse.cat.del: 'Удалить категорию товара'
+warehouse.cat.nogoods: 'В этой категории нет ни одного товара.'
+warehouse.cat.addnew: 'Добавить новую категорию'
+warehouse.cat.newSuccess: 'Категория успешно создана'
+warehouse.cat.editSuccess: 'Категория успешно отредактирована'
+warehouse.items.title: Товар
+warehouse.items.edit: 'редактирование товара в категории'
+warehouse.items.edit1: 'Редактировать категорию товара'
+warehouse.items.new: 'создание товара в категории'
+warehouse.items.new1: 'Создать товар в категории'
+warehouse.items.add: 'Добавить товар'
+warehouse.items.notused: 'Товар не используется'
+warehouse.items.placeholder: 'Основные товары'
+warehouse.items.placeholderShort: Мыло
+warehouse.items.maxiTitle: 'Название для использования внутри MaxiBooking'
+warehouse.items.saveSuccess: 'Изменения успешно сохранены'
+warehouse.items.newSuccess: 'Товар успешно создан'
+warehouse.items.editSuccess: 'Товар успешно отредактирован'
+warehouse.items.delSuccess: 'Товар успешно удалён'
+warehouse.items.price: 'Цена за единицу'
+warehouse.record.new: 'создание новой записи'
+warehouse.record.newSuccess: 'Новая запись успешно создана'
+warehouse.record.generalInfo: Данные
+warehouse.record.quantity: Количество
+warehouse.record.operation: Операция
+warehouse.record.edit: 'редактирование записи'
+warehouse.record.editSuccess: 'Запись успешно отредактирована'
+warehouse.record.amount: Сумма
+warehouse.record.recordDate: Дата
+warehouse.record.title: Наименование
+warehouse.record.hotel: Отель
+warehouse.record.hotels: Отели
+warehouse.record.goods: Товары
+warehouse.record.in: приход
+warehouse.record.out: расход
+warehouse.record.list: 'список приходов-расходов'
+warehouse.record.inventory: остатки
+warehouse.record.tabs.list: Записи
+warehouse.record.tabs.inventory: Остатки
+warehouse.record.th.quantity: Кол-во
+warehouse.fixtures.mongodb.warehousedata.household_chemical: 'Бытовая химия'
+warehouse.fixtures.mongodb.warehousedata.food: 'Питание'
+warehouse.fixtures.mongodb.warehousedata.underwear: 'Белье'
+warehouse.eventlistener.warehousesubscriber.can_not_delete_product_category: Невозможно удалить категорию с товарами
+warehouse.controller.invoicecontroller.new_consignment_note_has_been_created_successfully: 'Новая накладная успешно создана'
+warehouse.controller.invoicecontroller.consignment_saved: 'Накладная сохранена'
+warehouse.resources.view.record.dates: Даты
+warehouse.resources.view.invoice.add: Добавить
+warehouse.resources.view.inwoice.edit_consignment: редактирование накладной
+warehouse.resources.view.invoice.new.add: Добавить
+warehouse.resources.view.creation_of_new_commodity_waybill: создание новой товарной накладной
+warehouse.resources.view.error_the_number_can_not_be_zero: 'Ошибка. Количество не может быть нулевым!'
+warehouse.resources.view.operation: Операция
+warehouse.resources.view.date: Дата
+warehouse.resources.view.nubmer: Номер
+warehouse.resources.view.organization: Организация
+warehouse.resources.view.hotel: Отель
+warehouse.resources.view.lists: 'Список товарных накладных'
+warehouse.resources.form.recordfiltertype.with: с

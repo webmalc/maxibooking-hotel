@@ -38,6 +38,7 @@ var docReadyTourists = function () {
                 //$touristTable.find('.show-on-print').removeClass('hide');
                 //hide print column
             }
+            deleteLink();
         },
         "columnDefs": [
             { className: "hide-on-print", "targets": [ 6, 11 ] },

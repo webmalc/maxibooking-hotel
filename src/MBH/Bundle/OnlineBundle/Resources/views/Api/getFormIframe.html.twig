@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Maxibooking</title>
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
+    {% if formConfig and formConfig.theme %}
+        <link rel="stylesheet" href="{{ formConfig.theme }}">
+    {% endif %}
+</head>
+
+<body style="background-color: transparent;">
+    <div id="mbh-form-wrapper" style="overflow: hidden; height: auto">
+        <a href="http://maxi-booking.ru/" style="background-color: white; padding: 10px;">система онлайн бронирования</a>
+    </div>
+    {% if formConfig and formConfig.css %}
+        <style>
+         {{ formConfig.css }}
+        </style>  
+    {% endif %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ url('online_form_get', {id: formId}) }}"></script>
+</body>
+
+</html>

@@ -3,6 +3,7 @@
         <ul class="nav navbar-nav">
             <li><button type="submit" name="save" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"> </i> {{ 'views.actions.saveButtons.save'|trans({}, 'MBHBaseBundle') }}</button></li>
             <li><button type="button" onclick="location.href = '{{ path('channel_manager_sync', {'url': title_url}) }}'" class="btn btn-primary navbar-btn"><i class="fa fa-cloud-download"> </i> {{ 'views.channelmanager.actions.sync'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
+            {% block additional_actions %}{% endblock %}
             {% if is_granted('ROLE_LOGS') %}
             <li><button type="button" onclick="location.href = '{{ path('channel_manager_logs', {'url': title_url}) }}'" class="btn btn-default navbar-btn"><i class="fa fa-clock-o"> </i> {{ 'views.actions.saveButtons.log'|trans({}, 'MBHBaseBundle') }}</button></li>
             {% endif %}

@@ -11,22 +11,21 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
 
 /**
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тип номера уже существует")
- *
+ * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="mbhhotelbundle.document.roomtype.takoy.tip.nomera.uzhe.sushchestvuyet")
+ * @Disableable\Disableable
  * @ODM\HasLifecycleCallbacks
  */
 class RoomType extends Base implements RoomTypeInterface
 {
-
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -50,7 +49,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="validator.document.roomType.hotel_in_not_select")
      * @ODM\Index()
      */
     protected $hotel;
@@ -364,7 +363,6 @@ class RoomType extends Base implements RoomTypeInterface
         $total = $children + $adults;
 
         for ($i = 1; $i <= $total; $i++) {
-
             if ($i > $this->getTotalPlaces()) {
                 break;
             }

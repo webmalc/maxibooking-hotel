@@ -93,7 +93,7 @@
 			var amount = $(this).val();			
 			var qtty = $("input[name*='qtty']", $p).val() * 1;
 			if (! qtty) {
-				alert('Ошибка. Количество не может быть нулевым!');
+				alert({{ 'warehouse.resources.view.error_the_number_can_not_be_zero'|trans }});
 				$(this).val('');
 				return;
 			}

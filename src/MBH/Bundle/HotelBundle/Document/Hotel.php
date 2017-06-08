@@ -29,7 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\Document(collection="Hotels")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
+ * @MongoDBUnique(fields="fullTitle", message="validator.document.hotel.hotel_is_exist")
  * @ODM\HasLifecycleCallbacks
  */
 class Hotel extends Base implements \JsonSerializable, AddressInterface

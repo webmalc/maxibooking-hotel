@@ -3,14 +3,14 @@
         <li role="presentation" {% if active == 1 %} class="active" {% endif %}><a
                     href="{{ path('package_order_tourist_edit', {id: entity.id, packageId: package.id}) }}"><i class="fa fa-male"></i> Физ. лицо
                 {% if entity.mainTourist is null %}
-                    <span class="badge">нет</span>
+                    <span class="badge">{{ 'mbhpackagebundle.view.order.tabs.net'|trans }} </span>
                 {% endif %}
             </a>
         </li>
         <li role="presentation" {% if active == 2 %} class="active" {% endif %}><a
                     href="{{ path('package_order_organization_edit', {id: entity.id, packageId: package.id}) }}"><i class="fa fa-users"></i> Организация
                 {% if entity.organization is null %}
-                    <span class="badge">нет</span>
+                    <span class="badge">{{ 'mbhpackagebundle.view.order.tabs.net'|trans }} </span>
                 {% endif %}
             </a>
         </li>

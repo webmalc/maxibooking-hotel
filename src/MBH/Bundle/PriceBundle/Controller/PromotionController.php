@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class PromotionController
-
  *
  * @Route("promotions")
  */

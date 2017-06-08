@@ -1,0 +1,34 @@
+chessboard_manager.remove_button.popup: Удалить
+chessboard_manager.divide_button.popup: Переселить
+chessboard_manager.info_button.popup.title: Информация о брони
+chessboard_manager.edit_button.popup.title: Перейти в окно редактирования
+chessboard_manager.left_rooms_count.tooltip_title: 'Осталось %count% номеров'
+
+action_manager.modal.remove_confirmation.title: Подтверждение удаления
+action_manager.modal.remove_confirmation.text: Вы действительно хотите удалить эту бронь
+action_manager.modal.package_blocked.title: Бронь заблокирована для изменений
+action_manager.modal.package_blocked.text: Если вы хотите разблокировать эту бронь, перейдите в раздел редактирования брони
+action_manager.modal.package_begin_date_abroad.title: Дата заезда брони находится за границей заданного периода
+action_manager.modal.package_begin_date_abroad.text: Если вы хотите изменить эту бронь, измените дату начала просмотра броней
+action_manager.modal.package_end_date_abroad.title: Дата выезда брони находится за границей заданного периода
+action_manager.modal.package_end_date_abroad.text: Если вы хотите изменить эту бронь, измените дату окончания просмотра броней
+action_manager.modal.package_begin_and_end_date_abroad.title: Дата выезда и дата заезда брони находятся за границей заданного периода
+action_manager.modal.package_begin_and_end_date_abroad.text: Если вы хотите изменить эту бронь, измените дату начала и дату окончания просмотра броней
+action_manager.modal.package_to_large.title: Бронь не помещается на экран
+action_manager.modal.package_to_large.text: Если вы хотите изменить эту бронь, воспользуйтесь режимом редактирования брони
+action_manager.message.unexpected_error: Произошла непредвиденная ошибка
+aciton_manager.modal.change_package_begin_and_end.confirmation: Вы действительно хотите изменить дату заезда и выезда брони
+action_manager.modal.have_not_rights: У Вас недостаточно прав для редактирование брони
+action_manager.modal.need_changepackage_begin_and_end: Для выполнения данного действия необходимо изменить дату заезда или дату выезда
+aciton_manager.modal.change_package_begin.confirmation: Вы действительно хотите изменить дату заезда брони
+action_manager.modal.need_changepackage_begin.title: Для выполнения данного действия необходимо изменить дату заезда
+aciton_manager.modal.change_package_end.confirmation: Вы действительно хотите изменить дату выезда брони
+action_manager.modal.need_changepackage_end.title: Для выполнения данного действия необходимо изменить дату выезда
+action_manager.modal.book_button.title: 'Бронировать номер. Всего номеров %roomsCount%'
+action_manager.modal.disabled_book_button.title: Для создания брони необходимо указать плательщика
+
+action_manager.update_modal.without_accommodation: Без размещения
+action_manager.update_modal.not_specified: Не указан
+
+search.book_button.title: 'Бронировать номер. Всего номеров %roomsCount%'
+search.disabled_book_button.title: Для создания брони необходимо указать плательщика

@@ -1,0 +1,746 @@
+//@roomTypeColumnWidth: 200px;
+//@width: 47px;
+//@height: 40px;
+//@tileFontSize: 12px;
+//@leftRoomsAndNoAccFontSize: 16px;
+//@tileTopPadding: 12px;
+//@dayTopPadding: 5px;
+//@titleSubFontSize: 11px;
+//@titleSubPadding: 5px;
+
+body {
+  overflow-y: hidden !important;
+  padding-bottom: 0 !important;
+}
+.accommodation-chessBoard-pagination ul {
+  margin: 5px;
+}
+
+#accommodation-chessBoard-filter-floor {
+  width: 120px !important;
+}
+
+#loading-indicator {
+  top: 50%;
+  left: 50%;
+}
+
+.red-package {
+  background-color: rgba(232, 34, 34, 0.6) !important;
+}
+
+#chessboard-messages {
+  position: absolute;
+  z-index: 300;
+  margin-top: 3px;
+  top: -57px;
+  margin-left: -11px;
+}
+
+#dimmer {
+  background: #000;
+  opacity: 0.5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  z-index: 1100;
+}
+
+.package {
+  z-index: 100;
+  border-bottom: 1px solid white;
+  cursor: pointer;
+  .package-action-buttons {
+    position: absolute;
+    right: 4px;
+    top: -3px;
+  }
+}
+
+.with-left-divider:after, .with-right-divider:before {
+  content: ' ';
+  height: @tileFontSize;
+  top: (@height - @tileFontSize)/2;
+  position: absolute;
+  -webkit-border-radius: 0 7px 7px 0;
+  -moz-border-radius: 0 7px 7px 0;
+  border-radius: 0 7px 7px 0;
+  width: 7px;
+}
+
+.with-left-divider:after {
+  background-color: white;
+  left: 0;
+}
+
+.with-right-divider.danger:before {
+  background-color: rgba(221, 75, 57, 0.6);
+}
+
+.with-right-divider.success:before {
+  background-color: rgba(0, 166, 90, 0.6);
+}
+
+.with-right-divider.warning:before {
+  background-color: rgba(243, 156, 18, 0.6);
+}
+
+.with-right-divider:before {
+  right: -7px
+}
+
+.popover.fade {
+  min-width: 250px;
+  padding-right: 10px;
+  max-width: 700px !important;
+  z-index: 500;
+}
+
+.popover-content {
+  overflow: auto;
+  min-width: 200px !important;
+  max-width: 500px !important;
+  max-height: 200px !important;
+}
+
+.popover-package-container {
+  //overflow: auto;
+  white-space: nowrap;
+  //max-width: 700px;
+  .popover-info-button, .popover-edit-button {
+    width: @width;
+    margin: 0 5px;
+    font-size: @height;
+  }
+  .popover-info-button {
+    border: 0;
+    background-color: white;
+  }
+  .popover-edit-button {
+    left: 50px;
+    cursor: pointer;
+  }
+}
+
+#package-modal-change-alert {
+  font-size: 1.3em;
+}
+
+#package-edit-modal {
+  .findGuest {
+    max-width: 600px !important;
+  }
+}
+
+#packageModal {
+  .modal-body {
+    .row {
+      padding-bottom: 10px;
+      font-size: 1.3em;
+    }
+  }
+}
+
+.danger, .package {
+  background-color: rgba(221, 75, 57, 0.6);
+}
+
+.success {
+  background-color: rgba(0, 166, 90, 0.6);
+}
+
+.warning {
+  background-color: rgba(243, 156, 18, 0.6);
+}
+
+#accommodation-chessBoard-content {
+  position: relative;
+  color: #3d5471;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  strong.disabled-room-type {
+    text-decoration: line-through;
+  }
+  #header-title {
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    position: absolute;
+    z-index: 250;
+    .tableTitleCell {
+      height: @height;
+      padding: 10px;
+      text-align: center;
+    }
+  }
+  #calendarWrapper {
+    position: relative;
+    display: inline-block;
+    margin-left: @roomTypeColumnWidth;
+  }
+  #roomTypeColumn {
+    z-index: 150;
+    border-left: 1px solid #ddd;
+    background-color: white;
+    display: inline-block;
+    width: @roomTypeColumnWidth;
+    top: (@height * 2 + 1);
+    position: absolute;
+  }
+  .calendarDays li {
+    display: block;
+  }
+  .calendarDates {
+    cursor: default;
+  }
+  .calendarRow, .calendarDates {
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+  .tile, .calendarDaysHeader li {
+    float: left;
+    width: @width;
+  }
+  .tile {
+    border-bottom: 1px solid #dce0e0;
+    overflow: hidden;
+    position: relative;
+    text-align: left;
+    vertical-align: top;
+  }
+  .tile .tile {
+    border-bottom: 0px;
+  }
+  .tile .date {
+    border-right: 1px solid #eee;
+    font-size: 11px;
+    line-height: 11px;
+    font-weight: bold;
+    padding: @tileFontSize 2px 0px 8px;
+    height: @height;
+    position: relative;
+    text-align: right;
+  }
+  .achtung {
+    background-color: rgba(193, 232, 42, 0.55);
+  }
+  .tile .leftRooms, .tile .no-accommodation-date {
+    border-right: 1px solid #eee;
+    font-size: @leftRoomsAndNoAccFontSize;
+    line-height: 16px;
+    font-weight: bold;
+    padding: @tileTopPadding 5px;
+    height: @height;
+    position: relative;
+    text-align: center;
+  }
+  .tile .date div {
+    margin-left: 0;
+    text-align: right;
+    width: 28px;
+  }
+  .calendarDates .tile .date div {
+    display: none;
+  }
+  .tile.tile-busy.left .date div, .tile.tile-busy.both .date div {
+    cursor: default;
+  }
+  .tile .date span {
+    display: block;
+    text-align: right;
+    opacity: 0.4;
+  }
+  .tile .month {
+    border-top: 1px solid #ddd;
+    border-right: 1px solid #e3e3e3;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0px 5px;
+    height: @height;
+    position: relative;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .tile .day {
+    border-right: 1px solid #e3e3e3;
+    font-size: @tileFontSize;
+    line-height: 16px;
+    font-weight: bold;
+    padding: @dayTopPadding 5px;
+    height: @height;
+    position: relative;
+    text-align: center;
+  }
+  .tile .day span {
+    display: block;
+    text-align: center;
+    font-size: @tileFontSize;
+    font-weight: normal;
+    color: #999;
+
+  }
+  .tile .title {
+    border-top: 1px solid #ddd;
+    border-right: 1px solid #e3e3e3;
+    font-size: @titleSubFontSize;
+    font-weight: bold;
+    padding: 0px 5px;
+    height: @height;
+    position: relative;
+    text-align: left;
+    display: table-cell;
+    vertical-align: middle;
+    width: @roomTypeColumnWidth;
+  }
+  .tile .title-sub {
+    border-right: 1px solid #e3e3e3;
+    font-size: @titleSubFontSize;
+    font-weight: bold;
+    padding: @titleSubPadding 5px 0 9px;
+    height: @height;
+    position: relative;
+    text-align: left;
+    display: table-cell;
+    vertical-align: middle;
+    width: @roomTypeColumnWidth;
+    a:hover {
+      cursor: default;
+    }
+    a {
+      color: #3d5471;
+    }
+  }
+  .tile .price {
+    color: #868686;
+    font-weight: normal;
+    margin-top: -20px;
+    pointer-events: none;
+    position: absolute;
+    text-align: right;
+    width: 100%;
+  }
+  .tile .price span {
+    display: inline-block;
+    padding: 0 5% 0 0;
+  }
+  .tile .unavailable-icon {
+    bottom: 6%;
+    position: absolute;
+    right: 6%;
+  }
+  .tile.weekend::after {
+    background-color: #f6e9ca;
+    content: " ";
+    height: 3px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .tile.today::after {
+    background-color: #cae0ef;
+    content: " ";
+    height: 3px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .tile.active-start, .tile.active-middle, .tile.active-end.tile-busy.both, .tile.active-end.tile-busy.right-left {
+
+  }
+  .tile.tile-free::before, .tile.active-start::before, .tile.left::before, .today.both::before {
+    border-color: transparent;
+    border-style: solid;
+    border-width: 0 0 300px 166px;
+    content: "";
+    left: 32%;
+    margin: -100px;
+    position: absolute;
+    top: 50%;
+  }
+  .tile.active-end::before, .tile.both::before, .tile.right::before, .tile.right-left::before, .tile-busy + .no-tile-status::before {
+    border-color: transparent;
+    border-style: solid;
+    border-width: 298px 164px 300px 0;
+    content: "";
+    left: 28%;
+    margin: -100px;
+    position: absolute;
+    top: 50%;
+  }
+  .tile.tile-busy-early > .tile.right-left::before, .tile.tile-busy-early > .tile.right::before {
+    border-width: 289px 161px 300px 0;
+  }
+  .tile.tile-busy-early > .tile.left::before {
+    border-width: 0 0 307px 170px;
+  }
+  .tile.tile-busy.both::before {
+    border-color: #edefed;
+  }
+  .tile.tile-free.active-start::before {
+    border-right-color: #ddd !important;
+  }
+  .tile.tile-free.active-middle {
+    background: #ddd !important;
+  }
+  .tile.tile-free.active-end::before {
+    border-top-color: #ddd !important;
+  }
+
+  div.tile.tile-busy.left {
+    border-bottom: 0;
+  }
+  .tile.tile-busy.left::before {
+    border-bottom-color: #edefed;
+    border-left-color: transparent;
+  }
+  .tile.tile-busy.left.active-start::before, .tile.tile-busy.left.active-start .tile.left::before {
+    border-bottom-color: #c99 !important;
+  }
+  .tile.tile-busy.left.active-middle::before, .tile.tile-busy.left.active-middle .tile.left::before {
+    border-bottom-color: #c99 !important;
+    border-left-color: #c99 !important;
+    border-right-color: #c99 !important;
+  }
+  .tile.tile-busy.left.active-end::before {
+    border-right-color: #edefed;
+  }
+  .tile.tile-busy.left.active-end {
+    background: #ddd !important;
+  }
+  .tile.tile-busy.both.active::before, .tile.tile-busy.right-left.active::before {
+    border-color: #c99 !important;
+  }
+  .tile.tile-busy.left.active-start .date, .tile.tile-busy.active-middle .date, .tile.tile-busy.both.active .date, .tile.tile-busy.right-left.active .date {
+    color: #666 !important;
+  }
+  .tile.tile-busy.both.active::before, .tile.tile-busy.right-left.active::before, .tile.tile-busy.right-left.active div.tile::before {
+    border-color: #c99 !important;
+  }
+  .tile.tile-busy.right::before, .tile.tile-busy.right-left::before {
+    border-top-color: #edefed;
+  }
+  .tile.tile-busy.right.active-start::before {
+    border-right-color: #ddd !important;
+  }
+  .tile.tile-busy.right.active-middle::before, .tile.tile-busy.right.active-middle .tile.right::before {
+    border-color: #c99 !important;
+    border-left-color: #c99 !important;
+    border-right-color: #c99 !important;
+  }
+  .tile.tile-busy.right.active-end::before, .tile.tile-busy.right.active-end .tile.right::before {
+    border-top-color: #c99 !important;
+  }
+  .tile.tile-free.right-left::before {
+    border-top-color: #ffffff;
+  }
+  .tile.tile-free.right::before {
+    border-right-color: #ffffff;
+  }
+
+  .tile.tile-busy.tile-success.left > .date, .tile.tile-busy.tile-success.both > .date {
+    color: #fff;
+  }
+  .tile.tile-busy.tile-success.both::before {
+    border-color: #73a839;
+  }
+  .tile.tile-busy.tile-success.left::before {
+    border-bottom-color: #73a839;
+    border-left-color: transparent;
+  }
+  .tile.tile-busy.tile-success.left.active-end::before {
+    border-right-color: #73a839;
+  }
+  .tile.tile-busy.tile-success.right::before, .tile.tile-busy.tile-success.right-left::before {
+    border-top-color: #73a839;
+  }
+  .tile.tile-busy.tile-success-coming.both::before {
+    border-color: rgba(115, 168, 57, 0.75);
+  }
+  .tile.tile-busy.tile-success-coming.left::before {
+    border-bottom-color: rgba(115, 168, 57, 0.75);
+  }
+  .tile.tile-busy.tile-success-coming.both::before {
+    border-color: rgba(115, 168, 57, 0.75);
+  }
+  .tile.tile-busy.tile-success-coming.right::before, .tile.tile-busy.tile-success-coming.right-left::before {
+    border-top-color: rgba(115, 168, 57, 0.75);
+  }
+  .tile.tile-busy-early.tile-success.right::before, .tile.tile-busy-early.tile-success.right-left::before {
+    border-top-color: #43631f;
+  }
+  .tile.tile-busy-early.tile-success.left::before {
+    border-bottom-color: #43631f;
+  }
+  .tile.tile-busy-early.tile-success-coming.tile-success.right::before, .tile.tile-busy-early.tile-success-coming.right-left::before {
+    border-top-color: rgba(67, 99, 31, 0.45);
+  }
+  .tile.tile-busy-early.tile-success-coming.tile-success.left::before {
+    border-bottom-color: rgba(67, 99, 31, 0.45);
+  }
+  .tile.tile-busy-early .tile.tile-success-coming.tile-success.right::before, .tile.tile-busy-early .tile.tile-success-coming.right-left::before {
+    border-top-color: rgba(115, 168, 57, 0.75);
+  }
+  .tile.tile-busy-early .tile.tile-success-coming.tile-success.left::before {
+    border-bottom-color: rgba(115, 168, 57, 0.75);
+  }
+
+  .tile.tile-busy.tile-warning.left > .date, .tile.tile-busy.tile-warning.both > .date {
+    color: #fff;
+  }
+  .tile.tile-busy.tile-warning.both::before {
+    border-color: #dd5600;
+  }
+  .tile.tile-busy.tile-warning.left::before {
+    border-bottom-color: #dd5600;
+    border-left-color: transparent;
+  }
+  .tile.tile-busy.tile-warning.left.active-end::before {
+    border-right-color: #dd5600;
+  }
+  .tile.tile-busy.tile-warning.right::before, .tile.tile-busy.tile-warning.right-left::before {
+    border-top-color: #dd5600;
+  }
+  .tile.tile-busy-early.tile-warning.right::before, .tile.tile-busy-early.tile-warning.right-left::before {
+    border-top-color: #7c390e;
+  }
+  .tile.tile-busy-early.tile-warning.left::before {
+    border-bottom-color: #7c390e;
+  }
+  .tile.tile-busy.tile-warning-coming.both::before {
+    border-color: rgba(221, 86, 0, 0.45);
+  }
+  .tile.tile-busy.tile-warning-coming.left::before {
+    border-bottom-color: rgba(221, 86, 0, 0.45);
+  }
+  .tile.tile-busy.tile-warning-coming.both::before {
+    border-color: rgba(221, 86, 0, 0.45);
+  }
+  .tile.tile-busy.tile-warning-coming.right::before, .tile.tile-busy.tile-warning-coming.right-left::before {
+    border-top-color: rgba(221, 86, 0, 0.45);
+  }
+
+  .tile.tile-busy.tile-danger.left > .date, .tile.tile-busy.tile-danger.both > .date {
+    color: #fff;
+  }
+  .tile.tile-busy.tile-danger.both::before {
+    border-color: #c71c22;
+  }
+  .tile.tile-busy.tile-danger.left::before {
+    border-bottom-color: #c71c22;
+    border-left-color: transparent;
+  }
+  .tile.tile-busy.tile-danger.left.active-end::before {
+    border-right-color: #c71c22;
+  }
+  .tile.tile-busy.tile-danger.right::before, .tile.tile-busy.tile-danger.right-left::before {
+    border-top-color: #c71c22;
+  }
+  .tile.tile-busy-early.tile-danger.right::before, .tile.tile-busy-early.tile-danger.right-left::before {
+    border-top-color: #67090c;
+  }
+  .tile.tile-busy-early.tile-danger.left::before {
+    border-bottom-color: #67090c;
+  }
+  .tile.tile-busy.tile-danger-coming.both::before {
+    border-color: rgba(199, 28, 34, 0.45);
+  }
+  .tile.tile-busy.tile-danger-coming.left::before {
+    border-bottom-color: rgba(199, 28, 34, 0.45);
+  }
+  .tile.tile-busy.tile-danger-coming.both::before {
+    border-color: rgba(199, 28, 34, 0.45);
+  }
+  .tile.tile-busy.tile-danger-coming.right::before, .tile.tile-busy.tile-danger-coming.right-left::before {
+    border-top-color: rgba(199, 28, 34, 0.45);
+  }
+  .tile-title {
+    position: absolute;
+    top: 13px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 2px 3px;
+    font-size: 11px;
+    line-height: 11px;
+    border-radius: 4px;
+    z-index: 20;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .tile-coming {
+    background-image: url('/bundles/mbhpackage/images/coming-cm.png');
+  }
+  .tile-coming-out {
+    background-image: url('/bundles/mbhpackage/images/outcoming-cm.png');
+  }
+  .tile-coming-out-in {
+    background-image: url('/bundles/mbhpackage/images/outcoming-coming-cm.png');
+  }
+  .tile-coming-in-out {
+    background-image: url('/bundles/mbhpackage/images/coming-outcoming-cm.png');
+  }
+  .fa-big-icon1 {
+    font-size: 8px;
+    padding: 1px 0 0 0px;
+  }
+  .tile.tile-free.left::before {
+    border-bottom-color: #ffffff;
+  }
+
+  .popover {
+    a, a:hover, a:visited, a:link {
+      text-decoration: none;
+      color: inherit;
+    }
+  }
+
+  .tile-bookable {
+    cursor: pointer;
+  }
+
+}
+
+.room-types-table {
+  .wait-accommodation {
+    //background-color: #f4fafd;
+    td:nth-child(4), :nth-child(5), :nth-child(6), :nth-child(7), :nth-child(8) {
+      opacity: 0.35;
+    }
+    td:last-child .btn-info {
+      opacity: 0.35;
+    }
+  }
+  .select-status {
+    width: 50px;
+  }
+  .select2 {
+    .select2-selection__arrow {
+      display: none;
+    }
+    .select2-selection {
+      padding: 3px 0;
+      background-color: transparent;
+      border: none;
+    }
+    .select2-selection__rendered {
+      padding-right: 0;
+    }
+    .select2-selection {
+      height: 25px;
+    }
+  }
+}
+
+#filling-table td:nth-child(1) small {
+  color: #777;
+  white-space: nowrap;
+}
+
+#filling-chessBoard-filter-roomType {
+  width: 300px;
+}
+
+#filling-table-filter .datepicker-period-select {
+  width: 250px;
+}
+
+#work-shift-list-table {
+  tr {
+    cursor: pointer;
+  }
+}
+
+.ui-resizable-e, .ui-resizable-w {
+  z-index: 150;
+  width: 7px;
+  height: @height;
+  position: absolute;
+  background-color: rgba(221, 75, 57, 1);
+  cursor: pointer;
+  top: 0;
+}
+
+.ui-resizable-w {
+  border-left: 1px solid wheat;
+  cursor: w-resize;
+}
+
+.ui-resizable-e {
+  right: 0;
+  border-right: 1px solid wheat;
+  cursor: e-resize;
+}
+
+.remove-package-button, .divide-package-button {
+  padding: 0 2px;
+  border: none;
+  background: none;
+  z-index: 110;
+}
+
+.remove-package-button :active, .divide-package-button :active {
+  border: 0;
+}
+
+.remove-package-button {
+  color: rgba(177, 0, 0, 0.6);
+}
+
+.divide-package-button {
+  color: #ddf28a;
+}
+
+.modal {
+  color: #3d5471;
+  padding: 4px 0;
+  td:first-child {
+    font-weight: bolder;
+  }
+}
+
+.package-description {
+  white-space: nowrap;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  margin: @tileTopPadding auto;
+  text-align: center;
+  font-size: @titleSubFontSize;
+}
+
+#work-shift-detail-header {
+  margin-bottom: 5px;
+  .header {
+    display: inline-block;
+    font-size: 15px;
+    margin-left: 5px;
+    font-weight: bold;
+  }
+}
+
+.dividing-line {
+  position: absolute;
+  border: 2px dashed red;
+  height: @height;
+  z-index: 250;
+  top: 0
+}
+
+#ex1Slider {
+  display: inline-block;
+  width: 60%;
+  .slider-selection {
+    background: #BABABA;
+  }
+}

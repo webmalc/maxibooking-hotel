@@ -76,18 +76,18 @@
                                             <small>
                                                 {{ price.date|date('d.m.Y') }} -
                                                 <strong>{{ price.price|number_format(2) }}</strong> -
-                                                <a data-toggle="tooltip" title="Тариф"
+                                                <a data-toggle="tooltip" title="{{ 'mbhpackagebundle.view.package.edit.tarif'|trans }} "
                                                    href="{{ path('tariff_edit', {id: price.tariff.id}) }}">
                                                     <i class="fa fa-sliders"></i> {{ price.tariff }}
                                                 </a>
                                                 {% if price.promotion %}
-                                                    - <a data-toggle="tooltip" title="Акция"
+                                                    - <a data-toggle="tooltip" title="{{ 'mbhpackagebundle.view.package.edit.aktsiya'|trans }} "
                                                          href="{{ path('promotion_edit', {id: price.promotion.id}) }}">
                                                     <i class="fa fa-bookmark"></i> {{ price.promotion }}
                                                 </a>
                                                 {% endif %}
                                                 {% if price.special %}
-                                                    - <a data-toggle="tooltip" title="Акция"
+                                                    - <a data-toggle="tooltip" title="{{ 'mbhpackagebundle.view.package.edit.aktsiya'|trans }} "
                                                          href="{{ path('special_edit', {id: price.special.id}) }}">
                                                     <i class="fa fa-star"></i> {{ price.special }}
                                                 </a>

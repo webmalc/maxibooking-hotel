@@ -5,17 +5,33 @@ namespace MBH\Bundle\ChannelManagerBundle\Lib;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use Symfony\Component\HttpFoundation\Request;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerOverview;
 
 interface ChannelManagerServiceInterface
 {
     /**
+     * @return array
+     */
+    public function getNotifications(ChannelManagerConfigInterface $config): array;
+
+    /**
+     * @return array
+     */
+    public function getErrors(): array;
+
+    /**
+     * @param string $error
+     * @return self
+     */
+    public function addError(string $error): ChannelManagerServiceInterface;
+
+    /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
-     * @return boolean
-     * @throw \Exception
+     * @return ChannelManagerOverview
      */
-    public function update (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
+    public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): ?ChannelManagerOverview;
 
     /**
      * @param \DateTime $begin
@@ -24,7 +40,7 @@ interface ChannelManagerServiceInterface
      * @return boolean
      * @throw \Exception
      */
-    public function updatePrices (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
+    public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
 
     /**
      * @param \DateTime $begin
@@ -33,7 +49,7 @@ interface ChannelManagerServiceInterface
      * @return boolean
      * @throw \Exception
      */
-    public function updateRooms (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
 
     /**
      * @param \DateTime $begin
@@ -42,7 +58,16 @@ interface ChannelManagerServiceInterface
      * @return boolean
      * @throw \Exception
      */
-    public function updateRestrictions (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @return boolean
+     * @throw \Exception
+     */
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null);
 
     /**
      * Create packages from service request

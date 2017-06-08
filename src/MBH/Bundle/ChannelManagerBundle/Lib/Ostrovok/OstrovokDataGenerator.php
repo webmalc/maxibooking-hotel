@@ -218,6 +218,10 @@ class OstrovokDataGenerator
      */
     private function getRnaRoomCategoriesData($roomCategory, $count, \DateTime $startDate = null, \DateTime $endDate = null, $hotelId)
     {
+        if ($count <= 0) {
+            $count = 0;
+        }
+
         return [
             'hotel' => $hotelId,
             'count' => $count,

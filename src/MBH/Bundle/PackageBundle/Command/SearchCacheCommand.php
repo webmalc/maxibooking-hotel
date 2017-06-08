@@ -14,6 +14,7 @@ class SearchCacheCommand extends ContainerAwareCommand
 {
 
     const CHUNK_MAX_DAYS = 31;
+    const TITLE = 'mbh:cache:warm-search';
 
     /**
      * @var array
@@ -28,7 +29,7 @@ class SearchCacheCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('mbh:search:cache')
+            ->setName(self::TITLE)
             ->setDescription('Warm search cache')
             ->addOption('begin', null, InputOption::VALUE_OPTIONAL, 'From (date - d.m.Y)')
             ->addOption('end', null, InputOption::VALUE_OPTIONAL, 'To (date - d.m.Y)')
@@ -168,7 +169,7 @@ class SearchCacheCommand extends ContainerAwareCommand
             $output->writeln(sprintf('Start search #%d-%d [%s - %s]', $num, count($dates), $pair[0]->format('d.m.Y'), $pair[1]->format('d.m.Y')));
 
             //run command
-            $command = 'nohup php ' . $console . 'mbh:search:cache --begin='. $pair[0]->format('d.m.Y') .' --end='. $pair[1]->format('d.m.Y') .' --force --env=prod';
+            $command = 'nohup php ' . $console . self::TITLE .' --begin='. $pair[0]->format('d.m.Y') .' --end='. $pair[1]->format('d.m.Y') .' --force --env=prod';
             $process = new Process($command);
             $process->setTimeout(null)->setIdleTimeout(null)->run();
             $timeSearch = $startSearch->diff(new \DateTime());

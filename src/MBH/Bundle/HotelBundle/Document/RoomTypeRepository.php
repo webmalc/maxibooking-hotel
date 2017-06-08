@@ -62,4 +62,5 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         return $this->fetchQueryBuilder($hotel, $roomTypes)->getQuery()->execute();
     }
 
+
 }

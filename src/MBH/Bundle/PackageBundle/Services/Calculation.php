@@ -71,7 +71,6 @@ class Calculation
             $cashes[] = $newDoc;
         }
         foreach ($cashes as $cash) {
-
             if (!$cash->getIsPaid() || in_array($cash->getId(), $ids)) {
                 continue;
             }
@@ -105,7 +104,6 @@ class Calculation
             $services[] = $newDoc;
         }
         foreach ($services as $service) {
-
             if (!empty($service->getDeletedAt())) {
                 continue;
             }
@@ -145,8 +143,8 @@ class Calculation
         $useCategories = false,
         Special $special = null,
         $useDuration = true
-    )
-    {
+    ) {
+        $originTariff = $tariff;
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
         $places = $roomType->getPlaces();
@@ -169,17 +167,23 @@ class Calculation
         }
         $tariffId = $tariff->getId();
         $duration = $end->diff($begin)->format('%a') + 1;
-        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-            ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories, $memcached);
+        $priceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $tariffId, $memcached) {
+            return $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories, $memcached);
+        };
+
+        $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
         if (!$tariff->getIsDefault()) {
-            $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
+            $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel, null, $memcached);
             if (!$defaultTariff) {
                 return false;
             }
-            $defaultPriceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                ->fetch($begin, $end, $hotel, [$roomTypeId], [$defaultTariff->getId()], true, $this->manager->useCategories, $memcached);
-
+            $defaultPriceCachesCallback = function () use ($begin, $end, $hotel, $roomTypeId, $defaultTariff, $memcached) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                    ->fetch($begin, $end, $hotel, [$roomTypeId], [$defaultTariff->getId()], true, $this->manager->useCategories, $memcached);
+            };
+            $defaultPriceCaches = $this->helper->getFilteredResult($this->dm, $defaultPriceCachesCallback);
         } else {
             $defaultPriceCaches = $priceCaches;
             $defaultTariff = $tariff;
@@ -193,12 +197,20 @@ class Calculation
             } else {
                 $ids = [$mergingTariff->getId()];
             }
-            $mergingTariff = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-                ->fetch(
-                    $begin, $end, $hotel, [$roomTypeId],
+
+            $mergingTariffCallback = function () use ($begin, $end, $hotel, $roomTypeId, $ids, $memcached) {
+                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                    $begin,
+                    $end,
+                    $hotel,
+                    [$roomTypeId],
                     $ids,
-                    true, $this->manager->useCategories, $memcached
+                    true,
+                    $this->manager->useCategories,
+                    $memcached
                 );
+            };
+            $mergingTariff = $this->helper->getFilteredResult($this->dm, $mergingTariffCallback);
 
             if ($mergingTariff) {
                 $mergingTariffsPrices += $mergingTariff;
@@ -245,7 +257,10 @@ class Calculation
             $dayPrices = $packagePrices = [];
             foreach ($caches as $day => $cache) {
                 $promoConditions = PromotionConditionFactory::checkConditions(
-                    $promotion, $duration, $combination['adults'], $combination['children']
+                    $promotion,
+                    $duration,
+                    $combination['adults'],
+                    $combination['children']
                 );
 
                 if ($cache->getTariff()->getId() != $tariff->getId()) {
@@ -267,7 +282,6 @@ class Calculation
                 $adds = $all - $places;
 
                 if ($all > $places) {
-
                     if ($totalAdults >= $places) {
                         $mainAdults = $places;
                         $mainChildren = 0;
@@ -358,7 +372,7 @@ class Calculation
                     $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
                 }
 
-                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $tariff, $roomType, $special);
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $originTariff, $roomType, $special);
                 $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
 
@@ -370,7 +384,10 @@ class Calculation
             }
 
             $promoConditions = PromotionConditionFactory::checkConditions(
-                $promotion, $duration, $combination['adults'], $combination['children']
+                $promotion,
+                $duration,
+                $combination['adults'],
+                $combination['children']
             );
 
             if ($promoConditions) {
@@ -400,8 +417,7 @@ class Calculation
     public function getPackagePrice($price, \DateTime $date, Tariff $tariff, RoomType $roomType, Special $special = null): PackagePrice
     {
         $packagePrice = new PackagePrice($date, $price > 0 ? $price : 0, $tariff);
-        if (
-            $special &&
+        if ($special &&
             $date >= $special->getBegin() && $date <= $special->getEnd() &&
             $special->check($roomType) && $special->check($tariff)
         ) {
@@ -410,5 +426,4 @@ class Calculation
         }
         return $packagePrice;
     }
-
 }
