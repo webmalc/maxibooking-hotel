@@ -36,7 +36,7 @@ services:
 
   task_room_cache_recalculate:
     class:      MBH\Bundle\PriceBundle\Task\RecalculateCache
-    arguments:  ["@mbh.room.cache", "@mbh.task.logger"]
+    arguments:  ["@mbh.room.cache", "@mbh.task.logger", "@kernel"]
 
   task_special_recalculate:
     class:      MBH\Bundle\PriceBundle\Task\CalculateSpecialPrices
