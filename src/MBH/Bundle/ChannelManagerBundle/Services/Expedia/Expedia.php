@@ -11,6 +11,16 @@ use MBH\Bundle\ChannelManagerBundle\Lib\AbstractResponseHandler;
 class Expedia extends ExtendedAbstractChannelManager
 {
     const CONFIG = 'ExpediaConfig';
+    const UNAVAIBLE_PRICES = [
+    ];
+
+    const UNAVAIBLE_RESTRICTIONS = [
+        'minStayArrival' => null,
+        'maxStayArrival' => null,
+        'minBeforeArrival' => null,
+        'maxBeforeArrival' => null,
+    ];
+
     protected $isNotifyServiceAboutReservation = true;
 
     public function __construct(ContainerInterface $container)
@@ -40,7 +50,6 @@ class Expedia extends ExtendedAbstractChannelManager
     public function notifyServiceAboutReservation(AbstractOrderInfo $orderInfo, $config)
     {
         /** @var ExpediaOrderInfo $orderInfo */
-
         $requestData = $this->requestDataFormatter->formatNotifyServiceData($orderInfo, $config);
         $requestInfo = $this->requestFormatter->formatBookingConfirmationRequest($requestData);
 

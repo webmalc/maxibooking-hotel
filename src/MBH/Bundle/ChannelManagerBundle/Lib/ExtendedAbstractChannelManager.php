@@ -2,13 +2,13 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
-use MBH\Bundle\ChannelManagerBundle\Lib\Response;
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Для реализация данного интерфейса, необходимо также реализовать:
+ * Для реализация данного абстрактного класса, необходимо также реализовать:
  * 1) Класс AbstractRequestFormatter, отвечающий за формирование данных о запросах(url, заголовки, передаваемые данные)
  * 2) Класс AbstractRequestDataFormatter, отвечающий за формирование данных, передаваемых в запросе
  * 3) Класс AbstractResponseHandler, отвечающий за основную обработку приходящих ответов
@@ -186,8 +186,13 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         if (!$response) {
             return false;
         }
+        $responseHandler = $this->getResponseHandler($response);
+        $isSuccess = $responseHandler->isResponseCorrect();
+        if (!$isSuccess) {
+            $this->addError($responseHandler->getErrorMessage());
+        }
 
-        return $this->getResponseHandler($response)->isResponseCorrect();
+        return $isSuccess;
     }
 
     /**
