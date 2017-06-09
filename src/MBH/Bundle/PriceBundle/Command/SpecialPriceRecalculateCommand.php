@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SpecialPriceRecalculateCommand extends ContainerAwareCommand
@@ -13,6 +14,7 @@ class SpecialPriceRecalculateCommand extends ContainerAwareCommand
     {
         $this
             ->setName('mbh:special:recalculate')
+            ->addOption('specialIds', null, InputOption::VALUE_OPTIONAL, 'SpecialIds comma separated ')
             ->setDescription('Recalculate Special prices by search');
     }
 
@@ -23,7 +25,19 @@ class SpecialPriceRecalculateCommand extends ContainerAwareCommand
             $output->writeln($message);
         };
 
-        $this->getContainer()->get('mbh.special_handler')->calculatePrices([],[], $input->getOption('verbose')?$logOutput:null);
+        if ($input->getOption('specialIds')) {
+            $specialIds = explode(',', trim($input->getOption('specialIds'), ','));
+        }
+
+        $this
+            ->getContainer()
+            ->get('mbh.special_handler')
+            ->calculatePrices(
+                isset($specialIds) ? $specialIds : [],
+                [],
+                $input->getOption('verbose') ? $logOutput : null
+            );
+
         $time = $start->diff(new \DateTime());
         $output->writeln(
             sprintf('Recalculate complete. Elapsed time: %s', $time->format('%H:%I:%S'))

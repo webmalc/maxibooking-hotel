@@ -86,7 +86,6 @@ class SpecialHandler
      */
     public function calculatePrices(array $specialIds = [], array $roomTypeIds = [], callable $output = null): void
     {
-//        $specials = $this->getSpecials(['58f8a4d5cd572259776e96b1']);
         $specials = $this->getSpecials($specialIds);
         /** @var Special $special */
         foreach ($specials as $special) {
