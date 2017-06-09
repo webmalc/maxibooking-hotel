@@ -22,8 +22,8 @@
                     <tr>
                         <td><div class='text-center {{ cashDocument.isConfirmed is empty and cashDocument.isPaid ? 'not-confirmed-entry' }} {{ cashDocument.deletedAt ? 'deleted-entry' }} {{ cashDocument.isPaid is empty ? 'not-paid-entry' }}'><i class='{{ currency().icon }}'></i></div></td>
                         <td><div class='cash-number text-center'>{{ cashDocument.number }}</div></td>
-                        <td><div class='text-right'>{% if cashDocument.operation not in ['fee', 'out'] %}<a href='{{ path('cash_edit', { 'id': cashDocument.id }) }}' rel='main' class='text-success' title='Редактирование записи' data-toggle='tooltip'>{{ cashDocument.total|number_format(2) }}</a>{% endif %}</div></td>
-                        <td><div class='text-right'>{% if cashDocument.operation in ['fee', 'out'] %}<a href='{{ path('cash_edit', { 'id': cashDocument.id }) }}' rel='main' class='text-danger' title='Редактирование записи' data-toggle='tooltip'>{{ cashDocument.total|number_format(2) }}</a>{% endif %}</div></td>
+                        <td><div class='text-right'>{% if cashDocument.operation not in ['fee', 'out'] %}<a href='{{ path('cash_edit', { 'id': cashDocument.id }) }}' rel='main' class='text-success' title='{{ 'mbhpackagebundle.view.report.workshifttable.redaktirovaniye.zapisi'|trans }} ' data-toggle='tooltip'>{{ cashDocument.total|number_format(2) }}</a>{% endif %}</div></td>
+                        <td><div class='text-right'>{% if cashDocument.operation in ['fee', 'out'] %}<a href='{{ path('cash_edit', { 'id': cashDocument.id }) }}' rel='main' class='text-danger' title='{{ 'mbhpackagebundle.view.report.workshifttable.redaktirovaniye.zapisi'|trans }} ' data-toggle='tooltip'>{{ cashDocument.total|number_format(2) }}</a>{% endif %}</div></td>
                         <td>{{ operations[cashDocument.operation] }}<br><small>{{ methods[cashDocument.method] }}</small></td>
                         <td>{{ cashDocument.payer.shortName }}</td>
                         <td>{{ cashDocument.documentDate|date('d.m.Y') }}</td>
@@ -31,7 +31,7 @@
                         <td><div class='text-center'>{{ cashDocument.createdBy }}</div></td>
                         <td class='text-center'>
                             {% if cashDocument.id in updateCashIDs %}
-                                <label class="label label-success">Да</label>
+                                <label class="label label-success">{{ 'mbhpackagebundle.view.report.workshifttable.da'|trans }} </label>
                             {% endif %}
                         </td>
                     </tr>
@@ -42,7 +42,7 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найден ни один кассовый документ
+                        {{ 'package.resources.views.nenaiden_ni_odin_kassovii_document'|trans }}
                     </p>
                 </div>
             {% endif %}
@@ -51,12 +51,12 @@
 
     {% if cashDocuments %}
         <div class="text-center bg-gray color-palette alert">
-            <span class="package-summary-row"><b>Приход: </b><span>{{ income|number_format(2) }}</span></span>
-            <span class="package-summary-row"><b>Расход: </b><span>{{ expenses|number_format(2) }}</span></span>
+            <span class="package-summary-row"><b>{{ 'mbhpackagebundle.view.report.workshifttable.prikhod'|trans }} : </b><span>{{ income|number_format(2) }}</span></span>
+            <span class="package-summary-row"><b>{{ 'mbhpackagebundle.view.report.workshifttable.raskhod'|trans }} : </b><span>{{ expenses|number_format(2) }}</span></span>
         </div>
     {% endif %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Созданные брони'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'mbhpackagebundle.views.sozdanie_broni'|trans} %}
         {% block content %}
             {% if packages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' %}
@@ -64,14 +64,14 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найдена ни одна бронь
+                        {{ 'package.resources.views.ne_naidena_ni_odna_bron'|trans }}
                     </p>
                 </div>
             {% endif %}
         {% endblock %}
     {% endembed %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Измененные брони'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'mbhpackagebundle.views.izmenennie_broni'|trans} %}
         {% block content %}
             {% if packages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: updatePackages} %}
@@ -79,14 +79,14 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найдена ни одна бронь
+                        {{ 'package.resources.views.ne_naidena_ni_odna_bron'|trans }}
                     </p>
                 </div>
             {% endif %}
         {% endblock %}
     {% endembed %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Удаленные брони'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'mbhpackagebundle.views.udalennie_broni'|trans} %}
         {% block content %}
             {% if packages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: deletedPackages} %}
@@ -94,14 +94,14 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найдена ни одна бронь
+                        {{ 'package.resources.views.ne_naidena_ni_odna_bron'|trans }}
                     </p>
                 </div>
             {% endif %}
         {% endblock %}
     {% endembed %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Заезд'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'mbhpackagebundle.views.zaezd'|trans} %}
         {% block content %}
             {% if arrivalPackages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: arrivalPackages} %}
@@ -109,14 +109,14 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найдена ни одна бронь
+                        {{ 'package.resources.views.ne_naidena_ni_odna_bron'|trans }}
                     </p>
                 </div>
             {% endif %}
         {% endblock %}
     {% endembed %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Выезд'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'mbhpackagebundle.views.viezd'|trans} %}
         {% block content %}
             {% if departurePackages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: departurePackages} %}
@@ -124,7 +124,7 @@
                 <div class="alert bg-gray">
                     <p>
                         <i class="fa fa-exclamation-circle"></i>
-                        Не найдена ни одна бронь
+                        {{ 'package.resources.views.ne_naidena_ni_odna_bron'|trans }}
                     </p>
                 </div>
             {% endif %}
@@ -134,7 +134,7 @@
     <div class="alert bg-gray">
         <p>
             <i class="fa fa-exclamation-circle"></i>
-            Не найдена ни одна смена
+            {{ 'mbhpackagebundle.views.ne_naidena_ni_odna_smena'|trans }}
         </p>
     </div>
 {% endif %}

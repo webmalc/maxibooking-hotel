@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\Document(collection="Groups")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="name", message="Такая группа уже существует")
+ * @MongoDBUnique(fields="name", message="mbhuserbundle.document.group.takaya.gruppa.uzhe.sushchestvuyet")
  */
 class Group extends BaseGroup
 {

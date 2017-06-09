@@ -3,11 +3,11 @@
         <thead>
         <tr>
             <th class="td-xs">#</th>
-            <th class="td-md text-center">Даты</th>
-            <th class="td-sm">Сотрудник</th>
-            <th class="td-xs">Гости</th>
-            <th class="td-md">Касса</th>
-            <th class="td-sm">Статус</th>
+            <th class="td-md text-center">{{ 'mbhpackagebundle.view.report.workshiftlist.daty'|trans }} </th>
+            <th class="td-sm">{{ 'mbhpackagebundle.view.report.workshiftlist.sotrudnik'|trans }} </th>
+            <th class="td-xs">{{ 'mbhpackagebundle.view.report.workshiftlist.gosti'|trans }} </th>
+            <th class="td-md">{{ 'mbhpackagebundle.view.report.workshiftlist.kassa'|trans }} </th>
+            <th class="td-sm">{{ 'mbhpackagebundle.view.report.workshiftlist.status'|trans }} </th>
             <th class="td-sm"></th>
         </tr>
         </thead>
@@ -16,7 +16,7 @@
             <tr
                 data-id="{{ workShift.id }}"
                 data-electronicCashIncomeTotal="{{ workShift.electronicCashIncomeTotal }}"
-                data-detail-header="Рабочая смена {{ workShift.begin|mbh_format }} {{ workShift.begin|date('H:i') }} {% if workShift.end %} - {{ workShift.end|mbh_format }} {{ workShift.end|date('H:i') }}{% endif %}"
+                data-detail-header="{{ 'mbhpackagebundle.view.report.workshiftlist.rabochaya_smena'|trans }} {{ workShift.begin|mbh_format }} {{ workShift.begin|date('H:i') }} {% if workShift.end %} - {{ workShift.end|mbh_format }} {{ workShift.end|date('H:i') }}{% endif %}"
             class="{% if  workShift.status == 'locked' %}info{% elseif workShift.status == 'closed' %}danger{% endif %}">
                 <td>{{ workShift.id }}</td>
                 <td class="text-center">
@@ -35,21 +35,21 @@
                 </td>
                 <td>
                     <small>
-                        На начало смены: {{ workShift.beginGuestTotal }}<br>
+                        {{ 'mbhpackagebundle.view.report.workshiftlist.na.nachalo.smeny'|trans }} : {{ workShift.beginGuestTotal }}<br>
                     {% if workShift.status != 'open' %}
-                        На конец смены: {{ workShift.endGuestTotal }}<br>
-                        Заехавших: {{ workShift.arrivalTouristTotal }}<br>
-                        Не заехавших: {{ workShift.noArrivalTouristTotal }}<br>
-                        Выехавших: {{ workShift.departureTouristTotal }}<br>
-                        Не выехавших: {{ workShift.noDepartureTouristTotal }}
+                        {{ 'mbhpackagebundle.view.report.workshiftlist.na.konets.smeny'|trans }} : {{ workShift.endGuestTotal }}<br>
+                        {{ 'mbhpackagebundle.view.report.workshiftlist.zayekhavshikh'|trans }} : {{ workShift.arrivalTouristTotal }}<br>
+                        {{ 'mbhpackagebundle.view.report.workshiftlist.ne.zayekhavshikh'|trans }} : {{ workShift.noArrivalTouristTotal }}<br>
+                        {{ 'mbhpackagebundle.view.report.workshiftlist.vyyekhavshikh'|trans }} : {{ workShift.departureTouristTotal }}<br>
+                        {{ 'mbhpackagebundle.view.report.workshiftlist.ne.vyyekhavshikh'|trans }} : {{ workShift.noDepartureTouristTotal }}
                     {% endif %}
                     </small>
                 </td>
                 <td>
                 {% if workShift.status != 'open' %}
                     <small>
-                        Принято: {{ workShift.cashIncomeTotal }}<br>
-                        Выдано: {{ workShift.cashExpenseTotal }}<br>
+                        {{ 'mbhpackagebundle.view.report.workshiftlist.prinyato'|trans }} : {{ workShift.cashIncomeTotal }}<br>
+                        {{ 'mbhpackagebundle.view.report.workshiftlist.vydano'|trans }} : {{ workShift.cashExpenseTotal }}<br>
                         Разнесено б/н: {{ workShift.electronicCashIncomeTotal }}
                     </small>
                 {% endif %}
@@ -73,7 +73,7 @@
     <div class="alert bg-gray">
         <p>
             <i class="fa fa-exclamation-circle"></i>
-            Не найдено ни одной рабочей смены
+            {{ 'mbhpackagebundle.view.report.workshiftlist.ne_naydeno_ni_odnoy_rabochey_smeny'|trans }}
         </p>
     </div>
 {% endif %}

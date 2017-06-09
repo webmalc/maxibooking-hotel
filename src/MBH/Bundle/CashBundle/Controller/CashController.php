@@ -42,7 +42,7 @@ class CashController extends Controller
         $methods = $this->container->getParameter('mbh.cash.methods');
 
         $methods = array_slice($methods, 0, 2, true) +
-            ['cashless_electronic' => "Безнал (в т.ч. электронные)"] +
+            ['cashless_electronic' => $this->container->get('translator')->trans("controller.cashController.beznal.v.tom.chisle.electronnie")] +
             array_slice($methods, 2, count($methods) - 1, true);
 
         $queryCriteria = new CashDocumentQueryCriteria();

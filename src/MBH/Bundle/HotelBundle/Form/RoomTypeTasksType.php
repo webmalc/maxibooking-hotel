@@ -10,7 +10,6 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-
 /**
  * Class RoomTypeTasksType
 
@@ -21,7 +20,7 @@ class RoomTypeTasksType extends AbstractType
     {
         $hotel = $options['hotel'];
 
-        $queryBuilderFunction = function(TaskTypeRepository $repository) use($hotel) {
+        $queryBuilderFunction = function (TaskTypeRepository $repository) use ($hotel) {
             return $repository->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
         };
 

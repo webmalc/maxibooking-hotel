@@ -1,3 +1,8 @@
+mbhpackagebundle.document.organization.takoy.inn.uzhe.sushchestvuyet: 'Такой ИНН уже существует'
+validator.document.package.delete_reasons.source_exist: 'Такой источник уже существует'
+mbhpackagebundle.document.package.takoy.nomer.broni.uzhe.sushchestvuyet: 'Такой номер брони уже существует'
+mbhpackagebundle.document.package.kolichestvo.vzroslykh.ne.ukazano: 'Количество взрослых не указано'
+mbhpackagebundle.document.package.kolichestvo.detey.ne.ukazano: 'Количество детей не указано'
 validator.begin_end_message: Начало брони не должно быть больше или равно концу брони
 validator.places_message: Недопустимый тип номера для указанного количества гостей
 validator.tariff_message: Даты брони выходят за пределы тарифа

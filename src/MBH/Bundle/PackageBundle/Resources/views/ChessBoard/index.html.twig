@@ -143,7 +143,7 @@
     <input type="hidden" id="pageNumber" value="{{ pageNumber }}">
     {% include 'MBHBaseBundle:Partials:pager.html.twig' with {'page': pageNumber, 'pages': pageCount, class : 'accommodation-report-pagination'} %}
 
-    <div id="accommodation-chessBoard-content" style="overflow: auto; width: auto" class="">
+    <div id="accommodation-chessBoard-content"  class="scrolling">
         <!---------------------------- MONTHS AND DATES ------------------------->
         <div id="header-title" class="tile tile-not-selected tile-free both not-standard-tile"
              style="width:{{ headerWidth }}px;">

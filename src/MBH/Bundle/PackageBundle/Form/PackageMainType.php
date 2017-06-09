@@ -28,8 +28,8 @@ class PackageMainType extends AbstractType
 
         $builder
             ->add('begin', DateType::class, [
-                'label' => 'Заезд',
-                'group' => 'Заезд/отъезд',
+                'label' => 'mbhpackagebundle.form.packagemaintype.zayezd',
+                'group' => 'mbhpackagebundle.form.packagemaintype.zaezd_viezd',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => true,
@@ -40,8 +40,8 @@ class PackageMainType extends AbstractType
                 )
             ])
             ->add('end', DateType::class, [
-                'label' => 'Отъезд',
-                'group' => 'Заезд/отъезд',
+                'label' => 'mbhpackagebundle.form.packagemaintype.viezd',
+                'group' => 'mbhpackagebundle.form.packagemaintype.zaezd_viezd',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => true,
@@ -52,15 +52,15 @@ class PackageMainType extends AbstractType
                 )
             ])
             ->add('isForceBooking', CheckboxType::class, [
-                'label' => 'Принудительное бронирование?',
+                'label' => 'mbhpackagebundle.form.packagemaintype.prinuditelnoe_bronirovanie',
                 'required' => false,
-                'group' => 'Заезд/отъезд',
-                'help' => 'Игнорировать условия и ограничения при поиске доступного номера?'
+                'group' => 'mbhpackagebundle.form.packagemaintype.zaezd_viezd',
+                'help' => 'mbhpackagebundle.form.packagemaintype.ignorirovat_uslovia_i_ogranichenia_pri_poiske_dostupnogo_nomera'
             ])
             ->add('roomType', DocumentType::class, [
-                'label' => 'Тип номера',
+                'label' => 'mbhpackagebundle.form.packagemaintype.tip.nomera',
                 'class' => 'MBHHotelBundle:RoomType',
-                'group' => 'Номер',
+                'group' => 'mbhpackagebundle.form.packagemaintype.number',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->createQueryBuilder('q')
                         ->field('hotel.id')->equals($options['hotel']->getId())
@@ -72,9 +72,9 @@ class PackageMainType extends AbstractType
         if ($options['virtualRooms']) {
             $builder
             ->add('virtualRoom', DocumentType::class, [
-                'label' => 'Виртуальный номер',
+                'label' => 'mbhpackagebundle.form.packagemaintype.virtualnii_nomer',
                 'class' => 'MBHHotelBundle:Room',
-                'group' => 'Номер',
+                'group' => 'mbhpackagebundle.form.packagemaintype.number',
                 'query_builder' => function (DocumentRepository $dr) use ($package) {
                     return $dr->getVirtualRoomsForPackageQB($package);
                 },
@@ -83,27 +83,27 @@ class PackageMainType extends AbstractType
         }
             $builder
             ->add('adults', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Взрослых',
-                'group' => 'Номер',
+                'label' => 'mbhpackagebundle.form.packagemaintype.vzroslykh',
+                'group' => 'mbhpackagebundle.form.packagemaintype.number',
                 'required' => true,
-                'group' => 'Номер',
+                'group' => 'mbhpackagebundle.form.packagemaintype.number',
                 'multiple' => false,
                 'choices' => range(0, 12),
                 'attr' => array('class' => 'input-xxs plain-html'),
             ])
             ->add('children', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Детей',
-                'group' => 'Номер',
+                'label' => 'mbhpackagebundle.form.packagemaintype.detey',
+                'group' => 'mbhpackagebundle.form.packagemaintype.number',
                 'required' => true,
-                'group' => 'Номер',
+                'group' => 'mbhpackagebundle.form.packagemaintype.number',
                 'multiple' => false,
                 'choices' => range(0, 10),
                 'attr' => array('class' => 'input-xxs plain-html'),
             ])
             ->add('isSmoking', CheckboxType::class, [
-                'label' => 'Курящий?',
+                'label' => 'mbhpackagebundle.form.packagemaintype.kurashii',
                 'required' => false,
-                'group' => 'Номер',
+                'group' => 'mbhpackagebundle.form.packagemaintype.number',
             ]);
 
         if ($options['promotion']) {
@@ -116,7 +116,7 @@ class PackageMainType extends AbstractType
                         'label' => 'form.packageMainType.promotion',
                         'class' => 'MBH\Bundle\PriceBundle\Document\Promotion',
                         'required' => false,
-                        'group' => 'Акция',
+                        'group' => 'mbhpackagebundle.form.packagemaintype.akcia',
                         'choices' => $options['promotions']
                     ]);
             }
@@ -142,7 +142,7 @@ class PackageMainType extends AbstractType
             $builder->add('price', TextType::class, [
                 'label' => 'form.packageMainType.price',
                 'required' => true,
-                'group' => 'Цена',
+                'group' => 'mbhpackagebundle.form.packagemaintype.cena',
                 'error_bubbling' => true,
                 'property_path' => 'packagePrice',
                 'attr' => [
@@ -156,22 +156,22 @@ class PackageMainType extends AbstractType
                 ->add('discount', TextType::class, [
                     'label' => 'form.packageMainType.discount',
                     'required' => false,
-                    'group' => 'Скидка'
+                    'group' => 'mbhpackagebundle.form.packagemaintype.skidka'
                 ])
                 ->add('isPercentDiscount', CheckboxType::class, [
                     'label' => 'form.packageMainType.isPercentDiscount',
                     'required' => false,
-                    'group' => 'Скидка'
+                    'group' => 'mbhpackagebundle.form.packagemaintype.skidka'
                 ]);
         }
         if ($options['special']) {
             $builder
                 ->add('special', DocumentType::class, [
-                    'group' => 'Спецпредложение',
+                    'group' => 'mbhpackagebundle.form.packagemaintype.specpredlozhenie',
                     'label' => 'form.packageMainType.special',
                     'class' => 'MBH\Bundle\PriceBundle\Document\Special',
                     'required' => false,
-                    'group' => 'Спецпредложение',
+                    'group' => 'mbhpackagebundle.form.packagemaintype.specpredlozhenie',
                     'query_builder' => function (DocumentRepository $dr) use ($package) {
                         $filter = new SpecialFilter();
                         $filter->setHotel($package->getHotel())
@@ -185,13 +185,13 @@ class PackageMainType extends AbstractType
         }
         $builder
             ->add('numberWithPrefix', TextType::class, [
-                'label' => 'Номер брони',
-                'group' => 'Информация',
+                'label' => 'mbhpackagebundle.form.packagemaintype.nomer.broni',
+                'group' => 'mbhpackagebundle.form.packagemaintype.information',
                 'required' => true,
             ])
             ->add('note', TextareaType::class, [
                 'label' => 'form.packageMainType.comment',
-                'group' => 'Информация',
+                'group' => 'mbhpackagebundle.form.packagemaintype.information',
                 'required' => false,
             ]);
         if ($package->isDeleted()) {
@@ -212,10 +212,10 @@ class PackageMainType extends AbstractType
         if ($options['corrupted']) {
             $builder
                 ->add('corrupted', CheckboxType::class, [
-                    'label' => 'Повреждена?',
+                    'label' => 'mbhpackagebundle.form.packagemaintype.povrezhdena',
                     'required' => false,
-                    'group' => 'Информация',
-                    'help' => 'Бронь с поврежденной информацией. Подробности в комментарии к брони.'
+                    'group' => 'mbhpackagebundle.form.packagemaintype.information',
+                    'help' => 'mbhpackagebundle.form.packagemaintype.bron_s_povrezhdennoi_informaciei'
                 ]);
         }
     }

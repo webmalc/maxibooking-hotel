@@ -82,7 +82,7 @@
         <td class="text-right">
             {% if entity.isCheckIn %}
                 {{ entity.arrivalTime|mbh_format }} {{ entity.arrivalTime|date('H:i') }}<br>
-                <small>&nbsp;Заехал</small>
+                <small>&nbsp;{{ 'mbhpackagebundle.view.report.porterrows.zayekhal'|trans }} </small>
             {% else %}
                 {{ entity.begin|mbh_format }}
             {% endif %}
@@ -91,7 +91,7 @@
         <td class="text-right">
             {% if entity.isCheckOut %}
                 {{ entity.departureTime|mbh_format }} {{ entity.arrivalTime|date('H:i') }}<br>
-                <small>&nbsp;Выехал</small>
+                <small>&nbsp;{{ 'mbhpackagebundle.view.report.porterrows.vyyekhal'|trans }} </small>
             {% else %}
                 {{ entity.end|mbh_format }}<br>
             {% endif %}

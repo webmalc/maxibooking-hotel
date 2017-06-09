@@ -223,7 +223,7 @@ $(document).ready(function () {
         if (!$('.scrolling').length) {
             return null;
         }
-        var h = function () {
+        var height = function () {
             var isActionsPanelExists = $('#actions').length > 0;
             if (!isActionsPanelExists) {
                 document.body.style.paddingBottom = 0;
@@ -233,8 +233,8 @@ $(document).ready(function () {
                 return $(window).height() - $(this).offset().top - bottomOffset;
             });
         };
-        h();
-        setInterval(h, 500);
+        height();
+        setInterval(height, 500);
     }());
 
     //Tooltips configuration

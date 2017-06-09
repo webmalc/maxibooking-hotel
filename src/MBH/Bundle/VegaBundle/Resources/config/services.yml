@@ -4,3 +4,6 @@ services:
           arguments: ['@service_container']
     mbh.vega.dictionary_provider:
           class: MBH\Bundle\VegaBundle\Service\DictionaryProvider
+    mbh.vega.friendly_formatter:
+          class: MBH\Bundle\VegaBundle\Service\FriendlyFormatter
+          arguments: ['@service_container']

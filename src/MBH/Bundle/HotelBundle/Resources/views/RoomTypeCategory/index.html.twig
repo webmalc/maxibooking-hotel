@@ -7,9 +7,9 @@
         <thead>
             <tr>
                 <th></th>
-                <th>Название</th>
-                <th>Включена</th>
-                <th>Типы номеров</th>
+                <th>{{ 'mbhhotelbundle.view.roomtypecategory.index.nazvaniye'|trans }} </th>
+                <th>{{ 'mbhhotelbundle.view.roomtypecategory.index.vklyuchena'|trans }} </th>
+                <th>{{ 'mbhhotelbundle.view.roomtypecategory.index.tipy.nomerov'|trans }} </th>
                 <th></th>
             </tr>
         </thead>
@@ -24,7 +24,7 @@
                     </td>
                     <td>
                         {% if category.isEnabled %}
-                            <span class="label label-success">Да</span>
+                            <span class="label label-success">{{ 'mbhhotelbundle.view.roomtypecategory.index.da'|trans }} </span>
                         {% endif %}
                     </td>
                     <td>
@@ -33,7 +33,7 @@
                                 <small>{% if loop.index0 > 0 %}, {% endif %}{{ roomType }}</small>
                             {% endfor %}
                         {% else %}
-                            <span class="label label-danger">нет</span>
+                            <span class="label label-danger">{{ 'mbhhotelbundle.view.roomtypecategory.index.net'|trans }} </span>
                         {% endif %}
                     </td>
                     <td class="table-actions-td text-center">

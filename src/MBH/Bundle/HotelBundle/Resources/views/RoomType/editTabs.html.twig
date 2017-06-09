@@ -1,17 +1,17 @@
 <ul class="nav nav-tabs" role="tablist">
     <li {{ active == 1 ? 'class="active"' : '' }}>
         <a href="{{ path('room_type_edit', {'id': entity.id}) }}">
-            Общая информация и настройки
+            {{ 'views.hotel.roomType.editTabs.public_information_and_setting'|trans }}
         </a>
     </li>
     <li {{ active == 2 ? 'class="active"' : '' }}>
         <a href="{{ path('room_type_image_edit', {'id': entity.id}) }}">
-            Фотографии
+            {{ 'views.hotel.roomType.editTabs.photo'|trans }}
         </a>
     </li>
     <li {{ active == 3 ? 'class="active"' : '' }}>
         <a href="{{ path('room_type_task_edit', {'id': entity.id}) }}">
-            Задачи
+            {{ 'views.hotel.roomType.editTabs.tasks'|trans }}
         </a>
     </li>
 </ul>

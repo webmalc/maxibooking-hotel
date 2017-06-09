@@ -28,7 +28,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
- * @MongoDBUnique(fields="numberWithPrefix", message="Такой номер брони уже существует")
+ * @MongoDBUnique(fields="numberWithPrefix", message="mbhpackagebundle.document.package.takoy.nomer.broni.uzhe.sushchestvuyet")
  */
 class Package extends Base implements \JsonSerializable
 {
@@ -128,7 +128,7 @@ class Package extends Base implements \JsonSerializable
      * @var int
      * @Gedmo\Versioned
      * @ODM\Integer(name="adults")
-     * @Assert\NotNull(message="Количество взрослых не указано")
+     * @Assert\NotNull(message="mbhpackagebundle.document.package.kolichestvo.vzroslykh.ne.ukazano")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -143,7 +143,7 @@ class Package extends Base implements \JsonSerializable
      * @var int
      * @Gedmo\Versioned
      * @ODM\Integer(name="children")
-     * @Assert\NotNull(message="Количество детей не указано")
+     * @Assert\NotNull(message="mbhpackagebundle.document.package.kolichestvo.detey.ne.ukazano")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,

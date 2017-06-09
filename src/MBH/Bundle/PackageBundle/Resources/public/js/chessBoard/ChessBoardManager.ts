@@ -41,14 +41,12 @@ class ChessBoardManager {
         this.templateRemoveButton = ChessBoardManager.getTemplateRemoveButton();
         this.tableStartDate = ChessBoardManager.getTableStartDate();
         this.tableEndDate = ChessBoardManager.getTableEndDate();
-
     }
 
     public hangHandlers() {
         let wrapper = $('#calendarWrapper');
         let self = this;
         let chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
-        this.setChessboardContentHeight(chessBoardContentBlock);
         this.setContentWidth(chessBoardContentBlock);
         $('.sidebar-toggle').click(function () {
             setTimeout(function () {
@@ -177,14 +175,6 @@ class ChessBoardManager {
                 wrapper.append(newPackage);
             });
         }
-    }
-
-    private setChessboardContentHeight(chessBoardContentBlock) {
-        let $cb = $(chessBoardContentBlock);
-        let availableHeight = document.documentElement.clientHeight - $cb.offset().top;
-        let chessboardHeight = parseInt(getComputedStyle(chessBoardContentBlock).height, 10);
-        let chessboardContentBlockHeight = chessboardHeight > availableHeight ? availableHeight : chessboardHeight + 10;
-        $cb.css('height', chessboardContentBlockHeight);
     }
 
     public static getTableStartDate() {
@@ -540,26 +530,24 @@ class ChessBoardManager {
             $element.find('.remove-package-button').click(function () {
                 self.actionManager.callRemoveConfirmationModal(intervalData.packageId);
             });
-            $element.find('.divide-package-button').click(() => {
+            $element.find('.divide-package-button').click((event) => {
                 self.canMoveAccommodation = false;
+                let scissorIcon = event.target;
                 if (intervalData.viewPackage) {
-                    let scissorsElement = this.childNodes[0];
-                    scissorsElement.onclick = function () {
+                    scissorIcon.onclick = function () {
                         self.updatePackagesData();
                     };
-                    let accommodationElement = this.parentNode.parentNode;
-                    let accommodationWidth = parseInt(accommodationElement.style.width, 10);
+                    let accommodationWidth = parseInt(element.style.width, 10);
                     let tableCellWidth = styleConfigs[self.currentSizeConfigNumber].tableCellWidth;
                     if (accommodationWidth == tableCellWidth * 2) {
                         $('.divide-package-button').tooltip('hide');
-                        self.divide(accommodationElement, accommodationWidth / 2);
+                        self.divide(element, accommodationWidth / 2);
                     } else {
-                        let packageLeftCoordinate = accommodationElement.getBoundingClientRect().left;
+                        let packageLeftCoordinate = element.getBoundingClientRect().left;
                         let line: HTMLElement = document.createElement('div');
                         line.classList.add('dividing-line');
-                        accommodationElement.appendChild(line);
 
-                        let accommodationElementWidth = parseInt(getComputedStyle(accommodationElement).width, 10);
+                        let accommodationElementWidth = parseInt(getComputedStyle(element).width, 10);
                         let isAccommodationAbroadTable = (accommodationElementWidth % tableCellWidth) != 0
                             && ((accommodationElementWidth + 1) % tableCellWidth) != 0;
                         let packageToMiddayOffset = self.getPackageToMiddayOffset();
@@ -567,8 +555,9 @@ class ChessBoardManager {
                             ? tableCellWidth + packageToMiddayOffset
                             : tableCellWidth;
                         line.style.left = defaultLeftValue + 'px';
+                        element.appendChild(line);
 
-                        accommodationElement.onmousemove = function (event) {
+                        element.onmousemove = function (event) {
                             let offset = event.clientX - packageLeftCoordinate;
                             let griddedOffset;
                             if (isAccommodationAbroadTable) {
@@ -587,9 +576,9 @@ class ChessBoardManager {
                             }
 
                             line.style.left = griddedOffset + 'px';
-                            accommodationElement.onclick = function () {
-                                accommodationElement.onmousemove = null;
-                                accommodationElement.removeChild(line);
+                            element.onclick = function () {
+                                element.onmousemove = null;
+                                element.removeChild(line);
                                 self.divide(this, griddedOffset);
                             }
                         };

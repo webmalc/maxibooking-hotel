@@ -31,7 +31,7 @@ class TariffData extends AbstractFixture implements OrderedFixtureInterface
             }
 
             $tariff = new Tariff();
-            $tariff->setFullTitle('Основной тариф')
+            $tariff->setFullTitle($this->container->get('translator')->trans('price.datafixtures.mongodb.servicedata.default_tariff'))
                 ->setIsDefault(true)
                 ->setIsOnline(true)
                 ->setMinPerPrepay(25)

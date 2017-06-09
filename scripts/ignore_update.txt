@@ -31,4 +31,6 @@ nbproject
 parameters.yml
 .idea
 docs/
+var/clients/
+app/config/clients/
 

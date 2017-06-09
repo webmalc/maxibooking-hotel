@@ -1,3 +1,45 @@
+mbhbasebundle.service.helper.sorok: сорок
+mbhbasebundle.service.helper.devyanosto: девяносто
+mbhbasebundle.service.helper.sto: сто
+mbhbasebundle.service.helper.dvesti: двести
+mbhbasebundle.service.helper.trista: триста
+mbhbasebundle.service.helper.chetyresta: четыреста
+mbhbasebundle.service.helper.miliarda: милиарда
+mbhbasebundle.service.helper.odna: Один
+mbhbasebundle.service.helper.dve: Два
+mbhbasebundle.service.helper.tri: Три
+mbhbasebundle.service.helper.chetire: Четыре
+mbhbasebundle.service.helper.piat: Пять
+mbhbasebundle.service.helper.shest: Шесть
+mbhbasebundle.service.helper.sem: Семь
+mbhbasebundle.service.helper.vosem: Восемь
+mbhbasebundle.service.helper.deviat: Девять
+mbhbasebundle.service.helper.ten: Десять
+mbhbasebundle.service.helper.eleven: Одинадцать
+mbhbasebundle.service.helper.twelve: Двенадцать
+mbhbasebundle.service.helper.thirteen: Тренадцать
+mbhbasebundle.service.helper.fourteen: Четырнадцать
+mbhbasebundle.service.helper.fifteen: Пятнадцать
+mbhbasebundle.service.helper.sixteen: Шестнадцать
+mbhbasebundle.service.helper.seventeen: Семнадцать
+mbhbasebundle.service.helper.eighteen: Восемнадцать
+mbhbasebundle.service.helper.nineteen: Девятнадцать
+mbhbasebundle.service.helper.million: миллион
+mbhbasebundle.service.helper.milliard: миллиард
+mbhbasebundle.view.partials.datepickerperiodselect.period: Период
+mbhbasebundle.view.pdftemplates.individual.izveshcheniye: Извещение
+mbhbasebundle.view.pdftemplates.individual.kassir: Кассир
+mbhbasebundle.view.pdftemplates.individual.vidplatezha: 'Вид платежа'
+mailer.order.date: Дата
+mbhbasebundle.view.pdftemplates.organization.summa: Сумма
+mbhbasebundle.view.pdftemplates.individual.penya: Пеня
+mbhbasebundle.view.pdftemplates.individual.vsego: Всего
+mbhbasebundle.view.pdftemplates.organization.bankpoluchatelya: 'Банк получателя'
+mbhbasebundle.view.pdftemplates.organization.kol.vo: Кол-во
+mbhbasebundle.view.pdftemplates.organization.tsena: Цена
+mbhbasebundle.view.pdftemplates.organization.bukhgalter: Бухгалтер
+mbhbasebundle.view.navbar.pereytivkassu: 'Перейти в кассу'
+mbhbasebundle.view.navbar.spisokoteley: 'Список отелей'
 mbhbasebundle.view.pdftemplates.organization.uslugi: услуги
 mbhbasebundle.view.pdftemplates.organization.ot: 'от '
 mbhbasebundle.view.pdftemplates.individual.ot: 'от '
@@ -419,6 +461,111 @@ document.saved: Запись успешно сохранена.
 position: Позиция
 position.help: Позиция записи для сортировки
 configuration: Настройки
+
+app.resources.twigBundle.translations.error: Ошибка
+
+basebundle.menu.navigation: Навигация
+basebundle.menu.booking: Брони
+basebundle.menu.picking: Подбор
+basebundle.menu.number_unsettled_armor: Количество незаехавших броней
+basebundle.menu.number_unintelligible_armor: Количество невыехавших броней
+basebundle.menu.receptionist: Портье
+basebundle.menu.number_of_rooms: Номерной фонд
+basebundle.menu.arrival_departure: Заезд/Выезд
+basebundle.menu.chess_player: Шахматка
+basebundle.menu.number_and_price: Номера и цены
+basebundle.menu.tasks: Задачи
+basebundle.menu.tariffs: Тарифы
+basebundle.menu.view: Обзор
+basebundle.menu.room_in_sales: Номера в продаже
+basebundle.menu.price: Цены
+basebundle.menu.terms_and_conditions: Условия и ограничения
+basebundle.menu.services: Услуги
+basebundle.menu.actions: Акции
+basebundle.menu.cass: Касса
+basebundle.menu.reports: Отчеты
+basebundle.menu.clients: Клиенты
+basebundle.menu.organization: Организации
+basebundle.menu.occupancy: Заполняемость
+basebundle.menu.managers: Менеджеры
+basebundle.menu.visa_invations: Визовые приглашения
+basebundle.menu.analitics: Аналитика
+basebundle.menu.assessments: Оценки
+basebundle.menu.windows: Окна
+basebundle.menu.work_shifts: Рабочие смены
+basebundle.menu.settings: Настройки
+basebundle.menu.hotels: Отели
+basebundle.menu.shells: Корпуса
+basebundle.menu.groups_numbers: Группы номеров
+basebundle.menu.restorant: Ресторан
+basebundle.menu.ingredients: Ингредиенты
+basebundle.menu.menu_of_dishes: Меню блюд
+basebundle.menu.tables: Столы
+basebundle.menu.users: Пользователи
+basebundle.menu.groups: Группы
+basebundle.menu.sources: Источники
+basebundle.menu.reasond_of_removal: Причины удаления
+basebundle.menu.templates_of_document: Шаблоны документов
+basebundle.menu.parammeters: Параметры
+basebundle.menu.type_of_task: Типы задач
+basebundle.menu.warehouse: Склад
+basebundle.menu.interaction: Взаимодействие
+basebundle.menu.additional_channels: Дополнительные каналы
+basebundle.menu.vashotel: ВашОтель
+basebundle.menu.onlineform: Онлайн форма
+basebundle.menu.estimates: Оценки
+basebundle.menu.visa_invitation: Визовое приглашение
+basebundle.menu.create_new_hotel: Создать новый отель
+basebundle.menu.navigation: Навигация
+
+mbhbasebundle.view.pdftemplates.organization.bank.poluchatelya: Банк получателя
+mbhbasebundle.view.pdftemplates.organization.bik: Бик
+mbhbasebundle.view.pdftemplates.organization.sch: Cч
+mbhbasebundle.view.pdftemplates.organization.inn: ИНН
+mbhbasebundle.view.pdftemplates.organization.kpp: КПП
+mbhbasebundle.view.pdftemplates.organization.poluchatel: Получатель
+mbhbasebundle.view.pdftemplates.organization.chet_na_oplatu: Счет на оплату
+mbhbasebundle.view.pdftemplates.organization.postavshik: Поставщик
+mbhbasebundle.view.pdftemplates.organization.tel: тел
+mbhbasebundle.view.pdftemplates.organization.pokupatel: Покупатель
+mbhbasebundle.view.pdftemplates.organization.tovary_raboty_uslugi: Товары (работы, услуги)
+mbhbasebundle.view.pdftemplates.organization.ed: Ед
+mbhbasebundle.view.pdftemplates.organization.uslugi_otela_po_schetu: Услуги отеля по счету
+mbhbasebundle.view.pdftemplates.organization.zakaz: Заказ
+mbhbasebundle.view.pdftemplates.organization.ot: от
+mbhbasebundle.view.pdftemplates.organization.g: г
+mbhbasebundle.view.pdftemplates.organization.itog: Итог
+mbhbasebundle.view.pdftemplates.organization.bez_naloga: Без налога (НДС)
+mbhbasebundle.view.pdftemplates.organization.vsego_k_oplate: Всего к оплате
+mbhbasebundle.view.pdftemplates.organization.vsego_naimenovanii: Всего наименований 1, на сумму
+mbhbasebundle.view.pdftemplates.organization.rukovoditel: Руководитель
+
+mbhbasebundle.views.partials.yesterday: вчера
+mbhbasebundle.views.partials.today: сегодня
+mbhbasebundle.views.partials.tomorrow: завтра
+mbhbasebundle.views.partials.week: неделя
+mbhbasebundle.views.partials.month: месяц
+
+mbhbasebundle.views.mailer.vz: вз
+mbhbasebundle.views.mailer.rb: рб
+mbhbasebundle.views.mailer.dla_poluchenia_coda_dostupa_otskaniruite_etc: Для получения кода доступа отсканируйте смартфоном QR-штрихкод с картинки с помощью приложения
+
+mbhbasebundle.views.minimize_menu: Свернуть меню
+mbhbasebundle.views.kass: Касса
+mbhbasebundle.views.doc: Документ
+mbhbasebundle.views.sum: сумма
+mbhbasebundle.views.not_allow: не подтвержден
+mbhbasebundle.view.navbar.pereyti.v.kassu: Перейти в кассу
+mbhbasebundle.view.navbar.change: Смена
+mbhbasebundle.view.navbar.ch: ч
+mbhbasebundle.view.navbar.booking_change: Заблокировать смену
+mbhbasebundle.view.navbar.select_hotel: Выберите отель
+mbhbasebundle.view.navbar.spisok.oteley: Список отелей
+mbhbasebundle.view.navbar.input: Вошел
+mbhbasebundle.view.navbar.profile: Профиль
+mbhbasebundle.view.navbar.output: Выйти
+
+mbhbasebundle.view.pdftemplates.individual.vid.platezha: Вид платежа
 hide: скрыть
 show.more: Показать еще
 errors: Ошибки

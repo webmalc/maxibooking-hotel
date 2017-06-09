@@ -1,4 +1,14 @@
-form.formType.is_turned_on: Включена?
+mbhonlinebundle.form.triproutetype.gostinitsa: Гостиница
+mbhonlinebundle.form.triproutetype.gorod: Город
+mbhonlinebundle.form.invitedtouristtype.imya: Имя
+mbhonlinebundle.form.invitedtouristtype.familiya: Фамилия
+mbhonlinebundle.form.invitedtouristtype.obrashcheniye: Обращение
+mbhonlinebundle.form.invitedtouristtype.data.rozhdeniya: 'Дата рождения'
+mbhonlinebundle.form.invitedtouristtype.mesto.rozhdeniya: 'Место рождения'
+mbhonlinebundle.form.invitedtouristtype.grazhdanstvo: Гражданство
+mbhonlinebundle.form.invitedtouristtype.pasport: Паспорт
+mbhonlinebundle.form.invitedtouristtype.deystvuyet.do: 'Действует до'
+form.formType.is_turned_on: 'Включена?'
 form.formType.hotels: Отели
 form.formType.hotels_desc: Отели используемые в онлайн форме
 form.formType.hotels_placeholder: Все отели
@@ -28,6 +38,7 @@ controller.formController.settings_saved_success: 'Настройки успеш
 
 form.inviteType.type.single: 'Однократная (600 руб.)'
 form.inviteType.type.twice: 'Двукратная (900 руб.)'
+online_invite.voting_code: Код голосования для вставки на сайт
 form.formType.css_label: 'css'
 form.formType.css: 'Оформление'
 form.formType.css_help: 'Дополнительные css-стили для онлайн формы'
@@ -40,3 +51,11 @@ payment_types:
   online_full: 'Онлайн оплата (100%)'
   online_first_day: 'Онлайн оплата (одни сутки)'
   online_half: 'Онлайн оплата (50%)'
+
+onlinebundle.resources.views.hotels: Отели
+onlinebundle.resources.views.room_types: Типы номеров
+onlinebundle.resources.views.guests: Гости
+onlinebundle.resources.views.on: Включена
+onlinebundle.resources.views.all_hotels: Все отели
+onlinebundle.resources.da: Да
+onlinebundle.resources.net: Нет
