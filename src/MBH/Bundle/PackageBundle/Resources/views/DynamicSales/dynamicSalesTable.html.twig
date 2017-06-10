@@ -33,11 +33,13 @@
                 {% endif %}
                 {% for dynamicSaleDay in dynamicSalePeriod.dynamicSalesDays %}
                     <td class="date-td table-cell text-center {% if dynamicSaleDay.date|date('N') >= 6 %} text-danger{% endif %}">
+                        <span class="date-string">
                         {% if dynamicSaleDay.date|date('Y') == date('now')|date('Y') %}
                             {{ dynamicSaleDay.date|date('d.m') }}
-                            {% else %}
-                                {{ dynamicSaleDay.date|date('d.m.y') }}
+                        {% else %}
+                            {{ dynamicSaleDay.date|date('d.m.y') }}
                         {% endif %}
+                        </span>
                         <div class="text-muted text-center {% if dynamicSaleDay.date|date('N') >= 6 %} text-danger{% endif %}">
                             {{ weekdays[dynamicSaleDay.date|date('N')]|lower }}
                         </div>

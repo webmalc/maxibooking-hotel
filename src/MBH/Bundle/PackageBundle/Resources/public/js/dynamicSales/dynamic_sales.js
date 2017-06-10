@@ -1,4 +1,4 @@
-/*global window, document, $, Routing, console, mbh */
+/*global window, document, $, Routing, console, mbh, Highcharts */
 
 $(document).ready(function ($) {
     'use strict';
@@ -10,9 +10,9 @@ $(document).ready(function ($) {
             var wrapper = $('#dynamic-sales-table-wrapper'),
                 begin = [],
                 end = [];
-            $.each( $('.dynamic-sales-filter'),function (i) {
+            $.each($('.dynamic-sales-filter'), function (i) {
 
-                if($(this).val().length){
+                if ($(this).val().length) {
                     begin[i] = $(this).data('daterangepicker').startDate.format('DD.MM.YYYY');
                     end[i] = $(this).data('daterangepicker').endDate.format('DD.MM.YYYY');
                 }
@@ -28,7 +28,7 @@ $(document).ready(function ($) {
             if (wrapper.length === 0) {
                 return false;
             }
-            wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            wrapper.html(mbh.loader.html);
             if (!pricesProcessing) {
                 $.ajax({
                     url: Routing.generate('dynamic_sales_table'),
@@ -47,7 +47,7 @@ $(document).ready(function ($) {
             }
         };
 
-    var updateTables = function() {
+    var updateTables = function () {
         var headerTable = document.getElementById('headerTable');
         var headerTableHeight = parseInt(getComputedStyle(headerTable).height, 10);
         $('.dynamic-sales-table:lt(1)').css('margin-top', headerTableHeight);
@@ -72,8 +72,8 @@ $(document).ready(function ($) {
         var $dynamicSalesTableRows = $dynamicSalesTables.find('tr');
         $dynamicSalesTableRows.each(function (index, element) {
             var rightTableRowIdentifier = element.getAttribute('data-class');
-                var $appropriateRow = $('.rightTable').find('[data-class = ' + rightTableRowIdentifier + ']').eq(0);
-                element.style.height = $appropriateRow.css('height');
+            var $appropriateRow = $('.rightTable').find('[data-class = ' + rightTableRowIdentifier + ']').eq(0);
+            element.style.height = $appropriateRow.css('height');
         });
 
         var $headerTable = $(headerTable);
@@ -81,19 +81,28 @@ $(document).ready(function ($) {
             var widestWidth = getWidestCellWidth(cellNumber, $dynamicSalesTables, $headerTable);
             setWidestCellWidth(cellNumber, widestWidth, $headerTable, $dynamicSalesTables);
         });
+
         $('.table-title').each(function (index, element) {
             element.style.minWidth = parseInt(getComputedStyle(element).width, 10) + 40 + 'px';
         });
-        // setWrapperHeight();
-    };
 
-    // var setWrapperHeight = function() {
-    //     var $wrapper = $('#dynamic-sales-table-wrapper');
-    //     var availableHeight = document.documentElement.clientHeight - $wrapper.offset().top;
-    //     var tableHeight = parseInt($wrapper.css('height'), 10);
-    //     var wrapperHeight = tableHeight > availableHeight ? availableHeight : tableHeight + 10;
-    //     $wrapper.css('height', wrapperHeight - 45);
-    // };
+        var $dateRows = $('.dates');
+        $dynamicSalesTables.find('tr:not(:first)').dblclick(function () {
+            var row = this;
+            var data = [];
+            var currentTable = row.parentNode.parentNode;
+            var currentDataClass = row.getAttribute('data-class');
+            var isComparative = currentDataClass.indexOf('-compare') > -1;
+            var $associatedPeriods = $(currentTable).find('[data-class="' + currentDataClass + '"]');
+            $associatedPeriods.each(function (index, element) {
+                var dateRowIndex = isComparative ? index + 1 : index;
+                var isFirstRow = !isComparative && index === 0;
+                data.push(collectGraphData($(element), $dateRows.eq(dateRowIndex), isFirstRow));
+            });
+            var optionData = getOptionData(currentDataClass);
+            showDynamicSalesGraph(data, optionData);
+        });
+    };
 
     var setWidestCellWidth = function (number, widestWidth, $headerTable, $dynamicSalesTables) {
         $headerTable.find('tr:lt(1)').children().eq(number + 1).css('min-width', widestWidth);
@@ -102,7 +111,7 @@ $(document).ready(function ($) {
         });
     };
 
-    var getWidestCellWidth = function(cellNumber, $dynamicSalesTables, $headerTable) {
+    var getWidestCellWidth = function (cellNumber, $dynamicSalesTables, $headerTable) {
         var widestCellWidth = parseInt($headerTable.find('tr:lt(1)').children().eq(cellNumber + 1).css('width'), 10);
 
         $dynamicSalesTables.each(function (tableNumber, table) {
@@ -138,10 +147,10 @@ $(document).ready(function ($) {
     var $optionalDatePickers = $('#dynamic-sales-filter-begin2, #dynamic-sales-filter-begin3');
     $optionalDatePickers.daterangepicker(restRangePickersOptions);
 
-    $optionalDatePickers.on('apply.daterangepicker', function(ev, picker) {
+    $optionalDatePickers.on('apply.daterangepicker', function (ev, picker) {
         $(this).val(picker.startDate.format('DD.MM.YYYY') + ' - ' + picker.endDate.format('DD.MM.YYYY'));
     });
-    $optionalDatePickers.on('cancel.daterangepicker', function() {
+    $optionalDatePickers.on('cancel.daterangepicker', function () {
         $(this).val('');
     });
 
@@ -151,5 +160,162 @@ $(document).ready(function ($) {
         event.preventDefault();
         showTable();
     });
-
 });
+
+function getOptionData(optionId) {
+    var compareSubstringIndex = optionId.indexOf('-compare');
+    var isComparative = compareSubstringIndex > -1;
+    var isRelative = false;
+    if (isComparative) {
+        isRelative = optionId.indexOf('-percentage') > -1;
+        optionId = optionId.substring(0, compareSubstringIndex);
+    }
+
+    var options = document.getElementById('dynamic-sales-show-filter-roomType').options;
+    for (var i = 0; i < options.length; i++) {
+        var option = options[i];
+        if (option.value === optionId) {
+            return {name: option.text, isComparative: isComparative, isRelative: isRelative};
+        }
+    }
+}
+
+var collectGraphData = function ($row, $dateRow, isFirstRow) {
+    console.log($dateRow);
+    var rowData = [];
+    var $dateElements = $dateRow.children();
+    if (isFirstRow) {
+        $dateElements = $dateElements.not(':first, :last');
+    }
+    var previousDate;
+    $row.children().not(':first, :last').each(function (index, element) {
+        var span = element.getElementsByTagName('span');
+        var innerHtml = span.length > 0 ? span[0].innerHTML : element.innerHTML;
+        var hasValue = !isNaN(parseFloat(innerHtml));
+        var value;
+        var date;
+        if (hasValue) {
+            value = parseFloat(innerHtml);
+            var dateString = $dateElements.eq(index).find('.date-string').text();
+            var momentDate = moment(dateString, "DD.MM");
+            previousDate = momentDate;
+            date = momentDate.valueOf();
+        } else {
+            value = null;
+            date = previousDate.add(1, 'days').valueOf();
+        }
+
+        rowData.push([date, value]);
+    });
+
+    return rowData;
+};
+
+var showDynamicSalesGraph = function (data, optionData) {
+    $('#graph-modal').modal('show');
+    var dates = [];
+
+    data.forEach(function (rowData, index) {
+        var Schedule = {};
+
+        var periodBegin = rowData[0][0];
+        var periodEnd = rowData[rowData.length - 1][0];
+        Schedule.name = moment(periodBegin).format("DD.MM.YYYY") + ' - ' + moment(periodEnd).format("DD.MM.YYYY");
+
+        Schedule.data = rowData;
+        Schedule.xAxis = index;
+        Schedule.tickPosition = 'inside';
+        dates.push(Schedule);
+    });
+
+    console.log(dates);
+    var graphName;
+    var yAxisTitle;
+    var optionName = optionData.name;
+
+    if (optionData.isComparative) {
+        var valueType = optionData.isRelative ? 'относительных' : 'абсолютных';
+        graphName = 'Сравнение ' + valueType + ' значений в категории "' + optionName + '"';
+        yAxisTitle = optionData.isRelative ? (optionName + ', %') : optionName;
+    } else {
+        graphName = yAxisTitle = optionName;
+    }
+
+    Highcharts.chart('graph-wrapper', {
+        global: {
+            useUTC: true
+        },
+        chart: {
+            type: 'areaspline',
+            alignTicks: false
+        },
+        title: {
+            text: graphName
+        },
+        xAxis: [{
+            type: 'datetime',
+            showLastLabel: true,
+            crosshair: true,
+            tickmarkPlacement: 'on',
+            labels: {
+                formatter: function () {
+                    return Highcharts.dateFormat('%b %d', this.value);
+                },
+                style: {
+                    color: 'rgb(124, 181, 236)'
+
+                }
+            },
+            plotBands: [{
+                color: 'rgba(68, 170, 213, .2)'
+            }]
+        }, {
+            type: 'datetime',
+            showLastLabel: true,
+            crosshair: true,
+            tickmarkPlacement: 'on',
+            labels: {
+                formatter: function () {
+                    return Highcharts.dateFormat('%b %d', this.value);
+                }
+            }
+        },
+            {
+                type: 'datetime',
+                showLastLabel: true,
+                crosshair: true,
+                labels: {
+                    formatter: function () {
+                        return Highcharts.dateFormat('%b %d', this.value);
+                    }
+                }
+            }
+        ],
+
+        yAxis: {
+            title: {
+                text: yAxisTitle
+            }
+        },
+        tooltip: {
+            shared: true,
+            headerFormat: '<b>{series.name}</b><br>',
+            pointFormat: '{point.x:%e. %b}: <b>{point.y:.0f} </b>'
+        },
+        plotOptions: {
+            areaspline: {
+                fillOpacity: 0.5
+            },
+            series: {
+                pointWidth: 15,
+                pointInterval: 21 * 3600 * 1000 // one day
+            },
+            spline: {
+                marker: {
+                    enabled: true
+                }
+            }
+        },
+        series: dates
+    });
+};
