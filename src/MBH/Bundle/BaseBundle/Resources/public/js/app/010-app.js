@@ -112,6 +112,57 @@ mbh.datatablesOptions = {
     ]
 };
 
+mbh.highchartsOptions = {
+    lang: {
+        shortMonths: [
+            Translator.trans("analytics.months.jan_abbr"),
+            Translator.trans("analytics.months.feb_abbr"),
+            Translator.trans("analytics.months.mar_abbr"),
+            Translator.trans("analytics.months.apr_abbr"),
+            Translator.trans("analytics.months.may_abbr"),
+            Translator.trans("analytics.months.jun_abbr"),
+            Translator.trans("analytics.months.jul_abbr"),
+            Translator.trans("analytics.months.aug_abbr"),
+            Translator.trans("analytics.months.sep_abbr"),
+            Translator.trans("analytics.months.okt_abbr"),
+            Translator.trans("analytics.months.nov_abbr"),
+            Translator.trans("analytics.months.dec_abbr")
+        ],
+        months: [
+            Translator.trans("analytics.months.jan"),
+            Translator.trans("analytics.months.feb"),
+            Translator.trans("analytics.months.mar"),
+            Translator.trans("analytics.months.apr"),
+            Translator.trans("analytics.months.may"),
+            Translator.trans("analytics.months.jun"),
+            Translator.trans("analytics.months.jul"),
+            Translator.trans("analytics.months.aug"),
+            Translator.trans("analytics.months.sep"),
+            Translator.trans("analytics.months.okt"),
+            Translator.trans("analytics.months.nov"),
+            Translator.trans("analytics.months.dec")
+        ],
+        weekdays: [
+            Translator.trans("analytics.days_of_week.sun"),
+            Translator.trans("analytics.days_of_week.mon"),
+            Translator.trans("analytics.days_of_week.tue"),
+            Translator.trans("analytics.days_of_week.wed"),
+            Translator.trans("analytics.days_of_week.thu"),
+            Translator.trans("analytics.days_of_week.fri"),
+            Translator.trans("analytics.days_of_week.sat")
+        ],
+        downloadJPEG: Translator.trans("analytics.downloadJPEG"),
+        downloadPNG: Translator.trans("analytics.downloadPNG"),
+        downloadPDF: Translator.trans("analytics.downloadPDF"),
+        downloadSVG: Translator.trans("analytics.downloadSVG"),
+        drillUpText: "",
+        loading: Translator.trans("analytics.loading"),
+        printChart: Translator.trans("analytics.printChart"),
+        resetZoom: Translator.trans("analytics.resetZoom"),
+        resetZoomTitle: Translator.trans("analytics.resetZoomTitle")
+    }
+};
+
 $('#work-shift-lock').on('click', function(e) {
     e.preventDefault();
     var $this = $(this);

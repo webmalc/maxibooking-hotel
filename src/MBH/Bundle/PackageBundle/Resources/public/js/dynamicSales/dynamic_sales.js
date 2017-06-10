@@ -1,4 +1,4 @@
-/*global window, document, $, Routing, console, mbh, Highcharts */
+/*global window, document, $, Routing, console, mbh, Highcharts, Translator */
 
 $(document).ready(function ($) {
     'use strict';
@@ -181,7 +181,6 @@ function getOptionData(optionId) {
 }
 
 var collectGraphData = function ($row, $dateRow, isFirstRow) {
-    console.log($dateRow);
     var rowData = [];
     var $dateElements = $dateRow.children();
     if (isFirstRow) {
@@ -228,14 +227,14 @@ var showDynamicSalesGraph = function (data, optionData) {
         dates.push(Schedule);
     });
 
-    console.log(dates);
     var graphName;
     var yAxisTitle;
     var optionName = optionData.name;
 
     if (optionData.isComparative) {
-        var valueType = optionData.isRelative ? 'относительных' : 'абсолютных';
-        graphName = 'Сравнение ' + valueType + ' значений в категории "' + optionName + '"';
+        graphName = optionData.isRelative
+            ? Translator.trans("dynamic_sales.option_data_type.comparative_graph_name.absolute")
+            : Translator.trans("dynamic_sales.option_data_type.comparative_graph_name.relative");
         yAxisTitle = optionData.isRelative ? (optionName + ', %') : optionName;
     } else {
         graphName = yAxisTitle = optionName;
@@ -291,7 +290,6 @@ var showDynamicSalesGraph = function (data, optionData) {
                 }
             }
         ],
-
         yAxis: {
             title: {
                 text: yAxisTitle
@@ -316,6 +314,8 @@ var showDynamicSalesGraph = function (data, optionData) {
                 }
             }
         },
-        series: dates
+        series: dates,
+        lang: mbh.highchartsOptions.lang
     });
+    $('text:contains("Highcharts.com")').hide();
 };

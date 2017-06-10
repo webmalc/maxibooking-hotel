@@ -32,3 +32,49 @@ action_manager.update_modal.not_specified: Не указан
 
 search.book_button.title: 'Бронировать номер. Всего номеров %roomsCount%'
 search.disabled_book_button.title: Для создания брони необходимо указать плательщика
+
+analytics.months.jan_abbr: 'Янв'
+analytics.months.feb_abbr: 'Фев'
+analytics.months.mar_abbr: 'Мар'
+analytics.months.apr_abbr: 'Апр'
+analytics.months.may_abbr: 'Май'
+analytics.months.jun_abbr: 'Июн'
+analytics.months.jul_abbr: 'Июл'
+analytics.months.aug_abbr: 'Авг'
+analytics.months.sep_abbr: 'Сен'
+analytics.months.okt_abbr: 'Окт'
+analytics.months.nov_abbr: 'Ноя'
+analytics.months.dec_abbr: 'Дек'
+
+analytics.months.jan: 'Январь'
+analytics.months.feb: 'Февраль'
+analytics.months.mar: 'Март'
+analytics.months.apr: 'Апрель'
+analytics.months.may: 'Май'
+analytics.months.jun: 'Июнь'
+analytics.months.jul: 'Июль'
+analytics.months.aug: 'Август'
+analytics.months.sep: 'Сентябрь'
+analytics.months.okt: 'Октябрь'
+analytics.months.nov: 'Ноябрь'
+analytics.months.dec: 'Декабрь'
+
+analytics.days_of_week.sun: 'Воскресенье'
+analytics.days_of_week.mon: 'Понедельник'
+analytics.days_of_week.tue: 'Вторник'
+analytics.days_of_week.wed: 'Среда'
+analytics.days_of_week.thu: 'Четверг'
+analytics.days_of_week.fri: 'Пятница'
+analytics.days_of_week.sat: 'Суббота'
+
+analytics.downloadJPEG: "Сохранить как JPEG"
+analytics.downloadPNG: "Сохранить как PNG"
+analytics.downloadPDF: "Сохранить как PDF"
+analytics.downloadSVG: "Сохранить как SVG"
+analytics.loading: "Загрузка"
+analytics.printChart: "Версия для печати"
+analytics.resetZoom: "Сбросить приближение"
+analytics.resetZoomTitle: "Размер 1:1"
+
+dynamic_sales.option_data_type.comparative_graph_name.relative: 'Сравнение относительных значений в категории "%optionName%"'
+dynamic_sales.option_data_type.comparative_graph_name.absolute: 'Сравнение абсолютных значений в категории "%optionName%"'
