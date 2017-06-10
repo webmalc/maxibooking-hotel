@@ -18,8 +18,11 @@ class ExceptionSubscriber implements EventSubscriberInterface
     /** @var $slackNotifier  Notifier */
     private $slackNotifier;
 
-    public function __construct(Notifier $slackNotifier) {
+    private $domain;
+
+    public function __construct(Notifier $slackNotifier, $domain) {
         $this->slackNotifier = $slackNotifier;
+        $this->domain = $domain;
     }
 
     /**
@@ -53,7 +56,10 @@ class ExceptionSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getException();
         $message = $this->slackNotifier::createMessage();
-        $message->setText($exception->getMessage());
+        $messageText ="Произошла ошибка у \"" . $this->domain
+            . ". \"\n Сообщение \"" . $exception->getMessage()
+            . "\".\n Стек:" . $exception->getTraceAsString();
+        $message->setText($messageText);
         $this->slackNotifier->setMessage($message)->notify();
     }
 }
