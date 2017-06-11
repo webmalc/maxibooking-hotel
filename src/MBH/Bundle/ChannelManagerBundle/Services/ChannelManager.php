@@ -195,13 +195,7 @@ class ChannelManager
                 $result->setName($service['title']);
             }
         }
-        foreach ($this->services as $service) {
-            $result = $service['service']->getOverview($begin, $end, $hotel);
-            $results[$service['key']] = $result;
-            if ($result) {
-                $result->setName($service['title']);
-            }
-        }
+
         return $results;
     }
     
