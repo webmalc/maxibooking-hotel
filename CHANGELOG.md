@@ -1,3 +1,7 @@
+1.5.9
+=============
+* new rabbitmq (redmine #644)
+
 1.5.8
 =============
 * booking.com: fix (redmine #717)
