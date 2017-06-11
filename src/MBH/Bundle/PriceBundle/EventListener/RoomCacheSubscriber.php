@@ -40,11 +40,12 @@ class RoomCacheSubscriber implements EventSubscriber
             return;
         }
 
-        $this->container->get('old_sound_rabbit_mq.task_room_cache_recalculate_producer')->publish(serialize(
+        $this->container->get('old_sound_rabbit_mq.task_command_runner_producer')->publish(serialize(
             [
-                'begin' => $doc->getDate(),
-                'end' => $doc->getDate(),
-                'roomTypes' => [$doc->getRoomType()->getId()]
+                'command' => 'mbh:cache:recalculate',
+                '--roomTypes' => $doc->getId(),
+                '--begin' => $doc->getDate()->format('d.m.Y'),
+                '--end' => $doc->getDate()->format('d.m.Y'),
             ]
         ));
 

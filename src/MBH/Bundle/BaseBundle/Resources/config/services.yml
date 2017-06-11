@@ -235,3 +235,7 @@ services:
     mbh.cache.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]
+
+    task_command_runner:
+        class:      MBH\Bundle\BaseBundle\Task\CommandRunner
+        arguments:  ["@mbh.task.logger", "@kernel"]

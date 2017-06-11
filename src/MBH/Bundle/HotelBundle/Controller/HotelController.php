@@ -143,7 +143,6 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
-
             $entity->uploadFile();
 
             $this->dm->persist($entity);
@@ -297,8 +296,10 @@ class HotelController extends Controller
             $this->dm->persist($hotel);
             $this->dm->flush();
 
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.hotelController.record_edited_success'));
+            $this->addFlash(
+                'success',
+                $this->get('translator')->trans('controller.hotelController.record_edited_success')
+            );
 
             return $this->afterSaveRedirect('hotel', $hotel->getId(), [], '_contact_information');
         }
@@ -455,8 +456,6 @@ class HotelController extends Controller
 
         foreach ($regions as $region) {
             foreach ($region->getCities() as $city) {
-
-
                 $data[] = [
                     'id' => $city->getId(),
                     'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' . $city->getTitle()
