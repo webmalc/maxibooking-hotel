@@ -7,6 +7,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PackageInfo;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use Symfony\Component\Process\Process;
 
 /**
@@ -217,12 +218,12 @@ class RoomCache
             $this->container->get('mbh.mongo')->batchInsert('RoomCache', $roomCaches);
             $this->container->get('mbh.mongo')->update('RoomCache', $updates);
             $this->container->get('old_sound_rabbit_mq.task_command_runner_producer')->publish(serialize(
-                [
+                new Command([
                     'command' => 'mbh:cache:recalculate',
                     '--roomTypes' => implode(',', $this->helper->toIds($roomTypes)),
                     '--begin' => $begin->format('d.m.Y'),
                     '--end' => $end->format('d.m.Y'),
-                ]
+                    ])
             ));
         }
     }

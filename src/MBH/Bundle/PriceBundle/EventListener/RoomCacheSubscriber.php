@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class RoomCacheSubscriber implements EventSubscriber
@@ -41,12 +42,12 @@ class RoomCacheSubscriber implements EventSubscriber
         }
 
         $this->container->get('old_sound_rabbit_mq.task_command_runner_producer')->publish(serialize(
-            [
+            new Command([
                 'command' => 'mbh:cache:recalculate',
                 '--roomTypes' => $doc->getId(),
                 '--begin' => $doc->getDate()->format('d.m.Y'),
                 '--end' => $doc->getDate()->format('d.m.Y'),
-            ]
+            ])
         ));
 
         $this->container->get('mbh.cache')->clear('room_cache');
