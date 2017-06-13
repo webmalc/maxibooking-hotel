@@ -22,10 +22,12 @@ function priceSeparator(amount) {
 
 jQuery(document).ready(function() {
     var resize = function() {
+        // console.log(document.body.scrollHeight);
+        // console.log($( 'body' ).height());
         window.parent.postMessage({
             type: 'mbh',
                 action: 'resize',
-                height: document.body.scrollHeight
+                height: $('body').height()
             }, "*");
         };
         resize();
