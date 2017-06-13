@@ -198,7 +198,7 @@ var callMonthSlider = function (monthSwitcherContainer) {
     var page = monthSwitcherContainer.getActivePage();
     $('.bxslider').bxSlider({
 
-        minSlides: 4,
+        minSlides: 2,
         maxSlides: 4,
         slideWidth: 360,
         slideMargin: 10,
