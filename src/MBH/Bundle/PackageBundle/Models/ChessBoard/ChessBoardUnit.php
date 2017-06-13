@@ -177,8 +177,7 @@ class ChessBoardUnit implements \JsonSerializable
     {
         return ($this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE')
         && ($this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE_ALL')
-            || $this->rightsChecker->isGranted('DELETE', $package)
-            ) ? true : false);
+            || $this->rightsChecker->isGranted('DELETE', $package)) ? true : false);
     }
 
     private function hasViewPackageRights(Package $package)

@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -127,7 +128,7 @@ class PackageMainType extends AbstractType
             'required' => false,
             'data' => null,
             'mapped' => false,
-            'query_builder' => function (DocumentRepository $dr) use ($package, $options) {
+            'query_builder' => function (TariffRepository $dr) use ($package, $options) {
                 $filter = new TariffFilter();
                 $filter->setHotel($options['hotel'])
                     ->setBegin(new \DateTime())
@@ -136,7 +137,7 @@ class PackageMainType extends AbstractType
                     ->field('deletedAt')
                     ->equals(null);
             },
-            'group' => 'Цена',
+            'group' => 'mbhpackagebundle.form.packagemaintype.cena',
         ]);
         if (!$package->getTotalOverwrite() && $options['price']) {
             $builder->add('price', TextType::class, [

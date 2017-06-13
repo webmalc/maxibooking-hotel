@@ -3,12 +3,12 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
@@ -193,12 +193,27 @@ class ChessBoardDataBuilder
             $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
         }
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
-        $accommodationIds = [];
         $orderIds = [];
+        $touristIds = [];
         /** @var Package $package */
         foreach ($packages as $package) {
+            /** @var PersistentCollection $tourists */
+            $tourists = $package->getTourists();
+            $ids = [];
+            foreach ($tourists->getMongoData() as $touristData) {
+                $ids[] = $touristData['$id'];
+            }
+            $touristIds = array_merge($touristIds, $ids);
             $orderIds[] = $package->getOrder()->getId();
         }
+
+        $tourists = $this->dm
+            ->getRepository('MBHPackageBundle:Tourist')
+            ->createQueryBuilder()
+            ->field('id')->in($touristIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
 
         $orders = $this->dm
             ->getRepository('MBHPackageBundle:Order')
@@ -413,7 +428,7 @@ class ChessBoardDataBuilder
 
             $roomsByRoomTypeIds = $this->dm->getRepository('MBHHotelBundle:Room')
                 ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, $skipValue,
-                    self::ROOM_COUNT_ON_PAGE, true, null);
+                    self::ROOM_COUNT_ON_PAGE, true, true, ['fullTitle' => 'asc']);
 
             $sortedRoomsByRoomTypeIds = [];
             foreach ($roomsByRoomTypeIds as $roomTypeId => $roomsByRoomTypeId) {

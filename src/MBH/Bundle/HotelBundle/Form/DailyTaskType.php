@@ -3,13 +3,12 @@
 namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\TaskTypeRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class DailyTaskType
@@ -19,7 +18,7 @@ class DailyTaskType extends AbstractType
 {
     private $translator;
 
-    public function __construct(DataCollectorTranslator $translator) {
+    public function __construct(TranslatorInterface $translator) {
         $this->translator = $translator;
     }
 
