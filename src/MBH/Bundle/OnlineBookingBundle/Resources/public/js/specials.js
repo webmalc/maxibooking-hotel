@@ -198,8 +198,8 @@ var callMonthSlider = function (monthSwitcherContainer) {
     var page = monthSwitcherContainer.getActivePage();
     $('.bxslider').bxSlider({
 
-        minSlides: 3,
-        maxSlides: 3,
+        minSlides: 4,
+        maxSlides: 4,
         slideWidth: 360,
         slideMargin: 10,
         infiniteLoop: false,
@@ -233,10 +233,12 @@ UrlTool.prototype.changeUrl = function (month) {
 var MonthSwitcherContainer = function() {
     this.switchers = [];
     this.defaultSwitcher = null;
+    this.perPage = 4;
 };
 MonthSwitcherContainer.prototype.addSwitcher = function (switcher) {
     this.switchers.push(switcher);
 };
+
 
 MonthSwitcherContainer.prototype.defaultSwitcherDetermine = function(defaultMonth) {
     var switcher, enabledSwitcher;
@@ -264,13 +266,12 @@ MonthSwitcherContainer.prototype.getActivePage = function() {
     if(!this.defaultSwitcher) {
         return 1;
     }
-    var perPage = 3,
+    var perPage = this.perPage,
         numsOfSwitchers = this.switchers.length,
         pages = Math.ceil(numsOfSwitchers / perPage),
-        switcherIndex = this.switchers.indexOf(this.defaultSwitcher)+1,
-        page = Math.ceil((switcherIndex) / pages);
+        switcherIndex = this.switchers.indexOf(this.defaultSwitcher)+1;
 
-    return page
+    return Math.ceil((switcherIndex) / pages);
 };
 
 $(function () {

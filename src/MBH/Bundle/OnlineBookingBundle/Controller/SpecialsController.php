@@ -16,8 +16,9 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SpecialsController extends BaseController
 {
-    const SPECIAL_MONTH_BEGIN = 3;
-    const SPECIAL_MONTH_END = 11;
+    const SPECIAL_MONTH_BEGIN = 6;
+    const SPECIAL_MONTH_END = 10;
+    const SPECIAL_PER_PAGE = 4;
     /**
      * @Route("/{id}", name="all_specials", defaults={"id":""})
      * @Template()
@@ -37,7 +38,8 @@ class SpecialsController extends BaseController
             'data' => $preparedData,
             'monthList' => $this->getMonthList(),
             'hotels' => $hotels,
-            'multiHotel' => $hotel == false
+            'multiHotel' => $hotel == false,
+            'specialPerPage' => self::SPECIAL_PER_PAGE
 
         ];
     }
