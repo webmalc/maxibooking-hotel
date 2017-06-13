@@ -213,12 +213,12 @@ var collectGraphData = function ($row, $dateRow, isFirstRow) {
 var showDynamicSalesGraph = function (data, optionData) {
     $('#graph-modal').modal('show');
     var dates = [];
-
+    console.log(data);
     data.forEach(function (rowData, index) {
         var Schedule = {};
 
         var periodBegin = rowData[0][0];
-        var periodEnd = rowData[rowData.length - 1][0];
+        var periodEnd = getLastDateWithValue(rowData);
         Schedule.name = moment(periodBegin).format("DD.MM.YYYY") + ' - ' + moment(periodEnd).format("DD.MM.YYYY");
 
         Schedule.data = rowData;
@@ -226,15 +226,15 @@ var showDynamicSalesGraph = function (data, optionData) {
         Schedule.tickPosition = 'inside';
         dates.push(Schedule);
     });
-
+    console.log(dates);
     var graphName;
     var yAxisTitle;
     var optionName = optionData.name;
 
     if (optionData.isComparative) {
         graphName = optionData.isRelative
-            ? Translator.trans("dynamic_sales.option_data_type.comparative_graph_name.absolute")
-            : Translator.trans("dynamic_sales.option_data_type.comparative_graph_name.relative");
+            ? Translator.trans("dynamic_sales.option_data_type.comparative_graph_name.relative", {optionName: optionName})
+            : Translator.trans("dynamic_sales.option_data_type.comparative_graph_name.absolute", {optionName: optionName});
         yAxisTitle = optionData.isRelative ? (optionName + ', %') : optionName;
     } else {
         graphName = yAxisTitle = optionName;
@@ -318,4 +318,15 @@ var showDynamicSalesGraph = function (data, optionData) {
         lang: mbh.highchartsOptions.lang
     });
     $('text:contains("Highcharts.com")').hide();
+};
+
+var getLastDateWithValue = function (rowData) {
+    var dateWithValue;
+    rowData.forEach(function (dateData) {
+        if (!dateWithValue || dateData[1] !== null) {
+            dateWithValue = dateData[0];
+        }
+    });
+
+    return dateWithValue;
 };
