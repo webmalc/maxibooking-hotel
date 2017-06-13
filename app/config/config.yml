@@ -24,13 +24,12 @@ framework:
         #assets_version: SomeVersionScheme
     default_locale:  "%locale%"
     trusted_hosts:   ~
-    trusted_proxies: ~
     session:
         # handler_id set to null will use default session handler from php.ini
         handler_id:  ~
     fragments:       ~
     http_method_override: true
-    trusted_proxies:  [127.0.0.1, 127.0.1.1, 176.192.20.30]
+
 
 # Twig Configuration
 twig:
@@ -171,6 +170,9 @@ fos_user:
     user_class: MBH\Bundle\UserBundle\Document\User
     group:
             group_class: MBH\Bundle\UserBundle\Document\Group
+    from_email:
+            address: "%mailer_user%"
+            sender_name: NoReply
     
 # KnpMenuBundle Configuration    
 knp_menu:

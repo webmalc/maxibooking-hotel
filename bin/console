@@ -22,6 +22,6 @@ if ($debug) {
     Debug::enable();
 }
 
-$kernel = new AppKernel($env, $debug, getenv('MBCLIENT'));
+$kernel = new AppKernel($env, $debug, getenv('MB_CLIENT'));
 $application = new Application($kernel);
 $application->run($input);

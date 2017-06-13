@@ -12,8 +12,8 @@
     "php": ">=7.0.0",
     "alcaeus/mongo-php-adapter": "^1.0.0",
     "ext-mongo": "*",
-    "symfony/symfony": "3.1.*@stable",
-    "twig/twig": "^1",
+    "symfony/symfony": "3.*@stable",
+    "twig/twig": "*@stable",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
     "symfony/cache": "3.*@stable",
@@ -51,14 +51,16 @@
     "guzzlehttp/guzzle": "^6.2",
     "php-amqplib/rabbitmq-bundle": "^1.12",
     "phobetor/rabbitmq-supervisor-bundle": "^1.5",
-    "lexik/translation-bundle": "^4.0",
+    "lexik/translation-bundle": "dev-fix_258",
     "willdurand/js-translation-bundle": "^2.6",
     "vich/uploader-bundle": "^1.4"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
-    "symfony/phpunit-bridge": "^3.0",
-    "liip/functional-test-bundle": "^1.6"
+    "symfony/phpunit-bridge": "*@stable",
+
+    "liip/functional-test-bundle": "*@stable",
+    "phpunit/phpunit": "^6.2"
   },
   "scripts": {
     "symfony-scripts": [
