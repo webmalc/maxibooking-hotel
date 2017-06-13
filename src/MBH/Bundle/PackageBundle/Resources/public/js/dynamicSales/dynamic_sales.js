@@ -213,7 +213,7 @@ var collectGraphData = function ($row, $dateRow, isFirstRow) {
 var showDynamicSalesGraph = function (data, optionData) {
     $('#graph-modal').modal('show');
     var dates = [];
-    console.log(data);
+
     data.forEach(function (rowData, index) {
         var Schedule = {};
 
@@ -226,7 +226,7 @@ var showDynamicSalesGraph = function (data, optionData) {
         Schedule.tickPosition = 'inside';
         dates.push(Schedule);
     });
-    console.log(dates);
+
     var graphName;
     var yAxisTitle;
     var optionName = optionData.name;
