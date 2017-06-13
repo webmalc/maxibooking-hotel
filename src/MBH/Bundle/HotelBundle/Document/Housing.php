@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\Document(collection="Housing")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"name", "hotel"}, message="Такой корпус уже существует")
+ * @MongoDBUnique(fields={"name", "hotel"}, message="mbhhotelbundle.document.housing.takoy.korpus.uzhe.sushchestvuyet")
  */
 class Housing extends Base
 {

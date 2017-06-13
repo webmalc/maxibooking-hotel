@@ -101,11 +101,15 @@ class ActionManager {
         });
     }
 
-    private static showResultPrices($row) {
+    protected static showResultPrices($row) {
+        if ($row.hasClass('info')) {
+            return;
+        }
+
         let $searchTouristsSelect = $row.find('.search-tourists-select');
         let $packageSearchBook = $row.find('.package-search-book');
-        let touristVal = $searchTouristsSelect.val(),
-            touristArr = touristVal.split('_');
+        let touristVal = $searchTouristsSelect.val();
+        let touristArr = touristVal.split('_');
 
         let ulPrices = $row.find('ul.package-search-prices');
         ulPrices.hide();

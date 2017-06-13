@@ -83,3 +83,15 @@ services:
         arguments: ['@translator.default']
         tags:
             - { name: form.type}
+
+    mbh.task_type:
+        class: MBH\Bundle\HotelBundle\Form\TaskType
+        arguments: ['@mbh.helper', '@doctrine_mongodb.odm.document_manager']
+        tags:
+            - {name: form.type}
+
+    mbh.daily_task_type:
+        class: MBH\Bundle\HotelBundle\Form\DailyTaskType
+        arguments: ['@translator']
+        tags:
+            - {name: form.type}

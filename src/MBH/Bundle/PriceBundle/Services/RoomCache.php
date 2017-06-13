@@ -2,12 +2,12 @@
 
 namespace MBH\Bundle\PriceBundle\Services;
 
-
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PackageInfo;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use Symfony\Component\Process\Process;
 
 /**
@@ -48,7 +48,10 @@ class RoomCache
     public function recalculate(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff, $decrease = true)
     {
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $begin, $end, $roomType->getHotel(), [$roomType->getId()]
+            $begin,
+            $end,
+            $roomType->getHotel(),
+            [$roomType->getId()]
         );
 
         foreach ($roomCaches as $roomCache) {
@@ -78,14 +81,16 @@ class RoomCache
 
         /** @var \MBH\Bundle\PriceBundle\Document\RoomCache[] $caches */
         $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $begin, $end, null, $roomTypes
+            $begin,
+            $end,
+            null,
+            $roomTypes
         );
 
         $num = 0;
         $batchSize = 3;
 
         foreach ($caches as $cache) {
-
             $qb = $this->dm->getRepository('MBHPackageBundle:Package')
                 ->createQueryBuilder()
                 ->field('begin')->lte($cache->getDate())
@@ -102,7 +107,6 @@ class RoomCache
                 $cache->setPackagesCount($total);
             }
             if (!count($cache->getPackageInfo()) && $total) {
-
                 $packages = $qb->getQuery()->execute();
                 foreach ($packages as $package) {
                     $tariff = $package->getTariff();
@@ -143,8 +147,8 @@ class RoomCache
         array $availableRoomTypes = [],
         array $tariffs = [],
         array $weekdays = []
-    )
-    {
+    ) {
+    
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $roomCaches = $updateCaches = $updates = $remove = [];
@@ -156,7 +160,6 @@ class RoomCache
             ->fetch($begin, $end, $hotel, $this->helper->toIds($roomTypes), empty($tariffs) ? null : $this->helper->toIds($tariffs));
 
         foreach ($oldRoomCaches as $oldRoomCache) {
-
             if (!empty($weekdays) && !in_array($oldRoomCache->getDate()->format('w'), $weekdays)) {
                 continue;
             }
@@ -186,7 +189,6 @@ class RoomCache
         foreach ($tariffs as $tariff) {
             foreach ($roomTypes as $roomType) {
                 foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $endWithDay) as $date) {
-
                     if (isset($updateCaches[$tariff ? $tariff->getId() : 0][$date->format('d.m.Y')][$roomType->getId()])) {
                         continue;
                     }
@@ -206,7 +208,6 @@ class RoomCache
                         'isEnabled' => true,
                         'isClosed' => $isClosed
                     ];
-
                 }
             }
         }
@@ -216,12 +217,13 @@ class RoomCache
         } else {
             $this->container->get('mbh.mongo')->batchInsert('RoomCache', $roomCaches);
             $this->container->get('mbh.mongo')->update('RoomCache', $updates);
-            $this->container->get('old_sound_rabbit_mq.task_room_cache_recalculate_producer')->publish(serialize(
-                [
-                    'begin' => $begin,
-                    'end' => $end,
-                    'roomTypes' => $this->helper->toIds($roomTypes)
-                ]
+            $this->container->get('old_sound_rabbit_mq.task_command_runner_producer')->publish(serialize(
+                new Command([
+                    'command' => 'mbh:cache:recalculate',
+                    '--roomTypes' => implode(',', $this->helper->toIds($roomTypes)),
+                    '--begin' => $begin->format('d.m.Y'),
+                    '--end' => $end->format('d.m.Y'),
+                    ])
             ));
         }
     }

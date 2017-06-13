@@ -16,7 +16,7 @@ class WareCategoryType extends AbstractType
                 ->add('fullTitle', TextType::class, [
                     'label' => 'form.promotionType.label.fullTitle',
                     'required' => true,
-                    'attr' => ['placeholder' => 'warehouse.items.staple']
+                    'attr' => ['placeholder' => 'warehouse.items.placeholder']
                 ])
                 ->add('title', TextType::class, [
                     'label' => 'form.promotionType.label.title',

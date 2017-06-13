@@ -48,7 +48,7 @@
                                     <br>
                                     <small><i class='fa fa-trash-o'
                                               title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}'
-                                              data-toggle='tooltip'></i> Запись удалена
+                                              data-toggle='tooltip'></i> {{ "views.task.index.delete_recording"|trans }}
                                     </small>
                                 {% elseif task.description %}
                                     <br>
@@ -65,7 +65,7 @@
                                     class='fa fa-arrow-down text-success'></i>{% endif %}</td>
                             <td>{{ task.room.fullTitle }}</td>
                             <td>{{ task.createdAt|date('d.m.Y') }}{% if task.date %}<br>
-                                    <small>до {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}</td>
+                                    <small>{{ "views.task.index.before"|trans }} {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}</td>
                             <td class="table-actions-td text-right">
                                 <a href='#' class='btn btn-default btn-xs show-task-details'><i
                                             class='fa fa-eye'> {{ 'views.task.index.view'|trans({}, "MBHHotelBundle") }}</i></a>
@@ -133,7 +133,7 @@
                                     class='fa fa-check text-success'></i>{% endif %}</td>
                             <td>{{ task.type.title }}{% if task.isDeleted %}<br>
                                 <small><i class='fa fa-trash-o' title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}'
-                                          data-toggle='tooltip'></i> Запись удалена</small>{% endif %}
+                                          data-toggle='tooltip'></i> {{ "views.task.index.record_was_delete"|trans }}</small>{% endif %}
                             </td>
                             <td>{% if task.priority == 2 %}<i title='{{ priorities[task.priority] }}'
                                                               class='fa fa-arrow-up text-danger'></i><i
@@ -145,7 +145,7 @@
                                     class='fa fa-arrow-down text-success'></i>{% endif %}</td>
                             <td>{{ task.room.fullTitle }}</td>
                             <td>{{ task.createdAt|date('d.m.Y') }}{% if task.date %}<br>
-                                    <small>до {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}</td>
+                                    <small>{{ 'views.task.index.before_two'|trans }} {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}</td>
                             <td class="table-actions-td text-right">
                                 <a href='#' class='btn btn-default btn-xs show-task-details'><i
                                             class='fa fa-eye'> {{ 'views.task.index.view'|trans({}, "MBHHotelBundle") }}</i></a>

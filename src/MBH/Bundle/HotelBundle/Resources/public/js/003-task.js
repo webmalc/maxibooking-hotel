@@ -1,4 +1,4 @@
-/*global window, document, $, Routing, console */
+/*global window, document, $, Routing, console, deleteLink */
 $(document).ready(function () {
     'use strict';
     var $taskTable = $('#task-table'),
@@ -73,6 +73,7 @@ $(document).ready(function () {
 
                     $this.closest('tr').addClass(rowClass);
                 });
+                deleteLink();
             },
             "order": [[7, "desc"]]
         };
@@ -208,7 +209,7 @@ $(document).ready(function () {
         e.preventDefault();
         var id = $(this).closest('tr').data('id');
         showTaskModal(id);
-    })
+    });
 });
 
 

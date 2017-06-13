@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\Document(collection="Room", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"fullTitle", "roomType"}, message="Такой номер уже существует")
+ * @MongoDBUnique(fields={"fullTitle", "roomType"}, message="mbhhotelbundle.document.room.takoy.nomer.uzhe.sushchestvuyet")
  */
 class Room extends Base
 {

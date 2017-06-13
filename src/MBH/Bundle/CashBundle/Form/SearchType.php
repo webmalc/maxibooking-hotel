@@ -31,7 +31,7 @@ class SearchType extends AbstractType
                 'constraints' => [new NotBlank(), new Date()]
             ))
             ->add('end', DateType::class, array(
-                'label' => 'По',
+                'label' => 'mbhcashbundle.form.searchtype.po',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'data' => null,
@@ -41,11 +41,11 @@ class SearchType extends AbstractType
                 'constraints' => [new NotBlank(), new Date()]
             ))
             ->add('sort',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Сортирова',
+                'label' => 'mbhcashbundle.form.searchtype.sortirova',
                 'required' => false,
             ])
             ->add('pay_type',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'Вид платежа',
+                'label' => 'mbhcashbundle.form.searchtype.vid.platezha',
                 'required' => false,
             ])
             ->add('show_no_paid', CheckboxType::class, [

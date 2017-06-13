@@ -38,7 +38,7 @@ class RoomTypeType extends AbstractType
                     'required' => true,
                     'placeholder' => '',
                     'class' => 'MBHHotelBundle:RoomTypeCategory',
-                    'query_builder' => function(DocumentRepository $repository) use ($hotel) {
+                    'query_builder' => function (DocumentRepository $repository) use ($hotel) {
                         $qb = $repository->createQueryBuilder();
                         if ($hotel) {
                             $qb->field('hotel.id')->equals($hotel->getID());
@@ -93,7 +93,7 @@ class RoomTypeType extends AbstractType
                 'required' => false
             ])
             ->add('roomViewsTypes', DocumentType::class, [
-                'choice_label' => function($value) {
+                'choice_label' => function ($value) {
                     return $this->translator->trans($value);
                 },
                 'label' => 'form.roomType.room_view_types.label',
@@ -162,7 +162,6 @@ class RoomTypeType extends AbstractType
                 'help' => 'form.roomTypeType.is_room_included_in_search'
             ])
         ;
-
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -181,5 +180,4 @@ class RoomTypeType extends AbstractType
     {
         return 'mbh_bundle_hotelbundle_room_type_type';
     }
-
 }

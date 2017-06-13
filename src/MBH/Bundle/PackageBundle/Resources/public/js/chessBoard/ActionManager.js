@@ -78,9 +78,13 @@ var ActionManager = (function () {
         });
     };
     ActionManager.showResultPrices = function ($row) {
+        if ($row.hasClass('info')) {
+            return;
+        }
         var $searchTouristsSelect = $row.find('.search-tourists-select');
         var $packageSearchBook = $row.find('.package-search-book');
-        var touristVal = $searchTouristsSelect.val(), touristArr = touristVal.split('_');
+        var touristVal = $searchTouristsSelect.val();
+        var touristArr = touristVal.split('_');
         var ulPrices = $row.find('ul.package-search-prices');
         ulPrices.hide();
         ulPrices.find('li').hide();

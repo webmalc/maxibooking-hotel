@@ -1,7 +1,7 @@
 {% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
 
 {% block text %}
-    <p>Для получения кода доступа отсканируйте смартфоном QR-штрихкод с картинки с помощью приложения <a href="https://support.google.com/accounts/answer/1066447?hl=ru">Google Authenticator</a></p>
+    <p>{{ 'mbhbasebundle.views.mailer.dla_poluchenia_coda_dostupa_otskaniruite_etc'|trans }} <a href="https://support.google.com/accounts/answer/1066447?hl=ru">Google Authenticator</a></p>
     <p><img src="{{ text }}" alt="qr-code" width="200" height="200"></p>
 
 {% endblock %}

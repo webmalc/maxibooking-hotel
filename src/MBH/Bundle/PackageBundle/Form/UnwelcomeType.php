@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -42,13 +43,13 @@ class UnwelcomeType extends AbstractType
         ];
 
         foreach($this->getCharacteristics() as $characteristic) {
-            $builder->add($characteristic, 'choice', [
+            $builder->add($characteristic, ChoiceType::class, [
                 'label' => 'form.unwelcomeType.'.$characteristic,
                 'group' => 'form.unwelcomeType.group.common',
                 'expanded' => true,
                 'placeholder' => null,
                 'choices' => $levels,
-                'choice_label' => function($key, $value){
+                'choice_label' => function($key){
                     return $key == 0 ? 'Нет' : $key;
                 },
                 'choice_attr' => function($key, $value) {
@@ -64,7 +65,7 @@ class UnwelcomeType extends AbstractType
             'label' => 'form.unwelcomeType.comment',
             'group' => 'form.unwelcomeType.group.common',
             'attr' => ['style' => 'height:150px'],
-            'help' => 'Доступен только для вас и не передается в сервис нежелательных гостей'
+            'help' => 'mbhpackagebundle.form.unwelcometype.dostupen.tolʹko.dlya.vas.i.ne.peredayetsya.v.servis.nezhelatelʹnykh.gostey'
         ]);
     }
 

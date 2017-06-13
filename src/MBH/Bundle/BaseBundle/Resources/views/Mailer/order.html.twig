@@ -45,13 +45,13 @@
                     <small style="color:#888;">
                         {{ '%hotel%'|trans(transParams) }}
                         {% if package.adults > 0 %}
-                            , {{ package.adults }} вз.
+                            , {{ package.adults }} {{ 'mbhbasebundle.views.mailer.vz'|trans }}.
                         {% endif %}
                         {% if package.adults > 0 and package.children > 0 %}
                             , +
                         {% endif %}
                         {% if package.children > 0 %}
-                            , {{ package.children }} рб.
+                            , {{ package.children }} {{ 'mbhbasebundle.views.mailer.rb'|trans }}.
                         {% endif %}
                     </small>
                 </td>

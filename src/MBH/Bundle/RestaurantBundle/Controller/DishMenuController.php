@@ -64,7 +64,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', 'restaurantbundle.controller.entity_successful_created');
 
             return $this->afterSaveRedirect('restaurant_dishmenu_category', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -96,7 +96,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
             $this->dm->persist($category);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', 'restaurantbundle.controller.entry_successfully_edited');
 
             return $this->afterSaveRedirect('restaurant_dishmenu_category', $category->getId(), ['tab' => $category->getId()]);
         }
@@ -148,7 +148,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
             $this->dm->persist($item);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', 'restaurantbundle.controller.entity_successful_created');
 
             return $this->afterSaveRedirect('restaurant_dishmenu_item', $item->getId(), ['tab' => $category->getId()]);
         }
@@ -188,7 +188,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
 
             $this->dm->persist($item);
             $this->dm->flush();
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', 'restaurantbundle.controller.entry_successfully_edited');
 
             if ($request->get('save') !== null) {
                 return $this->redirectToRoute('restaurant_dishmenu_item_edit', ['id' =>$item->getId()]);
@@ -261,8 +261,8 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         $flashBag = $request->getSession()->getFlashBag();
 
         $success ?
-            $flashBag->set('success', 'Цены успешно сохранены.'):
-            $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
+            $flashBag->set('success', 'restaurantbundle.controller.price_successfully_saved'):
+            $flashBag->set('danger', 'restaurantbundle.controller.attention_not_all_parameter_successful_saved');
 
         $activetab = $request->get('activetab')?:null;
         return $this->redirectToRoute('restaurant_dishmenu_category', ['tab' => substr($activetab,1)]);

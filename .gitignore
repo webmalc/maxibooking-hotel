@@ -45,6 +45,10 @@ web/online
 app/supervisor
 docker_zalex
 
+#for new multiinstall
+/app/config/clients
+/var/clients
+
 #Eclipse
 tmp/
 *.tmp

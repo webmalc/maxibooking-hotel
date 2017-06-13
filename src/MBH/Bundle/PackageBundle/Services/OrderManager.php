@@ -431,7 +431,7 @@ class OrderManager
                     $defaultService->isRecalcWithPackage()
                 )
                 ->setPackage($package)
-                ->setNote('Услуга по умолчанию');
+                ->setNote($this->container->get('translator')->trans('mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu'));
 
             $package->addService($packageService);
             $this->dm->persist($packageService);

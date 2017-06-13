@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Helper service
@@ -25,6 +26,194 @@ class Helper
     {
         $this->container = $container;
         $this->tr = $this->container->get('translator');
+    }
+
+    /**
+     * @param mixed $date
+     * @param string $format
+     * @param string $timezone
+     * @return \DateTime|null
+     */
+    public static function getDateFromString($date, $format = "d.m.Y", string $timezone = null)
+    {
+        if (empty($date)) {
+            return null;
+        }
+        if ($date instanceof \DateTime) {
+            return $date;
+        }
+
+        $timezone = $timezone ?? date_default_timezone_get();
+
+        return \DateTime::createFromFormat($format.' H:i:s', $date.' 00:00:00', new \DateTimeZone($timezone));
+    }
+
+    /**
+     * @param $collection
+     * @param string $method
+     * @return array
+     */
+    public static function toIds($collection, $method = 'getId')
+    {
+        $result = [];
+
+        foreach ($collection as $object) {
+            $result[] = (is_object($object) && method_exists($object, $method)) ? $object->$method() : (string)$object;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    public static function translateToLat($text)
+    {
+        $rus = [
+            'А',
+            'Б',
+            'В',
+            'Г',
+            'Д',
+            'Е',
+            'Ё',
+            'Ж',
+            'З',
+            'И',
+            'Й',
+            'К',
+            'Л',
+            'М',
+            'Н',
+            'О',
+            'П',
+            'Р',
+            'С',
+            'Т',
+            'У',
+            'Ф',
+            'Х',
+            'Ц',
+            'Ч',
+            'Ш',
+            'Щ',
+            'Ъ',
+            'Ы',
+            'Ь',
+            'Э',
+            'Ю',
+            'Я',
+            'а',
+            'б',
+            'в',
+            'г',
+            'д',
+            'е',
+            'ё',
+            'ж',
+            'з',
+            'и',
+            'й',
+            'к',
+            'л',
+            'м',
+            'н',
+            'о',
+            'п',
+            'р',
+            'с',
+            'т',
+            'у',
+            'ф',
+            'х',
+            'ц',
+            'ч',
+            'ш',
+            'щ',
+            'ъ',
+            'ы',
+            'ь',
+            'э',
+            'ю',
+            'я',
+            ' ',
+            '/',
+            '\\',
+        ];
+        $lat = [
+            'A',
+            'B',
+            'V',
+            'G',
+            'D',
+            'E',
+            'E',
+            'Gh',
+            'Z',
+            'I',
+            'Y',
+            'K',
+            'L',
+            'M',
+            'N',
+            'O',
+            'P',
+            'R',
+            'S',
+            'T',
+            'U',
+            'F',
+            'H',
+            'C',
+            'Ch',
+            'Sh',
+            'Sch',
+            'Y',
+            'Y',
+            'Y',
+            'E',
+            'Yu',
+            'Ya',
+            'a',
+            'b',
+            'v',
+            'g',
+            'd',
+            'e',
+            'e',
+            'gh',
+            'z',
+            'i',
+            'y',
+            'k',
+            'l',
+            'm',
+            'n',
+            'o',
+            'p',
+            'r',
+            's',
+            't',
+            'u',
+            'f',
+            'h',
+            'c',
+            'ch',
+            'sh',
+            'sch',
+            'y',
+            'y',
+            'y',
+            'e',
+            'yu',
+            'ya',
+            ' ',
+            '_',
+            '_',
+        ];
+
+        return str_replace($rus, $lat, $text);
     }
 
     /**
@@ -62,26 +251,6 @@ class Helper
     }
 
     /**
-     * @param mixed $date
-     * @param string $format
-     * @param string $timezone
-     * @return \DateTime|null
-     */
-    public static function getDateFromString($date, $format = "d.m.Y", string $timezone = null)
-    {
-        if (empty($date)) {
-            return null;
-        }
-        if ($date instanceof \DateTime) {
-            return $date;
-        }
-
-        $timezone = $timezone ?? date_default_timezone_get();
-
-        return \DateTime::createFromFormat($format . ' H:i:s', $date . ' 00:00:00', new \DateTimeZone($timezone));
-    }
-
-    /**
      * Возвращает сумму прописью
      * @author runcore
      * @uses morph(...)
@@ -91,37 +260,58 @@ class Helper
         $currency = $this->container->get('mbh.currency')->info();
         $nul = 'ноль';
         $ten = array(
-            array('', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'),
-            array('', 'одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'),
+            array(
+                '',
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.one'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.two'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.three'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.four'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.five'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.six'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.seven'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.eight'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.nine'),
+            ),
+            array(
+                '',
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.odna'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.dve'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.tri'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.chetire'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.piat'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.shest'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.sem'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.vosem'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.deviat'),
+            ),
         );
         $a20 = array(
-            'десять',
-            'одиннадцать',
-            'двенадцать',
-            'тринадцать',
-            'четырнадцать',
-            'пятнадцать',
-            'шестнадцать',
-            'семнадцать',
-            'восемнадцать',
-            'девятнадцать'
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.twelve'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.eleven'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.twelve'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.fourteen'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.fifteen'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.sixteen'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.seventeen'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.eighteen'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.nineteen'),
         );
         $tens = array(
             2 => 'двадцать',
             'тридцать',
-            'сорок',
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.sorok'),
             'пятьдесят',
             'шестьдесят',
             'семьдесят',
             'восемьдесят',
-            'девяносто'
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.devyanosto')
         );
         $hundred = array(
             '',
-            'сто',
-            'двести',
-            'триста',
-            'четыреста',
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.sto'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.dvesti'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.trista'),
+            $this->container->get('translator')->trans('mbhbasebundle.service.helper.chetyresta'),
             'пятьсот',
             'шестьсот',
             'семьсот',
@@ -132,8 +322,14 @@ class Helper
             array($currency['small'], $currency['small'], $currency['small'], 1),
             array($currency['text'], $currency['text'], $currency['text'], 0),
             array('тысяча', 'тысячи', 'тысяч', 1),
-            array('миллион', 'миллиона', 'миллионов', 0),
-            array('миллиард', 'милиарда', 'миллиардов', 0),
+            array(
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.million'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.millionа'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.millionов'), 0),
+            array(
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.milliard'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.miliarda'),
+                $this->container->get('translator')->trans('mbhbasebundle.service.helper.milliardов'), 0),
         );
         //
         list($rub, $kop) = explode('.', sprintf("%015.2f", floatval($num)));
@@ -167,6 +363,26 @@ class Helper
         return trim(preg_replace('/ {2,}/', ' ', join(' ', $out)));
     }
 
+    /**
+     * Склоняем словоформу
+     * @ author runcore
+     */
+    public function morph($n, $f1, $f2, $f5)
+    {
+        $n = abs(intval($n)) % 100;
+        if ($n > 10 && $n < 20) {
+            return $f5;
+        }
+        $n = $n % 10;
+        if ($n > 1 && $n < 5) {
+            return $f2;
+        }
+        if ($n == 1) {
+            return $f1;
+        }
+
+        return $f5;
+    }
 
     public function convertNumberToWords($number)
     {
@@ -281,65 +497,18 @@ class Helper
         return $string;
     }
 
-
-    /**
-     * Склоняем словоформу
-     * @ author runcore
-     */
-    public function morph($n, $f1, $f2, $f5)
+    public function getMBHBundles()
     {
-        $n = abs(intval($n)) % 100;
-        if ($n > 10 && $n < 20) {
-            return $f5;
-        }
-        $n = $n % 10;
-        if ($n > 1 && $n < 5) {
-            return $f2;
-        }
-        if ($n == 1) {
-            return $f1;
+        $bundles = new \SplObjectStorage();
+        $kernelDir = $this->container->get('kernel')->getRootDir();
+        $finder = Finder::create()->directories()->name('*')->in($kernelDir.'/../src/MBH/Bundle')->depth(0);
+        $kernel = $this->container->get('kernel');
+        foreach ($finder as $dir) {
+            /** @var \SplFileInfo $dir */
+            $dir->isDir() ? $bundles->attach($kernel->getBundle('MBH'.$dir->getBasename())) : null;
         }
 
-        return $f5;
-    }
-
-    /**
-     * @param $collection
-     * @param string $method
-     * @return array
-     * TODO: сделать его не статическим? В проекте вызывается то как статический, то как обычный.
-     */
-    public static function toIds($collection, $method = 'getId')
-    {
-        $result = [];
-
-        foreach ($collection as $object) {
-            $result[] = (is_object($object) && method_exists($object, $method)) ? $object->$method() : (string)$object;
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param string $text
-     * @return string
-     */
-    public static function translateToLat($text)
-    {
-        $rus = [
-            'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т',
-            'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я', 'а', 'б', 'в', 'г', 'д', 'е', 'ё',
-            'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ',
-            'ъ', 'ы', 'ь', 'э', 'ю', 'я', ' ', '/', '\\'
-        ];
-        $lat = [
-            'A', 'B', 'V', 'G', 'D', 'E', 'E', 'Gh', 'Z', 'I', 'Y', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T',
-            'U', 'F', 'H', 'C', 'Ch', 'Sh', 'Sch', 'Y', 'Y', 'Y', 'E', 'Yu', 'Ya', 'a', 'b', 'v', 'g', 'd', 'e',
-            'e', 'gh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'h', 'c', 'ch', 'sh',
-            'sch', 'y', 'y', 'y', 'e', 'yu', 'ya', ' ', '_', '_'
-        ];
-
-        return str_replace($rus, $lat, $text);
+        return $bundles;
     }
 
     /**

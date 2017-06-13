@@ -1,6 +1,9 @@
-form.profileType.enter_new_password: Введите новый пароль
-form.userType.authentication_data: Данные аутентификации
-form.userType.new_password: Новый пароль
+mbhuserbundle.view.twofactor.email.vam.na.pochtu.vyslan.kod.dlya.vkhoda: 'Вам на почту выслан код для входа'
+mbhuserbundle.view.workshift.index.vyyti: Выйти
+mbhuserbundle.view.workshift.index.nachat.novuyu.smenu: 'Начать новую смену'
+form.profileType.enter_new_password: 'Введите новый пароль'
+form.userType.authentication_data: 'Данные аутентификации'
+form.userType.new_password: 'Новый пароль'
 form.password: Пароль
 form.password_confirmation: Подтвердите пароль
 form.userType.confirm_password: Подтвердите пароль
@@ -61,3 +64,20 @@ workShift:
         closed: Закрыта
     notification:
         work_shift_expired: Смена идет больше 12 часов. Закройте её
+
+restaurantbundle.controller.system_administrator: 'Администратор системы'
+restaurantbundle.controller.hotel_administrator: 'Администратор отеля'
+restaurantbundle.controller.analitic: 'Аналитик'
+restaurantbundle.controller.buhgalter: 'Бухгалтер'
+restaurantbundle.controller.turagent: 'Турагент'
+restaurantbundle.controller.little_manager: Младший менеджер
+restaurantbundle.controller.manager: 'Менеджер'
+restaurantbundle.controller.senior_manager: 'Старший менеджер'
+restaurantbundle.controller.portie: 'Портье'
+restaurantbundle.controller.servive_staff: 'Обслуживающий персонал'
+restaurantbundle.controller.restoran_senior_manager: 'Ресторан старший менеджер'
+restaurantbundle.controller.restoran_manager: 'Ресторан менеджер'
+restaurantbundle.controller.warehouse: 'Склад'
+
+
+mbhuserbundle.view.workshift.wait.vyyti: Выйти

@@ -106,7 +106,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $roomTypes = $helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn);
 
         if (!count($roomTypes)) {
-            return array_merge($response, ['error' => 'Типы номеров не найдены']);
+            return array_merge($response, ['error' => $this->container->get('translator')->trans('price.tariffcontroller.room_type_is_not_found')]);
         }
 
         //get tariffs
@@ -222,7 +222,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         }
         $this->dm->flush();
 
-        $request->getSession()->getFlashBag()->set('success', 'Изменения успешно сохранены.');
+        $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.tariffcontroller.update_successfully_saved'));
         $this->get('mbh.channelmanager')->updateRoomsInBackground();
         $this->get('mbh.cache')->clear('room_cache');
 
@@ -273,7 +273,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $request->getSession()->getFlashBag()->set('success', 'Данные успешно сгенерированы.');
+            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.tariffcontroller.data_successfully_generated'));
 
             $data = $form->getData();
 

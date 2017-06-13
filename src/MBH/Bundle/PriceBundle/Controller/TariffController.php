@@ -81,7 +81,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     {
         $tariff = new Tariff();
         $tariff
-            ->setFullTitle($parent->getFullTitle() . '-дочерний тариф')
+            ->setFullTitle($parent->getFullTitle() . '-' . $this->container->get('translator')->trans('price.tariffcontroller.children_tariff'))
             ->setHotel($parent->getHotel())
             ->setParent($parent)
             ->setIsEnabled(false)
@@ -90,7 +90,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $this->dm->flush();
 
         $request->getSession()->getFlashBag()
-            ->set('success', 'Дочерний тариф успешно создан.');
+            ->set('success', $this->container->get('translator')->trans('price.tariffcontroller.children_tariff_successfully_created'));
 
         return $this->redirect($this->generateUrl('tariff_edit', ['id' => $tariff->getId()]));
     }
@@ -140,8 +140,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $this->get('mbh.mongo')->copy('Restriction', $query, $update);
         $this->get('mbh.mongo')->copy('RoomCache', $query, $update);
 
-        $request->getSession()->getFlashBag()
-            ->set('success', 'Тариф успешно скопирован.');
+        $this->addFlash('success', 'price.tariffcontroller.tariff_successfully_copied');
 
         return $this->redirect($this->generateUrl('tariff_edit', ['id' => $new->getId()]));
     }
@@ -184,8 +183,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', 'Тариф успешно создан. Теперь необходимо заполнить цены.');
+            $this->addFlash('success', 'price.tariffcontroller.tariff_successfully_created');
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
@@ -217,7 +215,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $this->addFlash('success', 'price.tariffcontroller.entry_successfully_updated');
 
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
@@ -272,7 +270,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->persist($tariff);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $this->addFlash('success','price.tariffcontroller.entry_successfully_updated');
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('tariff_promotions_edit', ['id' => $tariff->getId()]) :
@@ -312,7 +310,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->persist($tariff);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $this->addFlash('success','price.tariffcontroller.entry_successfully_updated');
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('tariff_inheritance_edit', ['id' => $tariff->getId()]) :
@@ -348,7 +346,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->persist($tariff);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+            $this->addFlash('success', 'price.tariffcontroller.entry_successfully_updated');
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('tariff_services_edit', ['id' => $tariff->getId()]) :
