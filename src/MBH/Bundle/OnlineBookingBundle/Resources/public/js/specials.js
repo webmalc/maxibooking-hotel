@@ -297,6 +297,6 @@ $(function () {
         hotelSwitchers.push(hotelSwitcher);
     });
     monthSwitcherContainer.showFirstEnabledSwitcher(defaultMonth);
-    callMonthSlider(monthSwitcherContainer);
+    /*callMonthSlider(monthSwitcherContainer);*/
 
 });

@@ -110,7 +110,7 @@
     background: url('http://azovsky.ru/images/specnew/grey-arrow.png') no-repeat 95% 50%;
 }
 
-.spec-date select::-ms-expand { /* ��� IE */
+.spec-date select::-ms-expand { /* пїЅпїЅпїЅ IE */
     display: none;
 }
 
@@ -437,11 +437,11 @@
 }
 
 .spec-wrap {
-    background: #f7fcff;
+    background: #9cdbfc;
 }
 
 .month-spec {
-    max-width: 500px;
+    padding:0 15px;
     margin: 0 auto;
 }
 
@@ -471,11 +471,15 @@
     text-align: center;
     height: 50px;
     line-height: 50px;
+	display:inline-block;
+	width:25%;
+	margin-left:-4px;
 }
 
 .month-spec li a {
     text-transform: uppercase;
     color: #656565;
+	font-weight:600;
 }
 
 .month-spec li a:hover {
@@ -516,11 +520,10 @@
 }
 
 @media (max-width: 768px) {
-    .month-spec {
-        max-width: 280px;
-    }
-
     .month-spec li a:hover {
         padding: 7px 5px;
     }
+}
+@media (max-width: 414px) {
+    .month-spec li {width:50%;}
 }
