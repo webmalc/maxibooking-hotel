@@ -195,10 +195,11 @@ HotelSwitcher.prototype.showClickedSpecials = function () {
 };
 
 var callMonthSlider = function (monthSwitcherContainer) {
-    var page = monthSwitcherContainer.getActivePage();
+    var page = monthSwitcherContainer.getActivePage(),
+        perPage = monthSwitcherContainer.perPage;
     $('.bxslider').bxSlider({
 
-        minSlides: 2,
+        minSlides: perPage,
         maxSlides: 4,
         slideWidth: 360,
         slideMargin: 10,
@@ -233,7 +234,7 @@ UrlTool.prototype.changeUrl = function (month) {
 var MonthSwitcherContainer = function() {
     this.switchers = [];
     this.defaultSwitcher = null;
-    this.perPage = 4;
+    this.perPage = 3;
 };
 MonthSwitcherContainer.prototype.addSwitcher = function (switcher) {
     this.switchers.push(switcher);
