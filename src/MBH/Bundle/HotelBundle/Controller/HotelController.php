@@ -116,9 +116,9 @@ class HotelController extends Controller
                 ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'));
 
             //todo: create services
-            // $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-            // $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &');
-            // $process->run();
+            $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
+            $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'doctrine:mongodb:fixtures:load --append --no-debug > /dev/null 2>&1 &');
+            $process->run();
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
