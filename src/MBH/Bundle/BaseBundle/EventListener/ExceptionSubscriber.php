@@ -10,6 +10,7 @@ namespace MBH\Bundle\BaseBundle\EventListener;
 
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -17,12 +18,14 @@ class ExceptionSubscriber implements EventSubscriberInterface
 {
     /** @var $slackNotifier  Notifier */
     private $slackNotifier;
-
     private $domain;
+    private $environment;
 
-    public function __construct(Notifier $slackNotifier, $domain) {
+    public function __construct(Notifier $slackNotifier, $domain, $environment)
+    {
         $this->slackNotifier = $slackNotifier;
         $this->domain = $domain;
+        $this->environment = $environment;
     }
 
     /**
@@ -55,11 +58,13 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function notifyException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
-        $message = $this->slackNotifier::createMessage();
-        $messageText ="Произошла ошибка у \"" . $this->domain
-            . ". \"\n Сообщение \"" . $exception->getMessage()
-            . "\".\n Стек:" . $exception->getTraceAsString();
-        $message->setText($messageText);
-        $this->slackNotifier->setMessage($message)->notify();
+        if (!$exception instanceof AccessDeniedException && $this->environment === 'prod') {
+            $message = $this->slackNotifier::createMessage();
+            $messageText = "Произошла ошибка у \"" . $this->domain
+                . ". \"\n Сообщение \"" . $exception->getMessage()
+                . "\".\n Стек:" . $exception->getTraceAsString();
+            $message->setText($messageText);
+            $this->slackNotifier->setMessage($message)->notify();
+        }
     }
 }

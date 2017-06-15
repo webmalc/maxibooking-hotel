@@ -146,7 +146,7 @@ services:
 
     mbh.exception_subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\ExceptionSubscriber
-        arguments: ['@mbh.notifier.slack', '%router.request_context.host%']
+        arguments: ['@mbh.notifier.slack', '%router.request_context.host%', "%kernel.environment%"]
         tags:
             - {name: kernel.event_subscriber}
 
