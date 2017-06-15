@@ -10,7 +10,7 @@ RUN apt-get update \
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --install-dir=/usr/local/bin && mv /usr/local/bin/composer.phar /usr/local/bin/composer && \
     php -r "unlink('composer-setup.php');" && \
-    php -r "copy('http://download.gna.org/wkhtmltopdf/0.12/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz', 'wkhtmltopdf.tar');" && \
+    php -r "copy('https://downloads.wkhtmltopdf.org/0.12/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz', 'wkhtmltopdf.tar');" && \
     tar -xvf wkhtmltopdf.tar && mv wkhtmltox/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf && usermod -s /usr/bin/fish root
 
 CMD ["/bin/bash", "/start.sh"]
