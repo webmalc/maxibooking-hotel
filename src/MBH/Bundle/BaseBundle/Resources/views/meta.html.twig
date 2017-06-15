@@ -1,6 +1,6 @@
 {% spaceless %}
     <!DOCTYPE html>
-    <html lang="ru">
+    <html lang="{{ app.request.locale }}">
         <head>
             <meta charset="utf-8">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -102,12 +102,10 @@
                 'assets/vendor/admin-lte/plugins/fastclick/fastclick.min.js'
                 'assets/vendor/admin-lte/plugins/colorpicker/bootstrap-colorpicker.min.js'
                 'assets/vendor/admin-lte/plugins/iCheck/icheck.min.js'
-                'assets/vendor/moment/moment.js'
-                'assets/vendor/moment/locale/ru.js'
+                'assets/vendor/moment/min/moment-with-locales.min.js'
                 'assets/vendor/bootstrap-daterangepicker/daterangepicker.js'
                 'assets/vendor/readmore-js/readmore.min.js'
                 'bundles/bazingajstranslation/js/translator.min.js'
-                'js/translations/front_messages/ru.js'
             %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}
@@ -119,6 +117,7 @@
             <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js"></script>
+            <script src="{{ url('bazinga_jstranslation_js', { 'domain': 'front_messages' }) }}"></script>
 
             {% javascripts filter='uglifyjs2'
             '@MBHBaseBundle/Resources/public/js/app/*'
@@ -129,9 +128,12 @@
             {% if app.environment == 'dev' %}
                 <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
             {% else %}
+
             <script src="{{ asset('js/fos_js_routes.js') }}"></script>
             {% endif %}
-
+            <script>
+                moment.locale(document.documentElement.lang);
+            </script>
         {% endblock %}
 
     </body>

@@ -109,7 +109,6 @@ class ChessBoardManager {
         };
 
         let $reportFilter = $('#accommodation-report-filter');
-
         $('.daterangepicker-input').daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
             mbh.datarangepicker.on($reportFilter.find('.begin-datepicker.mbh-daterangepicker'), $reportFilter.find('.end-datepicker.mbh-daterangepicker'), picker);
         });
