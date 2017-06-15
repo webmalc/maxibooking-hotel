@@ -97,6 +97,8 @@ class SearchFormType extends AbstractType
                 'label' => 'Дети',
                 'choices' => range(0, 5),
                 'attr' => [
+                    'min' => 0,
+                    'max' => 5,
                     'class' => 'dropdown'
                 ]
 

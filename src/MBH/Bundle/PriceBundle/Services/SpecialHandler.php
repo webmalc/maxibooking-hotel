@@ -86,6 +86,7 @@ class SpecialHandler
      */
     public function calculatePrices(array $specialIds = [], array $roomTypeIds = [], callable $output = null): void
     {
+        $this->disabledSpecials = $this->enabledSpecials = [];
         $specials = $this->getSpecials($specialIds);
         /** @var Special $special */
         foreach ($specials as $special) {
@@ -106,6 +107,7 @@ class SpecialHandler
         if (!$special) {
             return;
         }
+
 
         $special->setRecalculation();
         $this->dm->flush();
