@@ -1,6 +1,7 @@
 1.5.9
 =============
 * new rabbitmq (redmine #644)
+* fix translations
 
 1.5.8
 =============
