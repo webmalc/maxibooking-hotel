@@ -65,6 +65,7 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
     public function load(ObjectManager $manager)
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
+        $trans = $this->container->get('translator');
 
         foreach ($hotels as $hotel) {
             foreach (self::SERVICES as $catName => $services) {
@@ -78,7 +79,7 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
                 if (empty($category)) {
                     $category = new ServiceCategory();
                     $category->setSystem(true)
-                        ->setFullTitle($catName)
+                        ->setFullTitle($trans->trans($catName))
                         ->setHotel($hotel)
                         ->setIsEnabled(true)
                     ;
@@ -97,7 +98,7 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
                     if (empty($service)) {
                         $service = new Service();
                         $titleId = $info['name'];
-                        $title = $titleId == 'WiFi' ? $titleId : $this->container->get('translator')->trans($titleId);
+                        $title = $titleId == 'WiFi' ? $titleId : $trans->trans($titleId);
                         $service->setCode($code)
                             ->setSystem(true)
                             ->setIsEnabled($info['enabled'])
