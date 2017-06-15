@@ -22,17 +22,17 @@ class FixturesCommand extends ContainerAwareCommand
 
     private function runCommand(string $command)
     {
-        $env = $this->getContainer()->get('kernel')->getEnvironment();
-        $process = new Process(
-            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console ' . $command . ' --no-debug --env=' . $env
-        );
-        $process->run();
+//        $env = $this->getContainer()->get('kernel')->getEnvironment();
+//        $process = new Process(
+//            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console ' . $command . ' --no-debug --env=' . $env
+//        );
+//        $process->run();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $start = new \DateTime();
-        $this->runCommand('doctrine:mongodb:schema:drop');
+//        $this->runCommand('doctrine:mongodb:schema:drop');
         $this->runCommand('doctrine:mongodb:fixtures:load --append');
 
         if ($input->getOption('cities')) {
