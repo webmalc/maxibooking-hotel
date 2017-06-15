@@ -1,6 +1,7 @@
+{% set locale = app.request.locale %}
 {% spaceless %}
     <!DOCTYPE html>
-    <html lang="{{ app.request.locale }}">
+    <html lang="{{ locale }}">
         <head>
             <meta charset="utf-8">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -82,7 +83,6 @@
                 'assets/vendor/datatables/media/js/jquery.dataTables.min.js'
                 'assets/vendor/datatables/media/js/dataTables.bootstrap.min.js'
                 'assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js'
-                'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.ru.min.js'
                 'assets/vendor/fancybox/source/jquery.fancybox.js'
                 'assets/vendor/tinycolor/dist/tinycolor-min.js'
                 'assets/vendor/jquery.cookie/jquery.cookie.js'
@@ -107,8 +107,22 @@
                 'assets/vendor/readmore-js/readmore.min.js'
                 'bundles/bazingajstranslation/js/translator.min.js'
             %}
+
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}
+
+            {% if locale == 'en' %}
+                {% set bootstrapLocale = 'en-GB' %}
+                {% set select2Locale = 'en' %}
+            {% elseif locale == 'ru' %}
+                {% set bootstrapLocale = 'ru' %}
+                {% set select2Locale = 'ru' %}
+            {% endif %}
+            {% set bootstrapLocaleFile = 'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.' ~ bootstrapLocale ~ '.min.js' %}
+            {% set select2LocaleFile = 'assets/vendor/select2/dist/js/i18n/' ~ select2Locale ~ '.js' %}
+
+            <script type="text/javascript" src="{{ asset(bootstrapLocaleFile) }}"></script>
+            <script type="text/javascript" src="{{ asset(select2LocaleFile) }}"></script>
 
             <script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js"></script>

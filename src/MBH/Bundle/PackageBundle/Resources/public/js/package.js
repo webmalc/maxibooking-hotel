@@ -32,7 +32,6 @@ var initAccommodationTab = function () {
         $arrival = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_time'),
         $departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
         datepickerOptions = {
-            language: "ru",
             autoclose: true,
             format: 'dd.mm.yyyy'
         };

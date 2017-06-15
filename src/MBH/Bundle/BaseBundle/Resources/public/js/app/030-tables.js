@@ -23,7 +23,7 @@ var docReadyTables = function () {
         "pageLength": 50,
         "stateSave": true,
         "language": {
-            "sProcessing": Translator.trans("list.processing") + "...",
+            "sProcessing": Translator.trans("list.sProcessing") + "...",
             "sLengthMenu": Translator.trans('list.sLengthMenu', {"menu": "_MENU_"}),
             "sZeroRecords": Translator.trans("list.sZeroRecords"),
             "sInfo": Translator.trans("list.sInfo", {'start' : '_START_', 'end' : '_END_', 'total' : "_TOTAL_"}),
