@@ -119,7 +119,7 @@ form.roomTypeTasks.daily: Каждые n дней проживания
 form.homeAwayType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
 form.homeAwayType.is_included: Включен?
 form.homeAwayType.hotel_id: ID отеля
-form.homeAwayType.hotel_id_in_home_away: ID отеля в HomeAway
+form.homeAwayType.assigned_id.label: ID в HomeAway
 controller.homeAwayController.settings_saved_success: 'Настройки успешно сохранены.'
 form.home_away_type.main_tariff.label: Тариф
 form.home_away_type.main_tariff.help: Тариф, данные по которому синхронизируются с HomeAway

@@ -25,6 +25,9 @@ class HomeAwayType extends AbstractType
                     'help' => 'form.homeAwayType.should_we_use_in_channel_manager'
                 ]
             )
+            ->add('assignedId', TextType::class, [
+                'label' => 'form.homeAwayType.assigned_id.label'
+            ])
             ->add('main_tariff', DocumentType::class, [
                 'label' => 'form.home_away_type.main_tariff.label',
                 'help' => 'form.home_away_type.main_tariff.help',

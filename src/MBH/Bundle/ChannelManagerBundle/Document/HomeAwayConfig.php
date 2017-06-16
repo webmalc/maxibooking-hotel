@@ -80,9 +80,34 @@ class HomeAwayConfig extends Base
      */
     protected $locale;
 
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $assignedId;
+
     public function __construct()
     {
         $this->rooms = new ArrayCollection();
+    }
+
+    /**
+     * @return string
+     */
+    public function getAssignedId()
+    {
+        return $this->assignedId;
+    }
+
+    /**
+     * @param string $assignedId
+     * @return HomeAwayConfig
+     */
+    public function setAssignedId($assignedId)
+    {
+        $this->assignedId = $assignedId;
+
+        return $this;
     }
 
     /**

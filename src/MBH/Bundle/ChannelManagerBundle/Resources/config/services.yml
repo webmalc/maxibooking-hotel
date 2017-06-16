@@ -194,4 +194,4 @@ services:
 
     mbh.channel_manager.home_away:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway
-        arguments: ['@translator', '%home_away_assigned_id%']
+        arguments: ['@translator', '@mbh.channelmanager.homeaway_response_compiler']

@@ -47,12 +47,12 @@ mbh-php-fpm:
   dockerfile: php-fpm/Dockerfile
   container_name: mbh-php-fpm
   volumes:
-    - ..:/var/www/mbh
-    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
-    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/cli/conf.d/99-overrides.ini
-    - ./php-fpm/start.sh:/start.sh
-    - ./php-fpm/fish:/root/.config/fish/functions
-    - /tmp/:/tmp/
+    - ..:/var/www/mbh:cached
+    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini:cached
+    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.1/cli/conf.d/99-overrides.ini:cached
+    - ./php-fpm/start.sh:/start.sh:cached
+    - ./php-fpm/fish:/root/.config/fish/functions:cached
+    - /tmp/:/tmp/:cached
   links:
     - mbh-memcached
     - mbh-mongo

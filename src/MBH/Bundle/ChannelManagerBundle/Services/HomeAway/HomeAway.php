@@ -3,6 +3,8 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
 
+use GuzzleHttp\Client;
+use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -10,15 +12,13 @@ use Symfony\Component\Translation\TranslatorInterface;
 class HomeAway
 {
     private $translator;
-    private $assignedId;
-    //TODO: Мб сменить.
-    // Дефолтный id, указанный в параметрах. Используется для проверки того, что для синхронизации был установлен актуальный id
-    const DEFAULT_ASSIGNED_ID = 123;
+    /** @var  HomeAwayResponseCompiler */
+    private $responseCompiler;
 
-    public function __construct(TranslatorInterface $translator, $assignedId)
+    public function __construct(TranslatorInterface $translator, HomeAwayResponseCompiler $responseCompiler)
     {
         $this->translator = $translator;
-        $this->assignedId = $assignedId;
+        $this->responseCompiler = $responseCompiler;
     }
 
     /**
@@ -45,12 +45,28 @@ class HomeAway
     }
 
     /**
+    * @param HomeAwayConfig $config
+    */
+    public function updateHomeAwayConfig(HomeAwayConfig $config)
+    {
+        $configData = $this->responseCompiler->formatConfigData($config);
+        $client = new Client();
+        //TODO: Сменить на URL mbhs
+        $result = $client->post('/api/update_config', [
+            'json' => [
+                "configData" => $configData,
+            ]
+        ]);
+    }
+
+    /**
      * @param Hotel $hotel
      * @return string
      */
     public function getHotelRequiredDataMessage(Hotel $hotel)
     {
         $config = $hotel->getHomeAwayConfig();
+        //TODO: Вернуть после тестов
 //        $availableListingCount = 0;
         $requestedData = [];
 
@@ -69,10 +85,6 @@ class HomeAway
 //        }
         if (empty($hotel->getLatitude()) || empty($hotel->getLongitude())) {
             $requestedData[] = 'home_away.data_to_sync.fill_longitude_and_latitude';
-        }
-
-        if ($this->assignedId == self::DEFAULT_ASSIGNED_ID) {
-            $requestedData[] = 'home_away.data_to_sync.assigned_id';
         }
 
         if (count($requestedData) > 0) {

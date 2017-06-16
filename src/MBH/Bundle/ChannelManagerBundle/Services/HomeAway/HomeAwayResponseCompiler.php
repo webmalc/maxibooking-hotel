@@ -59,54 +59,40 @@ class HomeAwayResponseCompiler
     }
 
     /**
-     * @param HomeAwayConfig[] $configs
-     * @param string $dataType
-     * @return string
+     * @param HomeAwayConfig $config
+     * @return array
      */
-    public function formatListingContentIndex($configs, $dataType)
+    public function formatConfigData(HomeAwayConfig $config)
     {
-        $rootElement = new \SimpleXMLElement('<listingContentIndex/>');
-        $advertisersElement = $rootElement->addChild('advertisers');
-        $advertiserElement = $advertisersElement->addChild('advertiser');
-        if ($dataType == 'availability') {
-            $urlName = 'homeaway_availability';
-            $nodeName = 'unitAvailabilityUrl';
-        } elseif ($dataType == 'rates') {
-            $urlName = 'homeaway_rates';
-            $nodeName = 'unitRatesUrl';
-        } else {
-            $urlName = 'homeaway_listing';
-            $nodeName = 'listingUrl';
-        }
-        $advertiserElement->addChild('assignedId', $this->assignedId);
-        foreach ($configs as $config) {
-            foreach ($config->getRooms() as $channelManagerRoomType) {
-                /** @var HomeAwayRoom $channelManagerRoomType */
-                if ($channelManagerRoomType->getIsEnabled()) {
-                    $roomType = $channelManagerRoomType->getRoomType();
-                    $listingEntry = $advertiserElement->addChild('listingContentIndexEntry');
-                    $listingEntry->addChild('listingExternalId', $roomType->getId());
-                    $listingEntry->addChild('unitExternalId', $roomType->getId());
-                    $listingEntry->addChild('active', $roomType->getIsEnabled());
-                    $listingEntry->addChild(
-                        'lastUpdatedDate',
-                        $roomType->getUpdatedAt()->format(self::HOME_AWAY_DATE_TIME_FORMAT)
-                    );
-                    //TODO: Возможно нужно добавить домен к URL
-                    $listingEntry->addChild(
-                        $nodeName,
-                        $this->router->generate(
-                            $urlName,
-                            ['roomTypeId' => $roomType->getId(), 'hotelId' => $config->getHotel()->getId()]
-                        )
-                    );
-                }
-            }
+        $roomsData = [];
+        /** @var HomeAwayRoom $room */
+        foreach ($config->getRooms() as $room) {
+            $roomType = $room->getRoomType();
+            $roomsData[$roomType->getId()] = [
+                'roomId' => $roomType->getId(),
+                'isActive' => $roomType->getIsEnabled(),
+                'updatedDate' => $roomType->getUpdatedAt()->format(self::HOME_AWAY_DATE_TIME_FORMAT),
+                'availabilityUrl' => $this->getListingDataUrl('homeaway_availability', $roomType, $config),
+                'ratesUrl' => $this->getListingDataUrl('homeaway_rates', $roomType, $config),
+                'listingUrl' => $this->getListingDataUrl('homeaway_listing', $roomType, $config)
+            ];
         }
 
-        return $rootElement->asXML();
+        $configData = [
+            'assignedId' => $config->getAssignedId(),
+            'isEnabled' => $config->getIsEnabled(),
+            'hotelId' => $config->getHotel()->getId(),
+            'roomsData' => $roomsData
+        ];
+
+        return $configData;
     }
 
+    /**
+     * @param RoomType $roomType
+     * @param HomeAwayConfig $config
+     * @return mixed
+     */
     public function formatListingData(RoomType $roomType, HomeAwayConfig $config)
     {
         $rootElement = new \SimpleXMLElement('<listing/>');
@@ -173,6 +159,13 @@ class HomeAwayResponseCompiler
         return $rootElement->asXML();
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param $roomTypeId
+     * @param $priceCaches
+     * @return mixed
+     */
     public function formatRatePeriodsData(
         \DateTime $begin,
         \DateTime $end,
@@ -206,6 +199,13 @@ class HomeAwayResponseCompiler
         return $unitRatePeriodsNode->asXML();
     }
 
+    /**
+     * @param $mbhRoomTypeId
+     * @param $priceCaches
+     * @param $restrictions
+     * @param $roomCaches
+     * @return mixed
+     */
     public function formatAvailabilityData(
         $mbhRoomTypeId,
         $priceCaches,
@@ -235,6 +235,15 @@ class HomeAwayResponseCompiler
         return $availabilityElement->asXML();
     }
 
+    /**
+     * @param HomeAwayRoom $homeAwayRoomType
+     * @param $adultCount
+     * @param $childrenCount
+     * @param $documentVersion
+     * @param HomeAwayConfig $config
+     * @param $searchResults
+     * @return mixed
+     */
     public function getQuoteResponse(
         HomeAwayRoom $homeAwayRoomType,
         $adultCount,
@@ -287,6 +296,13 @@ class HomeAwayResponseCompiler
         return $quoteResponse->asXML();
     }
 
+    /**
+     * @param $documentVersion
+     * @param $bookingResult
+     * @param $messages
+     * @return mixed
+     * @throws Exception
+     */
     public function getBookingResponse($documentVersion, $bookingResult, $messages)
     {
         $bookingResponse = new \SimpleXMLElement('<bookingResponse/>');
@@ -388,6 +404,10 @@ class HomeAwayResponseCompiler
         return $bookingResponse->asXML();
     }
 
+    /**
+     * @param Order $order
+     * @return string
+     */
     private function getPaymentStatus(Order $order)
     {
         if (!$order->getPaid()) {
@@ -403,6 +423,14 @@ class HomeAwayResponseCompiler
         return 'OVERPAID';
     }
 
+    /**
+     * @param $begin
+     * @param $end
+     * @param $roomCaches
+     * @param $restrictions
+     * @param $priceCaches
+     * @return array
+     */
     private function getAvailabilityData(
         $begin,
         $end,
@@ -441,6 +469,13 @@ class HomeAwayResponseCompiler
         ];
     }
 
+    /**
+     * @param \SimpleXMLElement $mainNode
+     * @param \DateTime $beginDate
+     * @param HomeAwayConfig $config
+     * @param $price
+     * @param $currency
+     */
     private function addPaymentScheduleNode(
         \SimpleXMLElement $mainNode,
         \DateTime $beginDate,
@@ -473,6 +508,12 @@ class HomeAwayResponseCompiler
         }
     }
 
+    /**
+     * @param $paymentType
+     * @param $price
+     * @param \DateTime $beginDate
+     * @return array
+     */
     private function getPaymentScheduleData($paymentType, $price, \DateTime $beginDate)
     {
         $data = [];
@@ -492,26 +533,42 @@ class HomeAwayResponseCompiler
         return $data;
     }
 
+    /**
+     * @param $upperLocalCurrency
+     * @return bool
+     */
     private function isLocalCurrencyAvailable($upperLocalCurrency)
     {
         return in_array($upperLocalCurrency, ['USD', 'EUR', 'GBP']);
     }
 
+    /**
+     * @param $upperLocalCurrency
+     * @return string
+     */
     private function getAvailableCurrency($upperLocalCurrency)
     {
         return $this->isLocalCurrencyAvailable($upperLocalCurrency) ? $upperLocalCurrency : 'USD';
     }
 
+    /**
+     * @return \DateTime
+     */
     private function getBeginDate()
     {
         return new \DateTime();
     }
 
+    /**
+     * @param HomeAwayConfig $config
+     * @param RoomType $roomType
+     * @return HomeAwayRoom|mixed|null
+     */
     private function getHARoomByRoomType(HomeAwayConfig $config, RoomType $roomType)
     {
         foreach ($config->getRooms() as $room) {
             /** @var HomeAwayRoom $room */
-            if ($room->getRoomType() == $roomType) {
+            if ($room->getRoomType()->getId() === $roomType->getId()) {
                 return $room;
             }
         }
@@ -522,5 +579,16 @@ class HomeAwayResponseCompiler
     private function getEndDate()
     {
         return new \DateTime('+2 year');
+    }
+
+    /**
+     * @param $urlName
+     * @param RoomType $roomType
+     * @param HomeAwayConfig $config
+     * @return string
+     */
+    private function getListingDataUrl($urlName, RoomType $roomType, HomeAwayConfig $config)
+    {
+        return $this->router->generate($urlName, ['roomTypeId' => $roomType->getId(), 'hotelId' => $config->getHotel()->getId()]);
     }
 }

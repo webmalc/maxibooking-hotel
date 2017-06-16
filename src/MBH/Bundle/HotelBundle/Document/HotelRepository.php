@@ -23,10 +23,14 @@ class HotelRepository extends DocumentRepository
         return $qb ?? null;
     }
 
+    /**
+     * @return array|null|object
+     */
     public function getHotelWithFilledContacts()
     {
         return $this->createQueryBuilder()
             ->field('contactInformation')->exists(true)->notEqual(null)
-            ->getQuery()->getSingleResult();
+            ->getQuery()
+            ->getSingleResult();
     }
 }

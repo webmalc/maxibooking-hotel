@@ -3,6 +3,7 @@ namespace MBH\Bundle\ChannelManagerBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -60,6 +61,10 @@ class ConfigsSubscriber implements EventSubscriber
         if ($doc instanceof Tariff) {
             $this->removeDoc('Tariff', 'Tariff', $doc);
             $ch->updateInBackground();
+        }
+
+        if ($doc instanceof HomeAwayConfig) {
+            $this->container->get('mbh.channel_manager.home_away')->updateHomeAwayConfig($doc);
         }
     }
 

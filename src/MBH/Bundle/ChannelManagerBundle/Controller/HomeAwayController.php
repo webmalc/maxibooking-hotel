@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 
-//TODO: Уточнить насчето местоположение назначенного id
 /**
  * @Route("/homeaway")
  */
@@ -245,7 +244,7 @@ class HomeAwayController extends BaseController
 
     /**
      *
-     * @Route("/quotes")
+     * @Route("/quotes", name="homeaway_quotes")
      * @param Request $request
      * @return Response
      * @throws \Exception
@@ -305,78 +304,7 @@ class HomeAwayController extends BaseController
      */
     public function bookingRequestAction(Request $request)
     {
-//        $bookingRequest = $request->getContent();
-        $bookingRequest = '<?xml version="1.0" encoding="UTF-8"?>
-            <bookingRequest>
-            <documentVersion>1.1</documentVersion>
-            <bookingRequestDetails>
-            <advertiserAssignedId>1931</advertiserAssignedId>
-            <listingExternalId>58b93c03a8471801ee458562</listingExternalId>
-            <unitExternalId>58b93c03a8471801ee458562</unitExternalId>
-            <propertyUrl>http://stage.homeaway.com/vacation-rental/p3173184</propertyUrl>
-            <listingChannel>HOMEAWAY_US</listingChannel>
-            <masterListingChannel>HOMEAWAY_US</masterListingChannel>
-            <message>I will need a crib provided.</message>
-            <inquirer>
-            <title>Ms.</title>
-            <firstName>Amy</firstName>
-            <lastName>Smith</lastName>
-            <emailAddress>amy@gmail.com</emailAddress>
-            <phoneNumber> 5125551212</phoneNumber>
-            <address rel="BILLING">
-            <addressLine1>10 Main Street</addressLine1>
-            <addressLine3>Austin</addressLine3>
-            <addressLine4>TX</addressLine4>
-            <country>US</country>
-            <postalCode>78703</postalCode>
-            </address>
-            </inquirer>
-            <commission/>
-            <reservation>
-            <numberOfAdults>2</numberOfAdults>
-            <numberOfChildren>1</numberOfChildren>
-            <numberOfPets>0</numberOfPets>
-            <reservationDates>
-            <beginDate>2017-02-19</beginDate>
-            <endDate>2017-02-27</endDate>
-            </reservationDates>
-            </reservation>
-            <orderItemList>
-            <orderItem>
-            <feeType>MISC</feeType>
-            <name>name</name>
-            <preTaxAmount currency="USD">0.00</preTaxAmount>
-            <totalAmount currency="USD">2399.85</totalAmount>
-            </orderItem>
-            </orderItemList>
-            <paymentForm>
-            <paymentCard>
-            <paymentFormType>CARD</paymentFormType>
-            <billingAddress rel="BILLING">
-            <addressLine1>10 Main Street</addressLine1>
-            <addressLine3>Austin</addressLine3>
-            <addressLine4>TX</addressLine4>
-            <country>US</country>
-            <postalCode>78703</postalCode>
-            </billingAddress>
-            <cvv>123</cvv>
-            <expiration>02/2017</expiration>
-            <maskedNumber>************1111</maskedNumber>
-            <nameOnCard>Amy Smith</nameOnCard>
-            <number>4111111111111111</number>
-            <numberToken>8ec791fd-e6ba-4069-ab3e-2eb0e5758817</numberToken>
-            <paymentCardDescriptor>
-            <paymentFormType>CARD</paymentFormType>
-            <cardCode>VISA</cardCode>
-            <cardType>CREDIT</cardType>
-            </paymentCardDescriptor>
-            </paymentCard>
-            </paymentForm>
-            <trackingUuid>20c98eb5-b596-4e1a-b74d-a391e3fd2a93</trackingUuid>
-            <travelerSource>HOMEAWAY_US</travelerSource>
-            </bookingRequestDetails>
-            </bookingRequest>';
-
+        $bookingRequest = $request->getContent();
         $bookingRequestXML = new \SimpleXMLElement($bookingRequest);
         $documentVersion = (string)$bookingRequestXML->documentVersion;
         $bookingRequestDetails = $bookingRequestXML->bookingRequestDetails[0];
