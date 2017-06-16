@@ -16,7 +16,7 @@ window.onload = function() {
             return;
         }
         if (e.data.action == 'resize') {
-            resultsIframe.style.height =  e.data.height > 300 ? e.data.height + 100 + 'px': '300px';
+            resultsIframe.style.height =  e.data.height > 300 ? e.data.height + 'px' : '300px';
         }
     };
     if (window.addEventListener) {

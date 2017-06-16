@@ -177,6 +177,12 @@ class User extends BaseUser implements RecipientInterface
     protected $locked;
 
     /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $locale = 'en';
+
+    /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
      */
@@ -577,4 +583,22 @@ class User extends BaseUser implements RecipientInterface
     {
         return self::TWO_FACTOR_TYPES;
     }
+
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     */
+    public function setLocale(string $locale)
+    {
+        $this->locale = $locale;
+    }
+
+
 }

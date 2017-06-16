@@ -175,6 +175,7 @@ ROLE_INDIVIDUAL_PROMOTION_ADD: Добавление индивидуальной
 ROLE_PROMOTION_ADD: Добавление акции
 ROLE_FORCE_BOOKING: Принудительное бронирование
 ROLE_PACKAGE_DELETE_REASON: Причина удаления брони
+ROLE_PRICE_SUMMARY: Просмотр итоговых значений броней по суммам
 
 ROLE_TOURIST: Клиенты
 ROLE_TOURIST_REPORT: Отчет по клиентам

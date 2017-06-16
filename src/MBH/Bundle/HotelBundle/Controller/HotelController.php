@@ -118,7 +118,7 @@ class HotelController extends Controller
             //todo: create services
             $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
             $client = $this->container->getParameter('client');
-            $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &', null, ['MBCLIENT' => $client]);
+            $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'doctrine:mongodb:fixtures:load --append --no-debug > /dev/null 2>&1 &', null, ['MBCLIENT' => $client]);
             $process->run();
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
