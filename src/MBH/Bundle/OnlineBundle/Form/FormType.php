@@ -55,6 +55,20 @@ class FormType extends AbstractType
                 ]
             )
             ->add(
+                'roomTypeChoices',
+                DocumentType::class,
+                [
+                    'label' => 'form.formType.room_type_choices',
+                    'class' => 'MBH\Bundle\HotelBundle\Document\RoomType',
+                    'group' => 'form.formType.parameters',
+                    'required' => false,
+                    'multiple' => true,
+                    'group_by' => 'hotel',
+                    'attr' => ['placeholder' => 'form.formType.room_type_choices_placeholder'],
+                    'help' =>  'form.formType.room_type_choices_desc'
+                ]
+            )
+            ->add(
                 'tourists',
                 CheckboxType::class,
                 [
@@ -82,6 +96,13 @@ class FormType extends AbstractType
                 'value' => true,
                 'required' => false,
                 'help' => 'form.formType.used_children_ages.help'
+            ])
+            ->add('maxPackages', ChoiceType::class, [
+                'label' => 'form.formType.max_packages.label',
+                'group' => 'form.formType.parameters',
+                'choices' => array_combine(range(1, 20), range(1, 20)),
+                'required' => true,
+                'help' => 'form.formType.max_packages.help'
             ])
             ->add('resultsUrl', TextType::class, [
                 'label' => 'form.formType.resultsUrl_label',
