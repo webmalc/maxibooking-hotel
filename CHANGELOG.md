@@ -1,3 +1,7 @@
+1.5.10
+============
+* online form improvements && fixes
+
 1.5.9
 =============
 * new rabbitmq (redmine #644)
