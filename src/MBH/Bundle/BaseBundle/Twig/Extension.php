@@ -150,7 +150,12 @@ class Extension extends \Twig_Extension
             $format[] .= '%i {minutes}';
         }
         $format = implode(' ', $format);
-        $format = str_replace(['{days}', '{hours}', '{minutes}'], ['д.', 'ч.', 'мин.'], $format);
+        $format = str_replace(['{days}', '{hours}', '{minutes}'], [
+            $this->translator->trans('twig.extensiion.day_abbr'),
+            $this->translator->trans('twig.extensiion.hour_abbr'),
+            $this->translator->trans('twig.extensiion.minute_abbr')
+        ], $format);
+
         return $interval->format($format);
     }
 

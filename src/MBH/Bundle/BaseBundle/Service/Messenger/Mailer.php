@@ -128,7 +128,7 @@ class Mailer implements \SplObserver
      */
     public function getSystemRecipients($category = null, Hotel $hotel = null)
     {
-        $error = 'Не удалось отправить письмо. Нет ни одного получателя.';
+        $error = 'Failed to send email. There is not a single recipient.';
 
         if (empty($category)) {
             throw new Exception($error);

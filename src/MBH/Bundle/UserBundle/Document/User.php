@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @MBHValidator\User
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
+ * @MongoDBUnique(fields="email", message="validator.user.email_is_busy")
  * @MongoDBUnique(fields="username", message="mbhuserbundle.document.user.takoy.login.uzhe.zaregistrirovan")
  */
 class User extends BaseUser implements RecipientInterface

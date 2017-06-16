@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Controller\ChessBoardController;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
@@ -143,7 +144,7 @@ class ChessBoardDataBuilder
     }
 
     /**
-     * Получение массива данныых о количестве свободных комнат, разделенных по дням
+     * Getting data of the number of available rooms, separated by day
      *
      * @return array
      */
@@ -227,9 +228,6 @@ class ChessBoardDataBuilder
     }
 
     /**
-     * Возвращает данные о периодах без размещения броней, имеющих неполное размещение,
-     * ...то есть имеющих данные о размещении, но дата окончания последнего размещения меньше даты выезда брони
-     *
      * @return array
      */
     private function getDateIntervalsWithoutAccommodation()
@@ -289,11 +287,10 @@ class ChessBoardDataBuilder
                     ->fetchWithAccommodation(
                         $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
                     );
-                //сортируем по датам начала размещения
+
                 $this->packageAccommodations = $this->accommodationManipulator
                     ->sortAccommodationsByBeginDate($accommodations->toArray())->toArray();
 
-                //сортируем по id брони
                 usort($this->packageAccommodations, function ($a, $b) {
                     /** @var PackageAccommodation $a */
                     /** @var PackageAccommodation $b */
@@ -334,8 +331,6 @@ class ChessBoardDataBuilder
         foreach ($this->getRoomTypes() as $roomType) {
 
             if (isset($roomCaches[$roomType->getId()])) {
-                //Данные о комнатах могут быть получены либо для всех тарифов, и массив, содержащий их будет иметь индекс 0,
-                // либо для одного и будет иметь индекс тарифа, для которого искали данные
                 $roomCachesByDates = current($roomCaches[$roomType->getId()]);
                 foreach (new \DatePeriod($this->beginDate, new \DateInterval('P1D'), $endDate) as $day) {
                     /** @var \DateTime $day */
@@ -499,19 +494,11 @@ class ChessBoardDataBuilder
 
             foreach ($roomsByRoomType as $room) {
                 /** @var Room $room */
-                //TODO: Переделать
-                $houseDetails = '';
-                if ($room->getHousing()) {
-                    $houseDetails .= "Корпус \"" . $room->getHousing()->getName() . "\"<br>";
-                }
-                if ($room->getFloor()) {
-                    $houseDetails .= 'Этаж ' . $room->getFloor();
-                }
 
                 $roomsData[$room->getId()] = [
                     'name' => $room->getName(),
                     'statuses' => $room->getStatus()->toArray(),
-                    'houseDetails' => $houseDetails
+                    'room' => $room
                 ];
             }
         }
@@ -560,7 +547,7 @@ class ChessBoardDataBuilder
     }
 
     /**
-     * Ленивая загрузка массива объектов RoomType, используемых в данном запросе
+     * Lazy loading of room types, used in the request
      * @return RoomType[]
      */
     private function getRoomTypes()

@@ -39,7 +39,7 @@
 
     <div class="header">
         <div class="title">
-            <h2>{{ 'mbhpackagebundle.view.documents.pdftemplates.schet'|trans }} № {{ entity.numberWithPrefix }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ 'now'|date('d.m.Y H:i') }}.</h2>
+            <h2>{{ 'pdf_templates.bill.bill_header'|trans({'%packageNumber%' : entity.numberWithPrefix, '%date%' : 'now'|date('d.m.Y H:i')}) }}.</h2>
         </div>
         {% if hotel and hotel.logoUrl %}
             <div class="logo">
@@ -113,7 +113,7 @@
                     <td align="center">{{ counter }}</td>
                     <td>{{ serviceGroup.byService.name }}</td>
                     <td align="center">{{ serviceGroup.actuallyAmount }}</td>
-                    <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
+                    <td align="center">{{ 'pdf_templates.bill.number_of_elements'|trans}}</td>
                     <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
                     <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
                 </tr>
@@ -124,12 +124,12 @@
         <!-- Total -->
         <table border="0" width="100%">
             <tr>
-                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.zakazanno'|trans }}:</strong></td>
+                <td align="right"><strong>{{ 'pdf_templates.bill.ordered'|trans }}:</strong></td>
                 <td align="right" style="width: 120px;"><strong>{{ total|number_format(2) }}</strong></td>
             </tr>
         </table>
 
-        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ counter }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>{{ 'pdf_templates.bill.ordered_services'|trans({'%servicesQuantity%' : counter, '%sumSize%' : total|number_format(2), '%currency%' : currency().text}) }}<br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
 
@@ -168,7 +168,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.oplacheno'|trans }}:</strong></td>
+                    <td align="right"><strong>{{ 'pdf_templates.bill.payed'|trans}}:</strong></td>
                     <td align="right" style="width: 120px;"><strong>+{{ paidTotal|number_format(2) }}</strong></td>
                 </tr>
             </tbody>
@@ -186,7 +186,7 @@
             <tbody>
             <tr style="font-size: 20px">
                 <td align="right">
-                    <strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.itog'|trans }}:</strong>
+                    <strong>{{ 'pdf_templates.bill.total'|trans}}:</strong>
                 </td>
                 <td align="right" style="width: 160px;"><strong>{{ (paidTotal - order.price)|number_format(2) }}</strong></td>
             </tr>
@@ -195,7 +195,7 @@
 
 
         <div style="margin-top: 70px">
-            <div class="ib">{{ 'mbhpackagebundle.view.documents.pdftemplates.dezhurniy_administrator'|trans }}</div>
+            <div class="ib">{{ 'pdf_templates.bill.administrator_on_duty'|trans}}</div>
             <div class="ib" style="border-bottom: 1px solid #000; width: 300px;"></div>
             <div class="ib" style="width: 150px">{% if user is defined and user %}{{ user|initial }}{% endif %}</div>
         </div>

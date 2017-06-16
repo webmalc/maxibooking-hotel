@@ -33,3 +33,5 @@ validator.document.tableType.max_name: Превышено допустимое �
 
 validator.document.category.unique: Такая категория уже существует
 validator.document.table.unique: Такой стол уже существует
+
+validator.document.table.table_can_have_less_chairs: Всего стол может иметь 20 стульев

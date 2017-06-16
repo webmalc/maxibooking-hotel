@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
@@ -29,6 +30,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -56,6 +58,9 @@ class TouristController extends Controller
         ];
     }
 
+    /**
+     * @return Form
+     */
     public function getTouristFilterForm()
     {
         $form = $this->createFormBuilder(null, [
@@ -71,7 +76,7 @@ class TouristController extends Controller
                 'format' => 'dd.MM.yyyy',
                 'required' => false
             ])
-            ->add('citizenship', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('citizenship', InvertChoiceType::class, [
                 'required' => false,
                 'choices' => [
                     TouristQueryCriteria::CITIZENSHIP_NATIVE => 'Граждане РФ',

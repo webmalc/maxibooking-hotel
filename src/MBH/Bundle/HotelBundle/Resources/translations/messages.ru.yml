@@ -198,7 +198,7 @@ form.task.updatableDate: Обновлено
 form.task.description: Комментарий
 form.task.status: Статус
 form.task.roomType: Тип номера
-
+form.notice_stay_place_xls_type.not_specified: Не указано
 
 form.task.group.general_add: Добавление задачи
 form.task.group.general_edit: Редактирование задачи

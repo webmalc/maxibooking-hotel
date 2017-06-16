@@ -4,11 +4,9 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
-use MBH\Bundle\PackageBundle\Document\DeleteReason;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
@@ -23,7 +21,6 @@ use MBH\Bundle\PackageBundle\Form\PackageAccommodationRoomType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PackageBundle\Lib\PackageAccommodationException;
-use MBH\Bundle\PackageBundle\Services\CsvGenerate;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
 use MBH\Bundle\PackageBundle\Services\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -39,7 +36,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Class PackageController
@@ -547,8 +543,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         } catch (PackageCreationException $e) {
             $createdPackageCount = count($e->order->getPackages());
             if ($packages > 1 && $createdPackageCount > 0) {
-                $request->getSession()->getFlashBag()
-                    ->set('danger', 'Создано ' . $createdPackageCount . ' из ' . count($packages) . ' броней');
+                $packageCreationMessage = $this->get('translator')->trans('controller.package_controller.package_creation_flash', [
+                    '%packagesCount%' => $createdPackageCount,
+                    '%requestedPackagesCount%' => $packages
+                ]);
+                $this->addFlash('danger', $packageCreationMessage);
                 $order = $e->order;
             } else {
                 if ($this->container->get('kernel')->getEnvironment() == 'dev') {
@@ -670,7 +669,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $this->dm->persist($package);
         $this->dm->flush();
 
-        $request->getSession()->getFlashBag()->set('success', 'Гость успешно удален.');
+        $this->addFlash('success', 'controller.packageController.guest_removed_successful');
 
         return $this->redirectToRoute('package_guest', ['id' => $package->getId()]);
     }

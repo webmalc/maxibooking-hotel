@@ -106,27 +106,27 @@ class PackageServiceType extends AbstractType
                 'required' => false,
             ])
             ->add('recalcWithPackage', CheckboxType::class, [
-                'label' => 'Смещаемая?',
+                'label' => 'form.packageServiceType.is_displaced',
                 'value' => true,
                 'group' => 'form.packageServiceType.add_service',
                 'required' => false,
-                'help' => 'Смещать ли даты услуги при изменении дат брони?',
+                'help' => 'form.packageServiceType.is_displaced.help',
                 'attr' => ['class' => 'toggle-date'],
             ])
             ->add('includeArrival', CheckboxType::class, [
-                'label' => 'Учитывать заезд?',
+                'label' => 'form.packageServiceType.includeArrival',
                 'value' => true,
                 'group' => 'form.packageServiceType.add_service',
                 'required' => false,
-                'help' => 'Учитывать ли дату заезда брони?',
+                'help' => 'form.packageServiceType.includeArrival.help',
                 'attr' => ['class' => 'toggle-date'],
             ])
             ->add('includeDeparture', CheckboxType::class, [
-                'label' => 'Учитывать выезд?',
+                'label' => 'form.packageServiceType.includeDeparture',
                 'value' => true,
                 'group' => 'form.packageServiceType.add_service',
                 'required' => false,
-                'help' => 'Учитывать ли дату выезда брони?',
+                'help' => 'form.packageServiceType.includeDeparture.help',
                 'attr' => ['class' => 'toggle-date'],
             ])
             ;

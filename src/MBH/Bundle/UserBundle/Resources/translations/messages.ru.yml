@@ -16,6 +16,7 @@ form.userType.hotels: Отели
 form.userType.hotels_user_has_access_to: Отели к которым имеет доступ пользователь.
 form.userType.is_included: Включен?
 form.userType.expires_at: Действует до
+form.userType.expires_at.help: Если не указано - срок действия пользователя неограничен
 form.userType.surname: Фамилия
 form.userType.two_factor: Двухфакторная аутентификация?
 form.userType.general_info: Общая информация
@@ -26,6 +27,7 @@ form.userType.birth_date: Дата рождения
 form.userType.general_info: Общая информация
 form.userType.placeholder_name: Иван
 form.userType.placeholder_patronymic: Иванович
+form.userType.need_at_least_one_hotel: Для включения рабочих смен должен быть выбран один отель
 controller.profileController.new_password_saved_success: 'Новый пароль успешно сохранен.'
 controller.profileController.record_saved_success: 'Запись успешно создана.'
 controller.profileController.record_edited_success: 'Запись успешно отредактирована.'
@@ -81,3 +83,16 @@ restaurantbundle.controller.warehouse: 'Склад'
 
 
 mbhuserbundle.view.workshift.wait.vyyti: Выйти
+
+view.wait.your_shift_is_blocked: Ваша смена заблокирована и ожидает сдачи.
+view.wait.duration: Длительность
+view.wait.cash: Касса
+view.wait.resume: Возобновить
+view.wait.time: '%hourst% ч. %minutes% мин.'
+
+view.profile.change_pass: Сменить пароль
+
+views.add_guest_modal.add_guest: Добавление гостя
+
+view.google.enter_code: Введите код из приложения телефона Google Authenticator
+view.google.check_mail: Если Google Authenticator не настроен, проверьте почтовый ящик для получения дальнейших инструкций

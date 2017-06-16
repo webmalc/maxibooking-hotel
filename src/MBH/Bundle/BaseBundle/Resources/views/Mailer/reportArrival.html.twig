@@ -53,7 +53,7 @@
                         {{ package.order.payer.getName() }}
                         <br>
                         <small style="color:#888;">
-                            {% if package.adults > 0 %}{{ package.adults }} вз.{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} рб.{% endif %}
+                            {% if package.adults > 0 %}{{ package.adults }} {{ 'mailer.reportArrival.number_of_adults'|trans}}{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} {{ 'mailer.reportArrival.number_of_children'|trans}}{% endif %}
                         </small>
                     </td>
                     <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">

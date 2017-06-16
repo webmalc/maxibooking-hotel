@@ -38,6 +38,9 @@ mbhpricebundle.form.tariffservicetype.vyberiteuslugu: 'Выберите услу
 mbhpricebundle.form.tariffservicetype.navsekh: 'На всех'
 mbhpricebundle.form.tariffservicetype.kol-vo: Кол-во
 mbhpricebundle.form.tariffservicetype.common_group_name: Общая информация
+mbhpricebundle.form.tariffservicetype.whole_period: Весь срок
+mbhpricebundle.form.tariff_inheritance_type.group.inheritance: 'Наследование от тарифа'
+mbhpricebundle.form.tariffinheritancetype.tseny.help: 'Наследовать ли цены от родительского тарифа'
 mbhpricebundle.form.roomcachegeneratortype.nachaloperioda: 'Начало периода'
 mbhpricebundle.form.roomcachegeneratortype.konetsperioda: 'Конец периода'
 mbhpricebundle.form.roomcachegeneratortype.dninedeli: 'Дни недели'
@@ -69,6 +72,12 @@ mbhpricebundle.form.servicetype.seyf: Сейф
 mbhpricebundle.form.servicetype.mezhdunarodnoyenazvaniye: 'Международное название'
 mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya: 'Описание услуги для онлайн бронирования'
 mbhpricebundle.form.servicetype.tiprascheta: 'Тип расчета'
+mbhpricebundle.form.servicetype.is_displaceable: Смещаемая?
+mbhpricebundle.form.servicetype.is_displaceable.help: Смещать ли даты услуги при изменении дат брони?
+mbhpricebundle.form.servicetype.includeArrival: Учитывать заезд?
+mbhpricebundle.form.servicetype.includeArrival.help: Учитывать ли дату заезда брони?
+mbhpricebundle.form.servicetype.includeDeparture: Учитывать выезд?
+mbhpricebundle.form.servicetype.includeDeparture.help: Учитывать ли дату выезда брони?
 special.group.dates: Даты
 mbhpricebundle.view.roomcache.index.tipnomera: 'Тип номера'
 mbhpricebundle.view.roomcache.index.kvotypotarifam: 'Квоты по тарифам.'
@@ -78,6 +87,8 @@ mbhpricebundle.view.roomcache.graph.zabronirovano: забронировано
 mbhpricebundle.view.roomcache.graph.netdannykh: 'нет данных'
 mbhpricebundle.view.service.index.novayakategoriyauslug: 'Новая категория услуг'
 mbhpricebundle.view.service.index.redaktirovat.kategoriyu.uslug: 'Редактировать категорию услуг '
+view.service.new.small_title: 'создание категории услуг'
+view.service.new_entry.small_title: создание услуги в категории
 specials.title: Название
 mbhpricebundle.view.pricecache.table.tsena: Цена
 mbhpricebundle.view.service.index.tiprascheta: 'Тип расчета'
@@ -257,6 +268,9 @@ mbhpricebundle.view.pricecache.generator.generator: генератор
 mbhpricebundle.view.pricecache.table.tsena: Цена
 mbhpricebundle.view.pricecache.table.tsenazadetskoyeosn: Цена за детское осн. место
 mbhpricebundle.view.pricecache.table.tsenazavzrosloyedop: Цена за взрослое доп. место
+mbhpricebundle.view.pricecache.table.price_for_children_main_place: Цена за детское осн. место
+mbhpricebundle.view.pricecache.table.price_for_adult_main_place: Цена за взрослое доп. место
+mbhpricebundle.view.pricecache.table.price_for_children_additional_place: Цена за детское доп. место
 mbhpricebundle.view.pricecache.filter.displayed_price_caches_date: Дата, для которой указаны цены
 mbhpricebundle.view.pricecache.filter.displayed_price_caches_time: Время, для которого указаны цены
 price.views.priceCache.index.warning_displayed_irrelevant_prices: 'Указаны неактульные цены'
@@ -296,6 +310,7 @@ mbhpricebundle.view.tariff.index.onlayn: Онлайн
 mbhpricebundle.view.tariff.index.da: Да
 mbhpricebundle.view.tariff.index.net: Нет
 mbhpricebundle.view.tariff.index.sozdatdocherniytarif: Создать дочерний тариф
+mbhpricebundle.view.tariff.index.small_title: список
 mbhpricebundle.view.tariff.layout.tarify: Тарифы
 mbhpricebundle.view.tariff.editservices.redaktirovaniye: редактирование
 mbhpricebundle.view.tariff.editservices.dobavit: Добавить
@@ -410,6 +425,10 @@ specials.tariff: Тариф
 specials.discount: Скидка
 specials.sold: Продано
 special.apply: Применить
+
+special.edit.sold: Продано
+special.edit.sold_from: 'Продано: %soldAmount% из %soldLimit%. Осталось: %remain%'
+special.edit.packages: Брони
 
 price.datafixtures.mongodb.servicedata.eat: Питание
 price.datafixtures.mongodb.servicedata.breakfast: Завтрак
@@ -526,10 +545,22 @@ mbhpricebundle.view.roomcache.index.tip.nomera: Тип номера
 mbhpricebundle.view.roomcache.index.kvoty.po.tarifam: Квоты по тарифам
 mbhpricebundle.view.service.index.novaya.kategoriya.uslug: Новая категория услуг
 mbhpricebundle.view.service.index.tip.rascheta: Тип расчета
+mbhpricebundle.view.service.index.edit: Редактировать
+mbhpricebundle.view.service.index.no_services_in_this_category: В этой категории нет ни одной услуги
+mbhpricebundle.view.service.index.add_service: Добавить услугу
+mbhpricebundle.view.service.index.save_changes: Сохранить изменения
+mbhpricebundle.view.service.index.add_new_service: Добавить новую категорию
+mbhpricebundle.view.service.index.small_title: список
+mbhpricebundle.view.service.index.create_service: 'Создать услугу в категории %categoryName%'
+mbhpricebundle.view.service.index.remove: Удалить
+mbhpricebundle.view.service.index.remove_category: 'Удалить категорию услуг %categoryName%'
+mbhpricebundle.view.service.index.service_not_used: Услуга не используется
+mbhpricebundle.view.service.index.thing: Штука
 
 mbhpricebundle.view.special.index.tarif: Тариф
 mbhpricebundle.view.special.index.tip.nomera: Тип номера
 mbhpricebundle.view.tariff.index.daty: Даты
+mbhpricebundle.view.tariff.index.show_disabled: Показывать выключенные?
 
 mbhpricebundle.form.tarifftype.vnutrenneye.nazvaniye: Внутреннее название
 mbhpricebundle.form.tarifftype.rebenok.do: Ребенок до

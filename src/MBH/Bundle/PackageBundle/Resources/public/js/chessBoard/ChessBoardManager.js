@@ -664,7 +664,7 @@ var ChessBoardManager = (function () {
         });
     };
     ChessBoardManager.prototype.getGriddedHeightValue = function (height) {
-        //1 - бордер
+        //1px - border
         var packageElementHeight = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1;
         return Math.floor(height / packageElementHeight) * packageElementHeight - 1;
     };
@@ -675,7 +675,7 @@ var ChessBoardManager = (function () {
         return intervalMomentEnd.isAfter(this.tableEndDate);
     };
     /**
-     * Получение строки, содержащей первые буквы сторон, в которые можно расширять бронь.(e - east, w - west)
+     * Getting the line, containing first letters of sides in which enable widening (e - east, w - west)
      * @param intervalData
      * @returns {string}
      */

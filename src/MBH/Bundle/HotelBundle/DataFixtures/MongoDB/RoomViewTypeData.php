@@ -41,9 +41,9 @@ class RoomViewTypeData extends AbstractFixture implements OrderedFixtureInterfac
     }
 
     /**
-     * Проверяет существует ли в базе данных указанный тип вида комнаты
+     * Checks whether the specified type of room type exists in the database
      *
-     * @param $existingRoomViews Массив существующих типов видов комнат
+     * @param $existingRoomViews
      * @param RoomViewType $roomViewType
      * @return bool
      */

@@ -1,4 +1,4 @@
-/*global window, $, services, document, datepicker, deleteLink, Routing, mbh */
+/*global window, $, services, document, datepicker, deleteLink, Routing, mbh, Translator */
 
 var docReadyTourists = function () {
     'use strict';
@@ -111,7 +111,7 @@ var docReadyTourists = function () {
                     details = data.details;
                     $.each(data.list, function (k, v) {
                         var d = details[v.id];
-                        data.list[k].text = v.text + ' ' + '(ИНН ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
+                        data.list[k].text = v.text + ' ' + '(' + Translator.trans('tourist.inn') +' ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
                     });
 
                     return {results: data.list};
@@ -135,7 +135,7 @@ var docReadyTourists = function () {
     var $authorityOrganCodeInput = $('#mbh_document_relation_authorityOrganCode');
     select2Text($('#mbh_document_relation_authorityOrgan')).select2({
         minimumInputLength: 3,
-        placeholder: "Сделайте выбор",
+        placeholder: Translator.trans('tourist.make_a_choice'),
         allowClear: true,
         ajax: {
             url: Routing.generate('authority_organ_json_list'),

@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\MenuItem;
+use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory;
@@ -224,9 +225,10 @@ class Builder implements ContainerAwareInterface
             return true;
         }
         $menu->addChild('Additional docs header', [
-            'label' => 'Шаблоны документов'
+            'label' => $translator->trans('mbh.package.builder.document_tempates')
         ])
         ->setAttribute('dropdown_header', true);
+        /** @var DocumentTemplate $doc */
         foreach ($customDocs as $doc) {
             $menu->addChild('doc_' . $doc->getId(), [
                 'label' => $doc->getName(),

@@ -70,3 +70,6 @@ validator.accommodation.end_less_or_equal_begin: Дата окончания р�
 validator.accommodation.package_is_cancelled: Невозможно указать размещения для удаленной брони.
 validator.package.special_message: Некорректное спецпредложение
 validator.service.wrong_dates: 'Некорректные даты услуги'
+validator.document.Unwelcome.need_feel_at_least_one_characteristic: Оцените хотя бы одну характеристику гостя
+document.organiztion.kpp.value_must_by_digit: Значение должно быть числом
+document.inn_trait.inn.value_must_by_digit: Значение должно быть числом

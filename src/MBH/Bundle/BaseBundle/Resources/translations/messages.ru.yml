@@ -5,7 +5,8 @@ mbhbasebundle.service.helper.dvesti: двести
 mbhbasebundle.service.helper.trista: триста
 mbhbasebundle.service.helper.chetyresta: четыреста
 mbhbasebundle.service.helper.miliarda: милиарда
-mbhbasebundle.service.helper.odna: Один
+mbhbasebundle.service.helper.one: Один
+mbhbasebundle.service.helper.odna: Одна
 mbhbasebundle.service.helper.dve: Два
 mbhbasebundle.service.helper.tri: Три
 mbhbasebundle.service.helper.chetire: Четыре
@@ -25,7 +26,10 @@ mbhbasebundle.service.helper.seventeen: Семнадцать
 mbhbasebundle.service.helper.eighteen: Восемнадцать
 mbhbasebundle.service.helper.nineteen: Девятнадцать
 mbhbasebundle.service.helper.million: миллион
+mbhbasebundle.service.helper.millionа: миллиона
+mbhbasebundle.service.helper.millionov: миллионов
 mbhbasebundle.service.helper.milliard: миллиард
+mbhbasebundle.service.helper.milliardov: миллиардов
 mbhbasebundle.view.partials.datepickerperiodselect.period: Период
 mbhbasebundle.view.pdftemplates.individual.izveshcheniye: Извещение
 mbhbasebundle.view.pdftemplates.individual.kassir: Кассир
@@ -211,6 +215,8 @@ mailer.reportArrival.not_paid: 'Без оплаты'
 mailer.reportArrival.pure_payment: 'Частичная опл.'
 mailer.reportArrival.transfer: Трансфер
 mailer.reportArrival.guests: Гостей
+mailer.reportArrival.number_of_adults: вз.
+mailer.reportArrival.number_of_children: рб.
 mailer.order.duty: Долг
 mailer.order.date: Дата
 mailer.order.cost: Стоимость
@@ -334,6 +340,7 @@ exception.vegaState_relation_delete.message.touristCitizenship: 'Невозмо�
 exception.vegaState_relation_delete.message.touristBirthplace: 'Невозможно удалить данные о стране, так как существуют клиенты, рожденный в ней (%total%).'
 exception.housing_relation_delete.message.room: 'Невозможно удалить корпус, так как существуют комнаты, относящиеся к нему (%total%).'
 exception.ingredient_relation_delete.message.dishIngredient: 'Невозможно удалить ингредиент, так как он используется в блюдах (%total%).'
+exception.ingredient_relation_delete.message.dish: 'Невозможно удалить блюдо, т.к. оно фигурирует в заказах. Вы всегда можете его скрыть в %hrefTagStart% меню редактирования'
 exception.special_relation_delete.message.package: 'Невозможно удалить спецпредложение, так как существуют брони, относящиеся к нему (%total%).'
 
 subscriber.cannot_delete_room_in_sale_error: Невозможно удалить комнату, так как она находится в продаже.
@@ -389,7 +396,7 @@ menu.label.nomandprice.prices: Цены
 menu.label.nomandprice.restriction: Условия и ограничения
 menu.label.nomandprice.services: Услуги
 menu.label.nomandprice.promotions: Акции
-menu.label.task:  Задачи
+menu.label.task: Задачи
 menu.label.cash: Касса
 menu.label.warehouse: Склад
 menu.label.restaurant: Ресторан
@@ -402,9 +409,11 @@ menu.label.reports.managers: Менеджеры
 menu.label.reports.invite: Визовые приглашения
 menu.label.reports.analystics: Аналитика
 menu.label.reports.polls: Оценки
+menu.label.reports.windows: Окна
 menu.label.reports.work_shift: Рабочие смены
 menu.label.reports.fms: Для ФМС
 
+menu.settings.label.header: Настройки
 menu.settings.label.hotels: Отели
 menu.settings.label.housing: Корпуса
 menu.settings.label.room_types: Номерной фонд
@@ -414,12 +423,13 @@ menu.room_type_category: Группы номеров
 menu.settings.label.restaurant: Ресторан
 menu.settings.label.restaurant.ingredients: Ингредиенты
 menu.settings.label.restaurant.dishmenu: Меню блюд
-menu.settings.label.restaurant.tables: Управление столиками
+menu.settings.label.restaurant.tables: Столы
 
 menu.configs.config: Настройки
 menu.configs.users: Пользователи
 menu.configs.groups: Группы
 menu.configs.sources: Источники
+menu.configs.delete_reasons: Причины удаления
 menu.configs.templates: Шаблоны документов
 menu.configs.parameters: Параметры
 menu.configs.tasktype: Типы задач
@@ -427,7 +437,7 @@ menu.configs.warehouse: Склад
 
 menu.communication.label: Взаимодействие
 menu.communication.label.advanced: Дополнительные каналы
-menu.communication.label.yh: ВашОтель
+menu.communication.label.your_hotel: ВашОтель
 menu.communication.label.onlineform: Онлайн форма
 menu.communication.label.polls: Оценки
 menu.communication.label.invite: Визовое приглашение
@@ -569,3 +579,13 @@ mbhbasebundle.view.pdftemplates.individual.vid.platezha: Вид платежа
 hide: скрыть
 show.more: Показать еще
 errors: Ошибки
+
+controllers.export_controller.yes: 'Да'
+controllers.export_controller.no: Нет
+
+views.partials.disable_button.show_disabled_room_types: 'Показывать отключенные типы комнат'
+views.partials.disable_button.entity_delete_form.remove: Удалить
+
+twig.extensiion.day_abbr: 'д.'
+twig.extensiion.hour_abbr: 'ч.'
+twig.extensiion.minute_abbr: 'мин.'
