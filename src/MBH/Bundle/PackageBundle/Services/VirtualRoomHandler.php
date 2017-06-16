@@ -358,10 +358,12 @@ class VirtualRoomHandler
 
         /** @var Package $package */
         foreach ($packages as $package) {
-            if ($package->getVirtualRoom() == $firstVirtualRoom) {
-                $package->setVirtualRoom($secondVirtualRoom);
-            } else {
-                $package->setVirtualRoom($firstVirtualRoom);
+            if ($package->getEnd() != $begin) {
+                if ($package->getVirtualRoom() == $firstVirtualRoom) {
+                    $package->setVirtualRoom($secondVirtualRoom);
+                } else {
+                    $package->setVirtualRoom($firstVirtualRoom);
+                }
             }
         }
 
