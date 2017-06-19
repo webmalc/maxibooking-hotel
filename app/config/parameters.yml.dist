@@ -53,6 +53,10 @@ parameters:
   mbh_payment_systems_change: true
   currency_ratio_fix: 1.015
 
+  #Online form
+  online_form_sites: ['http://example.com', 'http://example.com']
+  online_form_result_url: 'http://example.com/results/'
+
   #Redis
   mbh_redis: 'redis://mbh-redis' 
 
