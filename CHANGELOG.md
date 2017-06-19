@@ -2,6 +2,7 @@
 ============
 * online form improvements && fixes
 * package searchDelay
+* cashDocuments - search by payer
 
 1.5.9
 =============

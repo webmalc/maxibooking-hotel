@@ -560,10 +560,9 @@ class PackageRepository extends DocumentRepository
                 ->getQuery()
                 ->execute();
 
-            $touristsIds = [];
-            foreach ($tourists as $tourist) {
-                $touristsIds[] = $tourist->getId();
-            }
+            $touristsIds = array_map(function ($tourist) {
+                return $tourist->getId();
+            }, $tourists->toArray());
 
             if (count($touristsIds)) {
                 $qb->addOr($qb->expr()->field('tourists.id')->in($touristsIds));
