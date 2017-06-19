@@ -349,6 +349,7 @@ class ApiController extends Controller
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
             'hotels' => $hotels,
+            'formConfig' => $formConfig,
             'tariffResults' => $tariffResults
         ];
     }

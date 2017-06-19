@@ -117,7 +117,7 @@ class HotelController extends Controller
 
             //todo: create services
             $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-            $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &');
+            $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'doctrine:mongodb:fixtures:load --append --no-debug > /dev/null 2>&1 &');
             $process->run();
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
@@ -143,7 +143,6 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
-
             $entity->uploadFile();
 
             $this->dm->persist($entity);
@@ -297,8 +296,10 @@ class HotelController extends Controller
             $this->dm->persist($hotel);
             $this->dm->flush();
 
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.hotelController.record_edited_success'));
+            $this->addFlash(
+                'success',
+                $this->get('translator')->trans('controller.hotelController.record_edited_success')
+            );
 
             return $this->afterSaveRedirect('hotel', $hotel->getId(), [], '_contact_information');
         }
@@ -455,8 +456,6 @@ class HotelController extends Controller
 
         foreach ($regions as $region) {
             foreach ($region->getCities() as $city) {
-
-
                 $data[] = [
                     'id' => $city->getId(),
                     'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' . $city->getTitle()

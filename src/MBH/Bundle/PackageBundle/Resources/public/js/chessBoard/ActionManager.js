@@ -158,7 +158,6 @@ var ActionManager = (function () {
     ActionManager.callIntervalBeginOutOfRangeModal = function (side) {
         var $alertModal = $('#entity-delete-confirmation');
         if (side == 'begin') {
-            //TODO: Поменять текст и унифировать надписи
             $alertModal.find('.modal-title').text(Translator.trans('action_manager.modal.package_begin_date_abroad.title') + '!');
             $alertModal.find('#entity-delete-modal-text').text(Translator.trans('action_manager.modal.package_begin_date_abroad.text') + '.');
         }

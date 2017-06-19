@@ -511,7 +511,7 @@ class Service extends Base
      *
      * @return bool $recalcWithPackage
      */
-    public function isRecalcWithPackage(): ?bool
+    public function isRecalcWithPackage()
     {
         return $this->recalcWithPackage;
     }
