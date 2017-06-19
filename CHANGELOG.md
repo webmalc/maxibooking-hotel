@@ -1,6 +1,7 @@
 1.5.10
 ============
 * online form improvements && fixes
+* package searchDelay
 
 1.5.9
 =============
