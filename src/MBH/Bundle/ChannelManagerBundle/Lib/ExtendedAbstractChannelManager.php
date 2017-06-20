@@ -24,8 +24,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     protected $requestFormatter;
     /** @var AbstractRequestDataFormatter $requestDataFormatter */
     protected $requestDataFormatter;
-    /** Нужно ли уведомлять сервис о получениии брони? */
-    protected $isNotifyServiceAboutReservation = false;
 
     abstract protected function getResponseHandler($response, $config = null) : AbstractResponseHandler;
 
@@ -256,7 +254,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
 
             $result = false;
         } else {
-            //TODO: Убрать или нет
             $this->log($response);
             $this->log('Reservations count: ' . $responseHandler->getOrdersCount());
 
@@ -311,9 +308,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                         '#' . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName()
                     );
                 }
-                if ($this->isNotifyServiceAboutReservation) {
-                    $this->notifyServiceAboutReservation($orderInfo, $config);
-                }
+                $this->notifyServiceAboutReservation($orderInfo, $config);
             };
         }
     }

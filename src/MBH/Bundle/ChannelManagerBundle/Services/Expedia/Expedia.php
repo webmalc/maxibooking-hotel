@@ -21,8 +21,6 @@ class Expedia extends ExtendedAbstractChannelManager
         'maxBeforeArrival' => null,
     ];
 
-    protected $isNotifyServiceAboutReservation = true;
-
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
@@ -47,7 +45,7 @@ class Expedia extends ExtendedAbstractChannelManager
         return $this->container->get('mbh.channelmanager.expedia_response_handler')->setInitData($response, $config);
     }
 
-    public function notifyServiceAboutReservation(AbstractOrderInfo $orderInfo, $config)
+    protected function notifyServiceAboutReservation(AbstractOrderInfo $orderInfo, $config)
     {
         /** @var ExpediaOrderInfo $orderInfo */
         $requestData = $this->requestDataFormatter->formatNotifyServiceData($orderInfo, $config);
