@@ -120,9 +120,11 @@
             {% endif %}
             {% set bootstrapLocaleFile = 'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.' ~ bootstrapLocale ~ '.min.js' %}
             {% set select2LocaleFile = 'assets/vendor/select2/dist/js/i18n/' ~ select2Locale ~ '.js' %}
+            {% set frontMessagesFile = 'js/translations/front_messages/' ~ locale ~ '.js' %}
 
             <script type="text/javascript" src="{{ asset(bootstrapLocaleFile) }}"></script>
             <script type="text/javascript" src="{{ asset(select2LocaleFile) }}"></script>
+            <script type="text/javascript" src="{{ asset(frontMessagesFile) }}"></script>
 
             <script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js"></script>
@@ -131,7 +133,6 @@
             <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js"></script>
-            <script src="{{ url('bazinga_jstranslation_js', { 'domain': 'front_messages' }) }}"></script>
 
             {% javascripts filter='uglifyjs2'
             '@MBHBaseBundle/Resources/public/js/app/*'
