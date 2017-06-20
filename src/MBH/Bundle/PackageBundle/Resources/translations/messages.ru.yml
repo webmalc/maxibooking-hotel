@@ -103,6 +103,7 @@ mbhpackagebundle.view.tourist.index.kontakty: Контакты
 mbhpackagebundle.view.package.late.early.check.modal.net: Нет
 form.packageMainType.promotion: Акция
 form.packageServiceType.amount: Количество
+form.packageMainType.tariff: Тариф
 mbhpackagebundle.view.package.accommodation.otmena: Отмена
 form.organizationType.name: Название
 mbhpackagebundle.view.package.accommodation.data.pereyezda: 'Дата переезда'

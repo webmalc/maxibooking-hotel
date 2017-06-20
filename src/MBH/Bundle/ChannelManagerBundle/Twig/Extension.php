@@ -1,7 +1,6 @@
 <?php
 namespace MBH\Bundle\ChannelManagerBundle\Twig;
 
-use Symfony\Component\Translation\DataCollectorTranslator;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;

@@ -116,6 +116,7 @@ $(document).ready(function () {
         "serverSide": true,
         "ordering": true,
         "autoWidth": false,
+        "searchDelay": 2500,
         "ajax": {
             "url": Routing.generate('cash_json'),
             "data": function (d) {

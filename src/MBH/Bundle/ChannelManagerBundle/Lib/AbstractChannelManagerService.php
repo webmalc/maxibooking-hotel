@@ -23,7 +23,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     const TEST = true;
 
     const UNAVAIBLE_PRICES = [];
-
+    
     const UNAVAIBLE_RESTRICTIONS = [];
 
     /**
@@ -73,7 +73,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     protected $currency;
 
     protected $roomManager;
-
+    
     /**
      * @var array
      */
@@ -98,7 +98,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     {
         return $this->errors;
     }
-
+    
     /**
      * {{ @inheritDoc }}
      */
@@ -109,12 +109,17 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         if (!$config && !$config->getIsEnabled()) {
             return null;
         }
+
         $trans = $this->container->get('translator');
         $overview = new ChannelManagerOverview();
-        $overview->setBegin($begin)->setEnd($end);
+        $overview->setBegin($begin)
+            ->setName(static::class)
+            ->setEnd($end);
 
         $getError = function (array $types, string $prefix, ChannelManagerOverview &$overview, string $method) use ($config, $trans, $begin, $end) {
-
+            if (empty($types)) {
+                return null;
+            }
             $getMethod = 'get' . ucfirst($method);
             foreach ($this->$getMethod($config, $begin, $end, $types) as $val) {
                 $message = $val->getDate()->format('d.m.Y') . ': ' . $val->getTariff();
@@ -133,6 +138,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
         $getError(static::UNAVAIBLE_PRICES, 'channelmanager.notifications.prices', $overview, 'prices');
         $getError(static::UNAVAIBLE_RESTRICTIONS, 'channelmanager.notifications.restrictions', $overview, 'restrictions');
+
         return $overview;
     }
 
@@ -147,7 +153,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
         $trans = $this->container->get('translator');
         $getError = function (array $types, string $message, array &$errors, string $method) use ($config, $trans) {
-
+            if (empty($types)) {
+                return $errors;
+            }
             if (count($types) && $this->$method($config, $types)) {
                 $error = $trans->trans($message) . ': ';
                 $error .= implode(', ', array_map(function ($element) use ($trans, $message) {
@@ -205,13 +213,11 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     public function closeAll()
     {
-        $this->log('Abstract closeAll function start');
         $result = true;
         foreach ($this->getConfig() as $config) {
             $check = $this->closeForConfig($config);
             $result ? $result = $check : $result;
         }
-        $this->log('Abstract closeAll function end.');
 
         return $result;
     }
@@ -417,7 +423,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             return $element->getRoomType()->getId();
         }, $config->getRooms()->toArray()));
     }
-
+    
     /**
      * Get tariffIds from config
      *
@@ -511,7 +517,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
         return $builder->getQuery()->execute();
     }
-
+    
     /**
      * Get prices by config and type
      *
@@ -547,7 +553,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         foreach ($types as $type => $val) {
             $builder->addOr($builder->expr()->field($type)->notEqual($val));
         }
-
+        
         return $builder->getQuery()->count();
     }
 

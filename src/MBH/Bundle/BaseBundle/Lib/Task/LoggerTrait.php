@@ -7,6 +7,7 @@
  */
 
 namespace MBH\Bundle\BaseBundle\Lib\Task;
+
 use Symfony\Bridge\Monolog\Logger;
 
 trait LoggerTrait
@@ -22,7 +23,7 @@ trait LoggerTrait
      */
     public function logStart(array $message):string
     {
-        $log = self::class . 'message get. data: ';
+        $log = self::class . ': message get. data: ';
 
         foreach ($message as $key => $value) {
             if ($value instanceof \DateTime) {
@@ -33,6 +34,18 @@ trait LoggerTrait
             }
             $log .= $key . ' - ' . $value . '; ';
         }
+        $this->logger->info($log);
+
+        return $log;
+    }
+
+    /**
+     * @param string $output
+     * @return string
+     */
+    public function logString(string $output = null):string
+    {
+        $log = self::class . ': ' . $output;
         $this->logger->info($log);
 
         return $log;
