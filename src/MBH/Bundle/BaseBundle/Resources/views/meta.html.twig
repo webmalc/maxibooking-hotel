@@ -107,6 +107,7 @@
                 'assets/vendor/bootstrap-daterangepicker/daterangepicker.js'
                 'assets/vendor/readmore-js/readmore.min.js'
                 'bundles/bazingajstranslation/js/translator.min.js'
+                'js/translations/front_messages/ru.js'
             %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}
@@ -118,7 +119,6 @@
             <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js"></script>
             <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js"></script>
-            <script src="{{ url('bazinga_jstranslation_js', { 'domain': 'front_messages' }) }}"></script>
 
             {% javascripts filter='uglifyjs2'
             '@MBHBaseBundle/Resources/public/js/app/*'
