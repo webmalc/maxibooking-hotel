@@ -15,7 +15,7 @@
                 "{% if item.package and item.package.order and item.package.order.payer %} {{ item.package.order.payer.firstName is defined ? item.package.order.payer.lastName ~ ' ' ~ item.package.order.payer.firstName|first ~ '. ' ~ item.package.order.payer.patronymic|first ~ '.' : item.package.order.payer.name }}{% else %} <a href='{{ path("package_service", {id: item.package.id}) }}' class='danger'>&lt;не указан&gt;</a> {% endif %}",
                 "{{ item.total|number_format(2) }}",
                 "{% if item.package and item.package.order %}<div class='text-right'><a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_order_cash', {'id': item.package.order.id, 'packageId': item.package.id}) }}' class='text {% if item.package.order.isPaid %}text-success'{% elseif item.package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}>{% if item.package.paidStatus == 'success' %}{% if item.package.order.paid > item.package.order.price %}{{ 'overpaid'|trans }}{% else %}{{ 'paid'|trans }}{% endif %}{% elseif item.package.paidStatus == 'warning' or item.package.paidStatus == 'danger' %}{{ 'debt'|trans }}{% endif %}</a><br><small>{{ (item.package.debt * -1)|number_format(2) }}</small></div>{% endif %}",
-                "{{ item.note }}"
+                "{{ item.note|replace({"\n":' ', "\r":' ', "'": '', "\t": ' '}) }}"
             ] {% if loop.index != results|length %} , {% endif %}
         {% endfor %}
     ]

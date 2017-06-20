@@ -198,6 +198,10 @@ class OrderManager
             throw new Exception('Create packages error: $data["packages"] is empty.');
         }
 
+        if (!is_null($order) && !empty($order->getDeletedAt())) {
+                        throw new Exception('The specified order is deleted.');
+        }
+
         // create tourist
         if (!empty($data['tourist'])) {
             if (is_array($data['tourist'])) {
