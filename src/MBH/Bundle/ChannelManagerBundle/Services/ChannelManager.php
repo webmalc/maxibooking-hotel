@@ -159,7 +159,7 @@ class ChannelManager
     public function pullOrdersInBackground($serviceTitle = null, $old = false)
     {
         $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
-        $service ? $service = ' --service=' . $serviceTitle : '';
+        $serviceTitle ? $service = ' --service=' . $serviceTitle : '';
         $old ? $old = ' --old' : '';
 
         $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:pull ' . $env . $service . $old . '> /dev/null 2>&1 &');
@@ -195,13 +195,7 @@ class ChannelManager
                 $result->setName($service['title']);
             }
         }
-        foreach ($this->services as $service) {
-            $result = $service['service']->getOverview($begin, $end, $hotel);
-            $results[$service['key']] = $result;
-            if ($result) {
-                $result->setName($service['title']);
-            }
-        }
+
         return $results;
     }
     
