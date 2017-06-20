@@ -1002,6 +1002,21 @@ class Package extends Base implements \JsonSerializable
         return $this->services;
     }
 
+    /**
+     * @return array
+     */
+    public function getUnDeletedServices()
+    {
+        $services = [];
+        /** @var PackageService $service */
+        foreach ($this->services as $service) {
+            if (empty($service->getDeletedAt())) {
+                $services[] = $service;
+            }
+        }
+
+        return $services;
+    }
     
     /**
      * get services for recalculation
