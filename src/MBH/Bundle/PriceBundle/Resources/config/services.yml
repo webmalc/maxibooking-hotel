@@ -75,3 +75,9 @@ services:
       arguments: ['@translator']
       tags:
           - {name: form.type}
+
+  mbh.service_type:
+      class: MBH\Bundle\PriceBundle\Form\ServiceType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}
