@@ -91,7 +91,7 @@ class HotelSelector
         }
 
         // Select first hotel
-        $hotels = $hotelRepository->createQueryBuilder('s')
+        $hotels = $hotelRepository->createQueryBuilder()
             ->sort('isDefault', 'desc')
             ->getQuery()
             ->execute();

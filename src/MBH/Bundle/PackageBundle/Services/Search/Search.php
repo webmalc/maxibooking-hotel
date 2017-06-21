@@ -501,6 +501,7 @@ class Search implements SearchInterface
                 }
             }
         }
+
         return array_values($results);
     }
 

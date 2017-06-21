@@ -136,6 +136,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             }
         }
 
+        $groupedResult = $this->groupResultsByHotel($groupedResult);
+
         return [
             'results' => $groupedResult,
             'specials' => $specials,
@@ -144,6 +146,38 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons')
         ];
+    }
+
+    private function groupResultsByHotel(array $results)
+    {
+        $groupedByHotel = [];
+        foreach ($results as $result) {
+            $groupedByHotel[$result['roomType']->getHotel()->getId()][] = $result;
+        }
+
+        uksort(
+            $groupedByHotel,
+            [self::class,'sortByCurrentHotelFirst']
+        );
+
+        $groupedResults = [];
+        foreach ($groupedByHotel as $group) {
+            foreach ($group as $result) {
+                $groupedResults[] = $result;
+            }
+        }
+
+        return $groupedResults;
+
+    }
+
+    private function sortByCurrentHotelFirst($hotelA, $hotelB)
+    {
+        $currentHotelId = $this->hotel->getId();
+        $hotA = $hotelA === $currentHotelId;
+        $hotB = $hotelB === $currentHotelId;
+
+        return (int)$hotB <=> (int)$hotA;
     }
 
 }
