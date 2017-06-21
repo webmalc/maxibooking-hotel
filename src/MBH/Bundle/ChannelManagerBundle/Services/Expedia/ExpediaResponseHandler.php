@@ -68,7 +68,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
         if ($this->isXMLResponse()) {
             $xmlResponse = new \SimpleXMLElement($this->removeXmlnsString($this->response));
 
-            return (string)$xmlResponse->xpath('//Error');
+            return (string)$xmlResponse->xpath('//Error')[0];
         }
         $jsonResponse = json_decode($this->response, true);
 
@@ -90,7 +90,7 @@ class ExpediaResponseHandler extends AbstractResponseHandler
                         'rooms' => [$roomTypeId],
                         'readonly' => $tariffInfo['pricingModel'] === self::OCCUPANCY_BASED_PRICING ? false : true,
                         'minLOSDefault' => $tariffInfo['minLOSDefault'],
-                        'maxLOSDefault' => $tariffInfo['maxLOSDefault']
+                        'maxLOSDefault' => $tariffInfo['maxLOSDefault'],
                     ];
                 }
             }

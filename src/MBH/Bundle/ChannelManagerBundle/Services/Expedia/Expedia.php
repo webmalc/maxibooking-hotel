@@ -19,6 +19,8 @@ class Expedia extends ExtendedAbstractChannelManager
         'maxStayArrival' => null,
         'minBeforeArrival' => null,
         'maxBeforeArrival' => null,
+        'maxGuest' => null,
+        'minGuest' => null
     ];
 
     public function __construct(ContainerInterface $container)

@@ -125,9 +125,9 @@ abstract class AbstractRequestDataFormatter
                 $tariff = $tariffInfo['doc'];
                 $tariffId = $tariff->getId();
 
-                /** @var PriceCache $priceCache */
-                $priceCache = null;
                 foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+                    /** @var PriceCache $priceCache */
+                    $priceCache = null;
                     /** @var \DateTime $day */
                     if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                         /** @var PriceCache $priceCache */

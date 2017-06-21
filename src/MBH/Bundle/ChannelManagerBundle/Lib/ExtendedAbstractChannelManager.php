@@ -25,7 +25,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     /** @var AbstractRequestDataFormatter $requestDataFormatter */
     protected $requestDataFormatter;
 
-    abstract protected function getResponseHandler($response, $config = null) : AbstractResponseHandler;
+    abstract protected function getResponseHandler($response, $config = null): AbstractResponseHandler;
 
     /**
      * @param \DateTime $begin
@@ -45,7 +45,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             $serviceTariffs = $this->pullTariffs($config);
             $pricesData = $this->requestDataFormatter->formatPriceRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdatePricesRequest($pricesData);
-
             foreach ($requestInfoArray as $requestInfo) {
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $result = $this->checkResponse($sendResult);
@@ -72,8 +71,9 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             $roomsData = $this->requestDataFormatter->formatRoomRequestData($begin, $end, $roomType, $config);
+            dump($roomsData);
+            exit();
             $requestInfoArray = $this->requestFormatter->formatUpdateRoomsRequest($roomsData);
-
             foreach ($requestInfoArray as $requestInfo) {
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $result = $this->checkResponse($sendResult);
@@ -99,12 +99,10 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $end = $this->getDefaultEnd($begin, $end);
 
         // iterate hotels
-        foreach ($this->getConfig() as $config)
-        {
+        foreach ($this->getConfig() as $config) {
             $serviceTariffs = $this->pullTariffs($config);
             $restrictionsData = $this->requestDataFormatter->formatRestrictionRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdateRestrictionsRequest($restrictionsData);
-
             foreach ($requestInfoArray as $requestInfo) {
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $result = $this->checkResponse($sendResult);
@@ -135,17 +133,21 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     {
         $roomTypes = [];
 
-        //Получаем список объектов RequestInfo, содержащих данные о запросах.
-        $requestInfoList = $this->requestFormatter->formatPullRoomsRequest($config);
-
-        foreach ($requestInfoList as $requestInfo) {
-            $response = $this->sendRequestAndGetResponse($requestInfo);
-            $responseHandler = $this->getResponseHandler($response, $config);
-            if ($responseHandler->isResponseCorrect()) {
-                $roomTypesData = $responseHandler->getRoomTypesData();
-                $roomTypes += $roomTypesData;
-            }
-        }
+//        //Получаем список объектов RequestInfo, содержащих данные о запросах.
+//        $requestInfoList = $this->requestFormatter->formatPullRoomsRequest($config);
+//
+//        foreach ($requestInfoList as $requestInfo) {
+//            $response = $this->sendRequestAndGetResponse($requestInfo);
+//            $responseHandler = $this->getResponseHandler($response, $config);
+//            if ($responseHandler->isResponseCorrect()) {
+//                $roomTypesData = $responseHandler->getRoomTypesData();
+//                $roomTypes += $roomTypesData;
+//            }
+//        }
+        $roomTypes = [
+            1 => 'Первая',
+            2=> 'Вторая'
+        ];
 
         return $roomTypes;
     }
@@ -157,18 +159,33 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
-        $tariffs = [];
-        $roomTypes = $this->pullRooms($config);
+        $tariffs = [
+                123 => [
+                    'title' => 'Первый',
+                    'rooms' => [1],
+                    'readonly' => false,
+                    'minLOSDefault' => 1,
+                    'maxLOSDefault' => 28
+                ],
+                213 => [
+                    'title' => 'Второй',
+                    'rooms' => [2],
+                    'readonly' => false,
+                    'minLOSDefault' => 1,
+                    'maxLOSDefault' => 28
+                ]
+        ];
+//        $roomTypes = $this->pullRooms($config);
 
         //Получаем список объектов RequestInfo, содержащих данные о запросах.
-        $requestInfoList = $this->requestFormatter->formatPullTariffsRequest($config, $roomTypes);
+//        $requestInfoList = $this->requestFormatter->formatPullTariffsRequest($config, $roomTypes);
 
-        foreach ($requestInfoList as $requestInfo) {
-            $response = $this->sendRequestAndGetResponse($requestInfo);
-            $responseHandler = $this->getResponseHandler($response, $config);
-            $tariffsData = $responseHandler->getTariffsData($roomTypes);
-            $tariffs += $tariffsData;
-        }
+//        foreach ($requestInfoList as $requestInfo) {
+//            $response = $this->sendRequestAndGetResponse($requestInfo);
+//            $responseHandler = $this->getResponseHandler($response, $config);
+//            $tariffsData = $responseHandler->getTariffsData($roomTypes);
+//            $tariffs += $tariffsData;
+//        }
 
         return $tariffs;
     }
@@ -251,7 +268,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $orderHandler = $this->container->get('mbh.channelmanager.order_handler');
         if (!$this->checkResponse($response)) {
             $this->log($responseHandler->getErrorMessage());
-
             $result = false;
         } else {
             $this->log($response);
@@ -308,7 +324,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                         '#' . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName()
                     );
                 }
-                $this->notifyServiceAboutReservation($orderInfo, $config);
+//                $this->notifyServiceAboutReservation($orderInfo, $config);
             };
         }
     }
