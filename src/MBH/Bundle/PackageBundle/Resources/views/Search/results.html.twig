@@ -24,6 +24,8 @@
             <tr>
                 <th class="td-xxs"></th>
                 <th>{{ "specials.title"|trans }}</th>
+                {#<tr>{{ "specials.hotel"|trans }}</tr>#}
+                <th class="td-md">{{ "specials.hotel"|trans }}</th>
                 <th class="td-md">{{ "specials.dates"|trans }}</th>
                 <th class="td-md">{{ "specials.roomTypes"|trans }}</th>
                 <th class="td-md">{{ "specials.tariff"|trans }}</th>
@@ -38,6 +40,7 @@
                 <tr class="{{ selectedSpecial ? 'success' }}">
                     <td class="text-center"><i class='fa fa-star'></i></td>
                     <td><a target="_blank" href="{{ path('special_edit', {'id': special.id}) }}">{{ special }}</a></td>
+                    <td>{{ special.hotel.name }}</td>
                     <td>{{ special.begin|mbh_format }} - {{ special.end|mbh_format }}</td>
                     <td>
                         <small>{{ special.roomTypes|join(';<br>')|raw }}</small>

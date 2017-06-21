@@ -12,6 +12,9 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
  */
 class SpecialFilter
 {
+
+    //TODO: Костыль!!! Вынести хотя бы в настройки
+    const SPECIAL_INFANT_AGE = 2;
     /**
      * @var Hotel
      */
@@ -69,6 +72,29 @@ class SpecialFilter
     /**
      * @return \DateTime
      */
+
+    /**
+     * @var int
+     */
+    private $adults;
+    /**
+     * @var int
+     */
+    private $children = 0;
+    /**
+     * @var array
+     */
+    private $childrenAges = [];
+
+    /**
+     * @var int
+     */
+    private $infantAge = self::SPECIAL_INFANT_AGE;
+
+    /**
+     * @return \DateTime|null
+     */
+
     public function getBegin(): ?\DateTime
     {
         return $this->begin;
@@ -274,6 +300,72 @@ class SpecialFilter
 
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getAdults(): ?int
+    {
+        return $this->adults;
+    }
+
+    /**
+     * @param int $adults
+     */
+    public function setAdults(int $adults)
+    {
+        $this->adults = $adults;
+    }
+
+    /**
+     * @return int
+     */
+    public function getChildren(): ?int
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param int $children
+     */
+    public function setChildren(int $children)
+    {
+        $this->children = $children;
+    }
+
+    /**
+     * @return array
+     */
+    public function getChildrenAges(): ?array
+    {
+        return $this->childrenAges;
+    }
+
+    /**
+     * @param array $childrenAges
+     */
+    public function setChildrenAges(array $childrenAges)
+    {
+        $this->childrenAges = $childrenAges;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInfantAge(): ?int
+    {
+        return $this->infantAge;
+    }
+
+    /**
+     * @param mixed $infantAge
+     */
+    public function setInfantAge(int $infantAge)
+    {
+        $this->infantAge = $infantAge;
+    }
+
+
 
 
 

@@ -18,14 +18,12 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
             ->createQueryBuilder()
             ->distinct('roomType.$id')
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
 
         return $this->createQueryBuilder()
             ->field('id')->in(iterator_to_array($ids))
             ->getQuery()
-            ->execute()
-            ;
+            ->execute();
     }
 
     /**
@@ -71,7 +69,7 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
     {
         $queryBuilder = $this->createQueryBuilder();
 
-        if ($categories){
+        if ($categories) {
             $queryBuilder->field('category.id')->in($categories);
         }
 
@@ -80,6 +78,21 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
         }
 
         return $queryBuilder->getQuery()->execute();
+    }
+
+    public function getByCapacity(int $adults, int $children)
+    {
+        $roomTypes = $this->findAll();
+        $result = array_filter(
+            $roomTypes,
+            function (RoomType $roomType) use ($adults, $children) {
+
+                return $roomType->getTotalPlaces() >= ($adults + $children);
+            }
+        );
+
+        return $result;
+
     }
 
 }

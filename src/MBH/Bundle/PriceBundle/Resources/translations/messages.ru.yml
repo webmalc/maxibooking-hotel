@@ -296,6 +296,7 @@ form.group.discount: Скидка
 special.discount.help: Размер скидки, применяемой к стоимости дня брони
 
 specials.title: Название
+specials.hotel: Пансионат
 specials.dates: Даты
 specials.roomTypes: Тип номера
 specials.tariff: Тариф

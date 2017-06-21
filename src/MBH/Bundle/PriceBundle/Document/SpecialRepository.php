@@ -61,11 +61,13 @@ class SpecialRepository extends DocumentRepository
         }
 
         if ($filter->getTariff()) {
-            $qb->addAnd($qb->expr()->addOr(
-                $qb->expr()->field('tariffs')->exists(false),
-                $qb->expr()->field('tariffs')->size(0),
-                $qb->expr()->field('tariffs')->includesReferenceTo($filter->getTariff())
-            ));
+            $qb->addAnd(
+                $qb->expr()->addOr(
+                    $qb->expr()->field('tariffs')->exists(false),
+                    $qb->expr()->field('tariffs')->size(0),
+                    $qb->expr()->field('tariffs')->includesReferenceTo($filter->getTariff())
+                )
+            );
         }
 
         if (!$filter->getIsEnabled()) {
@@ -74,25 +76,52 @@ class SpecialRepository extends DocumentRepository
 
         if ($filter->getRemain() !== null) {
             if ($filter->getExcludeSpecial()) {
-                $qb->addAnd($qb->expr()->addOr(
-                    $qb->expr()->field('remain')->gte($filter->getRemain()),
-                    $qb->expr()->field('id')->equals($filter->getExcludeSpecial()->getId())
-                ));
+                $qb->addAnd(
+                    $qb->expr()->addOr(
+                        $qb->expr()->field('remain')->gte($filter->getRemain()),
+                        $qb->expr()->field('id')->equals($filter->getExcludeSpecial()->getId())
+                    )
+                );
             } else {
                 $qb->field('remain')->gte($filter->getRemain());
             }
         }
 
         if ($filter->getRoomType()) {
-            $qb->addAnd($qb->expr()->addOr(
-                $qb->expr()->field('roomTypes')->exists(false),
-                $qb->expr()->field('roomTypes')->size(0),
-                $qb->expr()->field('roomTypes')->includesReferenceTo($filter->getRoomType())
-            ));
+            $qb->addAnd(
+                $qb->expr()->addOr(
+                    $qb->expr()->field('roomTypes')->exists(false),
+                    $qb->expr()->field('roomTypes')->size(0),
+                    $qb->expr()->field('roomTypes')->includesReferenceTo($filter->getRoomType())
+                )
+            );
         }
 
         if ($filter->getHotel()) {
             $qb->field('hotel')->references($filter->getHotel());
+        }
+
+
+        if ($filter->getAdults() && !$filter->getRoomType()) {
+
+            $adults = $filter->getAdults();
+            $children = $filter->getChildren();
+            if ($children) {
+                $children = $this->filterChildren($children, $filter->getChildrenAges(), $filter->getInfantAge());
+            }
+
+            $roomTypes = $this->getDocumentManager()->getRepository('MBHHotelBundle:RoomType')->getByCapacity(
+                $adults,
+                $children
+            );
+            if (count($roomTypes)) {
+                foreach ($roomTypes as $roomType) {
+                    $qb->addOr($qb->expr()->field('roomTypes')->includesReferenceTo($roomType));
+                }
+            } else {
+                return $this->createQueryBuilder()->field('roomTypes')->in([]);
+            }
+
         }
 
         $qb->sort(
@@ -100,7 +129,6 @@ class SpecialRepository extends DocumentRepository
                 'begin' => 'asc',
             ]
         );
-
 
         return $qb;
     }
@@ -123,5 +151,23 @@ class SpecialRepository extends DocumentRepository
         $qb->field('prices')->exists(true);
 
         return $qb->getQuery()->execute();
+    }
+
+
+    private function filterChildren(int $children, array $childrenAges, int $infantAge): int
+    {
+        if (!$children) {
+            return 0;
+        }
+        $result = 0;
+        foreach (range(1, $children) as $childValue) {
+            $ageIndex = $childValue - 1;
+            if (isset($childrenAges[$ageIndex]) && $childrenAges[$ageIndex] <= $infantAge) {
+                continue;
+            }
+            $result++;
+        }
+
+        return $result;
     }
 }

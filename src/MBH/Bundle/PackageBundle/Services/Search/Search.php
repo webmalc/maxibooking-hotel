@@ -638,6 +638,15 @@ class Search implements SearchInterface
             $filter->setEnd($query->end);
             $filter->setIsStrict(true);
         }
+        if ($query->adults) {
+            $filter->setAdults($query->adults);
+        }
+        if ($query->children) {
+            $filter->setChildren($query->children);
+        }
+        if ($query->childrenAges) {
+            $filter->setChildrenAges($query->childrenAges);
+        }
 
         return $filter;
     }
