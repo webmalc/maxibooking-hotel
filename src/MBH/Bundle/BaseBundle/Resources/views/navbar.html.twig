@@ -7,6 +7,8 @@
     <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
 
+            {% include 'MBHBaseBundle::dashboard.html.twig' %}
+            
             {% set cash = user_cash() %}
 
             {% if cash['count'] %}
