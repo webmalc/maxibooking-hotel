@@ -63,13 +63,12 @@ class ExpediaController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-//            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
-            $errorMessage = '';
+            $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage($config);
             if ($errorMessage === '' || !$config->getIsEnabled()) {
                 $this->dm->persist($config);
                 $this->dm->flush();
 
-//                $this->get('mbh.channelmanager')->updateInBackground();
+                $this->get('mbh.channelmanager')->updateInBackground();
 
                 $this->addFlash('success', 'controller.expediaController.settings_saved_success');
             } else {
@@ -116,7 +115,7 @@ class ExpediaController extends Controller
             }
             $this->dm->flush();
 
-//            $this->get('mbh.channelmanager')->updateInBackground();
+            $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.expediaController.settings_saved_success');
 
             return $this->redirectToRoute('expedia_tariff');
@@ -167,7 +166,7 @@ class ExpediaController extends Controller
             }
             $this->dm->flush();
 
-//            $this->get('mbh.channelmanager')->updateInBackground();
+            $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success', 'controller.expediaController.settings_saved_success');
 
