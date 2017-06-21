@@ -420,9 +420,10 @@ class Search implements SearchInterface
                 if (in_array($tariff->getId(),$hardCodeTariffId)) {
 
                     /*Не выдаем цену если нет детей в запросе или один от 7 */
-                    $isOneChild = $query->children == 1 && count($query->childrenAges) == 1 && 6 < $query->childrenAges[0];
+                    $isOneJuniorChild = $query->children == 1 && count($query->childrenAges) == 1 && 6 < $query->childrenAges[0];
+
                     $isNoChildren = (bool)!count($query->childrenAges);
-                    if (($query->adults == 1 && $isOneChild) || $isNoChildren) {
+                    if ((($query->adults == 1 || $query->adults == 2)&& $isOneJuniorChild) || $isNoChildren) {
                         continue;
                     }
 
