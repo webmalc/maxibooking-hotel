@@ -161,7 +161,7 @@ class OrderManager
 
         return 'controller.packageController.record_edited_fail';
     }
-    
+
     /**
      * recalculate services while package update
      *
@@ -568,6 +568,24 @@ class OrderManager
         }
 
         return $order;
+    }
+
+    public function updatePricesByDate(Package $package, ?Tariff $tariff)
+    {
+        $newDailyPrice = $package->getPrice() / $package->getNights();
+        $newPricesByDate = [];
+        $begin = clone $package->getBegin();
+        $end = clone $package->getEnd();
+        /** @var \DateTime $day */
+        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+            $newPricesByDate[$day->format('d_m_Y')] = $newDailyPrice;
+            $packagePrice = $package->getPackagePriceByDate($day);
+            $packagePrice->setPrice($newDailyPrice);
+            if (!is_null($tariff)) {
+                $packagePrice->setTariff($tariff);
+            }
+        }
+        $package->setPricesByDate($newPricesByDate);
     }
 }
 

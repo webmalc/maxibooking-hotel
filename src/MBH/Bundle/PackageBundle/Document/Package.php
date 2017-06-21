@@ -1521,6 +1521,19 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getPricesByDateWithDiscount()
+    {
+        $prices = [];
+        foreach ($this->pricesByDate as $dateString => $price) {
+            $prices[$dateString] = $price - ($this->getDiscountMoney() / $this->getNights());
+        }
+
+        return $prices;
+    }
+
+    /**
      * @param array $prices
      * @return Package
      */
@@ -1715,5 +1728,21 @@ class Package extends Base implements \JsonSerializable
         });
 
         return $accommodation->first();
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return PackagePrice|null
+     */
+    public function getPackagePriceByDate(\DateTime $date)
+    {
+        /** @var PackagePrice $price */
+        foreach ($this->getPrices() as $price) {
+            if ($price->getDate() == $date) {
+                return $price;
+            }
+        }
+
+        return null;
     }
 }

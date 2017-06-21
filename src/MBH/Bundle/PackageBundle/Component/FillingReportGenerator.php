@@ -213,7 +213,7 @@ class FillingReportGenerator
                     }
 
                     foreach($filteredPackages as $package) {
-                        $priceByDate = $package->getPricesByDate();
+                        $priceByDate = $package->getPricesByDateWithDiscount();
                         $packagePrice = 0;
                         if(isset($priceByDate[$date->format('d_m_Y')])) {
                             $packagePrice = $priceByDate[$date->format('d_m_Y')];
