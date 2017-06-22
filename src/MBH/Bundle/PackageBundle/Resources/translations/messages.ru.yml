@@ -301,6 +301,8 @@ form.package_accommodation_type.check_out: Выезд
 form.package_accommodation_type.check_in.help: Дата начала размещения
 form.package_accommodation_type.check_out.help: Дата окончания размещения
 form.package_accommodation_type.note: Комментарий
+form.package_accommodation_type.is_automatically_changeable.label: Изменяемая?
+form.package_accommodation_type.is_automatically_changeable.help: Изменяется ли размещение автоматически при изменении дат въезда/выезда брони?
 controller.analyticsController.services_amount: 'Количество услуг'
 controller.analyticsController.proceeds: 'Выручка'
 controller.analyticsController.percentage: 'Процент'

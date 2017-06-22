@@ -153,6 +153,8 @@ class OrderManager
                 ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
                 ->setVirtualRoom($results[0]->getVirtualRoom())
             ;
+
+//            $this->updateAccommodations($new);
             $new = $this->recalculateServices($new);
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
@@ -160,6 +162,24 @@ class OrderManager
         }
 
         return 'controller.packageController.record_edited_fail';
+    }
+
+    public function updateAccommodations(Package $package)
+    {
+        $sortedAccommodations = $package->getSortedAccommodations();
+        if ($sortedAccommodations->count() > 0) {
+            /** @var PackageAccommodation $firstAccommodation */
+            if ($firstAccommodation = $sortedAccommodations->first() != $package->getBegin()) {
+                //TODO: Проверить возможность изменения
+                $firstAccommodation->setBegin($package->getBegin());
+            }
+            /** @var PackageAccommodation $lastAccommodation */
+            if ($lastAccommodation = $sortedAccommodations->last() != $package->getEnd()) {
+                $lastAccommodation->setEnd($package->getEnd());
+            }
+        }
+
+        return $package;
     }
     
     /**
@@ -197,7 +217,7 @@ class OrderManager
         if (empty($data['packages'])) {
             throw new Exception('Create packages error: $data["packages"] is empty.');
         }
-        if (!is_null($order && !empty($order->getDeletedAt()))) {
+        if (!is_null($order) && !empty($order->getDeletedAt())) {
             throw new Exception('The specified order is deleted.');
         }
         // create tourist

@@ -1,4 +1,4 @@
-/*global $, window, document, $ */
+/*global $, window, document, $, Translator */
 
 var toggler = function (id) {
     $("#" + id).toggle();
@@ -110,6 +110,13 @@ mbh.datatablesOptions = {
             className: 'btn btn-default btn-sm'
         }
     ]
+};
+
+mbh.bootstrapSwitchConfig = {
+    'size': 'small',
+    'onText': Translator.trans('app.bootstrap_switch_config.yes'),
+    'offText': Translator.trans('app.bootstrap_switch_config.no'),
+    'onColor': 'success'
 };
 
 $('#work-shift-lock').on('click', function(e) {
