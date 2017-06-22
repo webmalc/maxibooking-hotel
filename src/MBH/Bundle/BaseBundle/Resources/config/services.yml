@@ -107,15 +107,6 @@ services:
             - [attach, ["@mbh.mailer"]]
           arguments: ['@service_container']
 
-    mbh.notifier.slack:
-      class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
-      calls:
-        - [attach, ['@mbh.slack_messenger']]
-      arguments: ['@service_container']
-
-    mbh.slack_messenger:
-      class: MBH\Bundle\BaseBundle\Service\Messenger\SlackMessenger
-
     mbh.mailer:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Mailer
       arguments: ['@service_container']
@@ -143,12 +134,6 @@ services:
             arguments: ['@service_container']
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
-
-    mbh.exception_subscriber:
-        class: MBH\Bundle\BaseBundle\EventListener\ExceptionSubscriber
-        arguments: ['@mbh.notifier.slack', '%router.request_context.host%', "%kernel.environment%"]
-        tags:
-            - {name: kernel.event_subscriber}
 
     mbh.event_listener.versioned_subscriber:
             class: MBH\Bundle\BaseBundle\EventListener\VersionedSubscriber
