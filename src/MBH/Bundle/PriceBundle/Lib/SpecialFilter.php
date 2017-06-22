@@ -1,6 +1,7 @@
 <?php
 
 namespace MBH\Bundle\PriceBundle\Lib;
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -92,8 +93,17 @@ class SpecialFilter
     private $infantAge = self::SPECIAL_INFANT_AGE;
 
     /**
+     * @var array
+     */
+    private $roomTypes;
+
+
+
+    /**
      * @return \DateTime|null
      */
+
+
 
     public function getBegin(): ?\DateTime
     {
@@ -363,6 +373,22 @@ class SpecialFilter
     public function setInfantAge(int $infantAge)
     {
         $this->infantAge = $infantAge;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoomTypes(): ?array
+    {
+        return $this->roomTypes;
+    }
+
+    /**
+     * @param array $roomTypes
+     */
+    public function setRoomTypes(array $roomTypes)
+    {
+        $this->roomTypes = $roomTypes;
     }
 
 

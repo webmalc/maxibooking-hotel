@@ -4,7 +4,9 @@ namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -647,6 +649,25 @@ class Search implements SearchInterface
         }
         if ($query->childrenAges) {
             $filter->setChildrenAges($query->childrenAges);
+        }
+        if ($query->roomTypes) {
+            $roomTypes = $query->roomTypes;
+            $roomManager = $this->container->get('mbh.hotel.room_type_manager');
+            if ($roomManager->useCategories) {
+                $roomCategories = $roomTypes = [];
+                /** @var QueryBuilder $qb */
+                foreach ($query->roomTypes as $roomCategoryId) {
+                    $roomCategories[] = $this->dm->find('MBHHotelBundle:RoomTypeCategory', $roomCategoryId);
+                }
+                if (count($roomCategories)) {
+                    foreach ($roomCategories as $roomCategory) {
+                        /** @var RoomTypeCategory $roomCategory */
+                        $roomTypes = array_merge($roomTypes, $roomCategory->getTypes()->toArray());
+                    }
+                }
+
+            }
+            $filter->setRoomTypes($roomTypes);
         }
 
         return $filter;
