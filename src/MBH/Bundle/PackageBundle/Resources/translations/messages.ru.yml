@@ -646,8 +646,10 @@ chessboard_manager.without_accommodation.tile.text: Без размещения
 
 #package accommodation manipulator service
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
+accommodation_manipulator.error.edited_room_busy: 'Невозможно изменить размещение, так как в указанные дни комната "%roomName%" занята.'
 accommodation_manipulator.error.incorrect_acc_to_package_dates: Интервал дат размещения должен находиться между датами заезда и выезда брони
 accommodation_manipulator.error.intersect_with_other_accommodations: Размещение пересекается с другими размещениями брони.
+accommodation_manipulator.error.accommodation_is_not_moveable: 'Размещение изменяемой брони в комнате %roomName%, начинающееся %beginDate% и заканчивающееся %endDate%, является неперемещаемым.'
 
 #accommodation.html.twig
 package.accommodation.rooms: Комнаты

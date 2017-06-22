@@ -78,31 +78,6 @@ class OrderManager
             return $new;
         }
 
-        $oldPackageRoomIds = [];
-        foreach ($old->getAccommodations() as $accommodation) {
-            /** @var PackageAccommodation $accommodation */
-            $oldPackageRoomIds[] = $accommodation->getAccommodation()->getId();
-        }
-
-        //check accommodation
-        $accommodation = $old->getAccommodation();
-        /** @var PackageAccommodation $accommodation */
-        if ($accommodation) {
-            $rooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
-                $new->getBegin(),
-                $new->getEnd(),
-                $accommodation->getAccommodation()->getRoomType()->getHotel(),
-                $accommodation->getAccommodation()->getRoomType()->getId(),
-                $oldPackageRoomIds,
-                $old,
-                false
-            );
-
-            if (!count($rooms)) {
-                return 'controller.packageController.record_edited_fail_accommodation';
-            }
-        }
-
         //search for packages
         $tariff = $updateTariff ?? $new->getTariff();
         $promotion = $new->getPromotion() ? $new->getPromotion() : null;
@@ -154,7 +129,6 @@ class OrderManager
                 ->setVirtualRoom($results[0]->getVirtualRoom())
             ;
 
-//            $this->updateAccommodations($new);
             $new = $this->recalculateServices($new);
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
@@ -164,22 +138,53 @@ class OrderManager
         return 'controller.packageController.record_edited_fail';
     }
 
-    public function updateAccommodations(Package $package)
+    public function tryUpdateAccommodations(Package $package, Package $oldPackage)
     {
-        $sortedAccommodations = $package->getSortedAccommodations();
-        if ($sortedAccommodations->count() > 0) {
-            /** @var PackageAccommodation $firstAccommodation */
-            if ($firstAccommodation = $sortedAccommodations->first() != $package->getBegin()) {
-                //TODO: Проверить возможность изменения
-                $firstAccommodation->setBegin($package->getBegin());
-            }
-            /** @var PackageAccommodation $lastAccommodation */
-            if ($lastAccommodation = $sortedAccommodations->last() != $package->getEnd()) {
-                $lastAccommodation->setEnd($package->getEnd());
+        $errorMessages = [];
+        if ($package->getBegin() != $oldPackage->getBegin() || $package->getEnd() != $oldPackage->getEnd()) {
+
+            $sortedAccommodations = $package->getSortedAccommodations();
+            if ($sortedAccommodations->count() > 0) {
+                /** @var PackageAccommodation $firstAccommodation */
+                $firstAccommodation = $sortedAccommodations->first();
+                if ($firstAccommodation->getBegin() != $package->getBegin()) {
+                    $firstAccommodation->setBegin($package->getBegin());
+                    $errorMessage = $this->checkEditedAccommodation($firstAccommodation, $package);
+                    if (!empty($errorMessage)) {
+                        $errorMessages[] = $errorMessage;
+                    }
+                }
+
+                /** @var PackageAccommodation $lastAccommodation */
+                $lastAccommodation = $sortedAccommodations->last();
+                if ($lastAccommodation->getEnd() != $package->getEnd()) {
+                    $lastAccommodation->setEnd($package->getEnd());
+                    $errorMessage = $this->checkEditedAccommodation($lastAccommodation, $package);
+                    if (!empty($errorMessage)) {
+                        $errorMessages[] = $errorMessage;
+                    }
+                }
             }
         }
 
-        return $package;
+        return $errorMessages;
+    }
+
+    private function checkEditedAccommodation(PackageAccommodation $accommodation, Package $package)
+    {
+        if (!$accommodation->isAutomaticallyChangeable()) {
+            return $this->container
+                ->get('translator')
+                ->trans('accommodation_manipulator.error.accommodation_is_not_moveable', [
+                    '%roomName%' => $accommodation->getName(),
+                    '%beginDate%' => $accommodation->getBegin()->format('d.m.Y'),
+                    '%endDate%' => $accommodation->getEnd()->format('d.m.Y')
+                ]);
+        }
+
+        return $this->container
+            ->get('mbh_bundle_package.services.package_accommodation_manipulator')
+            ->checkErrors($accommodation, $package);
     }
 
     /**
@@ -203,7 +208,6 @@ class OrderManager
         return $package;
     }
 
-
     /**
      * @param array $data
      * @param Order|null $order
@@ -219,7 +223,7 @@ class OrderManager
         }
 
         if (!is_null($order) && !empty($order->getDeletedAt())) {
-                        throw new Exception('The specified order is deleted.');
+            throw new Exception('The specified order is deleted.');
         }
 
         // create tourist
