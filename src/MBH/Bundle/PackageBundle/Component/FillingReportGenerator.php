@@ -220,18 +220,18 @@ class FillingReportGenerator
                         }
                         $packageRowData['packagePrice'] += $packagePrice;
 
+                        $servicesPrice = 0;
                         foreach($package->getServices() as $service) {
                             if($date >= $service->getBegin() && $date < $service->getEnd()) {
-                                $packageRowData['servicePrice'] += $service->calcTotal() / $service->getNights();
+                                $servicesPrice += $service->calcTotal() / $service->getNights();
                             }
                         }
-                        //$packageRowData['servicePrice'] += $package->getServicesPrice() / $package->getNights();
-                        //$packageRowData['paid'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+
+                        $packageRowData['servicePrice'] += $servicesPrice;
 
                         $relationPaid = $package->getOrder()->getPrice() ?
                             $package->getOrder()->getPaid() / $package->getOrder()->getPrice() : 0;
-                        $packageRowData['paid'] += $relationPaid * ($packagePrice + $packageRowData['servicePrice']);
-                        //$packageRowData['debt'] += $package->getNights() > 0 ? $package->getDebt() / $package->getNights() : 0;
+                        $packageRowData['paid'] += $relationPaid * ($packagePrice + $servicesPrice);
                         $packageRowData['guests'] += $package->getAdults();
                         $uniqueAdults[$package->getId()] = $package->getAdults();
 
