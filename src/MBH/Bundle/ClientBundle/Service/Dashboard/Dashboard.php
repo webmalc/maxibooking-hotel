@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\ClientBundle\Service\Dashboard;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\ODM\MongoDB\Cursor;
 
 /**
  * Class Dashboard - generates and list user news & notifications
@@ -61,13 +61,12 @@ class Dashboard implements \SplSubject
     /**
      * get messages
      *
-     * @param type $param
-     * @return array
+     * @return Cursor
      */
-    public function getMessages(): array
+    public function getMessages(): Cursor
     {
         return $this->documentManager
             ->getRepository('MBHClientBundle:DashboardEntry')
-            ->findAll();
+            ->findNew();
     }
 }

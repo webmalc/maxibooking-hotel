@@ -573,3 +573,7 @@ mbhbasebundle.view.pdftemplates.individual.vid.platezha: Вид платежа
 hide: скрыть
 show.more: Показать еще
 errors: Ошибки
+
+# dashboard
+dashboard.modal.header: 'Предупреждения'
+dashboard.confirm.tooltip: 'Отметить прочитанным'
