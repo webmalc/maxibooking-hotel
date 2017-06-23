@@ -9,6 +9,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
 use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\SpecialDataPreparerExeption;
+use MBH\Bundle\OnlineBookingBundle\Service\Sorters\SorterInterface;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\SpecialPrice;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
@@ -29,15 +30,19 @@ class SpecialDataPreparer
 
     private $onlineOptions;
 
+    /** @var  SorterInterface */
+    private $sorter;
+
     /**
      * SpecialDataPreparer constructor.
      * @param DocumentManager $dm
      * @param array $hotelsLinks
      */
-    public function __construct(DocumentManager $dm, array $onlineOptions)
+    public function __construct(DocumentManager $dm, array $onlineOptions, SorterInterface $sorter)
     {
         $this->dm = $dm;
         $this->onlineOptions = $onlineOptions;
+        $this->sorter = $sorter;
     }
 
     /**
@@ -106,7 +111,7 @@ class SpecialDataPreparer
 
         }
 
-        return ['specials' => $this->sortSpecialsByPrice($result)];
+        return ['specials' => $this->sorter->sort($result)];
     }
 
     /**
@@ -147,21 +152,6 @@ class SpecialDataPreparer
 
         return $result;
     }
-
-
-    private function sortSpecialsByPrice(array $specials): array
-    {
-        uasort(
-            $specials,
-            function ($a, $b) {
-                /** @var Special $a */
-                /** @var SpecialPrice $c */
-                return reset($a['prices']) <=> reset($b['prices']);
-            }
-        );
-        return $specials;
-    }
-
 
 
     /**

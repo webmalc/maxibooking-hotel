@@ -24,9 +24,27 @@ services:
         class: MBH\Bundle\OnlineBookingBundle\Service\ChartDataFormer
         arguments: ["@mbh.calculation"]
 
+
+    mbh.online.special.sorter_date:
+        class: MBH\Bundle\OnlineBookingBundle\Service\Sorters\SpecialSorterDate
+
+    mbh.online.special.sorter_price:
+        class: MBH\Bundle\OnlineBookingBundle\Service\Sorters\SpecialSorterPrice
+
+    mbh.online.special.no_sort:
+        class: MBH\Bundle\OnlineBookingBundle\Service\Sorters\SpecialNoSorter
+
     mbh.online.special_data_preparer:
         class: MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer
-        arguments: ['@doctrine.odm.mongodb.document_manager', '%online_booking%']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '%online_booking%', '@mbh.online.special.no_sort']
+
+    mbh.online.special_data_preparer.date_sort:
+        class: MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer
+        arguments: ['@doctrine.odm.mongodb.document_manager', '%online_booking%', '@mbh.online.special.sorter_date']
+
+    mbh.online.special_data_preparer.price_sort:
+            class: MBH\Bundle\OnlineBookingBundle\Service\SpecialDataPreparer
+            arguments: ['@doctrine.odm.mongodb.document_manager', '%online_booking%', '@mbh.online.special.sorter_price']
 
     mbh.online.search_form_data:
         class: MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData

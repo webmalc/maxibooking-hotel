@@ -19,6 +19,15 @@ class SpecialsController extends BaseController
     const SPECIAL_MONTH_BEGIN = 6;
     const SPECIAL_MONTH_END = 10;
     const SPECIAL_PER_PAGE = 4;
+    const SPECIALS_SORT_BY_PRICE = 'mbh.online.special_data_preparer.price_sort';
+    const SPECIALS_SORT_BY_DATE = 'mbh.online.special_data_preparer.date_sort';
+
+    const DATA_PREPARER = [
+        'byDate' => self::SPECIALS_SORT_BY_DATE,
+        'byPrice' => self::SPECIALS_SORT_BY_PRICE
+    ];
+
+
     /**
      * @Route("/{id}", name="all_specials", defaults={"id":""})
      * @Template()
@@ -26,8 +35,9 @@ class SpecialsController extends BaseController
     public function indexAction(Hotel $hotel = null)
     {
 
-
-        $preparer = $this->get('mbh.online.special_data_preparer');
+        $sortParameter = $this->getParameter('online_booking')['special_list_sort'];
+        $preparerService = self::DATA_PREPARER[$sortParameter];
+        $preparer = $this->get($preparerService);
         $specials = $preparer->getSpecials($hotel);
 
         $preparedData = $preparer->getSpecialsPageFormatWithMonth($specials->toArray());

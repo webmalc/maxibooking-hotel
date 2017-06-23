@@ -96,16 +96,14 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
                     $diffB = $needleBegin->diff($b->getBegin());
                     $diffDateA = (int)$diffA->format('%d');
                     $diffDateB = (int)$diffB->format('%d');
-                    if ($diffDateA < $diffDateB) {
-                        return -1;
-                    } elseif($diffDateA > $diffDateB) {
-                        return 1;
-                    } else {
+                    $result = $diffDateA <=> $diffDateB;
+                    if ($result === 0) {
                         $priceA = $a->getPrices()->toArray()[0]->getPrices();
                         $priceB = $b->getPrices()->toArray()[0]->getPrices();
-
-                        return reset($priceA) <=> reset($priceB);
+                        $result = reset($priceA) <=> reset($priceB);
                     }
+
+                    return $result;
                 }
             );
         }

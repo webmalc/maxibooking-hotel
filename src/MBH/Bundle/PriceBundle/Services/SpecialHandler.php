@@ -32,7 +32,7 @@ class SpecialHandler
     /** @var  DocumentManager */
     private $dm;
     /** @var  SpecialDataPreparer */
-    private $specialHepler;
+    private $specialHelper;
     /** @var OnlineSpecialResultGenerator */
     private $specialSearchHelper;
     /** @var  OnlineSearchFormData */
@@ -70,7 +70,7 @@ class SpecialHandler
         $this->dm = $dm;
         $this->search = $search;
         $this->logger = $logger;
-        $this->specialHepler = $specialHelper;
+        $this->specialHelper = $specialHelper;
         $this->specialSearchHelper = $specialSearchHelper;
         $this->onlineSearchFormData = $onlineSearchFormData;
         $this->mailer = $mailer;
