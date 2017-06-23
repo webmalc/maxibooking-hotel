@@ -16,6 +16,17 @@ use Symfony\Component\HttpFoundation\Request;
 
 class WindowsReportGenerator
 {
+    const ROOM_QUANTITY = 'package.window.amount.rooms';
+    const ROOMS_IN_SALE = 'package.window.amount.rooms.in.sale';
+    const VIRTUAL_ROOMS_QUANTITY = 'package.window.amount.rooms.virtual';
+    const VIRTUAL_PLACED_QUANTITY = 'package.window.count.rooms.virtual';
+    const PACKAGES_QUANTITY = 'package.window.rooms.packages';
+    const REST_OF_VIRTUAL_ROOMS = 'package.window.difference.packages.virtual';
+    const REST_OF_ROOMS_IN_SALE = 'package.window.difference.room.in.packages.sales';
+    const DIFFERENCE_IN_SALE = 'package.window.difference.room.sale.package';
+    const DIFFERENCE_ROOM_PLACED = 'package.window.difference.room.placed';
+    const DIFFERENCE_IN_REST_ROOM = 'package.window.difference.room.rest';
+
     /**
      * @var array
      */
@@ -390,7 +401,6 @@ class WindowsReportGenerator
         if ($this->stat) {
             return $this->stat;
         }
-
         $this->stat = $this->createStat();
 
         return $this->stat;
@@ -411,23 +421,55 @@ class WindowsReportGenerator
                 $restRoomsForSale = $roomsForSale - $roomsBooked;
                 $dayAsString = $day->format('d.m.Y');
 
-                $stat[$roomTypeId]['package.window.amount.rooms'][$dayAsString] = $totalAmountRooms;
-                $stat[$roomTypeId]['package.window.amount.rooms.in.sale'][$dayAsString] = $roomsForSale;
-                $stat[$roomTypeId]['package.window.amount.rooms.virtual'][$dayAsString] = $amountVirtualRooms;
-                $stat[$roomTypeId]['package.window.count.rooms.virtual'][$dayAsString] = $virtualRoomsBooked;
-                $stat[$roomTypeId]['package.window.rooms.packages'][$dayAsString] = $roomsBooked;
-                $stat[$roomTypeId]['package.window.difference.packages.virtual'][$dayAsString] = abs($restVirtualRooms);
-                $stat[$roomTypeId]['package.window.difference.room.in.packages.sales'][$dayAsString] = abs($restRoomsForSale);
-                $stat[$roomTypeId]['package.window.difference.room.sale.package'][$dayAsString] = abs($roomsForSale - $amountVirtualRooms);
-                $stat[$roomTypeId]['package.window.difference.room.placed'][$dayAsString] = abs($roomsBooked - $virtualRoomsBooked);
-                $stat[$roomTypeId]['package.window.difference.room.rest'][$dayAsString] = abs($restVirtualRooms - $restRoomsForSale);
-
+                $stat[$roomTypeId][self::ROOM_QUANTITY][$dayAsString] = $totalAmountRooms;
+                $stat[$roomTypeId][self::ROOMS_IN_SALE][$dayAsString] = $roomsForSale;
+                $stat[$roomTypeId][self::VIRTUAL_ROOMS_QUANTITY][$dayAsString] = $amountVirtualRooms;
+                $stat[$roomTypeId][self::VIRTUAL_PLACED_QUANTITY][$dayAsString] = $virtualRoomsBooked;
+                $stat[$roomTypeId][self::PACKAGES_QUANTITY][$dayAsString] = $roomsBooked;
+                $stat[$roomTypeId][self::REST_OF_VIRTUAL_ROOMS][$dayAsString] = abs($restVirtualRooms);
+                $stat[$roomTypeId][self::REST_OF_ROOMS_IN_SALE][$dayAsString] = abs($restRoomsForSale);
+                $stat[$roomTypeId][self::DIFFERENCE_IN_SALE][$dayAsString] = abs($roomsForSale - $amountVirtualRooms);
+                $stat[$roomTypeId][self::DIFFERENCE_ROOM_PLACED][$dayAsString] = abs($roomsBooked - $virtualRoomsBooked);
+                $stat[$roomTypeId][self::DIFFERENCE_IN_REST_ROOM][$dayAsString] = abs($restVirtualRooms - $restRoomsForSale);
             }
         }
-
         return $stat;
     }
 
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return [
+            self::ROOM_QUANTITY,
+            self::ROOMS_IN_SALE,
+            self::VIRTUAL_ROOMS_QUANTITY,
+            self::VIRTUAL_PLACED_QUANTITY,
+            self::PACKAGES_QUANTITY,
+            self::REST_OF_VIRTUAL_ROOMS,
+            self::REST_OF_ROOMS_IN_SALE,
+            self::DIFFERENCE_IN_SALE,
+            self::DIFFERENCE_ROOM_PLACED,
+            self::DIFFERENCE_IN_REST_ROOM
+        ];
+    }
+
+    /**
+     * @param $option
+     * @param \DateTime $day
+     * @return int
+     */
+    public function getTotalValue($option, \DateTime $day)
+    {
+        $result = 0;
+        $stat = $this->getStat();
+        foreach ($stat as $roomTypeData) {
+            $result += $roomTypeData[$option][$day->format('d.m.Y')];
+        }
+
+        return $result;
+    }
 
     public function checkStatDanger(string $roomTypeId, string $statKey): bool
     {

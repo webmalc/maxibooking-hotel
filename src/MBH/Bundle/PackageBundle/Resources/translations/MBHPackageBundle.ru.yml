@@ -123,6 +123,7 @@ package.window.difference.room.in.packages.sales: Остаток номеров 
 package.window.difference.room.sale.package: Разница в продаже
 package.window.difference.room.placed: Разница размещено
 package.window.difference.room.rest: Разница остатков
+package.windows_table.total: Итого
 
 package.actions.find_similar:  Найти похожую
 package.actions.cancel: Отмена
