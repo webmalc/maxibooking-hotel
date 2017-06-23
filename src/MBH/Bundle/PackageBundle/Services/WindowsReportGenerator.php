@@ -454,21 +454,27 @@ class WindowsReportGenerator
         return $result;
     }
 
+    /**
+     * @param RoomType $roomType
+     * @param \DateTime $day
+     * @param bool $isVirtualRoomCount
+     * @return int
+     */
     private function getPackagesCountByDay(RoomType $roomType, \DateTime $day, bool $isVirtualRoomCount = false)
     {
         $result = 0;
-        $packages = $this->packages[$roomType->getId()]??[];
-        foreach ($packages as $package) {
-            $package = reset($package);
-            /** @var Package $package */
-            if ($package->getBegin() <= $day && $day < $package->getEnd()) {
-                if (!$isVirtualRoomCount || ($isVirtualRoomCount && $package->getVirtualRoom())) {
-                    $result++;
+        $packagesByRooms = $this->packages[$roomType->getId()]??[];
+        foreach ($packagesByRooms as $packagesByRoom) {
+            foreach ($packagesByRoom as $package) {
+                /** @var Package $package */
+                if ($package->getBegin() <= $day && $day < $package->getEnd()) {
+                    if (!$isVirtualRoomCount || $package->getVirtualRoom()) {
+                        $result++;
+                    }
                 }
             }
         }
 
         return $result;
     }
-
 }
