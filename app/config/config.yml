@@ -98,7 +98,10 @@ doctrine_mongodb:
     connections:
         default:
             server: "%mongodb_url%"
-            options: {}
+            driver_options:
+                context: "mbh.mongodb.context_service"
+            options:
+                ssl: true
     default_database: "%mongodb_database%"
     document_managers:
         default:

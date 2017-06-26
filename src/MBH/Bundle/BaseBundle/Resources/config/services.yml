@@ -245,3 +245,9 @@ services:
         arguments: ['%kernel.default_locale%']
         tags:
           - { name: kernel.event_subscriber }
+
+    mbh.mongodb.context_service:
+        class: 'resource'
+        factory: 'stream_context_create'
+        arguments:
+          - { ssl: { verify_expiry: false, allow_self_signed: true }}
