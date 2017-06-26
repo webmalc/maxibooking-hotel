@@ -101,7 +101,7 @@ doctrine_mongodb:
             driver_options:
                 context: "mbh.mongodb.context_service"
             options:
-                ssl: true
+                ssl: "%mongodb_ssl%"
     default_database: "%mongodb_database%"
     document_managers:
         default:
