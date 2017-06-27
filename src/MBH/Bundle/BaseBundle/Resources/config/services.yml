@@ -107,15 +107,6 @@ services:
             - [attach, ["@mbh.mailer"]]
           arguments: ['@service_container']
 
-    mbh.notifier.slack:
-      class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
-      calls:
-        - [attach, ['@mbh.slack_messenger']]
-      arguments: ['@service_container']
-
-    mbh.slack_messenger:
-      class: MBH\Bundle\BaseBundle\Service\Messenger\SlackMessenger
-
     mbh.mailer:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Mailer
       arguments: ['@service_container']
