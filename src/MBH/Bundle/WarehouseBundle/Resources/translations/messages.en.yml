@@ -1,0 +1,11 @@
+warehouse.cat.new: 'New category'
+warehouse.record.th.price: Price
+warehouse.common.settings: Settings
+warehouse.rec.del: Deletion
+warehouse.controller.invoicecontroller.consignment_saved: 'Document saved'
+warehouse.record.list: 'List of income and expenditure'
+warehouse.common.subtitle: List
+warehouse.items.maxiTitle: 'Title only visible inside MaxiBooknig system'
+mbhwarehousebundle.form.recordfiltertype.po: from
+warehouse.resources.form.recordfiltertype.with: to
+warehouse.common.savechanges: 'Save changes'

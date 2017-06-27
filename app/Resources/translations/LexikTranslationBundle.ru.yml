@@ -1,0 +1,30 @@
+translations.invalidate_cache: 'Очистить кеш'
+translations.domain: Домен
+translations.key: Ключ
+translations.grid_caption: 'Список переводов'
+translations.cache_removed: 'Файлы кеша были удалены'
+translations.new_translation: 'Новый перевод'
+translations.add_translation: 'Добавить перевод'
+translations.save: Сохранить
+translations.save_add: 'Создать и добавить новый'
+translations.page_title: Переводы
+translations.show_hide_columns: 'Показать/Скрыть колонки'
+translations.toggle_all_columns: 'Show/Hide all columns'
+translations.save_row: 'Сохранить текущую строку'
+translations.successfully_updated: 'Перевод для ключа #%id% успешно обновлён.'
+translations.successfully_added: 'Перевод добавлен.'
+translations.successfully_deleted: 'Перевод удалён'
+translations.update_failed: 'Не удалось обновить ключ #%id%.'
+translations.delete_failed: 'Не удалось удалить перевод ключа #%id%.'
+translations.back_to_list: Предыдущая
+translations.all_translations: Все
+translations.no_translations: 'Нет переводов'
+translations.profiler: Профили
+translations.data_source: 'Источник данных'
+translations.latest_profiles: 'Последние профили'
+translations.profile: Профиль
+overview.page_title: Обзор
+overview.show_grid: 'Таблица переводов'
+overview.msg_latest_translation: 'Дата последнего обновления: %date% UTC.'
+overview.domain: Домен
+overview.no_stats: 'Нет данных'

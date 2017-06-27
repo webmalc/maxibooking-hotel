@@ -1,0 +1,17 @@
+client.views.clientConfig.index.list: List
+client.views.clientConfig.index.hotel: Hotel
+client.views.clientConfig.index.name: Title
+documentTempalte.enabled: Enabled
+documentTempalte.title: Title
+views.documentTempalte.edit: Edit
+views.documentTempalte.new: 'New document template'
+client.tabs.params: Parameters
+views.clientConfig.layout.parameters: Parameters
+views.clientConfig.index.editing: Editing
+client.tabs.payment_system: 'Payment system'
+views.documentTempalte.index: 'Document template'
+client.viwes.clientConfig.paymentSystem.urlNotification: 'Notification URL'
+client.viwes.clientConfig.paymentSystem.urlSuccesPayment: 'Payment successful URL'
+client.viwes.clientConfig.paymentSystem.urlFailedPayment: 'Payment unsuccessful URL'
+client.views.clientConfig.index.allhotel: 'All hotels'
+client.views.clientConfig.index.organization: Company

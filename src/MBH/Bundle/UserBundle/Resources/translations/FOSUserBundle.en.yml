@@ -1,0 +1,25 @@
+views.profile.profile.password_error: 'Password should have at least 8 characters including one digit and one upper case letter!'
+index.fio: 'Full name'
+index.disabled: Disabled
+views.security.login.enter_in: 'Log in'
+'Bad credentials': 'Login or password are not correct'
+'User account is disabled.': 'Your profile is blocked'
+'User account is locked.': 'Your profile is blocked'
+views.profile.layout.profile: Profile
+resetting.request.invalid_username: 'User "%username%" does not exist.'
+layout.groups: Groups
+group.name: 'Group name'
+group.edit: 'Edit group'
+group.create: 'Create group'
+edit.small_title: Edit
+user.index.small_title: List
+index.login: Login
+index.groups: Groups
+index.permissions: Permissions
+index.status: Status
+record.index.edit: 'Edit record'
+record.index.remove: 'Delete record'
+layout.users: Users
+new.create: 'Create new'
+views.profile.layout.user: User
+views.profile.profile.change_password: 'Password change'

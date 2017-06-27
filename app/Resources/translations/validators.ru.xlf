@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="file.ext" target-language="ru">
+    <body>
+      <trans-unit id="1" approved="yes">
+        <source><![CDATA[A PHP extension caused the upload to fail.]]></source>
+        <target><![CDATA[Расширение PHP вызвало ошибку при загрузке.]]></target>
+      </trans-unit>
+      <trans-unit id="2" approved="yes">
+        <source><![CDATA[This value should be false.]]></source>
+        <target><![CDATA[Значение должно быть ложным.]]></target>
+      </trans-unit>
+      <trans-unit id="3" approved="yes">
+        <source><![CDATA[This value should be true.]]></source>
+        <target><![CDATA[Значение должно быть истинным.]]></target>
+      </trans-unit>
+      <trans-unit id="4" approved="yes">
+        <source><![CDATA[This value should be of type {{ type }}.]]></source>
+        <target><![CDATA[Тип значения должен быть {{ type }}.]]></target>
+      </trans-unit>
+      <trans-unit id="5" approved="yes">
+        <source><![CDATA[This value should be blank.]]></source>
+        <target><![CDATA[Значение должно быть пустым.]]></target>
+      </trans-unit>
+      <trans-unit id="6" approved="yes">
+        <source><![CDATA[The value you selected is not a valid choice.]]></source>
+        <target><![CDATA[Выбранное Вами значение недопустимо.]]></target>
+      </trans-unit>
+      <trans-unit id="7" approved="yes">
+        <source><![CDATA[You must select at least {{ limit }} choice.|You must select at least {{ limit }} choices.]]></source>
+        <target><![CDATA[Вы должны выбрать хотя бы {{ limit }} вариант.|Вы должны выбрать хотя бы {{ limit }} варианта.|Вы должны выбрать хотя бы {{ limit }} вариантов.]]></target>
+      </trans-unit>
+      <trans-unit id="8" approved="yes">
+        <source><![CDATA[You must select at most {{ limit }} choice.|You must select at most {{ limit }} choices.]]></source>
+        <target><![CDATA[Вы должны выбрать не более чем {{ limit }} вариант.|Вы должны выбрать не более чем {{ limit }} варианта.|Вы должны выбрать не более чем {{ limit }} вариантов.]]></target>
+      </trans-unit>
+      <trans-unit id="9" approved="yes">
+        <source><![CDATA[One or more of the given values is invalid.]]></source>
+        <target><![CDATA[Одно или несколько заданных значений недопустимо.]]></target>
+      </trans-unit>
+      <trans-unit id="10" approved="yes">
+        <source><![CDATA[This field was not expected.]]></source>
+        <target><![CDATA[Это поле не ожидалось.]]></target>
+      </trans-unit>
+      <trans-unit id="11" approved="yes">
+        <source><![CDATA[This field is missing.]]></source>
+        <target><![CDATA[Это поле отсутствует.]]></target>
+      </trans-unit>
+      <trans-unit id="12" approved="yes">
+        <source><![CDATA[This value is not a valid date.]]></source>
+        <target><![CDATA[Значение не является правильной датой.]]></target>
+      </trans-unit>
+      <trans-unit id="13" approved="yes">
+        <source><![CDATA[This value is not a valid datetime.]]></source>
+        <target><![CDATA[Значение даты и времени недопустимо.]]></target>
+      </trans-unit>
+      <trans-unit id="14" approved="yes">
+        <source><![CDATA[This value is not a valid email address.]]></source>
+        <target><![CDATA[Значение адреса электронной почты недопустимо.]]></target>
+      </trans-unit>
+      <trans-unit id="15" approved="yes">
+        <source><![CDATA[The file could not be found.]]></source>
+        <target><![CDATA[Файл не может быть найден.]]></target>
+      </trans-unit>
+      <trans-unit id="16" approved="yes">
+        <source><![CDATA[The file is not readable.]]></source>
+        <target><![CDATA[Файл не может быть прочитан.]]></target>
+      </trans-unit>
+      <trans-unit id="17" approved="yes">
+        <source><![CDATA[The file is too large ({{ size }} {{ suffix }}). Allowed maximum size is {{ limit }} {{ suffix }}.]]></source>
+        <target><![CDATA[Файл слишком большой ({{ size }} {{ suffix }}). Максимально допустимый размер {{ limit }} {{ suffix }}.]]></target>
+      </trans-unit>
+      <trans-unit id="18" approved="yes">
+        <source><![CDATA[The mime type of the file is invalid ({{ type }}). Allowed mime types are {{ types }}.]]></source>
+        <target><![CDATA[MIME-тип файла недопустим ({{ type }}). Допустимы MIME-типы файлов {{ types }}.]]></target>
+      </trans-unit>
+      <trans-unit id="19" approved="yes">
+        <source><![CDATA[This value should be {{ limit }} or less.]]></source>
+        <target><![CDATA[Значение должно быть {{ limit }} или меньше.]]></target>
+      </trans-unit>
+      <trans-unit id="20" approved="yes">
+        <source><![CDATA[This value is too long. It should have {{ limit }} character or less.|This value is too long. It should have {{ limit }} characters or less.]]></source>
+        <target><![CDATA[Значение слишком длинное. Должно быть равно {{ limit }} символу или меньше.|Значение слишком длинное. Должно быть равно {{ limit }} символам или меньше.|Значение слишком длинное. Должно быть равно {{ limit }} символам или меньше.]]></target>
+      </trans-unit>
+      <trans-unit id="21" approved="yes">
+        <source><![CDATA[This value should be {{ limit }} or more.]]></source>
+        <target><![CDATA[Значение должно быть {{ limit }} или больше.]]></target>
+      </trans-unit>
+      <trans-unit id="22" approved="yes">
+        <source><![CDATA[This value is too short. It should have {{ limit }} character or more.|This value is too short. It should have {{ limit }} characters or more.]]></source>
+        <target><![CDATA[Значение слишком короткое. Должно быть равно {{ limit }} символу или больше.|Значение слишком короткое. Должно быть равно {{ limit }} символам или больше.|Значение слишком короткое. Должно быть равно {{ limit }} символам или больше.]]></target>
+      </trans-unit>
+      <trans-unit id="23" approved="yes">
+        <source><![CDATA[This value should not be blank.]]></source>
+        <target><![CDATA[Значение не должно быть пустым.]]></target>
+      </trans-unit>
+      <trans-unit id="24" approved="yes">
+        <source><![CDATA[This value should not be null.]]></source>
+        <target><![CDATA[Значение не должно быть null.]]></target>
+      </trans-unit>
+      <trans-unit id="25" approved="yes">
+        <source><![CDATA[This value should be null.]]></source>
+        <target><![CDATA[Значение должно быть null.]]></target>
+      </trans-unit>
+      <trans-unit id="26" approved="yes">
+        <source><![CDATA[This value is not valid.]]></source>
+        <target><![CDATA[Значение недопустимо.]]></target>
+      </trans-unit>
+      <trans-unit id="27" approved="yes">
+        <source><![CDATA[This value is not a valid time.]]></source>
+        <target><![CDATA[Значение времени недопустимо.]]></target>
+      </trans-unit>
+      <trans-unit id="28" approved="yes">
+        <source><![CDATA[This value is not a valid URL.]]></source>
+        <target><![CDATA[Значение не является допустимым URL.]]></target>
+      </trans-unit>
+      <trans-unit id="29" approved="yes">
+        <source><![CDATA[The two values should be equal.]]></source>
+        <target><![CDATA[Оба значения должны быть одинаковыми.]]></target>
+      </trans-unit>
+      <trans-unit id="30" approved="yes">
+        <source><![CDATA[The file is too large. Allowed maximum size is {{ limit }} {{ suffix }}.]]></source>
+        <target><![CDATA[Файл слишком большой. Максимально допустимый размер {{ limit }} {{ suffix }}.]]></target>
+      </trans-unit>
+      <trans-unit id="31" approved="yes">
+        <source><![CDATA[The file is too large.]]></source>
+        <target><![CDATA[Файл слишком большой.]]></target>
+      </trans-unit>
+      <trans-unit id="32" approved="yes">
+        <source><![CDATA[The file could not be uploaded.]]></source>
+        <target><![CDATA[Файл не может быть загружен.]]></target>
+      </trans-unit>
+      <trans-unit id="33" approved="yes">
+        <source><![CDATA[This value should be a valid number.]]></source>
+        <target><![CDATA[Значение должно быть числом.]]></target>
+      </trans-unit>
+      <trans-unit id="34" approved="yes">
+        <source><![CDATA[This value is not a valid country.]]></source>
+        <target><![CDATA[Значение не является допустимой страной.]]></target>
+      </trans-unit>
+      <trans-unit id="35" approved="yes">
+        <source><![CDATA[This file is not a valid image.]]></source>
+        <target><![CDATA[Файл не является допустимым форматом изображения.]]></target>
+      </trans-unit>
+      <trans-unit id="36" approved="yes">
+        <source><![CDATA[This is not a valid IP address.]]></source>
+        <target><![CDATA[Значение не является допустимым IP адресом.]]></target>
+      </trans-unit>
+      <trans-unit id="37" approved="yes">
+        <source><![CDATA[This value is not a valid language.]]></source>
+        <target><![CDATA[Значение не является допустимым языком.]]></target>
+      </trans-unit>
+      <trans-unit id="38" approved="yes">
+        <source><![CDATA[This value is not a valid locale.]]></source>
+        <target><![CDATA[Значение не является допустимой локалью.]]></target>
+      </trans-unit>
+      <trans-unit id="39" approved="yes">
+        <source><![CDATA[This value is already used.]]></source>
+        <target><![CDATA[Это значение уже используется.]]></target>
+      </trans-unit>
+      <trans-unit id="40" approved="yes">
+        <source><![CDATA[The size of the image could not be detected.]]></source>
+        <target><![CDATA[Не удалось определить размер изображения.]]></target>
+      </trans-unit>
+      <trans-unit id="41" approved="yes">
+        <source><![CDATA[The image width is too big ({{ width }}px). Allowed maximum width is {{ max_width }}px.]]></source>
+        <target><![CDATA[Ширина изображения слишком велика ({{ width }}px). Максимально допустимая ширина {{ max_width }}px.]]></target>
+      </trans-unit>
+      <trans-unit id="42" approved="yes">
+        <source><![CDATA[The image width is too small ({{ width }}px). Minimum width expected is {{ min_width }}px.]]></source>
+        <target><![CDATA[Ширина изображения слишком мала ({{ width }}px). Минимально допустимая ширина {{ min_width }}px.]]></target>
+      </trans-unit>
+      <trans-unit id="43" approved="yes">
+        <source><![CDATA[The image height is too big ({{ height }}px). Allowed maximum height is {{ max_height }}px.]]></source>
+        <target><![CDATA[Высота изображения слишком велика ({{ height }}px). Максимально допустимая высота {{ max_height }}px.]]></target>
+      </trans-unit>
+      <trans-unit id="44" approved="yes">
+        <source><![CDATA[The image height is too small ({{ height }}px). Minimum height expected is {{ min_height }}px.]]></source>
+        <target><![CDATA[Высота изображения слишком мала ({{ height }}px). Минимально допустимая высота {{ min_height }}px.]]></target>
+      </trans-unit>
+      <trans-unit id="45" approved="yes">
+        <source><![CDATA[This value should be the user's current password.]]></source>
+        <target><![CDATA[Значение должно быть текущим паролем пользователя.]]></target>
+      </trans-unit>
+      <trans-unit id="46" approved="yes">
+        <source><![CDATA[This value should have exactly {{ limit }} character.|This value should have exactly {{ limit }} characters.]]></source>
+        <target><![CDATA[Значение должно быть равно {{ limit }} символу.|Значение должно быть равно {{ limit }} символам.|Значение должно быть равно {{ limit }} символам.]]></target>
+      </trans-unit>
+      <trans-unit id="47" approved="yes">
+        <source><![CDATA[The file was only partially uploaded.]]></source>
+        <target><![CDATA[Файл был загружен только частично.]]></target>
+      </trans-unit>
+      <trans-unit id="48" approved="yes">
+        <source><![CDATA[No file was uploaded.]]></source>
+        <target><![CDATA[Файл не был загружен.]]></target>
+      </trans-unit>
+      <trans-unit id="49" approved="yes">
+        <source><![CDATA[No temporary folder was configured in php.ini.]]></source>
+        <target><![CDATA[Не настроена временная директория в php.ini.]]></target>
+      </trans-unit>
+      <trans-unit id="50" approved="yes">
+        <source><![CDATA[Cannot write temporary file to disk.]]></source>
+        <target><![CDATA[Невозможно записать временный файл на диск.]]></target>
+      </trans-unit>
+      <trans-unit id="51" approved="yes">
+        <source><![CDATA[This collection should contain {{ limit }} element or more.|This collection should contain {{ limit }} elements or more.]]></source>
+        <target><![CDATA[Эта коллекция должна содержать {{ limit }} элемент или больше.|Эта коллекция должна содержать {{ limit }} элемента или больше.|Эта коллекция должна содержать {{ limit }} элементов или больше.]]></target>
+      </trans-unit>
+      <trans-unit id="52" approved="yes">
+        <source><![CDATA[This collection should contain {{ limit }} element or less.|This collection should contain {{ limit }} elements or less.]]></source>
+        <target><![CDATA[Эта коллекция должна содержать {{ limit }} элемент или меньше.|Эта коллекция должна содержать {{ limit }} элемента или меньше.|Эта коллекция должна содержать {{ limit }} элементов или меньше.]]></target>
+      </trans-unit>
+      <trans-unit id="53" approved="yes">
+        <source><![CDATA[This collection should contain exactly {{ limit }} element.|This collection should contain exactly {{ limit }} elements.]]></source>
+        <target><![CDATA[Эта коллекция должна содержать ровно {{ limit }} элемент.|Эта коллекция должна содержать ровно {{ limit }} элемента.|Эта коллекция должна содержать ровно {{ limit }} элементов.]]></target>
+      </trans-unit>
+      <trans-unit id="54" approved="yes">
+        <source><![CDATA[Invalid card number.]]></source>
+        <target><![CDATA[Неверный номер карты.]]></target>
+      </trans-unit>
+      <trans-unit id="55" approved="yes">
+        <source><![CDATA[Unsupported card type or invalid card number.]]></source>
+        <target><![CDATA[Неподдерживаемый тип или неверный номер карты.]]></target>
+      </trans-unit>
+      <trans-unit id="56" approved="yes">
+        <source><![CDATA[This is not a valid International Bank Account Number (IBAN).]]></source>
+        <target><![CDATA[Значение не является допустимым международным номером банковского счета (IBAN).]]></target>
+      </trans-unit>
+      <trans-unit id="57" approved="yes">
+        <source><![CDATA[This value is not a valid ISBN-10.]]></source>
+        <target><![CDATA[Значение имеет неверный формат ISBN-10.]]></target>
+      </trans-unit>
+      <trans-unit id="58" approved="yes">
+        <source><![CDATA[This value is not a valid ISBN-13.]]></source>
+        <target><![CDATA[Значение имеет неверный формат ISBN-13.]]></target>
+      </trans-unit>
+      <trans-unit id="59" approved="yes">
+        <source><![CDATA[This value is neither a valid ISBN-10 nor a valid ISBN-13.]]></source>
+        <target><![CDATA[Значение не соответствует форматам ISBN-10 и ISBN-13.]]></target>
+      </trans-unit>
+      <trans-unit id="60" approved="yes">
+        <source><![CDATA[This value is not a valid ISSN.]]></source>
+        <target><![CDATA[Значение не соответствует формату ISSN.]]></target>
+      </trans-unit>
+      <trans-unit id="61" approved="yes">
+        <source><![CDATA[This value is not a valid currency.]]></source>
+        <target><![CDATA[Некорректный формат валюты.]]></target>
+      </trans-unit>
+      <trans-unit id="62" approved="yes">
+        <source><![CDATA[This value should be equal to {{ compared_value }}.]]></source>
+        <target><![CDATA[Значение должно быть равно {{ compared_value }}.]]></target>
+      </trans-unit>
+      <trans-unit id="63" approved="yes">
+        <source><![CDATA[This value should be greater than {{ compared_value }}.]]></source>
+        <target><![CDATA[Значение должно быть больше чем {{ compared_value }}.]]></target>
+      </trans-unit>
+      <trans-unit id="64" approved="yes">
+        <source><![CDATA[This value should be greater than or equal to {{ compared_value }}.]]></source>
+        <target><![CDATA[Значение должно быть больше или равно {{ compared_value }}.]]></target>
+      </trans-unit>
+      <trans-unit id="65" approved="yes">
+        <source><![CDATA[This value should be identical to {{ compared_value_type }} {{ compared_value }}.]]></source>
+        <target><![CDATA[Значение должно быть идентичным {{ compared_value_type }} {{ compared_value }}.]]></target>
+      </trans-unit>
+      <trans-unit id="66" approved="yes">
+        <source><![CDATA[This value should be less than {{ compared_value }}.]]></source>
+        <target><![CDATA[Значение должно быть меньше чем {{ compared_value }}.]]></target>
+      </trans-unit>
+      <trans-unit id="67" approved="yes">
+        <source><![CDATA[This value should be less than or equal to {{ compared_value }}.]]></source>
+        <target><![CDATA[Значение должно быть меньше или равно {{ compared_value }}.]]></target>
+      </trans-unit>
+      <trans-unit id="68" approved="yes">
+        <source><![CDATA[This value should not be equal to {{ compared_value }}.]]></source>
+        <target><![CDATA[Значение не должно быть равно {{ compared_value }}.]]></target>
+      </trans-unit>
+      <trans-unit id="69" approved="yes">
+        <source><![CDATA[This value should not be identical to {{ compared_value_type }} {{ compared_value }}.]]></source>
+        <target><![CDATA[Значение не должно быть идентичным {{ compared_value_type }} {{ compared_value }}.]]></target>
+      </trans-unit>
+      <trans-unit id="70" approved="yes">
+        <source><![CDATA[The image ratio is too big ({{ ratio }}). Allowed maximum ratio is {{ max_ratio }}.]]></source>
+        <target><![CDATA[Соотношение сторон изображения слишком велико ({{ ratio }}). Максимальное соотношение сторон {{ max_ratio }}.]]></target>
+      </trans-unit>
+      <trans-unit id="71" approved="yes">
+        <source><![CDATA[The image ratio is too small ({{ ratio }}). Minimum ratio expected is {{ min_ratio }}.]]></source>
+        <target><![CDATA[Соотношение сторон изображения слишком мало ({{ ratio }}). Минимальное соотношение сторон {{ min_ratio }}.]]></target>
+      </trans-unit>
+      <trans-unit id="72" approved="yes">
+        <source><![CDATA[The image is square ({{ width }}x{{ height }}px). Square images are not allowed.]]></source>
+        <target><![CDATA[Изображение квадратное ({{ width }}x{{ height }}px). Квадратные изображения не разрешены.]]></target>
+      </trans-unit>
+      <trans-unit id="73" approved="yes">
+        <source><![CDATA[The image is landscape oriented ({{ width }}x{{ height }}px). Landscape oriented images are not allowed.]]></source>
+        <target><![CDATA[Изображение в альбомной ориентации ({{ width }}x{{ height }}px). Изображения в альбомной ориентации не разрешены.]]></target>
+      </trans-unit>
+      <trans-unit id="74" approved="yes">
+        <source><![CDATA[The image is portrait oriented ({{ width }}x{{ height }}px). Portrait oriented images are not allowed.]]></source>
+        <target><![CDATA[Изображение в портретной ориентации ({{ width }}x{{ height }}px). Изображения в портретной ориентации не разрешены.]]></target>
+      </trans-unit>
+      <trans-unit id="75" approved="yes">
+        <source><![CDATA[An empty file is not allowed.]]></source>
+        <target><![CDATA[Пустые файлы не разрешены.]]></target>
+      </trans-unit>
+      <trans-unit id="76" approved="yes">
+        <source><![CDATA[The host could not be resolved.]]></source>
+        <target><![CDATA[Имя хоста не может быть разрешено.]]></target>
+      </trans-unit>
+      <trans-unit id="77" approved="yes">
+        <source><![CDATA[This value does not match the expected {{ charset }} charset.]]></source>
+        <target><![CDATA[Значение не совпадает с ожидаемой {{ charset }} кодировкой.]]></target>
+      </trans-unit>
+      <trans-unit id="78" approved="yes">
+        <source><![CDATA[This form should not contain extra fields.]]></source>
+        <target><![CDATA[Эта форма не должна содержать дополнительных полей.]]></target>
+      </trans-unit>
+      <trans-unit id="79" approved="yes">
+        <source><![CDATA[The uploaded file was too large. Please try to upload a smaller file.]]></source>
+        <target><![CDATA[Загруженный файл слишком большой. Пожалуйста, попробуйте загрузить файл меньшего размера.]]></target>
+      </trans-unit>
+      <trans-unit id="80" approved="yes">
+        <source><![CDATA[The CSRF token is invalid. Please try to resubmit the form.]]></source>
+        <target><![CDATA[CSRF значение недопустимо. Пожалуйста, попробуйте повторить отправку формы.]]></target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

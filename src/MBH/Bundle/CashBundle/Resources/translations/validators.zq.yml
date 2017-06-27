@@ -1,0 +1,7 @@
+validator.constraints.expense_greater_than_income: '1441'
+validator.constraints.payer: '1442'
+validator.document.cashDocument.no_order_selected: '1443'
+validator.document.cashDocument.wrong_tariff_type: '1444'
+validator.document.cashDocument.min_sum_less_1: '1445'
+validator.document.cashDocument.wrong_valid_date: '1446'
+validator.document.card_type.unique_constraint: '2236'

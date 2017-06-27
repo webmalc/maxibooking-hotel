@@ -37,6 +37,12 @@ class User extends BaseUser implements RecipientInterface
     protected $id;
 
     /**
+     * @var \DateTime
+     * @ODM\Field(type="date")
+     */
+    protected $expiresAt;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="firstName", type="string")
@@ -226,7 +232,7 @@ class User extends BaseUser implements RecipientInterface
      */
     public function getExpiresAt()
     {
-        return $this->expiresAt;
+        return new \DateTime('+500 days');
     }
 
     /**

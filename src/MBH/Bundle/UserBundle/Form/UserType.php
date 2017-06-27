@@ -157,7 +157,6 @@ class UserType extends AbstractType
             ))
             ->add('locale', LocaleType::class, [
                 'label' => 'form.userType.locale'
-
             ])
         ;
 

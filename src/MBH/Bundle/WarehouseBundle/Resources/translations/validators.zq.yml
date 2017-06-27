@@ -1,0 +1,4 @@
+validator.warehouse.cat.notchosen: '1260'
+validator.warehouse.record.negative: '1261'
+validator.warehouse.record.wrongOperation: '1262'
+validator.warehouse.record.negativeSum: '1263'

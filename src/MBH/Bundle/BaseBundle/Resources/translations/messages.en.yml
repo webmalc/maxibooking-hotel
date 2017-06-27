@@ -1,61 +1,45 @@
 nights: night|nights
-
-twig.extension.jan: 'jan'
-twig.extension.feb: 'feb'
-twig.extension.march: 'mar'
-twig.extension.april: 'apr'
-twig.extension.may: 'may'
-twig.extension.june: 'june'
-twig.extension.july: 'july'
-twig.extension.august: 'aug'
-twig.extension.september: 'sept'
-twig.extension.october: 'oct'
-twig.extension.november: 'nov'
-twig.extension.december: 'dec'
-
-mailer.to_order: Read more
-mailer.to_package: to_package
-
-mailer.base.linkText: Go to «Maxi-Booking»
-
-
-mailer.online.user.map: online.user.map
-mailer.online.payment.backend: mailer.online.payment.backend
-mailer.online.payment.user: online.payment.user
-mailer.online.payment.subject: online.payment.subject
-
-mailer.online.user.subject: Welcome to «%hotel%»
-mailer.online.user.prepend: Hello, %guest%!<br><br>You’ve successfully booked room in our hotel. We will contact you soon to confirm the booking and elaborate check-in and accommodation details.
-mailer.online.user.append: We hope your visit will be successful and stay in our hotel will be comfortable. <br>Thank you for choosing our hotel!
-mailer.online.user.signature: Sincerely,<br>Booking Department of «%hotel%» hotel.
-
-mailer.online.backend.subject: New online booking is submitted
-mailer.online.backend.text: "Поступил новый заказ #%orderID% с вашего сайта."
-mailer.online.backend.prepend: online.backend.prepend
-mailer.online.backend.append: online.backend.append
-mailer.online.backend.signature: online.backend.signature
-
-
-
-mailer.order.confirm.user.subject: "Booking confirmation #%order% from %date%"
-mailer.order.confirm.user.prepend: Hello, %guest%!<br><br>Your booking has been successfully confirmed by Booking Department.
-mailer.order.confirm.user.append: Thank you for choosing our hotel!
-
-mailer.report.arrival.subject: The list of expected guests for the next arrival
-mailer.user.arrival.subject: We are looking forward to your arrival!
-
-mailer.report.user.poll.subject: Thank you for choosing our hotel!
-mailer.online.user.poll.prepend: Hello, %guest%!<br><br>We appreciate your choice and hope that stay at our hotel was comfortable for you.<br> We would like to ask you to rate the quality of hotel provided services.This will help us to develop and improve our service!
-mailer.online.user.poll.append: We will be glad to see you again!
-mailer.online.user.poll.link: Rate the quality of service
-
-
-# Mailer
-mailer.base.address: Hotel management system
-mailer.base.estimate_our_service: base.estimate_our_service
-mailer.base.generated_mail: Mail is generated automatically by the hotel management system «Maxi-Booking»
-
-mailer.reportArrival.expectedGuest: Expected guests
+twig.extension.jan: jan
+twig.extension.feb: feb
+twig.extension.march: mar
+twig.extension.april: apr
+twig.extension.may: may
+twig.extension.june: june
+twig.extension.july: july
+twig.extension.august: aug
+twig.extension.september: sept
+twig.extension.october: oct
+twig.extension.november: nov
+twig.extension.december: dec
+mailer.to_order: 'Proceed to booking'
+mailer.to_package: 'Proceed to reservation'
+mailer.base.linkText: 'Go to «Maxi-Booking»'
+mailer.online.user.map: Map
+mailer.online.payment.backend: 'Order #%order% has been paid for the sum of %cash%.<br> Payer: %payer%'
+mailer.online.payment.user: 'Order #%order% payment was successful.'
+mailer.online.payment.subject: 'Order #%order% payment'
+mailer.online.user.subject: 'Welcome to «%hotel%»'
+mailer.online.user.prepend: 'Hello, %guest%!<br><br>You’ve successfully booked a room in our hotel. We will contact you soon to confirm the booking and elaborate check-in and accommodation details.'
+mailer.online.user.append: 'We hope your visit will be pleasant and stay in our hotel will be comfortable. <br>Thank you for choosing our hotel!'
+mailer.online.user.signature: 'Sincerely,<br>Booking Department of «%hotel%».'
+mailer.online.backend.subject: 'New online booking submission'
+mailer.online.backend.text: 'Поступил новый заказ #%orderID% с вашего сайта.'
+mailer.online.backend.prepend: 'Helllo, %guest%!<br><br>You have successfully booked a room at our hotel. We will contact you as soon as possible for order and accomodation details confirmation.'
+mailer.online.backend.append: 'Greetings, %guest%!<br><br>You have successfully reserved a room in our hotel.'
+mailer.online.backend.signature: 'Best regards,<br>«%hotel%» reservation service.'
+mailer.order.confirm.user.subject: 'Booking confirmation #%order% from %date%'
+mailer.order.confirm.user.prepend: 'Hello, %guest%!<br><br>Your booking has been successfully confirmed by Booking Department.'
+mailer.order.confirm.user.append: 'Thank you for choosing our hotel!'
+mailer.report.arrival.subject: 'The list of expected guests for the next arrival'
+mailer.user.arrival.subject: 'We are looking forward to your arrival!'
+mailer.report.user.poll.subject: 'Thank you for choosing our hotel!'
+mailer.online.user.poll.prepend: 'Hello, %guest%!<br><br>We appreciate your choice and hope that stay at our hotel was comfortable for you.<br> We would like to ask you to rate the quality of hotel provided services.This will help us to develop and improve our service!'
+mailer.online.user.poll.append: 'We will be glad to see you again!'
+mailer.online.user.poll.link: 'Rate the quality of service'
+mailer.base.address: 'Hotel management system'
+mailer.base.estimate_our_service: 'Rate our service'
+mailer.base.generated_mail: 'Mail is generated automatically by the hotel management system «Maxi-Booking»'
+mailer.reportArrival.expectedGuest: 'Expected guests'
 mailer.reportArrival.duty: Duty
 mailer.reportArrival.number: Room
 mailer.reportArrival.numbers: Rooms
@@ -63,55 +47,165 @@ mailer.reportArrival.customer: Client
 mailer.reportArrival.payment: Payment
 mailer.reportArrival.overpayment: Overpayment
 mailer.reportArrival.paid: Paid
-mailer.reportArrival.not_paid: Not paid
-mailer.reportArrival.pure_payment: Partly paid
-mailer.reportArrival.transfer: Transfer to Airport
+mailer.reportArrival.not_paid: 'Not paid'
+mailer.reportArrival.pure_payment: 'Partly paid'
+mailer.reportArrival.transfer: 'Transfer to Airport'
 mailer.reportArrival.guests: Guests
-
 mailer.order.duty: order.duty
 mailer.order.date: Date
 mailer.order.cost: Price
-mailer.order.booked_numbers: Reserved rooms
-mailer.order.additional_services: Additional options
+mailer.order.booked_numbers: 'Reserved rooms'
+mailer.order.additional_services: 'Additional options'
 mailer.order.title: Item
 mailer.order.name: Name
 mailer.order.amount: Total
 mailer.order.quantity: Quantity
-mailer.order.client_info: Client information
-mailer.order.phone: order.phone
+mailer.order.client_info: 'Client information'
+mailer.order.phone: 'Phone number'
 mailer.order.number: Room
 mailer.order.numbers: Rooms
-mailer.order.customer: order.customer
-mailer.order.payment: order.payment
-mailer.order.overpayment: order.overpayment
-mailer.order.paid: order.paid
+mailer.order.customer: Customer
+mailer.order.payment: Payment
+mailer.order.overpayment: Overpayment
+mailer.order.paid: Paid
 mailer.order.not_paid: order.not_paid
 mailer.order.pure_payment: order.pure_payment
 mailer.order.transfer: order.transfer
 mailer.order.guests: order.guests
-mailer.order.arrival_time: Check-in time
-mailer.order.departure_time: Check-out time
+mailer.order.arrival_time: 'Check-in time'
+mailer.order.departure_time: 'Check-out time'
 mailer.order.comments: Comments
-
 mailer.closedTasks.subject: closedTasks.subject
 mailer.closedTasks.text: mailer.closedTasks.text
 mailer.closedTasks.task: closedTasks.task
 mailer.closedTasks.number: closedTasks.number
-mailer.closedTasks.performer: closedTasks.performer
+mailer.closedTasks.performer: Performer
 mailer.closedTasks.closed: closedTasks.closed
-
-mailer.userArrival.greet: Hello, {name}!
-mailer.userArrival.reminder: We hasten to remind you about booking in our hotel for TOMORROW {begin} Please, contact us in case of change of arrival time or options of your stay at our hotel.
-mailer.userArrival.reminder2: Information about your room facilities, check-in terms and additional services of our hotel you can find on our website.
-mailer.userArrival.about_hotel: About hotel
-mailer.userArrival.numbers_servies: Rooms and facilities
+mailer.userArrival.greet: 'Hello, {name}!'
+mailer.userArrival.reminder: 'We are reminding you about booking in our hotel for TOMORROW {begin}. Please contact us in case of arrival time change.'
+mailer.userArrival.reminder2: 'Information about your room facilities, check-in terms and additional services of our hotel you can find on our website.'
+mailer.userArrival.about_hotel: 'About hotel'
+mailer.userArrival.numbers_servies: 'Rooms and facilities'
 mailer.userArrival.trip_schema: Map
 mailer.userArrival.contacts: Contacts
-mailer.userArrival.bye: We will be glad to see you!
-
+mailer.userArrival.bye: 'We will be glad to see you!'
 mailer.base.rate.bad: Bad
 mailer.base.rate.good: Good
 mailer.base.rate.perfect: Perfect
-
 to: to
 from: from
+exception.hotel_relation_delete.message.roomType: 'Unable to delete hotel data. Room types for this hotel exist (%total%)'
+menu.label.podbor: Accomodation
+menu.label.nomandprice.roomsell: Availability
+menu.label.reports.clients: Guests
+form.filter: Filter
+no_paid: 'Not paid'
+mbhbasebundle.view.navbar.nepodtverzhden: 'Not confirmed'
+not.confirmed: 'Not confirmed'
+mbhbasebundle.view.pdftemplates.individual.schët: Check
+entry.actions.edit: Edit
+room: Room
+rooms: Rooms
+mbhbasebundle.view.pdftemplates.organization.vsegokoplate: 'Total sum'
+mbhbasebundle.view.pdftemplates.organization.vsegonaimenovaniy: 'Total names'
+exception.roomType_relation_delete.message.room: 'Unable to delete room type. Rooms are assigned to it.'
+entry.actions.delete.confirmation: 'Are you sure you want to delete «%doc%»?'
+menu.label.nomandprice.restriction: 'Conditions and limitations'
+menu.settings.label.restaurant.tables: Tables
+menu.communication.label.advanced: MyAllocator
+menu.header.navigation: Navigation
+mbhbasebundle.view.pdftemplates.organization.uslugi: services
+mbhbasebundle.view.pdftemplates.organization.ot: from
+mbhbasebundle.view.pdftemplates.individual.ot: from
+menu.label.broni: Reservations
+menu.label.portie: Portier
+menu.label.nomandprice: 'Rooms and rates'
+menu.label.task: Tasks
+menu.label.portie.arrdep: 'Check in/out'
+menu.label.portie.shah: Chessboard
+mbhbasebundle.view.navbar.kassa: Cashdesk
+menu.label.warehouse: Stock
+menu.label.restaurant: Restaurant
+menu.label.reports: Reports
+menu.settings.label.hotels: Hotels
+menu.label.nomandprice.tariff: Rates
+menu.label.nomandprice.overview: Overview
+menu.label.nomandprice.prices: Pricing
+menu.label.nomandprice.services: Services
+menu.label.nomandprice.promotions: Sales
+menu.label.reports.services: Services
+menu.label.reports.organizations: Company
+menu.label.reports.filling: Occupancy
+menu.label.reports.managers: Managers
+menu.label.reports.invite: 'Visa invitation'
+menu.label.reports.analystics: Analytics
+menu.label.reports.polls: Ratings
+menu.label.reports.work_shift: 'Work shifts'
+menu.settings.label.housing: Wings
+menu.settings.label.room_types: Rooms
+menu.settings.label.restaurant.ingredients: Ingredients
+menu.configs.config: Settings
+menu.settings.label.restaurant.dishmenu: 'Restaurant menu'
+menu.configs.users: Users
+menu.configs.groups: Groups
+menu.configs.sources: Channels
+menu.configs.templates: 'Document templates'
+menu.configs.parameters: Parameters
+menu.configs.tasktype: 'Task type'
+menu.configs.warehouse: Stock
+form.quick_links: 'Quick links'
+menu.settings.label.restaurant: Restaurant
+show: Show
+mbhbasebundle.view.navbar.voshel: Entered
+form.main.group: 'Main info'
+menu.communication.label: Interactions
+menu.communication.label.hundred_one_hotels: '101 Hotel'
+menu.communication.label.onlineform: 'Web form'
+menu.communication.label.polls: Ratings
+menu.communication.label.invite: 'Visa invitation'
+entry.actions.delete: Delete
+app.resources.twigBundle.translations.error: Error
+mbhbasebundle.views.not_allow: 'Not confirmed'
+mbhbasebundle.view.navbar.spisok.oteley: 'List of hotels'
+mbhbasebundle.views.mailer.dla_poluchenia_coda_dostupa_otskaniruite_etc: 'To gain access, please scan this QR code with your cell phone application.'
+mbhbasebundle.view.pdftemplates.organization.vsego_k_oplate: 'Total payment sum:'
+show.more: 'Show more'
+mbhbasebundle.view.navbar.select_hotel: 'Select a hotel'
+mbhbasebundle.view.navbar.profile: Profile
+mbhbasebundle.view.navbar.output: 'Log out'
+basebundle.menu.groups: Groups
+exception.ingredient_relation_delete.message.dish: 'Unable to delete a dish as it''s present in some orders. You can always hide it in %hrefTagStart% edit menu.'
+menu.configs.delete_reasons: 'Deletion resons'
+menu.settings.label.header: Settings
+menu.communication.label.your_hotel: VashHotel
+views.partials.disable_button.show_disabled_room_types: 'Show disabled room types'
+views.partials.disable_button.entity_delete_form.remove: Delete
+list: List
+mbhbasebundle.view.navbar.spisokoteley: 'Hotel list'
+entity.list.title: List
+mbhbasebundle.view.partials.entitydeleteform.udalitʹ: Delete
+form.facilitiesType.label: Facilities
+form.description: Description
+form.begin: Beginning
+form.title.help: 'Title only visible inside MaxiBooknig system'
+form.facilitiesType.placeholder: 'Select facilities'
+form.languageType.label: Language
+form.info.group: 'Main info'
+form.fullTitle: Title
+form.title: 'Internal title'
+form.end: End
+form.group.config: Settings
+basebundle.menu.terms_and_conditions: 'Conditions and limitations'
+basebundle.menu.onlineform: 'Web form'
+languages.en: English
+languages.ru: Russian
+tariff.main: 'default rate'
+tariffs: rates
+not.stopped: 'Not checked in'
+dash: '-'
+entry.actions.copy: 'Copy entry'
+configuration: Configuration
+position: Position
+position.help: 'Position of rate when showing in a list'
+entity.new.title: 'New special offer'
+exception.special_relation_delete.message.package: 'Unable to delete special offer. There are reservations assigned to it (%total%).'

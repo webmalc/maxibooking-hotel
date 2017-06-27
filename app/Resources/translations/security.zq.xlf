@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="file.ext" target-language="zq">
+    <body>
+      <trans-unit id="1" approved="yes">
+        <source><![CDATA[Authentication request could not be processed due to a system problem.]]></source>
+        <target><![CDATA[1413]]></target>
+      </trans-unit>
+      <trans-unit id="2" approved="yes">
+        <source><![CDATA[Account has expired.]]></source>
+        <target><![CDATA[1423]]></target>
+      </trans-unit>
+      <trans-unit id="3" approved="yes">
+        <source><![CDATA[An authentication exception occurred.]]></source>
+        <target><![CDATA[1411]]></target>
+      </trans-unit>
+      <trans-unit id="4" approved="yes">
+        <source><![CDATA[Authentication credentials could not be found.]]></source>
+        <target><![CDATA[1412]]></target>
+      </trans-unit>
+      <trans-unit id="5" approved="yes">
+        <source><![CDATA[Invalid credentials.]]></source>
+        <target><![CDATA[1414]]></target>
+      </trans-unit>
+      <trans-unit id="6" approved="yes">
+        <source><![CDATA[Cookie has already been used by someone else.]]></source>
+        <target><![CDATA[1415]]></target>
+      </trans-unit>
+      <trans-unit id="7" approved="yes">
+        <source><![CDATA[Not privileged to request the resource.]]></source>
+        <target><![CDATA[1416]]></target>
+      </trans-unit>
+      <trans-unit id="8" approved="yes">
+        <source><![CDATA[Invalid CSRF token.]]></source>
+        <target><![CDATA[1417]]></target>
+      </trans-unit>
+      <trans-unit id="9" approved="yes">
+        <source><![CDATA[Digest nonce has expired.]]></source>
+        <target><![CDATA[1418]]></target>
+      </trans-unit>
+      <trans-unit id="10" approved="yes">
+        <source><![CDATA[No authentication provider found to support the authentication token.]]></source>
+        <target><![CDATA[1419]]></target>
+      </trans-unit>
+      <trans-unit id="11" approved="yes">
+        <source><![CDATA[No session available, it either timed out or cookies are not enabled.]]></source>
+        <target><![CDATA[1420]]></target>
+      </trans-unit>
+      <trans-unit id="12" approved="yes">
+        <source><![CDATA[No token could be found.]]></source>
+        <target><![CDATA[1421]]></target>
+      </trans-unit>
+      <trans-unit id="13" approved="yes">
+        <source><![CDATA[Username could not be found.]]></source>
+        <target><![CDATA[1422]]></target>
+      </trans-unit>
+      <trans-unit id="14" approved="yes">
+        <source><![CDATA[Credentials have expired.]]></source>
+        <target><![CDATA[1424]]></target>
+      </trans-unit>
+      <trans-unit id="15" approved="yes">
+        <source><![CDATA[Account is disabled.]]></source>
+        <target><![CDATA[1425]]></target>
+      </trans-unit>
+      <trans-unit id="16" approved="yes">
+        <source><![CDATA[Account is locked.]]></source>
+        <target><![CDATA[1426]]></target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

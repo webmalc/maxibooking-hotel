@@ -1,0 +1,24 @@
+views.actions.deleteButtons.delete: Delete
+views.actions.list.add: Add
+views.actions.new.save: Save
+views.actions.saveButtons.save_and_close: 'Save and close'
+views.actions.saveButtons.save: Save
+views.actions.saveButtons.cancel: Cancel
+views.actions.saveButtons.log: Log
+views.actions.update.save: Save
+views.actions.update.delete: Delete
+views.partials.entityDeleteForm.confirm_delete_quote: 'Confirm deletion'
+views.partials.entityDeleteForm.confirm_delete: 'Confirm deletion'
+views.partials.entityDeleteForm.are_you_sure_delete_record_quote: 'Are you sure you want to delete this entry?'
+views.partials.entityDeleteForm.are_you_sure_delete_record: 'Are you sure you want to delete this entry?'
+views.partials.entityDeleteForm.cancel: Cancel
+views.partials.entityInfo.info: Information
+views.partials.entityInfo.changes_history: 'Change history'
+views.partials.entityInfo.created: Created
+views.partials.entityInfo.by_user: 'By user'
+views.partials.entityInfo.modified: Modified
+views.partials.entityInfo.no_changes_made: 'No changes made'
+views.partials.entityInfo.date: Date
+views.partials.entityInfo.user: User
+views.partials.entityInfo.changes: Changes
+app.resources.twigBundle.translations.occured.error: 'An error accured'

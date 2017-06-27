@@ -1,0 +1,183 @@
+form.roomType.is_room_included_in_search: 'Include room in search?'
+form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: 'Incorrect dates for entry generation'
+form.roomTypeGenerateRoomsType.too_many_generation_numbers: 'Too many entries to generate'
+form.roomTypeType.is_room_included_in_search: 'Include room type in search?'
+form.taskTypeCategory.title: 'Internal label'
+form.hotelExtendedType.placeholder_location: Address
+form.roomType.room_type: 'Room type'
+form.task.roomType: 'Room type'
+form.hotelType.hostel_hotel_or_not: 'Hostel or not?'
+form.hotelType.is_default: 'Default?'
+form.roomType.name: 'Room type name'
+form.hotelType.logo: Logo
+form.hotelExtendedType.all_rooms_non_smoking: 'All non-smoking rooms'
+form.hotelExtendedType.all_public_areas_non_smoking: 'Smoking is not allowed in public places'
+form.contact_info_type.email.help: E-mail
+form.hotel_contact_information.contact_info.group: 'Client support contacts'
+form.hotel_images.image_file.help: 'Hotel photo for online booking'
+form.hotel_images.image_file.label: Image
+form.contact_info_type.email.label: E-mail
+form.hotelExtendedType.zip_code: 'Zip code'
+views.task.index.vse: All
+controller.roomTypeController.success_room_type_creation: 'New room type succesfully created'
+form.notice_stay_place_xls_type.not_specified: 'Not specified'
+form.hotelExtendedType.city: City
+'form.hotelExtendedType.gps_coordinates_longitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>': 'Hotel GPS longitude coordinate.<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">View hotel coordinates.</a>'
+form.hotelExtendedType.hotel_amenities: 'Hotel amenities'
+form.hotelType.name: Title
+form.hotelExtendedType.parameters: Parameters
+form.hotelExtendedType.integration: Integration
+form.hotelExtendedType.gps_coordinates_latitude: 'Hotel GPS latitude coordinate.'
+form.hotelExtendedType.know_hotel_coordinates: 'View hotel coordinates.'
+form.hotelExtendedType.how_many_stars_hotel: 'Star rating'
+form.hotelExtendedType.settlement: Settlement
+form.hotelExtendedType.street: Street
+form.hotelExtendedType.house: House
+form.hotelExtendedType.corpus: Wing
+form.hotelExtendedType.flat: Appartment
+form.hotelExtendedType.location: Location
+form.hotelExtendedType.address: Address
+form.hotelExtendedType.latitude: Latitude
+form.hotelExtendedType.longitude: Longitude
+'form.hotelExtendedType.gps_coordinates_latitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>': 'Hotel GPS latitude coordinate.<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">View hotel coordinates.</a>'
+form.hotelExtendedType.hotel_type: 'Hotel type'
+form.hotelExtendedType.hotel_theme: 'Hotel theme'
+form.hotelType.general_info: 'General info'
+form.taskType.general_info: 'Add type'
+form.taskType.general_info_edit: 'Edit type'
+form.hotelType.placeholder_my_hotel: 'My hotel'
+form.hotelType.international_title: 'International name'
+form.hotelType.maxibooking_inner_name: 'Title only visible inside MaxiBooknig system'
+form.hotelType.is_default_maxibooking: 'Default when entering MaxiBooking'
+form.roomType.maxibooking_inner_name: 'Title only visible inside MaxiBooknig system'
+form.hotelType.inner_name: 'Internal name'
+form.hotelType.placeholder_hotel: Hetel
+form.hotelType.sale_days_amount: 'Sale days'
+form.hotelType.how_long_sale_opened_since_today: 'For how long this sale is active from today'
+form.roomTypeType.comport_plus_rooms_in_new_housing: 'Comfort plus. Rooms in new wing'
+form.roomTypeType.settings: Settings
+form.hotelType.document_use_name: 'Title used in documents'
+form.roomTypeGenerateRoomsType.first_bed_number: 'First bed number'
+form.roomTypeGenerateRoomsType.field_must_be_number: 'This field only supports numbers'
+form.roomTypeGenerateRoomsType.last_bed_number: 'Last bed number'
+form.roomTypeGenerateRoomsType.prefix_example: 'Prefix for the title'
+form.roomTypeType.international_title: 'International name'
+form.roomTypeType.online_reservation_room_description: 'Room type description for online reservation'
+form.roomTypeType.chess_room_type_color: 'Room type colour on chessboard'
+form.hotelType.prefix: Prefix
+form.hotelType.description: Description
+form.hotelType.settings: Settings
+form.hotelType.hostel: 'Hostel?'
+form.roomType.general_info: 'General info'
+form.roomType.inner_name: 'Internal name'
+form.roomType.placeholder_27_with_repair: '27'
+form.roomType.is_included: 'Included?'
+form.roomType.settings: Settings
+form.roomType.status: Status
+form.roomType.facilities: Fasilities
+form.roomType.housing: Wing
+form.roomType.floor: Floor
+form.roomTypeGenerateRoomsType.first_room_number: From
+form.roomTypeGenerateRoomsType.last_room_number: To
+form.roomTypeGenerateRoomsType.prefix: Prefix
+form.roomTypeGenerateRoomsType.housing: Wing
+form.roomTypeGenerateRoomsType.floor: Floor
+form.roomTypeType.name: Name
+form.roomTypeType.general_info: 'General info'
+form.roomTypeType.comfort_plus: 'Comfort plus'
+form.roomTypeType.inner_name: 'Internal name'
+form.roomTypeType.description: Description
+form.roomTypeType.color: Colour
+form.roomTypeType.image: Image
+form.roomTypeType.main_places: 'Number of beds'
+form.roomTypeType.places: Beds
+form.roomTypeType.inner_name.help: 'Title only visible inside MaxiBooknig system'
+form.roomTypeType.isChildPrices: 'Price for children'
+form.roomTypeType.isChildPricesDesc: 'Use a different price for children taking main beds?'
+form.roomTypeType.room_main_places_amount: 'Number of main beds in a room'
+form.task.status: Status
+form.roomTypeType.isIndividualAdditionalPrices: 'Individual prices for additional beds?'
+form.roomTypeType.isIndividualAdditionalPricesDesc: 'Use different prices for each additional bed?'
+form.roomTypeType.additional_places: 'Additional beds'
+form.roomTypeType.room_additional_places_amount: 'Number of additional beds in a number'
+form.roomTypeType.help.empty_facilities: 'Hotel amenities used'
+form.taskType.default_user_group: 'Default user group'
+form.roomTypeType.prices: 'Price formation'
+form.roomTypeType.is_included: 'Included?'
+form.roomTypeType.category: Category
+form.roomTypeType.facilities: Amenities
+form.roomTypeType.room_space: 'Room space'
+form.taskType.title: Title
+form.taskType.category: Category
+form.taskType.roomStatus: 'Room satus'
+form.task.type: 'Task type'
+form.task.room: Room
+form.roomTypeCategory.desc_help: 'Room type description for reservation online'
+form.taskTypeCategory.general_info: 'Add task category'
+form.task.rooms: Rooms
+form.task.priority: Priority
+form.task.tourist: Tourist
+form.task.date: 'Date and time'
+form.task.housing: Wing
+form.task.floor: Floor
+form.task.roles: Role
+form.task.general_room: 'Room type'
+form.task.placeholder_taskType: Task
+form.task.creationalDate: 'Created on'
+form.task.updatableDate: 'Updated on'
+form.task.description: Description
+form.task.group.general_add: 'Add a task'
+form.task.group.general_edit: 'Edit a task'
+form.task.group.assign: Assign
+form.task.group.settings: Settings
+form.userType.users: Performer
+form.userType.date: Date
+views.form.corpus.group.main: 'General info'
+views.form.corpus.group.address: Address
+views.form.corpus.group.config: Settings
+form.taskTypeCategory.fullTitle: Title
+views.task.index.performance: Performance
+form.searchTask.performance: Performance
+form.searchTask.creation: Creation
+form.roomTypeCategory.name: Title
+form.roomTypeCategory.inner_name: 'Internal title'
+form.roomTypeCategory.is_enabled: 'Enabled?'
+form.roomTypeCategory.desc: Description
+mbhhotelbundle.form.roomtypetaskstype.zadachi.sozdavayemyye.pri.zayezde.gostya: 'Tasks created on check in'
+form.hotelExtendedType.international_street_name.label: 'International title'
+form.hotelExtendedType.smoking_permitted_in_designated_areas_and_rooms: 'Smoking is allowed in special places only'
+form.hotelExtendedType.accepted_payment_types: 'Payment method'
+form.hotelExtendedType.check_in_out_policy.placeholder: 'Valid credit or debit card must be provided on check in'
+mbhhotelbundle.form.dailytasktype.vyberite.uslugu: 'Select a service'
+mbhhotelbundle.form.roomtypetaskstype.pri.vyyezde.gostya: 'On check out'
+form.hotelExtendedType.international_street_name.help: 'International street name'
+form.hotelExtendedType.non_smoking_room: 'Non-smoking lobbies'
+form.hotelExtendedType.accepted_card_type.help: 'Accepted card types'
+form.hotelExtendedType.is_invoice_accepted.help: 'Accept invoices as payment'
+form.hotelExtendedType.check_in_out_policy.label: 'Check in/out policies'
+form.hotelExtendedType.check_in_out_policy.help: 'Policies required on check in and check out'
+form.hotelExtendedType.smoking_policy.label: 'Smoking policy'
+form.contact_info_type.available_languages.label: 'Communication language'
+form.contact_info_type.phone.help: 'Contact phone number'
+form.contact_info_type.full_name.help: 'Full name'
+mbhhotelbundle.form.dailytasktype.dney: Days
+form.hotelExtendedType.accepted_card_type.label: 'Card type'
+form.hotelExtendedType.is_invoice_accepted.label: Invoice
+form.contact_info_type.phone.label: 'Phone number'
+form.contact_info_type.full_name.label: Name
+form.hotelType.isSmoking.label: 'Allow smoking?'
+form.hotel_images.image_is_default.help: 'Is this image default for the hotel?'
+form.hotel_images.image_is_default.label: 'Default?'
+form.roomTypeType.image.help: 'Room type image for reservations online'
+form.roomType.is_smoking.help: 'Is smoking allowed in the room?'
+form.hotelType.isSmoking.help: 'Is smoking allowed in the room?'
+form.roomType.is_smoking.label: 'Allow smoking?'
+form.roomType_generator.is_smoking.label: 'Smoking?'
+form.roomType.room_view_types.label: 'Window view'
+views.hotel.form.RoomTypeType.name_form_using_within: 'Internal label'
+views.hotel.form.RoomTypeType.image_type_number_for_online_booking: 'Room type image for reservations online'
+views.hotel.roomType.editTabs.public_information_and_setting: 'General info and settings'
+views.hotel.roomType.new.public_information_and_setting: 'General info and settings'
+views.hotel.form.hotelType.see_image: 'View image'
+views.hotel.form.hotelType.upload_file: 'Upload a file'
+views.hotel.form.hotelType.delete: Delete

@@ -1,0 +1,43 @@
+group.new.submit: 'Создать группу'
+group.edit.submit: 'Обновить группу'
+group.show.name: 'Название группы'
+group.flash.updated: 'Группа обновлена'
+group.flash.created: 'Группа создана'
+group.flash.deleted: 'Группа удалена'
+security.login.username: 'Имя пользователя'
+security.login.password: Пароль
+security.login.remember_me: 'Запомнить меня'
+security.login.submit: Войти
+profile.show.username: 'Имя пользователя'
+profile.show.email: 'Электронная почта'
+profile.edit.submit: Обновить
+profile.flash.updated: 'Профиль пользователя обновлен'
+change_password.submit: 'Изменить пароль'
+change_password.flash.success: 'Пароль изменен'
+registration.check_email: 'Письмо отправлено на адрес %email%. В нём содержится ссылка, по которой вы можете подтвердить свою регистрацию.'
+registration.confirmed: 'Поздравляем %username%, ваш аккаунт подтвержден.'
+registration.back: 'Вернуться на предыдущую страницу.'
+registration.submit: Регистрация
+registration.flash.user_created: 'Пользователь успешно создан'
+registration.email.subject: 'Добро пожаловать, %username%!'
+registration.email.message: 'Приветствуем, %username%!\n\nДля подтверждения вашей регистрации, пройдите по ссылке\n%confirmationUrl%\n\nС наилучшими пожеланиями,\nКоманда технической поддржки МаксиБукинг.'
+resetting.password_already_requested: 'Пароль для данного пользователя уже запрашивался за последние 24 часа.'
+resetting.check_email: 'Письмо на адрес %email% уже отправлено. Оно содержит ссылку, при переходе по которой ваш пароль будет сброшен.'
+resetting.request.username: 'Имя пользователя или электронная почта'
+resetting.request.submit: 'Сбросить пароль'
+resetting.reset.submit: 'Изменить пароль'
+resetting.flash.success: 'Пароль успешно сброшен'
+resetting.email.subject: 'Сброс пароля'
+resetting.email.message: 'Приветствуем, %username%!\n\nДля сброса пароля, пожалуйста, пройдите по ссылке\n%confirmationUrl%\n\nС наилучшими пожеланиями,\nКоманда поддержки МаксиБукинг..'
+layout.logout: Выход
+layout.login: Вход
+layout.register: Регистрация
+layout.logged_in_as: 'Вы вошли как %username%'
+form.group_name: 'Название группы'
+form.username: 'Имя пользователя'
+form.email: 'Электронная почта'
+form.current_password: 'Текущий пароль'
+form.password: Пароль
+form.password_confirmation: 'Подтвердите пароль'
+form.new_password: 'Новый пароль'
+form.new_password_confirmation: 'Подтвердите пароль'

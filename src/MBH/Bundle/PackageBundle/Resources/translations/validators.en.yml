@@ -1,0 +1,7 @@
+validator.document.package.delete_reason_greater_1000: 'Comment is limited to 1000 characters'
+form.searchType.range_validator: 'Additional dates field filled incorrectly'
+validator.places_message: 'Room type doesn''t suit the number of guests'
+validator.document.package.room_type_not_selected: 'Room type not selected'
+validator.document.roomCacheOverwrite.no_room_type_selected: 'Room type not selected'
+validator.document.package.service_price_less_zero: 'Services price cannot be less than 0'
+validator.package.special_message: 'Special offer has mismatches'

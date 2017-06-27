@@ -1,0 +1,8 @@
+form.profileType.min_password: 'Password cannot be less than 8 characters'
+validator.document.user.min_name: 'Name is too short'
+validator.document.user.max_name: 'Name is too long'
+validator.document.user.min_surname: 'Surname is too short'
+validator.document.user.max_surname: 'Surname is too long'
+form.profileType.min_number_password: 'Password should contain at least one digit'
+form.profileType.min_capital_letter_password: 'Password should contain at least one upper case letter'
+validator.user.default_notice_count: 'User with switched on option «Receiving side» (%user%) already exists'

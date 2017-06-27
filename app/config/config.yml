@@ -10,7 +10,7 @@ framework:
     serializer:
         enabled: true
     #esi:             ~
-    translator:      { fallback: ["%locale%", ru, en] }
+    translator:      { fallbacks: [] }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -232,11 +232,6 @@ liip_imagine:
             quality: 80
             filters:
               thumbnail: { size: [10, 10], mode: outbound, allow_upscale: true }
-        scaler:
-            quality: 80
-            filters:
-              relative_resize: { scale: 0.5, allow_upscale: true }
-
 
 # GravatarBundle
 ornicar_gravatar:
@@ -251,7 +246,7 @@ parameters:
 
 # Lexik translation bundle
 lexik_translation:
-    fallback_locale: [ru]         # (required) default locale(s) to use
+    fallback_locale: []         # (required) default locale(s) to use
     managed_locales: [ru, en]
     storage:
         type: mongodb
@@ -264,7 +259,7 @@ vich_uploader:
             upload_destination: '%kernel.root_dir%/../web/upload/images'
 
 bazinga_js_translation:
-    locale_fallback:      ru
+#    locale_fallback:      en
     default_domain:       front_messages
     active_domains:
             - front_messages

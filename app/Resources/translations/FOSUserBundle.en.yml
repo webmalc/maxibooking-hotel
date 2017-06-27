@@ -1,0 +1,43 @@
+group.new.submit: 'Create group'
+group.edit.submit: 'Update the group'
+group.show.name: 'Name of the group'
+group.flash.updated: 'Group has been updated'
+group.flash.created: 'Group has been created'
+group.flash.deleted: 'Group has been deleted'
+security.login.username: Username
+security.login.password: Password
+security.login.remember_me: 'Remember me'
+security.login.submit: 'Log in'
+profile.show.username: Username
+profile.show.email: 'Email address'
+profile.edit.submit: Update
+profile.flash.updated: 'User profile has been updated'
+change_password.submit: 'Change password'
+change_password.flash.success: 'Password has been changed'
+registration.check_email: 'A link has been sent to %email%. Please follow this link in order to complete registration.'
+registration.confirmed: 'Congratulations %username%, your account has been verified.'
+registration.back: 'Back to the previous page.'
+registration.submit: Registration
+registration.flash.user_created: 'User successfully added'
+registration.email.subject: 'Welcome %username%!'
+registration.email.message: 'Greetings, %username%!\n\nTo confirm your registration please follow this link\n%confirmationUrl%\n\nBest regards,\nMaxiBooking support team.\n'
+resetting.password_already_requested: 'Password for this user has been requested within the last 24 hours.'
+resetting.check_email: 'An link has been sent to %email%. Please follow the link to reset your password.'
+resetting.request.username: 'Username or email address'
+resetting.request.submit: 'Reset password'
+resetting.reset.submit: 'Change password'
+resetting.flash.success: 'Password has been reset successfully'
+resetting.email.subject: 'Password Reset'
+resetting.email.message: 'Greetings, %username%!\n\nTo reset the password please follow the link %confirmationUrl%\n\nBest regards,\nService support team.\n'
+layout.logout: 'Log out'
+layout.login: 'Log in'
+layout.register: Register
+layout.logged_in_as: 'Logged in as %username%'
+form.group_name: 'Group name'
+form.username: Username
+form.email: Email
+form.current_password: 'Current password'
+form.password: Password
+form.password_confirmation: 'Confirm password'
+form.new_password: 'New password'
+form.new_password_confirmation: 'Confirm password'
