@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Document\ColorsConfig;
 use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
 use MBH\Bundle\ClientBundle\Document\Paypal;
@@ -12,6 +13,7 @@ use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
+use MBH\Bundle\ClientBundle\Form\ColorsType;
 use MBH\Bundle\ClientBundle\Service\Notice;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -201,5 +203,48 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableModeBool);
 
         return $this->redirectToRoute($route);
+    }
+
+    /**
+     * @Template()
+     * @param Request $request
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
+     * @Route("/color_settings", name="color_settings")
+     * @return array
+     */
+    public function colorSettingsAction(Request $request)
+    {
+        $entity = $this->dm->getRepository('MBHClientBundle:ColorsConfig')->fetchConfig();
+        $form = $this->createForm(ColorsType::class, $entity);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $this->dm->flush();
+            $this->addFlash('success', 'controller.color_settings_action.config_successful_saved');
+        }
+
+        return [
+            'form' => $form->createView(),
+            'entity' => $entity,
+            'logs' => $this->logs($entity)
+        ];
+    }
+
+    /**
+     * @Route("/color_settings/reset", name="reset_color_settings")
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function resetSettingsAction()
+    {
+        $config = $this->dm->getRepository('MBHClientBundle:ColorsConfig')->fetchConfig();
+        $this->dm->remove($config);
+        $config = new ColorsConfig();
+        $this->dm->persist($config);
+        $this->dm->flush();
+        $this->addFlash('success', 'controller.color_settings_action.config_successful_reset');
+
+        return $this->redirectToRoute('color_settings');
     }
 }

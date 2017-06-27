@@ -6,6 +6,7 @@ declare let canCreatePackage;
 declare let Translator;
 declare let styleConfigs;
 declare let currentStyleConfigNumber;
+declare let colors;
 
 class ChessBoardManager {
     private static PACKAGE_FONT_SIZE_WIDTH = 8;
@@ -21,6 +22,7 @@ class ChessBoardManager {
     private tableEndDate;
     private canMoveAccommodation = true;
     private currentSizeConfigNumber = currentStyleConfigNumber;
+    private colors = colors;
 
     public static deletePackageElement(packageId) {
         let packageElement = document.getElementById(packageId);
@@ -350,7 +352,7 @@ class ChessBoardManager {
     private getTemplateElement() {
         let templateDiv: HTMLElement = document.createElement('div');
         templateDiv.style.position = 'absolute';
-        templateDiv.style.height = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1 + 'px';
+        templateDiv.style.height = styleConfigs[this.currentSizeConfigNumber].tableCellHeight - 1 + 'px';
         templateDiv.classList.add('package');
 
         let buttonsDiv = document.createElement('div');
@@ -437,7 +439,7 @@ class ChessBoardManager {
         let wrapperTopOffset = parseInt(wrapper.offset().top, 10);
         let roomLineTopOffset = parseInt(roomLineElement.offset().top, 10);
         packageElement.style.left = this.getPackageLeftOffset(startDate) + 'px';
-        packageElement.style.top = roomLineTopOffset - wrapperTopOffset + 'px';
+        packageElement.style.top = roomLineTopOffset - wrapperTopOffset + 1 + 'px';
 
         return packageElement;
     }
@@ -744,7 +746,7 @@ class ChessBoardManager {
     private isPackageOnSpecifiedLine(lineClass, packageOffset) {
         let specifiedLine = document.getElementsByClassName(lineClass);
         return Array.prototype.some.call(specifiedLine, function (element) {
-            return ChessBoardManager.saveOffsetCompare(packageOffset.top, $(element).offset().top);
+            return ChessBoardManager.isOffsetsEqual(packageOffset.top, $(element).offset().top);
         });
     }
 
@@ -770,7 +772,7 @@ class ChessBoardManager {
         //1 - бордер
         let packageElementHeight = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1;
 
-        return Math.floor(height / packageElementHeight) * packageElementHeight - 1;
+        return Math.floor(height / packageElementHeight) * packageElementHeight;
     }
 
     private isAbroadLeftTableSide(intervalMomentBegin) {
@@ -891,7 +893,7 @@ class ChessBoardManager {
     public getPackageData($packageElement) {
         let packageOffset = $packageElement.offset();
         let roomLine = $('.roomDates, .leftRoomsLine').filter(function () {
-            return ChessBoardManager.saveOffsetCompare($(this).offset().top, packageOffset.top);
+            return ChessBoardManager.isOffsetsEqual($(this).offset().top, packageOffset.top);
         });
         let roomTypeId = roomLine.parent().get(0).id || roomLine.get(0).getAttribute('data-roomtypeid');
         let accommodationId = roomLine.children().get(0).id;
@@ -915,6 +917,7 @@ class ChessBoardManager {
         } else {
             paidStatus = 'danger';
         }
+
         return {
             id: $packageElement.get(0).id,
             accommodation: accommodationId,
@@ -926,7 +929,7 @@ class ChessBoardManager {
         };
     }
 
-    private static saveOffsetCompare(firstOffset, secondOffset) {
+    private static isOffsetsEqual(firstOffset, secondOffset) {
         let firstIntOffset = parseInt(firstOffset, 10);
         let secondIntOffset = parseInt(secondOffset, 10);
         return (firstIntOffset === secondIntOffset)
@@ -936,7 +939,7 @@ class ChessBoardManager {
 
     private getDateStringByLeftOffset(dateElements, leftOffset) {
         let dateElement = dateElements.filter(function () {
-            return ChessBoardManager.saveOffsetCompare($(this).offset().left, leftOffset);
+            return ChessBoardManager.isOffsetsEqual($(this).offset().left, leftOffset);
         });
         let dateNumber = dateElements.index(dateElement);
         let momentDate = moment((<HTMLInputElement>document.getElementById('accommodation-report-begin')).value, "DD.MM.YYYY")
@@ -1139,11 +1142,11 @@ class ChessBoardManager {
                 let dateElements = item.children[0].children;
                 for (let i = 0; i < dateElements.length; i++) {
                     let dateLeftRoomsCount = leftRoomCounts[roomTypeId][i];
-                    let backgroundColor = 'yellowgreen';
+                    let backgroundColor = self.colors['leftRoomsPositive'];
                     if (dateLeftRoomsCount == 0) {
-                        backgroundColor = 'rgba(243, 156, 18, 0.66)'
+                        backgroundColor = self.colors['leftRoomsZero'];
                     } else if (dateLeftRoomsCount < 0) {
-                        backgroundColor = 'rgba(221, 75, 57, 0.6)';
+                        backgroundColor = self.colors['leftRoomsNegative'];
                     }
                     dateElements[i].children[0].style.backgroundColor = backgroundColor;
                     dateElements[i].children[0].innerHTML = dateLeftRoomsCount;

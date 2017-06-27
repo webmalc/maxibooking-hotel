@@ -22,3 +22,10 @@ client.views.clientConfig.index.hotel: "Отель"
 client.views.clientConfig.index.allhotel: "Все отели"
 client.views.clientConfig.index.organization: "Организация"
 client.views.clientConfig.index.list: "Список"
+
+#colorSettings
+client.views.clientConfig.color_settings.reset_settings.button: Сбросить настройки
+client.views.clientConfig.color_settings.small_title: Настройки цветов
+client.views.clientConfig.tabs.color_settings: Цвета
+client.views.clientConfig.reset_confirmation.text: Настройки цветов будут сброшены к стандартным
+client.views.clientConfig.reset_confirmation.button-text: Сбросить

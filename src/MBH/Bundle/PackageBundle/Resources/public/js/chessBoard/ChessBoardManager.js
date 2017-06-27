@@ -3,6 +3,7 @@ var ChessBoardManager = (function () {
     function ChessBoardManager(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals) {
         this.canMoveAccommodation = true;
         this.currentSizeConfigNumber = currentStyleConfigNumber;
+        this.colors = colors;
         this.dataManager = new DataManager(packagesData, leftRoomsData, noAccommodationCounts, noAccommodationIntervals, this);
         this.actionManager = new ActionManager(this.dataManager);
         this.updateNoAccommodationPackageCounts();
@@ -285,7 +286,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.prototype.getTemplateElement = function () {
         var templateDiv = document.createElement('div');
         templateDiv.style.position = 'absolute';
-        templateDiv.style.height = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1 + 'px';
+        templateDiv.style.height = styleConfigs[this.currentSizeConfigNumber].tableCellHeight - 1 + 'px';
         templateDiv.classList.add('package');
         var buttonsDiv = document.createElement('div');
         buttonsDiv.classList.add('package-action-buttons');
@@ -361,7 +362,7 @@ var ChessBoardManager = (function () {
         var wrapperTopOffset = parseInt(wrapper.offset().top, 10);
         var roomLineTopOffset = parseInt(roomLineElement.offset().top, 10);
         packageElement.style.left = this.getPackageLeftOffset(startDate) + 'px';
-        packageElement.style.top = roomLineTopOffset - wrapperTopOffset + 'px';
+        packageElement.style.top = roomLineTopOffset - wrapperTopOffset + 1 + 'px';
         return packageElement;
     };
     ChessBoardManager.prototype.editAccommodationElement = function (element, packageStartDate, packageEndDate) {
@@ -643,7 +644,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.prototype.isPackageOnSpecifiedLine = function (lineClass, packageOffset) {
         var specifiedLine = document.getElementsByClassName(lineClass);
         return Array.prototype.some.call(specifiedLine, function (element) {
-            return ChessBoardManager.saveOffsetCompare(packageOffset.top, $(element).offset().top);
+            return ChessBoardManager.isOffsetsEqual(packageOffset.top, $(element).offset().top);
         });
     };
     /**
@@ -666,7 +667,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.prototype.getGriddedHeightValue = function (height) {
         //1 - бордер
         var packageElementHeight = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1;
-        return Math.floor(height / packageElementHeight) * packageElementHeight - 1;
+        return Math.floor(height / packageElementHeight) * packageElementHeight;
     };
     ChessBoardManager.prototype.isAbroadLeftTableSide = function (intervalMomentBegin) {
         return intervalMomentBegin.isBefore(this.tableStartDate);
@@ -785,7 +786,7 @@ var ChessBoardManager = (function () {
     ChessBoardManager.prototype.getPackageData = function ($packageElement) {
         var packageOffset = $packageElement.offset();
         var roomLine = $('.roomDates, .leftRoomsLine').filter(function () {
-            return ChessBoardManager.saveOffsetCompare($(this).offset().top, packageOffset.top);
+            return ChessBoardManager.isOffsetsEqual($(this).offset().top, packageOffset.top);
         });
         var roomTypeId = roomLine.parent().get(0).id || roomLine.get(0).getAttribute('data-roomtypeid');
         var accommodationId = roomLine.children().get(0).id;
@@ -818,7 +819,7 @@ var ChessBoardManager = (function () {
             paidStatus: paidStatus
         };
     };
-    ChessBoardManager.saveOffsetCompare = function (firstOffset, secondOffset) {
+    ChessBoardManager.isOffsetsEqual = function (firstOffset, secondOffset) {
         var firstIntOffset = parseInt(firstOffset, 10);
         var secondIntOffset = parseInt(secondOffset, 10);
         return (firstIntOffset === secondIntOffset)
@@ -827,7 +828,7 @@ var ChessBoardManager = (function () {
     };
     ChessBoardManager.prototype.getDateStringByLeftOffset = function (dateElements, leftOffset) {
         var dateElement = dateElements.filter(function () {
-            return ChessBoardManager.saveOffsetCompare($(this).offset().left, leftOffset);
+            return ChessBoardManager.isOffsetsEqual($(this).offset().left, leftOffset);
         });
         var dateNumber = dateElements.index(dateElement);
         var momentDate = moment(document.getElementById('accommodation-report-begin').value, "DD.MM.YYYY")
@@ -998,12 +999,12 @@ var ChessBoardManager = (function () {
                 var dateElements = item.children[0].children;
                 for (var i = 0; i < dateElements.length; i++) {
                     var dateLeftRoomsCount = leftRoomCounts[roomTypeId][i];
-                    var backgroundColor = 'yellowgreen';
+                    var backgroundColor = self.colors['leftRoomsPositive'];
                     if (dateLeftRoomsCount == 0) {
-                        backgroundColor = 'rgba(243, 156, 18, 0.66)';
+                        backgroundColor = self.colors['leftRoomsZero'];
                     }
                     else if (dateLeftRoomsCount < 0) {
-                        backgroundColor = 'rgba(221, 75, 57, 0.6)';
+                        backgroundColor = self.colors['leftRoomsNegative'];
                     }
                     dateElements[i].children[0].style.backgroundColor = backgroundColor;
                     dateElements[i].children[0].innerHTML = dateLeftRoomsCount;

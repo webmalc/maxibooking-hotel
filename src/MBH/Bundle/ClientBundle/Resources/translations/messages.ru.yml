@@ -59,3 +59,22 @@ form.documentTemplateType.hotel: Отель
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
 
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
+
+controller.color_settings_action.config_successful_saved: Настройки успешно сохранены
+controller.color_settings_action.config_successful_reset: Установлены стандартные настройки
+form.colors_type.group.packages: Брони
+form.colors_type.success_color.label: Оплаченная
+form.colors_type.success_color.help: Цвет оплаченной брони
+form.colors_type.warning_color.label: Частично оплаченная
+form.colors_type.warning_color.help: Цвет частино оплаченной брони
+form.colors_type.danger_color.label: Неоплаченная
+form.colors_type.danger_color.help: Цвет неоплаченной брони
+form.colors_type.group.chessboard: Шахматка
+form.colors_type.left_rooms_positive.label: Положительное кол-во
+form.colors_type.left_rooms_positive.help: Цвет ячеек таблицы, отображающих положительное число оставшихся номеров
+form.colors_type.left_rooms_zero.label: Нулевое кол-во
+form.colors_type.left_rooms_zero.help: Цвет ячеек таблицы, отображающих нулевое количество оставшихся номеров
+form.colors_type.left_rooms_negative.label: Отрицательное кол-во
+form.colors_type.left_rooms_negative.help: Цвет ячеек таблицы, отображающих отрицательное количество оставшихся номеров
+form.colors_type.unplaced_color.label: Неразмещенные
+form.colors_type.unplaced_color.help: Цвет ячеек таблицы, отображающих количество неразмещенных броней за день

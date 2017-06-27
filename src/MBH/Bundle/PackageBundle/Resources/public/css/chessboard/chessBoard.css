@@ -38,10 +38,16 @@ body {
   border-bottom: 1px solid white;
   cursor: pointer;
 }
-.package .package-action-buttons {
+.package .divide-package-button,
+.package .remove-package-button {
   position: absolute;
-  right: 4px;
   top: -3px;
+}
+.package .divide-package-button {
+  left: 7px;
+}
+.package .remove-package-button {
+  right: 7px;
 }
 .with-left-divider:after,
 .with-right-divider:before {
@@ -59,13 +65,13 @@ body {
   left: 0;
 }
 .with-right-divider.danger:before {
-  background-color: rgba(221, 75, 57, 0.6);
+  background-color: #ff9e80;
 }
 .with-right-divider.success:before {
-  background-color: rgba(0, 166, 90, 0.6);
+  background-color: #8bc34a;
 }
 .with-right-divider.warning:before {
-  background-color: rgba(243, 156, 18, 0.6);
+  background-color: #fdd835;
 }
 .with-right-divider:before {
   right: -7px;
@@ -122,7 +128,7 @@ body {
   background-color: #c96f53;
 }
 .success {
-  background-color: #8bc34a !important;
+  background-color: #8bc34a;
 }
 .success .package-description,
 .success .ui-resizable-e,
@@ -135,7 +141,7 @@ body {
 .warning .package-description,
 .warning .ui-resizable-e,
 .warning .ui-resizable-w {
-  background-color: #c5a600;
+  background-color: #c77800;
 }
 #accommodation-chessBoard-content {
   position: relative;
@@ -281,7 +287,7 @@ body {
   text-align: left;
   display: table-cell;
   vertical-align: middle;
-  width: 200px;
+  width: 199px;
 }
 #accommodation-chessBoard-content .tile .title-sub {
   border-right: 1px solid #e3e3e3;
@@ -658,7 +664,7 @@ body {
 .ui-resizable-w {
   z-index: 150;
   width: 7px;
-  height: 40px;
+  height: 38px;
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -687,7 +693,7 @@ body {
   color: rgba(177, 0, 0, 0.6);
 }
 .divide-package-button {
-  color: #ddf28a;
+  color: #333;
 }
 .modal {
   color: #3d5471;

@@ -111,6 +111,7 @@ class ChessBoardController extends BaseController
         $tourist->setBirthplace(new BirthPlace());
         $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $tourist->getDocumentRelation()->setType('vega_russian_passport');
+        $colorSettings = $this->dm->getRepository('MBHClientBundle:ColorsConfig')->fetchConfig();
 
         return [
             'pageCount' => ceil($builder->getRoomCount() / $builder::ROOM_COUNT_ON_PAGE),
@@ -141,7 +142,8 @@ class ChessBoardController extends BaseController
                 $tourist->getAddressObjectDecomposed())
                 ->createView(),
             'sizes' => self::SIZE_CONFIGS,
-            'stylesFileNumber' => $stylesFileNumber
+            'stylesFileNumber' => $stylesFileNumber,
+            'colors' => $colorSettings->__toArray()
         ];
     }
 

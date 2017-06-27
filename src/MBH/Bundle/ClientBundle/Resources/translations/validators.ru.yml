@@ -1,0 +1,2 @@
+validator.colors_config.min_hex_code: Значение цвета должно быть не меньше шести символов
+validator.colors_config.max_hex_code: Значение цвета должно быть не больше 21 символа

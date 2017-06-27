@@ -47,19 +47,33 @@
         var currentStyleConfigNumber = {{ stylesFileNumber }};
         var canCreatePackage = {{ canCreatePackage }};
         var canBookWithoutPayer = {{ client_config().canBookWithoutPayer ? 'true' : 'false' }};
+        var colors = JSON.parse('{{ colors|json_encode|raw }}');
     </script>
     {% endjavascripts %}
+{% endblock %}
 
-    {% block styles %}
-        {{ parent() }}
-        {% stylesheets filter='cssrewrite, uglifycss'
-        '@MBHPackageBundle/Resources/public/css/*'
-        'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css'
-        %}
-        <link rel="stylesheet" href="{{ asset_url }}"/>
-        {% endstylesheets %}
-    {% endblock %}
-
+{% block styles %}
+    {{ parent() }}
+    {% stylesheets filter='cssrewrite, uglifycss'
+    '@MBHPackageBundle/Resources/public/css/*'
+    'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+    <style>
+        .success {
+            background-color: {{ colors['success'] }} !important;
+        }
+        .warning {
+            background-color: {{ colors['warning'] }} !important;
+        }
+        .danger {
+            background-color: {{ colors['danger'] }} !important;
+        }
+        #accommodation-chessBoard-content .achtung {
+            background-color: {{ colors['unplaced'] }} !important;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -218,7 +232,7 @@
 
                                         <a {% if toolTip != '' %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ toolTip }}" {% endif %}>{{ roomShortInfo[0:20] }}</a>
 
-                                        <div class="text-right">
+                                        <div class="text-right" style="height: {{ tileFontSize }}px;">
                                             {% if roomData.statuses is iterable and roomData.statuses is not empty %}
                                                 {% for status in roomData.statuses %}
                                                     {% if status.code in roomStatusIcons|keys %}
@@ -252,11 +266,11 @@
                                         <ul class="list-unstyled calendarDays">
                                             {% if leftRoomsData[roomTypeId] is defined %}
                                                 {% for leftRoomsCount in leftRoomsData[roomTypeId] %}
-                                                    {% set leftRoomsBackgroundColor = '#aeea00' %}
+                                                    {% set leftRoomsBackgroundColor = colors['leftRoomsPositive'] %}
                                                     {% if leftRoomsCount == 0 %}
-                                                        {% set leftRoomsBackgroundColor = 'rgba(243, 156, 18, 0.66)' %}
+                                                        {% set leftRoomsBackgroundColor = colors['leftRoomsZero'] %}
                                                     {% elseif leftRoomsCount < 0 %}
-                                                        {% set leftRoomsBackgroundColor = 'rgba(221, 75, 57, 0.6)' %}
+                                                        {% set leftRoomsBackgroundColor = colors['leftRoomsNegative'] %}
                                                     {% endif %}
                                                     <li class="tile"
                                                         style="background-color: {{ leftRoomsBackgroundColor }}"

@@ -36,16 +36,29 @@ body {
 .package {
   z-index: 100;
   border-bottom: 1px solid white;
+  transform: skew(-40deg);
   cursor: pointer;
 }
-.package .package-action-buttons {
+.package .divide-package-button,
+.package .remove-package-button {
   position: absolute;
-  right: 4px;
+}
+.package .divide-package-button {
+  left: -7px;
+  top: 10px;
+}
+.package .remove-package-button {
+  right: 14px;
   top: -3px;
+}
+.package-action-buttons,
+.package-description {
+  transform: skew(40deg);
 }
 .with-left-divider:after,
 .with-right-divider:before {
   content: ' ';
+  transform: skew(40deg);
   height: 10px;
   top: 7.5px;
   position: absolute;
@@ -59,13 +72,13 @@ body {
   left: 0;
 }
 .with-right-divider.danger:before {
-  background-color: rgba(221, 75, 57, 0.6);
+  background-color: #ff9e80;
 }
 .with-right-divider.success:before {
-  background-color: rgba(0, 166, 90, 0.6);
+  background-color: #8bc34a;
 }
 .with-right-divider.warning:before {
-  background-color: rgba(243, 156, 18, 0.6);
+  background-color: #fdd835;
 }
 .with-right-divider:before {
   right: -7px;
@@ -108,34 +121,6 @@ body {
 #packageModal .modal-body .row {
   padding-bottom: 10px;
   font-size: 1.3em;
-}
-.danger,
-.package {
-  background-color: #ff9e80;
-}
-.danger .package-description,
-.package .package-description,
-.danger .ui-resizable-e,
-.package .ui-resizable-e,
-.danger .ui-resizable-w,
-.package .ui-resizable-w {
-  background-color: #c96f53;
-}
-.success {
-  background-color: #8bc34a !important;
-}
-.success .package-description,
-.success .ui-resizable-e,
-.success .ui-resizable-w {
-  background-color: #7d8600;
-}
-.warning {
-  background-color: #fdd835;
-}
-.warning .package-description,
-.warning .ui-resizable-e,
-.warning .ui-resizable-w {
-  background-color: #c5a600;
 }
 #accommodation-chessBoard-content {
   position: relative;
@@ -281,7 +266,7 @@ body {
   text-align: left;
   display: table-cell;
   vertical-align: middle;
-  width: 180px;
+  width: 179px;
 }
 #accommodation-chessBoard-content .tile .title-sub {
   border-right: 1px solid #e3e3e3;
@@ -656,9 +641,10 @@ body {
 }
 .ui-resizable-e,
 .ui-resizable-w {
+  background: rgba(0, 0, 0, 0.5);
   z-index: 150;
   width: 7px;
-  height: 25px;
+  height: 23px;
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -687,7 +673,7 @@ body {
   color: rgba(177, 0, 0, 0.6);
 }
 .divide-package-button {
-  color: #ddf28a;
+  color: #333;
 }
 .modal {
   color: #3d5471;
