@@ -13,6 +13,11 @@
                     <button data-toggle="tooltip" data-placement="top" title="{{ 'dashboard.confirm.tooltip'|trans }}" type="button" class="close dashboard-confirm-button" data-id="{{ message.id }}">×</button>
                     {% endif %}
                     {{ message.text|trans|raw }}
+                    {% if message.route %}
+                        <div class="text-right margin-top-sm">
+                            <a href="{{ path(message.route) }}" target="_blank">{{ 'dashboard.link'|trans }}</a>
+                        </div>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>

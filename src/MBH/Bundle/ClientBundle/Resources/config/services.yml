@@ -15,7 +15,7 @@ services:
 
     mbh.dashboard.room_cache:
       class: MBH\Bundle\ClientBundle\Service\Dashboard\RoomCacheSource
-      arguments: ['@doctrine_mongodb', '@validator']
+      arguments: ['@doctrine_mongodb', '@validator', '@translator']
 
     mbh_bundle_client.twig.dashboard_extension:
         class: MBH\Bundle\ClientBundle\Twig\DashboardExtension

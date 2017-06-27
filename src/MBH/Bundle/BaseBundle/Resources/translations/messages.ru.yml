@@ -577,3 +577,6 @@ errors: Ошибки
 # dashboard
 dashboard.modal.header: 'Предупреждения'
 dashboard.confirm.tooltip: 'Отметить прочитанным'
+dashboard.messages.hotel.errors: 'обнаружены следующие ошибки'
+dashboard.messages.roomType.roomCache: 'не выставлены "Номера в продаже" на следующие периоды'
+dashboard.link: 'посмотреть'

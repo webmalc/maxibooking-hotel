@@ -47,6 +47,14 @@ class DashboardEntry extends Base
     private $text;
     
     /**
+     * @var string|null
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @ODM\Index()
+     */
+    private $route;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
@@ -163,5 +171,28 @@ class DashboardEntry extends Base
     public function getText(): string
     {
         return $this->text;
+    }
+
+    /**
+     * route set
+     *
+     * @param string $route
+     * @return self
+     */
+    public function setRoute(string $route = null): self
+    {
+        $this->route = $route;
+
+        return $this;
+    }
+
+    /**
+     * route get
+     *
+     * @return string|null
+     */
+    public function getRoute()
+    {
+        return $this->route;
     }
 }

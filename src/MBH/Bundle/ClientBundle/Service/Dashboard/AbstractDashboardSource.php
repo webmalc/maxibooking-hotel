@@ -5,12 +5,19 @@ namespace MBH\Bundle\ClientBundle\Service\Dashboard;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\ClientBundle\Document\DashboardEntry;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * AbstractDashboardSource class
  */
 abstract class AbstractDashboardSource implements \SplObserver
 {
+    
+    /**
+     * route - url route
+     */
+    const ROUTE = null;
+
     /**
      * message default type
      */
@@ -24,20 +31,30 @@ abstract class AbstractDashboardSource implements \SplObserver
     /**
      * @var ManagerRegistry
      */
-    private $documentManager;
+    protected $documentManager;
 
     /**
      * @var ValidatorInterface
      */
-    private $validator;
+    protected $validator;
+    
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
 
     /**
      * constructor
      */
-    public function __construct(ManagerRegistry $documentManager, ValidatorInterface $validator)
-    {
+    public function __construct(
+        ManagerRegistry $documentManager,
+        ValidatorInterface $validator,
+        TranslatorInterface $translator
+    ) {
+    
         $this->documentManager = $documentManager->getManager();
         $this->validator = $validator;
+        $this->translator = $translator;
     }
     
     /**
@@ -45,20 +62,21 @@ abstract class AbstractDashboardSource implements \SplObserver
      *
      * @param string $message
      * @param string $type
+     * @param string|null $route
      * @return self
      */
-    protected function saveMessage(string $message, string $type): self
+    protected function saveMessage(string $message, string $type, string $route = null): self
     {
         $entry = new DashboardEntry();
         $entry->setText($message)
             ->setType($type)
+            ->setRoute($route)
             ->setSource(get_class($this));
 
         if (!count($this->validator->validate($entry))) {
             $this->documentManager->persist($entry);
             $this->documentManager->flush();
         }
-
         return $this;
     }
     
@@ -83,9 +101,9 @@ abstract class AbstractDashboardSource implements \SplObserver
         $this->documentManager
             ->getRepository('MBHClientBundle:DashboardEntry')
             ->remove(new \DateTime('-' . static::LIFETIME . ' days'));
-
+ 
         foreach ($this->generateMessages() as $message) {
-            $this->saveMessage($message, static::TYPE);
+            $this->saveMessage($message, static::TYPE, static::ROUTE);
         }
     }
 }
