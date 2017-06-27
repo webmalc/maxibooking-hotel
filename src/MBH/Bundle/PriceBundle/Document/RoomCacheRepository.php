@@ -34,7 +34,7 @@ class RoomCacheRepository extends DocumentRepository
             $cache['roomType'] = (string) $cache['roomType']['$id'];
             $cache['tariff'] = isset($cache['tariff']) ? (string) $cache['tariff']['$id'] : 0;
             unset($cache['_id']);
-            $result[$cache['hotel']][$cache['roomType']][$cache['id']] = $cache;
+            $result[$cache['hotel']][$cache['roomType']][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
         }
 
         return $result;

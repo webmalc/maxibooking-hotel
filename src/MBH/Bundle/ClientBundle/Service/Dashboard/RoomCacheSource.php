@@ -41,12 +41,14 @@ class RoomCacheSource extends AbstractDashboardSource
 
         foreach ($this->caches as $hotelData) {
             foreach ($hotelData as $roomData) {
-                foreach ($roomData as $cache) {
-                    $this->checkZeroes($cache);
+                foreach ($roomData as $tariffData) {
+                    foreach ($tariffData as $cache) {
+                        $this->checkZeroes($cache);
+                        $this->checkHoles($cache);
+                    }
                 }
             }
         }
- 
         $this->processDates();
 
         return $this->messages;
@@ -93,10 +95,10 @@ class RoomCacheSource extends AbstractDashboardSource
         $result = [];
         foreach ($caches as $i => $cache) {
             if ($i == 0 || !$begin) {
-                $begin = $cache[0]['date'];
+                $begin = $cache[0];
             }
-            $end = $cache[0]['date'];
-            if (!isset($caches[$i + 1]) || (int) $caches[$i + 1][0]['date']->diff($end)->format('%a') != 1) {
+            $end = $cache[0];
+            if (!isset($caches[$i + 1]) || (int) $caches[$i + 1][0]->diff($end)->format('%a') != 1) {
                 $message = $begin->format('d.m.Y');
                 $message .=  $begin != $end ? '-' . $end->format('d.m.Y') : '';
                 $result[] =  $message;
@@ -117,20 +119,53 @@ class RoomCacheSource extends AbstractDashboardSource
     private function checkZeroes(array $cache): self
     {
         if (!$cache['totalRooms']) {
-            $this->addDate($cache);
+            $this->addDate($cache['hotel'], $cache['roomType'], $cache['date']);
         }
         return $this;
     }
     
     /**
-     * add cache to error dates
+     * check roomCaches - holes
      *
      * @param array $cache
      * @return self
      */
-    private function addDate(array $cache): self
+    private function checkHoles(array $cache): self
     {
-        $this->dates[$cache['hotel']][$cache['roomType']][$cache['date']->format('d.m.Y')][] = $cache;
+        if ($cache['tariff'] !== 0) {
+            return $this;
+        }
+        $caches = $this->caches[$cache['hotel']][$cache['roomType']][0];
+        if ($cache === reset($caches)) {
+            return $this;
+        }
+        if ($cache === end($caches)) {
+            return $this;
+        }
+        $check = function (string $operator) use ($caches, $cache) {
+            $day = clone $cache['date'];
+            $day->modify($operator . '1 day');
+            if (!isset($caches[$day->format('d.m.Y')])) {
+                $this->addDate($cache['hotel'], $cache['roomType'], $day);
+            }
+        };
+        $check('+');
+        $check('-');
+        
+        return $this;
+    }
+
+    /**
+     * add cache to error dates
+     *
+     * @param string $hotel
+     * @param string $roomType
+     * @param \DateTime $date
+     * @return self
+     */
+    private function addDate(string $hotel, string $roomType, \DateTime $date): self
+    {
+        $this->dates[$hotel][$roomType][$date->format('d.m.Y')][] = $date;
 
         return $this;
     }
