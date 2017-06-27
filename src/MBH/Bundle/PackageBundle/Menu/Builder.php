@@ -43,7 +43,7 @@ class Builder implements ContainerAwareInterface
 
 
 
-        if ($checker->isGranted('ROLE_DOCUMENTS_GENERATOR')) {
+        if ($checker->isGranted('ROLE_DOCUMENTS_GENERATOR') && $this->container->getParameter('locale') == 'ru') {
 
             $rootItem
                 ->addChild('Docs header', [
