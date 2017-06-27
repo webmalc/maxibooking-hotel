@@ -24,11 +24,6 @@ abstract class AbstractDashboardSource implements \SplObserver
     const TYPE = 'info';
 
     /**
-     * message default lifetime
-     */
-    const LIFETIME = 10;
-
-    /**
      * @var ManagerRegistry
      */
     protected $documentManager;
@@ -98,10 +93,6 @@ abstract class AbstractDashboardSource implements \SplObserver
      */
     public function update(\SplSubject $dashboard)
     {
-        $this->documentManager
-            ->getRepository('MBHClientBundle:DashboardEntry')
-            ->remove(new \DateTime('-' . static::LIFETIME . ' days'));
- 
         foreach ($this->generateMessages() as $message) {
             $this->saveMessage($message, static::TYPE, static::ROUTE);
         }

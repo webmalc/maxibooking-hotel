@@ -4,13 +4,18 @@ namespace MBH\Bundle\ClientBundle\Service\Dashboard;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\Cursor;
+use MBH\Bundle\ClientBundle\Document\DashboardEntryRepository;
 
 /**
  * Class Dashboard - generates and list user news & notifications
  */
 class Dashboard implements \SplSubject
 {
-    
+    /**
+     * message default lifetime
+     */
+    const LIFETIME = 10;
+
     /**
      * @var \SplObjectStorage
      */
@@ -20,6 +25,11 @@ class Dashboard implements \SplSubject
      * @var ManagerRegistry
      */
     private $documentManager;
+
+    /**
+     * @var DashboardEntryRepository
+     */
+    private $repo;
     
     /**
      * constructor
@@ -28,6 +38,8 @@ class Dashboard implements \SplSubject
     {
         $this->documentManager = $documentManager->getManager();
         $this->sources = new \SplObjectStorage();
+        $this->repo = $this->documentManager
+            ->getRepository('MBHClientBundle:DashboardEntry');
     }
 
     /**
@@ -53,20 +65,32 @@ class Dashboard implements \SplSubject
      */
     public function notify()
     {
+        $this->repo->remove(new \DateTime('-' . static::LIFETIME . ' days'));
+ 
         foreach ($this->sources as $source) {
             $source->update($this);
         }
     }
+
+    /**
+     * Clear messages
+     *
+     * @return self
+     */
+    public function clear(): self
+    {
+        $this->repo->remove();
+        
+        return $this;
+    }
     
     /**
-     * get messages
+     * Get messages
      *
      * @return Cursor
      */
     public function getMessages(): Cursor
     {
-        return $this->documentManager
-            ->getRepository('MBHClientBundle:DashboardEntry')
-            ->findNew();
+        return $this->repo->findNew();
     }
 }

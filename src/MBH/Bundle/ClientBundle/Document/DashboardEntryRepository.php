@@ -12,16 +12,19 @@ class DashboardEntryRepository extends DocumentRepository
 {
 
     /**
-     * @param \DateTime $date
+     * @param \DateTime|null $date
      * @return self
      */
-    public function remove(\DateTime $date): self
+    public function remove(\DateTime $date = null): self
     {
-        $this->createQueryBuilder()
+        $builder = $this->createQueryBuilder()
             ->updateMany()
-            ->field('deletedAt')->set(new \DateTime())
-            ->field('createdAt')->lte($date)
-            ->getQuery()
+            ->field('deletedAt')->set(new \DateTime());
+
+        if ($date) {
+            $builder->field('createdAt')->lte($date);
+        }
+        $builder->getQuery()
             ->execute();
 
         return $this;
