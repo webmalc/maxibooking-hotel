@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bcabcc4ad647a64cacc683812158a23d",
+    "content-hash": "7c25e235faf86d3fd0c2304f0915ff3e",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -114,13 +114,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/dinhkhanh/MongoDBAclBundle.git",
-                "reference": "95e68f0046a236e79b018e7617c09173ebbf0798"
+                "url": "https://github.com/webmalc/MongoDBAclBundle.git",
+                "reference": "87bf62c5ad7b64fe86938e471b8f78371bdf6a84"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dinhkhanh/MongoDBAclBundle/zipball/95e68f0046a236e79b018e7617c09173ebbf0798",
-                "reference": "95e68f0046a236e79b018e7617c09173ebbf0798",
+                "url": "https://api.github.com/repos/webmalc/MongoDBAclBundle/zipball/87bf62c5ad7b64fe86938e471b8f78371bdf6a84",
+                "reference": "87bf62c5ad7b64fe86938e471b8f78371bdf6a84",
                 "shasum": ""
             },
             "require": {
@@ -142,7 +142,6 @@
                     "Dinhkhanh\\MongoDBAclBundle\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -155,11 +154,14 @@
             "description": "MongoDB ACL Bundle",
             "homepage": "https://github.com/dinhkhanh/MongoDBAclBundle",
             "keywords": [
-                "acl",
-                "mongodb",
+                "ACL",
+                "MongoDB",
                 "security"
             ],
-            "time": "2016-09-12 09:31:21"
+            "support": {
+                "source": "https://github.com/webmalc/MongoDBAclBundle/tree/master"
+            },
+            "time": "2017-06-28 10:42:05"
         },
         {
             "name": "doctrine/annotations",
