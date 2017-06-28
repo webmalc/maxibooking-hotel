@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Service\Dashboard;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\ClientBundle\Document\DashboardEntry;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -39,17 +40,24 @@ abstract class AbstractDashboardSource implements \SplObserver
     protected $translator;
 
     /**
+     * @var Helper
+     */
+    protected $helper;
+
+    /**
      * constructor
      */
     public function __construct(
         ManagerRegistry $documentManager,
         ValidatorInterface $validator,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        Helper $helper
     ) {
     
         $this->documentManager = $documentManager->getManager();
         $this->validator = $validator;
         $this->translator = $translator;
+        $this->helper = $helper;
     }
     
     /**

@@ -11,11 +11,16 @@ services:
       class: MBH\Bundle\ClientBundle\Service\Dashboard\Dashboard
       calls:
         - [attach, ["@mbh.dashboard.room_cache"]]
+        - [attach, ["@mbh.dashboard.price_cache"]]
       arguments: ['@doctrine_mongodb']
+
+    mbh.dashboard.price_cache:
+      class: MBH\Bundle\ClientBundle\Service\Dashboard\PriceCacheSource
+      arguments: ['@doctrine_mongodb', '@validator', '@translator', '@mbh.helper']
 
     mbh.dashboard.room_cache:
       class: MBH\Bundle\ClientBundle\Service\Dashboard\RoomCacheSource
-      arguments: ['@doctrine_mongodb', '@validator', '@translator']
+      arguments: ['@doctrine_mongodb', '@validator', '@translator', '@mbh.helper']
 
     mbh_bundle_client.twig.dashboard_extension:
         class: MBH\Bundle\ClientBundle\Twig\DashboardExtension
