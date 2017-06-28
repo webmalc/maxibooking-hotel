@@ -1,5 +1,53 @@
-{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
-{% block document %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Pdf</title>
+</head>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
+      rel='stylesheet' type='text/css'>
+<body>
+<style>
+    body {
+        font-family: "Open Sans"; /*Arial*/
+        font-size: 16px;
+    }
+
+    .document {
+        padding-top: 0px;
+        width: 900px;
+        margin: 0 auto;
+    }
+
+    .ib {
+        display: inline-block;
+    }
+
+    .area {
+        border-bottom: solid #000000 1px;
+    }
+
+    .left {
+        float: left;
+    }
+
+    .right {
+        float: right;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .indent {
+        text-indent: 1.5em;
+    }
+
+    .upper {
+        text-transform: uppercase;
+    }
+</style>
+<div class="document">
     <style>
         .header {
             text-align: center;
@@ -9,135 +57,167 @@
     {# % set tourist = entity.order.mainTourist % #}
     <div>
         {% for tourist in tourists %}
-    <div style="width: 100%;font-weight: bold">
-        <div style="float: right;">{{ 'mbhpackagebundle.view.documents.pdftemplates.form'|trans }} 3</div>
-        <div style="clear: both"></div>
-    </div>
-
-    <div class="header">
-        <span class="upper">{{ 'mbhpackagebundle.view.documents.pdftemplates.svidetelstvo'|trans }}</span> № <strong>{{ entity.numberWithPrefix }} - {{ loop.index }}</strong> <br>
-        {{ 'mbhpackagebundle.view.documents.pdftemplates.o_registracii_po_mestu_prebivania'|trans }}
-    </div>
-
-    <p>
-        <div>
-            <div class="ib" style="float: left;width: 60px">
-                {{ 'mbhpackagebundle.view.documents.pdftemplates.vidano'|trans }} &nbsp
+            <div style="width: 100%;font-weight: bold">
+                <div style="float: right;">{{ 'mbhpackagebundle.view.documents.pdftemplates.form'|trans }} 3</div>
+                <div style="clear: both"></div>
             </div>
-            <div style="margin-left: 62px;">
-                <div class="area">&nbsp
-                    {% if tourist %}
-            {{ tourist.fullName }}{% if tourist.birthday %}, {{ tourist.birthday|date('d.m.Y') }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ 'mbhpackagebundle.view.documents.pdftemplates.r'|trans }}.{% endif %}{% if tourist.birthplace and tourist.birthplace.country and tourist.birthplace.city %}, {{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.city }}{% endif %}
-        {% endif %}
+
+            <div class="header">
+                <span class="upper">{{ 'mbhpackagebundle.view.documents.pdftemplates.svidetelstvo'|trans }}</span> №
+                <strong>{{ entity.numberWithPrefix }} - {{ loop.index }}</strong> <br>
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.o_registracii_po_mestu_prebivania'|trans }}
+            </div>
+
+            <p>
+            <div>
+                <div class="ib" style="float: left;width: 60px">
+                    {{ 'mbhpackagebundle.view.documents.pdftemplates.vidano'|trans }} &nbsp
                 </div>
-                <div style="display: block; font-size: 12px; font-weight: normal;">({{ 'mbhpackagebundle.view.documents.pdftemplates.fio_god_i_mesto_rozhdenia'|trans }})</div>
+                <div style="margin-left: 62px;">
+                    <div class="area">&nbsp
+                        {% if tourist %}
+                            {{ tourist.fullName }}{% if tourist.birthday %}, {{ tourist.birthday|date('d.m.Y') }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ 'mbhpackagebundle.view.documents.pdftemplates.r'|trans }}.{% endif %}{% if tourist.birthplace and tourist.birthplace.country and tourist.birthplace.city %}, {{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.city }}{% endif %}
+                        {% endif %}
+                    </div>
+                    <div style="display: block; font-size: 12px; font-weight: normal;">
+                        ({{ 'mbhpackagebundle.view.documents.pdftemplates.fio_god_i_mesto_rozhdenia'|trans }})
+                    </div>
+                </div>
+                <div style="clear: both "></div>
             </div>
-            <div style="clear: both "></div>
-        </div>
 
-        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.o_tom_chto_on_zaregistrirovan_po_mestu_prebivania'|trans }}:</div>
+            <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.o_tom_chto_on_zaregistrirovan_po_mestu_prebivania'|trans }}
+                :
+            </div>
 
-        {% set location = '' %}
+            {% set location = '' %}
 
-        {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.street %}
-            {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ entity.accommodation.housing.city  ~ ', ' ~ entity.accommodation.housing.settlement ~ ' ' ~ entity.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '.' ~ entity.accommodation.housing.house %}
-        {% endif %}
+            {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.street %}
+                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ entity.accommodation.housing.city  ~ ', ' ~ entity.accommodation.housing.settlement ~ ' ' ~ entity.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '.' ~ entity.accommodation.housing.house %}
+            {% endif %}
 
-        {% if not location and entity.roomType.hotel.city and entity.roomType.hotel.street %}
-            {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ entity.roomType.hotel.city  ~ ', ' ~ entity.roomType.hotel.settlement ~ ', ' ~ entity.roomType.hotel.street %}
-            {% if entity.roomType.hotel.house %}
-                {% set location = location ~ ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '. ' ~ entity.roomType.hotel.house %}
-                {% if entity.roomType.hotel.corpus %}
-                    {% set location = location ~ ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.kor'|trans ~ '. ' ~ entity.roomType.hotel.corpus %}
-                    {% if entity.roomType.hotel.flat %}
-                        {% set location = location ~  ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.kv'|trans ~ '. ' ~ entity.roomType.hotel.flat %}
+            {% if not location and entity.roomType.hotel.city and entity.roomType.hotel.street %}
+                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ entity.roomType.hotel.city  ~ ', ' ~ entity.roomType.hotel.settlement ~ ', ' ~ entity.roomType.hotel.street %}
+                {% if entity.roomType.hotel.house %}
+                    {% set location = location ~ ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '. ' ~ entity.roomType.hotel.house %}
+                    {% if entity.roomType.hotel.corpus %}
+                        {% set location = location ~ ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.kor'|trans ~ '. ' ~ entity.roomType.hotel.corpus %}
+                        {% if entity.roomType.hotel.flat %}
+                            {% set location = location ~  ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.kv'|trans ~ '. ' ~ entity.roomType.hotel.flat %}
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% endif %}
-        {% endif %}
 
-        <div>
-            <div class="area">&nbsp{{ location }}</div>
-            <div style="display: block; font-size: 12px; font-weight: normal;">({{ 'mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc'|trans }})</div>
-        </div>
-
-        <div>
-            {{ 'mbhpackagebundle.view.documents.pdftemplates.na_srok_s'|trans }} &nbsp{% if entity.begin %}{{ entity.begin|date('d.m.Y') }}{% endif %} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}. {{ 'mbhpackagebundle.view.documents.pdftemplates.po'|trans }} {% if entity.end %}{{ entity.end|date('d.m.Y') }}{% endif %} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}.
-        </div>
-    </p>
-
-    <div>
-        {{ 'mbhpackagebundle.view.documents.pdftemplates.svidetelstvo_vidano_k_documentu_udostoveraushemu_lichnost'|trans }}:
-        <br>{{ 'mbhpackagebundle.view.documents.pdftemplates.vid'|trans }} <div class="area ib" style="width: 475px">&nbsp{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</div>,
-        {{ 'mbhpackagebundle.view.documents.pdftemplates.seria'|trans }} <div class="area ib" style="width: 150px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</div>,
-        № <div class="area ib" style="width: 155px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</div>
-    </div>
-
-    <div>
-        <div class="ib" style="float: left;width: 210px">
-            <div style="float: left;width: 100px">{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.data.vydachi'|trans }} </div>
-            <div class="area ib" style="width: 100px;">
-                &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}
-            </div>
-        </div>
-        <div style="margin-left: 202px;">
-            <div class="area">
-                &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}
-            </div>
-            <div style="display: block; font-size: 12px; font-weight: normal;">({{ 'mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vidavshego_document'|trans }})</div>
-        </div>
-    </div>
-
-
-    <p>
-        <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.nachalnik_rukovoditel_organa_registracionnogo_ucheta'|trans }}</div>
-        <div class="area" style="margin-left: 470px;"></div>
-        &nbsp
-        <div class="area"></div>
-        <div style="display: block; font-size: 12px; font-weight: normal;text-align: center;">({{ 'mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_registracionnogo_ucheta'|trans }})</div>
-    </p>
-
-
-    <table style="width: 900px;">
-        <tbody>
-        <tr>
-            <td>
-            </td>
-            <td style="float: right">
-                <div>
-                    &nbsp
-                    <div class="area" style="width: 200px"></div>
-                    <div style="text-align: center;">({{ 'mbhpackagebundle.view.documents.pdftemplates.podpis'|trans }})</div>
+            <div>
+                <div class="area">&nbsp{{ location }}</div>
+                <div style="display: block; font-size: 12px; font-weight: normal;">
+                    ({{ 'mbhpackagebundle.view.documents.pdftemplates.respublika_kray_oblast_okrug_raion_etc'|trans }})
                 </div>
-            </td>
-            <td style="float: right;">
-                <div>
-                    &nbsp
-                    <div class="area" style="width: 200px;"></div>
-                    <div style="text-align: center;">({{ 'mbhpackagebundle.view.documents.pdftemplates.familia'|trans }})</div>
+            </div>
+
+            <div>
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.na_srok_s'|trans }}
+                &nbsp{% if entity.begin %}{{ entity.begin|date('d.m.Y') }}{% endif %} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}
+                . {{ 'mbhpackagebundle.view.documents.pdftemplates.po'|trans }} {% if entity.end %}{{ entity.end|date('d.m.Y') }}{% endif %} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}
+                .
+            </div>
+            </p>
+
+            <div>
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.svidetelstvo_vidano_k_documentu_udostoveraushemu_lichnost'|trans }}
+                :
+                <br>{{ 'mbhpackagebundle.view.documents.pdftemplates.vid'|trans }}
+                <div class="area ib" style="width: 475px">
+                    &nbsp{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</div>
+                ,
+                {{ 'mbhpackagebundle.view.documents.pdftemplates.seria'|trans }}
+                <div class="area ib" style="width: 150px">
+                    &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</div>
+                ,
+                №
+                <div class="area ib" style="width: 155px">
+                    &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</div>
+            </div>
+
+            <div>
+                <div class="ib" style="float: left;width: 210px">
+                    <div style="float: left;width: 100px">{{ 'mbhpackagebundle.view.documents.pdftemplates.evidence.data.vydachi'|trans }} </div>
+                    <div class="area ib" style="width: 100px;">
+                        &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}
+                    </div>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>{{ 'mbhpackagebundle.view.documents.pdftemplates.MM'|trans }}.{{ 'mbhpackagebundle.view.documents.pdftemplates.PP'|trans }}.</td>
-            <td style="float: right;">
-            </td>
-            <td style="float: right;">
-                "
-                <div class="area ib" style="width: 35px;"></div>
-                "
-                <div class="area ib" style="width: 160px;"></div>
-                <div class="area ib" style="width: 50px;"></div>
-                {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}.
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <div style="margin-left: 202px;">
+                    <div class="area">
+                        &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}
+                    </div>
+                    <div style="display: block; font-size: 12px; font-weight: normal;">
+                        ({{ 'mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_uchrezhdenia_vidavshego_document'|trans }}
+                        )
+                    </div>
+                </div>
+            </div>
 
-    {% if loop.index < tourists|length %}
-            <div style="page-break-after: always;"></div>
-        {% endif %}
 
-{% endfor %}
+            <p>
+            <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.nachalnik_rukovoditel_organa_registracionnogo_ucheta'|trans }}</div>
+            <div class="area" style="margin-left: 470px;"></div>
+            &nbsp
+            <div class="area"></div>
+            <div style="display: block; font-size: 12px; font-weight: normal;text-align: center;">
+                ({{ 'mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_registracionnogo_ucheta'|trans }})
+            </div>
+            </p>
+
+
+            <table style="width: 900px;">
+                <tbody>
+                <tr>
+                    <td>
+                    </td>
+                    <td style="float: right">
+                        <div>
+                            &nbsp
+                            <div class="area" style="width: 200px"></div>
+                            <div style="text-align: center;">
+                                ({{ 'mbhpackagebundle.view.documents.pdftemplates.podpis'|trans }})
+                            </div>
+                        </div>
+                    </td>
+                    <td style="float: right;">
+                        <div>
+                            &nbsp
+                            <div class="area" style="width: 200px;"></div>
+                            <div style="text-align: center;">
+                                ({{ 'mbhpackagebundle.view.documents.pdftemplates.familia'|trans }})
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>{{ 'mbhpackagebundle.view.documents.pdftemplates.MM'|trans }}
+                        .{{ 'mbhpackagebundle.view.documents.pdftemplates.PP'|trans }}.
+                    </td>
+                    <td style="float: right;">
+                    </td>
+                    <td style="float: right;">
+                        "
+                        <div class="area ib" style="width: 35px;"></div>
+                        "
+                        <div class="area ib" style="width: 160px;"></div>
+                        <div class="area ib" style="width: 50px;"></div>
+                        {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            {% if loop.index < tourists|length %}
+                <div style="page-break-after: always;"></div>
+            {% endif %}
+
+        {% endfor %}
     </div>
-{% endblock %}
+</div>
+</body>
+</html>
