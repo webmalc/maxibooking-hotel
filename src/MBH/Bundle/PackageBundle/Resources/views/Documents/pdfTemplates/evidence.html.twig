@@ -56,7 +56,7 @@
 
     {# % set tourist = entity.order.mainTourist % #}
     <div>
-        {% for tourist in tourists %}
+        {% for tourist in package.tourists %}
             <div style="width: 100%;font-weight: bold">
                 <div style="float: right;">{{ 'mbhpackagebundle.view.documents.pdftemplates.form'|trans }} 3</div>
                 <div style="clear: both"></div>
@@ -64,7 +64,7 @@
 
             <div class="header">
                 <span class="upper">{{ 'mbhpackagebundle.view.documents.pdftemplates.svidetelstvo'|trans }}</span> №
-                <strong>{{ entity.numberWithPrefix }} - {{ loop.index }}</strong> <br>
+                <strong>{{ package.numberWithPrefix }} - {{ loop.index }}</strong> <br>
                 {{ 'mbhpackagebundle.view.documents.pdftemplates.o_registracii_po_mestu_prebivania'|trans }}
             </div>
 
@@ -92,18 +92,18 @@
 
             {% set location = '' %}
 
-            {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.street %}
-                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ entity.accommodation.housing.city  ~ ', ' ~ entity.accommodation.housing.settlement ~ ' ' ~ entity.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '.' ~ entity.accommodation.housing.house %}
+            {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.street %}
+                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ package.accommodation.housing.city  ~ ', ' ~ package.accommodation.housing.settlement ~ ' ' ~ package.accommodation.housing.street ~ ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '.' ~ package.accommodation.housing.house %}
             {% endif %}
 
-            {% if not location and entity.roomType.hotel.city and entity.roomType.hotel.street %}
-                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ entity.roomType.hotel.city  ~ ', ' ~ entity.roomType.hotel.settlement ~ ', ' ~ entity.roomType.hotel.street %}
-                {% if entity.roomType.hotel.house %}
-                    {% set location = location ~ ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '. ' ~ entity.roomType.hotel.house %}
-                    {% if entity.roomType.hotel.corpus %}
-                        {% set location = location ~ ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.kor'|trans ~ '. ' ~ entity.roomType.hotel.corpus %}
-                        {% if entity.roomType.hotel.flat %}
-                            {% set location = location ~  ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.kv'|trans ~ '. ' ~ entity.roomType.hotel.flat %}
+            {% if not location and package.roomType.hotel.city and package.roomType.hotel.street %}
+                {% set location = ' ' ~ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans ~ '. ' ~ package.roomType.hotel.city  ~ ', ' ~ package.roomType.hotel.settlement ~ ', ' ~ package.roomType.hotel.street %}
+                {% if package.roomType.hotel.house %}
+                    {% set location = location ~ ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.d'|trans ~ '. ' ~ package.roomType.hotel.house %}
+                    {% if package.roomType.hotel.corpus %}
+                        {% set location = location ~ ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.kor'|trans ~ '. ' ~ package.roomType.hotel.corpus %}
+                        {% if package.roomType.hotel.flat %}
+                            {% set location = location ~  ', ' ~ 'mbhpackagebundle.view.documents.pdftemplates.kv'|trans ~ '. ' ~ package.roomType.hotel.flat %}
                         {% endif %}
                     {% endif %}
                 {% endif %}
@@ -118,11 +118,10 @@
 
             <div>
                 {{ 'mbhpackagebundle.view.documents.pdftemplates.na_srok_s'|trans }}
-                &nbsp{% if entity.begin %}{{ entity.begin|date('d.m.Y') }}{% endif %} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}
-                . {{ 'mbhpackagebundle.view.documents.pdftemplates.po'|trans }} {% if entity.end %}{{ entity.end|date('d.m.Y') }}{% endif %} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}
+                &nbsp{% if package.begin %}{{ package.begin|date('d.m.Y') }}{% endif %} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}
+                . {{ 'mbhpackagebundle.view.documents.pdftemplates.po'|trans }} {% if package.end %}{{ package.end|date('d.m.Y') }}{% endif %} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}
                 .
             </div>
-            </p>
 
             <div>
                 {{ 'mbhpackagebundle.view.documents.pdftemplates.svidetelstvo_vidano_k_documentu_udostoveraushemu_lichnost'|trans }}
@@ -167,8 +166,6 @@
             <div style="display: block; font-size: 12px; font-weight: normal;text-align: center;">
                 ({{ 'mbhpackagebundle.view.documents.pdftemplates.naimenovanie_organa_registracionnogo_ucheta'|trans }})
             </div>
-            </p>
-
 
             <table style="width: 900px;">
                 <tbody>
@@ -212,7 +209,7 @@
                 </tbody>
             </table>
 
-            {% if loop.index < tourists|length %}
+            {% if loop.index < package.tourists|length %}
                 <div style="page-break-after: always;"></div>
             {% endif %}
 

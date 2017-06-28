@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ClientBundle\Controller;
 
 
+use Liip\ImagineBundle\Templating\ImagineExtension;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\ClientBundle\Form\DocumentTemplateType;
@@ -132,11 +133,13 @@ class DocumentTemplateController extends BaseController
      */
     public function showAction(DocumentTemplate $doc, Package $package)
     {
-        $env = new \Twig_Environment(new \Twig_Loader_String());
+        $loader = new \Twig_Loader_Array(['template' => $doc->getContent()]);
+        $env = new \Twig_Environment($loader);
         $env->addExtension($this->get('mbh.twig.extension'));
         $env->addExtension(new TranslationExtension($this->get('translator')));
         $env->addExtension(new AssetExtension($this->get('assets.packages')));
         $env->addExtension(new HttpFoundationExtension($this->get('request_stack')));
+        $env->addExtension(new ImagineExtension($this->get('liip_imagine.cache.manager')));
 
         $order = $package->getOrder();
         $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
@@ -148,10 +151,13 @@ class DocumentTemplateController extends BaseController
             'payer' => $order->getPayer(),
             'organization' => $organization,
             'user' => $this->getUser(),
+            'arrivalTimeDefault' => $this->getParameter('mbh_package_arrival_time'),
+            'departureTimeDefault' => $this->getParameter('mbh_package_departure_time')
         ];
-        $this->addCalculatedParams($params, $package);
 
-        $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($env->render($doc->getContent(), $params));
+        $params = $this->addCalculatedParams($params, $package);
+        $renderedTemplate = $env->render('template', $params);
+        $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($renderedTemplate);
 
         return new Response($content, 200, [
             'Content-Type' => 'application/pdf'

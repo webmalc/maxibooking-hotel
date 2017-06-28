@@ -99,25 +99,25 @@
     {% set arrival = null %}
     {% set departure = null %}
 
-    {% if entity.begin %}
-        {% set arrival = entity.begin|date('d.m.Y') %}
+    {% if package.begin %}
+        {% set arrival = package.begin|date('d.m.Y') %}
     {% endif %}
 
-    {% if entity.end %}
-        {% set departure = entity.end|date('d.m.Y') %}
+    {% if package.end %}
+        {% set departure = package.end|date('d.m.Y') %}
     {% endif %}
 
-    {% if entity.arrivalTime %}
-        {% set arrival = entity.arrivalTime|date('d.m.Y') %}
+    {% if package.arrivalTime %}
+        {% set arrival = package.arrivalTime|date('d.m.Y') %}
     {% endif %}
 
-    {% if entity.departureTime %}
-        {% set departure = entity.departureTime|date('d.m.Y') %}
+    {% if package.departureTime %}
+        {% set departure = package.departureTime|date('d.m.Y') %}
     {% endif %}
 
 
-    {% if entity.roomType and entity.roomType.hotel %}
-        {% set hotel = entity.roomType.hotel %}
+    {% if package.roomType and package.roomType.hotel %}
+        {% set hotel = package.roomType.hotel %}
     {% endif %}
 
     {% if hotel and hotel.organization %}
@@ -125,7 +125,7 @@
     {% endif %}
 
     <div class="document">
-        {% for tourist in tourists %}
+        {% for tourist in package.tourists %}
             <div>
                 <table class="header">
                     <tr>
@@ -206,7 +206,7 @@
                                     <div>Company</div>
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.firma'|trans }} </div>
                                 </div>
-                                <div class="area">{% if entity.order and entity.order.organization %} {{ entity.order.organization.name }} {% endif %}</div>
+                                <div class="area">{% if package.order and package.order.organization %} {{ package.order.organization.name }} {% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -239,7 +239,7 @@
                                     <div>Pass №</div>
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.passport'|trans }} №</div>
                                 </div>
-                                <div class="area">{% if tourist and tourist.documentRelation and tourist.documentRelation.number and tourist.documentRelation.series %} {{ tourist.documentRelation.series }} {{ tourist.documentRelation.number }} {% endif %}</div>
+                                <div class="area" style="height: 38px !important;">{% if tourist and tourist.documentRelation and tourist.documentRelation.number and tourist.documentRelation.series %} {{ tourist.documentRelation.series }} {{ tourist.documentRelation.number }} {% endif %}</div>
                             </div>
                         </td>
                         <td colspan="6">
@@ -248,9 +248,11 @@
                                     <div>Issued by</div>
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.vydan'|trans }} </div>
                                 </div>
-                                <div class="area">
-                                    {% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
-                                    {% if tourist and tourist.documentRelation and tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
+                                <div class="area" style="height: 38px !important;">
+                                    {% if tourist and tourist.documentRelation  %}
+                                        {% if tourist.documentRelation.authorityOrgan %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
+                                        {% if tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
+                                    {% endif %}
                                 </div>
                             </div>
                         </td>
@@ -314,7 +316,7 @@
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.tarif'|trans }} </div>
                                 </div>
                                 <div style="margin-left: 56px"
-                                     class="area">{% if entity.tariff %}{{ entity.tariff.name }}{% endif %}</div>
+                                     class="area">{% if package.tariff %}{{ package.tariff.name }}{% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -343,7 +345,7 @@
                                     <div>Persons</div>
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.kol_gostey'|trans }}</div>
                                 </div>
-                                <div class="area">{{ entity.adults + entity.children }}</div>
+                                <div class="area">{{ package.adults + package.children }}</div>
                             </div>
                         </td>
                     </tr>
@@ -354,7 +356,7 @@
                                     <div>Type</div>
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.tip'|trans }} </div>
                                 </div>
-                                <div class="area">{% if entity.accommodation and entity.accommodation.roomType %}{{ entity.accommodation.roomType.internationalTitle }}{% endif %}</div>
+                                <div class="area">{% if package.accommodation and package.accommodation.roomType %}{{ package.accommodation.roomType.internationalTitle }}{% endif %}</div>
                             </div>
                         </td>
                         <td colspan="6">
@@ -363,7 +365,7 @@
                                     <div>Room</div>
                                     <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.nomer'|trans }} </div>
                                 </div>
-                                <div class="area">{% if entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
+                                <div class="area">{% if package.accommodation %}{{ package.accommodation.fullTitle }}{% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -434,7 +436,7 @@
                     <div class="square">
                         {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.oplacheno'|trans }}<br>
                         {{ 'mbhpackagebundle.view.documents.pdftemplates.do'|trans }}<br>
-                        {% if entity.end %}{{ entity.end|date('d.m.Y') }} <br> 12:00 {% endif %}
+                        {% if package.end %}{{ package.end|date('d.m.Y') }} <br> 12:00 {% endif %}
                     </div>
                     <div class="text">
                         {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.nasha_gostinica_predostavlaet_uslugi_etc'|trans }}
@@ -646,7 +648,7 @@
                                             <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.tip'|trans }} </div>
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 61px">{% if entity.accommodation and entity.accommodation.roomType %}{{ entity.accommodation.roomType.internationalTitle }}{% endif %}</div>
+                                             style="margin-left: 61px">{% if package.accommodation and package.accommodation.roomType %}{{ package.accommodation.roomType.internationalTitle }}{% endif %}</div>
                                     </div>
                                 </td>
                                 <td colspan="3">
@@ -656,7 +658,7 @@
                                             <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.nomer'|trans }} </div>
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 61px">{% if entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
+                                             style="margin-left: 61px">{% if package.accommodation %}{{ package.accommodation.fullTitle }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -681,7 +683,7 @@
                     </div>
                 </div>
 
-                {% if loop.index < tourists|length %}
+                {% if loop.index < package.tourists|length %}
                     <div style="page-break-after: always;"></div>
                 {% endif %}
             </div>

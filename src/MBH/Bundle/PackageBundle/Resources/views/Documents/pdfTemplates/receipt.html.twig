@@ -53,7 +53,7 @@
             font-size: 14.5px;
         }
     </style>
-    {% for tourist in tourists %}
+    {% for tourist in package.tourists %}
         {% for i in 1..2 %}
             <h3 class="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.receipt.raspiska'|trans }} </h3>
             <div>
@@ -89,18 +89,6 @@
                 </span>
                 </p>
 
-                <!--<div>
-                    <div style="float: left; display: inline-block; width: 30%">
-                        <div style="display: inline-block;">выданный</div>
-                        <div style="width: 60%; display: inline-block;" class="area"></div> г.,
-                    </div>
-                    <div style="display: inline-block; width: 70%">
-                        Место рождения
-                        <div style="width: 70%; display: inline-block;" class="area"></div>
-                    </div>
-                    <div style="clear:both;"></div>
-                </div>-->
-
                 <p>
                     {{ 'package.resources.views.citizenship'|trans }} <span class="area"
                                                                             style="display: inline-block; width: 300px">{% if tourist %}{{ tourist.citizenship }}{% endif %}</span>
@@ -134,49 +122,49 @@
                     </div>
                 </div>
                 <p>{{ 'package.resources.period_live'|trans }}
-                    <strong>{{ entity.begin|date('d.m.Y') }}</strong> {{ 'package.resources.g_po'|trans }}
-                    <strong>{{ entity.end|date('d.m.Y') }}</strong> {{ 'package.resources.gg'|trans }}</p>
+                    <strong>{{ package.begin|date('d.m.Y') }}</strong> {{ 'package.resources.g_po'|trans }}
+                    <strong>{{ package.end|date('d.m.Y') }}</strong> {{ 'package.resources.gg'|trans }}</p>
                 <p>
                 <div style="float: left; width: 350px">
                     {{ 'package.resources.my_appartment_at'|trans }}:
                 </div>
                 <div style="display: inline-block">
                 <span class="area" style="display: inline-block; width: 470px">
-                    {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.address %}
-                        {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
-                    {% elseif entity.roomType.hotel.city and entity.roomType.hotel.street %}
-                        {{ entity.roomType.hotel.city }}
-                        {{ entity.roomType.hotel.street }}
-                        {% if entity.roomType.hotel.house %}
-                            д.{{ entity.roomType.hotel.house }}
-                            {% if entity.roomType.hotel.house %}
-                                {{ entity.roomType.hotel.corpus }}
+                    {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.address %}
+                        {{ package.accommodation.housing.city }} {{ package.accommodation.housing.address }}
+                    {% elseif package.roomType.hotel.city and package.roomType.hotel.street %}
+                        {{ package.roomType.hotel.city }}
+                        {{ package.roomType.hotel.street }}
+                        {% if package.roomType.hotel.house %}
+                            д.{{ package.roomType.hotel.house }}
+                            {% if package.roomType.hotel.house %}
+                                {{ package.roomType.hotel.corpus }}
                             {% endif %}
                         {% endif %}
                     {% endif %}
                 </span>
                     <div style="font-size: 15px; font-weight: normal;">{{ 'package.resources.ul_d_korp_kv'|trans }} </div>
                 </div>
-                </p>
-                <div style="white-space: pre;"><span
-                            style="text-decoration: underline;font-weight: bold">{{ 'package.resources.undertake'|trans }}
-                        :</span>
-                    - {{ 'package.resources.not_produce_noise'|trans }};
-                    - {{ 'package.resources.do_not_poll_entrances_and_surrounding_territory'|trans }};
-                    - {{ 'package.resources.do_not_disturb_neighbors'|trans }};
-                    - {{ 'package.resources.do_not_spoil_objects_of_everyday_life_and_interior'|trans }};
-                    - {{ 'package.resources.do_not_reshuffle_furniture'|trans }}
-                    - {{ 'package.resources.do_not_store_or_use_explosive_or_flammable_objects'|trans }}.
+                <div>
+                    <span style="text-decoration: underline;font-weight: bold">{{ 'package.resources.undertake'|trans }}:</span>
+                    <ul>
+                        <li> {{ 'package.resources.not_produce_noise'|trans }};</li>
+                        <li> {{ 'package.resources.do_not_poll_entrances_and_surrounding_territory'|trans }};</li>
+                        <li> {{ 'package.resources.do_not_disturb_neighbors'|trans }};</li>
+                        <li> {{ 'package.resources.do_not_spoil_objects_of_everyday_life_and_interior'|trans }};</li>
+                        <li> {{ 'package.resources.do_not_reshuffle_furniture'|trans }}</li>
+                        <li> {{ 'package.resources.do_not_store_or_use_explosive_or_flammable_objects'|trans }}.</li>
+                    </ul>
                     {{ 'package.resources.for_everything_that_happens_in_the_apartment_i_have_provided_for_the_period_of_residence_i_am_carrying'|trans }}
-                    .
                 </div>
+                <br>
                 <div>
                     <div style="float: left;">
                         <div class="area" style="display: inline-block; width: 150px"></div>
                         ({{ 'paclages.resources.signature'|trans }})
                     </div>
                     <div style="float: right; font-weight: bold">
-                        15.06.2015 {{ 'package.resources.gg'|trans }}.
+                        {{ "now"|date('d.m.Y') }} {{ 'package.resources.gg'|trans }}.
                     </div>
                     <div style="clear:both;"></div>
                 </div>
@@ -186,8 +174,7 @@
             {% endif %}
         {% endfor %}
 
-
-        {% if loop.index < tourists|length %}
+        {% if loop.index < package.tourists|length %}
             <div style="page-break-after: always;"></div>
         {% endif %}
     {% endfor %}

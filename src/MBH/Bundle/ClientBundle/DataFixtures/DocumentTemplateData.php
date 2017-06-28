@@ -19,7 +19,6 @@ class DocumentTemplateData extends AbstractFixture implements OrderedFixtureInte
         'Акт' => 'act',
         'Счет' => 'bill',
         'Подтверждение' => 'confirmation',
-        'Подтверждение(EN)' => 'confirmation_en',
         'Свидетельство о регистрации по месту пребывания' => 'evidence',
         'Анкета ФМС (Форма 5)' => 'fms_form_5',
         'Анкета (Форма 1-Г)' => 'form_1_g',
@@ -32,12 +31,6 @@ class DocumentTemplateData extends AbstractFixture implements OrderedFixtureInte
      */
     public function doLoad(ObjectManager $manager)
     {
-        //TODO: Убрать
-        $templates = $manager->getRepository('MBHClientBundle:DocumentTemplate')->findAll();
-        foreach ($templates as $template) {
-            $manager->remove($template);
-        }
-        $manager->flush();
         foreach (self::DOCUMENT_TEMPLATE_DATA as $name => $templateFile) {
             $filePath = $this->container->get('kernel')->getRootDir()
                 . '/../src/MBH/Bundle/PackageBundle/Resources/views/Documents/pdfTemplates/'

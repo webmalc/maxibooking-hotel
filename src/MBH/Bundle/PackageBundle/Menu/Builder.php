@@ -180,16 +180,7 @@ class Builder implements ContainerAwareInterface
         //$types = $generatorFactory->getAvailableTypes();
 
         $types = [
-            TemplateGeneratorFactory::TYPE_CONFIRMATION,
-            TemplateGeneratorFactory::TYPE_CONFIRMATION_EN,
-            TemplateGeneratorFactory::TYPE_REGISTRATION_CARD,
-            TemplateGeneratorFactory::TYPE_FMS_FORM_5,
             XlsGeneratorFactory::TYPE_NOTICE,
-            TemplateGeneratorFactory::TYPE_EVIDENCE,
-            TemplateGeneratorFactory::TYPE_FORM_1_G,
-            TemplateGeneratorFactory::TYPE_RECEIPT,
-            TemplateGeneratorFactory::TYPE_BILL,
-            TemplateGeneratorFactory::TYPE_ACT,
         ];
 
         foreach ($types as $type) {

@@ -133,12 +133,12 @@
             <tbody>
 
             {% set packages = package.order.packages %}
-
-
+            {% set counter = 0 %}
             {% for package in packages %}
+                {% set counter = counter + 1 %}
                 {% for date,data in package.pricesByDateByPrice %}
                     <tr>
-                        <td align="center">{{ loop.index }}</td>
+                        <td align="center">{{ counter }}</td>
                         <td>
                             {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace('_', '.') }}
                             {% if package.roomType and package.roomType.fullTitle %}
@@ -153,11 +153,10 @@
                 {% endfor %}
             {% endfor %}
 
-            {% set servicesCounter = 0 %}
             {% for serviceGroup in packageServicesByType %}
-                {% set servicesCounter = servicesCounter + 1 %}
+                {% set counter = counter + 1 %}
                 <tr>
-                    <td align="center">{{ servicesCounter }}</td>
+                    <td align="center">{{ counter }}</td>
                     <td>{{ serviceGroup.byService.name }}</td>
                     <td align="center">{{ serviceGroup.actuallyAmount }}</td>
                     <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
@@ -169,10 +168,6 @@
         </table>
 
         <!-- Total -->
-        {% set total = 0 %}
-        {% for iteratedPackage in packages %}
-            {% set total = total + package.getPrice() %}
-        {% endfor %}
         <table border="0" width="100%">
             <tr>
                 <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.itogo'|trans }}:</strong>
@@ -186,8 +181,8 @@
             </tr>
         </table>
 
-        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ servicesCounter }}
-            , {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ package.servicesPrice|number_format(2) }} {{ currency().text }}
+        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ counter }}
+            , {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}
             <br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
@@ -213,7 +208,7 @@
             </tr>
         </table>
 
-        {% if formParams.hasStamp is defined and formParams.hasStamp and hotel.organization and hotel.organization.stamp %}
+        {% if hotel.organization and hotel.organization.stamp %}
             <img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px"
                  src="{{ hotel.organization.stamp }}">
         {% endif %}

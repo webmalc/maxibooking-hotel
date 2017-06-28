@@ -51,12 +51,12 @@
 {% set tourist = null %}
 {% set documentRelation = null %}
 
-{% if entity.roomType and entity.roomType.hotel %}
-    {% set hotel = entity.roomType.hotel %}
+{% if package.roomType and package.roomType.hotel %}
+    {% set hotel = package.roomType.hotel %}
 {% endif %}
 
-{% if entity.order and entity.order.mainTourist %}
-    {% set tourist = entity.order.mainTourist %}
+{% if package.order and package.order.mainTourist %}
+    {% set tourist = package.order.mainTourist %}
 {% endif %}
 
 {% if tourist and tourist.documentRelation %}
@@ -104,11 +104,7 @@
     <div class="title">
         <p>
             {{ 'mbhpackagebundle.view.documents.pdftemplates.podtverzhdenie'|trans }}
-            {% if formParams.hasFull is defined and formParams.hasFull %}
-                {{ 'mbhpackagebundle.view.documents.pdftemplates.zakaza'|trans }} № {{ entity.order.id }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ entity.order.createdAt|date("d.m.Y") }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}.
-            {% else %}
-                {{ 'mbhpackagebundle.view.documents.pdftemplates.broni'|trans }} № {{ entity.numberWithPrefix }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ entity.createdAt|date("d.m.Y") }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}.
-            {% endif %}
+            {{ 'mbhpackagebundle.view.documents.pdftemplates.zakaza'|trans }} № {{ package.order.id }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ package.order.createdAt|date("d.m.Y") }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}.
         </p>
     </div>
     {% if hotel and hotel.logoUrl %}
@@ -123,13 +119,13 @@
 
 <div class="main">
     <p class="indent">
-        <strong>{{ entity.address.name }}</strong>, {{ "package.pdf.with_an_address"|trans({}, "MBHPackageBundle") }}
+        <strong>{{ package.address.name }}</strong>, {{ "package.pdf.with_an_address"|trans({}, "MBHPackageBundle") }}
         {{ "package.pdf.address"|trans({}, "MBHPackageBundle") }}
-        : {% if entity.address and entity.address.country and entity.address.city and entity.address.street %}
-        {{ entity.address.country.title }}, {% if entity.address.region %}{{ entity.address.region.title }},{% endif %} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.city.title }}{% if entity.address.settlement is defined %}, {{ entity.address.settlement }}{% endif %}, {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.street }},
-        {% if entity.address.house %} {{ "package.pdf.short_home_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.house }}{% endif %}{% if entity.address.corpus %}, {{ "package.pdf.short_housing_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.corpus }}{% endif %}{% if entity.address.flat %}, {{ "package.pdf.short_apartment_extend"|trans({}, "MBHPackageBundle") }}. {{ entity.address.flat }}{% endif %}{% else %}_________________________________________{% endif %}
+        : {% if package.address and package.address.country and package.address.city and package.address.street %}
+        {{ package.address.country.title }}, {% if package.address.region %}{{ package.address.region.title }},{% endif %} {{ "package.pdf.short_city_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.city.title }}{% if package.address.settlement is defined %}, {{ package.address.settlement }}{% endif %}, {{ "package.pdf.short_street_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.street }},
+        {% if package.address.house %} {{ "package.pdf.short_home_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.house }}{% endif %}{% if package.address.corpus %}, {{ "package.pdf.short_housing_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.corpus }}{% endif %}{% if package.address.flat %}, {{ "package.pdf.short_apartment_extend"|trans({}, "MBHPackageBundle") }}. {{ package.address.flat }}{% endif %}{% else %}_________________________________________{% endif %}
         ,
-        {{ "package.pdf.inn"|trans({}, "MBHPackageBundle") }} {% if entity.address.inn is defined %}{{ entity.address.inn }}{% else %}________________________{% endif %}
+        {{ "package.pdf.inn"|trans({}, "MBHPackageBundle") }} {% if package.address.inn is defined %}{{ package.address.inn }}{% else %}________________________{% endif %}
         , {{ "package.pdf.notifies_customers"|trans({}, "MBHPackageBundle") }}
     </p>
     <style>
@@ -224,25 +220,17 @@
     <table border="1" cellpadding="0" cellspacing="0" class="table">
         <thead>
         <tr>
-            <th style="width: 30px;">№
-            </td>
+            <th style="width: 30px;">№</th>
             <th style="width: 100px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.naimenovaniye.uslug'|trans }} </th>
             <th style="width: 30px;">
-            {{ "package.pdf.amount"|trans({}, "MBHPackageBundle") }}</td>
-            <th style="width: 30px;">
-            {{ "package.pdf.unit"|trans({}, "MBHPackageBundle") }}</td>
-            <th style="width: 100px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.tsena'|trans }}
-            </td>
-            <th style="width: 100px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.summa'|trans }}
-            </td>
+            {{ "package.pdf.amount"|trans({}, "MBHPackageBundle") }}</th>
+            <th style="width: 30px;">{{ "package.pdf.unit"|trans({}, "MBHPackageBundle") }}</th>
+            <th style="width: 100px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.tsena'|trans }}</th>
+            <th style="width: 100px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.summa'|trans }}</th>
         </tr>
         </thead>
         <tbody>
-        {% if formParams.hasFull is defined and formParams.hasFull %}
-            {% set packages = entity.order.packages %}
-        {% else %}
-            {% set packages = [entity] %}
-        {% endif %}
+        {% set packages = package.order.packages %}
 
         {% set counter = 0 %}
         {% for package in packages %}
@@ -264,19 +252,17 @@
             {% endfor %}
         {% endfor %}
 
-        {% if formParams.hasServices is defined and formParams.hasServices %}
-            {% for serviceGroup in packageServicesByType %}
-                {% set counter = counter + 1 %}
-                <tr>
-                    <td align="center">{{ counter }}</td>
-                    <td>{{ serviceGroup.byService.fullTitle }}</td>
-                    <td align="center">{{ serviceGroup.actuallyAmount }}</td>
-                    <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
-                    <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
-                    <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
-                </tr>
-            {% endfor %}
-        {% endif %}
+        {% for serviceGroup in packageServicesByType %}
+            {% set counter = counter + 1 %}
+            <tr>
+                <td align="center">{{ counter }}</td>
+                <td>{{ serviceGroup.byService.fullTitle }}</td>
+                <td align="center">{{ serviceGroup.actuallyAmount }}</td>
+                <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
+                <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
+                <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 
@@ -288,11 +274,11 @@
         <tr>
             <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.v_tom_chisle_nds'|trans }}
                     :</strong></td>
-            <td align="right"><strong>0</strong></td>
+            <td align="right"><strong>{{ (total * 0.18)|number_format(2) }}</strong></td>
         </tr>
     </table>
 
-    <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ entity.services|length + packages|length }}
+    <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ package.services|length + packages|length }}
         , {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}
         <br>
         <strong>{{ total|num2str|capitalize }}</strong>
@@ -326,7 +312,7 @@
     </table>
 
 
-    {% if formParams.hasStamp is defined and formParams.hasStamp and hotel.organization and hotel.organization.stamp %}
+    {% if hotel.organization and hotel.organization.stamp %}
         <img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px"
              src="{{ hotel.organization.stamp }}">
     {% endif %}

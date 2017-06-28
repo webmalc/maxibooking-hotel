@@ -248,9 +248,11 @@ package.pdf.count_paid_total: Всего оплачено услуг на сум
 package.pdf.customer: 'Заказчик:'
 package.pdf.not_specified: 'Не указан'
 package.pdf.services_name: Наименование работ, услуг
+package.pdf.persons: Чел.
 package.pdf.date: Дата
 package.pdf.method: Вид
 package.pdf.total: Сумма
+package.pdf.days: Суток
 package.pdf.amount: Кол-во
 package.pdf.unit: Ед.
 package.pdf.price: Цена
