@@ -3,10 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\DBAL\Query\QueryBuilder;
-use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -665,8 +663,8 @@ class PackageRepository extends DocumentRepository
             $docs = $qb->getQuery()->count();
         } else {
             $qb->field('order')->prime(true);
-//            $qb->field('accommodations')->prime(true);
-//            $qb->field('accommodation')->prime(true);
+            $qb->field('accommodations')->prime(true);
+            $qb->field('accommodation')->prime(true);
             $qb->field('tariff')->prime(true);
             $qb->field('roomType')->prime(true);
             $qb->field('tourists')->prime(true);

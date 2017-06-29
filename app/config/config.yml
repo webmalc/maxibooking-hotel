@@ -203,7 +203,7 @@ doctrine_cache:
     providers:
         acl_apc_provider:
             namespace: "%mongodb_database%_"
-            type: 'memcache'
+            type: 'apc'
 
 liip_imagine:
     resolvers:

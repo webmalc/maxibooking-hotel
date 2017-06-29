@@ -44,7 +44,8 @@ class PackageAccommodationRepository extends DocumentRepository
         \DateTime $end = null,
         $rooms = null,
         $excludePackages = null,
-        $departure = true
+        $departure = true,
+        bool $hydrate = true
     )
     {
         /** Find PackageAccommodations  */
@@ -72,6 +73,7 @@ class PackageAccommodationRepository extends DocumentRepository
             $accQb->field('id')->notIn($excludedAccommodationIds);
         }
 
+        $accQb->hydrate($hydrate);
         //$qb->sort('begin', 'asc');
 
         return $accQb->getQuery()->execute();
