@@ -26,13 +26,14 @@ class AppKernel extends Kernel
             new Liip\ImagineBundle\LiipImagineBundle(),
             new JMS\DiExtraBundle\JMSDiExtraBundle($this),
             new JMS\AopBundle\JMSAopBundle(),
-            new JMS\TranslationBundle\JMSTranslationBundle(),
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
             new Ornicar\GravatarBundle\OrnicarGravatarBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
             new Phobetor\RabbitMqSupervisorBundle\RabbitMqSupervisorBundle(),
+            new Lexik\Bundle\TranslationBundle\LexikTranslationBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
+            new Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle(),
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),
@@ -56,6 +57,7 @@ class AppKernel extends Kernel
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
+            $bundles[] = new Fidry\PsyshBundle\PsyshBundle();
         }
 
         return $bundles;

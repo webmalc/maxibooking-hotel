@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
 class RoomCacheRecalculateCommand extends ContainerAwareCommand
 {
     protected function configure()
@@ -30,7 +29,6 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
 
         if ($input->getOption('roomTypes')) {
             $roomTypes = explode(',', trim($input->getOption('roomTypes'), ','));
-
         }
 
         $num += $this->getContainer()->get('mbh.room.cache')->recalculateByPackages(
@@ -44,5 +42,4 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
             sprintf('Recalculate complete. Entries: %s. Elapsed time: %s', number_format($num), $time->format('%H:%I:%S'))
         );
     }
-
 }

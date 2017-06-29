@@ -7,28 +7,35 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class ServiceCategoryType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
                 ->add('fullTitle', TextType::class, [
-                    'label' => 'Название',
+                    'label' => 'mbhpricebundle.form.servicecategorytype.nazvaniye',
                     'required' => true,
-                    'attr' => ['placeholder' => 'Основные услуги']
+                    'attr' => ['placeholder' => 'mbhpricebundle.form.servicecategorytype.osnovnyyeuslugi']
                 ])
                 ->add('title', TextType::class, [
-                    'label' => 'Внутреннее название',
+                    'label' => 'mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye',
                     'required' => false,
-                    'attr' => ['placeholder' => 'Основные услуги - лето ' . date('Y')],
-                    'help' => 'Название для использования внутри MaxiBooking'
+                    'attr' => ['placeholder' => $this->translator->trans('mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye.placeholder', ['%year%' => date('Y')])],
+                    'help' => 'mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye.help'
                 ])
                 ->add('description', TextareaType::class, [
-                    'label' => 'Описание',
+                    'label' => 'mbhpricebundle.form.servicecategorytype.opisaniye',
                     'required' => false,
-                    'help' => 'Описание категории услуг для онлайн бронирования'
+                    'help' => 'mbhpricebundle.form.servicecategorytype.opisaniyekategoriiuslugdlyaonlaynbronirovaniya'
                 ])
         ;
     }

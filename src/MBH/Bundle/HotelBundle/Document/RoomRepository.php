@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 
 /**
  * Class RoomRepository
@@ -122,7 +123,18 @@ class RoomRepository extends AbstractBaseRepository
         return $groupedRooms;
     }
 
-
+//    public function fetchAccommodationRoomsForPackage(Package $package, Hotel $hotel)
+//    {
+//        $begin = $package->getLastEndAccommodation();
+//        $end = $package->getEnd();
+//        $interval = $end->diff($begin, true);
+//        if (!$interval->format('%d')) {
+//            return [];
+//        }
+//        $excludePackages = $package->getId();
+//
+//        return $this->fetchAccommodationRooms($begin, $end, $hotel, null, null, $excludePackages, true);
+//    }
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -169,14 +181,20 @@ class RoomRepository extends AbstractBaseRepository
             $hotelRoomTypes[] = $roomType->getId();
         }
 
-        //packages with accommodation
-        $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation($newBegin->modify('+1 day'), $newEnd->modify('-1 day'), $rooms, $excludePackages);
-        foreach ($packages as $package) {
-            $ids[] = $package->getAccommodation()->getId();
-        };
+        $pAccommodations = $dm
+            ->getRepository('MBHPackageBundle:PackageAccommodation')
+            ->fetchWithAccommodation(
+                $newBegin->modify('+1 day'),
+                $newEnd->modify('-1 day'),
+                $rooms,
+                $excludePackages);
+        foreach ($pAccommodations as $accommodation) {
+            /** @var PackageAccommodation $accommodation */
+            $ids[] = $accommodation->getAccommodation()->getId();
+        }
 
         // rooms
-        $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
+        $qb = $this->createQueryBuilder()->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
              ->field('isEnabled')->equals(true)
              ->inToArray('roomType.id', $hotelRoomTypes)
              ->notInNotEmpty('id', $ids)

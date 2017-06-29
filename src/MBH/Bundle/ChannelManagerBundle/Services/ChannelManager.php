@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -16,12 +17,12 @@ class ChannelManager
 {
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface 
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
 
     /**
-     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry 
+     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
      */
     protected $dm;
 
@@ -31,7 +32,7 @@ class ChannelManager
     protected $services = [];
     
     /**
-     * @var string 
+     * @var string
      */
     protected $console;
     
@@ -47,6 +48,7 @@ class ChannelManager
         $this->services = $this->getServices();
         $this->console = $container->get('kernel')->getRootDir() . '/../bin/console ';
         $this->env = $this->container->get('kernel')->getEnvironment();
+        $this->logger = $container->get('mbh.channelmanager.logger');
     }
 
     /**
@@ -74,18 +76,17 @@ class ChannelManager
                 $service = $this->container->get($info['service']);
 
                 if ($service instanceof ServiceInterface && !empty($service->getConfig())) {
-
                     if (!empty($filter) && !in_array($key, $filter)) {
                         continue;
                     }
 
                     $services[] = [
-                        'service' => $service,
-                        'title'   => $info['title'],
-                        'key'     => $key
+                    'service' => $service,
+                    'title'   => $info['title'],
+                    'key'     => $key
                     ];
                 }
-            } catch (\Exception $e){
+            } catch (\Exception $e) {
             }
         }
 
@@ -152,6 +153,20 @@ class ChannelManager
     }
 
     /**
+     * @param string $serviceTitle service tile
+     * @param bool $old get old reservations
+     */
+    public function pullOrdersInBackground($serviceTitle = null, $old = false)
+    {
+        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
+        $serviceTitle ? $service = ' --service=' . $serviceTitle : '';
+        $old ? $old = ' --old' : '';
+
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:pull ' . $env . $service . $old . '> /dev/null 2>&1 &');
+        $process->run();
+    }
+
+    /**
      * @param \DateTime $begin
      * @param \DateTime $end
      */
@@ -168,6 +183,25 @@ class ChannelManager
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
+     * @return array
+     */
+    public function getOverview(\DateTime $begin, \DateTime $end, Hotel $hotel): array
+    {
+        $results = [];
+        foreach ($this->services as $service) {
+            $result = $service['service']->getOverview($begin, $end, $hotel);
+            $results[$service['key']] = $result;
+            if ($result) {
+                $result->setName($service['title']);
+            }
+        }
+
+        return $results;
+    }
+    
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
      * @param RoomType $roomType
      * @throw \Exception
      * @return array
@@ -180,24 +214,25 @@ class ChannelManager
 
         $result = false;
         foreach ($this->services as $service) {
-
             try {
                 $noError = false;
 
-                if(empty($roomType) && empty($begin) && empty($end)) {
+                if (empty($roomType) && empty($begin) && empty($end)) {
                     $noError = $service['service']->closeAll();
                 }
 
-                if(!empty($roomType) || $noError) {
+                if (!empty($roomType) || $noError) {
                     $noError = $result[$service['key']]['result'] = $service['service']->update($begin, $end, $roomType);
                 }
 
                 if (!$noError) {
-                    $this->sendMessage($service);
+                    $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
 
@@ -219,16 +254,17 @@ class ChannelManager
 
         $result = false;
         foreach ($this->services as $service) {
-
             try {
                 $noError = $result[$service['key']]['result'] = $service['service']->updateRooms($begin, $end, $roomType);
 
                 if (!$noError) {
-                    $this->sendMessage($service);
+                    $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
 
@@ -250,16 +286,17 @@ class ChannelManager
 
         $result = false;
         foreach ($this->services as $service) {
-
             try {
                 $noError = $result[$service['key']]['result'] = $service['service']->updatePrices($begin, $end, $roomType);
 
                 if (!$noError) {
-                    $this->sendMessage($service);
+                    $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
 
@@ -281,16 +318,17 @@ class ChannelManager
 
         $result = false;
         foreach ($this->services as $service) {
-
             try {
                 $noError = $result[$service['key']]['result'] = $service['service']->updateRestrictions($begin, $end, $roomType);
 
                 if (!$noError) {
-                    $this->sendMessage($service);
+                    $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
 
@@ -300,7 +338,6 @@ class ChannelManager
     public function pushResponse($serviceTitle, Request $request)
     {
         foreach ($this->services as $service) {
-
             if ($serviceTitle && $service['key'] != $serviceTitle) {
                 continue;
             }
@@ -308,7 +345,8 @@ class ChannelManager
             try {
                 return $service['service']->pushResponse($request);
             } catch (\Exception $e) {
-
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
 
@@ -318,43 +356,51 @@ class ChannelManager
     /**
      * Pull orders from services
      * @param string $serviceTitle service tile
+     * @param bool $old get old reservations
      * @return bool
      */
-    public function pullOrders($serviceTitle = null)
+    public function pullOrders($serviceTitle = null, $old = false)
     {
         if (!$this->checkEnvironment()) {
-            false;
+            return  false;
         }
         $result = false;
         foreach ($this->services as $service) {
-
             if ($serviceTitle && $service['key'] != $serviceTitle) {
                 continue;
             }
-
             try {
-                $noError = $result[$service['key']]['result'] = $service['service']->pullOrders();
-
+                $noError = $result[$service['key']]['result'] = $service['service']->pullOrders($old);
                 if (!$noError) {
-                    $this->sendMessage($service);
+                    $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
+                $this->sendMessage($service, [(string)$e]);
+                $this->logger->error(get_called_class() . ': ' . (string)$e);
             }
         }
         return $result;
     }
 
     /**
-     * @param $service
+     * @param string $service
+     * @param array $errors
      */
-    private function sendMessage($service)
+    private function sendMessage($service, array $errors = [])
     {
         $notifier = $this->container->get('mbh.notifier');
         $message = $notifier::createMessage();
+        $text = $service['title'] . $this->container->get('translator')->trans('services.channelManager.sync_error_check_interaction_settings');
+        if (count($errors)) {
+            $text .= '<br><br>' . htmlentities(implode('<br><br>', $errors));
+        }
+        foreach ($service['service']->getConfig() as $config) {
+            $text .= '<br>' . $config->getHotel();
+        }
         $message
-            ->setText( $service['title'] . $this->container->get('translator')->trans('services.channelManager.sync_error_check_interaction_settings'))
+            ->setText($text)
             ->setFrom('system')
             ->setType('warning')
             ->setCategory('error')

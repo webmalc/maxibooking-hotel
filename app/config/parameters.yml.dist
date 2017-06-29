@@ -53,15 +53,15 @@ parameters:
   mbh_payment_systems_change: true
   currency_ratio_fix: 1.015
 
-  #Online form
-  online_form_sites: ['http://example.com', 'http://example.com']
-  online_form_result_url: 'http://example.com/results/'
-  trip_advisor_confirmation_url: 'http://example.com'
+  #Redis
+  mbh_redis: 'redis://mbh-redis'
 
   #Cache
   mbh_cache:
-    is_enabled: true
+    is_enabled: false
     prefix: mbh
+    lifetime: 7
+    logs: false
     search:
       months: 6
       max_duration: 21

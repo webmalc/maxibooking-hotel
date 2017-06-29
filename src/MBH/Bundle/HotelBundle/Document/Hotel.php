@@ -31,7 +31,7 @@ use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as ChannelManagerValid
  * @ODM\Document(collection="Hotels", repositoryClass="MBH\Bundle\HotelBundle\Document\HotelRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
+ * @MongoDBUnique(fields="fullTitle", message="validator.document.hotel.hotel_is_exist")
  * @ODM\HasLifecycleCallbacks
  * @ChannelManagerValidator\TripAdvisor
  */

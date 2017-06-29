@@ -20,11 +20,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class WarehouseData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
-	private $cats = [
-		'Бытовая химия',
-		'Питание',
-		'Бельё',
-	];
+	private function cats()
+    {
+        return [
+            $this->container->get('translator')->trans('warehouse.fixtures.mongodb.warehousedata.household_chemical'),
+            $this->container->get('translator')->trans('warehouse.fixtures.mongodb.warehousedata.food'),
+            $this->container->get('translator')->trans('warehouse.fixtures.mongodb.warehousedata.underwear')
+        ];
+    }
 
     /**
      * @var ContainerInterface
@@ -47,7 +50,7 @@ class WarehouseData extends AbstractFixture implements OrderedFixtureInterface, 
 		$existingCats = $manager->getRepository('MBHWarehouseBundle:WareCategory')->findAll();
 		
 		// skip existing categories
-		foreach ($this->cats as $name) {
+		foreach ($this->cats() as $name) {
 			if ($this->checkExistance($existingCats, $name)) {
 				continue;
 			}

@@ -49,7 +49,7 @@ class WarehouseSubscriber implements EventSubscriber
             ;
 
             if(count($docs) > 0) {
-                throw new DeleteException('Невозможно удалить категорию с товарами');
+                throw new DeleteException($this->container->get('translator')->trans('warehouse.eventlistener.warehousesubscriber.can_not_delete_product_category'));
             }
         }
 

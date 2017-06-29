@@ -50,6 +50,11 @@ services:
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
+    mbh.package.package_accommodations.subscriber:
+                class: MBH\Bundle\PackageBundle\EventListener\PackageAccommodationSubscriber
+                tags:
+                    - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
     mbh.package.subscriber.tourist:
             class: MBH\Bundle\PackageBundle\EventListener\TouristSubscriber
             calls:
@@ -62,6 +67,12 @@ services:
             arguments: ['@service_container']
             tags:
                 - { name: validator.constraint_validator, alias: mbh.package.validator }
+
+    mbh.package.package_accommodation_validator:
+        class: MBH\Bundle\PackageBundle\Validator\Constraints\PackageAccommodationsValidator
+        arguments: ['@doctrine_mongodb.odm.document_manager']
+        tags:
+            - { name: validator.constraint_validator }
 
     mbh.package.form.type.birthplace:
             class: MBH\Bundle\PackageBundle\Form\BirthplaceType
@@ -108,6 +119,10 @@ services:
             calls:
                    - [setContainer, ['@service_container']]
 
+    mbh.package.report_data_builder:
+        class: MBH\Bundle\PackageBundle\Services\ChessBoardDataBuilder
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper', '@mbh_bundle_package.services.package_accommodation_manipulator', '@translator', '@service_container']
+
     mbh.package.windows.report.generator:
       class: MBH\Bundle\PackageBundle\Services\WindowsReportGenerator
       arguments: ['@mbh.helper', '@doctrine_mongodb']
@@ -119,6 +134,25 @@ services:
     mbh.acl_document_owner_maker:
         class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
         arguments: ['@security.acl.provider', '@doctrine.odm.mongodb.document_manager']
+
+    mbh_bundle_package.services.package_accommodation_manipulator:
+        class: MBH\Bundle\PackageBundle\Services\PackageAccommodationManipulator
+        arguments: ['@doctrine_mongodb.odm.document_manager', '@translator']
+
+    mbh_bundle_package.twig.package_extension:
+        class: MBH\Bundle\PackageBundle\Twig\PackageExtension
+        arguments: ['@mbh_bundle_package.services.package_accommodation_manipulator']
+        tags:
+            - { name: twig.extension }
+
+    mbh.chess_board.message_formatter:
+        class: MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter
+        arguments: ['@translator']
+
+    mbh.chess_board_unit:
+        class: MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit
+        arguments: ['@security.authorization_checker']
+        shared: false
 
     task_notice_unpaid_order:
       class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder

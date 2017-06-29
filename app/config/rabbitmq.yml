@@ -14,21 +14,13 @@ old_sound_rabbit_mq:
             heartbeat: 0
             use_socket: false
     producers:
-      task_room_cache_recalculate:
+      task_command_runner:
         connection:       default
-        exchange_options: {name: 'task_room_cache_recalculate', type: direct}
-      task_notice_unpaid_order:
-        connection:       default
-        exchange_options: {name: 'task_notice_unpaid_order', type: direct}
+        exchange_options: {name: 'task_command_runner', type: direct}
     consumers:
-      task_room_cache_recalculate:
+      task_command_runner:
         connection:       default
-        exchange_options: {name: 'task_room_cache_recalculate', type: direct}
-        queue_options:    {name: 'task_room_cache_recalculate'}
-        callback:         task_room_cache_recalculate
-      task_notice_unpaid_order:
-        connection:       default
-        exchange_options: {name: 'task_notice_unpaid_order', type: direct}
-        queue_options:    {name: 'task_notice_unpaid_order'}
-        callback:         task_notice_unpaid_order
-        idle_timeout:     10
+        exchange_options: {name: 'task_command_runner', type: direct}
+        queue_options:    {name: 'task_command_runner'}
+        callback:         task_command_runner
+        # idle_timeout:     10

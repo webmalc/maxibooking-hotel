@@ -1,3 +1,8 @@
+mbhpackagebundle.document.organization.takoy.inn.uzhe.sushchestvuyet: 'Такой ИНН уже существует'
+validator.document.package.delete_reasons.source_exist: 'Такой источник уже существует'
+mbhpackagebundle.document.package.takoy.nomer.broni.uzhe.sushchestvuyet: 'Такой номер брони уже существует'
+mbhpackagebundle.document.package.kolichestvo.vzroslykh.ne.ukazano: 'Количество взрослых не указано'
+mbhpackagebundle.document.package.kolichestvo.detey.ne.ukazano: 'Количество детей не указано'
 validator.begin_end_message: Начало брони не должно быть больше или равно концу брони
 validator.places_message: Недопустимый тип номера для указанного количества гостей
 validator.tariff_message: Даты брони выходят за пределы тарифа
@@ -59,7 +64,13 @@ validator.document.Tourist.max_note: Слишком длинное примеч�
 validator.document.OrderDocument.type: Тип должен быть выбран
 validator.document.OrderDocument.file_type: Тип файла не поддерживается. Поддерживаемые форматы png, jpeg, jpg, gif, pdf, xls, doc.
 form.searchType.range_validator: Некорректно заполнено поле "Дополнительные дни поиска"
+validator.accommodation.intersect.neighbour: Размещение пересекается с другими размещениями.
+validator.accommodation.wrong.start.end: Размещение выходит за пределы брони.
+validator.accommodation.end_less_or_equal_begin: Дата окончания размещения не может быть меньше или равна началу размещения.
+validator.accommodation.package_is_cancelled: Невозможно указать размещения для удаленной брони.
 validator.package.special_message: Некорректное спецпредложение
+validator.service.wrong_dates: 'Некорректные даты услуги'
+
 validator.document.card.cardholder: Значение имени держателя карта не может быть пустым
 validator.document.card.date: Значение даты, отображающей срок действия платежной карты, не может быть пустым
 validator.document.card.number.not_null: Значение номера платежной карты не может быть пустым

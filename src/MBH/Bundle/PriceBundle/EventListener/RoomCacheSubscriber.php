@@ -6,13 +6,13 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 
 class RoomCacheSubscriber implements EventSubscriber
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface 
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
 
@@ -41,12 +41,13 @@ class RoomCacheSubscriber implements EventSubscriber
             return;
         }
 
-        $this->container->get('old_sound_rabbit_mq.task_room_cache_recalculate_producer')->publish(serialize(
-            [
-                'begin' => $doc->getDate(),
-                'end' => $doc->getDate(),
-                'roomTypes' => [$doc->getRoomType()->getId()]
-            ]
+        $this->container->get('old_sound_rabbit_mq.task_command_runner_producer')->publish(serialize(
+            new Command([
+                'command' => 'mbh:cache:recalculate',
+                '--roomTypes' => $doc->getId(),
+                '--begin' => $doc->getDate()->format('d.m.Y'),
+                '--end' => $doc->getDate()->format('d.m.Y'),
+            ])
         ));
 
         $this->container->get('mbh.cache')->clear('room_cache');
@@ -71,7 +72,6 @@ class RoomCacheSubscriber implements EventSubscriber
         $doc = $args->getDocument();
 
         if ($doc instanceof RoomCache && $doc->getPackagesCount() > 0) {
-
             throw new DeleteException($this->container->get('translator')->trans('roomCacheSubscriber.delete_exception_message.can_not_delete_room'));
         }
     }

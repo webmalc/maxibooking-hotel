@@ -71,7 +71,7 @@ class TouristController extends Controller
                 'format' => 'dd.MM.yyyy',
                 'required' => false
             ])
-            ->add('citizenship',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('citizenship', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
                 'required' => false,
                 'choices' => [
                     TouristQueryCriteria::CITIZENSHIP_NATIVE => 'Граждане РФ',
@@ -112,9 +112,9 @@ class TouristController extends Controller
         /** @var TouristRepository $touristRepository */
         $touristRepository = $this->dm->getRepository('MBHPackageBundle:Tourist');
 
-        if($criteria->begin && $criteria->end) {
+        if ($criteria->begin && $criteria->end) {
             $diff = $criteria->begin->diff($criteria->end);
-            if($diff->y == 1 && $diff->m > 0 || $diff->y > 1) {
+            if ($diff->y == 1 && $diff->m > 0 || $diff->y > 1) {
                 $begin = clone($criteria->begin);
                 $criteria->end = $begin->modify('+ 1 year');
             }
@@ -183,17 +183,19 @@ class TouristController extends Controller
         $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $entity->getDocumentRelation()->setType('vega_russian_passport');
 
-        $form = $this->createForm(TouristType::class, $entity,
-            ['genders' => $this->container->getParameter('mbh.gender.types')]);
+        $form = $this->createForm(
+            TouristType::class,
+            $entity,
+            ['genders' => $this->container->getParameter('mbh.gender.types')]
+        );
         $docForm = $this->createForm(DocumentRelationType::class, $entity);
         $addressForm = $this->createForm(AddressObjectDecomposedType::class, $entity->getAddressObjectDecomposed());
 
         $form->handleRequest($request);
-        $docForm->submit($request);
-        $addressForm->submit($request);
+        $docForm->handleRequest($request);
+        $addressForm->handleRequest($request);
 
         if ($form->isValid() && $docForm->isValid() && $addressForm->isValid()) {
-
             $entity->setAddressObjectDecomposed($addressForm->getData());
             $this->dm->persist($entity);
             $this->dm->flush();
@@ -202,7 +204,7 @@ class TouristController extends Controller
 
             if ($entity->getBirthday() || $entity->getPhone() || $entity->getEmail()) {
                 $pieces = [];
-                !$entity->getBirthday() ?: $entity[] = $entity->getBirthday()->format('d.m.Y');
+                !$entity->getBirthday() ?: $pieces[] = $entity->getBirthday()->format('d.m.Y');
                 !$entity->getPhone() ?: $pieces[] = $entity->getPhone();
                 !$entity->getEmail() ?: $pieces[] = $entity->getEmail();
                 $text .= ' (' . implode(', ', $pieces) . ')';
@@ -236,13 +238,15 @@ class TouristController extends Controller
     public function createAction(Request $request)
     {
         $tourist = new Tourist();
-        $form = $this->createForm(TouristType::class, $tourist,
-            ['genders' => $this->container->getParameter('mbh.gender.types')]);
+        $form = $this->createForm(
+            TouristType::class,
+            $tourist,
+            ['genders' => $this->container->getParameter('mbh.gender.types')]
+        );
 
         $notUnwelcome = !$tourist->getIsUnwelcome();
         $form->handleRequest($request);
         if ($form->isValid()) {
-
             $this->dm->persist($tourist);
             $this->dm->flush();
 
@@ -275,13 +279,15 @@ class TouristController extends Controller
      */
     public function updateAction(Request $request, Tourist $tourist)
     {
-        $form = $this->createForm(TouristType::class, $tourist,
-            ['genders' => $this->container->getParameter('mbh.gender.types')]);
+        $form = $this->createForm(
+            TouristType::class,
+            $tourist,
+            ['genders' => $this->container->getParameter('mbh.gender.types')]
+        );
 
         $notUnwelcome = !$tourist->getIsUnwelcome();
         $form->handleRequest($request);
         if ($form->isValid()) {
-
             $this->dm->persist($tourist);
             $this->dm->flush();
 
@@ -352,8 +358,10 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success',
-                    $this->get('translator')->trans('controller.touristController.record_edited_success'));
+                $request->getSession()->getFlashBag()->set(
+                    'success',
+                    $this->get('translator')->trans('controller.touristController.record_edited_success')
+                );
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('tourist_edit_document', ['id' => $entity->getId()]) :
@@ -383,8 +391,8 @@ class TouristController extends Controller
         $entity->getVisa()->getType() ?: $entity->getVisa()->setType('visa');
 
         $form = $this->createFormBuilder($entity)
-            ->add('visa', new TouristVisaType())
-            ->add('migration', new TouristMigrationType())
+            ->add('visa', TouristVisaType::class)
+            ->add('migration', TouristMigrationType::class)
             ->getForm();
 
         if ($request->isMethod(Request::METHOD_POST)) {
@@ -394,8 +402,10 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success',
-                    $this->get('translator')->trans('controller.touristController.record_edited_success'));
+                $request->getSession()->getFlashBag()->set(
+                    'success',
+                    $this->get('translator')->trans('controller.touristController.record_edited_success')
+                );
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('tourist_edit_visa', ['id' => $entity->getId()]) :
@@ -538,7 +548,6 @@ class TouristController extends Controller
             $repository = $this->dm->getRepository('MBHVegaBundle:VegaFMS');
             $entities = $repository->findBy(['name' => new \MongoRegex('/.*' . $query . '.*/ui')], ['name' => 1], 50);
             foreach ($entities as $entity) {
-
                 $list[] = [
                     'id' => $entity->getId(),
                     'text' => $entity->getName()
@@ -585,8 +594,10 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success',
-                    $this->get('translator')->trans('controller.touristController.record_edited_success'));
+                $request->getSession()->getFlashBag()->set(
+                    'success',
+                    $this->get('translator')->trans('controller.touristController.record_edited_success')
+                );
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('tourist_edit_address', ['id' => $entity->getId()]) :

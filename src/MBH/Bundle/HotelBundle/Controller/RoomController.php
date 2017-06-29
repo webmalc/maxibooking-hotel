@@ -14,7 +14,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
-
 /**
  * Class RoomController
  * @Route("/room")
@@ -70,7 +69,7 @@ class RoomController extends BaseController
 
         $room = new Room();
         $room->setRoomType($roomType);
-        $form = $this->createForm(RoomForm::class, $room , [
+        $form = $this->createForm(RoomForm::class, $room, [
             'hotelId' => $this->hotel->getId()
         ]);
 
@@ -177,8 +176,10 @@ class RoomController extends BaseController
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success',
-                $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
+            $request->getSession()->getFlashBag()->set(
+                'success',
+                $this->get('translator')->trans('controller.roomTypeController.record_edited_success')
+            );
 
             return $this->isSavedRequest() ?
                  $this->redirectToRoute('room_edit', ['id' => $entity->getId()]) :
@@ -262,8 +263,10 @@ class RoomController extends BaseController
 
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success',
-                $this->get('translator')->trans('controller.roomTypeController.rooms_generation_success'));
+            $request->getSession()->getFlashBag()->set(
+                'success',
+                $this->get('translator')->trans('controller.roomTypeController.rooms_generation_success')
+            );
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }

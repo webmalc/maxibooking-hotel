@@ -88,7 +88,7 @@ class ClientConfig extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
-     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "rbk"})
+     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "paypal", "rbk"})
      */
     protected $paymentSystem;
 
@@ -121,6 +121,12 @@ class ClientConfig extends Base
      * @ODM\EmbedOne(targetDocument="Rbk")
      */
     protected $rbk;
+
+    /**
+     * @var PayPal
+     * @ODM\EmbedOne(targetDocument="Paypal")
+     */
+    protected $paypal;
 
     /**
      * @var string
@@ -164,7 +170,77 @@ class ClientConfig extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=365)
      */
-     protected $noticeUnpaid = 0;
+    protected $noticeUnpaid = 0;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     */
+    protected $isDisableableOn = false;
+
+    /**
+     * @var bool
+     * @Assert\NotNull()
+     * @ODM\Field(type="bool")
+     */
+    protected $canBookWithoutPayer = true;
+
+    /**
+     * @return bool
+     */
+    public function isCanBookWithoutPayer(): bool
+    {
+        return $this->canBookWithoutPayer;
+    }
+
+    /**
+     * @param bool $canBookWithoutPayer
+     * @return ClientConfig
+     */
+    public function setCanBookWithoutPayer(bool $canBookWithoutPayer): ClientConfig
+    {
+        $this->canBookWithoutPayer = $canBookWithoutPayer;
+
+        return $this;
+    }
+
+    /**
+     * @return PayPal
+     */
+    public function getPaypal()
+    {
+        return $this->paypal;
+    }
+
+    /**
+     * @param PayPal $PayPal
+     * @return self
+     */
+    public function setPaypal(\MBH\Bundle\ClientBundle\Document\Paypal $paypal)
+    {
+        $this->paypal = $paypal;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsDisableableOn(): bool
+    {
+        return $this->isDisableableOn;
+    }
+
+    /**
+     * @param bool $isDisableableOn
+     * @return ClientConfig
+     */
+    public function setIsDisableableOn(bool $isDisableableOn): ClientConfig
+    {
+        $this->isDisableableOn = $isDisableableOn;
+
+        return $this;
+    }
 
     /**
      * @return integer
@@ -351,6 +427,7 @@ class ClientConfig extends Base
     public function getPaymentSystemDoc()
     {
         $paymentSystem = $this->getPaymentSystem();
+
         if (!empty($paymentSystem) && !empty($this->$paymentSystem)) {
             return $this->$paymentSystem;
         }
@@ -366,6 +443,7 @@ class ClientConfig extends Base
     public function getFormData(CashDocument $cashDocument, $url = null)
     {
         $doc = $this->getPaymentSystemDoc();
+
         if (!$doc || $cashDocument->getOperation() != 'in' || $cashDocument->getMethod() != 'electronic' || $cashDocument->getIsPaid()) {
             return [];
         }
@@ -508,5 +586,4 @@ class ClientConfig extends Base
     {
         $this->beginDate = $beginDate;
     }
-
 }

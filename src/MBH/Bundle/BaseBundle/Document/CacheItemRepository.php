@@ -54,11 +54,29 @@ class CacheItemRepository extends DocumentRepository
 
         $caches = $qb->select(['key', 'begin', 'end'])->hydrate(false)->getQuery()->execute();
 
-        return array_map(function ($val) use ($caches) {
-            return $val['key'];
-        },
+        return array_map(
+            function ($val) use ($caches) {
+                return $val['key'];
+            },
             iterator_to_array($caches)
         );
+    }
+    
+    /**
+     * clear expired items
+     *
+     * @param type $param
+     * @return int
+     */
+    public function clearExpiredItems(): int
+    {
+        return $this->createQueryBuilder()
+            ->field('lifetime')->exists(true)
+            ->field('lifetime')->notEqual(null)
+            ->field('lifetime')->lte(new \DateTime())
+            ->remove()
+            ->getQuery()
+            ->execute()['n'];
     }
 
     /**

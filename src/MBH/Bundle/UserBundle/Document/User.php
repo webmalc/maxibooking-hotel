@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MBHValidator\User
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
- * @MongoDBUnique(fields="username", message="Такой логин уже зарегистрирован")
+ * @MongoDBUnique(fields="username", message="mbhuserbundle.document.user.takoy.login.uzhe.zaregistrirovan")
  */
 class User extends BaseUser implements RecipientInterface
 {
@@ -175,6 +175,12 @@ class User extends BaseUser implements RecipientInterface
      * @ODM\Field(type="boolean")
      */
     protected $locked;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    protected $locale = 'en';
 
     /**
      * Hook timestampable behavior
@@ -577,4 +583,22 @@ class User extends BaseUser implements RecipientInterface
     {
         return self::TWO_FACTOR_TYPES;
     }
+
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     */
+    public function setLocale(string $locale)
+    {
+        $this->locale = $locale;
+    }
+
+
 }

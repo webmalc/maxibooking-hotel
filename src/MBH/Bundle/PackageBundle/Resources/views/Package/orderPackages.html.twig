@@ -42,7 +42,7 @@
                             {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br><small>{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
                         </td>
                         <td>
-                            {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='{{ 'order.packages.go_to_placement'|trans({}, 'MBHPackageBundle') }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;не размещено&gt;{% endif %}</a></small>
+                            {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='{{ 'order.packages.go_to_placement'|trans({}, 'MBHPackageBundle') }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ 'mbhpackagebundle.view.package.orderpackages.ne.razmeshcheno'|trans }} &gt;{% endif %}</a></small>
                         </td>
                         <td class="text-center">
                             {{ package.adults }} + {{ package.children }}<br>

@@ -3,11 +3,6 @@ mbh_warehouse:
     type:     annotation
     prefix:   /
 
-JMSTranslationBundle_ui:
-    resource: "@JMSTranslationBundle/Controller/"
-    type:     annotation
-    prefix:   /_trans
-
 mbh_client:
     resource: "@MBHClientBundle/Controller/"
     type:     annotation
@@ -85,3 +80,6 @@ mbh_restaurant:
     resource: "@MBHRestaurantBundle/Controller/"
     type:     annotation
     prefix:   /restaurant
+
+_bazinga_jstranslation:
+    resource: "@BazingaJsTranslationBundle/Resources/config/routing/routing.yml"

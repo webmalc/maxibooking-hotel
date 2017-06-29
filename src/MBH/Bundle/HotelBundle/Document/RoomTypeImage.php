@@ -38,7 +38,7 @@ class RoomTypeImage
      * @var string
      * @Assert\File(
      *  maxSize = "5M",
-     *  maxSizeMessage = "Размер изображения не должен превышать 5MB.")
+     *  maxSizeMessage = "validator.document.roomTypeImage.image_size_5_mb")
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      */

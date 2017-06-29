@@ -1,8 +1,79 @@
+mbhcashbundle.service.onecexporter.sektsiyadokument: СекцияДокумент
+mbhcashbundle.service.onecexporter.platezhnoe.poruchenie: Платежное поручение
+form.cashDocumentType.number: Номер
+mbhcashbundle.service.onecexporter.nomer: Номер
+mbhcashbundle.service.onecexporter.data: Дата
+mbhcashbundle.service.onecexporter.summa: Сумма
+mbhcashbundle.view.cash.jsonbuttons.data: Дата
+form.cashDocumentType.sum: Сумма
+mbhcashbundle.service.onecexporter.platelshchik: Плательщик
+mbhcashbundle.service.onecexporter.platelshchikschet: ПлательщикСчет
+mbhcashbundle.service.onecexporter.dataspisano: ДатаСписано
+form.cashDocumentType.payer: Плательщик
+form.cashDocumentType.platelshikBank1: ПлательщикБанк1
+mbhcashbundle.service.onecexporter.poluchatelbank1: ПолучательБанк1
+mbhcashbundle.service.onecexporter.schet: Счет
+mbhcashbundle.service.onecexporter.ot: от
+mbhcashbundle.service.onecexporter.fio: ФИО
+mbhcashbundle.service.onecexporter.adres: АДРЕС
+mbhcashbundle.service.onecexporter.contact: КОНТАКТ
+mbhcashbundle.service.onecexporter.platelshchikinn: ПлательщикИНН
+mbhcashbundle.service.onecexporter.platelshchikkpp: ПлательщикКПП
+mbhcashbundle.service.onecexporter.platelshchikraschschet: ПлательщикРасчСчет
+mbhcashbundle.service.onecexporter.platelshchikbank: ПлательщикБанк
+mbhcashbundle.service.onecexporter.platelshchikbik: ПлательщикБИК
+mbhcashbundle.service.onecexporter.platelshchikkorschet: ПлательщикКорсчет
+mbhcashbundle.service.onecexporter.poluchatelʹschet: ПолучательСчет
+mbhcashbundle.service.onecexporter.datapostupilo: ДатаПоступило
+mbhcashbundle.service.onecexporter.poluchatel: Получатель
+mbhcashbundle.service.onecexporter.poluchatelinn: ПолучательИНН
+mbhcashbundle.service.onecexporter.poluchatelkpp: ПолучательКПП
+mbhcashbundle.service.onecexporter.poluchatelraschschet: ПолучательРасчСчет
+mbhcashbundle.service.onecexporter.poluchatelbank: ПолучательБанк
+mbhcashbundle.service.onecexporter.poluchatelbik: ПолучательБИК
+mbhcashbundle.service.onecexporter.poluchatelkorschet: ПолучательКорсчет
+mbhcashbundle.service.onecexporter.vidplatezha: ВидПлатежа
+mbhcashbundle.service.onecexporter.vidoplaty: ВидОплаты
+mbhcashbundle.service.onecexporter.kod: Код
+mbhcashbundle.service.onecexporter.statussostavitelya: СтатусСоставителя
+mbhcashbundle.service.onecexporter.pokazatelkbk: ПоказательКБК
+mbhcashbundle.service.onecexporter.okato: ОКАТО
+mbhcashbundle.service.onecexporter.pokazatelosnovaniya: ПоказательОснования
+mbhcashbundle.service.onecexporter.pokazatelperioda: ПоказательПериода
+mbhcashbundle.service.onecexporter.pokazatelnomera: ПоказательНомера
+mbhcashbundle.service.onecexporter.pokazateldaty: ПоказательДаты
+mbhcashbundle.service.onecexporter.pokazateltipa: ПоказательТипа
+mbhcashbundle.service.onecexporter.ocherednost: Очередность
+mbhcashbundle.service.onecexporter.naznacheniyeplatezha: НазначениеПлатежа
+mbhcashbundle.service.onecexporter.konetsdokumenta: КонецДокумента
+mbhcashbundle.service.onecexporter.versiyaformata: ВерсияФормата
+mbhcashbundle.service.onecexporter.kodirovka: Кодировка
+mbhcashbundle.service.onecexporter.otpravitel: Отправитель
+mbhcashbundle.service.onecexporter.datasozdaniya: ДатаСоздания
+mbhcashbundle.service.onecexporter.vremyasozdaniya: ВремяСоздания
+mbhcashbundle.service.onecexporter.datanachala: ДатаНачала
+mbhcashbundle.service.onecexporter.datakontsa: ДатаКонца
+mbhcashbundle.service.onecexporter.raschschet: РасчСчет
+mbhcashbundle.service.onecexporter.sektsiyaraschschet: СекцияРасчСчет
+mbhcashbundle.service.onecexporter.nachalnyyostatok: НачальныйОстаток
+mbhcashbundle.service.onecexporter.vsegospisano: ВсегоСписано
+mbhcashbundle.service.onecexporter.vsegopostupilo: ВсегоПоступило
+mbhcashbundle.service.onecexporter.konechnyyostatok: КонечныйОстаток
+mbhcashbundle.service.onecexporter.konetsraschschet: КонецРасчСчет
+mbhcashbundle.service.onecexporter.konetsfayla: КонецФайла
+mbhcashbundle.form.searchtype.po: По
+mbhcashbundle.form.searchtype.sortirova: Сортирова
+mbhcashbundle.form.searchtype.vid.platezha: 'Вид платежа'
+mbhcashbundle.view.cash.jsonbuttons.data: Дата
+mbhcashbundle.view.cash.index.ostatok.po.kasse: 'Остаток по кассе'
+mbhcashbundle.view.cash.index.1c_export: Экспорт в 1C
+mbhcashbundle.view.cash.index.upload_clearing: Выгрузить безнал
 form.cashDocumentType.payer: Плательщик
 form.cashDocumentType.organization: Организация
 form.cashDocumentType.tourist: Клиент
 form.cashDocumentType.article: Статья
 form.cashDocumentType.placeholder_fio: Иванов Иван Иванович
+form.cashDocumentType.inn: ИНН
 form.cashDocumentType.sum: Сумма
 form.cashDocumentType.payment_way: Способ оплаты
 form.cashDocumentType.document_date: Дата документа
@@ -13,7 +84,19 @@ form.cashDocumentType.comment: Комментарий
 form.cashDocumentType.is_paid: Оплачен?
 controller.cashController.edit_record_success: 'Запись успешно отредактирована.'
 controller.cashController.payment_confirmed_success: 'Платеж успешно подтвержден'
+controller.cashController.beznal.v.tom.chisle.electronnie: 'Безнал (в т.ч. электронные)'
 
 cashDocumentCriteria.type.order: По заказам
 cashDocumentCriteria.type.other: Без заказов
-
+cashDocumentSubscriber.document.dlia.pechati.ne.sozdan : 'Документ для печати не создан.'
+cashDocumentSubscriber.ne.naidena.organizacia.dlia.etogo.otela: 'Не найдена организация для этого отеля из раздела "Мои организации".'
+cashDocumentSubscriber.ne.ustanovlen.bank.polichatela: 'Не установлен "Банк получателя".'
+cashDocumentSubscriber.ne.ustanovlen.bik.polichatela: 'Не установлен "Бик банка".'
+cashDocumentSubscriber.ne.ustanovlen.kor.shet: 'Не установлен "Корр. счёт".'
+cashDocumentSubscriber.ne.ustanovlen.inn: 'Не установлен "ИНН".'
+cashDocumentSubscriber.ne.ustanovlen.kpp: 'Не установлен "КПП".'
+cashDocumentSubscriber.ne.ustanovlen.raschetnii.shet: 'Не установлен "Расчётный счёт".'
+cashDocumentSubscriber.ne.ustanovleno.nazvanie.organizacii: 'Не установлено "Название организации".'
+cashDocumentSubscriber.schet.na.oplatu: Счёт на оплату
+cashDocumentSubscriber.schet: Счёт
+cashDocumentSubscriber.ot: от

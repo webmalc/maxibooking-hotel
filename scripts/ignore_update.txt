@@ -30,4 +30,7 @@ web/app_dev.php
 nbproject
 parameters.yml
 .idea
+docs/
+var/clients/
+app/config/clients/
 

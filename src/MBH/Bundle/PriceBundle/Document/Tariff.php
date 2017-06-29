@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MBHValidator\Tariff
  * @ChannelManagerValidator\TripAdvisor
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="tariff.tariff_already_exists")
+ * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="mbhpricebundle.document.tariff.takoy.tarif.uzhe.sushchestvuyet")
  * @ODM\HasLifecycleCallbacks
  */
 class Tariff extends Base implements ConditionsInterface
@@ -39,7 +39,7 @@ class Tariff extends Base implements ConditionsInterface
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -48,14 +48,14 @@ class Tariff extends Base implements ConditionsInterface
 
     use ConditionsTrait;
     
-    /** 
+    /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="tariffs")
-     * @Assert\NotNull(message="tariff.hotel_not_choosen")
+     * @Assert\NotNull(message="Не выбран отель")
      * @ODM\Index()
      */
     protected $hotel;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -63,20 +63,13 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="tariff.to_short_name",
+     *      minMessage="Слишком короткое имя",
      *      max=100,
-     *      maxMessage="tariff.to_long_name"
+     *      maxMessage="Слишком длинное имя"
      * )
      * @ODM\Index()
      */
     protected $fullTitle;
-
-    /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Field(type="int", name="minPerPrepay")
-     */
-    protected $minPerPrepay;
 
     /**
      * @var string
@@ -84,9 +77,9 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="tariff.to_short_name",
+     *      minMessage="Слишком короткое имя",
      *      max=100,
-     *      maxMessage="tariff.to_long_name"
+     *      maxMessage="Слишком длинное имя"
      * )
      * @ODM\Index()
      */
@@ -97,9 +90,9 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="tariff.to_short_description",
+     *      minMessage="Слишком короткое описание",
      *      max=300,
-     *      maxMessage="tariff.to_long_description"
+     *      maxMessage="Слишком длинное описание"
      * )
      * @ODM\Index()
      */
@@ -231,6 +224,14 @@ class Tariff extends Base implements ConditionsInterface
     protected $parent;
 
     /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int", name="minPerPrepay")
+     * @Assert\Range(min=0, max=100)
+     */
+    protected $minPerPrepay = 0;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -301,26 +302,6 @@ class Tariff extends Base implements ConditionsInterface
     {
         return $this->fullTitle;
     }
-
-    /**
-     * @return int
-     */
-    public function getMinPerPrepay()
-    {
-        return $this->minPerPrepay;
-    }
-
-    /**
-     * @param int $minPerPrepay
-     * @return Tariff
-     */
-    public function setMinPerPrepay(int $minPerPrepay)
-    {
-        $this->minPerPrepay = $minPerPrepay;
-
-        return $this;
-    }
-
 
     /**
      * Set title
@@ -734,6 +715,25 @@ class Tariff extends Base implements ConditionsInterface
     public function setPosition(int $position): Tariff
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMinPerPrepay(): int
+    {
+        return $this->minPerPrepay ?? 0;
+    }
+
+    /**
+     * @param int $minPerPrepay
+     * @return $this
+     */
+    public function setMinPerPrepay(int $minPerPrepay)
+    {
+        $this->minPerPrepay = $minPerPrepay;
 
         return $this;
     }

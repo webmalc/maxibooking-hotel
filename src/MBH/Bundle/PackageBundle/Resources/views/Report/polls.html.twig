@@ -10,7 +10,7 @@
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'polls-report-filter-widget'} %}
         <form id="polls-report-filter" action="{{ path('report_polls' ) }}" class="form-inline filter-form remember" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+                <i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.report.polls.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp
                 <input type="text" name="begin" id="polls-report-filter-begin" class="datepicker polls-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-45 days")|date('d.m.Y') : app.request.get('begin')}}">
             </div>
             <div class="input">

@@ -142,6 +142,11 @@ services:
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
+    mbh.event_listener.disable_listener:
+        class: MBH\Bundle\BaseBundle\Lib\Disableable\DisableableSubscriber
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
     mbh.event_listener.hotelable_listener:
         class: MBH\Bundle\BaseBundle\EventListener\HotelableListener
         arguments: ['@mbh.hotel.selector']
@@ -163,8 +168,14 @@ services:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.cache:
-            class: MBH\Bundle\BaseBundle\Service\Cache
-            arguments: ['%mbh_cache%', '@doctrine_mongodb', '@validator']
+        class: MBH\Bundle\BaseBundle\Service\Cache
+        arguments:
+          - '%mbh_cache%'
+          - '%mbh_redis%'
+          - '@doctrine_mongodb'
+          - '@validator'
+          - '@mbh.cache.logger'
+          - '@mbh.mongo'
 
     mbh.task.logger:
         class:     Symfony\Bridge\Monolog\Logger
@@ -175,6 +186,66 @@ services:
     mbh.task.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.task.log", 200]
+
+
+    #Translation
+    mbh.base.command.translate:
+        class:  MBH\Bundle\BaseBundle\Command\TranslatorCommand
+        arguments: ['mbh:translation']
+        calls:
+            - [ addConverter, ['@mbh.base.lib.document_translator' ]]
+            - [ addConverter, ['@mbh.base.lib.twig_translator' ]]
+            - [ addConverter, ['@mbh.base.lib.form_translator' ]]
+            - [ addConverter, ['@mbh.base.lib.service_translator' ]]
+            - [ addConverter, ['@mbh.base.lib.services_translator' ]]
+        tags:
+            - { name: console.command }
+
+    mbh.base.lib.abstract_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\AbstractTranslateConverter
+        abstract: true
+        arguments: ['@translation.loader','@translation.writer', '@mbh.task.logger']
+
+    mbh.base.lib.document_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\DocumentTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+
+    mbh.base.lib.twig_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\TwigTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+
+    mbh.base.lib.form_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\FormTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+
+    mbh.base.lib.service_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\ServiceTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+
+    mbh.base.lib.services_translator:
+        class: MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\ServicesTranslateConverter
+        parent: mbh.base.lib.abstract_translator
+
+    mbh.cache.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.cache.logger_handler']]
+
+    mbh.cache.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]
+
+    task_command_runner:
+        class:      MBH\Bundle\BaseBundle\Task\CommandRunner
+        arguments:  ["@mbh.task.logger", "@kernel"]
+
+    mbh.locale.subscriber:
+        class: MBH\Bundle\BaseBundle\EventListener\LocaleSubscriber
+        arguments: ['%kernel.default_locale%']
+        tags:
+          - { name: kernel.event_subscriber }
+
 
     mbh.yandex_translator:
         class: MBH\Bundle\BaseBundle\Service\YandexTranslator

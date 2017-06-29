@@ -2,7 +2,7 @@ services:
 #roomCache generator
   mbh.room.cache.graph.generator:
     class: MBH\Bundle\PriceBundle\Services\RoomCacheGraphGenerator
-    arguments: ['@mbh.helper', '@doctrine_mongodb']
+    arguments: ['@mbh.helper', '@doctrine_mongodb', '@service_container']
 
   mbh.tariff.subscriber:
     class: MBH\Bundle\PriceBundle\EventListener\TariffSubscriber
@@ -28,10 +28,6 @@ services:
             class: MBH\Bundle\PriceBundle\Services\Restriction
             arguments: ['@service_container']
 
-  task_room_cache_recalculate:
-    class:      MBH\Bundle\PriceBundle\Task\RecalculateCache
-    arguments:  ["@mbh.room.cache", "@mbh.task.logger"]
-
   mbh.type.special:
       class:      MBH\Bundle\PriceBundle\Form\SpecialType
       arguments:  ["@mbh.hotel.selector"]
@@ -49,3 +45,39 @@ services:
         arguments:  ["@mbh.hotel.selector"]
         tags:
                 - { name: form.type }
+
+  mbh.tariff_type:
+      class: MBH\Bundle\PriceBundle\Form\TariffType
+      arguments: ['@translator']
+      tags:
+          - {name : form.type}
+
+  mbh.price_cache_generator_type:
+      class: MBH\Bundle\PriceBundle\Form\PriceCacheGeneratorType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}
+
+  mbh.serice_category_type:
+      class: MBH\Bundle\PriceBundle\Form\ServiceCategoryType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}
+
+  mbh.promotion_type:
+      class: MBH\Bundle\PriceBundle\Form\PromotionType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}
+
+  mbh.tariff_services_type:
+      class: MBH\Bundle\PriceBundle\Form\TariffServicesType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}
+
+  mbh.service_type:
+      class: MBH\Bundle\PriceBundle\Form\ServiceType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}

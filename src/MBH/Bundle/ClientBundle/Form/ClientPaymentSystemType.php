@@ -19,6 +19,7 @@ class ClientPaymentSystemType extends AbstractType
         $moneymailShopIDP = $moneymailKey = null;
         $unitellerShopIDP = $unitellerPassword = null;
         $rbkEshopId = $rbkSecretKey = null;
+        $paypalLogin =  null;
         $default = $options['default'];
 
         if ($entity) {
@@ -33,6 +34,7 @@ class ClientPaymentSystemType extends AbstractType
             $unitellerPassword = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerPassword() : '';
             $rbkEshopId = $entity->getRbk() ? $entity->getRbk()->getRbkEshopId() : '';
             $rbkSecretKey = $entity->getRbk() ? $entity->getRbk()->getRbkSecretKey() : '';
+            $paypalLogin = $entity->getPaypal() ? $entity->getPaypal()->getPaypalLogin() : '';
 
             if ($entity->getPaymentSystem()) {
                 $default = $entity->getPaymentSystem();
@@ -51,7 +53,8 @@ class ClientPaymentSystemType extends AbstractType
         } else {
             $builder
                 ->add(
-                    'paymentSystem',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
+                    'paymentSystem',
+                    \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                     [
                         'label' => 'form.clientPaymentSystemType.payment_system',
                         'choices' => $options['paymentTypes'],
@@ -196,6 +199,18 @@ class ClientPaymentSystemType extends AbstractType
                 ]
             )
             ->add(
+                'paypalLogin',
+                TextType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.payment_system_paypal_login',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params paypal'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'mapped' => false,
+                    'data' => $paypalLogin
+                ]
+            )
+            ->add(
                 'successUrl',
                 TextType::class,
                 [
@@ -216,7 +231,6 @@ class ClientPaymentSystemType extends AbstractType
                 ]
             )
         ;
-
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -234,5 +248,4 @@ class ClientPaymentSystemType extends AbstractType
     {
         return 'mbh_bundle_clientbundle_client_payment_system_type';
     }
-
 }

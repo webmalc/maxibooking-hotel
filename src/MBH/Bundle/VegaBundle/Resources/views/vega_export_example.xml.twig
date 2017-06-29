@@ -1,33 +1,33 @@
 <registration dateIn="2014-10-01" dateOut="2014-10-10" room="301" xmlns="http://www.sonarplus.ru/replication/vegaimport">
-    <person lastName="Иванов" firstName="Иван" middleName="Иванович" birthDate="1960-10-10">
-        <gender type="S_SEX" dictvalue="МУЖ." />
-        <citizenship type="S_STATE" dictvalue="РОССИЯ" />
-        <birthPlace main_region="КРАСНОДАРСКИЙ КРАЙ" city="Г. КРАСНОДАР" settlement="П. БЕЛОЗЕРНЫЙ">
-            <country type="S_STATE" dictvalue="РОССИЯ" />
+    <person lastName="{{ 'vegabundle.resources.views.ivanov'|trans }}" firstName="{{ 'vegabundle.resources.views.ivan'|trans }}" middleName="{{ 'vegabundle.resources.views.ivanovich'|trans }}" birthDate="1960-10-10">
+        <gender type="S_SEX" dictvalue="{{ 'vegabundle.resources.views.muzh'|trans }}." />
+        <citizenship type="S_STATE" dictvalue="{{ 'vegabundle.resources.views.RUSSIA'|trans }}" />
+        <birthPlace main_region="{{ 'vegabundle.resources.views.KRASNODARSKY-KRY'|trans }}" city="{{ 'vegabundle.resources.views.G-Krasnodar'|trans }}" settlement="{{ 'vegabundle.resources.views.P-Belozerniy'|trans }}">
+            <country type="S_STATE" dictvalue="{{ 'vegabundle.resources.views.Russia'|trans }}" />
         </birthPlace>
     </person>
     <documentRelation>
         <document series="1234" number="123456" issued="1900-01-01">
-            <type type="S_DOCUM" dictvalue="ПАСПОРТ РФ" />
+            <type type="S_DOCUM" dictvalue="{{ 'vegabundle.resources.views.Pasport-RF'|trans }}" />
             <authorityOrgan type="S_FMS" dictvalue="592-011" />
         </document>
-        <relation type="TYPE_SV" dictvalue="ВЛАДЕЛЕЦ" />
+        <relation type="TYPE_SV" dictvalue="{{ 'vegabundle.resources.views.Vladelec'|trans }}" />
     </documentRelation>
     <liveAddress>
         <addressObject type="ADDROBJ" dictvalue="F1C553C1-B927-4D76-B398-048E10587EA6" />
-        <housing value="160" type="S_HOUSEPART" dictvalue="ДОМ" />
-        <housing value="А" type="S_HOUSEPART" dictvalue="ЛИТЕРА" />
-        <housing value="13" type="S_HOUSEPART" dictvalue="КВАРТИРА" />
+        <housing value="160" type="S_HOUSEPART" dictvalue="{{ 'vegabundle.resources.views.Dom'|trans }}" />
+        <housing value="А" type="S_HOUSEPART" dictvalue="{{ 'vegabundle.resources.views.Litera'|trans }}" />
+        <housing value="13" type="S_HOUSEPART" dictvalue="{{ 'vegabundle.resources.views.Kvartira'|trans }}" />
     </liveAddress>
     <regAddress type="ADDR_REG" dictvalue="12" />
     <embeddings>
         <scanneddocument filename="img123893.jpg">
-            <doctype type="S_DOCUM" dictvalue="ВИЗА"/>
-            <scantype type="S_TPSCAN" dictvalue="ВИЗА"/>
+            <doctype type="S_DOCUM" dictvalue="{{ 'vegabundle.resources.views.Visa'|trans }}"/>
+            <scantype type="S_TPSCAN" dictvalue="{{ 'vegabundle.resources.views.Visa'|trans }}"/>
         </scanneddocument>
         <scanneddocument filename="img123895.jpg">
-            <doctype type="S_DOCUM" dictvalue="ПАСПОРТ ИГ"/>
-            <scantype type="S_TPSCAN" dictvalue="ДОКУМЕНТ, УД. ЛИЧНОСТЬ - УСТАНОВОЧНЫЕ ДАННЫЕ ЛИЦА (ФИО, Д.Р., ФОТО)"/>
+            <doctype type="S_DOCUM" dictvalue="{{ 'vegabundle.resources.views.Passport-Ig'|trans }}"/>
+            <scantype type="S_TPSCAN" dictvalue="{{ 'vegabundle.resources.views.Document-Ud-Lichnost'|trans }}"/>
         </scanneddocument>
     </embeddings>
 </registration>

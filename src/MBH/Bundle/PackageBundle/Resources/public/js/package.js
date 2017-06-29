@@ -303,6 +303,7 @@ var docReadyPackages = function () {
         "processing": true,
         "serverSide": true,
         "ordering": true,
+        "searchDelay": 2500,
         "ajax": {
             "url": Routing.generate('package_json'),
             "data": function (d) {
@@ -510,7 +511,7 @@ $(document).ready(function () {
                 docReadyPackages();
                 docReadyCash();
                 docReadyDocs();
-
+                docReadyAccommodations();
             });
         });
     }());

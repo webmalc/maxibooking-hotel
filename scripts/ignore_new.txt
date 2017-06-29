@@ -23,4 +23,7 @@ protectedUpload/*
 web/app_dev.php
 nbproject
 .idea
+docs/
+var/clients/
+app/config/clients/
 

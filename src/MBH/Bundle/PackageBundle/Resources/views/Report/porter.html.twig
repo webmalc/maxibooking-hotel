@@ -11,7 +11,7 @@
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'porter-report-filter-widget'} %}
         <form id="porter-report-filter" class="form-inline filter-form remember" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+                <i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.report.porter.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp
                 <input type="text" name="begin" id="porter-report-filter-begin"
                        class="datepicker porter-report-filter begin-datepicker not-set-date form-control input-sm"
                        data-date-format="dd.mm.yyyy"

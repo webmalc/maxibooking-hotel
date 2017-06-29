@@ -9,6 +9,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class TariffServicesType
@@ -16,22 +18,27 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class TariffServicesType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
         $builder
             ->add('services', DocumentType::class, [
-                'label' => 'Доступные услуги',
-                'group' => 'Общая информация',
+                'label' => 'mbhpricebundle.form.tariffpromotionstype.dostupnyyeaktsii',
+                'group' => 'mbhpricebundle.form.tariffservicetype.common_group_name',
                 'required' => false,
-                'attr' => ['data-placeholder' => 'Все услуги'],
+                'attr' => ['data-placeholder' => $this->translator->trans('mbhpricebundle.form.tariffservicestype.vseuslugi')],
                 'class' => 'MBH\Bundle\PriceBundle\Document\Service',
                 'choices' => $options['services_all'],
                 'multiple' => true
             ])
             ->add('defaultServices', CollectionType::class, [
-                'label' => 'Услуги по умолчанию',
-                'group' => 'Общая информация',
+                'label' => 'mbhpricebundle.form.tariffservicestype.uslugipoumolchaniyu',
+                'group' => 'mbhpricebundle.form.tariffservicetype.common_group_name',
                 'required' => false,
                 'entry_type' => TariffServiceType::class,
                 'entry_options' => ['services' => $options['services']],

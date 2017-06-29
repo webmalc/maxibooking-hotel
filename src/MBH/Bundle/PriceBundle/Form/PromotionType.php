@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
@@ -11,6 +12,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -20,6 +23,13 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class PromotionType extends AbstractType
 {
+    /** @var  DataCollectorTranslator */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -78,12 +88,12 @@ class PromotionType extends AbstractType
             ]);
         $conditions = PromotionConditionFactory::getAvailableConditions();
         $builder
-            ->add('condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('condition',  InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.condition',
                 'required' => false,
                 'group' => 'form.promotionType.group.conditions',
                 'choices' => array_combine($conditions, $conditions),
-                'choice_label' => function ($value, $label) {
+                'choice_label' => function ($value) {
                     return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
@@ -96,12 +106,12 @@ class PromotionType extends AbstractType
                     'class' => 'spinner',
                 ],
             ])
-            ->add('additional_condition',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('additional_condition',  InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.add_condition',
                 'required' => false,
                 'group' => 'form.promotionType.group.conditions',
                 'choices' => array_combine($conditions, $conditions),
-                'choice_label' => function ($value, $label) {
+                'choice_label' => function ($value) {
                     return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
@@ -129,8 +139,14 @@ class PromotionType extends AbstractType
                             !$promotion->getFreeAdultsQuantity() &&
                             !$promotion->getChildrenDiscount()
                         ) {
-                            $executionContext->buildViolation('Заполните поля "Скидка" или "Количество детей бесплатно" или "Количество взрослых бесплатно"')
-                                ->addViolation();
+                            $violationText = $this->translator->trans(
+                                'mbhpricebundle.promotion_type.fill_specified_fields', [
+                                    '%first_field%' => $this->translator->trans('mbhpricebundle.view.promotion.index.skidka'),
+                                    '%second_field%' => $this->translator->trans('form.promotionType.label.freeChildrenQuantity'),
+                                    '%third_field%' => $this->translator->trans('form.promotionType.label.freeAdultsQuantity')
+                                ],
+                                'validators');
+                            $executionContext->buildViolation($violationText)->addViolation();
                             return false;
                         }
                         return false;
