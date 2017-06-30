@@ -23,7 +23,7 @@
     </div>
 {% endif %}
 
-{% if entity %}
+{% if entity and base != 'tripadvisor' %}
 {%  set notifications = mbh_channelmanager_get_notifications(entity) %}
 {% if notifications|length %}
     <div class="alert alert-warning">

@@ -118,6 +118,7 @@ services:
               - '@mbh.package.search'
               - '@translator'
               - '@validator'
+              - '@mbh.channel_manager.trip_advisor_response_formatter'
 
     mbh.channel_manager.trip_advisor_response_formatter:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter

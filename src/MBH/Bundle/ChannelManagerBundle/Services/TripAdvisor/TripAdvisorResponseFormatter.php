@@ -26,7 +26,7 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class TripAdvisorResponseFormatter
 {
-    const API_VERSION = 7;
+    const API_VERSION = 8;
     const TRIP_ADVISOR_DATE_FORMAT = 'Y-m-d';
     const TRIP_ADVISOR_AVAILABLE_CARD_TYPES = ['Visa', 'MasterCard', 'AmericanExpress', 'Discover'];
     const ROOM_NOT_AVAILABLE_ERROR = 'RoomNotAvailable';
@@ -149,66 +149,59 @@ class TripAdvisorResponseFormatter
         return $response;
     }
 
-    public function formatHotelInventoryData($apiVersion, $language, $configs)
+    /**
+     * @param TripAdvisorConfig $config
+     * @return array
+     */
+    public function formatHotelInventoryData(TripAdvisorConfig $config)
     {
-        $hotelsData = [];
-        /** @var TripAdvisorConfig $config */
-        foreach ($configs as $config) {
-            $hotel = $config->getHotel();
-            $contactInformation = $hotel->getContactInformation();
-            /** @var Hotel $hotel */
-            $hotelData = [
-                'ta_id' => (int)$config->getHotelId(),
-                'partner_id' => $hotel->getId(),
-                'name' => $hotel->getInternationalTitle(),
-                'street' => $hotel->getInternationalStreetName(),
-                'city' => $this->getTranslatableTitle($hotel->getCity()),
-                'state' => $this->getTranslatableTitle($hotel->getRegion()),
-                'country' => $this->getTranslatableTitle($hotel->getCountry()),
-                'amenities' => $this->getAvailableHotelAmenities($hotel->getFacilities()),
-                'url' => $config->getHotelUrl(),
-                'room_types' => []
-            ];
-            if ($contactInformation->getPhoneNumber()) {
-                $hotelData['phone'] = $contactInformation->getPhoneNumber();
-            }
-            if ($contactInformation->getEmail()) {
-                $hotelData['email'] = $contactInformation->getEmail();
-            }
-            if ($hotel->getLatitude()) {
-                $hotelData['latitude'] = $hotel->getLatitude();
-            }
-            if ($hotel->getLongitude()) {
-                $hotelData['longitude'] = $hotel->getLongitude();
-            }
-            if ($hotel->getDescription()) {
-                $hotelData['desc'] = $hotel->getDescription();
-            }
-            if ($hotel->getZipCode()) {
-                $hotelData['postal_code'] = $hotel->getZipCode();
-            }
-
-            foreach ($hotel->getRoomTypes() as $roomType) {
-                $tripAdvisorRoomType = $config->getTARoomTypeByMBHRoomTypeId($roomType->getId());
-                if ($roomType->getDescription() && !is_null($tripAdvisorRoomType) && $tripAdvisorRoomType->getIsEnabled()) {
-                    $roomTypeData = [];
-                    if ($roomType->getDescription()) {
-                        $description = str_replace('</p>', '', str_replace('<p>', '',$roomType->getDescription()));
-                        $roomTypeData['desc'] = $description;
-                    }
-                    $hotelData['room_types'][$roomType->getName()] = $roomTypeData;
-                }
-            }
-            $hotelsData[] = $hotelData;
+        $hotel = $config->getHotel();
+        $contactInformation = $hotel->getContactInformation();
+        /** @var Hotel $hotel */
+        $hotelData = [
+            'ta_id' => (int)$config->getHotelId(),
+            'partner_id' => $hotel->getId(),
+            'name' => $hotel->getInternationalTitle(),
+            'street' => $hotel->getInternationalStreetName(),
+            'city' => $this->getTranslatableTitle($hotel->getCity()),
+            'state' => $this->getTranslatableTitle($hotel->getRegion()),
+            'country' => $this->getTranslatableTitle($hotel->getCountry()),
+            'amenities' => $this->getAvailableHotelAmenities($hotel->getFacilities()),
+            'url' => $config->getHotelUrl(),
+            'room_types' => []
+        ];
+        if ($contactInformation->getPhoneNumber()) {
+            $hotelData['phone'] = $contactInformation->getPhoneNumber();
+        }
+        if ($contactInformation->getEmail()) {
+            $hotelData['email'] = $contactInformation->getEmail();
+        }
+        if ($hotel->getLatitude()) {
+            $hotelData['latitude'] = $hotel->getLatitude();
+        }
+        if ($hotel->getLongitude()) {
+            $hotelData['longitude'] = $hotel->getLongitude();
+        }
+        if ($hotel->getDescription()) {
+            $hotelData['desc'] = $hotel->getDescription();
+        }
+        if ($hotel->getZipCode()) {
+            $hotelData['postal_code'] = $hotel->getZipCode();
         }
 
-        $response = [
-            'api_version' => (int)$apiVersion,
-            'lang' => $language,
-            'hotels' => $hotelsData
-        ];
+        foreach ($hotel->getRoomTypes() as $roomType) {
+            $tripAdvisorRoomType = $config->getTARoomTypeByMBHRoomTypeId($roomType->getId());
+            if ($roomType->getDescription() && !is_null($tripAdvisorRoomType) && $tripAdvisorRoomType->getIsEnabled()) {
+                $roomTypeData = [];
+                if ($roomType->getDescription()) {
+                    $description = str_replace('</p>', '', str_replace('<p>', '',$roomType->getDescription()));
+                    $roomTypeData['desc'] = $description;
+                }
+                $hotelData['room_types'][$roomType->getName()] = $roomTypeData;
+            }
+        }
 
-        return $response;
+        return $hotelData;
     }
 
     public function formatHotelAvailability(
@@ -323,6 +316,26 @@ class TripAdvisorResponseFormatter
         $response['hotels'] = $hotelsAvailabilityData;
 
         return $response;
+    }
+
+    public function formatAvailability(
+        $startDate,
+        $endDate,
+        $adultsChildrenCombinations,
+        $language,
+        $availabilityData,
+        $apiVersion,
+        $requestedHotels,
+
+
+
+        $queryKey,
+        $currency,
+        $userCountry,
+        $configs
+    )
+    {
+
     }
 
     public function formatBookingAvailability(
@@ -925,15 +938,6 @@ class TripAdvisorResponseFormatter
         }
 
         return $imagesData;
-    }
-
-    private function getContactInfo(ContactInfo $contactInfo)
-    {
-        return [
-            'full_name' => $contactInfo->getFullName(),
-            'email' => $contactInfo->getEmail(),
-            'phone_number' => $contactInfo->getPhoneNumber()
-        ];
     }
 
     private function getTranslatableTitle(TranslatableInterface $entity)

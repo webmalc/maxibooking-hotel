@@ -175,6 +175,8 @@ form.trip_advisor_type.hotel_id_in_trip_advisor: ID отеля в настрой
 form.trip_advisor_type.main_tariff.label: Тариф
 form.trip_advisor_type.main_tariff.help: Основной тариф
 form.trip_advisor_type.language.label: Язык
+form.trip_advisor_type.child_policy.label: Правила для детей
+form.trip_advisor_type.child_policy.placeholder: Приветствуется пребывание с детьми
 form.trip_advisor_type.hotel_url.label: URL отеля
 form.trip_advisor_type.hotel_url.help: URL - адрес страницы описания отеля
 form.trip_advisor_type.hotel_payment_policy.label: Правила платежей
@@ -186,6 +188,7 @@ form.trip_advisor_type.payment_type.label: Тип оплаты
 controller.tripadvisor_controller.settings_saved_success: 'Настройки успешно сохранены.'
 controller.tripadvisor_controller.config_not_found: Основные настройки не сохранены
 controller.trip_advisor_controller.unfilled_hotel_data.error: 'Для настройки синхронизации с TripAdvisor необходимо заполнить следующие поля в настройках отеля: %fields%'
+controller.trip_advisor_controller.unfilled_hotel_data.main_tariff.error: 'Для тарифа, указанного основным, незаполнены следующие поля: %fields%'
 controller.trip_advisor_controller.unfilled_room_type_data.error: 'Для настройки синхронизации типа комнат "%roomTypeName%" с TripAdvisor необходимо заполнить следующие данные в настройках: %fields%'
 controller.trip_advisor_controller.unfilled_tariff_data.error: 'Для настройки синхронизации тарифа "%tariffName%" с TripAdvisor необходимо заполнить следующие поля в настройках: %fields%'
 form.trip_advisor_tariff_type.refundable_type.none: Без возврата

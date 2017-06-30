@@ -159,7 +159,7 @@ class TripAdvisorConfig extends Base
      * @param mixed $hotel
      * @return TripAdvisorConfig
      */
-    public function setHotel($hotel)
+    public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
 
@@ -178,7 +178,7 @@ class TripAdvisorConfig extends Base
      * @param string $hotelId
      * @return TripAdvisorConfig
      */
-    public function setHotelId(string $hotelId): TripAdvisorConfig
+    public function setHotelId($hotelId): TripAdvisorConfig
     {
         $this->hotelId = $hotelId;
 

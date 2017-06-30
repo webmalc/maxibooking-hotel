@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\ChannelManagerBundle\Model\TripAdvisor\TripAdvxisorFee;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 

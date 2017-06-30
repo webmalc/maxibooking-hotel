@@ -75,3 +75,5 @@ parameters:
   yandex_api_key: trnsl.1.1.20170228T135607Z.7332db5172340acc.daffb01c86f20b9e8261905b6208f1e0dda914f3
   api_username: username
   api_password: password
+  trip_advisor_confirmation_url: 'http://example.com'
+  online_form_result_url: 'http://example.com'

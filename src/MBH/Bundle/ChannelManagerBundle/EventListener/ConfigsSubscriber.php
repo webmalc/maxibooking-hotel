@@ -3,6 +3,7 @@ namespace MBH\Bundle\ChannelManagerBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -37,10 +38,11 @@ class ConfigsSubscriber implements EventSubscriber
         $doc = $args->getObject();
 
         if ($doc instanceof ChannelManagerConfigInterface && !$doc->getIsEnabled()) {
-
             $this->container->get('mbh.channelmanager')->closeInBackground();
         }
-
+        if ($doc instanceof TripAdvisorConfig) {
+            $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($doc);
+        }
     }
 
     /**

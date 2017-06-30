@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
+use GuzzleHttp\Client;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -19,16 +21,21 @@ class TripAdvisorHelper
     private $search;
     private $translator;
     private $validator;
+    /** @var  TripAdvisorResponseFormatter $responseFormatter */
+    private $responseFormatter;
+
     const TRIP_ADVISOR_CONFIRMATION_URL = 'http://example.com';
 
     public function __construct(
         SearchFactory $search,
         TranslatorInterface $translator,
-        DataCollectingValidator $validator
+        DataCollectingValidator $validator,
+        TripAdvisorResponseFormatter $responseFormatter
     ) {
         $this->search = $search;
         $this->translator = $translator;
         $this->validator = $validator;
+        $this->responseFormatter = $responseFormatter;
     }
 
     /**
@@ -37,22 +44,14 @@ class TripAdvisorHelper
      * @param $confirmationUrl
      * @return array
      */
-    public static function getHotelUnfilledRequiredFields(Hotel $hotel, $confirmationUrl)
+    public function getHotelUnfilledRequiredFields(Hotel $hotel, $confirmationUrl)
     {
         $requiredHotelData = [];
-        $hotelContactInformation = $hotel->getContactInformation();
 
         !empty($hotel->getInternationalStreetName()) ?: $requiredHotelData[] = 'form.hotelExtendedType.international_street_name.help';
         !empty($hotel->getRegion()) ?: $requiredHotelData[] = 'form.hotelExtendedType.region';
         !empty($hotel->getCountry()) ?: $requiredHotelData[] = 'form.hotelExtendedType.country';
         !empty($hotel->getCity()) ?: $requiredHotelData[] = 'form.hotelExtendedType.city';
-        if (empty($hotelContactInformation)) {
-            $requiredHotelData[] = 'form.hotel_contact_information.contact_info.group';
-        } else {
-            !empty($hotelContactInformation->getEmail()) ?: $requiredHotelData[] = 'form.contact_info_type.email.help';
-            !empty($hotelContactInformation->getFullName()) ?: $requiredHotelData[] = 'form.contact_info_type.full_name.help';
-            !empty($hotelContactInformation->getPhoneNumber()) ?: $requiredHotelData[] = 'form.contact_info_type.phone.help';
-        }
         !empty($hotel->getSmokingPolicy()) ?: $requiredHotelData[] = 'form.hotelType.isSmoking.help';
         !empty($hotel->getCheckinoutPolicy()) ?: $requiredHotelData[] = 'form.hotelExtendedType.check_in_out_policy.label';
         $confirmationUrl == self::TRIP_ADVISOR_CONFIRMATION_URL ?: $requiredHotelData[] = 'channel_manager_helper.confirmation_url';
@@ -65,7 +64,7 @@ class TripAdvisorHelper
      * @param RoomType $roomType
      * @return array
      */
-    public static function getRoomTypeRequiredUnfilledFields(RoomType $roomType)
+    public function getRoomTypeRequiredUnfilledFields(RoomType $roomType)
     {
         $requiredRoomTypeData = [];
         !empty($roomType->getInternationalTitle()) ?: $requiredRoomTypeData[] = 'form.roomTypeType.international_title';
@@ -82,15 +81,15 @@ class TripAdvisorHelper
      * @param Tariff $tariff
      * @return array
      */
-    public static function getTariffRequiredUnfilledFields(Tariff $tariff)
+    public function getTariffRequiredUnfilledFields(Tariff $tariff)
     {
         $requiredTariffData = [];
         !empty($tariff->getDescription()) ?: $requiredTariffData[] = 'mbhpricebundle.form.tarifftype.opisaniye';
         $mealTypeCodes = [];
         /** @var TariffService $defaultService */
         foreach ($tariff->getDefaultServices() as $defaultService) {
-            //TODO: Что делать с локализацией?
-            if ($defaultService->getService()->getCategory()->getName() == 'Питание') {
+            $mealCategoryName = $this->translator->trans('price.datafixtures.mongodb.servicedata.eat');
+            if ($defaultService->getService()->getCategory()->getName() == $mealCategoryName) {
                 $mealTypeCodes[] = $defaultService->getService()->getCode();
             }
         }
@@ -187,5 +186,26 @@ class TripAdvisorHelper
             'problem' => $problemType,
             'explanation' => $this->translator->trans($descriptionId, [], null, $locale)
         ];
+    }
+
+    /**
+     * @param TripAdvisorConfig $config
+     */
+    public function sendUpdateDataToMBHs(TripAdvisorConfig $config)
+    {
+        $configData = $this->responseFormatter->formatHotelInventoryData($config);
+        $jsonData = json_encode($configData);
+        $client = new Client();
+        //TODO: Сменить на URL mbhs
+        $url = 'localhost:8080/app_dev.php/client/tripadvisor/update_config/'
+            . $config->getHotel()->getId()
+            . '/'
+            . $config->getIsEnabled() ? 'true' : 'false';
+
+        $result = $client->post($url, [
+            'json' => [
+                "configData" => $jsonData,
+            ]
+        ]);
     }
 }

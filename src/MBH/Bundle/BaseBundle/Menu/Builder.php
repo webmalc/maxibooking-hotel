@@ -359,7 +359,7 @@ class Builder implements ContainerAwareInterface
 
         }
         $menu['services']->addChild('hundredOneHotel', ['route' => 'tripadvisor', 'label' => 'TripAdvisor.com'])
-            ->setAttributes(['icon' => 'fa fa-cloud-download']);
+            ->setAttributes(['icon' => 'fa fa-tripadvisor']);
         $menu['services']->addChild('tripadvisor', ['route' => 'hundred_one_hotels', 'label' => 'menu.communication.label.hundred_one_hotels'])
             ->setAttributes(['icon' => 'fa fa-cloud-download']);
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'basebundle.menu.onlineform'])

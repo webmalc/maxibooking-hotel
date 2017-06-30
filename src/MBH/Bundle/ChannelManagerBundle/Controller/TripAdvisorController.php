@@ -56,22 +56,30 @@ class TripAdvisorController extends BaseController
 
         $form->handleRequest($request);
         $confirmationUrl = $this->getParameter('trip_advisor_confirmation_url');
-        $unfilledData = $this->get('mbh.channelmanager.helper')->getHotelUnfilledRequiredFields($this->hotel,
-            $confirmationUrl);
+        $unfilledData = $this->get('mbh.channel_manager.tripadvisor')
+            ->getHotelUnfilledRequiredFields($this->hotel, $confirmationUrl);
+
         $unfilledStringData = '';
         if (count($unfilledData) > 0) {
-            $translator = $this->get('translator');
-            $unfilledFieldsString = '';
-            foreach ($unfilledData as $unfilledDatum) {
-                $unfilledFieldsString .= '<br>"' . $translator->trans($unfilledDatum) . '", ';
-            }
-            $unfilledFieldsString = rtrim($unfilledFieldsString, ', ');
-            $unfilledStringData = $translator->trans('controller.trip_advisor_controller.unfilled_hotel_data.error',
-                ['%fields%' => $unfilledFieldsString]);
-        } elseif ($form->isSubmitted() && $form->isValid()) {
+            $unfilledStringData = $this->getUnfilledString($unfilledData,
+                'controller.trip_advisor_controller.unfilled_hotel_data.error');
+        }
+
+        $mainTariffUnfilledFields = [];
+        if (!is_null($config->getMainTariff())) {
+            $mainTariffUnfilledFields = $this->get('mbh.channel_manager.tripadvisor')
+                ->getTariffRequiredUnfilledFields($config->getMainTariff());
+        }
+        if (count($mainTariffUnfilledFields) > 0) {
+            empty($unfilledStringData) ?: $unfilledStringData .= '<br>';
+            $unfilledStringData .= $this->getUnfilledString($mainTariffUnfilledFields,
+                'controller.trip_advisor_controller.unfilled_hotel_data.main_tariff.error');
+        }
+
+        if (empty($unfilledStringData) && $form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($config);
-            $this->dm->flush();
             $this->addFlash('success', 'controller.tripadvisor_controller.settings_saved_success');
+            $this->dm->flush();
         }
 
         return [
@@ -115,7 +123,7 @@ class TripAdvisorController extends BaseController
         $translator = $this->get('translator');
         foreach ($tariffs as $tariff) {
             $unfilledFieldsString = '';
-            $requiredUnfilledFields = $this->get('mbh.channelmanager.helper')->getTariffRequiredUnfilledFields($tariff);
+            $requiredUnfilledFields = $this->get('mbh.channel_manager.tripadvisor')->getTariffRequiredUnfilledFields($tariff);
             if (count($requiredUnfilledFields) > 0) {
                 foreach ($requiredUnfilledFields as $unfilledDatum) {
                     $unfilledFieldsString .= '<br>"' . $translator->trans($unfilledDatum) . '", ';
@@ -175,7 +183,7 @@ class TripAdvisorController extends BaseController
         foreach ($roomTypes as $roomType) {
             $translator = $this->get('translator');
             $unfilledFieldsString = '';
-            $requiredUnfilledFields = $this->get('mbh.channelmanager.helper')->getRoomTypeRequiredUnfilledFields($roomType);
+            $requiredUnfilledFields = $this->get('mbh.channel_manager.tripadvisor')->getRoomTypeRequiredUnfilledFields($roomType);
             if (count($requiredUnfilledFields) > 0) {
                 foreach ($requiredUnfilledFields as $unfilledDatum) {
                     $unfilledFieldsString .= '<br>"' . $translator->trans($unfilledDatum) . '", ';
@@ -203,44 +211,6 @@ class TripAdvisorController extends BaseController
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
-    }
-
-    /**
-     * @Route("/api/config")
-     * @Method("GET")
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function getConfigDataAction(Request $request)
-    {
-        if (!$this->checkBaseAuthorization($request)) {
-            return new JsonResponse(['error' => 'not_authorized'], 403);
-        }
-
-        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->getHotelWithFilledContacts();
-        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')->formatConfigResponse($hotel);
-
-        return new JsonResponse($response);
-    }
-
-    /**
-     * @Method("GET")
-     * @Route("/api/hotel_inventory")
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function getHotelInventoryDataAction(Request $request)
-    {
-        $apiVersion = $request->get('api_version');
-        $language = $request->get('lang');
-
-        $responseDataFormatter = $this->get('mbh.channel_manager.trip_advisor_response_data_formatter');
-        $configuredHotels = $responseDataFormatter->getTripAdvisorConfigs();
-
-        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
-            ->formatHotelInventoryData($apiVersion, $language, $configuredHotels);
-
-        return new JsonResponse($response);
     }
 
     /**
@@ -313,6 +283,31 @@ class TripAdvisorController extends BaseController
         $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
             ->formatBookingAvailability($availabilityData, $hotel, $apiVersion, $requestedHotel, $startDate, $endDate,
                 $requestedAdultsChildrenCombination, $language, $queryKey, $userCountry, $deviceType, $currency);
+
+        return new JsonResponse($response);
+    }
+
+    public function availabilityAction(Request $request)
+    {
+        if (!$this->checkBaseAuthorization($request)) {
+            return new JsonResponse(['error' => 'not_authorized'], 403);
+        }
+
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        $requestedAdultsChildrenCombination = json_decode($request->get('party'), true);
+        $language = $request->get('lang');
+        $queryKey = $request->get('query_key');
+        $currency = $request->get('currency');
+        $userCountry = $request->get('user_country');
+        $requestedPayload = json_decode($request->get('requested_payload'), true);
+        $hotelsData = json_decode($request->get('hotels'), true);
+
+        $configs = $this->get('mbh.channelmanager.expedia_request_data_formatter')->getTripAdvisorConfigs($hotelsData);
+
+        $response = $this->get('mbh.channel_manager.trip_advisor_response_formatter')
+            ->formatAvailability($startDate, $endDate, $requestedAdultsChildrenCombination, $language, $queryKey,
+                $currency, $userCountry, $requestedPayload, $configs);
 
         return new JsonResponse($response);
     }
@@ -492,5 +487,24 @@ class TripAdvisorController extends BaseController
 
         return $request->headers->get('authorization') == 'Basic '
             . base64_encode("$baseUsername:$basePassword");
+    }
+
+    /**
+     * @param $unfilledFields
+     * @param $transId
+     * @return string
+     */
+    private function getUnfilledString($unfilledFields, $transId)
+    {
+        $translator = $this->get('translator');
+        $unfilledFieldsString = '';
+        foreach ($unfilledFields as $unfilledField) {
+            $unfilledFieldsString .= '<br>"' . $translator->trans($unfilledField) . '", ';
+        }
+
+        $unfilledFieldsString = rtrim($unfilledFieldsString, ', ');
+        $unfilledStringData = $translator->trans($transId, ['%fields%' => $unfilledFieldsString]);
+
+        return $unfilledStringData;
     }
 }
