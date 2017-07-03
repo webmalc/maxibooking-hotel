@@ -12,13 +12,28 @@ use MBH\Bundle\BaseBundle\Service\Cache;
 class TariffRepository extends DocumentRepository
 {
 
+    /**
+     * Get base tariffs ids
+     * @return array
+     */
+    public function getBaseTariffsIds(): array
+    {
+        return array_map(function ($entry) {
+            return (string) $entry['_id'];
+        }, $this->createQueryBuilder()
+            ->select('id')
+            ->field('isDefault')->equals(true)
+            ->hydrate(false)
+            ->getQuery()->toArray());
+    }
+
     public function getMergingTariffs()
     {
         $result = $this->createQueryBuilder()
-            ->field('defaultForMerging')->equals(true)
-            ->field('isDefault')->equals(false)
-            ->getQuery()
-            ->execute()
+        ->field('defaultForMerging')->equals(true)
+        ->field('isDefault')->equals(false)
+        ->getQuery()
+        ->execute()
         ;
 
         return $result;
@@ -31,18 +46,18 @@ class TariffRepository extends DocumentRepository
     public function getWithPackages()
     {
         $ids = $this->getDocumentManager()
-            ->getRepository('MBHPackageBundle:Package')
-            ->createQueryBuilder()
-            ->distinct('tariff.$id')
-            ->getQuery()
-            ->execute()
+        ->getRepository('MBHPackageBundle:Package')
+        ->createQueryBuilder()
+        ->distinct('tariff.$id')
+        ->getQuery()
+        ->execute()
         ;
 
         return $this->createQueryBuilder()
-            ->field('id')->in(iterator_to_array($ids))
-            ->getQuery()
-            ->execute()
-            ;
+        ->field('id')->in(iterator_to_array($ids))
+        ->getQuery()
+        ->execute()
+        ;
     }
 
     /**
@@ -55,14 +70,14 @@ class TariffRepository extends DocumentRepository
     public function fetchChildTariffsQuery(Hotel $hotel, $type, $tariffs = [])
     {
         $types = [
-            'rooms' =>'inheritRooms', 'restrictions' => 'inheritRestrictions', 'prices' => 'inheritPrices'
+        'rooms' =>'inheritRooms', 'restrictions' => 'inheritRestrictions', 'prices' => 'inheritPrices'
         ];
 
         $qb = $this->createQueryBuilder();
         $qb->field('hotel.id')->equals($hotel->getId())
-            ->addOr($qb->expr()->field('parent')->equals(null))
-            ->addOr($qb->expr()->field('parent')->exists(false))
-            ->addOr($qb->expr()->field('childOptions.' . $types[$type])->equals(false))
+        ->addOr($qb->expr()->field('parent')->equals(null))
+        ->addOr($qb->expr()->field('parent')->exists(false))
+        ->addOr($qb->expr()->field('childOptions.' . $types[$type])->equals(false))
         ;
 
         // tariffs
@@ -102,8 +117,8 @@ class TariffRepository extends DocumentRepository
         $queryBuilder = $this->createQueryBuilder('q');
 
         $queryBuilder
-            ->field('id')->equals($tariffId)
-            ->limit(1);
+        ->field('id')->equals($tariffId)
+        ->limit(1);
 
         $result = $queryBuilder->getQuery()->getSingleResult();
 
@@ -132,8 +147,8 @@ class TariffRepository extends DocumentRepository
         $queryBuilder = $this->createQueryBuilder('q');
 
         $queryBuilder->field('isDefault')->equals(true)
-            ->field('hotel.id')->equals($hotel->getId())
-            ->limit(1);
+        ->field('hotel.id')->equals($hotel->getId())
+        ->limit(1);
 
         if ($online !== null) {
             $queryBuilder->field('isOnline')->equals(boolval($online));
@@ -199,7 +214,7 @@ class TariffRepository extends DocumentRepository
             }
         }
         $result = $this->fetchQueryBuilder($hotel, $tariffs, $enabled, $online)
-            ->getQuery()->execute();
+        ->getQuery()->execute();
 
         if ($memcached) {
             $memcached->set(iterator_to_array($result), 'tariffs_fetch_method', func_get_args());
@@ -249,9 +264,9 @@ class TariffRepository extends DocumentRepository
             $qb->field('hotel.id')->equals($filter->getHotel()->getId());
         }
 
-        $qb->sort(['position' => 'desc', 'fullTitle' => 'asc']);
+            $qb->sort(['position' => 'desc', 'fullTitle' => 'asc']);
 
-        return $qb;
+            return $qb;
     }
 
     /**

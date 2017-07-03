@@ -573,3 +573,11 @@ mbhbasebundle.view.pdftemplates.individual.vid.platezha: Вид платежа
 hide: скрыть
 show.more: Показать еще
 errors: Ошибки
+
+# dashboard
+dashboard.modal.header: 'Предупреждения'
+dashboard.confirm.tooltip: 'Отметить прочитанным'
+dashboard.messages.hotel.errors: 'обнаружены следующие ошибки'
+dashboard.messages.roomType.roomCache: 'не выставлены "Номера в продаже" на следующие периоды'
+dashboard.messages.roomType.priceCache: 'не выставлены "Цены" основного тарифа на следующие периоды'
+dashboard.link: 'посмотреть'
