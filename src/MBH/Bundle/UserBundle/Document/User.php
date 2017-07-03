@@ -180,7 +180,7 @@ class User extends BaseUser implements RecipientInterface
      * @var string
      * @ODM\Field(type="string")
      */
-    protected $locale = 'en';
+    protected $locale = 'ru';
 
     /**
      * Hook timestampable behavior
