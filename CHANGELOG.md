@@ -1,5 +1,6 @@
-dev
+1.5.11
 ============
+* add dashboards
 * doctrine mongodb vendor update
 * add acl cache
 * add fork acl provider https://github.com/webmalc/MongoDBAclBundle.git
