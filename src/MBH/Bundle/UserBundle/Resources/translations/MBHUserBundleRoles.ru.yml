@@ -8,7 +8,7 @@ ROLE_SENIOR_MANAGER: Старший менеджер
 ROLE_USER: Пользователь
 ROLE_READ_ONLY: Гость
 ROLE_BASE_USER: Базовый пользователь
-
+ROLE_DASHBOARD: Системные сообщения
 
 ROLE_STAFF: Обслуживающий персонал
 ROLE_CLEANING: Уборка

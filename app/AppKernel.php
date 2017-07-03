@@ -60,6 +60,7 @@ class AppKernel extends Kernel
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
+            $bundles[] = new Fidry\PsyshBundle\PsyshBundle();
         }
 
         return $bundles;

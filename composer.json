@@ -58,7 +58,8 @@
     "phobetor/rabbitmq-supervisor-bundle": "^1.5",
     "lexik/translation-bundle": "^4.0",
     "willdurand/js-translation-bundle": "^2.6",
-    "vich/uploader-bundle": "^1.4"
+    "vich/uploader-bundle": "^1.4",
+    "theofidry/psysh-bundle": "3.0.0"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
