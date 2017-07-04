@@ -1,0 +1,17 @@
+@font-face {
+  font-family: 'MaxiBooking';
+  font-weight: 700;
+  font-style: normal;
+  src: local('MaxiBooking'), url(/bundles/mbhbase/css/fonts/maxibooking-webfont.woff) format('woff');
+}
+/* Custom Icons */
+[class^="mb-icon-"],
+[class*=" mb-icon-"] {
+  font-family: MaxiBooking;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: inherit;
+}
+.mb-icon-logo:before {
+  content: "\004D";
+}
