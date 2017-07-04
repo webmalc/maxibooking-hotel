@@ -16,6 +16,8 @@
 {% set titleSubFontSize = currentSizes['titleSubFontSize'] %}
 {% set leftRoomsAndNoAccFontSize = currentSizes['leftRoomsAndNoAccFontSize'] %}
 {% set stylesFile = 'bundles/mbhpackage/css/chessboard/chessboard_' ~ stylesFileNumber ~ '.css' %}
+{% set subtrahend = 10 %}
+{% set minuend = tableCellHeight - subtrahend %}
 
 {% block scripts %}
     {{ parent() }}
@@ -48,6 +50,7 @@
         var canCreatePackage = {{ canCreatePackage }};
         var canBookWithoutPayer = {{ client_config().canBookWithoutPayer ? 'true' : 'false' }};
         var colors = JSON.parse('{{ colors|json_encode|raw }}');
+        var subtrahend = {{ subtrahend }};
     </script>
     {% endjavascripts %}
 {% endblock %}
@@ -61,17 +64,97 @@
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
     <style>
-        .success {
+        .package {
+            height: {{ minuend }}px
+        }
+        .success,.with-right-divider.success:before {
             background-color: {{ colors['success'] }} !important;
         }
-        .warning {
+        .warning,.with-right-divider.warning:before {
             background-color: {{ colors['warning'] }} !important;
         }
-        .danger {
+        .danger,.with-right-divider.danger:before {
             background-color: {{ colors['danger'] }} !important;
+        }
+        .package-with-right-arrow:before {
+            right: {{ minuend / 2 }}px !important;
+        }
+        .danger.package-with-right-arrow:before {
+            border-left: {{ minuend / 2 }}px solid {{ colors['danger_add'] }} !important;
+        }
+        .success.package-with-right-arrow:before, .package.package-with-right-arrow:before {
+            border-left: {{ minuend / 2 }}px solid {{ colors['warning_add'] }} !important;
+        }
+        .warning.package-with-right-arrow:before {
+            border-left: {{ minuend / 2 }}px solid {{ colors['warning_add'] }} !important;
         }
         #accommodation-chessBoard-content .achtung {
             background-color: {{ colors['unplaced'] }} !important;
+        }
+        .ui-resizable-e, .ui-resizable-w {
+            border-bottom: {{ (minuend / 2) - 1}}px solid transparent !important;
+            border-top: {{ (minuend / 2) - 1}}px solid transparent !important;
+        }
+        .danger>.ui-resizable-e, .danger>.ui-resizable-w  {
+            border-left: {{ minuend / 2 }}px solid {{ colors['danger_add'] }} !important;
+        }
+        .warning>.ui-resizable-e, .warning>.ui-resizable-w  {
+            border-left: {{ minuend / 2 }}px solid {{ colors['warning_add'] }} !important;
+        }
+        .success>.ui-resizable-e, .success>.ui-resizable-w  {
+            border-left: {{ minuend / 2 }}px solid {{ colors['success_add'] }} !important;
+        }
+        .danger>.right-inner-resizable-triangle {
+            border-left: {{ (minuend / 4)|round }}px solid {{ colors['danger'] }} !important;
+        }
+        .success>.right-inner-resizable-triangle {
+            border-left: {{ (minuend / 4)|round }}px solid {{ colors['success'] }} !important;
+        }
+        .warning>.right-inner-resizable-triangle {
+            border-left: {{ (minuend / 4)|round }}px solid {{ colors['warning'] }} !important;
+        }
+        .danger.near-left-puzzle>.ui-resizable-e, .package.near-left-puzzle>.ui-resizable-e, .danger>.resizable-appendix {
+            background-color: {{ colors['danger_add'] }} !important;
+        }
+        .success.near-left-puzzle>.ui-resizable-e, .success>.resizable-appendix {
+            background-color: {{ colors['success_add'] }} !important;
+        }
+
+        .warning.near-left-puzzle>.ui-resizable-e, .warning>.resizable-appendix {
+            background-color: {{ colors['warning_add'] }} !important;
+        }
+        .package-with-left-arrow:after, .package-with-right-arrow:before {
+            border-bottom: {{ (minuend / 2) - 2 }}px solid transparent !important;
+            border-top: {{ minuend / 2 }}px solid transparent !important;
+        }
+        .with-left-divider:after, .with-right-divider:before {
+            top: {{ (minuend - tileFontSize)/2 }}px !important;
+        }
+        .package-with-right-arrow:before {
+            right: {{ (minuend / 2) * (-1) }}px !important;
+        }
+        .resizable-appendix {
+            height: {{ minuend- 2 }}px !important;
+        }
+        .near-left-puzzle>.ui-resizable-e {
+            height: {{ minuend - 2 }}px !important ;
+        }
+        .package:not(.near-left-puzzle)>.ui-resizable-e {
+            right: {{ minuend / 2 * (-1) }}px !important;
+        }
+        .right-inner-resizable-triangle {
+            border-bottom: {{ (minuend / 2) - 1 }}px solid transparent !important;
+            border-top: {{ minuend / 2 }}px solid transparent !important;
+            border-left: {{ (minuend / 4)|round }}px solid white !important;
+            right: {{ (minuend / 4)|round * (-1) }}px !important;
+        }
+        .left-inner-resizable-triangle {
+            border-bottom: {{ minuend / 2 }}px solid transparent !important;
+            border-top: {{ minuend / 2 }}px solid transparent !important;
+            border-left: {{ minuend / 2 }}px solid white !important;
+        }
+        .package-description {
+            margin: {{ (minuend - titleSubFontSize - (2 * 3)) / 2 }}px auto !important;
         }
     </style>
 {% endblock %}
@@ -169,7 +252,7 @@
             </div>
         </div>
         <div id="months-and-dates"
-             style="background-color: #ecf0f5; position: absolute;  z-index: 101; left: {{ headerWidth }}px; width:{{ dayTableWidth }}px; height: {{ headerHeight }}px;">
+             style="background-color: #ecf0f5; position: absolute;  z-index: 200; left: {{ headerWidth }}px; width:{{ dayTableWidth }}px; height: {{ headerHeight }}px;">
             <div class="calendarRow clearfix">
                 <ul class="list-unstyled calendarDays">
                     {% for monthDays in calendarData %}

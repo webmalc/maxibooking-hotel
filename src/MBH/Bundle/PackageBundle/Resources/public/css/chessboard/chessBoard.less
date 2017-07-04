@@ -56,28 +56,45 @@ body {
 .package {
   z-index: 100;
   border-bottom: 1px solid white;
-  transform: skew(-40deg);
   cursor: pointer;
-  .divide-package-button, .remove-package-button {
+  .package-action-buttons {
     position: absolute;
-  }
-  .divide-package-button {
-    left: -7px;
-    top: 10px;
-  }
-  .remove-package-button {
-    right: 14px;
+    right: 3px;
     top: -3px;
   }
 }
+.package-with-left-arrow:after, .package-with-right-arrow:before {
+  content: ' ';
+  position: absolute;
+  border-bottom: ((@height / 2) - 2) solid transparent;
+  border-top: (@height / 2) solid transparent;
+  width: 0;
+  height: 0;
+}
+.package-with-right-arrow:before {
+  right: (@height / 2) * (-1);
+}
 
-.package-action-buttons, .package-description {
-  transform: skew(40deg);
+.danger.package-with-right-arrow:before {
+  border-left: (@height / 2) solid rgba(221, 75, 57, 0.6);
+}
+
+.success.package-with-right-arrow:before, .package.package-with-right-arrow:before {
+  border-left: (@height / 2) solid rgba(0, 166, 90, 0.6);
+}
+
+.warning.package-with-right-arrow:before {
+  border-left: (@height / 2) solid rgba(243, 156, 18, 0.6);
+}
+
+.package-with-left-arrow:after {
+  top: 0;
+  left: 0 !important;
+  border-left: (@height / 2) solid white;
 }
 
 .with-left-divider:after, .with-right-divider:before {
   content: ' ';
-  transform: skew(40deg);
   height: @tileFontSize;
   top: (@height - @tileFontSize)/2;
   position: absolute;
@@ -157,6 +174,45 @@ body {
       padding-bottom: 10px;
       font-size: 1.3em;
     }
+  }
+}
+
+.danger, .package {
+  background-color: rgba(221, 75, 57, 0.6);
+  .resizable-appendix {
+    background-color: rgba(221, 75, 57, 0.6);
+  }
+  .ui-resizable-e {
+    border-left: ((@height / 2) - 1) solid rgba(221, 75, 57, 0.6);
+  }
+  .ui-resizable-w {
+    border-left: ((@height / 2) - 1) solid rgba(221, 75, 57, 0.9);
+  }
+}
+
+.success {
+  background-color: rgba(0, 166, 90, 0.6);
+  .resizable-appendix {
+    background-color: rgba(0, 166, 90, 0.6);
+  }
+  .ui-resizable-e {
+    border-left: ((@height / 2) - 1) solid rgba(0, 166, 90, 0.6);
+  }
+  .ui-resizable-w {
+    border-left: ((@height / 2) - 1) solid rgba(0, 166, 90, 0.6);
+  }
+}
+
+.warning {
+  background-color: rgba(243, 156, 18, 0.6);
+  .resizable-appendix {
+    background-color: rgba(243, 156, 18, 0.6);
+  }
+  .ui-resizable-e {
+    border-left: ((@height / 2) - 1) solid rgba(243, 156, 18, 0.6);
+  }
+  .ui-resizable-w {
+    border-left: ((@height / 2) - 1) solid rgba(243, 156, 18, 0.6);
   }
 }
 
@@ -663,24 +719,82 @@ body {
 }
 
 .ui-resizable-e, .ui-resizable-w {
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 150;
-  width: 7px;
-  height: @height - 2;
   position: absolute;
-  cursor: pointer;
+  border-bottom: ((@height / 2) - 1) solid transparent;
+  border-top: ((@height / 2) - 1) solid transparent;
+  width: 0;
+  top: 0;
+  height: 0;
+}
+.ui-resizable-w {
+  cursor: w-resize;
+  z-index: 100;
+  left: 6px;
+}
+.resizable-appendix {
+  width: 4px;
+  height: @height - 2;
+  background-color: red;
+  position: absolute;
+  left: 2px;
   top: 0;
 }
-
-.ui-resizable-w {
-  border-left: 1px solid wheat;
-  cursor: w-resize;
+.near-left-puzzle {
+  .ui-resizable-e {
+    position: absolute;
+    border: 0 !important;
+    width: 5px;
+    top: 0;
+    height: @height - 2;
+    right: 0;
+  }
+  .danger.ui-resizable-e {
+    background-color: red;
+  }
+}
+.danger.near-left-puzzle, .package.near-left-puzzle {
+  .ui-resizable-e {
+    background-color: rgba(221, 75, 57, 0.6);
+  }
 }
 
+.success.near-left-puzzle {
+  .ui-resizable-e {
+    background-color: rgba(0, 166, 90, 0.6);
+  }
+}
+
+.warning.near-left-puzzle {
+  .ui-resizable-e {
+    background-color: rgba(243, 156, 18, 0.6);
+  }
+}
 .ui-resizable-e {
-  right: 0;
-  border-right: 1px solid wheat;
+  right: (@height / 2) * (-1);
   cursor: e-resize;
+}
+
+.right-inner-resizable-triangle {
+  position: absolute;
+  z-index:200;
+  border-bottom: ((@height / 2) - 1) solid transparent;
+  border-top: (@height / 2) solid transparent;
+  border-left: ceil((@height / 4)) solid white;
+  width: 0;
+  top: 0;
+  right: ceil((@height / 4)) * (-1);
+  height: 0;
+}
+.left-inner-resizable-triangle {
+  position: absolute;
+  z-index: 150;
+  border-bottom: (@height / 2) solid transparent;
+  border-top: (@height / 2) solid transparent;
+  border-left: (@height / 2) solid white;
+  width: 0;
+  top: 0;
+  left: 0;
+  height: 0;
 }
 
 .remove-package-button, .divide-package-button {
@@ -736,7 +850,7 @@ body {
 .dividing-line {
   position: absolute;
   border: 2px dashed red;
-  height: @height;
+  height: @height - 2;
   z-index: 250;
   top: 0
 }

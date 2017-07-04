@@ -3,6 +3,15 @@
 {% set small_title = 'client.views.clientConfig.color_settings.small_title'|trans({}, 'MBHClientBundle') %}
 {% set layout='tabs' %}
 
+{% block styles %}
+    {{ parent() }}
+    {% stylesheets filter='cssrewrite, uglifycss'
+        '@MBHClientBundle/Resources/public/css/color_settings.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
 {% block content %}
 
     {% include 'MBHClientBundle:ClientConfig:tabs.html.twig' with {'active': 3 , 'entity': entity} %}

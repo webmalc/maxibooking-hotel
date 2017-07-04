@@ -3,13 +3,26 @@
  */
 /*global window, $, document, deleteLink, mbh */
 $(document).ready(function () {
-    var CPSize = 300;
-    var colorPickerTemplate = '<div class="colorpicker dropdown-menu">'+
-    '<div class="colorpicker-saturation" style="width:'+CPSize+'px;height:'+CPSize+'px"><i><b></b></i></div>'+
-    '<div class="colorpicker-hue" style="height:'+CPSize+'px"><i></i></div>'+
-    '<div class="colorpicker-alpha" style="height:'+CPSize+'px"><i></i></div>'+
-    '<div class="colorpicker-color"><div /></div>'+
-    '</div>';
-    $('.color-picker').colorpicker({template: colorPickerTemplate});
+    var sliders = {
+        saturation: {
+            maxLeft: 300,
+            maxTop: 300,
+            callLeft: 'setSaturation',
+            callTop: 'setBrightness'
+        },
+        hue: {
+            maxLeft: 0,
+            maxTop: 300,
+            callLeft: false,
+            callTop: 'setHue'
+        },
+        alpha: {
+            maxLeft: 0,
+            maxTop: 300,
+            callLeft: false,
+            callTop: 'setAlpha'
+        }
+    };
+    $('.color-picker').colorpicker({'sliders': sliders});
     deleteLink();
 });

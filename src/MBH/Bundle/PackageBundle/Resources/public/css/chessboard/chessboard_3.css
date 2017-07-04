@@ -36,29 +36,43 @@ body {
 .package {
   z-index: 100;
   border-bottom: 1px solid white;
-  transform: skew(-40deg);
   cursor: pointer;
 }
-.package .divide-package-button,
-.package .remove-package-button {
+.package .package-action-buttons {
   position: absolute;
-}
-.package .divide-package-button {
-  left: -7px;
-  top: 10px;
-}
-.package .remove-package-button {
-  right: 14px;
+  right: 3px;
   top: -3px;
 }
-.package-action-buttons,
-.package-description {
-  transform: skew(40deg);
+.package-with-left-arrow:after,
+.package-with-right-arrow:before {
+  content: ' ';
+  position: absolute;
+  border-bottom: 21.5px solid transparent;
+  border-top: 23.5px solid transparent;
+  width: 0;
+  height: 0;
+}
+.package-with-right-arrow:before {
+  right: -23.5px;
+}
+.danger.package-with-right-arrow:before {
+  border-left: 23.5px solid rgba(221, 75, 57, 0.6);
+}
+.success.package-with-right-arrow:before,
+.package.package-with-right-arrow:before {
+  border-left: 23.5px solid rgba(0, 166, 90, 0.6);
+}
+.warning.package-with-right-arrow:before {
+  border-left: 23.5px solid rgba(243, 156, 18, 0.6);
+}
+.package-with-left-arrow:after {
+  top: 0;
+  left: 0 !important;
+  border-left: 23.5px solid white;
 }
 .with-left-divider:after,
 .with-right-divider:before {
   content: ' ';
-  transform: skew(40deg);
   height: 14px;
   top: 16.5px;
   position: absolute;
@@ -121,6 +135,46 @@ body {
 #packageModal .modal-body .row {
   padding-bottom: 10px;
   font-size: 1.3em;
+}
+.danger,
+.package {
+  background-color: rgba(221, 75, 57, 0.6);
+}
+.danger .resizable-appendix,
+.package .resizable-appendix {
+  background-color: rgba(221, 75, 57, 0.6);
+}
+.danger .ui-resizable-e,
+.package .ui-resizable-e {
+  border-left: 22.5px solid rgba(221, 75, 57, 0.6);
+}
+.danger .ui-resizable-w,
+.package .ui-resizable-w {
+  border-left: 22.5px solid rgba(221, 75, 57, 0.9);
+}
+.success {
+  background-color: rgba(0, 166, 90, 0.6);
+}
+.success .resizable-appendix {
+  background-color: rgba(0, 166, 90, 0.6);
+}
+.success .ui-resizable-e {
+  border-left: 22.5px solid rgba(0, 166, 90, 0.6);
+}
+.success .ui-resizable-w {
+  border-left: 22.5px solid rgba(0, 166, 90, 0.6);
+}
+.warning {
+  background-color: rgba(243, 156, 18, 0.6);
+}
+.warning .resizable-appendix {
+  background-color: rgba(243, 156, 18, 0.6);
+}
+.warning .ui-resizable-e {
+  border-left: 22.5px solid rgba(243, 156, 18, 0.6);
+}
+.warning .ui-resizable-w {
+  border-left: 22.5px solid rgba(243, 156, 18, 0.6);
 }
 #accommodation-chessBoard-content {
   position: relative;
@@ -641,22 +695,72 @@ body {
 }
 .ui-resizable-e,
 .ui-resizable-w {
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 150;
-  width: 7px;
-  height: 45px;
   position: absolute;
-  cursor: pointer;
+  border-bottom: 22.5px solid transparent;
+  border-top: 22.5px solid transparent;
+  width: 0;
   top: 0;
+  height: 0;
 }
 .ui-resizable-w {
-  border-left: 1px solid wheat;
   cursor: w-resize;
+  z-index: 100;
+  left: 6px;
+}
+.resizable-appendix {
+  width: 4px;
+  height: 45px;
+  background-color: red;
+  position: absolute;
+  left: 2px;
+  top: 0;
+}
+.near-left-puzzle .ui-resizable-e {
+  position: absolute;
+  border: 0 !important;
+  width: 5px;
+  top: 0;
+  height: 45px;
+  right: 0;
+}
+.near-left-puzzle .danger.ui-resizable-e {
+  background-color: red;
+}
+.danger.near-left-puzzle .ui-resizable-e,
+.package.near-left-puzzle .ui-resizable-e {
+  background-color: rgba(221, 75, 57, 0.6);
+}
+.success.near-left-puzzle .ui-resizable-e {
+  background-color: rgba(0, 166, 90, 0.6);
+}
+.warning.near-left-puzzle .ui-resizable-e {
+  background-color: rgba(243, 156, 18, 0.6);
 }
 .ui-resizable-e {
-  right: 0;
-  border-right: 1px solid wheat;
+  right: -23.5px;
   cursor: e-resize;
+}
+.right-inner-resizable-triangle {
+  position: absolute;
+  z-index: 200;
+  border-bottom: 22.5px solid transparent;
+  border-top: 23.5px solid transparent;
+  border-left: 12px solid white;
+  width: 0;
+  top: 0;
+  right: -12px;
+  height: 0;
+}
+.left-inner-resizable-triangle {
+  position: absolute;
+  z-index: 150;
+  border-bottom: 23.5px solid transparent;
+  border-top: 23.5px solid transparent;
+  border-left: 23.5px solid white;
+  width: 0;
+  top: 0;
+  left: 0;
+  height: 0;
 }
 .remove-package-button,
 .divide-package-button {
@@ -706,7 +810,7 @@ body {
 .dividing-line {
   position: absolute;
   border: 2px dashed red;
-  height: 47px;
+  height: 45px;
   z-index: 250;
   top: 0;
 }

@@ -292,18 +292,6 @@ class ChessBoardDataBuilder
                 //сортируем по датам начала размещения
                 $this->packageAccommodations = $this->accommodationManipulator
                     ->sortAccommodationsByBeginDate($accommodations->toArray())->toArray();
-
-                //сортируем по id брони
-                usort($this->packageAccommodations, function ($a, $b) {
-                    /** @var PackageAccommodation $a */
-                    /** @var PackageAccommodation $b */
-                    $idComparisonResult = strcmp($a->getPackage()->getId(), $b->getPackage()->getId());
-                    if ($idComparisonResult < 1) {
-                        return $idComparisonResult;
-                    }
-
-                    return $a->getBegin() > $b->getBegin() ? -1 : 1;
-                });
             }
 
             $this->isPackageAccommodationsInit = true;

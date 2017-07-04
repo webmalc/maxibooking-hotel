@@ -260,6 +260,19 @@ var DataManager = (function () {
         this._leftRoomCounts = tableData.leftRoomCounts;
         this.noAccommodationCounts = tableData.noAccommodationCounts;
     };
+    DataManager.prototype.getNearRightAccommodation = function (accommodationId) {
+        var accommodationData = this._accommodations[accommodationId];
+        for (var id in this._accommodations) {
+            var iteratedAccommodation = this._accommodations[id];
+            if (this._accommodations.hasOwnProperty(id)
+                && iteratedAccommodation.accommodation == accommodationData.accommodation
+                && iteratedAccommodation.end === accommodationData.begin
+                && iteratedAccommodation.packageEnd === iteratedAccommodation.end) {
+                return id;
+            }
+        }
+        return null;
+    };
     return DataManager;
 }());
 //# sourceMappingURL=DataManager.js.map

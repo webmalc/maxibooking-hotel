@@ -24,8 +24,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ColorsConfig extends Base
 {
     const DEFAULT_SUCCESS_COLOR = '#8bc34a';
+    const DEFAULT_SUCCESS_ADDITIONAL_COLOR = 'rgba(0, 166, 90, 0.9)';
     const DEFAULT_DANGER_COLOR = '#ff9e80';
+    const DEFAULT_DANGER_ADDITIONAL_COLOR = 'rgba(221, 75, 57, 0.6)';
     const DEFAULT_WARNING_COLOR = '#fdd835';
+    const DEFAULT_WARNING_ADDITIONAL_COLOR = 'rgba(243, 156, 18, 0.9)';
     const LEFT_ROOMS_POSITIVE = 'yellowgreen';
     const LEFT_ROOMS_NEGATIVE = 'rgba(221, 75, 57, 0.6)';
     const LEFT_ROOMS_ZERO = 'rgba(243, 156, 18, 0.66)';
@@ -48,6 +51,7 @@ class ColorsConfig extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -61,6 +65,20 @@ class ColorsConfig extends Base
      * )
      */
     private $successColor = self::DEFAULT_SUCCESS_COLOR;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     * @Assert\Length(
+     *      min=6,
+     *      minMessage="validator.colors_config.min_hex_code",
+     *      max=21,
+     *      maxMessage="validator.colors_config.max_hex_code"
+     * )
+     */
+    private $successAdditionalColor = self::DEFAULT_SUCCESS_ADDITIONAL_COLOR;
 
     /**
      * @var string
@@ -88,7 +106,35 @@ class ColorsConfig extends Base
      *      maxMessage="validator.colors_config.max_hex_code"
      * )
      */
+    private $warningAdditionalColor = self::DEFAULT_WARNING_ADDITIONAL_COLOR;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     * @Assert\Length(
+     *      min=6,
+     *      minMessage="validator.colors_config.min_hex_code",
+     *      max=21,
+     *      maxMessage="validator.colors_config.max_hex_code"
+     * )
+     */
     private $dangerColor = self::DEFAULT_DANGER_COLOR;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     * @Assert\Length(
+     *      min=6,
+     *      minMessage="validator.colors_config.min_hex_code",
+     *      max=21,
+     *      maxMessage="validator.colors_config.max_hex_code"
+     * )
+     */
+    private $dangerAdditionalColor = self::DEFAULT_DANGER_ADDITIONAL_COLOR;
 
     /**
      * @var string
@@ -145,6 +191,63 @@ class ColorsConfig extends Base
      * )
      */
     private $unplacedColor = self::UNPLACED;
+
+    /**
+     * @return string
+     */
+    public function getSuccessAdditionalColor(): string
+    {
+        return $this->successAdditionalColor;
+    }
+
+    /**
+     * @param string $successAdditionalColor
+     * @return ColorsConfig
+     */
+    public function setSuccessAdditionalColor(string $successAdditionalColor): ColorsConfig
+    {
+        $this->successAdditionalColor = $successAdditionalColor;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWarningAdditionalColor(): string
+    {
+        return $this->warningAdditionalColor;
+    }
+
+    /**
+     * @param string $warningAdditionalColor
+     * @return ColorsConfig
+     */
+    public function setWarningAdditionalColor(string $warningAdditionalColor): ColorsConfig
+    {
+        $this->warningAdditionalColor = $warningAdditionalColor;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDangerAdditionalColor(): string
+    {
+        return $this->dangerAdditionalColor;
+    }
+
+    /**
+     * @param string $dangerAdditionalColor
+     * @return ColorsConfig
+     */
+    public function setDangerAdditionalColor(string $dangerAdditionalColor): ColorsConfig
+    {
+        $this->dangerAdditionalColor = $dangerAdditionalColor;
+
+        return $this;
+    }
 
     /**
      * @return string
@@ -283,8 +386,11 @@ class ColorsConfig extends Base
     {
         return [
             'success' => $this->getSuccessColor(),
+            'success_add' => $this->getSuccessAdditionalColor(),
             'danger' => $this->getDangerColor(),
+            'danger_add' => $this->getDangerAdditionalColor(),
             'warning' => $this->getWarningColor(),
+            'warning_add' => $this->getWarningAdditionalColor(),
             'leftRoomsPositive' => $this->getLeftRoomsPositiveColor(),
             'leftRoomsNegative' => $this->getLeftRoomsNegativeColor(),
             'leftRoomsZero' => $this->getLeftRoomsZeroColor(),

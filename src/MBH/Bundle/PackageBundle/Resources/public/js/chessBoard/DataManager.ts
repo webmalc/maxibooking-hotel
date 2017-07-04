@@ -302,4 +302,19 @@ class DataManager {
         this._leftRoomCounts = tableData.leftRoomCounts;
         this.noAccommodationCounts = tableData.noAccommodationCounts;
     }
+
+    public getNearRightAccommodation(accommodationId) {
+        let accommodationData = this._accommodations[accommodationId];
+        for (let id in this._accommodations) {
+            let iteratedAccommodation = this._accommodations[id];
+            if (this._accommodations.hasOwnProperty(id)
+                && iteratedAccommodation.accommodation == accommodationData.accommodation
+                && iteratedAccommodation.end === accommodationData.begin
+                && iteratedAccommodation.packageEnd === iteratedAccommodation.end) {
+                return id;
+            }
+        }
+
+        return null;
+    }
 }

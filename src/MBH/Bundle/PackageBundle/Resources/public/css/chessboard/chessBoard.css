@@ -49,6 +49,14 @@ body {
 .package .remove-package-button {
   right: 7px;
 }
+.package:after {
+  content: ' ';
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-left: 40px solid red;
+  border-bottom: 20px solid transparent;
+}
 .with-left-divider:after,
 .with-right-divider:before {
   content: ' ';

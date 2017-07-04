@@ -23,6 +23,16 @@ class ColorsType extends AbstractType
                     'class' => 'color-picker'
                 ]
             ])
+            ->add('successAdditionalColor', TextType::class, [
+                'label' => 'form.colors_type.success_additional_color.label',
+                'required' => true,
+                'group' => 'form.colors_type.group.packages',
+                'addon' => 'fa fa-eyedropper',
+                'help' => 'form.colors_type.success_additional_color.help',
+                'attr' => [
+                    'class' => 'color-picker'
+                ]
+            ])
             ->add('warningColor', TextType::class, [
                 'label' => 'form.colors_type.warning_color.label',
                 'required' => true,
@@ -34,6 +44,17 @@ class ColorsType extends AbstractType
                 'addon' => 'fa fa-eyedropper',
                 'help' => 'form.colors_type.warning_color.help'
             ])
+            ->add('warningAdditionalColor', TextType::class, [
+                'label' => 'form.colors_type.warning_additional_color.label',
+                'required' => true,
+                'group' => 'form.colors_type.group.packages',
+                'attr' => [
+                    'placeholder' => '008000',
+                    'class' => 'color-picker'
+                ],
+                'addon' => 'fa fa-eyedropper',
+                'help' => 'form.colors_type.warning_additional_color.help'
+            ])
             ->add('dangerColor', TextType::class, [
                 'label' => 'form.colors_type.danger_color.label',
                 'required' => true,
@@ -44,6 +65,17 @@ class ColorsType extends AbstractType
                 ],
                 'addon' => 'fa fa-eyedropper',
                 'help' => 'form.colors_type.danger_color.help'
+            ])
+            ->add('dangerAdditionalColor', TextType::class, [
+                'label' => 'form.colors_type.danger_additional_color.label',
+                'required' => true,
+                'group' => 'form.colors_type.group.packages',
+                'attr' => [
+                    'placeholder' => '008000',
+                    'class' => 'color-picker'
+                ],
+                'addon' => 'fa fa-eyedropper',
+                'help' => 'form.colors_type.danger_additional_color.help'
             ])
             ->add('leftRoomsPositiveColor', TextType::class, [
                 'label' => 'form.colors_type.left_rooms_positive.label',
