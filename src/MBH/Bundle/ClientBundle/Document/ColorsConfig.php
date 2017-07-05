@@ -24,11 +24,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ColorsConfig extends Base
 {
     const DEFAULT_SUCCESS_COLOR = '#8bc34a';
-    const DEFAULT_SUCCESS_ADDITIONAL_COLOR = 'rgba(0, 166, 90, 0.9)';
+    const DEFAULT_SUCCESS_ADDITIONAL_COLOR = '#00a65a';
     const DEFAULT_DANGER_COLOR = '#ff9e80';
-    const DEFAULT_DANGER_ADDITIONAL_COLOR = 'rgba(221, 75, 57, 0.6)';
+    const DEFAULT_DANGER_ADDITIONAL_COLOR = '#dd4b39';
     const DEFAULT_WARNING_COLOR = '#fdd835';
-    const DEFAULT_WARNING_ADDITIONAL_COLOR = 'rgba(243, 156, 18, 0.9)';
+    const DEFAULT_WARNING_ADDITIONAL_COLOR = '#fd9c12';
     const LEFT_ROOMS_POSITIVE = 'yellowgreen';
     const LEFT_ROOMS_NEGATIVE = 'rgba(221, 75, 57, 0.6)';
     const LEFT_ROOMS_ZERO = 'rgba(243, 156, 18, 0.66)';
@@ -60,7 +60,7 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=21,
+     *      max=7,
      *      maxMessage="validator.colors_config.max_hex_code"
      * )
      */
@@ -74,7 +74,7 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=21,
+     *      max=7,
      *      maxMessage="validator.colors_config.max_hex_code"
      * )
      */
@@ -88,7 +88,7 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=21,
+     *      max=7,
      *      maxMessage="validator.colors_config.max_hex_code"
      * )
      */
@@ -102,7 +102,7 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=21,
+     *      max=7,
      *      maxMessage="validator.colors_config.max_hex_code"
      * )
      */
@@ -116,7 +116,7 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=21,
+     *      max=7,
      *      maxMessage="validator.colors_config.max_hex_code"
      * )
      */
@@ -130,7 +130,7 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=21,
+     *      max=7,
      *      maxMessage="validator.colors_config.max_hex_code"
      * )
      */
@@ -144,8 +144,8 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=21,
-     *      maxMessage="validator.colors_config.max_hex_code"
+     *      max=2,
+     *      maxMessage="validator.colors_config.max_color_length"
      * )
      */
     private $leftRoomsPositiveColor = self::LEFT_ROOMS_POSITIVE;
@@ -158,8 +158,8 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=21,
-     *      maxMessage="validator.colors_config.max_hex_code"
+     *      max=22,
+     *      maxMessage="validator.colors_config.max_color_length"
      * )
      */
     private $leftRoomsNegativeColor = self::LEFT_ROOMS_NEGATIVE;
@@ -172,8 +172,8 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=21,
-     *      maxMessage="validator.colors_config.max_hex_code"
+     *      max=22,
+     *      maxMessage="validator.colors_config.max_color_length"
      * )
      */
     private $leftRoomsZeroColor = self::LEFT_ROOMS_ZERO;
@@ -186,8 +186,8 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=21,
-     *      maxMessage="validator.colors_config.max_hex_code"
+     *      max=22,
+     *      maxMessage="validator.colors_config.max_color_length"
      * )
      */
     private $unplacedColor = self::UNPLACED;
