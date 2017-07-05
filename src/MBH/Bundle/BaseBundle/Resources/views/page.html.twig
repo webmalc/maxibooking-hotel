@@ -3,11 +3,13 @@
 {% block body %}
     {{ parent() }}
 
+    {% set dashboard_messages = dashboard_messages() %}
+
     <header class="main-header">
         <!-- Logo -->
         {% include 'MBHBaseBundle::logo.html.twig' %}
         <!-- Header Navbar -->
-        {% include 'MBHBaseBundle::navbar.html.twig' %}
+        {% include 'MBHBaseBundle::navbar.html.twig' with {'dashboard_messages': dashboard_messages} %}
     </header>
 
     {% if form is defined %}
@@ -78,6 +80,8 @@
             {% endblock %}
 
             {% include 'MBHBaseBundle:Partials:entityDeleteForm.html.twig' %}
+
+            {% include 'MBHBaseBundle::dashboardModal.html.twig' with {'dashboard_messages': dashboard_messages} %}
 
             <div id="print-user-info">
                 <div class="row">

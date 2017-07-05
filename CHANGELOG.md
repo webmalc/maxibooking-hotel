@@ -1,3 +1,17 @@
+dev
+============
+* doctrine mongodb vendor update
+* add acl cache
+* add fork acl provider https://github.com/webmalc/MongoDBAclBundle.git
+* add primes to PackageRepository::fetch()
+
+1.5.10
+============
+* online form improvements && fixes
+* package searchDelay
+* cashDocuments - search by payer
+* user locale
+
 1.5.9
 =============
 * new rabbitmq (redmine #644)

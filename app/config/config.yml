@@ -7,6 +7,8 @@ imports:
     - { resource: rabbitmq.yml }
 
 framework:
+    assets:
+        version: "v%mbh.version%" 
     serializer:
         enabled: true
     #esi:             ~
@@ -21,7 +23,6 @@ framework:
     validation:      { enable_annotations: true }
     templating:
         engines: ['twig']
-        #assets_version: SomeVersionScheme
     default_locale:  "%locale%"
     trusted_hosts:   ~
     session:
@@ -92,7 +93,7 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: file }
     encryption: "%mailer_encryption%"
-    
+
 # DoctrineMongoDBBundle Configuration
 doctrine_mongodb:
     connections:
@@ -200,6 +201,14 @@ dinhkhanh_mongo_db_acl:
     acl_provider:
         default_database: "%mongodb_database%"
 
+doctrine_cache:
+    acl_cache:
+        id: 'doctrine_cache.providers.acl_apc_provider'
+    providers:
+        acl_apc_provider:
+            namespace: "%mongodb_database%_"
+            type: 'apc'
+
 liip_imagine:
     resolvers:
         default:
@@ -264,6 +273,7 @@ vich_uploader:
     mappings:
         upload_image:
             uri_prefix:         /upload/images
+            #DISABLED! Overrides in Extension
             upload_destination: '%kernel.root_dir%/../web/upload/images'
 
 bazinga_js_translation:

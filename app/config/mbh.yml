@@ -179,7 +179,6 @@ parameters:
 
     #параметры онлайн формы
     mbh.online.form:
-          packages_max: "%mbh_online_form_max_packages%"
           messages: true
           payment_types:
             in_hotel: 'Оплата при заселении'

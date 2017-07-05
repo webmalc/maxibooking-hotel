@@ -5,7 +5,8 @@ mbhbasebundle.service.helper.dvesti: двести
 mbhbasebundle.service.helper.trista: триста
 mbhbasebundle.service.helper.chetyresta: четыреста
 mbhbasebundle.service.helper.miliarda: милиарда
-mbhbasebundle.service.helper.odna: Один
+mbhbasebundle.service.helper.one: Один
+mbhbasebundle.service.helper.odna: Одна
 mbhbasebundle.service.helper.dve: Два
 mbhbasebundle.service.helper.tri: Три
 mbhbasebundle.service.helper.chetire: Четыре
@@ -25,7 +26,10 @@ mbhbasebundle.service.helper.seventeen: Семнадцать
 mbhbasebundle.service.helper.eighteen: Восемнадцать
 mbhbasebundle.service.helper.nineteen: Девятнадцать
 mbhbasebundle.service.helper.million: миллион
+mbhbasebundle.service.helper.millionа: миллиона
+mbhbasebundle.service.helper.millionov: миллионов
 mbhbasebundle.service.helper.milliard: миллиард
+mbhbasebundle.service.helper.milliardov: миллиардов
 mbhbasebundle.view.partials.datepickerperiodselect.period: Период
 mbhbasebundle.view.pdftemplates.individual.izveshcheniye: Извещение
 mbhbasebundle.view.pdftemplates.individual.kassir: Кассир
@@ -569,3 +573,11 @@ mbhbasebundle.view.pdftemplates.individual.vid.platezha: Вид платежа
 hide: скрыть
 show.more: Показать еще
 errors: Ошибки
+
+# dashboard
+dashboard.modal.header: 'Предупреждения'
+dashboard.confirm.tooltip: 'Отметить прочитанным'
+dashboard.messages.hotel.errors: 'обнаружены следующие ошибки'
+dashboard.messages.roomType.roomCache: 'не выставлены "Номера в продаже" на следующие периоды'
+dashboard.messages.roomType.priceCache: 'не выставлены "Цены" основного тарифа на следующие периоды'
+dashboard.link: 'посмотреть'

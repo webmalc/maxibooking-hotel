@@ -251,3 +251,15 @@ services:
         factory: 'stream_context_create'
         arguments:
           - { ssl: { verify_expiry: false, allow_self_signed: true }}
+
+    mbh.instance_info.collector:
+        class: 'MBH\Bundle\BaseBundle\DataCollector\InstanceInfoCollector'
+        public: false
+        arguments: ["@kernel"]
+        tags:
+          -
+            name: 'data_collector'
+            template: "@MBHBase/Profiler/instance.profiler.html.twig"
+            id: 'client.instance.informer'
+
+

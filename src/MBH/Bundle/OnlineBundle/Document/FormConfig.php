@@ -66,6 +66,12 @@ class FormConfig extends Base
     protected $hotels;
 
     /**
+     * @var array
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
+     */
+    protected $roomTypeChoices;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -143,10 +149,46 @@ class FormConfig extends Base
      * @Assert\Choice(callback = "getThemes")
      */
     protected $theme;
+    
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=1, max = 20
+     * )
+     */
+    private $maxPackages = 5;
+
 
     public function __construct()
     {
         $this->hotels = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * maxPackages set
+     *
+     * @param int $maxPackages
+     * @return self
+     */
+    public function setMaxPackages(int $maxPackages): self
+    {
+        $this->maxPackages = $maxPackages;
+
+        return $this;
+    }
+
+    /**
+     * maxPackages get
+     *
+     * @return int
+     */
+    public function getMaxPackages(): int
+    {
+        return $this->maxPackages;
     }
 
     /**
@@ -314,6 +356,24 @@ class FormConfig extends Base
     public function setHotels($hotels)
     {
         $this->hotels = $hotels;
+        return $this;
+    }
+    
+    /**
+     * @return array
+     */
+    public function getRoomTypeChoices()
+    {
+        return $this->roomTypeChoices;
+    }
+
+    /**
+     * @param array $roomTypeChoices
+     * @return FormConfig
+     */
+    public function setRoomTypeChoices($roomTypeChoices)
+    {
+        $this->roomTypeChoices = $roomTypeChoices;
         return $this;
     }
     

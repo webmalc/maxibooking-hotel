@@ -3,11 +3,11 @@ views.api.form.hotel: Отель
 views.api.form.check_in_date: Дата заезда
 views.api.form.check_out_date: Дата выезда
 views.api.form.nights_amount: Количество ночей
-views.api.form.room_type: Тип номера
+views.api.form.room_type: Тип размещения
 views.api.form.adults: Взрослые
 views.api.form.children: Дети
 views.api.form.children_ages.label: Возраста детей
-views.api.form.find_room: Найти номер
+views.api.form.find_room: Найти 
 views.api.form.online_reservation_system: система онлайн бронирования
 views.api.getPaymentType.dates: "Даты:"
 views.api.getPaymentType.days_and_nights: "Дни/ночи:"
@@ -22,16 +22,16 @@ views.api.getPaymentType.reservation_guarantee_whole_sum:  Гарантиров�
 views.api.getPaymentType.reservation_guarantee_first_night: Гарантированное бронирование, предоплата стоимости проживания первых суток до заезда в отель
 views.api.getPaymentType.reservation_guarantee_half: Гарантированное бронирование, предоплата 50% всей стоимости проживания до заезда в отель
 
-views.api.getPaymentType.choose_other_rooms: Выбрать другие номера
+views.api.getPaymentType.choose_other_rooms: Назад к результатам
 views.api.getPaymentType.reservate: Бронировать
 views.api.getPaymentType.reservation_error_try_again: Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.
-views.api.getResultsTable.hotel_rooms_for: Номера в отеле на
-views.api.getResultsTable.room_type: Тип номера
+views.api.getResultsTable.hotel_rooms_for: Размещения на
+views.api.getResultsTable.room_type: Тип размещения
 views.api.getResultsTable.room_cache_count: Количество
 views.api.getResultsTable.guests: Гости
 views.api.getResultsTable.price: Цена
 views.api.getResultsTable.rooms_amount: Кол-во
-views.api.getResultsTable.room_description: описание номера
+views.api.getResultsTable.room_description: описание типа размещения
 views.api.getResultsTable.room_price: цена за номер
 views.api.getResultsTable.hotel: Отель
 views.api.getResultsTable.service_type: Тип услуги
@@ -39,7 +39,7 @@ views.api.getResultsTable.price: Цена
 views.api.getResultsTable.amount: Количество
 views.api.getResultsTable.price_per: цена за
 views.api.getResultsTable.day: день
-views.api.getResultsTable.rooms: "Номера:"
+views.api.getResultsTable.rooms: "Размещение:"
 views.api.getResultsTable.services: "Услуги:"
 views.api.getResultsTable.result: "Итого:"
 views.api.getResultsTable.facilities: Удобства
@@ -57,14 +57,14 @@ views.api.getUserForm.check_in_time: Время заезда
 views.api.getUserForm.check_out_time: Время отъезда
 views.api.getUserForm.comment: Комментарий
 views.api.getUserForm.required_fields: "- поля обязательные для заполнения"
-views.api.getUserForm.choose_other_rooms: Выбрать другие номера
+views.api.getUserForm.choose_other_rooms: Назад к результатам
 views.api.getUserForm.continue: Продолжить
 views.api.getUserForm.reservation_error: Произошла ошибка во время бронирования.
 views.api.getUserForm.refresh_page_and_try_again: Обновите страницу и попробуйте еще раз.
 views.api.notification.new_reservations_made_with_online_form: Оформлены новые брони через онлайн форму.
 views.api.notification.hotel: Отель
 views.api.notification.dates: Даты
-views.api.notification.room_type: Тип номера
+views.api.notification.room_type: Тип размещения
 views.api.notification.client: "Клиент:"
 views.api.notification.phone: "Телефон:"
 views.api.make_payment_for_order_id: "Оплатить %total%. Номера заказа: %order_id%"

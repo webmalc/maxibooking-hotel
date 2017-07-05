@@ -5,23 +5,27 @@
   "description": "The \"Symfony Standard Edition\" distribution",
   "minimum-stability": "stable",
   "autoload": {
-    "psr-4": { "": "src/" },
-    "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
+    "psr-4": {
+      "": "src/"
+    },
+    "classmap": [
+      "app/AppKernel.php",
+      "app/AppCache.php"
+    ]
   },
   "require": {
     "php": ">=7.0.0",
-    "alcaeus/mongo-php-adapter": "^1.0.0",
-    "ext-mongo": "*",
+    "alcaeus/mongo-php-adapter": "1.*@stable",
     "symfony/symfony": "3.*@stable",
     "twig/twig": "*@stable",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
     "symfony/cache": "3.*@stable",
     "predis/predis": "*@stable",
-    "symfony/swiftmailer-bundle": "^2.3@stable",
-    "swiftmailer/swiftmailer": "^5.0@stable",
-    "symfony/monolog-bundle": "^2.8@stable",
-    "sensio/distribution-bundle": "^5.0@stable",
+    "symfony/swiftmailer-bundle": "*@stable",
+    "swiftmailer/swiftmailer": "@stable",
+    "symfony/monolog-bundle": "@stable",
+    "sensio/distribution-bundle": "@stable",
     "symfony/polyfill-apcu": "^1.0",
     "sensio/framework-extra-bundle": "^3.0.2@stable",
     "incenteev/composer-parameter-handler": "^2.0@stable",
@@ -30,7 +34,7 @@
     "doctrine/mongodb-odm-bundle": "*@dev",
     "gedmo/doctrine-extensions": "2.*@stable",
     "stof/doctrine-extensions-bundle": "dev-master",
-    "friendsofsymfony/user-bundle": "dev-master#f3002436abeac555104069f4562d284d23d06dab",
+    "friendsofsymfony/user-bundle": "*@stable",
     "friendsofsymfony/jsrouting-bundle": "*@stable",
     "knplabs/knp-menu": "*@stable",
     "knplabs/knp-menu-bundle": "*@stable",
@@ -53,7 +57,8 @@
     "phobetor/rabbitmq-supervisor-bundle": "^1.5",
     "lexik/translation-bundle": "dev-fix_258",
     "willdurand/js-translation-bundle": "^2.6",
-    "vich/uploader-bundle": "^1.4"
+    "vich/uploader-bundle": "^1.4",
+    "theofidry/psysh-bundle": "3.0.0"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
@@ -92,5 +97,14 @@
     "branch-alias": {
       "dev-master": "3.1-dev"
     }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/webmalc/MongoDBAclBundle"
+    }
+  ],
+  "provide": {
+    "ext-mongo": "*"
   }
 }

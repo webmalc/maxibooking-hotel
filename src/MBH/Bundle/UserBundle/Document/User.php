@@ -180,8 +180,13 @@ class User extends BaseUser implements RecipientInterface
      * @var string
      * @ODM\Field(type="string")
      */
-    protected $locale = 'en';
+    protected $locale = 'ru';
 
+    /**
+     * @ODM\Field(type="date")
+     * @Assert\DateTime()
+     */
+    protected $expiresAt;
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields

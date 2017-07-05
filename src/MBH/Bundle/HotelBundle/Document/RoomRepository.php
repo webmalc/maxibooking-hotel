@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\MongoDB\ArrayIterator;
 use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -180,19 +181,24 @@ class RoomRepository extends AbstractBaseRepository
             }
             $hotelRoomTypes[] = $roomType->getId();
         }
-
         $pAccommodations = $dm
             ->getRepository('MBHPackageBundle:PackageAccommodation')
             ->fetchWithAccommodation(
                 $newBegin->modify('+1 day'),
                 $newEnd->modify('-1 day'),
                 $rooms,
-                $excludePackages);
+                $excludePackages,
+                true,
+                false);
+        $pAccommodations = $pAccommodations->toArray();
         foreach ($pAccommodations as $accommodation) {
-            /** @var PackageAccommodation $accommodation */
-            $ids[] = $accommodation->getAccommodation()->getId();
-        }
+            if (isset($accommodation['accommodation']['$id'])
+                && $accommodation['accommodation']['$id'] instanceof \MongoId
+            ) {
+                $ids[] = (string)$accommodation['accommodation']['$id'];
+            }
 
+        }
         // rooms
         $qb = $this->createQueryBuilder()->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
              ->field('isEnabled')->equals(true)
