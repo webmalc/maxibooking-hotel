@@ -896,16 +896,15 @@ class ChessBoardManager {
                 let innerTriangle = document.createElement('div');
                 innerTriangle.classList.add('right-inner-resizable-triangle');
                 $element.append(innerTriangle);
-                let backupTriangle = document.createElement('div');
-                backupTriangle.classList.add('right-inner-resizable-triangle');
-                backupTriangle.style.backgroundColor = 'white';
-                backupTriangle.style.zIndex = '199';
-                $element.append(backupTriangle);
             }
             if (resizableHandlesValue.indexOf('w') > -1) {
                 let innerTriangle = document.createElement('div');
                 innerTriangle.classList.add('left-inner-resizable-triangle');
                 $element.append(innerTriangle);
+                let appendix = document.createElement('div');
+                appendix.classList.add('resizable-appendix');
+                $element.append(appendix);
+                $element.removeClass('package-with-left-arrow');
             }
         }
 
