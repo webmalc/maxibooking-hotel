@@ -1,7 +1,7 @@
 services:
     security.authentication.success_handler:
         class: MBH\Bundle\UserBundle\Security\AuthenticationSuccessHandler
-        arguments:  ["@security.http_utils", {}, "@mbh.mbhs"]
+        arguments:  ["@security.http_utils", {}, "@mbh.mbhs", "@mbh.dashboard"]
         tags:
             - { name: 'monolog.logger', channel: 'security' }
 
