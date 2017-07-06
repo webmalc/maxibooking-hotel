@@ -17,11 +17,13 @@ class TripAdvisorValidator extends ConstraintValidator
 {
     private $translator;
     private $confirmationUrl;
+    private $tripAdvisorHelper;
 
-    public function __construct(TranslatorInterface $translator, $confirmationUrl)
+    public function __construct(TranslatorInterface $translator, $confirmationUrl, TripAdvisorHelper $tripAdvisorHelper)
     {
         $this->translator = $translator;
         $this->confirmationUrl = $confirmationUrl;
+        $this->tripAdvisorHelper = $tripAdvisorHelper;
     }
 
     public function validate($document, Constraint $constraint)
@@ -31,7 +33,7 @@ class TripAdvisorValidator extends ConstraintValidator
                 foreach ($document->getHotel()->getTripAdvisorConfig()->getTariffs() as $tariff) {
                     /** @var TripAdvisorTariff $tariff */
                     if ($tariff->getTariff() === $document && $tariff->getIsEnabled()) {
-                        $unfilledFields = TripAdvisorHelper::getTariffRequiredUnfilledFields($document);
+                        $unfilledFields = $this->tripAdvisorHelper->getTariffRequiredUnfilledFields($document);
                     }
                 }
             }
@@ -40,13 +42,13 @@ class TripAdvisorValidator extends ConstraintValidator
                 foreach ($document->getHotel()->getTripAdvisorConfig()->getRooms() as $room) {
                     /** @var TripAdvisorRoomType $room */
                     if ($room->getRoomType() === $document && $room->getIsEnabled()) {
-                        $unfilledFields = TripAdvisorHelper::getRoomTypeRequiredUnfilledFields($document);
+                        $unfilledFields = $this->tripAdvisorHelper->getRoomTypeRequiredUnfilledFields($document);
                     }
                 }
             }
         } elseif ($document instanceof Hotel) {
             if ($this->isTripAdvisorConfigEnabled($document)) {
-                $unfilledFields = TripAdvisorHelper::getHotelUnfilledRequiredFields($document, $this->confirmationUrl);
+                $unfilledFields = $this->tripAdvisorHelper->getHotelUnfilledRequiredFields($document, $this->confirmationUrl);
             }
         }
         if (isset($unfilledFields) && count($unfilledFields)) {

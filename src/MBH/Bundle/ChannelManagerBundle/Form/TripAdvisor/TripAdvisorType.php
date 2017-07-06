@@ -2,11 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Form\TripAdvisor;
 
-use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
-use MBH\Bundle\ChannelManagerBundle\Form\TripAdvisorTariffType;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -35,21 +31,6 @@ class TripAdvisorType extends AbstractType
                     'help' => 'form.trip_advisor_type.hotel_id_in_trip_advisor',
                 ]
             )
-            ->add('main_tariff', DocumentType::class, [
-                'label' => 'form.trip_advisor_type.main_tariff.label',
-                'help' => 'form.trip_advisor_type.main_tariff.help',
-                'class' => 'MBHPriceBundle:Tariff',
-                'query_builder' => function(DocumentRepository $er) use($options) {
-                    $qb = $er->createQueryBuilder();
-                    if ($options['hotel'] instanceof Hotel) {
-                        $qb->field('hotel.id')->equals($options['hotel']->getId());
-                    }
-                    return $qb;
-                },
-                'placeholder' => '',
-                'required' => true,
-                'attr' => ['placeholder' => 'tarifftype.placeholder']
-            ])
             ->add('locale', ChoiceType::class, [
                 'label' => 'form.trip_advisor_type.language.label',
                 'choice_label' => function($label) {

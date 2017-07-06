@@ -63,13 +63,6 @@ class TripAdvisorConfig extends Base
     protected $hotelId;
 
     /**
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
-     * @Assert\NotNull(message="validator.document.trip_advisor_config.main_tariff_not_specified")
-     */
-    protected $mainTariff;
-
-    /**
      * @var string
      * @ODM\Field(type="string")
      */
@@ -186,25 +179,6 @@ class TripAdvisorConfig extends Base
     }
 
     /**
-     * @return Tariff
-     */
-    public function getMainTariff()
-    {
-        return $this->mainTariff;
-    }
-
-    /**
-     * @param mixed $mainTariff
-     * @return TripAdvisorConfig
-     */
-    public function setMainTariff($mainTariff)
-    {
-        $this->mainTariff = $mainTariff;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getLocale(): ?string
@@ -300,7 +274,7 @@ class TripAdvisorConfig extends Base
     }
 
     /**
-     * @return ArrayCollection
+     * @return ArrayCollection|TripAdvisorTariff[]
      */
     public function getTariffs()
     {

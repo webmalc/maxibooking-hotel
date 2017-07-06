@@ -3,11 +3,9 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorRoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -35,36 +33,26 @@ class TripAdvisorDataFormatter
         $availabilityData = [];
         /** @var TripAdvisorConfig $tripAdvisorConfig */
         foreach ($tripAdvisorConfigs as $tripAdvisorConfig) {
-            $searchResult = $this->search($startDate, $endDate, $tripAdvisorConfig->getHotel(),
-                $tripAdvisorConfig->getMainTariff());
+            $searchResult = $this->search($startDate, $endDate, $tripAdvisorConfig->getHotel());
             foreach ($searchResult as $result) {
-                /** @var RoomType $roomType */
-                $availabilityData[$tripAdvisorConfig->getHotelId()][] = $result;
+                $availabilityData[$tripAdvisorConfig->getHotel()->getId()][] = $result;
             }
         }
 
         return $availabilityData;
     }
 
-    public function getTripAdvisorConfigs($hotelsSyncData = null)
+    public function getTripAdvisorConfigs($hotelIds)
     {
         $tripAdvisorConfigRepository = $this->dm->getRepository('MBHChannelManagerBundle:TripAdvisorConfig');
 
-        if (is_null($hotelsSyncData)) {
-            $configs = $tripAdvisorConfigRepository->findAll();
-        } else {
-            $tripAdvisorHotelIds = [];
-            foreach ($hotelsSyncData as $syncData) {
-                $tripAdvisorHotelIds[] = $syncData['partner_id'];
-            }
-            $configs = $tripAdvisorConfigRepository->createQueryBuilder()
-                ->field('hotel.id')->in($tripAdvisorHotelIds)->getQuery()->execute();
-        }
+        $configs = $tripAdvisorConfigRepository->createQueryBuilder()
+            ->field('hotel.id')->in($hotelIds)->getQuery()->execute();
 
         $result = [];
         foreach ($configs as $config) {
             /** @var TripAdvisorConfig $config */
-            $result[$config->getHotelId()] = $config;
+            $result[$config->getHotel()->getId()] = $config;
         }
 
         return $result;
@@ -159,19 +147,24 @@ class TripAdvisorDataFormatter
         return $syncOrders;
     }
 
-    private function search($startDate, $endDate, Hotel $hotel, Tariff $tariff = null)
+    private function search(\DateTime $startDate, \DateTime $endDate, Hotel $hotel, Tariff $tariff = null)
     {
         $query = new SearchQuery();
 
         $query->accommodations = true;
-
-        $query->begin = Helper::getDateFromString($startDate, 'Y-m-d');
-        $query->end = Helper::getDateFromString($endDate, 'Y-m-d');
-        $query->addHotel($hotel);
+        $query->begin = $startDate;
+        $query->end = $endDate;
         $query->adults = 0;
         $query->children = 0;
-        if ($tariff) {
-            $query->tariff = $tariff;
+        $query->tariff = $tariff;
+
+        /** @var TripAdvisorRoomType $room */
+        foreach ($hotel->getTripAdvisorConfig()->getRooms() as $room) {
+            if ($room->getIsEnabled()) {
+                $query->addRoomType($room->getRoomType()->getId());
+            } else {
+                $query->addExcludeRoomType([$room->getRoomType()->getId()]);
+            }
         }
 
         return $this->search->setWithTariffs()->search($query);

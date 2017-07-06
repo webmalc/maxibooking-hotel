@@ -118,10 +118,10 @@ services:
               - '@mbh.package.search'
               - '@translator'
               - '@validator'
-              - '@mbh.channel_manager.trip_advisor_response_formatter'
+              - '@mbh.channel_manager.trip_advisor_response_compiler'
 
-    mbh.channel_manager.trip_advisor_response_formatter:
-      class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseFormatter
+    mbh.channel_manager.trip_advisor_response_compiler:
+      class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseCompiler
       arguments: ['%trip_advisor_confirmation_url%', '%router.request_context.host%', '%mbh_package_arrival_time%', '%mbh_package_departure_time%', '%online_form_result_url%', '%locale%', '@doctrine_mongodb.odm.document_manager', '@vich_uploader.templating.helper.uploader_helper', '@mbh.currency', '%locale.currency%', '@mbh.channel_manager.order_handler']
 
     mbh.channel_manager.trip_advisor_response_data_formatter:
@@ -171,6 +171,6 @@ services:
 
     mbh.channel_manager.trip_advisor_validator:
         class: MBH\Bundle\ChannelManagerBundle\Validator\Constraints\TripAdvisorValidator
-        arguments: ['@translator', '%trip_advisor_confirmation_url%']
+        arguments: ['@translator', '%trip_advisor_confirmation_url%', '@mbh.channel_manager.tripadvisor']
         tags:
             - { name: validator.constraint_validator }

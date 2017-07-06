@@ -12,8 +12,8 @@ use Symfony\Component\Validator\ConstraintViolation;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use Symfony\Component\Translation\TranslatorInterface;
-use Liip\FunctionalTestBundle\Validator\DataCollectingValidator;
 use MBH\Bundle\CashBundle\Document\CardType;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TripAdvisorHelper
 {
@@ -21,7 +21,7 @@ class TripAdvisorHelper
     private $search;
     private $translator;
     private $validator;
-    /** @var  TripAdvisorResponseFormatter $responseFormatter */
+    /** @var  TripAdvisorResponseCompiler $responseFormatter */
     private $responseFormatter;
 
     const TRIP_ADVISOR_CONFIRMATION_URL = 'http://example.com';
@@ -29,8 +29,8 @@ class TripAdvisorHelper
     public function __construct(
         SearchFactory $search,
         TranslatorInterface $translator,
-        DataCollectingValidator $validator,
-        TripAdvisorResponseFormatter $responseFormatter
+        ValidatorInterface $validator,
+        TripAdvisorResponseCompiler $responseFormatter
     ) {
         $this->search = $search;
         $this->translator = $translator;
@@ -47,11 +47,20 @@ class TripAdvisorHelper
     public function getHotelUnfilledRequiredFields(Hotel $hotel, $confirmationUrl)
     {
         $requiredHotelData = [];
+        $hotelContactInformation = $hotel->getContactInformation();
 
         !empty($hotel->getInternationalStreetName()) ?: $requiredHotelData[] = 'form.hotelExtendedType.international_street_name.help';
         !empty($hotel->getRegion()) ?: $requiredHotelData[] = 'form.hotelExtendedType.region';
         !empty($hotel->getCountry()) ?: $requiredHotelData[] = 'form.hotelExtendedType.country';
         !empty($hotel->getCity()) ?: $requiredHotelData[] = 'form.hotelExtendedType.city';
+        if (empty($hotelContactInformation)) {
+            $requiredHotelData[] = 'form.hotel_contact_information.contact_info.group';
+        } else {
+            !empty($hotelContactInformation->getEmail()) ?: $requiredHotelData[] = 'form.contact_info_type.email.help';
+            !empty($hotelContactInformation->getFullName()) ?: $requiredHotelData[] = 'form.contact_info_type.full_name.help';
+            !empty($hotelContactInformation->getPhoneNumber()) ?: $requiredHotelData[] = 'form.contact_info_type.phone.help';
+        }
+        !empty(count($hotel->getAcceptedCardTypes()) > 0) ?: $requiredHotelData[] = 'form.hotelExtendedType.accepted_card_type.help';
         !empty($hotel->getSmokingPolicy()) ?: $requiredHotelData[] = 'form.hotelType.isSmoking.help';
         !empty($hotel->getCheckinoutPolicy()) ?: $requiredHotelData[] = 'form.hotelExtendedType.check_in_out_policy.label';
         $confirmationUrl == self::TRIP_ADVISOR_CONFIRMATION_URL ?: $requiredHotelData[] = 'channel_manager_helper.confirmation_url';
@@ -134,7 +143,7 @@ class TripAdvisorHelper
         }
 
         if (!$isRoomAvailable || $searchResult->getRoomsCount() < count($packages)) {
-            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::ROOM_NOT_AVAILABLE_ERROR,
+            $errors[] = $this->getErrorData(TripAdvisorResponseCompiler::ROOM_NOT_AVAILABLE_ERROR,
                 'order_handler.order_room_not_available', $locale);
             $isOrderCorrupted = true;
         }
@@ -145,11 +154,11 @@ class TripAdvisorHelper
 //            $isOrderCorrupted = true;
 //        }
         if (empty($orderInfo->getPayer()->getEmail())) {
-            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::MISSING_EMAIL,
+            $errors[] = $this->getErrorData(TripAdvisorResponseCompiler::MISSING_EMAIL,
                 'order_handler.missing_email.error', $locale);
         }
         if (empty($orderInfo->getPayer()->getFirstName())) {
-            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::MISSING_PAYER_FIRST_NAME,
+            $errors[] = $this->getErrorData(TripAdvisorResponseCompiler::MISSING_PAYER_FIRST_NAME,
                 'order_handler.missing_first_name.error', $locale);
         }
 
@@ -158,7 +167,7 @@ class TripAdvisorHelper
         if (is_array($creditCardValidationErrors)) {
             foreach ($creditCardValidationErrors as $cardError) {
                 /** @var ConstraintViolation $cardError */
-                $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::CREDIT_CARD_DECLINED,
+                $errors[] = $this->getErrorData(TripAdvisorResponseCompiler::CREDIT_CARD_DECLINED,
                     $cardError->getMessage(), $locale);
             }
         }
@@ -170,7 +179,7 @@ class TripAdvisorHelper
             $acceptedCardCodes[] = $acceptedCardType->getCardCode();
         }
         if (!in_array(strtoupper($orderPaymentCard->type), $acceptedCardCodes)) {
-            $errors[] = $this->getErrorData(TripAdvisorResponseFormatter::CREDIT_CARD_NOT_SUPPORTED,
+            $errors[] = $this->getErrorData(TripAdvisorResponseCompiler::CREDIT_CARD_NOT_SUPPORTED,
                 'order_handler.card_type_not_supported.error', $locale);
         }
 

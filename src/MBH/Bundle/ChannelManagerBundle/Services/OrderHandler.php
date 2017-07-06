@@ -12,6 +12,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class OrderHandler
 {
@@ -25,7 +26,7 @@ class OrderHandler
         DocumentManager $dm,
         SearchFactory $searchFactory,
         TranslatorInterface $translator,
-        DataCollectingValidator $validator
+        ValidatorInterface $validator
     ) {
         $this->dm = $dm;
         $this->search = $searchFactory;
