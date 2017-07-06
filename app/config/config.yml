@@ -212,7 +212,8 @@ doctrine_cache:
 liip_imagine:
     resolvers:
         default:
-            web_path: ~
+            web_path:
+                cache_prefix: "clients/%client%/media/cache"
     loaders:
         protected:
             filesystem:
@@ -273,8 +274,7 @@ vich_uploader:
     mappings:
         upload_image:
             uri_prefix:         /upload/images
-            #DISABLED! Overrides in Extension
-            upload_destination: '%kernel.root_dir%/../web/upload/images'
+            upload_destination: '%kernel.root_dir%/../web/clients/%client%/upload/images'
 
 bazinga_js_translation:
     locale_fallback:      ru

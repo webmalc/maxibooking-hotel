@@ -4,6 +4,8 @@
 namespace MBH\Bundle\BaseBundle\DataCollector;
 
 
+use Liip\ImagineBundle\Imagine\Cache\Resolver\WebPathResolver;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -12,11 +14,16 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class InstanceInfoCollector extends DataCollector
 {
+    /** @var KernelInterface */
     private $kernel;
+    /** @var  ContainerInterface */
+    private $container;
 
     public function __construct(KernelInterface $kernel)
     {
         $this->kernel = $kernel;
+        $this->container = $this->kernel->getContainer();
+
     }
 
 
@@ -44,19 +51,23 @@ class InstanceInfoCollector extends DataCollector
         $dirs = [
             'cacheDir' => $this->kernel->getCacheDir(),
             'logDir' => $this->kernel->getLogDir(),
-            'vichUpload' => $this->getVichUploadFolder()
+            'vichUpload:destination' => $this->getVichUploadFolder('upload_destination'),
+            'vichUpload:uri_prefix' => $this->getVichUploadFolder('uri_prefix'),
+            'liip:cache:path' => $this->getLiipCachePath()
         ];
 
         return $dirs;
     }
 
-    private function getVichUploadFolder()
+    private function getLiipCachePath(string $key = null): string
     {
+        $result = 'Не получилось забрать из сервиса настройки';
+        return $result;
+    }
 
-        $container = $this->kernel->getContainer();
-        $dir = $container->getParameter('vich_uploader.mappings')['upload_image']['upload_destination'];
-
-        return $dir;
+    private function getVichUploadFolder(string $key): string
+    {
+        return $this->container->getParameter('vich_uploader.mappings')['upload_image'][$key];
     }
 
     public function getName()
