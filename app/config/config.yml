@@ -217,9 +217,9 @@ liip_imagine:
     loaders:
         protected:
             filesystem:
-                data_root: "%kernel.root_dir%/../protectedUpload"
+                data_root: "%kernel.root_dir%/../protectedUpload/clients/%client%"
     filter_sets:
-        cache: ~
+#        cache: ~
         thumb_50x50:
             quality: 80
             filters:

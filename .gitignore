@@ -114,4 +114,6 @@ ctags
 env
 gtags
 
+web/clients/
+
 

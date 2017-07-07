@@ -168,8 +168,8 @@ class Mailer implements \SplObserver
             );
         }
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
-        $message = \Swift_Message::newInstance();
-        empty($template) ? $template = $this->params['template'] : $template;
+        $message = new \Swift_Message();
+        $template = $template?:$this->params['template'];
 
         $data['hotelName'] = 'MaxiBooking';
         $data = $this->addImages($data, $message, $template);
@@ -180,19 +180,22 @@ class Mailer implements \SplObserver
             $transParams = [
                 '%guest%' => $recipient->getName(),
                 '%hotel%' => null
+
             ];
 
-            if ($data['hotel']) {
-                $data['hotelName'] = $data['hotel']->getName();
-                $transParams['%hotel%'] = $data['hotel']->getName();
+            /** @var Hotel $hotel */
+            if ($hotel = $data['hotel']) {
+                $data['hotelName'] = $hotel->getName();
+                $transParams['%hotel%'] = $hotel->getName();
             }
 
             if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $this->locale) {
                 $translator->setLocale($recipient->getCommunicationLanguage());
                 $data['isSomeLanguage'] = false;
-                if ($data['hotel'] && $data['hotel']->getInternationalTitle()) {
-                    $data['hotelName'] = $data['hotel']->getInternationalTitle();
-                    $transParams['%hotel%'] = $data['hotel']->getInternationalTitle();
+                /** @var Hotel $hotel */
+                if ($hotel = $data['hotel'] && $hotel->getInternationalTitle()) {
+                    $data['hotelName'] = $hotel->getInternationalTitle();
+                    $transParams['%hotel%'] = $hotel->getInternationalTitle();
                 }
             } else {
                 $translator->setLocale($this->locale);
@@ -213,6 +216,7 @@ class Mailer implements \SplObserver
                 ->setFrom([$this->params['fromMail'] => $fromText])
                 ->setBody($body, 'text/html');
             $message->setTo([$recipient->getEmail() => $recipient->getName()]);
+            //TODO: add try catch? otherwise exception stopped sending  emails
             $this->mailer->send($message);
         }
 
