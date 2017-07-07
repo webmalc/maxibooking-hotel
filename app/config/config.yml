@@ -209,17 +209,51 @@ doctrine_cache:
             namespace: "%mongodb_database%_"
             type: 'apc'
 
+
+
+# GravatarBundle
+ornicar_gravatar:
+  rating: g
+  size: 160
+  default: mm
+
+# KNPMenu
+parameters:
+    knp_menu.renderer.twig.options:
+        currentClass: active
+
+# Lexik translation bundle
+lexik_translation:
+    fallback_locale: [ru]         # (required) default locale(s) to use
+    managed_locales: [ru, en]
+    storage:
+        type: mongodb
+
+vich_uploader:
+    db_driver: mongodb
+    mappings:
+        upload_image:
+            uri_prefix:         '/clients/%client%/upload/images'
+            upload_destination: '%kernel.root_dir%/../web/clients/%client%/upload/images'
+
 liip_imagine:
     resolvers:
         default:
             web_path:
                 cache_prefix: "clients/%client%/media/cache"
+
+    #dont touch data_root. Must be point to root web in our case
+    loaders:
+        default:
+            filesystem:
+                data_root: "%kernel.root_dir%/../web"
     loaders:
         protected:
             filesystem:
-                data_root: "%kernel.root_dir%/../protectedUpload/clients/%client%"
+                data_root: "%kernel.root_dir%/../protectedUpload"
+
     filter_sets:
-#        cache: ~
+        cache: ~
         thumb_50x50:
             quality: 80
             filters:
@@ -250,31 +284,6 @@ liip_imagine:
             filters:
               relative_resize: { scale: 0.5, allow_upscale: true }
 
-
-# GravatarBundle
-ornicar_gravatar:
-  rating: g
-  size: 160
-  default: mm
-
-# KNPMenu
-parameters:
-    knp_menu.renderer.twig.options:
-        currentClass: active
-
-# Lexik translation bundle
-lexik_translation:
-    fallback_locale: [ru]         # (required) default locale(s) to use
-    managed_locales: [ru, en]
-    storage:
-        type: mongodb
-
-vich_uploader:
-    db_driver: mongodb
-    mappings:
-        upload_image:
-            uri_prefix:         '/clients/%client%/upload/images'
-            upload_destination: '%kernel.root_dir%/../web/clients/%client%/upload/images'
 
 bazinga_js_translation:
     locale_fallback:      ru

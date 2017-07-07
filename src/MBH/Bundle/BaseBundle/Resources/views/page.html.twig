@@ -27,7 +27,7 @@
         {% block print_hotel_logo %}
             {% if selected_hotel() and selected_hotel().logo %}
                 <div id="print-hotel-logo">
-                    <img class="grayscale" src="{{ asset(selected_hotel().logoUrl)|imagine_filter('thumb_95x80') }}"/>
+                    <img class="grayscale" src="{{ asset(selected_hotel().logoUrl|imagine_filter('thumb_95x80')) }}"/>
                 </div>
             {% endif %}
         {% endblock %}

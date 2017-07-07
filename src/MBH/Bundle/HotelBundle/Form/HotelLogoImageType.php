@@ -5,12 +5,10 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Image;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use \MBH\Bundle\BaseBundle\Document\Image as BaseImage;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 
 class HotelLogoImageType extends AbstractType
@@ -18,13 +16,13 @@ class HotelLogoImageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('imageFile', FileType::class, [
+//            ->add('imageFile', FileType::class, [
+            ->add('imageFile', VichImageType::class, [
+                'download_uri' => false,
                 'label' => false,
                 'required' => false,
-                'help' => 'form.hotel_images.image_file.help',
-                'constraints' => [new Image(), new NotBlank()],
-                'group' => 'no-group'
-
+                'help' => 'form.hotel_logo.image_file.help',
+                'group' => 'form.hotel_logo.group'
             ]);
     }
 

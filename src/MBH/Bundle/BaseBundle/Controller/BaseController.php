@@ -6,9 +6,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Base Controller
@@ -170,5 +172,21 @@ class BaseController extends Controller
     protected function getRequest()
     {
         return $this->get('request_stack')->getCurrentRequest();
+    }
+
+    /**
+     * @Route("test")
+     */
+    public function testAction()
+    {
+        $dm = $this->container->get('doctrine_mongodb.odm.default_document_manager');
+        /** @var Hotel $hotel */
+        $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->getLastHotel();
+        $image = $hotel->getLogoImage();
+        $helper = $this->container->get('vich_uploader.templating.helper.uploader_helper');
+        $image2 = $hotel->getImages()->first();
+        $path = $helper->asset($image, 'imageFile');
+        $path2 = $helper->asset($image2, 'imageFile');
+        return new Response('alloha');
     }
 }

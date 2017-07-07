@@ -573,7 +573,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * Get images
-     *
+     * @deprecated use
      * @return \Doctrine\Common\Collections\Collection|RoomTypeImage[] $images
      */
     public function getImages()

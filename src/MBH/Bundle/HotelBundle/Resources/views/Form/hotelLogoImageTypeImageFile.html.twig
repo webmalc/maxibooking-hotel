@@ -1,0 +1,24 @@
+{% block vich_image_widget %}
+    {% spaceless %}
+        <div class="vich-image">
+            {{ form_widget(form.file) }}
+
+            {% if form.delete is defined %}
+                <div class="print-clearfix"></div>
+                <div class="col-sm-4">
+                {{ form_label(form.delete) }}
+                </div>
+
+                {{ form_widget(form.delete) }}
+            {% endif %}
+
+            {% if image_uri %}
+                <div class="print-clearfix"></div>
+                <a href="{{ image_uri }}" class="fancybox"><img src="{{ asset(image_uri|imagine_filter('thumb_95x80')) }}" alt="" /></a>
+            {% endif %}
+            {% if download_uri %}
+                <a href="{{ download_uri }}">{{ translation_domain is same as(false) ? download_label : download_label|trans({}, translation_domain) }}</a>
+            {% endif %}
+        </div>
+    {% endspaceless %}
+{% endblock %}

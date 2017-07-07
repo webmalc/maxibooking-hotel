@@ -66,6 +66,7 @@ class HotelType extends AbstractType
             ->add('logoImage', HotelLogoImageType::class, [
                 'group' => 'form.hotelType.settings',
                 'required' => false
+
             ])
             ->add('isHostel', CheckboxType::class, [
                 'label' => 'form.hotelType.hostel',

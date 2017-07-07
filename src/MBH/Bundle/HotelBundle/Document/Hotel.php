@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="Hotels")
+ * @ODM\Document(collection="Hotels", repositoryClass="MBH\Bundle\HotelBundle\Document\HotelRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="validator.document.hotel.hotel_is_exist")
