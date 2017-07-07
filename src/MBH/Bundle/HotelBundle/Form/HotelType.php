@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use MBH\Bundle\BaseBundle\Form\ImageType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -61,6 +62,10 @@ class HotelType extends AbstractType
                 'constraints' => [
                     new \Symfony\Component\Validator\Constraints\Image()
                 ]
+            ])
+            ->add('logoImage', HotelLogoImageType::class, [
+                'group' => 'form.hotelType.settings',
+                'required' => false
             ])
             ->add('isHostel', CheckboxType::class, [
                 'label' => 'form.hotelType.hostel',

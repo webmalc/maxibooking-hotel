@@ -291,6 +291,12 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     protected $zipCode;
 
     /**
+     * @var Image
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\BaseBundle\Document\Image", cascade={"persist"})
+     */
+    protected $logoImage;
+
+    /**
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\BaseBundle\Document\Image")
      */
     protected $images;
@@ -1137,6 +1143,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     public function getLogoUrl()
     {
+//        if ($this->logoImage) {
+//            return $this->logoImage
+//        }
         if ($this->getFile() instanceof File) {
             return '/upload/hotelLogos/' . $this->getLogo();
         }
@@ -1558,6 +1567,20 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
+     * @return Image|null
+     */
+    public function getLogoImage(): ?Image
+    {
+        return $this->logoImage;
+    }
+
+    public function setLogoImage(Image $logoImage)
+    {
+        $this->logoImage = $logoImage;
+    }
+
+
+    /**
      * @return mixed
      */
     public function getZipCode()
@@ -1594,4 +1617,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
         return $this;
     }
+
+
 }

@@ -273,7 +273,7 @@ vich_uploader:
     db_driver: mongodb
     mappings:
         upload_image:
-            uri_prefix:         /upload/images
+            uri_prefix:         '/clients/%client%/upload/images'
             upload_destination: '%kernel.root_dir%/../web/clients/%client%/upload/images'
 
 bazinga_js_translation:
