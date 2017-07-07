@@ -238,14 +238,15 @@ class TripAdvisorResponseCompiler
                     $hotelResponseData = [
                         "response_type" => "available",
                         'available' => [
-                            'room_types' => $this->getRoomTypesData($config, $categories['room_type_details'], $language),
+                            'room_types' => $this->getRoomTypesData($config, $language, $categories['room_type_details'], $categoryModifiers['photos']),
                             'rate_plans' => $this->getRatePlansData($config, $categories['rate_plan_details']),
                             'room_rates' => $hotelRoomRates,
                             'partner_booking_details' => $this->getPartnerBookingDetails($config->getHotel())
                         ]
                     ];
                     if ($categories['hotel_details']) {
-                        $hotelResponseData['available']['hotel_details'] = $this->getHotelDetails($config->getHotel(), $language);
+                        $hotelResponseData['available']['hotel_details']
+                            = $this->getHotelDetails($config->getHotel(), $language, $categoryModifiers['photos']);
                     }
                 } else {
                     $hotelResponseData = ["response_type" => "unavailable"];
@@ -274,29 +275,6 @@ class TripAdvisorResponseCompiler
     /**
      * @param TripAdvisorConfig $config
      * @param bool $isFull
-     * @param $language
-     * @return array
-     */
-    private function getRoomTypesData(TripAdvisorConfig $config, bool $isFull, $language)
-    {
-        $roomTypesData = [];
-        /** @var TripAdvisorRoomType $room */
-        foreach ($config->getRooms() as $room) {
-            if ($room->getIsEnabled()) {
-                if ($isFull) {
-                    $roomTypeData = $this->getRoomTypeData($room->getRoomType(), $language);
-                }
-                $roomTypeData["persistent_room_type_code"] = $room->getRoomType()->getId();
-                $roomTypesData[] = $roomTypeData;
-            }
-        }
-
-        return $roomTypesData;
-    }
-
-    /**
-     * @param TripAdvisorConfig $config
-     * @param bool $isFull
      * @return array
      */
     private function getRatePlansData(TripAdvisorConfig $config, bool $isFull)
@@ -313,6 +291,30 @@ class TripAdvisorResponseCompiler
         }
 
         return $tariffsData;
+    }
+
+    /**
+     * @param TripAdvisorConfig $config
+     * @param $language
+     * @param bool $isWithDetails
+     * @param bool $isWithPhotos
+     * @return array
+     */
+    private function getRoomTypesData(TripAdvisorConfig $config, $language, bool $isWithDetails, bool $isWithPhotos)
+    {
+        $roomTypesData = [];
+        /** @var TripAdvisorRoomType $room */
+        foreach ($config->getRooms() as $room) {
+            if ($room->getIsEnabled()) {
+                if ($isWithDetails) {
+                    $roomTypeData = $this->getRoomTypeData($room->getRoomType(), $language, $isWithPhotos);
+                }
+                $roomTypeData["persistent_room_type_code"] = $room->getRoomType()->getId();
+                $roomTypesData[] = $roomTypeData;
+            }
+        }
+
+        return $roomTypesData;
     }
 
     public function formatSubmitBookingResponse(
@@ -332,7 +334,7 @@ class TripAdvisorResponseCompiler
 
         if ($isSuccessfully) {
             $response['reservation'] =
-                $this->getReservationData($bookingCreationResult, $hotel, $hotel->getTripAdvisorConfig());
+                $this->getReservationData($bookingCreationResult, $hotel, $hotel->getTripAdvisorConfig(), true);
         } else {
             $response['problems'] = $messages;
         }
@@ -351,7 +353,7 @@ class TripAdvisorResponseCompiler
         ];
 
         if ($isCreated) {
-            $response['reservation'] = $this->getReservationData($order, $hotel, $hotel->getTripAdvisorConfig());
+            $response['reservation'] = $this->getReservationData($order, $hotel, $hotel->getTripAdvisorConfig(), true);
         }
 
         return $response;
@@ -430,6 +432,10 @@ class TripAdvisorResponseCompiler
         return $tariffData;
     }
 
+    /**
+     * @param TripAdvisorTariff $tariff
+     * @return array
+     */
     private function getCancellationRules(TripAdvisorTariff $tariff)
     {
         if ($tariff->getRefundableType() == 'full') {
@@ -446,7 +452,14 @@ class TripAdvisorResponseCompiler
         return $result;
     }
 
-    private function getReservationData(Order $order, Hotel $hotel, TripAdvisorConfig $config)
+    /**
+     * @param Order $order
+     * @param Hotel $hotel
+     * @param TripAdvisorConfig $config
+     * @param $isWithPhotos
+     * @return array
+     */
+    private function getReservationData(Order $order, Hotel $hotel, TripAdvisorConfig $config, $isWithPhotos)
     {
         /** @var Package $orderFirstPackage */
         $orderFirstPackage = $order->getFirstPackage();
@@ -491,7 +504,7 @@ class TripAdvisorResponseCompiler
             'checkin_date' => $orderFirstPackage->getBegin()->format(self::TRIP_ADVISOR_DATE_FORMAT),
             'checkout_date' => $orderFirstPackage->getEnd()->format(self::TRIP_ADVISOR_DATE_FORMAT),
             'partner_hotel_code' => $orderFirstPackage->getHotel()->getId(),
-            'hotel' => $this->getHotelDetails($orderFirstPackage->getHotel(), $language),
+            'hotel' => $this->getHotelDetails($orderFirstPackage->getHotel(), $language, $isWithPhotos),
             'customer' => [
                 'first_name' => $payer->getFirstName(),
                 'last_name' => $payer->getLastName(),
@@ -614,7 +627,7 @@ class TripAdvisorResponseCompiler
         ];
     }
 
-    private function getHotelDetails(Hotel $hotel, $requestedLocale)
+    private function getHotelDetails(Hotel $hotel, $requestedLocale, $withPhotos)
     {
         if ($this->isRequestedLanguageLocal($requestedLocale)) {
             $hotelName = $hotel->getName();
@@ -643,6 +656,9 @@ class TripAdvisorResponseCompiler
             'checkout_time' => $this->departureTime . ':00',
             'hotel_smoking_policy' => ['custom' => [$hotel->getSmokingPolicy()], 'standard' => []],
         ];
+        if ($withPhotos) {
+            $hotelDetails['photos'] = $this->getHotelPhotoData($hotel);
+        }
         if ($hotel->getTripAdvisorConfig()->getChildPolicy()) {
             $hotelDetails['child_policy'] = $hotel->getTripAdvisorConfig()->getChildPolicy();
         }
@@ -741,7 +757,7 @@ class TripAdvisorResponseCompiler
         return false;
     }
 
-    private function getRoomTypeData(RoomType $roomType, $locale)
+    private function getRoomTypeData(RoomType $roomType, $locale, $withPhotos)
     {
         if ($this->isRequestedLanguageLocal($locale)) {
             $roomTypeName = $roomType->getName();
@@ -752,7 +768,6 @@ class TripAdvisorResponseCompiler
             'name' => $roomTypeName,
             'description' => $roomType->getDescription()
                 ? $roomType->getDescription() : $roomTypeName,
-            'photos' => $this->getRoomTypePhotoData($roomType),
             'room_amenities' => $this->getRoomAmenities($roomType),
             'max_occupancy' => [
                 'number_of_adults' => $roomType->getTotalPlaces(),
@@ -763,6 +778,9 @@ class TripAdvisorResponseCompiler
             'room_smoking_policy' => $roomType->getIsSmoking() ? 'smoking' : 'non_smoking',
             'room_view_type' => $this->getRoomViewTypes($roomType)
         ];
+        if ($withPhotos) {
+            $roomTypeResponseData['photos'] = $this->getRoomTypePhotoData($roomType);
+        }
 
         if ($roomType->getRoomSpace()) {
             $roomTypeResponseData['room_size_value'] = (int)$roomType->getRoomSpace();
