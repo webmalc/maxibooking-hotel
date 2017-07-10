@@ -778,7 +778,7 @@ class Special extends Base
      * @param string $default_price
      * @return $this
      */
-    public function setDefaultPrice(?string $default_price = null)
+    public function setDefaultPrice($default_price = null)
     {
         $this->default_price = $default_price;
 
