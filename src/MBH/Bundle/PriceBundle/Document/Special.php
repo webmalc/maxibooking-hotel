@@ -224,9 +224,13 @@ class Special extends Base
      * @var string
      * @ODM\Field(type="string")
      * @Assert\Length(min=1, max=6)
+     * @Assert\Regex(
+     *     pattern="/^\d_\d$/",
+     *     message="Ошибка цены по-умолчанию. Пример: 3_0 - трое взрослых, нуль детей. "
+     * )
      *
      */
-    protected $default_price;
+    protected $default_price = '';
 
     /**
      * @var bool
@@ -774,7 +778,7 @@ class Special extends Base
      * @param string $default_price
      * @return $this
      */
-    public function setDefaultPrice(string $default_price)
+    public function setDefaultPrice(?string $default_price = null)
     {
         $this->default_price = $default_price;
 
