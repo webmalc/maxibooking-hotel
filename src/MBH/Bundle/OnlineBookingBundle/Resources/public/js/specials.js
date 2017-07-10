@@ -223,7 +223,7 @@ UrlTool.prototype.getDefaultMonth = function () {
         month = null;
     }
 
-    return month || 'month_06';
+    return month || 'month_07';
 };
 UrlTool.prototype.changeUrl = function (month) {
     var state = this.pathName + '?' + month;

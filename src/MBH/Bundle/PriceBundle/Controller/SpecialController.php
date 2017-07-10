@@ -6,10 +6,8 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
-use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
-use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Special;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Form\SpecialFilterType;
 use MBH\Bundle\PriceBundle\Form\SpecialType;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
@@ -106,6 +104,10 @@ class SpecialController extends Controller implements CheckHotelControllerInterf
         $entity->setLimit(1);
         $specialName = $this->createSpecialName($room, $begin, $end, $virtual);
         $entity->setFullTitle($specialName);
+
+        /** @var Tariff $baseTariff */
+        $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($this->hotel);
+        $entity->addTariff($baseTariff);
 
         $form = $this->createForm(SpecialType::class, $entity);
 

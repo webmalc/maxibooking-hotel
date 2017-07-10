@@ -221,6 +221,14 @@ class Special extends Base
     protected $prices;
 
     /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Length(min=1, max=6)
+     *
+     */
+    protected $default_price;
+
+    /**
      * @var bool
      * @ODM\Field(type="boolean")
      * @Assert\NotNull()
@@ -753,6 +761,27 @@ class Special extends Base
 
         return $result;
     }
+
+    /**
+     * @return string
+     */
+    public function getDefaultPrice()
+    {
+        return $this->default_price;
+    }
+
+    /**
+     * @param string $default_price
+     * @return $this
+     */
+    public function setDefaultPrice(string $default_price)
+    {
+        $this->default_price = $default_price;
+
+        return $this;
+    }
+
+
 
 
 }

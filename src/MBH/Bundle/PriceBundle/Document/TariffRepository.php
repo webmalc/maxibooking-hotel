@@ -99,12 +99,13 @@ class TariffRepository extends DocumentRepository
             }
         }
 
-        $queryBuilder = $this->createQueryBuilder('q');
+        $queryBuilder = $this->createQueryBuilder();
 
         $queryBuilder
             ->field('id')->equals($tariffId)
             ->limit(1);
 
+        /** @var Tariff $result */
         $result = $queryBuilder->getQuery()->getSingleResult();
 
         if ($memcached) {
@@ -129,7 +130,7 @@ class TariffRepository extends DocumentRepository
             }
         }
 
-        $queryBuilder = $this->createQueryBuilder('q');
+        $queryBuilder = $this->createQueryBuilder();
 
         $queryBuilder->field('isDefault')->equals(true)
             ->field('hotel.id')->equals($hotel->getId())

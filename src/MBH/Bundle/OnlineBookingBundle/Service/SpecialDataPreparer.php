@@ -12,6 +12,7 @@ use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\SpecialDataPreparerExeption;
 use MBH\Bundle\OnlineBookingBundle\Service\Sorters\SorterInterface;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\SpecialPrice;
+use MBH\Bundle\PriceBundle\Document\SpecialRepository;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 
 /**
@@ -62,7 +63,10 @@ class SpecialDataPreparer
             $specialsFilter->setHotel($hotel);
         }
 
-        return $this->dm->getRepository('MBHPriceBundle:Special')->getStrictBeginFiltered($specialsFilter);
+        /** @var SpecialRepository $specialRepo */
+        $specialRepo = $this->dm->getRepository('MBHPriceBundle:Special');
+
+        return $specialRepo->getStrictBeginFiltered($specialsFilter);
     }
 
     /**
@@ -73,12 +77,14 @@ class SpecialDataPreparer
     {
         $results = [];
         $data = $this->getSpecialsPageFormat($specials);
-        foreach ($data['specials'] as $specialEntity ) {
+        foreach ($data['specials'] as $specialEntity) {
+            /** @var \DateTime $begin */
+            /** @var \DateTime $end */
             $begin = $specialEntity['dates']['begin'];
             $end = $specialEntity['dates']['end'];
             $special = $specialEntity['special'];
-            $results['month_'.$begin->format('m')][] = $special->getId();
-            $results['month_'.$end->format('m')][] = $special->getId();
+            $results['month_' . $begin->format('m')][] = $special->getId();
+            $results['month_' . $end->format('m')][] = $special->getId();
 
         }
         $data['byMonth'] = $results;
@@ -101,7 +107,7 @@ class SpecialDataPreparer
             if (count($special->getPrices())) {
                 foreach ($special->getPrices() as $specialPrice) {
                     $isDefaultTariff = $specialPrice->getTariff()->getIsDefault();
-                    if (self::ONLY_DEFAULT_TARIFF && !$isDefaultTariff ) {
+                    if (self::ONLY_DEFAULT_TARIFF && !$isDefaultTariff) {
                         continue;
                     }
 
@@ -125,7 +131,6 @@ class SpecialDataPreparer
         $roomType = $specialPrice->getRoomType();
         $tariff = $specialPrice->getTariff();
 
-
         $result = [
             'special' => $special,
             'roomType' => $roomType,
@@ -144,6 +149,7 @@ class SpecialDataPreparer
             'discount' => $special->getDiscount(),
             'isPercent' => $special->isIsPercent(),
             'prices' => $specialPrice->getPrices(),
+            'default_price' => $special->getDefaultPrice()??$this->determineDefaultPrice($specialPrice->getPrices()),
             'specialId' => $special->getId(),
             'roomTypeId' => $roomType->getId(),
             'roomCategoryId' => $roomType->getCategory()->getId(),
@@ -153,6 +159,30 @@ class SpecialDataPreparer
         return $result;
     }
 
+
+    /**
+     * Определяем наибольшее количество человек с наименьшей ценой
+     * @param array|null $prices
+     * @return null|string
+     */
+    private function determineDefaultPrice(array $prices = null): ?string
+    {
+        $result = '';
+        $price = $capacity = [];
+        if (is_array($prices)) {
+            foreach ($prices as $key => $value) {
+                $price[] = $value;
+                $capacity[] = $key;
+            }
+            array_multisort($price, SORT_ASC, SORT_NUMERIC, $capacity, SORT_DESC, SORT_STRING);
+        }
+
+        if (!empty($capacity) && is_array($capacity)) {
+            $result = reset($capacity);
+        }
+
+        return $result;
+    }
 
     /**
      * @param array $data
