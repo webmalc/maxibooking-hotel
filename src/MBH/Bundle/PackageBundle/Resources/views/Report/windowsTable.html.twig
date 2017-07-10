@@ -23,7 +23,7 @@
         <div class="mbh-graph-wrapper">
             <table class="table-hover">
                 <thead>
-                <tr >
+                <tr>
                     <th class="mbh-graph-date-th" style="width: 180px !important;">#</th>
                     {% for date in data.dates %}
                         <th class="mbh-graph-date-th">
@@ -38,7 +38,7 @@
                 <tbody>
                 {% set rooms = data.rooms(roomType) %}
                 {% for room in rooms %}
-                    <tr data-roomtypeid="{{ roomType.id }}" >
+                    <tr data-roomtypeid="{{ roomType.id }}">
                         <td class="text-center text-muted mbh-graph-cell">
                             <small>{{ room }}</small>
                         </td>
@@ -57,22 +57,20 @@
                                         <a style="display: block; height: 100%; z-index:5; position: relative;"
                                            href="{{ path('package_edit', {'id': entry.package.id}) }}"
                                            class="windows-package-info-link bg-green {{ entry.begin ? 'pull-right window-end' }} {{ entry.end ? 'pull-left window-begin' }} {{ not entry.regular ? 'mbh-graph-div' }}"
-                                            data-placement="top" data-html="true"
+                                           data-placement="top" data-html="true"
                                            data-id="{{ entry.package.id }}" title="{{ entry.tooltip }}">
                                         </a>
                                     {% endfor %}
                                 {% endif %}
                                 {% if specials is not empty %}
                                     {% for special in specials %}
-                                        <div title = "{{ special.fullTitle }}" data-toggle="tooltip" class="special-hidden special-cell {{ special.begin == date?'special-cell-begin':'' }} {{ special.end == date?'special-cell-end':'' }}"
+                                        <div title="{{ special.fullTitle }}" data-toggle="tooltip"
+                                             class="special-hidden special-cell {{ special.begin == date?'special-cell-begin':'' }} {{ special.end == date?'special-cell-end':'' }}"
                                              data-name="{{ special.name }}"
-                                             data-special="{{ special.id }}"
-                                        >
-
+                                             data-special="{{ special.id }}">
                                         </div>
                                     {% endfor %}
                                 {% endif %}
-
                             </td>
                         {% endfor %}
                     </tr>
@@ -95,4 +93,38 @@
             </table>
         </div>
     {% endfor %}
+    {% if data.roomTypes|length > 1 %}
+        <div class="bg-gray color-palette mbh-graph-header">
+            {{ 'package.windows_table.total'|trans({}, 'MBHPackageBundle') }}
+        </div>
+        <div class="mbh-graph-wrapper">
+        <table class="table-hover">
+        <thead>
+        <tr>
+            <th class="mbh-graph-date-th" style="width: 180px !important;"></th>
+            {% for date in data.dates %}
+                <th class="mbh-graph-date-th">
+                    <span class="{{ date|date('N') in [6,7] ? 'text-red' }} {{ date|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-yellow' }} ">{{ date|date('d.m') }}</span>
+                    <div class="text-muted">
+                        {{ date|date('Y') == 'now'|date('Y') ? weekdays[date|date('N')]|lower : date|date('Y') }}
+                    </div>
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for option in data.options %}
+            <tr>
+                <td class="text-center text-muted mbh-graph-cell">
+                    <small>{{ option|trans({}, "MBHPackageBundle") }}</small>
+                </td>
+                {% for date in data.dates %}
+                    <td class="text-center text-muted mbh-graph-cell">
+                        <small>{{ data.getTotalValue(option, date) }}</small>
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    {% endif %}
 {% endif %}
