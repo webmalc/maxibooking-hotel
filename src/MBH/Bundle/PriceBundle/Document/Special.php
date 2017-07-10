@@ -224,10 +224,6 @@ class Special extends Base
      * @var string
      * @ODM\Field(type="string")
      * @Assert\Length(min=1, max=6)
-     * @Assert\Regex(
-     *     pattern="/^\d_\d$/",
-     *     message="Ошибка цены по-умолчанию. Пример: 3_0 - трое взрослых, нуль детей. "
-     * )
      *
      */
     protected $default_price;

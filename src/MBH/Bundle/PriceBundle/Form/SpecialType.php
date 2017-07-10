@@ -161,10 +161,10 @@ class SpecialType extends AbstractType
                 'required' => false,
                 'group' => 'special.group.conditions',
                 'help' => 'special.defaultPrice.help',
-                'constraints' => [
-                    new Regex(['pattern' => "/^\d_\d$/", 'message' => 'Ошибка цены по-умолчанию. Пример: 3_0 - трое взрослых, нуль детей.']),
-
-                ]
+//                'constraints' => [
+//                    new Regex(['pattern' => "/^\d_\d$/", 'message' => 'Ошибка цены по-умолчанию. Пример: 3_0 - трое взрослых, нуль детей.']),
+//
+//                ]
 
             ])
             ->add('limit', NumberType::class, [
