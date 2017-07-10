@@ -1,7 +1,6 @@
 /*global window, $, document, mbh, Routing, deleteLink */
 $(document).ready(function () {
     'use strict';
-
     $('#special-packages-list').readmore({
         collapsedHeight: 20,
         lessLink: '<a class="text-right" href="#">скрыть брони</a>',

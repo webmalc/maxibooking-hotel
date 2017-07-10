@@ -292,6 +292,8 @@ special.limit: Макс. кол-во
 special.limit.help: Количество предложений доступных для продажи
 special.isPercent: В процентах?
 form.group.discount: Скидка
+special.defaultPrice: "Вывод цены по умолчанию для:"
+special.defaultPrice.help: "Например 1_0 (1-взрослый, 0 детей)"
 
 special.discount.help: Размер скидки, применяемой к стоимости дня брони
 

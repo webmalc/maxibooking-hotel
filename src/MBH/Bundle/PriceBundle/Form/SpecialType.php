@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class SpecialType extends AbstractType
 {
@@ -86,7 +87,6 @@ class SpecialType extends AbstractType
                 'value' => true,
                 'required' => false,
             ])
-            ->add('defaultPrice', ChoiceType::class, [])
             ->add('displayFrom', DateType::class, [
                     'label' => 'special.displayFrom',
                     'group' => 'special.group.conditions',
@@ -152,11 +152,26 @@ class SpecialType extends AbstractType
                 },
                 'help' => 'special.virtualRoom.help'
             ])
+            ->add('defaultPrice', TextType::class, [
+                'attr' => [
+                    'class' => 'plain-html'
+                ],
+
+                'label' => 'special.defaultPrice',
+                'required' => false,
+                'group' => 'special.group.conditions',
+                'help' => 'special.defaultPrice.help',
+                'constraints' => [
+                    new Regex(['pattern' => "/^\d_\d$/", 'message' => 'Ошибка цены по-умолчанию. Пример: 3_0 - трое взрослых, нуль детей.']),
+
+                ]
+
+            ])
             ->add('limit', NumberType::class, [
                 'label' => 'special.limit',
                 'help' => 'special.limit.help',
                 'group' => 'special.group.conditions',
-                'attr' => ['class' => 'spinner-1'],
+                'attr' => ['class' => 'spinner-1']
             ])
             ->add('isEnabled', CheckboxType::class, [
                 'label' => 'isEnabled',

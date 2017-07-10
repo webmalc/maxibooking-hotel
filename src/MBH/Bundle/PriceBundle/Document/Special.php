@@ -14,7 +14,6 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\BaseBundle\Validator\Constraints as MBHAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -221,9 +220,14 @@ class Special extends Base
     protected $prices;
 
     /**
+     * string format (adults_children  e.g. 1_0 )
      * @var string
      * @ODM\Field(type="string")
      * @Assert\Length(min=1, max=6)
+     * @Assert\Regex(
+     *     pattern="/^\d_\d$/",
+     *     message="Ошибка цены по-умолчанию. Пример: 3_0 - трое взрослых, нуль детей. "
+     * )
      *
      */
     protected $default_price;
