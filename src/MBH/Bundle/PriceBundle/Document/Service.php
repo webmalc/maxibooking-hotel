@@ -561,4 +561,19 @@ class Service extends Base
     {
         return $this->includeArrival;
     }
+
+    /**
+     * @param bool $isFull
+     * @return array
+     */
+    public function getJsonSerialized($isFull = false)
+    {
+        //TODO: Потребуется - расширю
+        $data = [
+            'id' => $this->getId(),
+            'title' => $this->getName(),
+        ];
+
+        return $data;
+    }
 }

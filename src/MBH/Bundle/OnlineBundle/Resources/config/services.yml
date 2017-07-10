@@ -8,3 +8,13 @@ services:
     mbh.online.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.online.log", 200]
+
+    mbh.api_response_compiler:
+        class: MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler
+        arguments:
+            - '@translator'
+
+    mbh.api_handler:
+        class: MBH\Bundle\OnlineBundle\Services\ApiHandler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
