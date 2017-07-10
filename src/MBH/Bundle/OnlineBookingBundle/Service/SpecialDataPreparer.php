@@ -168,8 +168,35 @@ class SpecialDataPreparer
     private function determineDefaultPrice(array $prices = null): ?string
     {
         $result = '';
-        $price = $capacity = [];
         if (is_array($prices)) {
+//            /** Вариант наивыгоднейшей цены */
+//             * Сортировка по условию минимум цена за одного
+//             */
+//            $price = $capacity = [];
+//            $origin = $prices;
+//            uksort($prices, function ($capA, $capB) use($origin) {
+//                [$adultsA, $childrenA] = explode('_', $capA);
+//                [$adultsB, $childrenB] = explode('_', $capB);
+//                $capacityA = $adultsA + $childrenA;
+//                $capacityB = $adultsB + $childrenB;
+//
+//                $priceA = $origin[$capA] / $capacityA;
+//                $priceB = $origin[$capB] / $capacityB;
+//
+//                return $priceA <=> $priceB;
+//            });
+
+            /** Вариант 2, без цены за 1
+             * Принудительно убираю цену за одного из значений по-умолчанию.
+             *
+             * @var  $key
+             * @var  $value
+             */
+            $capacity = [];
+            $excludeCapacity = '1_0';
+            if (isset($prices[$excludeCapacity])) {
+                unset($prices[$excludeCapacity]);
+            }
             foreach ($prices as $key => $value) {
                 $price[] = $value;
                 $capacity[] = $key;
