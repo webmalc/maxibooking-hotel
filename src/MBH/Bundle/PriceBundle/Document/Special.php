@@ -285,7 +285,7 @@ class Special extends Base
      * @param string $fullTitle
      * @return self
      */
-    public function setFullTitle(string $fullTitle) :self
+    public function setFullTitle(string $fullTitle = null) :self
     {
         $this->fullTitle = $fullTitle;
         return $this;
@@ -493,7 +493,7 @@ class Special extends Base
      * @param float $discount
      * @return Special
      */
-    public function setDiscount(float $discount): Special
+    public function setDiscount(float $discount = null): Special
     {
         $this->discount = $discount;
         return $this;
@@ -511,9 +511,10 @@ class Special extends Base
      * @param bool $isPercent
      * @return Special
      */
-    public function setIsPercent(bool $isPercent): Special
+    public function setIsPercent(bool $isPercent = null): Special
     {
         $this->isPercent = $isPercent;
+
         return $this;
     }
 
@@ -529,9 +530,10 @@ class Special extends Base
      * @param int $limit
      * @return Special
      */
-    public function setLimit(int $limit): Special
+    public function setLimit(int $limit = null): Special
     {
         $this->limit = $limit;
+
         return $this;
     }
 
@@ -547,7 +549,7 @@ class Special extends Base
      * @param int $sold
      * @return Special
      */
-    public function setSold(int $sold): Special
+    public function setSold(int $sold = null): Special
     {
         $this->sold = $sold;
         return $this;
@@ -565,7 +567,7 @@ class Special extends Base
      * @param int $remain
      * @return Special
      */
-    public function setRemain(int $remain): Special
+    public function setRemain(int $remain = null): Special
     {
         $this->remain = $remain;
         return $this;
@@ -726,7 +728,7 @@ class Special extends Base
      * @param Room $virtualRoom
      * @return $this
      */
-    public function setVirtualRoom(Room $virtualRoom)
+    public function setVirtualRoom(Room $virtualRoom = null)
     {
         $this->virtualRoom = $virtualRoom;
 
@@ -744,7 +746,7 @@ class Special extends Base
     /**
      * @param string $error
      */
-    public function setError(string $error)
+    public function setError(string $error = null)
     {
         $this->error = $error;
     }

@@ -5,6 +5,10 @@ namespace MBH\Bundle\PriceBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
+use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
+use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -13,6 +17,9 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Regex;
 
@@ -22,10 +29,15 @@ class SpecialType extends AbstractType
      * @var HotelSelector
      */
     private $hotelSelector;
+    /**
+     * @var SearchFactory
+     */
+    private $search;
 
-    public function __construct(HotelSelector $hotelSelector)
+    public function __construct(HotelSelector $hotelSelector, SearchFactory $search)
     {
         $this->hotelSelector = $hotelSelector;
+        $this->search = $search;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -117,7 +129,7 @@ class SpecialType extends AbstractType
                 'class' => 'MBH\Bundle\PriceBundle\Document\Tariff',
                 'multiple' => true,
                 'required' => false,
-                'query_builder' => function(DocumentRepository $er) {
+                'query_builder' => function (DocumentRepository $er) {
                     return $er->createQueryBuilder()
                         ->field('hotel')->references($this->hotelSelector->getSelected())
                         ->sort('fullTitle', 'asc');
@@ -131,7 +143,7 @@ class SpecialType extends AbstractType
                 'multiple' => true,
                 'group_by' => 'category',
                 'required' => false,
-                'query_builder' => function(DocumentRepository $er) {
+                'query_builder' => function (DocumentRepository $er) {
                     return $er->createQueryBuilder()
                         ->field('hotel')
                         ->references($this->hotelSelector->getSelected())
@@ -152,21 +164,6 @@ class SpecialType extends AbstractType
                 },
                 'help' => 'special.virtualRoom.help'
             ])
-            ->add('defaultPrice', TextType::class, [
-                'attr' => [
-                    'class' => 'plain-html'
-                ],
-
-                'label' => 'special.defaultPrice',
-                'required' => false,
-                'group' => 'special.group.conditions',
-                'help' => 'special.defaultPrice.help',
-                'constraints' => [
-                    new Regex(['pattern' => "/^\d_\d$/", 'message' => 'Ошибка цены по-умолчанию. Пример: 3_0 - трое взрослых, нуль детей.']),
-
-                ]
-
-            ])
             ->add('limit', NumberType::class, [
                 'label' => 'special.limit',
                 'help' => 'special.limit.help',
@@ -178,14 +175,63 @@ class SpecialType extends AbstractType
                 'group' => 'form.group.config',
                 'value' => true,
                 'required' => false,
-            ])
-        ;
+            ]);
+
+        $defaultPriceModifier = function (FormInterface $form, Room $virtualRoom = null) {
+            $choices = [];
+            /** @var RoomType $roomType */
+            if ($virtualRoom) {
+                $roomType = $virtualRoom->getRoomType();
+                $capacity = $roomType->getTotalPlaces();
+                $choices = [];
+                foreach (range(1, $capacity) as $adultPlace) {
+                    foreach (range(0, $capacity - $adultPlace) as $childPlace) {
+                        $choices[] = $adultPlace . '_' . ($childPlace);
+                    }
+
+                }
+            }
+
+            $form->add('defaultPrice', ChoiceType::class, [
+                'label' => 'special.defaultPrice',
+                'required' => false,
+                'attr' => [
+                    'class' => 'plain-html'
+                ],
+                'group' => 'special.group.conditions',
+                'help' => 'special.defaultPrice.help',
+                'choices' => array_combine($choices, $choices),
+                'constraints' => [
+                    new Regex(['pattern' => "/^\d_\d$/", 'message' => 'Ошибка цены по-умолчанию. Пример: 3_0 - трое взрослых, нуль детей.']),
+
+                ]
+            ]);
+        };
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($defaultPriceModifier) {
+            $virtualRoom = $event->getData()->getVirtualRoom();
+            $defaultPriceModifier($event->getForm(), $virtualRoom);
+
+        });
+        $builder->get('virtualRoom')->addEventListener(
+            FormEvents::POST_SUBMIT,
+            function (FormEvent $event) use ($defaultPriceModifier) {
+                $virtualRoom = $event->getForm()->getData();
+                $defaultPriceModifier($event->getForm()->getParent(), $virtualRoom);
+            }
+
+        );
+//
+//        $builder->get('virtualRoom')->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+//            $event->stopPropagation();
+//        }, 900);
     }
+
+
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'MBH\Bundle\PriceBundle\Document\Special'
+            'data_class' => 'MBH\Bundle\PriceBundle\Document\Special',
         ));
     }
 

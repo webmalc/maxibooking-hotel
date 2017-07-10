@@ -48,7 +48,7 @@ services:
 
   mbh.type.special:
       class:      MBH\Bundle\PriceBundle\Form\SpecialType
-      arguments:  ["@mbh.hotel.selector"]
+      arguments:  ["@mbh.hotel.selector", "@mbh.package.search"]
       tags:
               - { name: form.type }
 

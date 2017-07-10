@@ -975,12 +975,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb.git",
-                "reference": "1c22128aa00703e9599b7b7b21a636c1214be7b7"
+                "reference": "7dde2cfeaf4acf16572b79567e48550c15b199ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb/zipball/1c22128aa00703e9599b7b7b21a636c1214be7b7",
-                "reference": "1c22128aa00703e9599b7b7b21a636c1214be7b7",
+                "url": "https://api.github.com/repos/doctrine/mongodb/zipball/7dde2cfeaf4acf16572b79567e48550c15b199ba",
+                "reference": "7dde2cfeaf4acf16572b79567e48550c15b199ba",
                 "shasum": ""
             },
             "require": {
@@ -990,7 +990,7 @@
             },
             "require-dev": {
                 "jmikola/geojson": "^1.0",
-                "phpunit/phpunit": "~4.8|~5.0"
+                "phpunit/phpunit": "^5.7 || ^6.0"
             },
             "suggest": {
                 "alcaeus/mongo-php-adapter": "Allows usage of PHP 7",
@@ -999,7 +999,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4.x-dev"
+                    "dev-master": "1.5.x-dev"
                 }
             },
             "autoload": {
@@ -1044,7 +1044,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2016-11-08 06:28:35"
+            "time": "2017-07-07 05:37:08"
         },
         {
             "name": "doctrine/mongodb-odm",
@@ -1052,12 +1052,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "f158f31bf1632d4bb9679b8a748b1b54e6cb9d25"
+                "reference": "0e8729239071e213596cddc5b52a50dfb652ce6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/f158f31bf1632d4bb9679b8a748b1b54e6cb9d25",
-                "reference": "f158f31bf1632d4bb9679b8a748b1b54e6cb9d25",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/0e8729239071e213596cddc5b52a50dfb652ce6b",
+                "reference": "0e8729239071e213596cddc5b52a50dfb652ce6b",
                 "shasum": ""
             },
             "require": {
@@ -1067,7 +1067,7 @@
                 "doctrine/common": "~2.4",
                 "doctrine/inflector": "~1.0",
                 "doctrine/instantiator": "~1.0.1",
-                "doctrine/mongodb": "~1.3",
+                "doctrine/mongodb": "^1.4.0",
                 "php": "^5.6 || ^7.0",
                 "symfony/console": "~2.3|~3.0"
             },
@@ -1076,7 +1076,6 @@
                 "symfony/yaml": "~2.3|~3.0"
             },
             "suggest": {
-                "alcaeus/mongo-php-adapter": "Allows usage of PHP 7",
                 "symfony/yaml": "Enables the YAML metadata mapping driver"
             },
             "type": "library",
@@ -1128,7 +1127,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2016-11-08 07:43:58"
+            "time": "2017-06-23 09:22:43"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -1136,30 +1135,32 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMongoDBBundle.git",
-                "reference": "6dde855375471bc3e1bf2fad4e3d781efff68d67"
+                "reference": "74c3e1cc6d14a44707f8d162437a6454c0cbeff7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/6dde855375471bc3e1bf2fad4e3d781efff68d67",
-                "reference": "6dde855375471bc3e1bf2fad4e3d781efff68d67",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/74c3e1cc6d14a44707f8d162437a6454c0cbeff7",
+                "reference": "74c3e1cc6d14a44707f8d162437a6454c0cbeff7",
                 "shasum": ""
             },
             "require": {
+                "doctrine/mongodb": "^1.4",
                 "doctrine/mongodb-odm": "^1.1",
                 "php": "^5.6 || ^7.0",
                 "psr/log": "^1.0",
-                "symfony/config": "^2.7 || ^3.0",
-                "symfony/console": "^2.7 || ^3.0",
-                "symfony/dependency-injection": "^2.7 || ^3.0",
-                "symfony/doctrine-bridge": "^2.7 || ^3.0",
-                "symfony/framework-bundle": "^2.7 || ^3.0",
-                "symfony/options-resolver": "^2.7 || ^3.0"
+                "symfony/config": "^2.7 || ^3.0 || ^4.0",
+                "symfony/console": "^2.7 || ^3.0 || ^4.0",
+                "symfony/dependency-injection": "^2.7 || ^3.0 || ^4.0",
+                "symfony/doctrine-bridge": "^2.7 || ^3.0 || ^4.0",
+                "symfony/framework-bundle": "^2.7 || ^3.0 || ^4.0",
+                "symfony/options-resolver": "^2.7 || ^3.0 || ^4.0"
             },
             "require-dev": {
                 "doctrine/data-fixtures": "@dev",
-                "symfony/form": "^2.7 || ^3.0",
-                "symfony/phpunit-bridge": "^2.7 || ^3.0",
-                "symfony/yaml": "^2.7 || ^3.0"
+                "phpunit/phpunit": "^5.6",
+                "symfony/form": "^2.7 || ^3.0 || ^4.0",
+                "symfony/phpunit-bridge": "^2.7 || ^3.0 || ^4.0",
+                "symfony/yaml": "^2.7 || ^3.0 || ^4.0"
             },
             "suggest": {
                 "doctrine/data-fixtures": "Load data fixtures"
@@ -1167,7 +1168,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1-dev"
+                    "dev-master": "3.4-dev"
                 }
             },
             "autoload": {
@@ -1200,7 +1201,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2016-09-16 13:05:23"
+            "time": "2017-06-07 14:25:20"
         },
         {
             "name": "friendsofsymfony/jsrouting-bundle",
