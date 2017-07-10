@@ -149,7 +149,7 @@ class SpecialDataPreparer
             'discount' => $special->getDiscount(),
             'isPercent' => $special->isIsPercent(),
             'prices' => $specialPrice->getPrices(),
-            'default_price' => $special->getDefaultPrice()??$this->determineDefaultPrice($specialPrice->getPrices()),
+            'default_price' => $special->getDefaultPrice()?:$this->determineDefaultPrice($specialPrice->getPrices()),
             'specialId' => $special->getId(),
             'roomTypeId' => $roomType->getId(),
             'roomCategoryId' => $roomType->getCategory()->getId(),

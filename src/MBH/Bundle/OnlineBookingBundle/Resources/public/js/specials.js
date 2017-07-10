@@ -63,8 +63,9 @@ Special.prototype.recalculatePrice = function () {
 
 Special.prototype.reNewPrices = function () {
     var prices = this.recalculatePrice();
-    this.$newPrice.text(prices.newPrice);
-    this.$oldPrice.text(prices.oldPrice);
+    console.log(prices.newPrice);
+    this.$newPrice.text(this.numberWithCommas(prices.newPrice));
+    this.$oldPrice.text(this.numberWithCommas(prices.oldPrice));
 };
 
 Special.prototype.reNewHref = function () {
@@ -106,6 +107,10 @@ Special.prototype.setLast = function () {
     if (!this.$row.hasClass('spec-last')) {
         this.$row.addClass('spec-last')
     }
+};
+
+Special.prototype.numberWithCommas = function (x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 };
 
 var MonthSwitcher = function ($row, urlTool) {
