@@ -6,7 +6,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
- * Created by PhpStorm.
  * User: danya
  * Date: 10.07.17
  * Time: 10:11

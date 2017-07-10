@@ -66,7 +66,7 @@ onlinebundle.resources.net: Нет
 
 external_api_controller.online_form_config.not_found: Онлайн формы с указанным ID не существует
 external_api_controller.online_form_config.not_enabled: Указанная онлайн-форма недоступна
-external_api_controller.missing_fields.error: 'Отсутствует поле "%field%"'
+external_api_controller.missing_fields.error: 'Отсутствует обязательно поле "%field%"'
 external_api_controller.field_must_be_type_of_array: 'Поле "%field%" должно быть массивом'
 external_api_controller.error.hotel_with_specified_id_not_exists: 'Отеля с ID = "%hotelId%" не существует'
 external_api_controller.error.specified_room_type_not_contains_in_form_config: 'Тип номера с ID = "%roomTypeId%" не указан в списке типов номеров конфигурации указанной онлайн-формы'

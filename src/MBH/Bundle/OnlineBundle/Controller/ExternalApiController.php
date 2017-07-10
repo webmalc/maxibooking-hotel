@@ -214,15 +214,13 @@ class ExternalApiController extends BaseController
                 if (is_null($roomType)) {
                     $responseCompiler->addErrorMessage($responseCompiler::ROOM_TYPE_WITH_SPECIFIED_ID_NOT_EXISTS,
                         ['%roomTypeId%' => $roomTypeId]);
-
-                    if (!is_null($formConfig) &&!$formConfig->getRoomTypeChoices()->contains($roomType)) {
-                        $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_ROOM_TYPE,
-                            ['%roomTypeId%' => $roomTypeId]
-                        );
-                    }
+                } elseif (!is_null($formConfig) && !$formConfig->getRoomTypeChoices()->contains($roomType)) {
+                    $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_ROOM_TYPE,
+                        ['%roomTypeId%' => $roomTypeId]
+                    );
+                } else {
+                    $query->addRoomType($roomTypeId);
                 }
-
-                $query->addRoomType($roomTypeId);
             }
         }
 
@@ -233,14 +231,13 @@ class ExternalApiController extends BaseController
                     $responseCompiler->addErrorMessage($responseCompiler::HOTEL_WITH_SPECIFIED_ID_NOT_EXISTS,
                         ['%hotelId%' => $hotelId]);
 
-                    if (!is_null($formConfig) && !$formConfig->getHotels()->contains($hotel)) {
-                        $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_HOTEL,
-                            ['%hotelId%' => $hotelId]
-                        );
-                    }
+                } elseif (!is_null($formConfig) && !$formConfig->getHotels()->contains($hotel)) {
+                    $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_HOTEL,
+                        ['%hotelId%' => $hotelId]
+                    );
+                } else {
+                    $query->addHotel($hotel);
                 }
-
-                $query->addHotel($hotel);
             }
         }
 
@@ -255,7 +252,6 @@ class ExternalApiController extends BaseController
         $results = $this->get('mbh.package.search')->search($query);
 
         $responseData = [];
-
         /** @var SearchResult $searchResult */
         foreach ($results as $searchResult) {
             $responseData[] = $searchResult->getJsonSerialized();

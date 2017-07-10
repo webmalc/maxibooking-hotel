@@ -646,7 +646,6 @@ class ApiController extends Controller
                 'accommodation' => false,
                 'tariff' => $info->tariff->id,
                 'isOnline' => true,
-                'accommodation' => false,
             ];
         }
         foreach ($request->services as $info) {
