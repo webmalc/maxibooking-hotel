@@ -63,6 +63,9 @@
                     data-price="{{ price|round }}"
                     data-adults="{{ adults }}"
                     data-children="{{ children }}"
+                    {% if special.default_price is not empty and special.default_price == capacity %}
+                        selected="selected"
+                    {% endif %}
             >
                 {{ adults }} взр. {{ children ? '+' ~children~ ' ' ~ 'children'|transchoice(children):'' }}
             </option>
