@@ -20,6 +20,7 @@ form.orderTouristType.phone: Телефон
 form.orderTouristType.phone: Телефон
 form.orderTouristType.email: E-mail
 mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu: 'Услуга по умолчанию'
+mbhpackagebundle.services.ordermanager.all_accommodations_removed: 'Размещения были удалены так как был изменен тип номера'
 mbhpackagebundle.services.touristsmessenger.gost.ne.nayden: 'Гость не найден.'
 mbhpackagebundle.view.service.index.kategoriya: Категория
 mbhpackagebundle.view.service.index.vse.uslugi: 'Все услуги'
@@ -205,7 +206,7 @@ form.packageCopyType.should_we_transfer_guests_to_selected_reservation: Пере
 form.packageCopyType.services: Услуги
 form.packageCopyType.should_we_transfer_all_services_to_selected_reservation: Перенести ли все услуги в выбранную бронь?
 form.packageCopyType.placement: Размещение
-form.packageCopyType..should_we_transfer_placement_to_selected_reservation: Перенести ли размещение в выбранную бронь?
+form.packageCopyType.should_we_transfer_placement_to_selected_reservation: Перенести ли размещение в выбранную бронь?
 form.packageGuestType.fio: ФИО
 form.packageGuestType.find_guest: Найти гостя
 form.packageGuestType.placeholder_fio: Иванов Иван Иванович

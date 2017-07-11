@@ -140,9 +140,12 @@ class OrderManager
 
     public function tryUpdateAccommodations(Package $package, Package $oldPackage)
     {
-        $errorMessages = [];
-        if ($package->getBegin() != $oldPackage->getBegin() || $package->getEnd() != $oldPackage->getEnd()) {
-
+        $isSuccessFull = true;
+        $dangerNotifications = [];
+        if ($package->getRoomType()->getId() !== $oldPackage->getRoomType()->getId()) {
+            $package->removeAccommodations();
+            $dangerNotifications[] = 'mbhpackagebundle.services.ordermanager.all_accommodations_removed';
+        } elseif ($package->getBegin() != $oldPackage->getBegin() || $package->getEnd() != $oldPackage->getEnd()) {
             $sortedAccommodations = $package->getSortedAccommodations();
             if ($sortedAccommodations->count() > 0) {
                 /** @var PackageAccommodation $firstAccommodation */
@@ -151,7 +154,8 @@ class OrderManager
                     $firstAccommodation->setBegin($package->getBegin());
                     $errorMessage = $this->checkEditedAccommodation($firstAccommodation, $package);
                     if (!empty($errorMessage)) {
-                        $errorMessages[] = $errorMessage;
+                        $isSuccessFull = false;
+                        $dangerNotifications[] = $errorMessage;
                     }
                 }
 
@@ -161,13 +165,18 @@ class OrderManager
                     $lastAccommodation->setEnd($package->getEnd());
                     $errorMessage = $this->checkEditedAccommodation($lastAccommodation, $package);
                     if (!empty($errorMessage)) {
-                        $errorMessages[] = $errorMessage;
+                        $isSuccessFull = false;
+                        $dangerNotifications[] = $errorMessage;
                     }
                 }
             }
         }
 
-        return $errorMessages;
+
+        return [
+            'success' => $isSuccessFull,
+            'dangerNotifications' => $dangerNotifications
+        ];
     }
 
     private function checkEditedAccommodation(PackageAccommodation $accommodation, Package $package)
@@ -594,6 +603,24 @@ class OrderManager
         }
 
         return $order;
+    }
+
+    public function updatePricesByDate(Package $package, ?Tariff $tariff)
+    {
+        $newDailyPrice = $package->getPrice() / $package->getNights();
+        $newPricesByDate = [];
+        $begin = clone $package->getBegin();
+        $end = clone $package->getEnd();
+        /** @var \DateTime $day */
+        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
+            $newPricesByDate[$day->format('d_m_Y')] = $newDailyPrice;
+            $packagePrice = $package->getPackagePriceByDate($day);
+            $packagePrice->setPrice($newDailyPrice);
+            if (!is_null($tariff)) {
+                $packagePrice->setTariff($tariff);
+            }
+        }
+        $package->setPricesByDate($newPricesByDate);
     }
 }
 

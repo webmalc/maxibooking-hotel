@@ -466,18 +466,22 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid() && !$package->getIsLocked()) {
             //check by search
             $newTariff = $form->get('tariff')->getData();
-            $orderManager = $this->container->get('mbh.order_manager');
+            $orderManager = $this->get('mbh.order_manager');
+            if ($package->getPackagePrice() != $oldPackage->getPackagePrice()) {
+                $orderManager->updatePricesByDate($package, $newTariff);
+            }
+
             $result = $orderManager->updatePackage($oldPackage, $package, $newTariff);
             if ($result instanceof Package) {
                 $this->dm->persist($package);
                 $this->dm->flush();
                 $this->addFlash('success', 'controller.packageController.record_edited_success');
-                $errorMessages = $orderManager->tryUpdateAccommodations($package, $oldPackage);
-                if (count($errorMessages) > 0) {
-                    foreach ($errorMessages as $errorMessage) {
-                        $this->addFlash('danger', $errorMessage);
-                    }
-                } else {
+
+                $updateResult = $orderManager->tryUpdateAccommodations($package, $oldPackage);
+                foreach ($updateResult['dangerNotifications'] as $messages) {
+                    $this->addFlash('danger', $messages);
+                }
+                if ($updateResult['success'] === true) {
                     $this->dm->flush();
                 }
 
