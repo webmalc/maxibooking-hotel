@@ -10,6 +10,37 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 class RoomCacheRepository extends DocumentRepository
 {
     /**
+     * @param int $period
+     * @return array
+     */
+    public function findForDashboard(int $period): array
+    {
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight +' . $period . ' days');
+        $result = [];
+        $caches =  $this->createQueryBuilder()
+            ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'totalRooms')
+            ->field('date')->gte($begin)->lte($end)
+            ->sort('date')->sort('hotel.id')->sort('roomType.id')
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()->toArray();
+
+        foreach ($caches as $cache) {
+            $cache['id'] = (string) $cache['_id'];
+            $cache['date'] = $cache['date']->toDateTime();
+            $cache['date']->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+            $cache['hotel'] = (string) $cache['hotel']['$id'];
+            $cache['roomType'] = (string) $cache['roomType']['$id'];
+            $cache['tariff'] = isset($cache['tariff']) ? (string) $cache['tariff']['$id'] : 0;
+            unset($cache['_id']);
+            $result[$cache['hotel']][$cache['roomType']][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
+        }
+
+        return $result;
+    }
+
+    /**
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param RoomType $roomType

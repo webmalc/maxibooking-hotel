@@ -65,6 +65,32 @@ class PackageAccommodation extends Base implements \JsonSerializable
     protected $accommodation;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull
+     */
+    protected $isAutomaticallyChangeable = true;
+
+    /**
+     * @return bool
+     */
+    public function isAutomaticallyChangeable(): ?bool
+    {
+        return $this->isAutomaticallyChangeable;
+    }
+
+    /**
+     * @param bool $isAutomaticallyChangeable
+     * @return PackageAccommodation
+     */
+    public function setIsAutomaticallyChangeable(bool $isAutomaticallyChangeable): PackageAccommodation
+    {
+        $this->isAutomaticallyChangeable = $isAutomaticallyChangeable;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array

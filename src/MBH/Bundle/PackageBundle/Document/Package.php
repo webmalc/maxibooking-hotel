@@ -1641,7 +1641,6 @@ class Package extends Base implements \JsonSerializable
         usort($data, function ($a, $b) {
             /** @var PackageAccommodation $a*/
             /** @var PackageAccommodation $b*/
-            $c = 'd';
             return ($a->getBegin() < $b->getBegin())? -1 : 1;
         });
 

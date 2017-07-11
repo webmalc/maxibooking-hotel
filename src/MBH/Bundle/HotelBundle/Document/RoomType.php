@@ -138,7 +138,7 @@ class RoomType extends Base implements RoomTypeInterface
      * @Assert\Range(
      *      min=0,
      *      minMessage="validator.document.roomType.places_amount_less_zero",
-     *      max=5
+     *      max=10
      * )
      * @ODM\Index()
      */

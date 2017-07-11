@@ -467,6 +467,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             //check by search
             $newTariff = $form->get('tariff')->getData();
             $orderManager = $this->container->get('mbh.order_manager');
+            $result = $orderManager->updatePackage($oldPackage, $package, $newTariff);
+            $orderManager = $this->container->get('mbh.order_manager');
             if ($package->getPackagePrice() != $oldPackage->getPackagePrice()) {
                 $orderManager->updatePricesByDate($package, $newTariff);
             }
@@ -477,15 +479,19 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             if ($result instanceof Package) {
                 $this->dm->persist($package);
                 $this->dm->flush();
-
-                $flashBag->set(
-                    'success',
-                    $this->get('translator')->trans('controller.packageController.record_edited_success')
-                );
+                $this->addFlash('success', 'controller.packageController.record_edited_success');
+                $errorMessages = $orderManager->tryUpdateAccommodations($package, $oldPackage);
+                if (count($errorMessages) > 0) {
+                    foreach ($errorMessages as $errorMessage) {
+                        $this->addFlash('danger', $errorMessage);
+                    }
+                } else {
+                    $this->dm->flush();
+                }
 
                 return $this->afterSaveRedirect('package', $package->getId());
             } else {
-                $flashBag->set('danger', $this->get('translator')->trans($result));
+                $this->addFlash('danger', $result);
             }
         }
 
