@@ -410,6 +410,7 @@ report.poll.invite: 'Визовые приглашения'
 report.poll.small_title_order: 'Оценки заказа '
 views.report.polls.th.order: Заказ
 views.report.polls.th.hotel: Отель
+mbhpackagebundle.view.report.polls.daty: Даты
 views.report.polls.not_found: Ничего не найдено.
 views.report.polls.view_record: 'Перейти к результатам'
 
