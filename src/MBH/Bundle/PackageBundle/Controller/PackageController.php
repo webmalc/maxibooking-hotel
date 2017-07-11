@@ -466,22 +466,24 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid() && !$package->getIsLocked()) {
             //check by search
             $newTariff = $form->get('tariff')->getData();
-            $result = $this->container->get('mbh.order_manager')
-                ->updatePackage($oldPackage, $package, $newTariff);
-            /** @var FlashBagInterface $flashBag */
-            $flashBag = $request->getSession()->getFlashBag();
+            $orderManager = $this->container->get('mbh.order_manager');
+            $result = $orderManager->updatePackage($oldPackage, $package, $newTariff);
             if ($result instanceof Package) {
                 $this->dm->persist($package);
                 $this->dm->flush();
-
-                $flashBag->set(
-                    'success',
-                    $this->get('translator')->trans('controller.packageController.record_edited_success')
-                );
+                $this->addFlash('success', 'controller.packageController.record_edited_success');
+                $errorMessages = $orderManager->tryUpdateAccommodations($package, $oldPackage);
+                if (count($errorMessages) > 0) {
+                    foreach ($errorMessages as $errorMessage) {
+                        $this->addFlash('danger', $errorMessage);
+                    }
+                } else {
+                    $this->dm->flush();
+                }
 
                 return $this->afterSaveRedirect('package', $package->getId());
             } else {
-                $flashBag->set('danger', $this->get('translator')->trans($result));
+                $this->addFlash('danger', $result);
             }
         }
 

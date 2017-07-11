@@ -135,7 +135,6 @@ services:
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
-
     mbh.event_listener.versioned_subscriber:
             class: MBH\Bundle\BaseBundle\EventListener\VersionedSubscriber
             arguments: ["@service_container"]

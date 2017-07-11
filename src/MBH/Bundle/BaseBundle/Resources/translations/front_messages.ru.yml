@@ -32,3 +32,9 @@ action_manager.update_modal.not_specified: Не указан
 
 search.book_button.title: 'Бронировать номер. Всего номеров %roomsCount%'
 search.disabled_book_button.title: Для создания брони необходимо указать плательщика
+
+accommodation.modal_title.add_accommodation: Добавить размещение
+accommodation.modal_title.change_accommodation: Изменить размещение
+
+app.bootstrap_switch_config.yes: да
+app.bootstrap_switch_config.no: нет
