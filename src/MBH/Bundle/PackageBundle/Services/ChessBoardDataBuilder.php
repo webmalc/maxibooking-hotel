@@ -287,7 +287,7 @@ class ChessBoardDataBuilder
             if (count($rooms) > 0) {
                 $accommodations = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')
                     ->fetchWithAccommodation(
-                        $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
+                        $this->beginDate, $this->endDate, $this->helper->toIds($rooms)
                     );
                 //сортируем по датам начала размещения
                 $this->packageAccommodations = $this->accommodationManipulator
