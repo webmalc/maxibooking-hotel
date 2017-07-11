@@ -1676,9 +1676,19 @@ class Package extends Base implements \JsonSerializable
      * @param PackageAccommodation $accommodation
      * @return Package
      */
-    public function removeAccommodations(PackageAccommodation $accommodation)
+    public function removeAccommodation(PackageAccommodation $accommodation)
     {
         $this->accommodations->removeElement($accommodation);
+
+        return $this;
+    }
+
+    /**
+     * @return Package
+     */
+    public function removeAccommodations()
+    {
+        $this->accommodations = new ArrayCollection();
 
         return $this;
     }
