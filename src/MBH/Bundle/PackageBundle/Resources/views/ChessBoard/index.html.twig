@@ -252,7 +252,7 @@
                                         <ul class="list-unstyled calendarDays">
                                             {% if leftRoomsData[roomTypeId] is defined %}
                                                 {% for leftRoomsCount in leftRoomsData[roomTypeId] %}
-                                                    {% set leftRoomsBackgroundColor = 'yellowgreen' %}
+                                                    {% set leftRoomsBackgroundColor = '#aeea00' %}
                                                     {% if leftRoomsCount == 0 %}
                                                         {% set leftRoomsBackgroundColor = 'rgba(243, 156, 18, 0.66)' %}
                                                     {% elseif leftRoomsCount < 0 %}
