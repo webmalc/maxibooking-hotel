@@ -852,7 +852,7 @@ mbhpackagebundle.view.documents.pdftemplates.registration_card.otezd: Отъез
 mbhpackagebundle.view.documents.pdftemplates.registration_card.kol_gostey: Кол. гостей
 mbhpackagebundle.view.documents.pdftemplates.registration_card.oplacheno: Оплачено
 mbhpackagebundle.view.documents.pdftemplates.registration_card.nasha_gostinica_predostavlaet_uslugi_etc: Наша гостиница предоставляет услуги, перечень которых Вы найдете в своем номере
-mbhpackagebundle.view.documents.pdftemplates.registration_card.viezd_gostey_ne_pozdnee_etc: Выезд гостей не позднее - 12:00, заселение гостей с 14:00
+mbhpackagebundle.view.documents.pdftemplates.registration_card.viezd_gostey_ne_pozdnee_etc: 'Выезд гостей не позднее - %departure%, заселение гостей с %arrival%'
 mbhpackagebundle.view.documents.pdftemplates.registration_card.kurenie_v_nashey_gostinice_zapresheno_etc: Курение в нашей гостинице запрещено. Разрешается только в специально отведенных для этого местах
 mbhpackagebundle.view.documents.pdftemplates.registration_card.za_sohranenie_deneg_i_cennih_veshey_ne_sdannih_na_hranenie_etc: За сохранность денег и ценных вещей, не сданных на хранение, администрация гостиницы ответственности не несет
 mbhpackagebundle.view.documents.pdftemplates.registration_card.postoronnie_lica_po_prosbe_prozhivaushih_etc: Посторонние лица по просьбе проживающих, с ведома администрации, могут находиться в гостинице с 9 до 23 часов
