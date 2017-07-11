@@ -48,6 +48,7 @@ class RoomType extends Base implements RoomTypeInterface
     use InternableDocument;
 
     /**
+     * @var Hotel
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
      * @Assert\NotNull(message="validator.document.roomType.hotel_in_not_select")
      * @ODM\Index()
@@ -703,5 +704,62 @@ class RoomType extends Base implements RoomTypeInterface
         $this->roomViewsTypes = $roomViewsTypes;
 
         return $this;
+    }
+
+    /**
+     * @param $domainName
+     * @return array
+     */
+    public function getRoomTypePhotoData($domainName)
+    {
+        $imagesData = [];
+        foreach ($this->getImages() as $image) {
+            $roomTypeImageData = [];
+            /** @var RoomTypeImage $image */
+            $roomTypeImageData['url'] = 'https://' . $domainName . '/' . $image->getPath();
+            if ($image->getWidth()) {
+                $roomTypeImageData['width'] = (int)$image->getWidth();
+            }
+            if ($image->getHeight()) {
+                $roomTypeImageData['height'] = (int)$image->getHeight();
+            }
+            $imagesData[] = $roomTypeImageData;
+        }
+
+        return $imagesData;
+    }
+
+    /**
+     * @param bool $isFull
+     * @param null $domainName
+     * @return array
+     */
+    public function getJsonSerialized($isFull = false, $domainName = null)
+    {
+        $data = [
+            'id' => $this->getId(),
+            'isEnabled' => $this->getIsEnabled(),
+            'hotelId' => $this->getHotel()->getId(),
+            'title' => $this->getName(),
+            'description' => $this->getDescription() ?? '',
+            'numberOfPlaces' => $this->getPlaces(),
+            'numberOfAdditionalPlaces' => $this->getAdditionalPlaces()
+        ];
+        if ($isFull) {
+            $comprehensiveData = [
+                'isSmoking' => $this->isIsSmoking(),
+                'isHostel' => $this->getIsHostel(),
+                'facilities' => $this->getFacilities(),
+            ];
+            if ($this->getRoomSpace()) {
+                $comprehensiveData['roomSpace'] = $this->getRoomSpace();
+            }
+            if (!is_null($domainName)) {
+                $comprehensiveData['photos'] = $this->getRoomTypePhotoData($domainName);
+            }
+            $data = array_merge($data, $comprehensiveData);
+        }
+
+        return $data;
     }
 }
