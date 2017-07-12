@@ -174,19 +174,5 @@ class BaseController extends Controller
         return $this->get('request_stack')->getCurrentRequest();
     }
 
-    /**
-     * @Route("test")
-     */
-    public function testAction()
-    {
-        $dm = $this->container->get('doctrine_mongodb.odm.default_document_manager');
-        /** @var Hotel $hotel */
-        $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->getLastHotel();
-        $image = $hotel->getLogoImage();
-        $helper = $this->container->get('vich_uploader.templating.helper.uploader_helper');
-        $image2 = $hotel->getImages()->first();
-        $path = $helper->asset($image, 'imageFile');
-        $path2 = $helper->asset($image2, 'imageFile');
-        return new Response('alloha');
-    }
+
 }

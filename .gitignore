@@ -9,7 +9,7 @@ scripts/deploy_to_test.sh
 /var/cache/*
 /var/logs/*
 /var/clients/
-
+/src/MBH/Bundle/TestBundle
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 /build/
