@@ -108,7 +108,9 @@ class Mailer implements \SplObserver
             $id = $domElement->getAttribute('data-name');
             $src = $domElement->getAttribute('src');
 
-            $path = $rootDir.'/../web/'.str_replace('/app_dev.php/', '', parse_url($src)['path']);
+            //Problem when path with first '/' ltrim for that
+            $srcPath = ltrim(str_replace('/app_dev.php/', '', parse_url($src)['path']), '/');
+            $path = $rootDir.'/../web/'.$srcPath;
 
             if (!empty($id) && !empty($src)) {
                 $data[$id] = $message->embed(

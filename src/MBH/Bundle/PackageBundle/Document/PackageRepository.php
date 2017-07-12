@@ -577,7 +577,28 @@ class PackageRepository extends DocumentRepository
 
             if (count($touristsIds)) {
                 $qb->addOr($qb->expr()->field('tourists.id')->in($touristsIds));
-                $qb->addOr($qb->expr()->field('mainTourist.id')->in($touristsIds));
+            }
+
+            $organizations = $dm->getRepository('MBHPackageBundle:Organization')
+                ->createQueryBuilder()
+                ->field('type')->equals('contragents')
+                ->field('name')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+                ->getQuery()
+                ->execute();
+
+            $organizationsIds = array_map(function ($organization) {
+                return $organization->getId();
+            }, $organizations->toArray());
+            $orders = $dm->getRepository('MBHPackageBundle:Order')
+                ->createQueryBuilder()
+                ->field('organization.id')->in($organizationsIds)
+                ->getQuery()
+                ->execute();
+            $ordersIds = array_map(function (Order $order) {
+                return $order->getId();
+            }, $orders->toArray());
+            if (count($ordersIds) > 0) {
+                $qb->addOr($qb->expr()->field('order.id')->in($ordersIds));
             }
 
             $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*'.$query.'.*/ui')));

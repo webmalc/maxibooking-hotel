@@ -334,9 +334,7 @@ class ChessBoardDataBuilder
         foreach ($this->getRoomTypes() as $roomType) {
 
             if (isset($roomCaches[$roomType->getId()])) {
-                //Данные о комнатах могут быть получены либо для всех тарифов, и массив, содержащий их будет иметь индекс 0,
-                // либо для одного и будет иметь индекс тарифа, для которого искали данные
-                $roomCachesByDates = current($roomCaches[$roomType->getId()]);
+                $roomCachesByDates = isset($roomCaches[$roomType->getId()][0]) ? $roomCaches[$roomType->getId()][0] : current($roomCaches[$roomType->getId()]);
                 foreach (new \DatePeriod($this->beginDate, new \DateInterval('P1D'), $endDate) as $day) {
                     /** @var \DateTime $day */
                     if (isset($roomCachesByDates[$day->format('d.m.Y')])) {

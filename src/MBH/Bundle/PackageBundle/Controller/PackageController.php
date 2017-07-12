@@ -471,22 +471,28 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid() && !$package->getIsLocked()) {
             //check by search
             $newTariff = $form->get('tariff')->getData();
-            $result = $this->container->get('mbh.order_manager')
-                ->updatePackage($oldPackage, $package, $newTariff);
-            /** @var FlashBagInterface $flashBag */
-            $flashBag = $request->getSession()->getFlashBag();
+            $orderManager = $this->get('mbh.order_manager');
+            if ($package->getPackagePrice() != $oldPackage->getPackagePrice()) {
+                $orderManager->updatePricesByDate($package, $newTariff);
+            }
+
+            $result = $orderManager->updatePackage($oldPackage, $package, $newTariff);
             if ($result instanceof Package) {
                 $this->dm->persist($package);
                 $this->dm->flush();
+                $this->addFlash('success', 'controller.packageController.record_edited_success');
 
-                $flashBag->set(
-                    'success',
-                    $this->get('translator')->trans('controller.packageController.record_edited_success')
-                );
+                $updateResult = $orderManager->tryUpdateAccommodations($package, $oldPackage);
+                foreach ($updateResult['dangerNotifications'] as $messages) {
+                    $this->addFlash('danger', $messages);
+                }
+                if ($updateResult['success'] === true) {
+                    $this->dm->flush();
+                }
 
                 return $this->afterSaveRedirect('package', $package->getId());
             } else {
-                $flashBag->set('danger', $this->get('translator')->trans($result));
+                $this->addFlash('danger', $result);
             }
         }
 

@@ -19,25 +19,29 @@ function setOnClickHandler($selector, isEdit, modal, modalBody) {
     $selector.click(function (event) {
         event.preventDefault();
         var url;
+        var modalTitleId;
         var packageId = $(this).attr('data-package-id');
         if (isEdit) {
             url = Routing.generate('package_accommodation_edit', {
                 'id' : $(this).attr('data-accommodation-id')
             });
+            modalTitleId = 'accommodation.modal_title.change_accommodation';
         } else {
             url = Routing.generate('package_accommodation_new', {
                 'id': packageId,
                 'room': $(this).attr('data-room-id')
             });
+            modalTitleId = 'accommodation.modal_title.add_accommodation';
         }
+        modal.find('.modal-title').html(Translator.trans(modalTitleId) + '?');
         modalBody.html(mbh.loader.html);
         modal.modal();
         $.get(url, function(modalHtml) {
             modalBody.html(modalHtml);
             modalBody.find('.datepicker').datepicker({
-                language: "ru",
                 autoclose: true
             });
+            modalBody.find('input[type="checkbox"]').bootstrapSwitch(mbh.bootstrapSwitchConfig);
 
             if (!isEdit && document.getElementById('interval-begin-date').value) {
 
@@ -51,11 +55,8 @@ function setOnClickHandler($selector, isEdit, modal, modalBody) {
                     var formData = change_form.serialize();
                     modalBody.html(mbh.loader.html);
                     $.post(url, formData, function (html) {
+
                         modalBody.html(html);
-                        modalBody.find('.datepicker').datepicker({
-                            language: "ru",
-                            autoclose: true
-                        });
                     }).fail(function (xhr) {
                         if (xhr.status === 302) {
                             window.location.href = Routing.generate('package_accommodation', {id: packageId});

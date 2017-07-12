@@ -288,7 +288,7 @@ class Helper
             ),
         );
         $a20 = array(
-            $translator->trans('mbhbasebundle.service.helper.twelve'),
+            $translator->trans('mbhbasebundle.service.helper.ten'),
             $translator->trans('mbhbasebundle.service.helper.eleven'),
             $translator->trans('mbhbasebundle.service.helper.twelve'),
             $translator->trans('mbhbasebundle.service.helper.fourteen'),
