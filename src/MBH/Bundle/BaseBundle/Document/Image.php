@@ -66,6 +66,17 @@ class Image
      */
     public $width;
 
+    /** @var  int
+     * @ODM\Field(type="integer")
+     * @Assert\Type("integer")
+     * @Assert\Range(
+     *     min = -1000,
+     *     max = 1000
+     * )
+     */
+
+    protected $priority = 0;
+
     public function setImageFile(File $image = null)
     {
         $this->imageFile = $image;
@@ -200,4 +211,25 @@ class Image
 
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param int $priority
+     * @return $this|Image
+     */
+    public function setPriority($priority): Image
+    {
+        $this->priority = $priority;
+
+        return $this;
+    }
+
+
 }

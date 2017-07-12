@@ -262,4 +262,16 @@ services:
             template: "@MBHBase/Profiler/instance.profiler.html.twig"
             id: 'client.instance.informer'
 
+    mbh.image_migrate.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.image_migrate.logger_handler']]
+
+    mbh.image_migrate.logger_handler:
+        public: false
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.image_migrate.log", 200]
+
+
 
