@@ -9,6 +9,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
@@ -172,6 +173,12 @@ class RoomType extends Base implements RoomTypeInterface
      * @ODM\EmbedMany(targetDocument="RoomTypeImage")
      */
     private $images = [];
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|Image[]
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\BaseBundle\Document\Image", cascade={"persist"})
+     */
+    protected $onlineImages;
     /**
      * @var TaskSettings
      * @ODM\EmbedOne(targetDocument="TaskSettings")
@@ -204,6 +211,7 @@ class RoomType extends Base implements RoomTypeInterface
     {
         $this->rooms = new ArrayCollection();
         $this->roomViewsTypes = new ArrayCollection();
+        $this->onlineImages = new ArrayCollection();
     }
 
     /**
@@ -581,26 +589,29 @@ class RoomType extends Base implements RoomTypeInterface
         return $this->images;
     }
 
-    public function deleteImageById($imageId)
-    {
-        $result = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($this->getImages() as $element) {
-            if ($element->getId() == $imageId) {
-                $imagePath = $element->getPath();
-                if (file_exists($imagePath) && is_readable($imagePath)) {
-                    unlink($imagePath);
-                }
-            } else {
-                $result[] = $element;
-            }
-        }
-        $this->images = $result;
-    }
-
     public function makeMainImageById($imageId)
     {
-        foreach ($this->getImages() as $element) {
-            $element->setIsMain($element->getId() == $imageId);
+        foreach ($this->getOnlineImages() as $onlineImage) {
+            $onlineImage->setIsMain($onlineImage->getId() == $imageId);
+        }
+    }
+
+    /**
+     * @return $this
+     */
+    public function makeFirstImageAsMain()
+    {
+        if (count($this->onlineImages)) {
+            $this->onlineImages->first()->setIsMain(true);
+        }
+
+        return $this;
+    }
+
+    public function makeMainImage(Image $image)
+    {
+        foreach ($this->getOnlineImages() as $onlineImage) {
+            $onlineImage->setIsMain($onlineImage == $image);
         }
     }
 
@@ -704,4 +715,53 @@ class RoomType extends Base implements RoomTypeInterface
 
         return $this;
     }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection|Image[]
+     */
+    public function getOnlineImages()
+    {
+        return $this->onlineImages;
+    }
+
+    /**
+     * @param Image $onlineImage
+     * @internal param \Doctrine\Common\Collections\Collection|Image[] $onlineImages
+     */
+    public function addOnlineImage(Image $onlineImage)
+    {
+        $this->onlineImages->add($onlineImage);
+    }
+
+    public function removeOnlineIMage(Image $onlineImage)
+    {
+        $this->onlineImages->removeElement($onlineImage);
+
+        return $this;
+    }
+
+    public function getOnlineImagesByPriority(): array
+    {
+        $result = [];
+        $images = $this->onlineImages;
+        if (count($images)) {
+            $result = $images->toArray();
+            uasort($result,
+                function ($imageA, $imageB) {
+                    /** @var Image $imageA */
+                    /** @var Image $imageB */
+                    $priorityA = $imageA->getPriority();
+                    $priorityB = $imageB->getPriority();
+                    if ($priorityA === $priorityB) {
+                        return $imageA->getCreatedAt() <=> $imageB->getCreatedAt();
+                    }
+
+                    return $imageA->getPriority() <=> $imageB->getPriority();
+                });
+        }
+
+        return $result;
+    }
+
+
 }

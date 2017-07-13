@@ -231,5 +231,15 @@ class Image
         return $this;
     }
 
+    public function isMain(): bool
+    {
+        return $this->isDefault;
+    }
+
+    public function setIsMain(bool $isMain)
+    {
+        $this->setIsDefault($isMain);
+    }
+
 
 }

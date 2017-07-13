@@ -581,3 +581,11 @@ dashboard.messages.hotel.errors: 'обнаружены следующие оши
 dashboard.messages.roomType.roomCache: 'не выставлены "Номера в продаже" на следующие периоды'
 dashboard.messages.roomType.priceCache: 'не выставлены "Цены" основного тарифа на следующие периоды'
 dashboard.link: 'посмотреть'
+
+form.image.is_default.label: 'Основное?'
+form.image.is_default.help: 'Является ли изображение основным'
+form.image.file.label: 'Изображение'
+form.image.file.help: 'Загрузить изображение'
+form.image.priority.label : 'Приоритет показа'
+form.image.priority.help : 'Приоритет показа (опционально) -1000 ... 1000'
+image.priority: 'Приоритет'

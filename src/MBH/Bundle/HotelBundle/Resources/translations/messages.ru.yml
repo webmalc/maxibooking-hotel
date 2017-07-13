@@ -307,3 +307,7 @@ views.hotel.TaskType.index.delete_category_types_task: Удалить катег
 views.hotel.form.hotelType.upload_file: Загрузите файл
 views.hotel.form.hotelType.see_image: Просмотреть изображение
 views.hotel.form.hotelType.delete: Удалить
+
+views.hotel.roomType.editImages.edit.priority: Настройка приоритета показа
+views.hotel.roomType.editImages.edit.priority.save: Сохранить приоритет
+views.hotel.roomType.editImages.edit.priority.close: Закрыть

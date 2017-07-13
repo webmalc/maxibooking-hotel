@@ -402,11 +402,8 @@ class HotelController extends Controller
     {
         foreach ($hotel->getImages() as $image) {
             /** @var Image $image */
-            if ($image->getIsDefault() && $image->getId() != $newMainImage->getId()) {
-                $image->setIsDefault(false);
-            }
+            $image->setIsDefault($image->getId() == $newMainImage->getId());
         }
-        $newMainImage->setIsDefault(true);
 
         return $hotel;
     }

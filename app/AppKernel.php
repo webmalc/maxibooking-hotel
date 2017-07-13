@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
+use MBH\Bundle\TestBundle\MBHTestBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
@@ -79,6 +80,7 @@ class AppKernel extends Kernel
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
             $bundles[] = new Fidry\PsyshBundle\PsyshBundle();
+            $bundles[] = new MBHTestBundle();
         }
 
         return $bundles;
