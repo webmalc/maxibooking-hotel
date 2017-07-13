@@ -12,9 +12,13 @@ use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,12 +31,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExternalApiController extends BaseController
 {
     /**
-     * @Route("/roomTypes")
+     * @Route("/roomTypes", name="api_room_types", options={"expose"=true})
      * @param Request $request
      * @return JsonResponse
      */
     public function getRoomTypesAction(Request $request)
     {
+        //TODO: Заменить
+        header('Access-Control-Allow-Origin: ' . 'null');
         $requestHandler = $this->get('mbh.api_handler');
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $queryData = $request->query;
@@ -42,6 +48,8 @@ class ExternalApiController extends BaseController
         $isEnabled = !empty($queryData->get('isEnabled')) ? $queryData->get('isEnabled') === 'true' : true;
         $isFull = !empty($queryData->get('isFull')) ? $queryData->get('isFull') === 'true' : false;
         $onlineFormId = $queryData->get('onlineFormId');
+        /** @var FormConfig $formConfig */
+        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
 
         $roomTypeIds = $queryData->get('roomTypeIds');
         $hotelIds = $queryData->get('hotelIds');
@@ -69,8 +77,6 @@ class ExternalApiController extends BaseController
             ->getQuery()
             ->execute();
 
-        /** @var FormConfig $formConfig */
-        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
         if ($responseCompiler->isSuccessFull()) {
             $responseData = [];
             $domainName = $this->getParameter('router.request_context.host');
@@ -97,6 +103,8 @@ class ExternalApiController extends BaseController
      */
     public function getTariffsAction(Request $request)
     {
+        //TODO: Заменить
+        header('Access-Control-Allow-Origin: ' . 'null');
         $requestHandler = $this->get('mbh.api_handler');
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $this->setLocaleByRequest();
@@ -181,6 +189,8 @@ class ExternalApiController extends BaseController
      */
     public function getBookingOptions(Request $request)
     {
+        //TODO: Заменить
+        header('Access-Control-Allow-Origin: ' . 'null');
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
@@ -209,35 +219,14 @@ class ExternalApiController extends BaseController
         $query->tariff = $request->get('tariff');
 
         if (!is_null($roomTypeIds)) {
-            foreach ($roomTypeIds as $roomTypeId) {
-                $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
-                if (is_null($roomType)) {
-                    $responseCompiler->addErrorMessage($responseCompiler::ROOM_TYPE_WITH_SPECIFIED_ID_NOT_EXISTS,
-                        ['%roomTypeId%' => $roomTypeId]);
-                } elseif (!is_null($formConfig) && !$formConfig->getRoomTypeChoices()->contains($roomType)) {
-                    $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_ROOM_TYPE,
-                        ['%roomTypeId%' => $roomTypeId]
-                    );
-                } else {
-                    $query->addRoomType($roomTypeId);
-                }
-            }
+            $filteredRoomTypeIds = $requestHandler->getFilteredRoomTypeIds($roomTypeIds, $responseCompiler, $formConfig);
+            $query->roomTypes = $filteredRoomTypeIds;
         }
 
         if (!is_null($hotelIds)) {
-            foreach ($hotelIds as $hotelId) {
-                $hotel = $this->dm->find('MBHHotelBundle:Hotel', $hotelId);
-                if (is_null($hotel)) {
-                    $responseCompiler->addErrorMessage($responseCompiler::HOTEL_WITH_SPECIFIED_ID_NOT_EXISTS,
-                        ['%hotelId%' => $hotelId]);
-
-                } elseif (!is_null($formConfig) && !$formConfig->getHotels()->contains($hotel)) {
-                    $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_HOTEL,
-                        ['%hotelId%' => $hotelId]
-                    );
-                } else {
-                    $query->addHotel($hotel);
-                }
+            $filteredHotels = $requestHandler->getFilteredHotels($hotelIds, $responseCompiler, $formConfig);
+            foreach ($filteredHotels as $hotel) {
+                $query->addHotel($hotel);
             }
         }
 
@@ -257,6 +246,67 @@ class ExternalApiController extends BaseController
             $responseData[] = $searchResult->getJsonSerialized();
         }
         $responseCompiler->setData($responseData);
+
+        return $responseCompiler->getResponse();
+    }
+
+    /**
+     * @Route("/orders/{orderId}")
+     * @param $orderId
+     * @return JsonResponse
+     */
+    public function getOrderAction($orderId)
+    {
+        //TODO: Заменить
+        header('Access-Control-Allow-Origin: ' . 'null');
+        $order = $this->dm->find('MBHPackageBundle:Order', $orderId);
+        $responseCompiler = $this->get('mbh.api_response_compiler');
+        if (is_null($order)) {
+            $responseCompiler->addErrorMessage(ApiResponseCompiler::ORDER_WITH_SPECIFIED_ID_TO_EXISTS,
+                ['%orderId%' => $orderId]);
+        } else {
+            $responseCompiler->setData($order->getJsonSerialized());
+        }
+
+        return $responseCompiler->getResponse();
+    }
+
+    /**
+     * @Route("/services")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getServicesAction(Request $request)
+    {
+        //TODO: Заменить
+        header('Access-Control-Allow-Origin: ' . 'null');
+        $responseCompiler = $this->get('mbh.api_response_compiler');
+        $apiHandler = $this->get('mbh.api_handler');
+
+        $queryData = $request->query;
+        $isOnline = !is_null($queryData->get('isOnline')) ? $request->get('isOnline') === 'true' : true;
+        $isEnabled = !is_null($queryData->get('isEnabled')) ? $request->get('isEnabled') === 'true' : true;
+        $tariffId = $queryData->get('tariffId');
+
+        $apiHandler->checkMandatoryFields($queryData, ['tariffId'], $responseCompiler);
+
+        $serviceRepository = $this->dm->getRepository('MBHPriceBundle:Service');
+        $tariff = $this->dm->find('MBHPriceBundle:Tariff', $tariffId);
+        if (is_null($tariff)) {
+            $responseCompiler->addErrorMessage($responseCompiler::TARIFF_WITH_SPECIFIED_ID_NOT_EXISTS);
+        } else {
+            $servicesByCategories = $serviceRepository->getAvailableServicesForTariff($tariff);
+            $servicesData = [];
+            foreach ($servicesByCategories as $servicesByCategory) {
+                /** @var Service $service */
+                foreach ($servicesByCategory as $service) {
+                    if ((!$isEnabled || $service->getIsEnabled()) && (!$isOnline || $service->getIsOnline())) {
+                        $servicesData[] = $service->getJsonSerialized();
+                    }
+                }
+            }
+            $responseCompiler->setData($servicesData);
+        }
 
         return $responseCompiler->getResponse();
     }

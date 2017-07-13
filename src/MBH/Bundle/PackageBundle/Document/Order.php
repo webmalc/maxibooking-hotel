@@ -994,4 +994,28 @@ class Order extends Base
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function getJsonSerialized()
+    {
+        $data = [
+            'id' => $this->getId(),
+            'price' => $this->getPrice(),
+            'paid' => $this->getPaid(),
+            'isPaid' => $this->getIsPaid(),
+            'isConfirmed' => $this->getConfirmed(),
+            'packages' => array_map(function (Package $package) {
+                return $package->getJsonSerialized();
+            }, $this->getPackages()->toArray())
+        ];
+        if ($this->getNote()) {
+            $data['note'] = $this->getNote();
+        }
+        if (!is_null($this->getMainTourist())) {
+            $data['mainTourist'] = $this->getMainTourist()->getJsonSerialized();
+        }
+
+        return $data;
+    }
 }

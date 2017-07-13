@@ -10,6 +10,7 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\VegaBundle\Document\VegaState;
@@ -939,5 +940,34 @@ class Tourist extends Base implements \JsonSerializable , PayerInterface, Recipi
             'citizenship' => $this->getCitizenship() ? $this->getCitizenship()->getName() : null,
             'documentRelation' => $this->getDocumentRelation() ? $this->getDocumentRelation() : null
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getJsonSerialized()
+    {
+        $data = [
+            'id' => $this->getId(),
+            'firstName' => $this->getFirstName(),
+            'lastName' => $this->getLastName(),
+        ];
+        if (!is_null($this->getPatronymic())) {
+            $data['patronymic'] = $this->getPatronymic();
+        }
+        if (!is_null($this->getBirthday())) {
+            $data['birthDay'] = $this->birthday->format(ApiHandler::DATE_FORMAT);
+        }
+        if (!is_null($this->getEmail())) {
+            $data['email'] = $this->getEmail();
+        }
+        if (!is_null($this->getMobilePhone())) {
+            $data['mobilePhone'] = $this->getMobilePhone();
+        }
+        if (!is_null($this->getPhone())) {
+            $data['phone'] = $this->getPhone();
+        }
+
+        return $data;
     }
 }

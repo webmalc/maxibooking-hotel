@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -1768,5 +1769,30 @@ class Package extends Base implements \JsonSerializable
         }
 
         return null;
+    }
+
+    public function getJsonSerialized()
+    {
+        $data = [
+            'id' => $this->getId(),
+            'number' => $this->getNumber(),
+            'numberWithPrefix' => $this->getNumberWithPrefix(),
+            'orderId' => $this->getOrder()->getId(),
+            'tariffId' => $this->getTariff()->getId(),
+            'roomTypeId' => $this->getRoomType()->getId(),
+            'adults' => $this->getAdults(),
+            'children' => $this->getChildren(),
+            'begin' => $this->getBegin()->format(ApiHandler::DATE_FORMAT),
+            'end' => $this->getEnd()->format(ApiHandler::DATE_FORMAT),
+            'price' => $this->getPrice(),
+            'servicesPrice' => $this->getServicesPrice(),
+            'isSmoking' => $this->getIsSmoking(),
+            'isCorrupted' => $this->getCorrupted(),
+            'isLocked' => $this->getIsLocked(),
+            'isForceBooking' => $this->getIsForceBooking(),
+            'arrivalTime' => $this->arrivalTime
+        ];
+
+        return $data;
     }
 }

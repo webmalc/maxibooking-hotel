@@ -533,7 +533,8 @@ class SearchResult
             'roomType' => $this->getRoomType()->getId(),
             'tariff' => $this->getTariff()->getId(),
             'prices' => $this->prices,
-            'roomsCount' => $this->getRoomsCount()
+            'roomsCount' => $this->getRoomsCount(),
+            'nights' => $this->getNights()
         ];
 
         return $data;

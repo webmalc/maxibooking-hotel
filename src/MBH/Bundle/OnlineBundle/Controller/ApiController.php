@@ -494,10 +494,12 @@ class ApiController extends Controller
      */
     public function createPackagesAction(Request $request)
     {
+        //TODO: Заменить
+        header('Access-Control-Allow-Origin: ' . 'null');
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $requestJson = json_decode($request->getContent());
 
+        $requestJson = json_decode($request->getContent());
         //Create packages
         $order = $this->createPackages($requestJson, $requestJson->paymentType != 'in_hotel');
 
@@ -508,7 +510,7 @@ class ApiController extends Controller
             ]);
         }
         $packages = iterator_to_array($order->getPackages());
-        $this->sendNotifications($order, $requestJson->arrival . ':00', $requestJson->departure . ':00');
+//        $this->sendNotifications($order, $requestJson->arrival . ':00', $requestJson->departure . ':00');
 
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
@@ -548,7 +550,7 @@ class ApiController extends Controller
             );
         }
 
-        return new JsonResponse(['success' => true, 'message' => $message, 'form' => $form]);
+        return new JsonResponse(['success' => true, 'message' => $message, 'form' => $form, 'order' => $order->getJsonSerialized()]);
     }
 
     /**
@@ -654,7 +656,6 @@ class ApiController extends Controller
                 'amount' => $info->amount
             ];
         }
-        try {
             $order = $this->container->get('mbh.order_manager')->createPackages([
                 'packages' => $packageData,
                 'services' => $servicesData,
@@ -669,12 +670,6 @@ class ApiController extends Controller
                 'order_note' => $request->note,
                 'confirmed' => false
             ], null, null, $cash ? ['total' => (float)$request->total] : null);
-        } catch (\Exception $e) {
-            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
-                dump($e->getMessage());
-            };
-            return false;
-        }
 
         return $order;
     }

@@ -714,9 +714,9 @@ class RoomType extends Base implements RoomTypeInterface
     {
         $imagesData = [];
         foreach ($this->getImages() as $image) {
-            $roomTypeImageData = [];
+            $roomTypeImageData = ['isMain' => $image->getIsMain()];
             /** @var RoomTypeImage $image */
-            $roomTypeImageData['url'] = 'https://' . $domainName . '/' . $image->getPath();
+            $roomTypeImageData['url'] = 'http://' . $domainName . '/' . $image->getPath();
             if ($image->getWidth()) {
                 $roomTypeImageData['width'] = (int)$image->getWidth();
             }
@@ -739,11 +739,13 @@ class RoomType extends Base implements RoomTypeInterface
         $data = [
             'id' => $this->getId(),
             'isEnabled' => $this->getIsEnabled(),
-            'hotelId' => $this->getHotel()->getId(),
+            'hotel' => $this->getHotel()->getJsonSerialized(),
             'title' => $this->getName(),
             'description' => $this->getDescription() ?? '',
             'numberOfPlaces' => $this->getPlaces(),
-            'numberOfAdditionalPlaces' => $this->getAdditionalPlaces()
+            'numberOfAdditionalPlaces' => $this->getAdditionalPlaces(),
+            'places' => $this->getPlaces(),
+            'additionalPlaces' => $this->getAdditionalPlaces()
         ];
         if ($isFull) {
             $comprehensiveData = [

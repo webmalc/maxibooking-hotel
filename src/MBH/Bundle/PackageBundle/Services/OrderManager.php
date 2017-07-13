@@ -462,8 +462,8 @@ class OrderManager
                 ->setPersons($persons)
                 ->setNights($nights)
                 ->setPrice(0)
-                ->setIncludeArrival($defaultService->isIncludeArrival())
-                ->setIncludeDeparture($defaultService->isIncludeDeparture())
+//                ->setIncludeArrival($defaultService->isIncludeArrival())
+//                ->setIncludeDeparture($defaultService->isIncludeDeparture())
                 ->setRecalcWithPackage(
                     $defaultService->isRecalcWithPackage()
                 )
