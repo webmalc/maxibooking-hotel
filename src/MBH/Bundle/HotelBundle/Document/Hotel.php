@@ -1143,9 +1143,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     public function getLogoUrl()
     {
-//        if ($this->logoImage) {
-//            return $this->logoImage
-//        }
+
         if ($this->getFile() instanceof File) {
             return '/upload/hotelLogos/' . $this->getLogo();
         }
@@ -1577,6 +1575,13 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     public function setLogoImage(Image $logoImage)
     {
         $this->logoImage = $logoImage;
+    }
+
+    public function removeLogoImage()
+    {
+        $this->logoImage = null;
+
+        return $this;
     }
 
 

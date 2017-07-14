@@ -177,9 +177,10 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
 
+        $logoImageDeleteUrl = $this->generateUrl('hotel_delete_logo_image', ['id' => $entity->getId()]);
+
         $form = $this->createForm(HotelType::class, $entity, [
-            'imageUrl' => $entity->getLogoUrl(),
-            'removeImageUrl' => $this->generateUrl('hotel_delete_logo', ['id' => $entity->getId()])
+            'logo_image_delete_url' => $logoImageDeleteUrl
         ]);
 
         return array(
@@ -207,6 +208,20 @@ class HotelController extends Controller
             $this->dm->flush();
         }
         return $this->redirect($this->generateUrl('hotel_edit', ['id' => $entity->getId()]));
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @Route("/{id}/logoImage/delete", name="hotel_delete_logo_image")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
+     */
+    public function deleteImageLogoAction(Hotel $hotel)
+    {
+        $hotel->removeLogoImage();
+        $this->dm->flush();
+
+        return $this->redirect($this->generateUrl('hotel_edit', ['id' => $hotel->getId()]));
     }
 
     /**

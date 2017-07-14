@@ -17,11 +17,6 @@ class HotelType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $logoHelp = 'views.hotel.form.hotelType.upload_file';
-        if($options['imageUrl']) {
-            $logoHelp = '<a href="'.$options['imageUrl'].'" class="fancybox">' . 'views.hotel.form.hotelType.see_image' . '</a></br><a class="text-danger" href="'.$options['removeImageUrl'].'"><i class="fa fa-trash-o"></i> ' . 'views.hotel.form.hotelType.delete' . '</a>';
-        }
-
         $builder
             ->add('fullTitle', TextType::class, [
                 'label' => 'form.hotelType.name',
@@ -54,18 +49,11 @@ class HotelType extends AbstractType
                 'attr' => ['class' => 'tinymce'],
                 'required' => false
             ])
-            ->add('file', FileType::class, [
-                'label' => 'form.hotelType.logo',
-                'group' => 'form.hotelType.settings',
-                'help' => $logoHelp,
-                'required' => false,
-                'constraints' => [
-                    new \Symfony\Component\Validator\Constraints\Image()
-                ]
-            ])
             ->add('logoImage', HotelLogoImageType::class, [
+                'label' => 'form.hotel_logo.image_file.help',
                 'group' => 'form.hotelType.settings',
-                'required' => false
+                'required' => false,
+                'logo_image_delete_url' => $options['logo_image_delete_url']
 
             ])
             ->add('isHostel', CheckboxType::class, [
@@ -90,7 +78,7 @@ class HotelType extends AbstractType
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
             'types' => [],
             'imageUrl' => null,
-            'removeImageUrl' => null
+            'logo_image_delete_url' => null
         ]);
     }
 

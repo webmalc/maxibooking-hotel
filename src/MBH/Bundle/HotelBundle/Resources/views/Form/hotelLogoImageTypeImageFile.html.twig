@@ -1,7 +1,6 @@
 {% block vich_image_widget %}
     {% spaceless %}
         <div class="vich-image">
-            {{ form_widget(form.file) }}
 
             {% if form.delete is defined %}
                 <div class="print-clearfix"></div>
@@ -17,8 +16,17 @@
                 <a href="{{ image_uri }}" class="fancybox"><img src="{{ asset(image_uri|imagine_filter('thumb_95x80')) }}" alt="" /></a>
             {% endif %}
             {% if download_uri %}
+                <p>
                 <a href="{{ download_uri }}">{{ translation_domain is same as(false) ? download_label : download_label|trans({}, translation_domain) }}</a>
+                </p>
             {% endif %}
+            {% if logo_image_delete_url is defined and logo_image_delete_url is not empty and image_uri %}
+                <p>
+                <a class="text-danger" href="{{ logo_image_delete_url }}"><i class="fa fa-trash-o"></i>{{ 'views.hotel.form.hotelType.delete'|trans }} </a>
+                </p>
+            {% endif %}
+
+            {{ form_widget(form.file) }}
         </div>
     {% endspaceless %}
 {% endblock %}
