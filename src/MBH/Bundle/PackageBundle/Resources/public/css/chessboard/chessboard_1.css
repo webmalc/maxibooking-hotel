@@ -111,13 +111,31 @@ body {
 }
 .danger,
 .package {
-  background-color: rgba(221, 75, 57, 0.6);
+  background-color: #ff9e80;
+}
+.danger .package-description,
+.package .package-description,
+.danger .ui-resizable-e,
+.package .ui-resizable-e,
+.danger .ui-resizable-w,
+.package .ui-resizable-w {
+  background-color: #c96f53;
 }
 .success {
-  background-color: rgba(0, 166, 90, 0.6);
+  background-color: #8bc34a !important;
+}
+.success .package-description,
+.success .ui-resizable-e,
+.success .ui-resizable-w {
+  background-color: #7d8600;
 }
 .warning {
-  background-color: rgba(243, 156, 18, 0.6);
+  background-color: #fdd835;
+}
+.warning .package-description,
+.warning .ui-resizable-e,
+.warning .ui-resizable-w {
+  background-color: #c5a600;
 }
 #accommodation-chessBoard-content {
   position: relative;
@@ -642,7 +660,6 @@ body {
   width: 7px;
   height: 30px;
   position: absolute;
-  background-color: #dd4b39;
   cursor: pointer;
   top: 0;
 }

@@ -20,6 +20,7 @@ form.orderTouristType.phone: Телефон
 form.orderTouristType.phone: Телефон
 form.orderTouristType.email: E-mail
 mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu: 'Услуга по умолчанию'
+mbhpackagebundle.services.ordermanager.all_accommodations_removed: 'Размещения были удалены так как был изменен тип номера'
 mbhpackagebundle.services.touristsmessenger.gost.ne.nayden: 'Гость не найден.'
 mbhpackagebundle.view.service.index.kategoriya: Категория
 mbhpackagebundle.view.service.index.vse.uslugi: 'Все услуги'
@@ -205,7 +206,7 @@ form.packageCopyType.should_we_transfer_guests_to_selected_reservation: Пере
 form.packageCopyType.services: Услуги
 form.packageCopyType.should_we_transfer_all_services_to_selected_reservation: Перенести ли все услуги в выбранную бронь?
 form.packageCopyType.placement: Размещение
-form.packageCopyType..should_we_transfer_placement_to_selected_reservation: Перенести ли размещение в выбранную бронь?
+form.packageCopyType.should_we_transfer_placement_to_selected_reservation: Перенести ли размещение в выбранную бронь?
 form.packageGuestType.fio: ФИО
 form.packageGuestType.find_guest: Найти гостя
 form.packageGuestType.placeholder_fio: Иванов Иван Иванович
@@ -301,6 +302,8 @@ form.package_accommodation_type.check_out: Выезд
 form.package_accommodation_type.check_in.help: Дата начала размещения
 form.package_accommodation_type.check_out.help: Дата окончания размещения
 form.package_accommodation_type.note: Комментарий
+form.package_accommodation_type.is_automatically_changeable.label: Изменяемая?
+form.package_accommodation_type.is_automatically_changeable.help: Изменяется ли размещение автоматически при изменении дат въезда/выезда брони?
 controller.analyticsController.services_amount: 'Количество услуг'
 controller.analyticsController.proceeds: 'Выручка'
 controller.analyticsController.percentage: 'Процент'
@@ -644,8 +647,10 @@ chessboard_manager.without_accommodation.tile.text: Без размещения
 
 #package accommodation manipulator service
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
+accommodation_manipulator.error.edited_room_busy: 'Невозможно изменить размещение, так как в указанные дни комната "%roomName%" занята.'
 accommodation_manipulator.error.incorrect_acc_to_package_dates: Интервал дат размещения должен находиться между датами заезда и выезда брони
 accommodation_manipulator.error.intersect_with_other_accommodations: Размещение пересекается с другими размещениями брони.
+accommodation_manipulator.error.accommodation_is_not_moveable: 'Размещение изменяемой брони в комнате %roomName%, начинающееся %beginDate% и заканчивающееся %endDate%, является неперемещаемым.'
 
 #accommodation.html.twig
 package.accommodation.rooms: Комнаты
