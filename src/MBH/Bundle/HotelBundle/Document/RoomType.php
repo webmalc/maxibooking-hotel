@@ -733,13 +733,16 @@ class RoomType extends Base implements RoomTypeInterface
         $this->onlineImages->add($onlineImage);
     }
 
-    public function removeOnlineIMage(Image $onlineImage)
+    public function removeOnlineImage(Image $onlineImage)
     {
         $this->onlineImages->removeElement($onlineImage);
 
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getOnlineImagesByPriority(): array
     {
         $result = [];

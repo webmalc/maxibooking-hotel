@@ -144,9 +144,6 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $entity->uploadFile();
-
-            $this->dm->persist($entity);
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()

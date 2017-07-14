@@ -136,7 +136,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
         if ($image) {
-            $roomType->removeOnlineIMage($image);
+            $roomType->removeOnlineImage($image);
             $imageWasMain = $image->isMain();
             if($imageWasMain) {
                 $roomType->makeFirstImageAsMain();
