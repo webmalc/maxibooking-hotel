@@ -685,4 +685,17 @@ class PackageService extends Base
     {
         return $this->includeArrival;
     }
+
+    public function getJsonSerialized()
+    {
+        return [
+            'service' => $this->getService()->getJsonSerialized(),
+            'price' => $this->getPrice(),
+            'amount' => $this->getAmount(),
+            'persons' => $this->getPersons(),
+            'begin' => $this->getBegin(),
+            'time' => $this->getTime(),
+            'note' => $this->getNote()
+        ];
+    }
 }

@@ -511,7 +511,9 @@ class ApiController extends Controller
         }
         $packages = iterator_to_array($order->getPackages());
 //        $this->sendNotifications($order, $requestJson->arrival . ':00', $requestJson->departure . ':00');
-
+        foreach ($packages as $package) {
+            $this->dm->refresh($package);
+        }
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
         }

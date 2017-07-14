@@ -1790,7 +1790,10 @@ class Package extends Base implements \JsonSerializable
             'isCorrupted' => $this->getCorrupted(),
             'isLocked' => $this->getIsLocked(),
             'isForceBooking' => $this->getIsForceBooking(),
-            'arrivalTime' => $this->arrivalTime
+            'arrivalTime' => $this->arrivalTime,
+            'services' => array_map(function (PackageService $packageService) {
+                return $packageService->getJsonSerialized();
+            }, $this->getServices()->toArray())
         ];
 
         return $data;
