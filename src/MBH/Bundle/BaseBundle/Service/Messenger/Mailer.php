@@ -5,8 +5,10 @@ namespace MBH\Bundle\BaseBundle\Service\Messenger;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Monolog\Logger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Mailer service
@@ -48,6 +50,17 @@ class Mailer implements \SplObserver
      */
     private $permissions;
 
+    /** @var  Logger */
+    protected $logger;
+
+    /** @var  TranslatorInterface */
+    protected $translator;
+
+    /**
+     * Mailer constructor.
+     * @param ContainerInterface $container
+     */
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -57,6 +70,8 @@ class Mailer implements \SplObserver
         $this->dm = $this->container->get('doctrine_mongodb');
         $this->locale = $this->container->getParameter('locale');
         $this->permissions = $this->container->get('mbh.hotel.selector');
+        $this->logger = $this->container->get('mbh.mailer.logger');
+        $this->translator = $this->container->get('translator');
     }
 
     /**
@@ -111,11 +126,19 @@ class Mailer implements \SplObserver
             //Problem when path with first '/' ltrim for that
             $srcPath = ltrim(str_replace('/app_dev.php/', '', parse_url($src)['path']), '/');
             $path = $rootDir.'/../web/'.$srcPath;
-
-            if (!empty($id) && !empty($src)) {
+            /** TODO: Problem with no yet cache image
+             * @link https://github.com/liip/LiipImagineBundle/issues/242#issuecomment-71647135
+             */
+            if (!empty($id) && !empty($src) && is_file($path)) {
                 $data[$id] = $message->embed(
                     \Swift_Image::fromPath($path)
                 );
+            } else {
+                $errorMessage = 'mailer.image.not.exists';
+                $transParams = [
+                    '%path%' => $path,
+                ];
+                $this->logger->addAlert($this->translator->trans($errorMessage, $transParams));
             }
         }
 
@@ -177,13 +200,22 @@ class Mailer implements \SplObserver
         $data = $this->addImages($data, $message, $template);
         $translator = $this->container->get('translator');
 
+
+
         foreach ($recipients as $recipient) {
+
             //@todo move to notifier
             $transParams = [
                 '%guest%' => $recipient->getName(),
                 '%hotel%' => null
 
             ];
+
+            if (!$recipient->getEmail()) {
+                $errorMessage = 'mailer.recipient.empty.email';
+                $this->logger->addAlert($translator->trans($errorMessage, $transParams));
+                continue;
+            }
 
             /** @var Hotel $hotel */
             if ($hotel = $data['hotel']) {
@@ -218,7 +250,6 @@ class Mailer implements \SplObserver
                 ->setFrom([$this->params['fromMail'] => $fromText])
                 ->setBody($body, 'text/html');
             $message->setTo([$recipient->getEmail() => $recipient->getName()]);
-            //TODO: add try catch? otherwise exception stopped sending  emails
             $this->mailer->send($message);
         }
 

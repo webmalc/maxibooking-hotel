@@ -232,9 +232,22 @@ services:
         calls:
             - [pushHandler, ['@mbh.cache.logger_handler']]
 
+
+
     mbh.cache.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]
+
+    mbh.mailer.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: ['mailer']
+        calls:
+            - [pushHandler, ['@mbh.mailer.logger_handler']]
+
+    mbh.mailer.logger_handler:
+        public: false
+        class: Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.mailer.log", 200]
 
     task_command_runner:
         class:      MBH\Bundle\BaseBundle\Task\CommandRunner

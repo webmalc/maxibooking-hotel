@@ -256,6 +256,9 @@ mailer.userArrival.bye: 'Будем рады вас видеть!'
 mailer.base.rate.bad: Плохо
 mailer.base.rate.good: Хорошо
 mailer.base.rate.perfect: Отлично
+mailer.recipient.empty.email: 'Пустая почта у получателя %guest%'
+mailer.image.not.exists: 'Не существует файла %path%. Возмжожно не создан кеш файла'
+
 debt: Долг
 partially_paid: Частично
 paid: Оплачено

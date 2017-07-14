@@ -229,7 +229,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      * @Template()
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAutoTasksAction(Request $request, RoomType $roomType)
     {
@@ -312,8 +312,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($roomType->getHotel())) {
             throw $this->createNotFoundException();
         }
-        $legacyForm = $this->createForm(RoomTypeImageType::class);
-        $legacyForm->handleRequest($request);
 
         $form = $this->createForm(OnlineImageFileType::class);
         $form->handleRequest($request);
@@ -341,10 +339,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         return array(
             'entity' => $roomType,
-            'legacyForm' => $legacyForm->createView(),
             'form' => $form->createView(),
             'logs' => $this->logs($roomType),
-            'legacyImages' => $roomType->getImages(),
             'images' => $images,
             'priorityForm' => $imagePriorityForm->createView()
         );

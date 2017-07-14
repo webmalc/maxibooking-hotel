@@ -548,30 +548,11 @@ class RoomType extends Base implements RoomTypeInterface
         return $this;
     }
 
-    /**
-     * Add image
-     *
-     * @param \MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
-     */
-    public function addImage(\MBH\Bundle\HotelBundle\Document\RoomTypeImage $image)
-    {
-        $this->images[] = $image;
-    }
-
-    /**
-     * Remove image
-     *
-     * @param \MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
-     */
-    public function removeImage(\MBH\Bundle\HotelBundle\Document\RoomTypeImage $image)
-    {
-        $this->images->removeElement($image);
-    }
-
     public function getMainImage()
     {
-        foreach ($this->getImages() as $image) {
-            if ($image->getIsMain()) {
+        /** @var Image $image */
+        foreach ($this->onlineImages as $image) {
+            if ($image->isMain()) {
                 return $image;
             }
         }
@@ -602,6 +583,10 @@ class RoomType extends Base implements RoomTypeInterface
     public function makeFirstImageAsMain()
     {
         if (count($this->onlineImages)) {
+            foreach ($this->onlineImages as $onlineImage) {
+                $onlineImage->setIsMain(false);
+            }
+
             $this->onlineImages->first()->setIsMain(true);
         }
 
