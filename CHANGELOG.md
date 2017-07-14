@@ -4,6 +4,12 @@ dev
 * add acl cache
 * add fork acl provider https://github.com/webmalc/MongoDBAclBundle.git
 * add primes to PackageRepository::fetch()
+* change images to Image document in Hotel  and RoomType
+* change logo in mail templates
+* check empty email addresses before generate mail (add to log if emtpy) 
+* check is file exists before attach to mail
+* add priority to roomType images
+* each client in own file folder
 
 1.5.10
 ============
