@@ -180,7 +180,7 @@
         }
 
         .package-description {
-            margin: {{ (minuend - titleSubFontSize - (2 * 3)) / 2 }}px auto !important;
+            margin: {{ ((minuend - titleSubFontSize - (2 * 3)) / 2)|round(0, 'floor') }}px auto !important;
         }
     </style>
 {% endblock %}
