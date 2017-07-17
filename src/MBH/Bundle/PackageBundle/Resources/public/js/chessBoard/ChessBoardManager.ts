@@ -384,6 +384,8 @@ class ChessBoardManager {
 
         let packageStartDate = ChessBoardManager.getMomentDate(packageItem.begin);
         let packageEndDate = ChessBoardManager.getMomentDate(packageItem.end);
+        let accommodationStartDate = ChessBoardManager.getMomentDate(packageItem.begin);
+        let accommodationEndDate = ChessBoardManager.getMomentDate(packageItem.end);
 
         let packageCellCount = packageEndDate.diff(packageStartDate, 'days');
         let packageWidth = packageCellCount * styleConfigs[this.currentSizeConfigNumber].tableCellWidth - 3;
@@ -409,6 +411,12 @@ class ChessBoardManager {
         if (packageItem.position == 'middle' || packageItem.position == 'right') {
             packageDiv.classList.add('with-left-divider');
             packageDiv.classList.remove('package-with-left-arrow');
+        }
+        if (this.isAbroadLeftTableSide(accommodationStartDate)) {
+            packageDiv.classList.remove('package-with-left-arrow');
+        }
+        if (this.isAbroadRightTableSide(accommodationEndDate)) {
+            packageDiv.classList.remove('package-with-right-arrow');
         }
 
         if (packageItem.isCheckOut) {
@@ -1173,6 +1181,7 @@ class ChessBoardManager {
                         backgroundColor = self.colors['leftRoomsZero'];
                     } else if (dateLeftRoomsCount < 0) {
                         backgroundColor = self.colors['leftRoomsNegative'];
+                        dateElements[i].children[0].style.color = '#DC2814';
                     }
                     dateElements[i].children[0].style.backgroundColor = backgroundColor;
                     dateElements[i].children[0].innerHTML = dateLeftRoomsCount;

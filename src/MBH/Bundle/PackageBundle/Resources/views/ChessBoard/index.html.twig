@@ -59,100 +59,126 @@
     {{ parent() }}
     {% stylesheets filter='cssrewrite, uglifycss'
     '@MBHPackageBundle/Resources/public/css/*'
-    'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css'
-    %}
+    'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
+    {% set halfMinuend = (minuend / 2)|round %}
     <style>
         .package {
             height: {{ minuend }}px
         }
-        .success,.with-right-divider.success:before {
+
+        .success, .with-right-divider.success:before {
             background-color: {{ colors['success'] }} !important;
         }
-        .warning,.with-right-divider.warning:before {
+
+        .warning, .with-right-divider.warning:before {
             background-color: {{ colors['warning'] }} !important;
         }
-        .danger,.with-right-divider.danger:before {
+
+        .danger, .with-right-divider.danger:before {
             background-color: {{ colors['danger'] }} !important;
         }
+
         .package-with-right-arrow:before {
-            right: {{ minuend / 2 }}px !important;
+            right: {{ halfMinuend }}px !important;
         }
-        .danger.package-with-right-arrow:before {
-            border-left: {{ minuend / 2 }}px solid {{ colors['danger_add'] }} !important;
+
+        .danger.package-with-right-arrow:before, .package.package-with-right-arrow:before {
+            border-left: {{ halfMinuend }}px solid {{ colors['danger_add'] }} !important;
         }
-        .success.package-with-right-arrow:before, .package.package-with-right-arrow:before {
-            border-left: {{ minuend / 2 }}px solid {{ colors['warning_add'] }} !important;
+
+        .success.package-with-right-arrow:before {
+            border-left: {{ halfMinuend }}px solid {{ colors['success_add'] }} !important;
         }
+
         .warning.package-with-right-arrow:before {
-            border-left: {{ minuend / 2 }}px solid {{ colors['warning_add'] }} !important;
+            border-left: {{ halfMinuend }}px solid {{ colors['warning_add'] }} !important;
         }
+
         #accommodation-chessBoard-content .achtung {
             background-color: {{ colors['unplaced'] }} !important;
         }
+
         .ui-resizable-e, .ui-resizable-w {
-            border-bottom: {{ (minuend / 2) - 1}}px solid transparent !important;
-            border-top: {{ (minuend / 2) - 1}}px solid transparent !important;
+            border-bottom: {{ halfMinuend - 1}}px solid transparent !important;
+            border-top: {{ halfMinuend - 1}}px solid transparent !important;
         }
-        .danger>.ui-resizable-e, .danger>.ui-resizable-w  {
-            border-left: {{ minuend / 2 }}px solid {{ colors['danger_add'] }} !important;
+
+        .danger > .ui-resizable-e, .danger > .ui-resizable-w {
+            border-left: {{ halfMinuend }}px solid {{ colors['danger_add'] }} !important;
         }
-        .warning>.ui-resizable-e, .warning>.ui-resizable-w  {
-            border-left: {{ minuend / 2 }}px solid {{ colors['warning_add'] }} !important;
+
+        .warning > .ui-resizable-e, .warning > .ui-resizable-w {
+            border-left: {{ halfMinuend }}px solid {{ colors['warning_add'] }} !important;
         }
-        .success>.ui-resizable-e, .success>.ui-resizable-w  {
-            border-left: {{ minuend / 2 }}px solid {{ colors['success_add'] }} !important;
+
+        .success > .ui-resizable-e, .success > .ui-resizable-w {
+            border-left: {{ halfMinuend }}px solid {{ colors['success_add'] }} !important;
         }
-        .danger>.right-inner-resizable-triangle {
+
+        .danger > .right-inner-resizable-triangle {
             border-left: {{ (minuend / 4)|round }}px solid {{ colors['danger'] }} !important;
         }
-        .success>.right-inner-resizable-triangle {
+
+        .success > .right-inner-resizable-triangle {
             border-left: {{ (minuend / 4)|round }}px solid {{ colors['success'] }} !important;
         }
-        .warning>.right-inner-resizable-triangle {
+
+        .warning > .right-inner-resizable-triangle {
             border-left: {{ (minuend / 4)|round }}px solid {{ colors['warning'] }} !important;
         }
-        .danger.near-left-puzzle>.ui-resizable-e, .package.near-left-puzzle>.ui-resizable-e, .danger>.resizable-appendix {
+
+        .danger.near-left-puzzle > .ui-resizable-e, .package.near-left-puzzle > .ui-resizable-e, .danger > .resizable-appendix {
             background-color: {{ colors['danger_add'] }} !important;
         }
-        .success.near-left-puzzle>.ui-resizable-e, .success>.resizable-appendix {
+
+        .success.near-left-puzzle > .ui-resizable-e, .success > .resizable-appendix {
             background-color: {{ colors['success_add'] }} !important;
         }
 
-        .warning.near-left-puzzle>.ui-resizable-e, .warning>.resizable-appendix {
+        .warning.near-left-puzzle > .ui-resizable-e, .warning > .resizable-appendix {
             background-color: {{ colors['warning_add'] }} !important;
         }
+
         .package-with-left-arrow:after, .package-with-right-arrow:before {
-            border-bottom: {{ (minuend / 2) - 2 }}px solid transparent !important;
-            border-top: {{ minuend / 2 }}px solid transparent !important;
+            border-bottom: {{ halfMinuend - 2 }}px solid transparent !important;
+            border-top: {{ halfMinuend }}px solid transparent !important;
         }
+
         .with-left-divider:after, .with-right-divider:before {
             top: {{ (minuend - tileFontSize)/2 }}px !important;
         }
+
         .package-with-right-arrow:before {
-            right: {{ (minuend / 2) * (-1) }}px !important;
+            right: {{ halfMinuend * (-1) }}px !important;
         }
+
         .resizable-appendix {
             height: {{ minuend- 2 }}px !important;
         }
-        .near-left-puzzle>.ui-resizable-e {
-            height: {{ minuend - 2 }}px !important ;
+
+        .near-left-puzzle > .ui-resizable-e {
+            height: {{ minuend - 2 }}px !important;
         }
-        .package:not(.near-left-puzzle)>.ui-resizable-e {
-            right: {{ minuend / 2 * (-1) }}px !important;
+
+        .package:not(.near-left-puzzle) > .ui-resizable-e {
+            right: {{ halfMinuend * (-1) }}px !important;
         }
+
         .right-inner-resizable-triangle {
-            border-bottom: {{ (minuend / 2) - 1 }}px solid transparent !important;
-            border-top: {{ minuend / 2 }}px solid transparent !important;
+            border-bottom: {{ halfMinuend - 1 }}px solid transparent !important;
+            border-top: {{ halfMinuend }}px solid transparent !important;
             border-left: {{ (minuend / 4)|round }}px solid white !important;
             right: {{ (minuend / 4)|round * (-1) }}px !important;
         }
+
         .left-inner-resizable-triangle {
-            border-bottom: {{ minuend / 2 }}px solid transparent !important;
-            border-top: {{ minuend / 2 }}px solid transparent !important;
-            border-left: {{ minuend / 2 }}px solid white !important;
+            border-bottom: {{ halfMinuend }}px solid transparent !important;
+            border-top: {{ halfMinuend }}px solid transparent !important;
+            border-left: {{ halfMinuend }}px solid white !important;
         }
+
         .package-description {
             margin: {{ (minuend - titleSubFontSize - (2 * 3)) / 2 }}px auto !important;
         }
@@ -187,7 +213,8 @@
         </div>
         <div class="input">
             <i class="fa fa-bed" title='{{ 'chessboard_manager.room_type.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
-            <select name="filter_roomType[]" multiple data-placeholder="{{ 'chessboard_manager.room_type.title'|trans }}"
+            <select name="filter_roomType[]" multiple
+                    data-placeholder="{{ 'chessboard_manager.room_type.title'|trans }}"
                     id="accommodation-report-filter-roomType"
                     class="accommodation-report-filter form-control input-sm">
                 <option></option>
@@ -200,7 +227,8 @@
         {% if housings|length %}
             <div class="input">
                 <i class="fa fa-home" title='{{ 'chessboard_manager.housing.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
-                <select name="housing[]" multiple data-placeholder="{{ 'chessboard_manager.housing.title'|trans }}" id="accommodation-report-filter-housing"
+                <select name="housing[]" multiple data-placeholder="{{ 'chessboard_manager.housing.title'|trans }}"
+                        id="accommodation-report-filter-housing"
                         class="accommodation-report-filter form-control input-sm">
                     <option></option>
                     {% for housing in housings %}
@@ -214,7 +242,8 @@
         {% if floors|length %}
             <div class="input">
                 <i class="fa fa-home" title='{{ 'chessboard_manager.floor.title'|trans }}' data-toggle='tooltip'></i>&nbsp;
-                <select name="floor[]" multiple data-placeholder="{{ 'chessboard_manager.floor.title'|trans }}" id="accommodation-report-filter-floor"
+                <select name="floor[]" multiple data-placeholder="{{ 'chessboard_manager.floor.title'|trans }}"
+                        id="accommodation-report-filter-floor"
                         class="accommodation-report-filter form-control input-sm">
                     <option></option>
                     {% for floor in floors %}
@@ -225,14 +254,16 @@
             </div>
         {% endif %}
         <div class="input">
-            <button type="button" class="btn btn-primary navbar-btn" id="filter-button">{{ 'chessboard_manager.filter.button.text'|trans }}</button>
+            <button type="button" class="btn btn-primary navbar-btn"
+                    id="filter-button">{{ 'chessboard_manager.filter.button.text'|trans }}</button>
         </div>
         <div style="display: inline-block;margin-top: 13px; margin-right: 5px;">
             {% include '@MBHBase/Partials/disable_button.html.twig' with {isChecked : displayDisabledRoomType, route : 'chess_board_home'} %}
         </div>
         <div class="input" style="width: 150px;">
             <i class="fa fa-minus" style="margin-right: 5px"></i>&nbsp;
-            <input style="display: none;" id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="3"
+            <input style="display: none;" id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0"
+                   data-slider-max="3"
                    data-slider-step="1" data-slider-value="{{ stylesFileNumber }}"/>
             <i class="fa fa-plus" style="margin-left: 15px"></i>&nbsp;
         </div>
@@ -241,7 +272,7 @@
     <input type="hidden" id="pageNumber" value="{{ pageNumber }}">
     {% include 'MBHBaseBundle:Partials:pager.html.twig' with {'page': pageNumber, 'pages': pageCount, class : 'accommodation-report-pagination'} %}
 
-    <div id="accommodation-chessBoard-content"  class="scrolling">
+    <div id="accommodation-chessBoard-content" class="scrolling">
         <!---------------------------- MONTHS AND DATES ------------------------->
         <div id="header-title" class="tile tile-not-selected tile-free both not-standard-tile"
              style="width:{{ headerWidth }}px;">
@@ -292,7 +323,8 @@
                                             class="text-info">
                                         <i class="fa fa-bed"></i> {{ roomTypeData.name[0:30] }}</strong></div>
                             </li>
-                            <li class="tile tile-not-selected tile-free both not-standard-tile" style="width:{{ headerWidth }}px;">
+                            <li class="tile tile-not-selected tile-free both not-standard-tile"
+                                style="width:{{ headerWidth }}px;">
                                 <div class="title-sub text-right">
                                     <div class="text-right">
                                         {{ 'chessboard_manager.without_accommodation.tile.text'|trans }}
@@ -350,13 +382,16 @@
                                             {% if leftRoomsData[roomTypeId] is defined %}
                                                 {% for leftRoomsCount in leftRoomsData[roomTypeId] %}
                                                     {% set leftRoomsBackgroundColor = colors['leftRoomsPositive'] %}
+                                                    {% set isNegativeCount = false %}
                                                     {% if leftRoomsCount == 0 %}
                                                         {% set leftRoomsBackgroundColor = colors['leftRoomsZero'] %}
                                                     {% elseif leftRoomsCount < 0 %}
                                                         {% set leftRoomsBackgroundColor = colors['leftRoomsNegative'] %}
+                                                        {% set isNegativeCount = true %}
                                                     {% endif %}
                                                     <li class="tile"
-                                                        style="background-color: {{ leftRoomsBackgroundColor }}"
+                                                        style="background-color: {{ leftRoomsBackgroundColor }};
+                                                        {% if isNegativeCount %} color: #DC2814;{% endif %}"
                                                         title="{{ 'chessboard_manager.left_rooms_count.tooltip_title'|trans({'%count%' : leftRoomsCount}, 'front_messages') }}"
                                                         data-toggle="tooltip" data-placement="bottom"
                                                         data-container="body">
@@ -367,17 +402,13 @@
                                                 {% endfor %}
                                             {% else %}
                                                 {% for day in days %}
-                                                    {#{% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}#}
-                                                    {#{% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}#}
                                                     <li class=" tile tile-bookable tile-free both">
                                                         <div class="no-accommodation-date" data-container="body"
                                                              data-placement="bottom" data-html="true"
-                                                             title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}" tabindex="0"
+                                                             title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}"
+                                                             tabindex="0"
                                                              data-date="{{ day|date('d.m.Y') }}"
                                                              data-toggle="popover">
-                                                            {#<div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}#}
-                                                            {#<span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>#}
-                                                            {#</div>#}
                                                         </div>
                                                     </li>
                                                 {% endfor %}
@@ -389,17 +420,15 @@
                                             <ul class="calendarDates list-unstyled"
                                                 id="{{ 'no_accommodation' ~ roomTypeId }}">
                                                 {% for day in days %}
-                                                    {#{% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}#}
-                                                    {#{% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}#}
-                                                    <li class=" tile tile-bookable tile-free both">
+                                                    {% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}
+                                                    {% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}
+                                                    <li class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
                                                         <div class="no-accommodation-date" data-container="body"
                                                              data-placement="bottom" data-html="true"
-                                                             title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}" tabindex="0"
+                                                             title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}"
+                                                             tabindex="0"
                                                              data-date="{{ day|date('d.m.Y') }}"
                                                              data-toggle="popover">
-                                                            {#<div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}#}
-                                                            {#<span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>#}
-                                                            {#</div>#}
                                                         </div>
                                                     </li>
                                                 {% endfor %}
@@ -564,7 +593,8 @@
                         <a class="btn btn-success" target="_blank" id="package-info-modal-edit">
                             <i class="fa fa-pencil-square-o"
                                aria-hidden="true"></i>&nbsp;{{ 'modal.chessBoard.edit'|trans }}</a>
-                        <button class="btn btn-danger" id="package-info-modal-delete"><i class="fa fa-trash-o"></i>&nbsp;{{ 'modal.chessBoard.delete'|trans }}
+                        <button class="btn btn-danger" id="package-info-modal-delete"><i
+                                    class="fa fa-trash-o"></i>&nbsp;{{ 'modal.chessBoard.delete'|trans }}
                         </button>
                         <button type="button" class="btn btn-default" id="packageModalCancelButton"
                                 data-dismiss="modal"><i class="fa fa-times"

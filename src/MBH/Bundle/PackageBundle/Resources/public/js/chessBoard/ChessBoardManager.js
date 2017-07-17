@@ -318,6 +318,8 @@ var ChessBoardManager = (function () {
         }
         var packageStartDate = ChessBoardManager.getMomentDate(packageItem.begin);
         var packageEndDate = ChessBoardManager.getMomentDate(packageItem.end);
+        var accommodationStartDate = ChessBoardManager.getMomentDate(packageItem.begin);
+        var accommodationEndDate = ChessBoardManager.getMomentDate(packageItem.end);
         var packageCellCount = packageEndDate.diff(packageStartDate, 'days');
         var packageWidth = packageCellCount * styleConfigs[this.currentSizeConfigNumber].tableCellWidth - 3;
         var packageDiv = templatePackageElement.cloneNode(true);
@@ -340,6 +342,12 @@ var ChessBoardManager = (function () {
         if (packageItem.position == 'middle' || packageItem.position == 'right') {
             packageDiv.classList.add('with-left-divider');
             packageDiv.classList.remove('package-with-left-arrow');
+        }
+        if (this.isAbroadLeftTableSide(accommodationStartDate)) {
+            packageDiv.classList.remove('package-with-left-arrow');
+        }
+        if (this.isAbroadRightTableSide(accommodationEndDate)) {
+            packageDiv.classList.remove('package-with-right-arrow');
         }
         if (packageItem.isCheckOut) {
             packageDiv.classList.add('tile-coming-out');
@@ -1033,6 +1041,7 @@ var ChessBoardManager = (function () {
                     }
                     else if (dateLeftRoomsCount < 0) {
                         backgroundColor = self.colors['leftRoomsNegative'];
+                        dateElements[i].children[0].style.color = '#DC2814';
                     }
                     dateElements[i].children[0].style.backgroundColor = backgroundColor;
                     dateElements[i].children[0].innerHTML = dateLeftRoomsCount;

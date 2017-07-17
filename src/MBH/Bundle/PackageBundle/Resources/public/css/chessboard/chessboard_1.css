@@ -178,7 +178,7 @@ body {
 }
 #accommodation-chessBoard-content {
   position: relative;
-  color: #3d5471;
+  color: #3C3C3C;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -358,14 +358,8 @@ body {
   position: absolute;
   right: 6%;
 }
-#accommodation-chessBoard-content .tile.weekend::after {
-  background-color: #f6e9ca;
-  content: " ";
-  height: 3px;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
+#accommodation-chessBoard-content .tile.weekend {
+  background-color: #f5f5f5;
 }
 #accommodation-chessBoard-content .tile.today::after {
   background-color: #cae0ef;
@@ -789,8 +783,7 @@ body {
 .package-description {
   white-space: nowrap;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
+  color: black;
   -webkit-border-radius: 8px;
   -moz-border-radius: 8px;
   border-radius: 8px;
