@@ -2,8 +2,12 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Task;
 
+use Symfony\Component\HttpKernel\KernelInterface;
+
 class Command
 {
+    /** @var  string */
+    private $command;
     /**
      * @var array
      */
@@ -18,6 +22,15 @@ class Command
      * @var bool
      */
     private $logOutput = true;
+
+    /** @var string */
+    private $client;
+
+    /** @var  string */
+    private $environment;
+
+    /** @var  boolean */
+    private $debug;
    
     /**
      * constructor
@@ -26,11 +39,15 @@ class Command
      * @param bool $async
      * @param bool $logOutput
      */
-    public function __construct(array $commandParams, bool $async = false, bool $logOutput = true)
+    public function __construct(array $commandParams, \AppKernel $kernel, bool $async = false, bool $logOutput = true)
     {
-        $this->commandParams = $commandParams;
+        $this->command = $commandParams['command'];
+        $this->commandParams = $commandParams['params'];
         $this->async = $async;
         $this->logOutput = $logOutput;
+        $this->client = $kernel->getClient();
+        $this->environment = $kernel->getEnvironment();
+        $this->debug = $kernel->isDebug();
     }
 
     /**
@@ -46,6 +63,11 @@ class Command
         return $this;
     }
 
+
+    public function getCommand()
+    {
+        return $this->command;
+    }
     /**
      * commandParams get
      *
@@ -101,4 +123,65 @@ class Command
     {
         return $this->logOutput && !$this->async;
     }
+
+    /**
+     * @return string
+     */
+    public function getClient(): string
+    {
+        return $this->client;
+    }
+
+    /**
+     * @param string $client
+     * @return $this
+     */
+    public function setClient(string $client)
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEnvironment(): string
+    {
+        return $this->environment;
+    }
+
+    /**
+     * @param string $environment
+     * @return $this
+     */
+    public function setEnvironment(string $environment)
+    {
+        $this->environment = $environment;
+
+        return $this;
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isDebug(): bool
+    {
+        return $this->debug;
+    }
+
+
+    /**
+     * @param bool $debug
+     * @return $this
+     */
+    public function setDebug(bool $debug)
+    {
+        $this->debug = $debug;
+
+        return $this;
+    }
+
+
 }

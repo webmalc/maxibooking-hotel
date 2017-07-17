@@ -7,6 +7,9 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
+    /** @var string */
+    const CLIENT_VARIABLE = 'MB_CLIENT';
+
     /** @var  string */
     protected $client;
 
@@ -80,7 +83,7 @@ class AppKernel extends Kernel
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
             $bundles[] = new Fidry\PsyshBundle\PsyshBundle();
-            $bundles[] = new MBHTestBundle();
+//            $bundles[] = new MBHTestBundle();
         }
 
         return $bundles;
@@ -111,5 +114,10 @@ class AppKernel extends Kernel
         } else {
             $loader->load($this->getRootDir().'/config/parameters.yml');
         }
+    }
+
+    public function getClient()
+    {
+        return $this->client;
     }
 }

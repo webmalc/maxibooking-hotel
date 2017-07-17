@@ -1,4 +1,4 @@
-dev
+2.0.0-beta.1
 ============
 * doctrine mongodb vendor update
 * add acl cache
@@ -10,6 +10,7 @@ dev
 * check is file exists before attach to mail
 * add priority to roomType images
 * each client in own file folder
+* change task runner (rabbitmq consumer) to multi clients
 
 1.5.10
 ============

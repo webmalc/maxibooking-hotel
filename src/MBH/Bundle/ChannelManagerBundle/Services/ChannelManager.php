@@ -100,7 +100,7 @@ class ChannelManager
     {
         $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:configs ' . $env . '> /dev/null 2>&1 &', null, ['MBCLIENT' => $this->client]);
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:configs ' . $env . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -109,7 +109,7 @@ class ChannelManager
     {
         $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:close ' . $env . '> /dev/null 2>&1 &', null, ['MBCLIENT' => $this->client]);
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:close ' . $env . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -123,7 +123,7 @@ class ChannelManager
         $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
         $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, ['MBCLIENT' => $this->client]);
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -137,7 +137,7 @@ class ChannelManager
         $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
         $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=rooms ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, ['MBCLIENT' => $this->client]);
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=rooms ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -151,7 +151,7 @@ class ChannelManager
         $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
         $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=prices ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, ['MBCLIENT' => $this->client]);
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=prices ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -165,7 +165,7 @@ class ChannelManager
         $serviceTitle ? $service = ' --service=' . $serviceTitle : '';
         $old ? $old = ' --old' : '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:pull ' . $env . $service . $old . '> /dev/null 2>&1 &', null, ['MBCLIENT' => $this->client]);
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:pull ' . $env . $service . $old . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -179,7 +179,7 @@ class ChannelManager
         $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
         $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=restrictions ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, ['MBCLIENT' => $this->client]);
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=restrictions ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 

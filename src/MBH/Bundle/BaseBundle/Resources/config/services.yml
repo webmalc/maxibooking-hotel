@@ -179,7 +179,7 @@ services:
 
     mbh.task.logger:
         class:     Symfony\Bridge\Monolog\Logger
-        arguments: [app]
+        arguments: ['task']
         calls:
             - [pushHandler, ['@mbh.task.logger_handler']]
 

@@ -66,6 +66,7 @@ twig:
         version: "%mbh.version%"
         currency: "%locale.currency%"
 
+
 # Assetic Configuration
 assetic:
     debug:          "%kernel.debug%"

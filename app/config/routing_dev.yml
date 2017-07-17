@@ -1,7 +1,7 @@
-test:
-    resource: "@MBHTestBundle/Controller/"
-    type: annotation
-    prefix: /test
+#test:
+#    resource: "@MBHTestBundle/Controller/"
+#    type: annotation
+#    prefix: /test
 _wdt:
     resource: "@WebProfilerBundle/Resources/config/routing/wdt.xml"
     prefix:   /_wdt

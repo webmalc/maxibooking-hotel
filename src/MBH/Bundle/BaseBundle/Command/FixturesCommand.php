@@ -26,7 +26,7 @@ class FixturesCommand extends ContainerAwareCommand
         $client = $this->getContainer()->getParameter('client');
         $process = new Process(
             'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console ' . $command . ' --no-debug --env=' . $env,
-            null, ['MBCLIENT' => $client]
+            null, [\AppKernel::CLIENT_VARIABLE => $client]
         );
         $process->run();
     }

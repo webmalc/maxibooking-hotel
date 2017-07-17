@@ -19,6 +19,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Process\Process;
 
 class HotelController extends Controller
 {
@@ -118,7 +119,7 @@ class HotelController extends Controller
             //todo: create services
             $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
             $client = $this->container->getParameter('client');
-            $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'doctrine:mongodb:fixtures:load --append --no-debug > /dev/null 2>&1 &', null, ['MBCLIENT' => $client]);
+            $process = new Process('nohup php ' . $console . 'doctrine:mongodb:fixtures:load --append --no-debug > /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $client]);
             $process->run();
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
