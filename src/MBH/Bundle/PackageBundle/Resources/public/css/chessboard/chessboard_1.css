@@ -266,6 +266,9 @@ body {
 #accommodation-chessBoard-content .leftRoomsLine .weekend {
   background-color: #E6E6E6 !important;
 }
+#accommodation-chessBoard-content .leftRoomsLine .today {
+  background-color: #e4eff6 !important;
+}
 #accommodation-chessBoard-content .tile .date div {
   margin-left: 0;
   text-align: right;
