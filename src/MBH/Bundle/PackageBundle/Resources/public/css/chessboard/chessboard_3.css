@@ -315,7 +315,7 @@ body {
 #accommodation-chessBoard-content .tile .title {
   border-top: 1px solid #ddd;
   border-right: 1px solid #e3e3e3;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: bold;
   padding: 0px 5px;
   height: 47px;
@@ -327,7 +327,7 @@ body {
 }
 #accommodation-chessBoard-content .tile .title-sub {
   border-right: 1px solid #e3e3e3;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: bold;
   padding: 0 5px 0 9px;
   height: 47px;
@@ -548,7 +548,7 @@ body {
   border-radius: 8px;
   margin: 14px auto;
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
 }
 #work-shift-detail-header {
   margin-bottom: 5px;
