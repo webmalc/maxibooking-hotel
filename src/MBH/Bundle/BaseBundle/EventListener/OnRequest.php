@@ -25,6 +25,7 @@ class OnRequest
         $tz = $this->container->getParameter('mbh.timezone');
         if (!empty($tz) && $tz != 'default') {
             $this->container->get('twig')->getExtension('core')->setTimezone($tz);
+            date_default_timezone_set($tz);
         }
 
     }
