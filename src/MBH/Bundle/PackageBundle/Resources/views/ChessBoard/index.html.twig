@@ -276,14 +276,14 @@
         <!---------------------------- MONTHS AND DATES ------------------------->
         <div id="header-title" class="tile tile-not-selected tile-free both not-standard-tile"
              style="width:{{ headerWidth }}px;">
-            <div class="title" style="height: {{ headerHeight }}px; background-color: #ecf0f5;">
+            <div class="title" style="height: {{ headerHeight }}px;">
                 <div class="tableTitleCell">&nbsp;</div>
                 <div class="tableTitleCell">
                 </div>
             </div>
         </div>
         <div id="months-and-dates"
-             style="background-color: #ecf0f5; position: absolute;  z-index: 200; left: {{ headerWidth }}px; width:{{ dayTableWidth }}px; height: {{ headerHeight }}px;">
+             style="position: absolute;  z-index: 200; left: {{ headerWidth }}px; width:{{ dayTableWidth }}px; height: {{ headerHeight }}px;">
             <div class="calendarRow clearfix">
                 <ul class="list-unstyled calendarDays">
                     {% for monthDays in calendarData %}
@@ -317,7 +317,7 @@
                     <div class="clearfix">
                         <ul class="calendarDays list-unstyled">
                             <li class="tile tile-not-selected tile-free both not-standard-tile"
-                                style="width:{{ headerWidth }}px; background-color: #ecf0f5;">
+                                style="width:{{ headerWidth }}px;">
                                 <div class="title">
                                     <strong {% if not roomTypeData.isEnabled %} class="disabled-room-type"{% endif %}
                                             class="text-info">
@@ -384,6 +384,7 @@
                                                     {% set leftRoomsBackgroundColor = colors['leftRoomsPositive'] %}
                                                     {% set isNegativeCount = false %}
                                                     {% if leftRoomsCount == 0 %}
+                                                        {% set isNegativeCount = true %}
                                                         {% set leftRoomsBackgroundColor = colors['leftRoomsZero'] %}
                                                     {% elseif leftRoomsCount < 0 %}
                                                         {% set leftRoomsBackgroundColor = colors['leftRoomsNegative'] %}

@@ -1179,6 +1179,7 @@ class ChessBoardManager {
                     let backgroundColor = self.colors['leftRoomsPositive'];
                     if (dateLeftRoomsCount == 0) {
                         backgroundColor = self.colors['leftRoomsZero'];
+                        dateElements[i].children[0].style.color = '#DC2814';
                     } else if (dateLeftRoomsCount < 0) {
                         backgroundColor = self.colors['leftRoomsNegative'];
                         dateElements[i].children[0].style.color = '#DC2814';
