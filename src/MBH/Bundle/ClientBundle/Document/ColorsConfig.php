@@ -144,7 +144,7 @@ class ColorsConfig extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.colors_config.min_hex_code",
-     *      max=2,
+     *      max=22,
      *      maxMessage="validator.colors_config.max_color_length"
      * )
      */

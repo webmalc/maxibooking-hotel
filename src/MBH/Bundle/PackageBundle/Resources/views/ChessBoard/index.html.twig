@@ -299,9 +299,11 @@
             <div class="calendarRow clearfix">
                 <ul class="list-unstyled calendarDays">
                     {% for day in days %}
-                        <li class="tile tile-bookable tile-free both">
+                        {% set isWeekend = day|date('N') in [6,7] %}
+                        {% set isNow = day|date('d.m.Y') == 'now'|date('d.m.Y') %}
+                        <li class="tile tile-bookable tile-free both {% if isWeekend %}weekend{% endif %}">
                             <div class="day">
-                                <div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}
+                                <div class="{{ isWeekend ? 'text-danger' }}{{ isNow ? 'text-info' }}">{{ day|date('d.m') }}
                                     <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>
                                 </div>
                             </div>
