@@ -1093,7 +1093,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
             'debt' => $package->getPaidStatus() != 'success' && !$package->getIsCheckOut(),
             'hasEarlyCheckIn' => $hasEarlyCheckIn,
-            'hasLateCheckOut' => $hasLateCheckOut
+            'hasLateCheckOut' => $hasLateCheckOut,
+            'timeZone' => $this->getParameter('mbh.timezone')
         ]);
 
         $authorizationChecker = $this->container->get('security.authorization_checker');

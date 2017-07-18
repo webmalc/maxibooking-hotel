@@ -76,10 +76,10 @@ views.form.index.new: "создание"
 views.form.index.settings: Настройки
 views.form.index.site_embed_code: Код для сайта
 views.form.index.settings_required: "Необходимо заполнить основные настройки!"
-views.form.index.site_embed_form_code: Код формы для вставки на сайт
+views.form.index.site_embed_form_code: Код формы поиска
 views.form.index.to_form_place: "На место для формы:"
 views.form.index.before_closing_tag: Перед закрывающим тегом
-views.form.index.search_page_embed_code: "Код страницы поиска для вставки на сайт:"
+views.form.index.search_page_embed_code: "Код формы результатов поиска:"
 views.form.index.to_results_place: "На место для результатов:"
 views.form.layout.online_form: "Онлайн форма"
 views.form.layout.online_polls: "Оценки"

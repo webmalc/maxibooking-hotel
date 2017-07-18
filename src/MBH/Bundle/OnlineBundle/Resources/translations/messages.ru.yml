@@ -39,6 +39,7 @@ controller.apiController.thank_you: 'Большое спасибо. '
 controller.apiController.we_will_call_you_back_soon: ' Мы свяжемся с Вами в ближайшее время.<br>'
 controller.apiController.your_order_number: 'Номер вашего заказа: '
 controller.formController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.formController.frame_sizes_changed: 'Изменены значения размеров онлайн-формы. Обновите код формы на сайте.'
 
 form.inviteType.type.single: 'Однократная (600 руб.)'
 form.inviteType.type.twice: 'Двукратная (900 руб.)'
@@ -48,7 +49,13 @@ form.formType.css: 'Оформление'
 form.formType.css_help: 'Дополнительные css-стили для онлайн формы'
 form.formType.theme_label: 'Тема'
 form.formType.resultsUrl_label: 'Страница результатов' 
-form.formType.resultsUrl_help: 'URL страницы для вывода результатов поиска' 
+form.formType.resultsUrl_help: 'URL страницы для вывода результатов поиска'
+form.formType.frame_width.is_full_width.label: На всю ширину?
+form.formType.frame_width.is_full_width.help: Форма занимает 100% свободного места
+form.formType.frame_width.label: Ширина
+form.formType.frame_width.help: Ширина фрейма
+form.formType.frame_height.label: Высота
+form.formType.frame_height.help: Высота фрейма
 
 payment_types:
   in_hotel: 'Оплата при заселении'

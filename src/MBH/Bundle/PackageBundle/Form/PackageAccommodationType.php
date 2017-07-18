@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -17,7 +18,7 @@ class PackageAccommodationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('purposeOfArrival',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('purposeOfArrival',  InvertChoiceType::class, [
                 'label' => 'form.packageMainType.arrival_purpose',
                 'required' => false,
                 'group' => 'form.packageAccommodationType.choose_placement',
@@ -42,6 +43,7 @@ class PackageAccommodationType extends AbstractType
             'date_widget' => 'single_text',
             'attr' => ['placeholder' => '12:00', 'class' => 'input-time'],
             'date_format' => 'dd.MM.yyyy',
+            'data' => new \DateTime('now', new \DateTimeZone($options['timeZone']))
         ];
 
         if ($options['hasEarlyCheckIn']) {
@@ -55,7 +57,7 @@ class PackageAccommodationType extends AbstractType
             'value' => true,
             'group' => 'form.packageAccommodationType.check_in_group',
             'required' => false,
-            'help' => 'form.packageAccommodationType.are_guests_checked_out_help'
+            'help' => 'form.packageAccommodationType.are_guests_checked_out_help',
         ];
         if ($options['debt']) {
             //$isCheckOutOptions['attr'] = ['disabled' => 'disabled'];
@@ -75,6 +77,7 @@ class PackageAccommodationType extends AbstractType
             'date_widget' => 'single_text',
             'attr' => ['placeholder' => '12:00', 'class' => 'input-time'],
             'date_format' => 'dd.MM.yyyy',
+            'data' => new \DateTime('now', new \DateTimeZone($options['timeZone']))
         ];
 
         if ($options['hasLateCheckOut']) {
@@ -95,6 +98,7 @@ class PackageAccommodationType extends AbstractType
             'roomStatusIcons' => [],
             'hasEarlyCheckIn' => false,
             'hasLateCheckOut' => false,
+            'timeZone' => null
         ]);
     }
 
