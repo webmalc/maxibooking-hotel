@@ -11,6 +11,8 @@
 * add priority to roomType images
 * each client in own file folder
 * change task runner (rabbitmq consumer) to multi clients
+* add service get all clients 
+* add generator for ChannelManager pull queue in RMQ
 
 1.5.10
 ============

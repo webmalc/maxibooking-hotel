@@ -22,6 +22,8 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $start = new \DateTime();
+
         $container = $this->getContainer();
         $clients = $container->get('mbh.service.client_list_getter')->getClientsList();
         $certainClient = $input->getOption('client');
@@ -40,6 +42,11 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
             );
             $producer->publish(serialize($command));
         }
+
+        $time = $start->diff(new \DateTime());
+        $output->writeln(count($clients).' clients were handled.');
+        $output->writeln(implode(' ', $clients));
+        $output->writeln('Command complete. Elapsed time: ' . $time->format('%H:%I:%S'));
     }
 
 }
