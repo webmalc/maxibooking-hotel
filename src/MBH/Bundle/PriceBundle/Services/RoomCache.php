@@ -230,16 +230,15 @@ class RoomCache
             /** @var \AppKernel $kernel */
             $kernel = $this->container->get('kernel');
             $command = new Command(
+                'mbh:cache:recalculate',
                 [
-                    'command' => 'mbh:cache:recalculate',
-                    'params' => [
-                        '--roomTypes' => implode(',', $this->helper->toIds($roomTypes)),
-                        '--begin' => $begin->format('d.m.Y'),
-                        '--end' => $end->format('d.m.Y'),
-                    ],
-
+                    '--roomTypes' => implode(',', $this->helper->toIds($roomTypes)),
+                    '--begin' => $begin->format('d.m.Y'),
+                    '--end' => $end->format('d.m.Y'),
                 ],
-                $kernel
+                $kernel->getClient(),
+                $kernel->getEnvironment(),
+                $kernel->isDebug()
             );
 
             $this->container->get('old_sound_rabbit_mq.task_command_runner_producer')->publish(

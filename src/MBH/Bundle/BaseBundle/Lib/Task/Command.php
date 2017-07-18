@@ -2,8 +2,6 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Task;
 
-use Symfony\Component\HttpKernel\KernelInterface;
-
 class Command
 {
     /** @var  string */
@@ -31,23 +29,28 @@ class Command
 
     /** @var  boolean */
     private $debug;
-   
+
     /**
      * constructor
      *
-     * @param array $commandParams
+     * @param string $command
+     * @param array $params
+     * @param string $client
+     * @param string $env
+     * @param bool $debug
      * @param bool $async
      * @param bool $logOutput
+     * @internal param array $commandParams
      */
-    public function __construct(array $commandParams, \AppKernel $kernel, bool $async = false, bool $logOutput = true)
+    public function __construct(string $command, array $params = [], string $client, string $env, bool $debug, bool $async = false, bool $logOutput = true)
     {
-        $this->command = $commandParams['command'];
-        $this->commandParams = $commandParams['params'];
+        $this->command = $command;
+        $this->commandParams = $params;
         $this->async = $async;
         $this->logOutput = $logOutput;
-        $this->client = $kernel->getClient();
-        $this->environment = $kernel->getEnvironment();
-        $this->debug = $kernel->isDebug();
+        $this->client = $client;
+        $this->environment = $env;
+        $this->debug = $debug;
     }
 
     /**

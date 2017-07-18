@@ -9,6 +9,8 @@ class AppKernel extends Kernel
 {
     /** @var string */
     const CLIENT_VARIABLE = 'MB_CLIENT';
+    /** @var string */
+    const CLIENTS_CONFIG_FOLDER = '/app/config/clients';
 
     /** @var  string */
     protected $client;
@@ -110,7 +112,7 @@ class AppKernel extends Kernel
     {
         $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
         if ($this->client) {
-            $loader->load($this->getRootDir().'/config/clients/parameters_'.$this->client.'.yml');
+            $loader->load($this->getRootDir().'/..'.self::CLIENTS_CONFIG_FOLDER.'/parameters_'.$this->client.'.yml');
         } else {
             $loader->load($this->getRootDir().'/config/parameters.yml');
         }

@@ -46,15 +46,15 @@ class RoomCacheSubscriber implements EventSubscriber
         $this->container->get('old_sound_rabbit_mq.task_command_runner_producer')->publish(
             serialize(
                 new Command(
+                    'mbh:cache:recalculate',
                     [
-                        'command' => 'mbh:cache:recalculate',
-                        'params' => [
-                            '--roomTypes' => $doc->getId(),
-                            '--begin' => $doc->getDate()->format('d.m.Y'),
-                            '--end' => $doc->getDate()->format('d.m.Y'),
-                        ],
+                        '--roomTypes' => $doc->getId(),
+                        '--begin' => $doc->getDate()->format('d.m.Y'),
+                        '--end' => $doc->getDate()->format('d.m.Y'),
                     ],
-                    $kernel
+                    $kernel->getClient(),
+                    $kernel->getEnvironment(),
+                    $kernel->isDebug()
                 )
             )
         );
