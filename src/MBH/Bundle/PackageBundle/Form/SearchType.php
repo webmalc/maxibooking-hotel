@@ -3,7 +3,11 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -22,18 +26,20 @@ class SearchType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var DocumentManager $dm */
         $dm = $options['dm'];
         if (!$dm) {
             throw new Exception('Unable to find Document Manager');
         }
 
-        $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('h')
+        $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder()
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
 		
         $roomTypes = [];
 
+        /** @var Hotel $hotel */
         foreach ($hotels as $hotel) {
 
             if (!$options['security']->checkPermissions($hotel)) {
@@ -41,11 +47,14 @@ class SearchType extends AbstractType
             }
 
             $roomTypes[$hotel->getName()]['allrooms_' . $hotel->getId()] = 'form.searchType.all_rooms';
-			
+
+            /** @var RoomType $roomType */
             foreach ($options['roomManager']->getRooms($hotel) as $roomType) {
                 $roomTypes[$hotel->getName()][$roomType->getId()] = $roomType->getName();
             }
         }
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         $builder
             ->add('tourist', TextType::class, [
@@ -109,14 +118,14 @@ class SearchType extends AbstractType
                 'label' => 'form.searchType.adults',
                 'required' => true,
                 'error_bubbling' => true,
-                'data' => 1,
+                'data' => $clientConfig->getDefaultAdultsQuantity(),
                 'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 12],
             ])
             ->add('children', IntegerType::class, [
                 'label' => 'form.searchType.children',
                 'required' => true,
                 'error_bubbling' => true,
-                'data' => 0,
+                'data' => $clientConfig->getDefaultChildrenQuantity(),
                 'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 6],
             ])
             ->add('special', DocumentType::class, [
@@ -152,7 +161,8 @@ class SearchType extends AbstractType
             'roomManager' => null,
             'startDate' => new \DateTime(),
             'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery',
-            'method' => 'GET'
+            'method' => 'GET',
+            'client_config' => null
         ]);
     }
 
