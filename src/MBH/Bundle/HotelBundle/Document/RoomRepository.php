@@ -169,7 +169,7 @@ class RoomRepository extends AbstractBaseRepository
         $roomTypes && !is_array($roomTypes) ? $roomTypes = [$roomTypes] : $roomTypes;
         $rooms && !is_array($rooms) ? $rooms = [$rooms] : $rooms;
         $excludePackages and !is_array($excludePackages) ? $excludePackages = [$excludePackages] : $excludePackages;
-        $ids = $groupedRooms = [];
+        $fullRoomsIds = $groupedRooms = [];
         $hotelRoomTypes = [];
         $newEnd = clone $end;
         $newBegin = clone $begin;
@@ -181,23 +181,30 @@ class RoomRepository extends AbstractBaseRepository
             $hotelRoomTypes[] = $roomType->getId();
         }
 
-        $pAccommodations = $dm
+        $existedAccommodations = $dm
             ->getRepository('MBHPackageBundle:PackageAccommodation')
-            ->fetchWithAccommodation(
+            ->getWithAccommodationQB(
                 $newBegin->modify('+1 day'),
                 $newEnd->modify('-1 day'),
                 $rooms,
-                $excludePackages);
-        foreach ($pAccommodations as $accommodation) {
+                $excludePackages)
+            ->select(['accommodation.id'])
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+
+        foreach ($existedAccommodations as  $accommodation) {
             /** @var PackageAccommodation $accommodation */
-            $ids[] = $accommodation->getAccommodation()->getId();
+            $fullRoomsIds[] = $accommodation['accommodation']['$id'];
         }
 
         // rooms
         $qb = $this->createQueryBuilder()->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
              ->field('isEnabled')->equals(true)
              ->inToArray('roomType.id', $hotelRoomTypes)
-             ->notInNotEmpty('id', $ids)
+             ->notInNotEmpty('id', $fullRoomsIds)
              ->inNotEmpty('id', $rooms)
         ;
 

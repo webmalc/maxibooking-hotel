@@ -1057,7 +1057,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
 
         $roomTypeName = $package->getRoomType()->getName();
-        uksort($optGroupRooms, function ($a, $b) use ($roomTypeName) {
+        uksort($optGroupRooms, function ($a) use ($roomTypeName) {
             if ($a == $roomTypeName) {
                 return -1;
             }

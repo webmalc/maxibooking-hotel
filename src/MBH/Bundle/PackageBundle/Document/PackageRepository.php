@@ -428,11 +428,12 @@ class PackageRepository extends DocumentRepository
      */
     public function fetchQuery($data)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  DocumentManager */
         $dm = $this->getDocumentManager();
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
         $now = new \DateTime('midnight');
         $orderData = [];
+        $isShowDeleted = isset($data['deleted']) && $data['deleted'];
 
         //confirmed
         if (isset($data['confirmed']) && $data['confirmed'] != null) {
@@ -450,7 +451,15 @@ class PackageRepository extends DocumentRepository
             $orderData = array_merge($orderData, ['asIdsArray' => true, 'status' => $data['status']]);
         }
         if (!empty($orderData)) {
+            if ($isShowDeleted && $dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $dm->getFilterCollection()->disable('softdeleteable');
+            }
+
             $orders = $dm->getRepository('MBHPackageBundle:Order')->fetch($orderData);
+
+            if (!$dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $dm->getFilterCollection()->enable('softdeleteable');
+            }
             $qb->field('order.id')->in($orders);
         }
 
@@ -646,7 +655,7 @@ class PackageRepository extends DocumentRepository
         }
 
         //deleted if
-        if (isset($data['deleted']) && $data['deleted'] || $dateType == 'deletedAt') {
+        if ($isShowDeleted || $dateType == 'deletedAt') {
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
             }

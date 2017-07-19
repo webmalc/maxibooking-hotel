@@ -30,6 +30,40 @@ class PackageAccommodationRepository extends DocumentRepository
         return $qb->getQuery()->execute();
     }
 
+    public function getWithAccommodationQB(
+        \DateTime $begin = null,
+       \DateTime $end = null,
+       $rooms = null,
+       $excludePackages = null
+    ) {
+        /** Find PackageAccommodations  */
+        $accQb = $this->createQueryBuilder();
+
+        $accQb
+            ->field('end')->gte($begin)
+            ->field('begin')->lte($end);
+
+        if ($rooms) {
+            $rooms = is_array($rooms) ? $rooms : [$rooms];
+            $accQb->field('accommodation.id')->in($rooms);
+        }
+
+        if ($excludePackages) {
+            $excludedAccommodationIds = [];
+            if (!is_array($excludePackages)) {
+                $excludePackages = [$excludePackages];
+            }
+            foreach ($excludePackages as $excludePackage) {
+                foreach ($excludePackage->getAccommodations() as $accommodation) {
+                    $excludedAccommodationIds[] = $accommodation->getId();
+                }
+            }
+            $accQb->field('id')->notIn($excludedAccommodationIds);
+        }
+
+        return $accQb;
+    }
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -47,32 +81,7 @@ class PackageAccommodationRepository extends DocumentRepository
         $departure = true
     )
     {
-        /** Find PackageAccommodations  */
-        $accQb = $this->createQueryBuilder();
-
-        $accQb
-            ->field('end')->gte($begin)
-            ->field('begin')->lte($end);
-
-        if ($rooms) {
-            is_array($rooms) ? $rooms : $rooms = [$rooms];
-            $accQb->field('accommodation.id')->in($rooms);
-        }
-
-        if ($excludePackages) {
-            $excludedAccommodationIds = [];
-            if (!is_array($excludePackages)) {
-                $excludePackages = [$excludePackages];
-            }
-            foreach ($excludePackages as $excludePackage) {
-                foreach ($excludePackage->getAccommodations() as $accommodation) {
-                    $excludedAccommodationIds[] = $accommodation->getId();
-                }
-            }
-            $accQb->field('id')->notIn($excludedAccommodationIds);
-        }
-
-        //$qb->sort('begin', 'asc');
+        $accQb = $this->getWithAccommodationQB($begin, $end, $rooms, $excludePackages);
 
         return $accQb->getQuery()->execute();
     }
