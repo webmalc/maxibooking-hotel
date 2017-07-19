@@ -1,7 +1,9 @@
 /*global window, jQuery, document */
+var isDisplayChildAges = {{ isDisplayChildAges ? 'true' : 'false' }};
 jQuery(document).ready(function() {
     var wrapper = jQuery('#mbh-form-wrapper');
     wrapper.html("{{ styles|escape('js') }}{{ text|escape('js') }}");
+
 
     var begin = jQuery('#mbh-form-begin'),
         end = jQuery('#mbh-form-end'),
@@ -167,25 +169,27 @@ jQuery(document).ready(function() {
 });
 
 function setChildAgeForms(childrenCount) {
-    var $childAgesBlock = $('.children-ages');
-    if (childrenCount > 0) {
-        $childAgesBlock.show();
-    } else if ($childAgesBlock) {
-        $childAgesBlock.hide();
-    }
-    var selectFormCount = $childAgesBlock.find('select').size();
-    var difference = childrenCount - selectFormCount;
-    if (difference > 0) {
-        for (var i = selectFormCount; i < childrenCount; i++) {
-            var childrenAgeForm = $('#children-age-1').clone();
-            var selectFormName = 'children-age-' + (i + 1);
-            childrenAgeForm.attr('id', selectFormName);
-            $childAgesBlock.append(childrenAgeForm);
+    if (isDisplayChildAges) {
+        var $childAgesBlock = $('.children-ages');
+        if (childrenCount > 0) {
+            $childAgesBlock.show();
+        } else if ($childAgesBlock) {
+            $childAgesBlock.hide();
         }
-    } else if (difference < 0) {
-        while (childrenCount != selectFormCount && $childAgesBlock.find('select').size() > 1) {
-            $childAgesBlock.find('select').last().remove();
-            selectFormCount--;
+        var selectFormCount = $childAgesBlock.find('select').size();
+        var difference = childrenCount - selectFormCount;
+        if (difference > 0) {
+            for (var i = selectFormCount; i < childrenCount; i++) {
+                var childrenAgeForm = $('#children-age-1').clone();
+                var selectFormName = 'children-age-' + (i + 1);
+                childrenAgeForm.attr('id', selectFormName);
+                $childAgesBlock.append(childrenAgeForm);
+            }
+        } else if (difference < 0) {
+            while (childrenCount != selectFormCount && $childAgesBlock.find('select').size() > 1) {
+                $childAgesBlock.find('select').last().remove();
+                selectFormCount--;
+            }
         }
     }
 }
