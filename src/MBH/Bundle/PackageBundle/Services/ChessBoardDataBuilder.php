@@ -53,8 +53,8 @@ class ChessBoardDataBuilder
     private $roomTypes;
     private $isRoomsByRoomTypeIdsInit = false;
     private $roomsByRoomTypeIds = [];
-    private $isPackageAccommodationsInit = false;
-    private $packageAccommodations = [];
+    private $isPackageAccommodationsDataInit = false;
+    private $packageAccommodationsData = [];
     private $isAvailableRoomTypesInit = false;
     private $availableRoomTypes;
     const ROOM_COUNT_ON_PAGE = 30;
@@ -236,11 +236,12 @@ class ChessBoardDataBuilder
     {
         $dateIntervalsWithoutAccommodation = [];
         $packages = [];
-        foreach ($this->getPackageAccommodations() as $packageAccommodation) {
+        foreach ($this->getPackageAccommodationsData() as $packageAccommodationData) {
             /** @var Package $package */
-            $package = $packageAccommodation->getPackage();
+            $package = $packageAccommodationData['package'];
             $packages[$package->getId()] = $package;
         }
+
         foreach ($packages as $package) {
             $emptyIntervals = $this->accommodationManipulator->getEmptyIntervals($package);
             foreach ($emptyIntervals as $emptyInterval) {
@@ -260,9 +261,9 @@ class ChessBoardDataBuilder
     {
         $accommodationIntervals = [];
 
-        foreach ($this->getPackageAccommodations() as $accommodation) {
-            /** @var PackageAccommodation $accommodation */
-            $package = $accommodation->getPackage();
+        foreach ($this->getPackageAccommodationsData() as $packageAccommodationData) {
+            $package = $packageAccommodationData['package'];
+            $accommodation = $packageAccommodationData['accommodation'];
             $intervalData = $this->container
                 ->get('mbh.chess_board_unit')->setInitData($package, $accommodation);
             $accommodationIntervals[$intervalData->getId()] = $intervalData;
@@ -273,11 +274,11 @@ class ChessBoardDataBuilder
     }
 
     /**
-     * @return array
+     * @return array ['accommodation', 'package']
      */
-    private function getPackageAccommodations()
+    private function getPackageAccommodationsData()
     {
-        if (!$this->isPackageAccommodationsInit) {
+        if (!$this->isPackageAccommodationsDataInit) {
 
             $rooms = [];
             foreach ($this->getRoomsByRoomTypeIds() as $roomsByRoomTypeId) {
@@ -287,29 +288,58 @@ class ChessBoardDataBuilder
             if (count($rooms) > 0) {
                 $accommodations = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')
                     ->fetchWithAccommodation(
-                        $this->beginDate, $this->endDate, $this->helper->toIds($rooms)
-                    );
-                //сортируем по датам начала размещения
-                $this->packageAccommodations = $this->accommodationManipulator
-                    ->sortAccommodationsByBeginDate($accommodations->toArray())->toArray();
+                        $this->beginDate, $this->endDate, $this->helper->toIds($rooms), null, false
+                    )->toArray();
+                $accommodationsIds = array_map(function (PackageAccommodation $accommodation) {
+                    return $accommodation->getId();
+                }, $accommodations);
+
+                $packages = $this->dm
+                    ->getRepository('MBHPackageBundle:Package')
+                    ->createQueryBuilder()
+                    ->field('accommodations.id')->in($accommodationsIds)
+                    ->getQuery()
+                    ->execute();
+
+                $packageAccommodationsData = array_map(function (PackageAccommodation $accommodation) use ($packages) {
+                    /** @var Package $package */
+                    foreach ($packages as $package) {
+                        if ($package->getAccommodations()->contains($accommodation)) {
+                            return [
+                                'package' => $package,
+                                'accommodation' => $accommodation
+                            ];
+                        }
+                    }
+                    throw new \Exception('Accommodation must relate to package');
+                }, $accommodations);
 
                 //сортируем по id брони
-                usort($this->packageAccommodations, function ($a, $b) {
-                    /** @var PackageAccommodation $a */
-                    /** @var PackageAccommodation $b */
-                    $idComparisonResult = strcmp($a->getPackage()->getId(), $b->getPackage()->getId());
+                usort($packageAccommodationsData, function ($a, $b) {
+                    /** @var Package $aPackage */
+                    $aPackage = $a['package'];
+                    /** @var Package $bPackage */
+                    $bPackage = $b['package'];
+                    /** @var PackageAccommodation $aAccommodation */
+                    $aAccommodation = $a['accommodation'];
+                    /** @var PackageAccommodation $bAccommodation */
+                    $bAccommodation = $b['accommodation'];
+
+                    $idComparisonResult = strcmp($aPackage->getId(), $bPackage->getId());
                     if ($idComparisonResult < 1) {
                         return $idComparisonResult;
                     }
 
-                    return $a->getBegin() > $b->getBegin() ? -1 : 1;
+                    return $aAccommodation->getBegin() > $bAccommodation->getBegin() ? -1 : 1;
                 });
+
+                $this->packageAccommodationsData = $packageAccommodationsData;
             }
 
-            $this->isPackageAccommodationsInit = true;
+            $this->isPackageAccommodationsDataInit = true;
         }
 
-        return $this->packageAccommodations;
+        return $this->packageAccommodationsData;
     }
 
     /**
