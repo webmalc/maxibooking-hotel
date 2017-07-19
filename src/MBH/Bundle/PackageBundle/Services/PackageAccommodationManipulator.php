@@ -93,7 +93,9 @@ class PackageAccommodationManipulator
         is_null($endDate) ?: $accommodation->setEnd($endDate);
         is_null($room) ?: $accommodation->setAccommodation($room);
 
-        $errorMessage = $this->checkErrors($accommodation, $accommodation->getPackage());
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->getPackageByPackageAccommodationId($accommodation->getId());
+        $errorMessage = $this->checkErrors($accommodation, $package);
         if ($errorMessage != '') {
             return $errorMessage;
         }

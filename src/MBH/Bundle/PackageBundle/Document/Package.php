@@ -1602,12 +1602,13 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection|ArrayCollection
      */
     public function getAccommodations(): Collection
     {
         return $this->getSortedAccommodations();
     }
+
     /**
      * @return Special|null
      */

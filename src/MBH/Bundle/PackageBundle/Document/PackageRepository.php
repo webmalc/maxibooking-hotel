@@ -868,4 +868,13 @@ class PackageRepository extends DocumentRepository
 
         return $queryBuilder->getQuery()->execute();
     }
+
+    /**
+     * @param $packageAccommodationId
+     * @return object
+     */
+    public function getPackageByPackageAccommodationId(string $packageAccommodationId)
+    {
+        return $this->findOneBy(['accommodations.id' => $packageAccommodationId]);
+    }
 }

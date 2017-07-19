@@ -179,7 +179,7 @@ class ChessBoardController extends BaseController
         } catch (\Exception $e) {
             $message = $this->get('translator')->trans($e->getMessage());
             $messageFormatter->addErrorMessage($e->getMessage());
-            $this->logs($message);
+            $this->get('logger')->alert($message);
         }
         $messageFormatter->addSuccessfulMessage('controller.chessboard.package_remove.success');
 
@@ -380,7 +380,8 @@ class ChessBoardController extends BaseController
         $translator = $this->get('translator');
         $helper = $this->container->get('mbh.helper');
 
-        $package = $firstAccommodation->getPackage();
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->getPackageByPackageAccommodationId($firstAccommodation->getId());
         $accommodationEnd = $firstAccommodation->getEnd();
 
         $intermediateDateString = $request->request->get('begin');
