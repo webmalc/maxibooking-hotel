@@ -79,7 +79,7 @@ class ChessBoardUnit implements \JsonSerializable
             $array['payer'] = $this->package->getPayer()->getShortName();
         }
         if ($this->accommodation) {
-            $array['updateAccommodation'] = $this->hasUpdateAccommodationRights($this->accommodation);
+            $array['updateAccommodation'] = false;
             $array['accommodation'] = $this->accommodation->getRoom()->getId();
             $array['position'] = $this->getAccommodationRelativePosition($this->accommodation, $this->package);
         }
