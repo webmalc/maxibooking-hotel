@@ -24,7 +24,12 @@
         <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
 
         <div class="row margin-left-sm">
-            <div class="col-xs-offset-5 col-xs-7">
+            <div class="col-xs-5">
+                <a href="{{ path('fos_user_security_login') }}">
+                    {{ 'security.login.submit'|trans({}, 'FOSUserBundle') }}
+                </a>
+            </div>
+            <div class="col-xs-7">
                 <button type="submit" name="_submit" class="btn btn-primary btn-block btn-flat">
                     <i class="fa fa-refresh"></i> {{ 'resetting.request.submit'|trans }}
                 </button>
