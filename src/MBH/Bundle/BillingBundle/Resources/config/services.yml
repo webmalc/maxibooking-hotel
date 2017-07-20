@@ -7,27 +7,28 @@ services:
         class: MBH\Bundle\BillingBundle\Service\ClientListGetter
         arguments: ["@mbh.kernel_root_dir"]
 
-    mbh.installer.manager:
-        class: MBH\Bundle\BillingBundle\Lib\Installer\InstallerManager
+    mbh.maintenance.manager:
+        class: MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager
         calls:
-            - [addInstaller, ['@mbh.parameters.installer']]
-            - [addInstaller, ['@mbh.nginx.installer']]
-            - [addInstaller, ['@mbh.mongo.installer']]
+            - [addMaintenance, ['@mbh.parameters.maintenance']]
+            - [addMaintenance, ['@mbh.nginx.maintenance']]
+            - [addMaintenance, ['@mbh.mongo.maintenance']]
 
-    mbh.installer.abstract_installer:
+    mbh.maintenance.abstract:
         abstract: true
         public: false
         arguments: ["@service_container"]
-        class: MBH\Bundle\BillingBundle\Lib\Installer\AbstractInstaller
+        class: MBH\Bundle\BillingBundle\Lib\Maintenance\AbstractMaintenance
 
-    mbh.parameters.installer:
-        class: MBH\Bundle\BillingBundle\Lib\Installer\ParametersInstaller
-        parent: mbh.installer.abstract_installer
+    mbh.parameters.maintenance:
+        class: MBH\Bundle\BillingBundle\Lib\Maintenance\ParametersMaintenance
+        parent: mbh.maintenance.abstract
 
-    mbh.nginx.installer:
-        class: MBH\Bundle\BillingBundle\Lib\Installer\NginxInstaller
-        parent: mbh.installer.abstract_installer
+    mbh.nginx.maintenance:
+        class: MBH\Bundle\BillingBundle\Lib\Maintenance\NginxMaintenance
+        parent: mbh.maintenance.abstract
 
-    mbh.mongo.installer:
-        parent: mbh.installer.abstract_installer
-        class: MBH\Bundle\BillingBundle\Lib\Installer\MongoInstaller
+    mbh.mongo.maintenance:
+        arguments: ["@service_container", {sampleDbName: "%mongodb_database%"}]
+
+        class: MBH\Bundle\BillingBundle\Lib\Maintenance\MongoMaintenance

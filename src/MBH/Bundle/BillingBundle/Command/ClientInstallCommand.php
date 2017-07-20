@@ -4,7 +4,7 @@
 namespace MBH\Bundle\BillingBundle\Command;
 
 
-use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientInstallException;
+use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -37,12 +37,12 @@ class ClientInstallCommand extends ContainerAwareCommand
                 $existsClients = array_diff($clients, $installingClients);
             }
 
-            $installManager = $container->get('mbh.installer.manager');
+            $installManager = $container->get('mbh.maintenance.manager');
             foreach ($installingClients as $client) {
                 try {
                     $installManager->install($client);
                     $installed[] = $client;
-                } catch (ClientInstallException $e) {
+                } catch (ClientMaintenanceException $e) {
                     $installManager->rollBack($client);
                     $error[] = $client;
                 }

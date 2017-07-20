@@ -10,6 +10,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Generates RBQ messages for channel manager pull
+ *
+ * Class ChannelManagerQueueGeneratorCommand
+ * @package MBH\Bundle\BillingBundle\Command
+ */
 class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
 {
     protected function configure()
