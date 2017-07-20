@@ -724,7 +724,6 @@ var ChessBoardManager = (function () {
         return resizableHandlesValue;
     };
     /**
-     *
      * @param $element
      * @param intervalData
      * @returns {any}
@@ -775,7 +774,23 @@ var ChessBoardManager = (function () {
                 }
             });
         }
+        if (intervalData.isLateCheckOut && resizableHandlesValue.indexOf('e') > -1) {
+            this.addServicesDisplaying($element, '.ui-resizable-e', 'late-check-out-block');
+        }
+        if (intervalData.isEarlyCheckIn && resizableHandlesValue.indexOf('w') > -1) {
+            this.addServicesDisplaying($element, '.ui-resizable-w', 'early-checkin-block');
+        }
         return $element;
+    };
+    ChessBoardManager.prototype.addServicesDisplaying = function ($element, sideElemBlockClass, addedClass) {
+        if ($element.has(sideElemBlockClass)) {
+            $element.find(sideElemBlockClass).addClass(addedClass);
+        }
+        else {
+            var laterCheckOutBlock = document.createElement('div');
+            laterCheckOutBlock.classList.add(addedClass);
+            $element.append(laterCheckOutBlock);
+        }
     };
     /**
      * Получение данных о брони на основании данных о текущем положении элемента, отображающего бронь.

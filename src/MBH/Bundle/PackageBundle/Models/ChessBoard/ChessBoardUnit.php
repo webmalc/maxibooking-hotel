@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Models\ChessBoard;
 
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 /**
@@ -69,7 +70,9 @@ class ChessBoardUnit implements \JsonSerializable
             'viewPackage' => $this->hasViewPackageRights($this->package),
             'removePackage' => $this->hasRemovePackageRights($this->package),
             'updatePackage' => $this->hasUpdatePackageRights($this->package),
-            'packageId' => $this->getPackageId()
+            'packageId' => $this->getPackageId(),
+            'isEarlyCheckIn' => $this->isEarlyCheckIn(),
+            'isLateCheckOut' => $this->isLateCheckOut()
         ];
 
         if ($this->package->getPayer()) {
@@ -123,6 +126,36 @@ class ChessBoardUnit implements \JsonSerializable
     {
         return $this->accommodation ?
             $this->accommodation->getRoom()->getRoomType()->getId() : $this->package->getRoomType()->getId();
+    }
+
+    /**
+     * @return bool
+     */
+    private function isEarlyCheckIn()
+    {
+        /** @var PackageService $service */
+        foreach ($this->package->getServices() as $service) {
+            if ($service->getService()->getCode() === 'Early check-in') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isLateCheckOut()
+    {
+        /** @var PackageService $service */
+        foreach ($this->package->getServices() as $service) {
+            if ($service->getService()->getCode() === 'Late check-out') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
