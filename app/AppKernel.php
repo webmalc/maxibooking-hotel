@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
+use MBH\Bundle\BillingBundle\MBHBillingBundle;
 use MBH\Bundle\TestBundle\MBHTestBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -76,6 +77,7 @@ class AppKernel extends Kernel
             new MBH\Bundle\VegaBundle\MBHVegaBundle(),
             new MBH\Bundle\WarehouseBundle\MBHWarehouseBundle(),
             new MBH\Bundle\RestaurantBundle\MBHRestaurantBundle(),
+            new MBHBillingBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
@@ -112,7 +114,7 @@ class AppKernel extends Kernel
     {
         $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
         if ($this->client) {
-            $loader->load($this->getRootDir().'/..'.self::CLIENTS_CONFIG_FOLDER.'/parameters_'.$this->client.'.yml');
+            $loader->load($this->getClientConfigFolder().'/parameters_'.$this->client.'.yml');
         } else {
             $loader->load($this->getRootDir().'/config/parameters.yml');
         }
@@ -121,5 +123,10 @@ class AppKernel extends Kernel
     public function getClient()
     {
         return $this->client;
+    }
+
+    public function getClientConfigFolder()
+    {
+        return $this->getRootDir().'/..'.self::CLIENTS_CONFIG_FOLDER;
     }
 }

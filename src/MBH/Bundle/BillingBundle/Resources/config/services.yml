@@ -1,0 +1,33 @@
+services:
+    mbh.kernel_root_dir:
+        class: 'mock_class'
+        factory: ["@kernel", getRootDir]
+
+    mbh.service.client_list_getter:
+        class: MBH\Bundle\BillingBundle\Service\ClientListGetter
+        arguments: ["@mbh.kernel_root_dir"]
+
+    mbh.installer.manager:
+        class: MBH\Bundle\BillingBundle\Lib\Installer\InstallerManager
+        calls:
+            - [addInstaller, ['@mbh.parameters.installer']]
+            - [addInstaller, ['@mbh.nginx.installer']]
+            - [addInstaller, ['@mbh.mongo.installer']]
+
+    mbh.installer.abstract_installer:
+        abstract: true
+        public: false
+        arguments: ["@service_container"]
+        class: MBH\Bundle\BillingBundle\Lib\Installer\AbstractInstaller
+
+    mbh.parameters.installer:
+        class: MBH\Bundle\BillingBundle\Lib\Installer\ParametersInstaller
+        parent: mbh.installer.abstract_installer
+
+    mbh.nginx.installer:
+        class: MBH\Bundle\BillingBundle\Lib\Installer\NginxInstaller
+        parent: mbh.installer.abstract_installer
+
+    mbh.mongo.installer:
+        parent: mbh.installer.abstract_installer
+        class: MBH\Bundle\BillingBundle\Lib\Installer\MongoInstaller

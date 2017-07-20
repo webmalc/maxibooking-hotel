@@ -1,7 +1,7 @@
 <?php
 
 
-namespace MBH\Bundle\BaseBundle\Service\Exceptions;
+namespace MBH\Bundle\BillingBundle\Lib\Exceptions;
 
 
 use MBH\Bundle\BaseBundle\Lib\Exception;

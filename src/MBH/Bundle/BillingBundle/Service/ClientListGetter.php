@@ -1,10 +1,10 @@
 <?php
 
 
-namespace MBH\Bundle\BaseBundle\Service;
+namespace MBH\Bundle\BillingBundle\Service;
 
 
-use MBH\Bundle\BaseBundle\Service\Exceptions\ClientListGetterException;
+use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientListGetterException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 

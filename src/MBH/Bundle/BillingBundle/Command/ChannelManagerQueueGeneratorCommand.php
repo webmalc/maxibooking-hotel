@@ -1,7 +1,7 @@
 <?php
 
 
-namespace MBH\Bundle\BaseBundle\Command;
+namespace MBH\Bundle\BillingBundle\Command;
 
 
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
@@ -16,7 +16,7 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
     {
         $this
             ->setName('mbh:queue:channelmanager:generate')
-            ->setDescription('Generates RMQ messages for all clients ChannelManager Update')
+            ->setDescription('Generates RMQ messages for clients ChannelManager Update')
             ->addOption('client', null, InputOption::VALUE_OPTIONAL, 'Specify client for channelManagerUpdate');
     }
 

@@ -285,17 +285,3 @@ services:
         public: false
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.image_migrate.log", 200]
-
-    mbh.kernel_root_dir:
-        class: 'fake_class'
-        factory: ["@kernel", getRootDir]
-
-    mbh.service.client_list_getter:
-        class: MBH\Bundle\BaseBundle\Service\ClientListGetter
-        arguments: ["@mbh.kernel_root_dir"]
-
-
-
-
-
-

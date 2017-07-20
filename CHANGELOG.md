@@ -14,6 +14,7 @@
 * add service get all clients 
 * add generator for ChannelManager pull queue in RMQ
 
+
 1.5.10
 ============
 * online form improvements && fixes
