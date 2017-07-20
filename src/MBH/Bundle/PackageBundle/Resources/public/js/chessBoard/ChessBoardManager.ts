@@ -890,8 +890,9 @@ class ChessBoardManager {
     }
 
     private addServicesDisplaying($element, sideElemBlockClass, addedClass) {
-        if ($element.has(sideElemBlockClass)) {
-            $element.find(sideElemBlockClass).addClass(addedClass);
+        let $sideElement = $element.find(sideElemBlockClass);
+        if ($sideElement.length > 0) {
+            $sideElement.addClass(addedClass);
         } else {
             let laterCheckOutBlock = document.createElement('div');
             laterCheckOutBlock.classList.add(addedClass);

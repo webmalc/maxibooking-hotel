@@ -783,8 +783,9 @@ var ChessBoardManager = (function () {
         return $element;
     };
     ChessBoardManager.prototype.addServicesDisplaying = function ($element, sideElemBlockClass, addedClass) {
-        if ($element.has(sideElemBlockClass)) {
-            $element.find(sideElemBlockClass).addClass(addedClass);
+        var $sideElement = $element.find(sideElemBlockClass);
+        if ($sideElement.length > 0) {
+            $sideElement.addClass(addedClass);
         }
         else {
             var laterCheckOutBlock = document.createElement('div');
