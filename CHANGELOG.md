@@ -13,6 +13,8 @@
 * change task runner (rabbitmq consumer) to multi clients
 * add service get all clients 
 * add generator for ChannelManager pull queue in RMQ
+* add complex indexes in some repos
+* add MBHBillingBundle, move maintenance commands
 
 
 1.5.10

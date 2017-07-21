@@ -19,6 +19,7 @@ use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
  * @MongoDBUnique(fields={"roomTypeCategory", "date", "tariff", "cancelDate"}, message="PriceCache already exist.")
  * @ODM\HasLifecycleCallbacks
  * @Disableable\Disableable
+ * @ODM\Index(keys={"hotel"="asc","roomType"="asc","tariff"="asc","date"="asc"})
  */
 class PriceCache extends Base
 {
