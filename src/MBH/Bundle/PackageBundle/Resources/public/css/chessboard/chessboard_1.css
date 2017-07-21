@@ -67,8 +67,15 @@ body {
 }
 .package-with-left-arrow:after {
   top: 0;
-  left: 0 !important;
-  border-left: 15px solid white;
+}
+.success.package-with-left-arrow:after {
+  border-right: 15px solid rgba(0, 166, 90, 0.6);
+}
+.warning.package-with-left-arrow:after {
+  border-right: 15px solid rgba(243, 156, 18, 0.6);
+}
+.danger.package-with-left-arrow:after {
+  border-right: 15px solid rgba(221, 75, 57, 0.6);
 }
 .with-left-divider:after,
 .with-right-divider:before {
@@ -150,7 +157,7 @@ body {
 }
 .danger .ui-resizable-w,
 .package .ui-resizable-w {
-  border-left: 14px solid rgba(221, 75, 57, 0.9);
+  border-right: 14px solid rgba(221, 75, 57, 0.9);
 }
 .success {
   background-color: rgba(0, 166, 90, 0.6);
@@ -162,7 +169,7 @@ body {
   border-left: 14px solid rgba(0, 166, 90, 0.6);
 }
 .success .ui-resizable-w {
-  border-left: 14px solid rgba(0, 166, 90, 0.6);
+  border-right: 14px solid rgba(0, 166, 90, 0.6);
 }
 .warning {
   background-color: rgba(243, 156, 18, 0.6);
@@ -174,7 +181,7 @@ body {
   border-left: 14px solid rgba(243, 156, 18, 0.6);
 }
 .warning .ui-resizable-w {
-  border-left: 14px solid rgba(243, 156, 18, 0.6);
+  border-right: 14px solid rgba(243, 156, 18, 0.6);
 }
 #accommodation-chessBoard-content {
   position: relative;
@@ -458,7 +465,6 @@ body {
 .ui-resizable-w {
   cursor: w-resize;
   z-index: 100;
-  left: 6px;
 }
 .resizable-appendix {
   width: 4px;

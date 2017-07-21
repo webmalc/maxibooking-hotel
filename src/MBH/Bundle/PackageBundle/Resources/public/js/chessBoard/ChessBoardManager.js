@@ -797,20 +797,6 @@ var ChessBoardManager = (function () {
                     }
                 }
             });
-            if (resizableHandlesValue.indexOf('e') > -1) {
-                var innerTriangle = document.createElement('div');
-                innerTriangle.classList.add('right-inner-resizable-triangle');
-                $element.append(innerTriangle);
-            }
-            if (resizableHandlesValue.indexOf('w') > -1) {
-                var innerTriangle = document.createElement('div');
-                innerTriangle.classList.add('left-inner-resizable-triangle');
-                $element.append(innerTriangle);
-                var appendix = document.createElement('div');
-                appendix.classList.add('resizable-appendix');
-                $element.append(appendix);
-                $element.removeClass('package-with-left-arrow');
-            }
         }
         return $element;
     };

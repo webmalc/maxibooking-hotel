@@ -63,6 +63,7 @@
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
     {% set halfMinuend = (minuend / 2)|round %}
+    {% set quarterMinuend = (minuend / 4)|round %}
     <style>
         .package {
             height: {{ minuend }}px
@@ -81,54 +82,44 @@
         }
 
         .package-with-right-arrow:before {
-            right: {{ halfMinuend }}px !important;
+            right: {{ quarterMinuend }}px !important;
         }
 
         .danger.package-with-right-arrow:before, .package.package-with-right-arrow:before {
-            border-left: {{ halfMinuend }}px solid {{ colors['danger_add'] }} !important;
+            border-left: {{ quarterMinuend }}px solid {{ colors['danger'] }} !important;
         }
 
         .success.package-with-right-arrow:before {
-            border-left: {{ halfMinuend }}px solid {{ colors['success_add'] }} !important;
+            border-left: {{ quarterMinuend }}px solid {{ colors['success'] }} !important;
         }
 
         .warning.package-with-right-arrow:before {
-            border-left: {{ halfMinuend }}px solid {{ colors['warning_add'] }} !important;
+            border-left: {{ quarterMinuend }}px solid {{ colors['warning'] }} !important;
         }
 
         #accommodation-chessBoard-content .achtung {
             background-color: {{ colors['unplaced'] }} !important;
         }
 
-        .ui-resizable-e, .ui-resizable-w {
-            border-bottom: {{ halfMinuend - 1}}px solid transparent !important;
-            border-top: {{ halfMinuend - 1}}px solid transparent !important;
+        .danger > .ui-resizable-e{
+            border-left: {{ quarterMinuend }}px solid {{ colors['danger_add'] }} !important;
+        }
+        .danger > .ui-resizable-w {
+            border-right: {{ quarterMinuend }}px solid {{ colors['danger_add'] }} !important;
         }
 
-        .danger > .ui-resizable-e, .danger > .ui-resizable-w {
-            border-left: {{ halfMinuend }}px solid {{ colors['danger_add'] }} !important;
+        .warning > .ui-resizable-e {
+            border-left: {{ quarterMinuend }}px solid {{ colors['warning_add'] }} !important;
         }
-
-        .warning > .ui-resizable-e, .warning > .ui-resizable-w {
-            border-left: {{ halfMinuend }}px solid {{ colors['warning_add'] }} !important;
+        .warning > .ui-resizable-w {
+            border-right: {{ quarterMinuend }}px solid {{ colors['warning_add'] }} !important;
         }
-
-        .success > .ui-resizable-e, .success > .ui-resizable-w {
-            border-left: {{ halfMinuend }}px solid {{ colors['success_add'] }} !important;
+        .success > .ui-resizable-e {
+            border-left: {{ quarterMinuend }}px solid {{ colors['success_add'] }} !important;
         }
-
-        .danger > .right-inner-resizable-triangle {
-            border-left: {{ (minuend / 4)|round }}px solid {{ colors['danger'] }} !important;
+        .success > .ui-resizable-w {
+            border-right: {{ quarterMinuend }}px solid {{ colors['success_add'] }} !important;
         }
-
-        .success > .right-inner-resizable-triangle {
-            border-left: {{ (minuend / 4)|round }}px solid {{ colors['success'] }} !important;
-        }
-
-        .warning > .right-inner-resizable-triangle {
-            border-left: {{ (minuend / 4)|round }}px solid {{ colors['warning'] }} !important;
-        }
-
         .danger.near-left-puzzle > .ui-resizable-e, .package.near-left-puzzle > .ui-resizable-e, .danger > .resizable-appendix {
             background-color: {{ colors['danger_add'] }} !important;
         }
@@ -141,44 +132,34 @@
             background-color: {{ colors['warning_add'] }} !important;
         }
 
-        .package-with-left-arrow:after, .package-with-right-arrow:before {
+        .package-with-left-arrow:after, .package-with-right-arrow:before, .ui-resizable-e, .ui-resizable-w {
             border-bottom: {{ halfMinuend - 2 }}px solid transparent !important;
             border-top: {{ halfMinuend }}px solid transparent !important;
         }
-
+        .package-with-left-arrow:after, .ui-resizable-w {
+            left: {{ quarterMinuend *(-1) }}px !important;
+        }
+        .success.package-with-left-arrow:after {
+            border-right: {{ quarterMinuend }}px solid {{ colors['success'] }} !important;
+        }
+        .warning.package-with-left-arrow:after {
+            border-right: {{ quarterMinuend }}px solid {{ colors['warning'] }} !important;
+        }
+        .danger.package-with-left-arrow:after {
+            border-right: {{ quarterMinuend }}px solid {{ colors['danger'] }} !important;
+        }
         .with-left-divider:after, .with-right-divider:before {
             top: {{ (minuend - tileFontSize)/2 }}px !important;
         }
-
-        .package-with-right-arrow:before {
-            right: {{ halfMinuend * (-1) }}px !important;
+        .package-with-right-arrow:before, .package:not(.near-left-puzzle) > .ui-resizable-e {
+            right: {{ quarterMinuend * (-1) }}px !important;
         }
-
         .resizable-appendix {
             height: {{ minuend- 2 }}px !important;
         }
-
         .near-left-puzzle > .ui-resizable-e {
             height: {{ minuend - 2 }}px !important;
         }
-
-        .package:not(.near-left-puzzle) > .ui-resizable-e {
-            right: {{ halfMinuend * (-1) }}px !important;
-        }
-
-        .right-inner-resizable-triangle {
-            border-bottom: {{ halfMinuend - 1 }}px solid transparent !important;
-            border-top: {{ halfMinuend }}px solid transparent !important;
-            border-left: {{ (minuend / 4)|round }}px solid white !important;
-            right: {{ (minuend / 4)|round * (-1) }}px !important;
-        }
-
-        .left-inner-resizable-triangle {
-            border-bottom: {{ halfMinuend }}px solid transparent !important;
-            border-top: {{ halfMinuend }}px solid transparent !important;
-            border-left: {{ halfMinuend }}px solid white !important;
-        }
-
         .package-description {
             margin: {{ ((minuend - titleSubFontSize - (2 * 3)) / 2)|round(0, 'floor') }}px auto !important;
         }
