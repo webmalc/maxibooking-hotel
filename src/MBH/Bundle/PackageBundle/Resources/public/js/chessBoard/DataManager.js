@@ -260,18 +260,22 @@ var DataManager = (function () {
         this._leftRoomCounts = tableData.leftRoomCounts;
         this.noAccommodationCounts = tableData.noAccommodationCounts;
     };
-    DataManager.prototype.getNearRightAccommodation = function (accommodationId) {
+    DataManager.prototype.getAccommodationNeighbors = function (accommodationId) {
+        var neighborsBySides = {};
         var accommodationData = this._accommodations[accommodationId];
         for (var id in this._accommodations) {
             var iteratedAccommodation = this._accommodations[id];
             if (this._accommodations.hasOwnProperty(id)
-                && iteratedAccommodation.accommodation == accommodationData.accommodation
-                && iteratedAccommodation.end === accommodationData.begin
-                && iteratedAccommodation.packageEnd === iteratedAccommodation.end) {
-                return id;
+                && iteratedAccommodation.accommodation == accommodationData.accommodation) {
+                if (iteratedAccommodation.end === accommodationData.begin) {
+                    neighborsBySides['left'] = iteratedAccommodation;
+                }
+                else if (iteratedAccommodation.begin === accommodationData.end) {
+                    neighborsBySides['right'] = iteratedAccommodation;
+                }
             }
         }
-        return null;
+        return neighborsBySides;
     };
     return DataManager;
 }());

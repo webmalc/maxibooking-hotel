@@ -474,30 +474,32 @@ body {
   left: 2px;
   top: 0;
 }
-.near-left-puzzle .ui-resizable-e {
+.near-right-element > .ui-resizable-e,
+.near-left-element > .ui-resizable-w {
   position: absolute;
   border: 0 !important;
   width: 5px;
   top: 0;
   height: 23px;
+}
+.near-right-element > .ui-resizable-e {
   right: 0;
 }
-.near-left-puzzle .danger.ui-resizable-e {
-  background-color: red;
-}
-.danger.near-left-puzzle .ui-resizable-e,
-.package.near-left-puzzle .ui-resizable-e {
+.danger.near-right-element .ui-resizable-e,
+.package.near-right-element .ui-resizable-e {
   background-color: rgba(221, 75, 57, 0.6);
 }
-.success.near-left-puzzle .ui-resizable-e {
+.success.near-right-element .ui-resizable-e {
   background-color: rgba(0, 166, 90, 0.6);
 }
-.warning.near-left-puzzle .ui-resizable-e {
+.warning.near-right-element .ui-resizable-e {
   background-color: rgba(243, 156, 18, 0.6);
 }
 .ui-resizable-e {
-  right: -12.5px;
   cursor: e-resize;
+}
+.package:not(.near-right-element) > .ui.resizable-e {
+  right: -12.5px;
 }
 .right-inner-resizable-triangle {
   position: absolute;

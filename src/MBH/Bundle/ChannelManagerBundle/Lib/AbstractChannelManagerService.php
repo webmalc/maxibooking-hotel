@@ -127,7 +127,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 $message .= implode(', ', array_filter(array_map(function ($element) use ($trans, $prefix, $val) {
                     $typeMethod = 'get' . ucfirst($element);
                     if ($val->$typeMethod()) {
-                        return $trans->trans($prefix . '.type.' . $element);
+                        return '"' . $trans->trans($prefix . '.type.' . $element) . '"';
                     }
                 }, array_keys($types))));
             

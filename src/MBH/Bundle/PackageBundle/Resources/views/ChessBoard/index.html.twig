@@ -65,8 +65,8 @@
     {% set halfMinuend = (minuend / 2)|round %}
     {% set quarterMinuend = (minuend / 4)|round %}
     <style>
-        .package {
-            height: {{ minuend }}px
+        .package, .dividing-line {
+            height: {{ minuend }}px !important;
         }
 
         .success, .with-right-divider.success:before {
@@ -101,42 +101,53 @@
             background-color: {{ colors['unplaced'] }} !important;
         }
 
-        .danger > .ui-resizable-e{
+        .danger:not(.near-right-element) > .ui-resizable-e{
             border-left: {{ quarterMinuend }}px solid {{ colors['danger_add'] }} !important;
         }
-        .danger > .ui-resizable-w {
+        .danger:not(.near-left-element) > .ui-resizable-w {
             border-right: {{ quarterMinuend }}px solid {{ colors['danger_add'] }} !important;
         }
 
-        .warning > .ui-resizable-e {
+        .warning:not(.near-right-element) > .ui-resizable-e {
             border-left: {{ quarterMinuend }}px solid {{ colors['warning_add'] }} !important;
         }
-        .warning > .ui-resizable-w {
+        .warning:not(.near-left-element) > .ui-resizable-w {
             border-right: {{ quarterMinuend }}px solid {{ colors['warning_add'] }} !important;
         }
-        .success > .ui-resizable-e {
+        .success:not(.near-right-element) > .ui-resizable-e {
             border-left: {{ quarterMinuend }}px solid {{ colors['success_add'] }} !important;
         }
-        .success > .ui-resizable-w {
+        .success:not(.near-left-element) > .ui-resizable-w {
             border-right: {{ quarterMinuend }}px solid {{ colors['success_add'] }} !important;
         }
-        .danger.near-left-puzzle > .ui-resizable-e, .package.near-left-puzzle > .ui-resizable-e, .danger > .resizable-appendix {
+        .danger.near-left-element > .ui-resizable-w,
+        .package.near-left-element > .ui-resizable-w,
+        .danger.near-right-element > .ui-resizable-e,
+        .package.near-right-element > .ui-resizable-e,
+        .danger > .resizable-appendix {
             background-color: {{ colors['danger_add'] }} !important;
         }
 
-        .success.near-left-puzzle > .ui-resizable-e, .success > .resizable-appendix {
+        .success.near-left-element > .ui-resizable-w,
+        .success > .resizable-appendix,
+        .success.near-right-element > .ui-resizable-e {
             background-color: {{ colors['success_add'] }} !important;
         }
 
-        .warning.near-left-puzzle > .ui-resizable-e, .warning > .resizable-appendix {
+        .warning.near-left-element > .ui-resizable-w,
+        .warning.near-right-element > .ui-resizable-e,
+        .warning > .resizable-appendix {
             background-color: {{ colors['warning_add'] }} !important;
         }
 
-        .package-with-left-arrow:after, .package-with-right-arrow:before, .ui-resizable-e, .ui-resizable-w {
+        .package-with-left-arrow:after,
+        .package-with-right-arrow:before,
+        .package:not(.near-right-element) > .ui-resizable-e,
+        .package:not(.near-left-element) > .ui-resizable-w {
             border-bottom: {{ halfMinuend - 2 }}px solid transparent !important;
             border-top: {{ halfMinuend }}px solid transparent !important;
         }
-        .package-with-left-arrow:after, .ui-resizable-w {
+        .package-with-left-arrow:after, .package:not(.near-left-element) > .ui-resizable-w {
             left: {{ quarterMinuend *(-1) }}px !important;
         }
         .success.package-with-left-arrow:after {
@@ -151,13 +162,13 @@
         .with-left-divider:after, .with-right-divider:before {
             top: {{ (minuend - tileFontSize)/2 }}px !important;
         }
-        .package-with-right-arrow:before, .package:not(.near-left-puzzle) > .ui-resizable-e {
+        .package-with-right-arrow:before, .package:not(.near-right-element) > .ui-resizable-e {
             right: {{ quarterMinuend * (-1) }}px !important;
         }
-        .resizable-appendix {
+        .near-right-element > .ui-resizable-e, .near-left-element > .ui-resizable-w {
             height: {{ minuend- 2 }}px !important;
         }
-        .near-left-puzzle > .ui-resizable-e {
+        .near-left-element > .ui-resizable-e, .near-right-element > .ui-resizable-w {
             height: {{ minuend - 2 }}px !important;
         }
         .package-description {
