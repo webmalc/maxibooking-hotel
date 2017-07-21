@@ -62,7 +62,8 @@ class MongoMaintenance extends AbstractMaintenance
             throw new ClientMaintenanceException('Can not do backup! Remove Terminated');
         }
         $backupFolder = $this->getBackupDir($client);
-        $backupCommand = sprintf("mongodump -d %s -o %s", $client);
+        $backupCommand = sprintf("mongodump -d %s -o %s --host %s", $client, $backupFolder, $this->options['host'].':'.$this->options['port']);
+        $this->executeCommand($backupCommand);
     }
 
     private function purgeDb($client)

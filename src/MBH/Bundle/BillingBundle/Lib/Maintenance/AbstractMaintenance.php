@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
@@ -123,10 +124,14 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $result;
     }
 
-    protected function executeCommand(string $command)
+    protected function executeCommand(string $command, string $cwd = null, array $env = null)
     {
-        $process = new Process($command);
-        $process->mustRun();
+        $process = new Process($command, $cwd, $env);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $e) {
+            throw new ClientMaintenanceException($e->getMessage());
+        }
 
         return json_decode($process->getOutput(), true);
     }

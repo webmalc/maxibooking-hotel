@@ -65,6 +65,7 @@ mbh-webserver:
   volumes:
       - ..:/var/www/mbh
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+
   ports:
    - "9090:80"
   links:
