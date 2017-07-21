@@ -16,6 +16,7 @@
                 {% stylesheets filter='cssrewrite, uglifycss'
                     'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
                     'assets/vendor/font-awesome/css/font-awesome.min.css'
+                    'assets/vendor/font-awesome-animation/src/font-awesome-animation.css'
                     'assets/vendor/select2/dist/css/select2.min.css'
                     'assets/vendor/bootstrap-switch/dist/css/bootstrap2/bootstrap-switch.min.css'
                     'assets/vendor/datatables/media/css/dataTables.bootstrap.min.css'
@@ -68,11 +69,13 @@
                         text: "{{ currency().text }}"
 
                     },
+                    justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }}, 
                     startDatePick: '{{ dateDatepickers|date('d.m.Y') }}',
                     UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
                     utils: {}
                 }
             </script>
+            {{ app.session.remove('mbh.justLogin') }}
 
             {% javascripts filter='uglifyjs2'
                 'assets/vendor/jquery/dist/jquery.min.js'

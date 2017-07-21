@@ -161,7 +161,6 @@ class ClientConfig extends Base
      */
     protected $beginDate;
 
-
     /**
      * @var integer
      * @Gedmo\Versioned
@@ -185,6 +184,56 @@ class ClientConfig extends Base
      * @ODM\Field(type="bool")
      */
     protected $canBookWithoutPayer = true;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $defaultAdultsQuantity = 1;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $defaultChildrenQuantity = 0;
+
+    /**
+     * @return int
+     */
+    public function getDefaultAdultsQuantity(): int
+    {
+        return $this->defaultAdultsQuantity;
+    }
+
+    /**
+     * @param int $defaultAdultsQuantity
+     * @return ClientConfig
+     */
+    public function setDefaultAdultsQuantity(int $defaultAdultsQuantity): ClientConfig
+    {
+        $this->defaultAdultsQuantity = $defaultAdultsQuantity;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultChildrenQuantity(): int
+    {
+        return $this->defaultChildrenQuantity;
+    }
+
+    /**
+     * @param int $defaultChildrenQuantity
+     * @return ClientConfig
+     */
+    public function setDefaultChildrenQuantity(int $defaultChildrenQuantity): ClientConfig
+    {
+        $this->defaultChildrenQuantity = $defaultChildrenQuantity;
+
+        return $this;
+    }
 
     /**
      * @return bool

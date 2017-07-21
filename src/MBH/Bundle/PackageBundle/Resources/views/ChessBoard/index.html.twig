@@ -334,7 +334,7 @@
                                             {% if roomData.statuses is iterable and roomData.statuses is not empty %}
                                                 {% for status in roomData.statuses %}
                                                     {% if status.code in roomStatusIcons|keys %}
-                                                        <i style="position: relative; bottom: 10px; font-size: 14px;"
+                                                        <i style="position: relative; bottom: 10px; font-size: 12px;"
                                                            data-container="body"
                                                            class=" fa mbf-{{ roomStatusIcons[status.code] }}"
                                                            title="{{ status }}" data-toggle="tooltip"></i>

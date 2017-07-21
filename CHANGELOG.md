@@ -3,6 +3,7 @@
 * online form improvements && fixes
 * package searchDelay
 * cashDocuments - search by payer
+* user locale
 
 1.5.9
 =============
