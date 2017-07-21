@@ -30,24 +30,12 @@ class PackageAccommodationRepository extends DocumentRepository
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param null $rooms
-     * @param Package[] $excludePackages
-     * @param boolean $departure
-     * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    public function fetchWithAccommodation(
+    public function getWithAccommodationQB(
         \DateTime $begin = null,
-        \DateTime $end = null,
-        $rooms = null,
-        $excludePackages = null,
-        $departure = true,
-        bool $hydrate = true
-    )
-    {
+       \DateTime $end = null,
+       $rooms = null,
+       $excludePackages = null
+    ) {
         /** Find PackageAccommodations  */
         $accQb = $this->createQueryBuilder();
 
@@ -56,7 +44,7 @@ class PackageAccommodationRepository extends DocumentRepository
             ->field('begin')->lte($end);
 
         if ($rooms) {
-            is_array($rooms) ? $rooms : $rooms = [$rooms];
+            $rooms = is_array($rooms) ? $rooms : [$rooms];
             $accQb->field('accommodation.id')->in($rooms);
         }
 
@@ -73,8 +61,27 @@ class PackageAccommodationRepository extends DocumentRepository
             $accQb->field('id')->notIn($excludedAccommodationIds);
         }
 
-        $accQb->hydrate($hydrate);
-        //$qb->sort('begin', 'asc');
+        return $accQb;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param null $rooms
+     * @param Package[] $excludePackages
+     * @param boolean $departure
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchWithAccommodation(
+        \DateTime $begin = null,
+        \DateTime $end = null,
+        $rooms = null,
+        $excludePackages = null,
+        $departure = true
+    )
+    {
+        $accQb = $this->getWithAccommodationQB($begin, $end, $rooms, $excludePackages);
 
         return $accQb->getQuery()->execute();
     }

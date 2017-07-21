@@ -175,10 +175,12 @@ fos_user:
     user_class: MBH\Bundle\UserBundle\Document\User
     group:
             group_class: MBH\Bundle\UserBundle\Document\Group
+    service:
+        mailer: mbh.mailer
     from_email:
             address: "%mailer_user%"
             sender_name: NoReply
-    
+
 # KnpMenuBundle Configuration    
 knp_menu:
     twig:  # use "twig: false" to disable the Twig extension and the TwigRenderer

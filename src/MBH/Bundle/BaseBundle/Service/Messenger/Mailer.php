@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
+use FOS\UserBundle\Mailer\MailerInterface;
+use FOS\UserBundle\Model\UserInterface;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -9,11 +11,12 @@ use Monolog\Logger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Mailer service
  */
-class Mailer implements \SplObserver
+class Mailer implements \SplObserver, MailerInterface
 {
     /**
      * @var array
@@ -160,7 +163,7 @@ class Mailer implements \SplObserver
         }
 
         $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy(
-            [$category . 's' => true, 'enabled' => true, 'locked' => false, 'username' => ['$ne'=>'mb']]
+            [$category . 's' => true, 'enabled' => true, 'locked' => false, 'username' => ['$ne' => 'mb']]
         );
 
         if ($hotel) {
@@ -261,5 +264,42 @@ class Mailer implements \SplObserver
         }
 
         return true;
+    }
+
+    /**
+     * Send an email to a user to confirm the account creation.
+     *
+     * @param UserInterface $user
+     */
+    public function sendConfirmationEmailMessage(UserInterface $user)
+    {
+        // TODO: Implement sendConfirmationEmailMessage() method.
+    }
+
+    /**
+     * Send an email to a user to confirm the password reset.
+     *
+     * @param UserInterface $user
+     */
+    public function sendResettingEmailMessage(UserInterface $user)
+    {
+        $translator = $this->container->get('translator');
+        $text = $translator->trans('resetting.email.subject', ['%username%' => $user->getUsername()], 'FOSUserBundle');
+        $confirmationUrl = $this->container->get('router')->generate('fos_user_resetting_reset', [
+            'token' => $user->getConfirmationToken()],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $linkText = $translator->trans('mailer.resetting_mail.reset_pass_button.text');
+
+        $this->send([$user], [
+            'hotel' => null,
+            'buttonName' => $linkText,
+            'text' => $text,
+            'user' => $user,
+            'transParams' => [],
+            'linkText' => $linkText,
+            'link' => $confirmationUrl
+        ], '@MBHBase/Mailer/resettingPassword.html.twig');
     }
 }

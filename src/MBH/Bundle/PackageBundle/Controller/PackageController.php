@@ -905,7 +905,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->setRoom($room)
             ->setBegin($package->getLastEndAccommodation())
             ->setEnd($package->getEnd())
-            ->setPackage($package);
+            ->setPackageForValidator($package);
+
         $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
         $form->handleRequest($request);
 
@@ -959,9 +960,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     return new Response('', 302);
                 }
 
+                $package = $this->dm->getRepository('MBHPackageBundle:Package')
+                    ->getPackageByPackageAccommodationId($accommodation->getId());
                 return $this->redirectToRoute(
                     'package_accommodation',
-                    ['id' => $accommodation->getPackage()->getId(), 'begin' => null, 'end' => null]
+                    ['id' => $package->getId(), 'begin' => null, 'end' => null]
                 );
             }
 
@@ -986,7 +989,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function accommodationDeleteAction(Request $request, PackageAccommodation $entity)
     {
-        $package = $entity->getPackage();
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->getPackageByPackageAccommodationId($entity->getId());
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
@@ -1062,7 +1066,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
 
         $roomTypeName = $package->getRoomType()->getName();
-        uksort($optGroupRooms, function ($a, $b) use ($roomTypeName) {
+        uksort($optGroupRooms, function ($a) use ($roomTypeName) {
             if ($a == $roomTypeName) {
                 return -1;
             }
