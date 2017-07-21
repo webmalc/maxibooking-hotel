@@ -10,6 +10,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
@@ -126,10 +127,10 @@ abstract class AbstractMaintenance implements MaintenanceInterface
 
     protected function executeCommand(string $command, string $cwd = null, array $env = null)
     {
-        $process = new Process($command, $cwd, $env);
+        $process = new Process($command, $cwd, $env, null, 60*10);
         try {
             $process->mustRun();
-        } catch (ProcessFailedException $e) {
+        } catch (ProcessFailedException|ProcessTimedOutException $e) {
             throw new ClientMaintenanceException($e->getMessage());
         }
 

@@ -24,6 +24,10 @@ class MongoMaintenance extends AbstractMaintenance
 
     public function install(string $client)
     {
+        if ($this->isDBExist($client)) {
+            $this->remove($client);
+        }
+
         $cloneResult = $this->cloneDb($client);
         $isDbCloned = $this->isDBExist($client);
 
