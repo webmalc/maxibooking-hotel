@@ -15,6 +15,7 @@
 * add generator for ChannelManager pull queue in RMQ
 * add complex indexes in some repos
 * add MBHBillingBundle, move maintenance commands
+* add cache:clear command for all users
 
 
 1.5.10

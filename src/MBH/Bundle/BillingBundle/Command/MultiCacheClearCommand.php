@@ -49,7 +49,7 @@ class MultiCacheClearCommand extends ContainerAwareCommand
                     $commandLine = sprintf('php console %s --env=%s %s', $command, $env, $isDebug ?'': '--no-debug');
                     $output->writeln($commandLine);
                     $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $client], null, 180);
-//                    $process->mustRun();
+                    $process->mustRun();
                 }
                 $output->writeln('Clearing cache for '.$client.' done.');
             }

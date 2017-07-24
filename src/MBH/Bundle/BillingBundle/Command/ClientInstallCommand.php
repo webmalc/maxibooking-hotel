@@ -35,9 +35,12 @@ class ClientInstallCommand extends ContainerAwareCommand
             $installManager = $container->get('mbh.maintenance.manager');
             foreach ($installingClients as $client) {
                 try {
+                    $output->writeln('Installing client '.$client);
                     $installManager->install($client);
                     $installed[] = $client;
                 } catch (ClientMaintenanceException $e) {
+                    $output->writeln('RollBack client '.$client);
+                    $output->writeln($e->getMessage());
                     $installManager->rollBack($client);
                     $error[] = [
                         'client' => $client,
