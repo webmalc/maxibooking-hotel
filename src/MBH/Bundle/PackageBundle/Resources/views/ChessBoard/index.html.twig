@@ -16,7 +16,7 @@
 {% set titleSubFontSize = currentSizes['titleSubFontSize'] %}
 {% set leftRoomsAndNoAccFontSize = currentSizes['leftRoomsAndNoAccFontSize'] %}
 {% set stylesFile = 'bundles/mbhpackage/css/chessboard/chessboard_' ~ stylesFileNumber ~ '.css' %}
-{% set subtrahend = 10 %}
+{% set subtrahend = (tableCellHeight / 5)|round %}
 {% set minuend = tableCellHeight - subtrahend %}
 
 {% block scripts %}

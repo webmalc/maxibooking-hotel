@@ -529,6 +529,7 @@ body {
   border: none;
   background: none;
   z-index: 110;
+  font-size: 15px;
 }
 .remove-package-button :active,
 .divide-package-button :active {

@@ -193,35 +193,7 @@ class ChessBoardDataBuilder
             $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
         }
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
-        $orderIds = [];
-        $touristIds = [];
-        /** @var Package $package */
-        foreach ($packages as $package) {
-            /** @var PersistentCollection $tourists */
-            $tourists = $package->getTourists();
-            $ids = [];
-            foreach ($tourists->getMongoData() as $touristData) {
-                $ids[] = $touristData['$id'];
-            }
-            $touristIds = array_merge($touristIds, $ids);
-            $orderIds[] = $package->getOrder()->getId();
-        }
-
-        $tourists = $this->dm
-            ->getRepository('MBHPackageBundle:Tourist')
-            ->createQueryBuilder()
-            ->field('id')->in($touristIds)
-            ->getQuery()
-            ->execute()
-            ->toArray();
-
-        $orders = $this->dm
-            ->getRepository('MBHPackageBundle:Order')
-            ->createQueryBuilder()
-            ->field('id')->in($orderIds)
-            ->getQuery()
-            ->execute()
-            ->toArray();
+        $this->loadTouristsAndOrders($packages);
 
         return $packages;
     }
@@ -300,6 +272,7 @@ class ChessBoardDataBuilder
                     ->field('accommodations.id')->in($accommodationsIds)
                     ->getQuery()
                     ->execute();
+                $this->loadTouristsAndOrders($packages);
 
                 $packageAccommodationsData = array_map(function (PackageAccommodation $accommodation) use ($packages) {
                     /** @var Package $package */
@@ -602,5 +575,45 @@ class ChessBoardDataBuilder
         }
 
         return $this->roomTypes;
+    }
+
+    /**
+     * @param Package[] $packages
+     */
+    private function loadTouristsAndOrders($packages)
+    {
+        $orderIds = [];
+        $touristIds = [];
+        /** @var Package $package */
+        foreach ($packages as $package) {
+            /** @var PersistentCollection $tourists */
+            $tourists = $package->getTourists();
+            $ids = [];
+            foreach ($tourists->getMongoData() as $touristData) {
+                $ids[] = $touristData['$id'];
+            }
+            $touristIds = array_merge($touristIds, $ids);
+            $orderIds[] = $package->getOrder()->getId();
+        }
+
+        if (count($touristIds) > 0) {
+            $tourists = $this->dm
+                ->getRepository('MBHPackageBundle:Tourist')
+                ->createQueryBuilder()
+                ->field('id')->in($touristIds)
+                ->getQuery()
+                ->execute()
+                ->toArray();
+        }
+
+        if (count($orderIds) > 0) {
+            $orders = $this->dm
+                ->getRepository('MBHPackageBundle:Order')
+                ->createQueryBuilder()
+                ->field('id')->in($orderIds)
+                ->getQuery()
+                ->execute()
+                ->toArray();
+        }
     }
 }

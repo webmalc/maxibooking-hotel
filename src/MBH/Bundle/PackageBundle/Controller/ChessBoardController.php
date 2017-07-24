@@ -47,7 +47,7 @@ class ChessBoardController extends BaseController
             'tileTopPadding' => 7,
             'dayTopPadding' => 0,
             'titleSubPadding' => 0,
-            'titleSubFontSize' => 11,
+            'titleSubFontSize' => 13,
             'leftRoomsAndNoAccFontSize' => 16,
         ],
         [
