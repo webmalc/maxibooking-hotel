@@ -73,7 +73,7 @@ class ApiController extends Controller
             'formConfig' => $formConfig
         ];
     }
-    
+
     /**
      * Orders xml
      * @Route("/orders/{begin}/{end}/{id}/{sign}/{type}", name="online_orders", defaults={"_format"="xml", "id"=null})
@@ -107,8 +107,7 @@ class ApiController extends Controller
         $qb = $this->dm->getRepository('MBHPackageBundle:Package')
             ->createQueryBuilder()
             ->field('roomType.id')->in($this->get('mbh.helper')->toIds($hotel->getRoomTypes()))
-            ->sort('updatedAt', 'desc');
-        ;
+            ->sort('updatedAt', 'desc');;
 
         if ($type == 'live') {
             $qb
@@ -217,15 +216,14 @@ class ApiController extends Controller
      */
     public function checkOrderAction(Request $request)
     {
-
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $logger = $this->get('mbh.online.logger');
         $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP' . $request->getClientIp() . '. Post data: ' . implode(
-            '; ',
-            $_POST
-        ) . ' . Keys: ' . implode('; ', array_keys($_POST));
+                '; ',
+                $_POST
+            ) . ' . Keys: ' . implode('; ', array_keys($_POST));
 
 
         if (!$clientConfig) {
@@ -416,7 +414,7 @@ class ApiController extends Controller
                 $facilityArray[$key] = $val;
             }
         }
-        
+
         return [
             'defaultTariff' => $defaultTariff ?? null,
             'facilityArray' => $facilityArray,
@@ -529,21 +527,58 @@ class ApiController extends Controller
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
+        $formData = $clientConfig->getFormData($order->getCashDocuments()[0]);
+        $receipt = json_encode([
+            'lines' => [
+                'name' => '',
+                'price' => 'цена за единицу измерения',
+                 'qty' => 'количество',
+                 'sum' => $formData['total'],
+                // Допустимые значения vat:
+                // -1 – не облагается НДС
+                // 0 – облагается НДС по ставке 0%
+                // 10 – облагается НДС по ставке 10%
+                // 18 – облагается НДС по ставке 18%
+                // 110 – облагается НДС по ставке 10/110
+                // 118 – облагается НДС по ставке 18/118
+                // Значение taxmode должно соответствовать
+                 'vat' => 'код ставки налогообложения',
+                // Допустимые значения taxmode:
+                // 0 — Общая система налогообложения
+                // 1 — Упрощенная система налогообложения (Доход)
+                // 2 — Упрощенная СН (Доход минус Расход)
+                // 3 — Единый налог на вмененный доход
+                // 4 — Единый сельскохозяйственный налог
+                // 5 — Патентная система налогообложения
+                'taxmode' => 'код системы налогообложения'
+            ]
+        ]);
+
+        $receiptSignature = mb_strtoupper(
+            hash("sha256", (
+                hash("sha256", $formData['shopId']) . '&' .
+                hash("sha256", $formData['orderId']) . '&' .
+                hash("sha256", $formData['data.total']) . '&' .
+                hash("sha256", $receipt) . '&' . hash("sha256", $formData['password']))
+            )
+        );
+
         if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
         } else {
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig',
                 [
-                    'data' => array_merge(['test' => false, 'currency' => strtoupper($this->getParameter('locale.currency')),
+                    'data' => array_merge(['test' => false,
+                        'currency' => strtoupper($this->getParameter('locale.currency')),
+
                         'buttonText' => $this->get('translator')->trans(
                             'views.api.make_payment_for_order_id',
                             ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle'
                         )
-                    ], $clientConfig->getFormData(
-                        $order->getCashDocuments()[0]
-                    ))
+                    ], $formData,
+                        ['receipt' => $receipt, 'receiptSignature' => $receiptSignature])
                 ]
             );
         }

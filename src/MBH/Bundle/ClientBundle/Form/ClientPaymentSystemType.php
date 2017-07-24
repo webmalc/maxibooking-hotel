@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -164,7 +165,7 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'unitellerPassword',
-                TextType::class,
+                PasswordType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.uniteller_password',
                     'required' => false,
