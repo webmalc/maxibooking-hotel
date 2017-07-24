@@ -193,7 +193,7 @@ class ChessBoardDataBuilder
             $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
         }
         $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
-        $this->loadTouristsAndOrders($packages);
+        $this->loadRelatedToPackagesData($packages);
 
         return $packages;
     }
@@ -272,7 +272,7 @@ class ChessBoardDataBuilder
                     ->field('accommodations.id')->in($accommodationsIds)
                     ->getQuery()
                     ->execute();
-                $this->loadTouristsAndOrders($packages);
+                $this->loadRelatedToPackagesData($packages);
 
                 $packageAccommodationsData = array_map(function (PackageAccommodation $accommodation) use ($packages) {
                     /** @var Package $package */
@@ -580,7 +580,7 @@ class ChessBoardDataBuilder
     /**
      * @param Package[] $packages
      */
-    private function loadTouristsAndOrders($packages)
+    private function loadRelatedToPackagesData($packages)
     {
         $orderIds = [];
         $touristIds = [];
