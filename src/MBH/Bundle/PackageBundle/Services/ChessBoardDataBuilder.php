@@ -274,9 +274,11 @@ class ChessBoardDataBuilder
                     ->execute();
                 $this->loadRelatedToPackagesData($packages);
 
-                $packageAccommodationsData = array_map(function (PackageAccommodation $accommodation) use ($packages) {
+                $packagesIds = [];
+                $packageAccommodationsData = array_map(function (PackageAccommodation $accommodation) use ($packages, $packagesIds) {
                     /** @var Package $package */
                     foreach ($packages as $package) {
+                        $packagesIds[$package->getId()] = $package->getId();
                         if ($package->getAccommodations()->contains($accommodation)) {
                             return [
                                 'package' => $package,
@@ -286,6 +288,13 @@ class ChessBoardDataBuilder
                     }
                     throw new \Exception('Accommodation must relate to package');
                 }, $accommodations);
+
+                $this->dm
+                    ->getRepository('MBHPackageBundle:PackageService')
+                    ->createQueryBuilder()
+                    ->field('package.id')->in($packagesIds)
+                    ->getQuery()
+                    ->execute();
 
                 //сортируем по id брони
                 usort($packageAccommodationsData, function ($a, $b) {
@@ -584,6 +593,7 @@ class ChessBoardDataBuilder
     {
         $orderIds = [];
         $touristIds = [];
+        $packagesIds = [];
         /** @var Package $package */
         foreach ($packages as $package) {
             /** @var PersistentCollection $tourists */
@@ -594,10 +604,11 @@ class ChessBoardDataBuilder
             }
             $touristIds = array_merge($touristIds, $ids);
             $orderIds[] = $package->getOrder()->getId();
+            $packagesIds[] = $package->getId();
         }
 
         if (count($touristIds) > 0) {
-            $tourists = $this->dm
+            $this->dm
                 ->getRepository('MBHPackageBundle:Tourist')
                 ->createQueryBuilder()
                 ->field('id')->in($touristIds)
@@ -607,7 +618,7 @@ class ChessBoardDataBuilder
         }
 
         if (count($orderIds) > 0) {
-            $orders = $this->dm
+            $this->dm
                 ->getRepository('MBHPackageBundle:Order')
                 ->createQueryBuilder()
                 ->field('id')->in($orderIds)
