@@ -49,4 +49,18 @@ class ClientListGetter
 
         return $clients;
     }
+
+    public function getExistingClients(array $clients): array
+    {
+        $allClients = $this->getClientsList();
+
+        return array_intersect($clients, $allClients);
+    }
+
+    public function getNewClients(array $clients): array
+    {
+        $allClients = $this->getClientsList();
+
+        return array_diff($clients, $allClients);
+    }
 }

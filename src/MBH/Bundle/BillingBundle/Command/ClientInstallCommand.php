@@ -25,47 +25,39 @@ class ClientInstallCommand extends ContainerAwareCommand
     {
         $start = new \DateTime();
         $container = $this->getContainer();
-        if ($input->getOption('clients')) {
-            $clients = explode(',', trim($input->getOption('clients'), ','));
-            $installedClients = $container->get('mbh.service.client_list_getter')->getClientsList();
+        $clients = explode(',', trim($input->getOption('clients'), ','));
+        $clientsGetter = $container->get('mbh.service.client_list_getter');
+        $installingClients = $clientsGetter->getNewClients($clients);
 
-            $installingClients = array_diff($clients, $installedClients);
-            if ($clients !== $installingClients) {
-                /** TODO: output warning? */
-                $existsClients = array_diff($clients, $installingClients);
-            }
-            if ($installingClients) {
-                $installed = $error = [];
+        if ($installingClients) {
+            $installed = $error = [];
 
-                $installManager = $container->get('mbh.maintenance.manager');
-                foreach ($installingClients as $client) {
-                    try {
-                        $installManager->install($client);
-                        $installed[] = $client;
-                    } catch (ClientMaintenanceException $e) {
-                        $installManager->rollBack($client);
-                        $error[] = [
-                            'client' => $client,
-                            'error' => $e->getMessage(),
-                        ];
-                    }
+            $installManager = $container->get('mbh.maintenance.manager');
+            foreach ($installingClients as $client) {
+                try {
+                    $installManager->install($client);
+                    $installed[] = $client;
+                } catch (ClientMaintenanceException $e) {
+                    $installManager->rollBack($client);
+                    $error[] = [
+                        'client' => $client,
+                        'error' => $e->getMessage(),
+                    ];
                 }
-                $time = $start->diff(new \DateTime());
-                $message = sprintf(
-                    'Installation process was complete. Installed client: %s. Error clients: %s Elapsed time: %s',
-                    implode(" ", $installed),
-                    implode(" ", array_column($error, 'client')).implode(" ", array_column($error, 'error')),
-                    $time->format('%H:%I:%S')
-                );
-            } else {
-                $message = sprintf('Clients %s already installed.', implode(" ", $clients));
             }
 
+
+            $message = sprintf(
+                'Installation process was complete. Installed client: %s. Error clients: %s',
+                implode(" ", $installed),
+                implode(" ", array_column($error, 'client')).implode(" ", array_column($error, 'error'))
+            );
         } else {
-            $message = 'No specified clients to install';
+            $message = sprintf('Clients %s already installed.', implode(" ", $clients));
         }
 
-        $output->writeln($message);
+        $time = $start->diff(new \DateTime());
+        $output->writeln(sprintf($message.' Elapsed time: %s', $time->format('%H:%I:%S')));
 
     }
 }
