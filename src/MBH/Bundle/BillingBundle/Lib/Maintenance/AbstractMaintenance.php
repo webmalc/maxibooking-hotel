@@ -52,55 +52,6 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->container;
     }
 
-    protected function createSymLink(string $source, string $target)
-    {
-        if (!$this->isFileExists($source)) {
-            throw new ClientMaintenanceException('No nginx original file to create Link');
-        }
-        $this->fileSystem->symlink($source, $target);
-    }
-
-
-    protected function dumpFile(string $fileName, string $file)
-    {
-        try {
-            $this->fileSystem->dumpFile($fileName, $file);
-        } catch (IOException $exception) {
-            throw new ClientMaintenanceException('Error of file dumping.'.$exception->getMessage());
-        }
-
-    }
-
-    protected function removeFile(string $fileName)
-    {
-        try {
-            if ($this->isFileExists($fileName)) {
-                $this->fileSystem->remove($fileName);
-            }
-        } catch (IOException $exception) {
-            throw new ClientMaintenanceException('Can not remove file'.$exception->getMessage());
-        }
-    }
-
-    protected function copyFile(string $sourceFile, string $targetFile)
-    {
-        try {
-            $this->fileSystem->copy($sourceFile, $targetFile, true);
-        } catch (IOException $e) {
-            throw new ClientMaintenanceException('Cannot Backup Parameters YML '. $sourceFile);
-        }
-    }
-
-    protected function isFileExists(string $fileName)
-    {
-        return $this->fileSystem->exists($fileName);
-    }
-
-    protected function getBackupDir(string $client): string
-    {
-        return $this->options['backupDir'].'/'.$client;
-    }
-
     protected function getMainConfig(): array
     {
         if (!$this->mainConfig) {
@@ -111,6 +62,58 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         return $this->mainConfig;
     }
 
+
+    protected function dumpFile(string $fileName, string $file)
+    {
+        try {
+            $this->fileSystem->dumpFile($fileName, $file);
+        } catch (IOException $e) {
+            throw new ClientMaintenanceException('Error of file dumping.'.$e->getMessage());
+        }
+
+    }
+
+    protected function createSymLink(string $source, string $target)
+    {
+        if (!$this->isFileExists($source)) {
+            throw new ClientMaintenanceException('No nginx original file to create Link');
+        }
+        $this->fileSystem->symlink($source, $target);
+    }
+
+    protected function copyFile(string $sourceFile, string $targetFile)
+    {
+        try {
+            $this->fileSystem->copy($sourceFile, $targetFile, true);
+        } catch (IOException $e) {
+            throw new ClientMaintenanceException('Cannot Backup Parameters YML '. $sourceFile.' '.$e->getMessage());
+        }
+    }
+
+    protected function removeFile(string $fileName)
+    {
+        try {
+            if ($this->isFileExists($fileName)) {
+                $this->fileSystem->remove($fileName);
+            }
+        } catch (IOException $e) {
+            throw new ClientMaintenanceException('Can not remove file'.$e->getMessage());
+        }
+    }
+
+
+    protected function isFileExists(string $fileName)
+    {
+        return $this->fileSystem->exists($fileName);
+    }
+
+    protected function getBackupDir(string $clientName): string
+    {
+        return $this->options['backupDir'].'/'.$clientName;
+    }
+
+
+
     protected function yamlParse(string $fileName): array
     {
         if (!$this->isFileExists($fileName)) {
@@ -118,15 +121,27 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         }
         try {
              $result = Yaml::parse(file_get_contents($fileName));
-        } catch (ParseException $exception) {
-            throw new ClientMaintenanceException($exception->getMessage());
+        } catch (ParseException $e) {
+            throw new ClientMaintenanceException($e->getMessage());
         }
 
         return $result;
     }
 
-    protected function executeCommand(string $command, string $cwd = null, array $env = null)
+    protected function executeConsoleCommand(string $command, string $cwd = null, array $env = null): ?string
     {
+        $cwd = $cwd??$this->container->get('mbh.kernel_root_dir').'/../bin';
+        $isDebug = $this->container->get('kernel')->isDebug();
+        $kernelEnv = $this->container->get('kernel')->getEnvironment();
+
+        $command = sprintf('php console %s --env=%s %s',$command, $kernelEnv, $isDebug ?'': '--no-debug');
+
+        return $this->executeCommand($command, $cwd, $env);
+    }
+
+    protected function executeCommand(string $command, string $cwd = null, array $env = null): ?string
+    {
+
         $process = new Process($command, $cwd, $env, null, 60*10);
         try {
             $process->mustRun();
@@ -134,26 +149,26 @@ abstract class AbstractMaintenance implements MaintenanceInterface
             throw new ClientMaintenanceException($e->getMessage());
         }
 
-        return json_decode($process->getOutput(), true);
+        return $process->getOutput();
     }
 
-    protected function getClientConfig(string $client): array
+    protected function getClientConfigFileName(string $clientName): string
     {
-        $fileName = $this->getClientConfigFileName($client);
-
-        return $this->yamlParse($fileName);
-    }
-
-    protected function getClientConfigFileName(string $client): string
-    {
-        $fileName = $this->options['clientConfigDir'].'/'.$this->getConfigName($client);
+        $fileName = $this->options['clientConfigDir'].'/'.$this->getConfigName($clientName);
 
         return $fileName;
     }
 
-    protected function getConfigName(string $client): string
+    protected function getClientConfig(string $clientName): array
     {
-        $configName = 'parameters_'.$client.'.yml';
+        $fileName = $this->getClientConfigFileName($clientName);
+
+        return $this->yamlParse($fileName);
+    }
+
+    protected function getConfigName(string $clientName): string
+    {
+        $configName = 'parameters_'.$clientName.'.yml';
 
         return $configName;
     }

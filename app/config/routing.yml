@@ -1,6 +1,8 @@
 mbh_billing:
     resource: "@MBHBillingBundle/Controller/"
     type: annotation
+    prefix: /deploy
+    defaults: { _format: 'json' }
 
 mbh_warehouse:
     resource: "@MBHWarehouseBundle/Controller/"

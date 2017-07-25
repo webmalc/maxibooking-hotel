@@ -5,94 +5,97 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
+use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Yaml\Yaml;
 
 class ParametersMaintenance extends AbstractMaintenance
 {
 
-    public function install(string $client)
+    public function install(Client $client)
     {
         $sampleConfig = $this->getMainConfig();
-        $overridesConfig = $this->generateConfigOverrides($client);
-        $newConfig = Yaml::dump(array_replace_recursive($sampleConfig, $overridesConfig), 5);
+        $overridesConfig = $this->generateConfigOverrides($client->getName());
+        $resultConfig = array_replace_recursive($sampleConfig, $overridesConfig);
+        $newConfig = Yaml::dump($resultConfig, 5);
 
         if (empty($newConfig)) {
             throw new ClientMaintenanceException('Client config is empty!');
         }
 
-        $this->saveClientParameters($client, $newConfig);
+        $this->saveClientParameters($client->getName(), $newConfig);
+
     }
 
-    public function rollBack(string $client)
+    public function rollBack(Client $client)
     {
-        $this->removeFile($this->getClientConfigFileName($client));
+        $this->removeFile($this->getClientConfigFileName($client->getName()));
     }
 
-    public function remove(string $client)
+    public function remove(Client $client)
     {
-        $this->backup($client);
-        $this->removeFile($this->getClientConfigFileName($client));
+        $this->backup($client->getName());
+        $this->removeFile($this->getClientConfigFileName($client->getName()));
     }
 
-    public function update(string $client)
+    public function update(Client $client)
     {
         // TODO: Implement update() method.
     }
 
-    public function restore(string $client)
+    public function restore(Client $client)
     {
-        $parametersFileName = $this->getBackupParametersFileName($client);
+        $parametersFileName = $this->getBackupParametersFileName($client->getName());
         if (!$this->isFileExists($parametersFileName)) {
             throw new ClientMaintenanceException(
                 'Restore parameters.yml failed, file not found in '.$parametersFileName
             );
         };
         $parameters = file_get_contents($parametersFileName);
-        $this->saveClientParameters($client, $parameters);
+        $this->saveClientParameters($client->getName(), $parameters);
     }
 
 
-    private function backup(string $client)
+    private function backup(string $clientName)
     {
-        $clientParameters = $this->getClientConfigFileName($client);
-        $backupParameters = $this->getBackupParametersFileName($client);
+        $clientParameters = $this->getClientConfigFileName($clientName);
+        $backupParameters = $this->getBackupParametersFileName($clientName);
         if (file_exists($clientParameters)) {
             $this->copyFile($clientParameters, $backupParameters);
         }
 
     }
 
-    private function getBackupParametersFileName(string $client)
+    private function getBackupParametersFileName(string $clientName)
     {
-        $backupFolder = $this->getBackupDir($client);
-        $backupFileName = $backupFolder.'/'.$this->getConfigName($client);
+        $backupFolder = $this->getBackupDir($clientName);
+        $backupFileName = $backupFolder.'/'.$this->getConfigName($clientName);
 
         return $backupFileName;
     }
 
 
 
-    private function generateConfigOverrides(string $client, array $newConfig = []): array
+    private function generateConfigOverrides(string $clientName, array $newConfig = []): array
     {
         $overrides = $newConfig ?: [
             'parameters' => [
-                'mongodb_database' => $client,
+                'mongodb_database' => $clientName,
                 'secret' => $this->getContainer()->get('mbh.helper')->getRandomString(),
-                'router.request_context.host' => $client.'.maxibooking.ru',
+                'router.request_context.host' => $clientName.'.maxibooking.ru',
                 'mbh_cache' => [
-                    'prefix' => $client,
+                    'prefix' => $clientName,
                 ],
-                'client' => $client,
+                'client' => $clientName,
             ],
         ];
 
         return $overrides;
     }
 
-    private function saveClientParameters(string $client, string $parameters)
+    private function saveClientParameters(string $clientName, string $parameters)
     {
-        $this->dumpFile($this->getClientConfigFileName($client), $parameters);
+        $this->dumpFile($this->getClientConfigFileName($clientName), $parameters);
     }
 
     protected function configureOptions(OptionsResolver $resolver)

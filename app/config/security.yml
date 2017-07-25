@@ -38,6 +38,7 @@ security:
                 domain:   ~
 
     access_control:
+        - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }

@@ -30,6 +30,9 @@ framework:
         handler_id:  ~
     fragments:       ~
     http_method_override: true
+    cache:
+        app: cache.adapter.redis
+        default_redis_provider: "%mbh_redis%"
 
 
 # Twig Configuration

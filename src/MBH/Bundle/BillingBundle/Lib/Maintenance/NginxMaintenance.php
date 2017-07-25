@@ -4,42 +4,49 @@
 namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 
+use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
+use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class NginxMaintenance extends AbstractMaintenance
 {
 
-    public function install(string $client)
+    public function install(Client $client)
     {
         $twig = $this->getContainer()->get('templating');
-        $nginxConfig = $twig->render(
-            '@MBHBilling/Maintenance/nginx.config.html.twig',
-            [
-                'client' => $client,
-                'codeFolder' => $this->options['codeFolder'],
-            ]
-        );
+        try {
+            $nginxConfig = $twig->render(
+                '@MBHBilling/Maintenance/nginx.config.html.twig',
+                [
+                    'client' => $client->getName(),
+                    'codeFolder' => $this->options['codeFolder'],
+                ]
+            );
+        } catch (\Twig_Error_Runtime $e) {
+            throw new ClientMaintenanceException($e->getMessage());
+        }
 
-        $this->installNginxFiles($client, $nginxConfig);
+
+        $this->installNginxFiles($client->getName(), $nginxConfig);
     }
 
-    public function rollBack(string $client)
+    public function rollBack(Client $client)
     {
         $this->remove($client);
     }
 
-    public function remove(string $client)
+    public function remove(Client $client)
     {
-        $this->removeFile($this->getNginxLinkName($client));
-        $this->removeFile($this->getNginxFileName($client));
+        $this->removeFile($this->getNginxLinkName($client->getName()));
+        $this->removeFile($this->getNginxFileName($client->getName()));
     }
 
-    public function restore(string $client)
+    public function restore(Client $client)
     {
         $this->install($client);
     }
 
-    public function update(string $client)
+    public function update(Client $client)
     {
     }
 
@@ -49,24 +56,24 @@ final class NginxMaintenance extends AbstractMaintenance
         $this->createLink($client);
     }
 
-    private function getNginxFileName(string $client): string
+    private function getNginxFileName(string $clientName): string
     {
-        return $this->options['sitesAvailable'].'/'.$client;
+        return $this->options['sitesAvailable'].'/'.$clientName;
     }
 
-    private function getNginxLinkName(string $client): string
+    private function getNginxLinkName(string $clientName): string
     {
-        return $this->options['sitesEnabled'].'/'.$client;
+        return $this->options['sitesEnabled'].'/'.$clientName;
     }
 
-    private function createFile(string $client, string $file)
+    private function createFile(string $clientName, string $file)
     {
-        $this->dumpFile($this->getNginxFileName($client), $file);
+        $this->dumpFile($this->getNginxFileName($clientName), $file);
     }
 
-    private function createLink(string $client)
+    private function createLink(string $clientName)
     {
-        $this->createSymLink($this->getNginxFileName($client), $this->getNginxLinkName($client));
+        $this->createSymLink($this->getNginxFileName($clientName), $this->getNginxLinkName($clientName));
     }
 
     protected function configureOptions(OptionsResolver $resolver)
