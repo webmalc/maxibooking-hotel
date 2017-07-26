@@ -29,6 +29,55 @@ class Uniteller implements PaymentSystemInterface
      * @ODM\Field(type="string")
      */
     protected $unitellerPassword;
+    /**
+     * @var float
+     * @ODM\Field(type="float")
+     */
+    protected $taxationRateCode;
+
+    /**
+     * @var float
+     * @ODM\Field(type="float")
+     */
+    protected $taxationSystemCode;
+
+    /**
+     * @return float
+     */
+    public function getTaxationRateCode(): ?float
+    {
+        return $this->taxationRateCode;
+    }
+
+    /**
+     * @param float $taxationRateCode
+     * @return Uniteller
+     */
+    public function setTaxationRateCode(float $taxationRateCode): Uniteller
+    {
+        $this->taxationRateCode = $taxationRateCode;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTaxationSystemCode(): ?float
+    {
+        return $this->taxationSystemCode;
+    }
+
+    /**
+     * @param float $taxationSystemCode
+     * @return Uniteller
+     */
+    public function setTaxationSystemCode(float $taxationSystemCode): Uniteller
+    {
+        $this->taxationSystemCode = $taxationSystemCode;
+
+        return $this;
+    }
 
     /**
      * Set unitellerShopIDP

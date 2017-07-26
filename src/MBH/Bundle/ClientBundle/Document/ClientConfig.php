@@ -117,7 +117,7 @@ class ClientConfig extends Base
     protected $uniteller;
 
     /**
-     * @var Uniteller
+     * @var Rbk
      * @ODM\EmbedOne(targetDocument="Rbk")
      */
     protected $rbk;
@@ -436,7 +436,7 @@ class ClientConfig extends Base
     }
 
     /**
-     * @return Uniteller
+     * @return Rbk
      */
     public function getRbk()
     {
@@ -444,7 +444,7 @@ class ClientConfig extends Base
     }
 
     /**
-     * @param Uniteller $rbk
+     * @param Rbk $rbk
      */
     public function setRbk($rbk)
     {

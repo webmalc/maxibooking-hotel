@@ -2,12 +2,11 @@
 
 namespace MBH\Bundle\OnlineBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -146,12 +145,13 @@ class ApiController extends Controller
         }
 
         $hotelsQb = $dm->getRepository('MBHHotelBundle:Hotel')
-            ->createQueryBuilder('q')
+            ->createQueryBuilder()
             ->sort('fullTitle', 'asc');
 
         $configHotelsIds = $this->get('mbh.helper')->toIds($formConfig->getHotels());
 
         $hotels = [];
+        /** @var Hotel $hotel */
         foreach ($hotelsQb->getQuery()->execute() as $hotel) {
             if ($configHotelsIds && !in_array($hotel->getId(), $configHotelsIds)) {
                 continue;
@@ -216,7 +216,7 @@ class ApiController extends Controller
      */
     public function checkOrderAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /** @var DocumentManager $dm */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $logger = $this->get('mbh.online.logger');
@@ -224,7 +224,6 @@ class ApiController extends Controller
                 '; ',
                 $_POST
             ) . ' . Keys: ' . implode('; ', array_keys($_POST));
-
 
         if (!$clientConfig) {
             $logger->info('FAIL. ' . $logText . ' .Not found config');
@@ -260,6 +259,7 @@ class ApiController extends Controller
         }
 
         //send notifications
+        /** @var Order $order */
         $order = $cashDocument->getOrder();
         $package = $order->getPackages()[0];
         $params = [
@@ -532,25 +532,10 @@ class ApiController extends Controller
             'lines' => [
                 'name' => '',
                 'price' => 'цена за единицу измерения',
-                 'qty' => 'количество',
-                 'sum' => $formData['total'],
-                // Допустимые значения vat:
-                // -1 – не облагается НДС
-                // 0 – облагается НДС по ставке 0%
-                // 10 – облагается НДС по ставке 10%
-                // 18 – облагается НДС по ставке 18%
-                // 110 – облагается НДС по ставке 10/110
-                // 118 – облагается НДС по ставке 18/118
-                // Значение taxmode должно соответствовать
-                 'vat' => 'код ставки налогообложения',
-                // Допустимые значения taxmode:
-                // 0 — Общая система налогообложения
-                // 1 — Упрощенная система налогообложения (Доход)
-                // 2 — Упрощенная СН (Доход минус Расход)
-                // 3 — Единый налог на вмененный доход
-                // 4 — Единый сельскохозяйственный налог
-                // 5 — Патентная система налогообложения
-                'taxmode' => 'код системы налогообложения'
+                'qty' => 'количество',
+                'sum' => $formData['total'],
+                'vat' => $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationRateCode() : null,
+                'taxmode' => $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationRateCode() : null,
             ]
         ]);
 
