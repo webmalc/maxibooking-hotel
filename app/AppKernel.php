@@ -120,12 +120,12 @@ class AppKernel extends Kernel
         }
     }
 
-    public function getClient()
+    public function getClient(): ?string
     {
         return $this->client;
     }
 
-    public function getClientConfigFolder()
+    public function getClientConfigFolder(): string
     {
         return $this->getRootDir().'/..'.self::CLIENTS_CONFIG_FOLDER;
     }

@@ -5,17 +5,17 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\string;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Yaml\Yaml;
 
-class ParametersMaintenance extends AbstractMaintenance
+final class ParametersMaintenance extends AbstractMaintenance
 {
 
-    public function install(Client $client)
+    public function install(string $clientName)
     {
         $sampleConfig = $this->getMainConfig();
-        $overridesConfig = $this->generateConfigOverrides($client->getName());
+        $overridesConfig = $this->generateConfigOverrides($clientName);
         $resultConfig = array_replace_recursive($sampleConfig, $overridesConfig);
         $newConfig = Yaml::dump($resultConfig, 5);
 
@@ -23,36 +23,36 @@ class ParametersMaintenance extends AbstractMaintenance
             throw new ClientMaintenanceException('Client config is empty!');
         }
 
-        $this->saveClientParameters($client->getName(), $newConfig);
+        $this->saveClientParameters($clientName, $newConfig);
 
     }
 
-    public function rollBack(Client $client)
+    public function rollBack(string $clientName)
     {
-        $this->removeFile($this->getClientConfigFileName($client->getName()));
+        $this->removeFile($this->getClientConfigFileName($clientName));
     }
 
-    public function remove(Client $client)
+    public function remove(string $clientName)
     {
-        $this->backup($client->getName());
-        $this->removeFile($this->getClientConfigFileName($client->getName()));
+        $this->backup($clientName);
+        $this->removeFile($this->getClientConfigFileName($clientName));
     }
 
-    public function update(Client $client)
+    public function update(string $clientName)
     {
         // TODO: Implement update() method.
     }
 
-    public function restore(Client $client)
+    public function restore(string $clientName)
     {
-        $parametersFileName = $this->getBackupParametersFileName($client->getName());
+        $parametersFileName = $this->getBackupParametersFileName($clientName);
         if (!$this->isFileExists($parametersFileName)) {
             throw new ClientMaintenanceException(
                 'Restore parameters.yml failed, file not found in '.$parametersFileName
             );
         };
         $parameters = file_get_contents($parametersFileName);
-        $this->saveClientParameters($client->getName(), $parameters);
+        $this->saveClientParameters($clientName, $parameters);
     }
 
 

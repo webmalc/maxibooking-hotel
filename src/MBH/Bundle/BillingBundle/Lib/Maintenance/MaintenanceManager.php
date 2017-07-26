@@ -6,31 +6,22 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\string;
 
 class MaintenanceManager
 {
     /** @var  MaintenanceInterface[] */
     private $maintenances;
 
-    /** @var PostMaintenanceInterface[] */
-    private $postMaintenance;
-
-    public function __construct()
+public function __construct()
     {
         $this->maintenances = new ArrayCollection();
-        $this->postMaintenance = new ArrayCollection();
     }
 
 
     public function addMaintenance(MaintenanceInterface $maintenance)
     {
         $this->maintenances->add($maintenance);
-    }
-
-    public function addPostMaintenance(PostMaintenanceInterface $postMaintenance)
-    {
-        $this->postMaintenance->add($postMaintenance);
     }
 
     private function getMaintenances()
@@ -42,35 +33,27 @@ class MaintenanceManager
         return $this->maintenances;
     }
 
-    public function install(Client $client)
+    public function install(string $clientName)
     {
 
         foreach ($this->getMaintenances() as $maintenance) {
-            $maintenance->install($client);
+            $maintenance->install($clientName);
         }
     }
 
 
-    public function rollBack(Client $client)
+    public function rollBack(string $clientName)
     {
         foreach ($this->getMaintenances() as $maintenance) {
-            $maintenance->rollBack($client);
+            $maintenance->rollBack($clientName);
         }
     }
 
-    public function remove(Client $client)
+    public function remove(string $clientName)
     {
         foreach ($this->getMaintenances() as $maintenance) {
-            $maintenance->remove($client);
+            $maintenance->remove($clientName);
         }
     }
-
-    public function afterInstall(Client $client)
-    {
-        foreach ($this->postMaintenance as $postMaintenance) {
-            $postMaintenance->afterInstall($client);
-        }
-    }
-
 
 }

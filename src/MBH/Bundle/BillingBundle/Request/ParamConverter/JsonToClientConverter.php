@@ -4,7 +4,7 @@
 namespace MBH\Bundle\BillingBundle\Request\ParamConverter;
 
 
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\string;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +32,7 @@ class JsonToClientConverter implements ParamConverterInterface
 
     public function supports(ParamConverter $configuration)
     {
-        return $configuration->getClass() == Client::class;
+        return $configuration->getClass() == string::class;
     }
 
 }

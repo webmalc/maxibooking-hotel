@@ -9,7 +9,7 @@ use MBH\Bundle\BillingBundle\Lib\Exceptions\AfterInstallException;
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager;
 use MBH\Bundle\BillingBundle\Lib\Model\Answer;
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\string;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -37,7 +37,7 @@ class HttpClientInstaller
 
     }
 
-    public function install(Client $client): Answer
+    public function install(string $client): Answer
     {
         $answer = new Answer();
         if (in_array($client->getName(), $this->listGetter->getClientsList()) && false) {
@@ -64,7 +64,7 @@ class HttpClientInstaller
 
     }
 
-    public function remove(Client $client, bool $force = false): Answer
+    public function remove(string $client, bool $force = false): Answer
     {
         $answer = new Answer();
         if (!in_array($client->getName(), $this->listGetter->getClientsList()) && !$force) {
@@ -108,7 +108,7 @@ class HttpClientInstaller
 
     }
 
-    private function sendResponse(Client $client, Answer $answer)
+    private function sendResponse(string $client, Answer $answer)
     {
         $url = $client->getResponseUrl();
 

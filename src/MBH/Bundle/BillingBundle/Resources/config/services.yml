@@ -13,11 +13,10 @@ services:
             - [addMaintenance, ['@mbh.parameters.maintenance']]
             - [addMaintenance, ['@mbh.nginx.maintenance']]
             - [addMaintenance, ['@mbh.mongo.maintenance']]
-            - [addPostMaintenance, ['@mbh.mongo.maintenance']]
 
     mbh.maintenance.abstract:
-        abstract: true
         public: false
+        abstract: true
         arguments: ["@service_container"]
         class: MBH\Bundle\BillingBundle\Lib\Maintenance\AbstractMaintenance
 
@@ -26,19 +25,21 @@ services:
         parent: mbh.maintenance.abstract
 
     mbh.nginx.maintenance:
+        public: false
         class: MBH\Bundle\BillingBundle\Lib\Maintenance\NginxMaintenance
         parent: mbh.maintenance.abstract
 
     mbh.mongo.maintenance:
+        public: false
         arguments: ["@service_container", {sampleDbName: "%mongodb_database%"}]
 
         class: MBH\Bundle\BillingBundle\Lib\Maintenance\MongoMaintenance
 
     mbh.billing.client.converter:
+        public: false
         class: MBH\Bundle\BillingBundle\Request\ParamConverter\JsonToClientConverter
         tags:
             - { name: request.param_converter, converter: json_client_converter}
 
-    mbh.billing.http_client_installer:
-        class: MBH\Bundle\BillingBundle\Service\HttpClientInstaller
-        arguments: ['@mbh.maintenance.manager', '@mbh.service.client_list_getter', '@mbh.helper']
+    mbh.billing.api:
+        class: MBH\Bundle\BillingBundle\Service\BillingApi

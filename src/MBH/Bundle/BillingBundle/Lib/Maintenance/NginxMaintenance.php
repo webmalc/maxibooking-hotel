@@ -5,20 +5,20 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\string;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class NginxMaintenance extends AbstractMaintenance
 {
 
-    public function install(Client $client)
+    public function install(string $clientName)
     {
         $twig = $this->getContainer()->get('templating');
         try {
             $nginxConfig = $twig->render(
                 '@MBHBilling/Maintenance/nginx.config.html.twig',
                 [
-                    'client' => $client->getName(),
+                    'client' => $clientName,
                     'codeFolder' => $this->options['codeFolder'],
                 ]
             );
@@ -27,26 +27,26 @@ final class NginxMaintenance extends AbstractMaintenance
         }
 
 
-        $this->installNginxFiles($client->getName(), $nginxConfig);
+        $this->installNginxFiles($clientName, $nginxConfig);
     }
 
-    public function rollBack(Client $client)
+    public function rollBack(string $clientName)
     {
-        $this->remove($client);
+        $this->remove($clientName);
     }
 
-    public function remove(Client $client)
+    public function remove(string $clientName)
     {
-        $this->removeFile($this->getNginxLinkName($client->getName()));
-        $this->removeFile($this->getNginxFileName($client->getName()));
+        $this->removeFile($this->getNginxLinkName($clientName));
+        $this->removeFile($this->getNginxFileName($clientName));
     }
 
-    public function restore(Client $client)
+    public function restore(string $clientName)
     {
-        $this->install($client);
+        $this->install($clientName);
     }
 
-    public function update(Client $client)
+    public function update(string $clientName)
     {
     }
 

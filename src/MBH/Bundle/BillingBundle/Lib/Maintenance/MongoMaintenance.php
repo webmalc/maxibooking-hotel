@@ -4,9 +4,8 @@
 namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 
-use MBH\Bundle\BillingBundle\Lib\Exceptions\AfterInstallException;
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Lib\Model\string;
 use MongoDB\Client as MongoClient;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Exception\InvalidArgumentException;
@@ -15,9 +14,9 @@ use MongoDB\Model\DatabaseInfo;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class MongoMaintenance extends AbstractMaintenance implements PostMaintenanceInterface
+final class MongoMaintenance extends AbstractMaintenance
 {
-    /** @var Client */
+    /** @var string */
     protected $mongoClient;
 
     public function __construct(ContainerInterface $container, $options)
@@ -27,11 +26,11 @@ class MongoMaintenance extends AbstractMaintenance implements PostMaintenanceInt
     }
 
 
-    public function install(Client $client)
+    public function install(string $clientName)
     {
-        $clientName = $client->getName();
+
         if ($this->isDBExist($clientName)) {
-            $this->remove($client);
+            $this->remove($clientName);
         }
 
         $cloneResult = json_decode(trim($this->cloneDb($clientName)), true);
@@ -43,47 +42,24 @@ class MongoMaintenance extends AbstractMaintenance implements PostMaintenanceInt
 
     }
 
-    public function afterInstall(Client $client)
+    public function rollBack(string $clientName)
     {
-        $clientName = $client->getName();
-        try {
-            $config = $this->getClientConfig($clientName);
-        } catch (ClientMaintenanceException $e) {
-            throw new AfterInstallException($e->getMessage());
-        }
-        if ($config && $this->isDBExist($clientName)) {
-            try {
-                $commandLine = sprintf('mbh:client:after:install '.$clientName);
-                $env = ['MB_CLIENT' => $config['parameters']['client']];
-                $cache = $this->container->get('cache.app');
-                $item = $cache->getItem(Client::CACHE_PREFIX.$client->getName())->set($client);
-                $cache->save($item);
-                $result = $this->executeConsoleCommand($commandLine, null, $env);
-                $cache->clear();
-            } catch (ClientMaintenanceException $e) {
-                throw new AfterInstallException();
-            }
+        if ($this->isDBExist($clientName)) {
+            $this->purgeDb($clientName);
         }
     }
 
-    public function rollBack(Client $client)
+    public function remove(string $clientName)
     {
-        if ($this->isDBExist($client->getName())) {
-            $this->purgeDb($client->getName());
-        }
+        $this->dumpDb($clientName);
+        $this->purgeDb($clientName);
     }
 
-    public function remove(Client $client)
-    {
-        $this->dumpDb($client->getName());
-        $this->purgeDb($client->getName());
-    }
-
-    public function update(Client $client)
+    public function update(string $clientName)
     {
     }
 
-    public function restore(Client $client)
+    public function restore(string $clientName)
     {
         // TODO: Implement restore() method.
     }

@@ -4,18 +4,16 @@
 namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
-
 interface MaintenanceInterface
 {
-    public function install(Client $client);
+    public function install(string $clientName);
 
-    public function rollBack(Client $client);
+    public function rollBack(string $clientName);
 
-    public function remove(Client $client);
+    public function remove(string $clientName);
 
-    public function restore(Client $client);
+    public function restore(string $clientName);
 
-    public function update(Client $client);
+    public function update(string $clientName);
 
 }

@@ -57,7 +57,7 @@ class ClientListGetter
         return array_intersect($clients, $allClients);
     }
 
-    public function getNewClients(array $clients): array
+    public function getNotInstalledClients(array $clients): array
     {
         $allClients = $this->getClientsList();
 
