@@ -1,8 +1,6 @@
-.content {
-  padding-bottom: 5px !important;
-}
 body {
-  overflow-y: hidden;
+  overflow-y: hidden !important;
+  padding-bottom: 0 !important;
 }
 .accommodation-chessBoard-pagination ul {
   margin: 5px;
@@ -113,18 +111,33 @@ body {
 }
 .danger,
 .package {
-  background-color: rgba(221, 75, 57, 0.6);
+  background-color: #ff9e80;
+}
+.danger .package-description,
+.package .package-description,
+.danger .ui-resizable-e,
+.package .ui-resizable-e,
+.danger .ui-resizable-w,
+.package .ui-resizable-w {
+  background-color: #c96f53;
 }
 .success {
-  background-color: rgba(0, 166, 90, 0.6);
+  background-color: #8bc34a !important;
+}
+.success .package-description,
+.success .ui-resizable-e,
+.success .ui-resizable-w {
+  background-color: #7d8600;
 }
 .warning {
-  background-color: rgba(243, 156, 18, 0.6);
+  background-color: #fdd835;
+}
+.warning .package-description,
+.warning .ui-resizable-e,
+.warning .ui-resizable-w {
+  background-color: #c5a600;
 }
 #accommodation-chessBoard-content {
-  border-color: #ddd;
-  border-style: solid;
-  border-width: 1px 0 0 1px;
   position: relative;
   color: #3d5471;
   -webkit-user-select: none;
@@ -136,6 +149,7 @@ body {
 }
 #accommodation-chessBoard-content #header-title {
   border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
   position: absolute;
   z-index: 250;
 }
@@ -151,6 +165,7 @@ body {
 }
 #accommodation-chessBoard-content #roomTypeColumn {
   z-index: 150;
+  border-left: 1px solid #ddd;
   background-color: white;
   display: inline-block;
   width: 200px;
@@ -227,6 +242,7 @@ body {
   opacity: 0.4;
 }
 #accommodation-chessBoard-content .tile .month {
+  border-top: 1px solid #ddd;
   border-right: 1px solid #e3e3e3;
   font-size: 14px;
   font-weight: bold;
@@ -255,6 +271,7 @@ body {
   color: #999;
 }
 #accommodation-chessBoard-content .tile .title {
+  border-top: 1px solid #ddd;
   border-right: 1px solid #e3e3e3;
   font-size: 11px;
   font-weight: bold;
@@ -643,7 +660,6 @@ body {
   width: 7px;
   height: 40px;
   position: absolute;
-  background-color: #dd4b39;
   cursor: pointer;
   top: 0;
 }
@@ -710,7 +726,7 @@ body {
 }
 #ex1Slider {
   display: inline-block;
-  width: 70%;
+  width: 60%;
 }
 #ex1Slider .slider-selection {
   background: #BABABA;

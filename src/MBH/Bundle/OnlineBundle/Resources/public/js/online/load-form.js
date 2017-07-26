@@ -1,5 +1,23 @@
 /*global window, document */
-window.onload = function() {
+if (typeof(mbh) !== 'undefined') {
+    var config = mbh;
+} else if (typeof(mbhForm) !== 'undefined') {
+    var config = mbhForm;
+}
+function addLoadEvent(func) {
+    var oldonload = window.onload;
+    if (typeof window.onload != 'function') {
+        window.onload = func;
+    } else {
+        window.onload = function() {
+            if (oldonload) {
+                oldonload();
+            }
+            func();
+        };
+    }
+}
+addLoadEvent(function() {
     var getCoords = function(elem) {
         var box = elem.getBoundingClientRect();
 
@@ -24,8 +42,8 @@ window.onload = function() {
     }
     var urlIndex = window.location.href.indexOf('?');
     var url = urlIndex !== -1 ? window.location.href.slice(urlIndex) : '';
-    formWrapper.innerHTML = '<iframe id="mbh-form-iframe" scrolling="no" frameborder="0" width="300" height="400" src="' + mbh.form_url + url +'"></iframe>';
-    document.body.innerHTML += '<iframe id="mbh-form-calendar" style="display: none; position: absolute; top: 0px;" scrolling="no" frameborder="0" width="310" height="270" src="' + mbh.calendar_url + '"></iframe>';
+    formWrapper.innerHTML = '<iframe id="mbh-form-iframe" scrolling="no" frameborder="0" width="300" height="400" src="' + config.form_url + url +'"></iframe>';
+    document.body.innerHTML += '<iframe id="mbh-form-calendar" style="display: none; position: absolute; top: 0px;" scrolling="no" frameborder="0" width="310" height="270" src="' + config.calendar_url + '"></iframe>';
 
     var formIframe = document.getElementById('mbh-form-iframe');
     var formCalendar = document.getElementById('mbh-form-calendar');
@@ -70,4 +88,4 @@ window.onload = function() {
     } else {
 	      window.attachEvent("onmessage", processMessage);
     }
-};
+});

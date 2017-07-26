@@ -8,6 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\LocaleType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -16,7 +17,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -26,7 +27,7 @@ class UserType extends AbstractType
     private $roles;
     private $translator;
 
-    public function __construct(DataCollectorTranslator $translator) {
+    public function __construct(TranslatorInterface $translator) {
         $this->translator = $translator;
     }
 
@@ -155,6 +156,10 @@ class UserType extends AbstractType
                 'required' => false,
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year'),
             ))
+            ->add('locale', LocaleType::class, [
+                'label' => 'form.userType.locale',
+                'group' => 'form.userType.general_info',
+            ])
         ;
 
         $myExtraFieldValidator = function(FormEvent $event){

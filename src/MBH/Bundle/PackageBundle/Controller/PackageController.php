@@ -462,22 +462,28 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid() && !$package->getIsLocked()) {
             //check by search
             $newTariff = $form->get('tariff')->getData();
-            $result = $this->container->get('mbh.order_manager')
-                ->updatePackage($oldPackage, $package, $newTariff);
-            /** @var FlashBagInterface $flashBag */
-            $flashBag = $request->getSession()->getFlashBag();
+            $orderManager = $this->get('mbh.order_manager');
+            if ($package->getPackagePrice() != $oldPackage->getPackagePrice()) {
+                $orderManager->updatePricesByDate($package, $newTariff);
+            }
+
+            $result = $orderManager->updatePackage($oldPackage, $package, $newTariff);
             if ($result instanceof Package) {
                 $this->dm->persist($package);
                 $this->dm->flush();
+                $this->addFlash('success', 'controller.packageController.record_edited_success');
 
-                $flashBag->set(
-                    'success',
-                    $this->get('translator')->trans('controller.packageController.record_edited_success')
-                );
+                $updateResult = $orderManager->tryUpdateAccommodations($package, $oldPackage);
+                foreach ($updateResult['dangerNotifications'] as $messages) {
+                    $this->addFlash('danger', $messages);
+                }
+                if ($updateResult['success'] === true) {
+                    $this->dm->flush();
+                }
 
                 return $this->afterSaveRedirect('package', $package->getId());
             } else {
-                $flashBag->set('danger', $this->get('translator')->trans($result));
+                $this->addFlash('danger', $result);
             }
         }
 
@@ -893,7 +899,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->setRoom($room)
             ->setBegin($package->getLastEndAccommodation())
             ->setEnd($package->getEnd())
-            ->setPackage($package);
+            ->setPackageForValidator($package);
+
         $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
         $form->handleRequest($request);
 
@@ -947,9 +954,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     return new Response('', 302);
                 }
 
+                $package = $this->dm->getRepository('MBHPackageBundle:Package')
+                    ->getPackageByPackageAccommodationId($accommodation->getId());
                 return $this->redirectToRoute(
                     'package_accommodation',
-                    ['id' => $accommodation->getPackage()->getId(), 'begin' => null, 'end' => null]
+                    ['id' => $package->getId(), 'begin' => null, 'end' => null]
                 );
             }
 
@@ -974,7 +983,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function accommodationDeleteAction(Request $request, PackageAccommodation $entity)
     {
-        $package = $entity->getPackage();
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->getPackageByPackageAccommodationId($entity->getId());
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
@@ -1050,7 +1060,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
 
         $roomTypeName = $package->getRoomType()->getName();
-        uksort($optGroupRooms, function ($a, $b) use ($roomTypeName) {
+        uksort($optGroupRooms, function ($a) use ($roomTypeName) {
             if ($a == $roomTypeName) {
                 return -1;
             }

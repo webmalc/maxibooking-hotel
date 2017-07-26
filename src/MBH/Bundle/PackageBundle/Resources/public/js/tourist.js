@@ -191,13 +191,16 @@ var docReadyTourists = function () {
                 $authorityOrganCodeInput.val(data.code);
             });
         } else {
+            if (value) {
+                $authorityOrganTextInput.val(value);
+            }
             $authorityOrganCodeInput.attr('disabled', false);
         }
-    })
+    });
 
     new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));
     new RangeInputs($('#form_visa_arrivalTime'), $('#form_visa_departureTime'));
-}
+};
 
 /*global document, window, Routing, $ */
 $(document).ready(function () {

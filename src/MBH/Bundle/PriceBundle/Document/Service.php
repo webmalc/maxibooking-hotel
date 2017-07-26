@@ -511,7 +511,7 @@ class Service extends Base
      *
      * @return bool $recalcWithPackage
      */
-    public function isRecalcWithPackage(): ?bool
+    public function isRecalcWithPackage()
     {
         return $this->recalcWithPackage;
     }
@@ -534,11 +534,15 @@ class Service extends Base
      *
      * @return bool
      */
-    public function isIncludeDeparture(): ?bool
+    public function isIncludeDeparture()
     {
-        return $this->includeDeparture;
+        if ($this->getCalcType() == 'per_stay') {
+            return $this->includeDeparture;
+        }
+
+        return true;
     }
-    
+
     /**
      * includeArrival set
      *
@@ -557,8 +561,12 @@ class Service extends Base
      *
      * @return bool
      */
-    public function isIncludeArrival(): ?bool
+    public function isIncludeArrival()
     {
-        return $this->includeArrival;
+        if ($this->getCalcType() == 'per_stay') {
+            return $this->includeArrival;
+        }
+
+        return true;
     }
 }

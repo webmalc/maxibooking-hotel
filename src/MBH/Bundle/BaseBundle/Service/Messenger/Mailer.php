@@ -2,16 +2,19 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
+use FOS\UserBundle\Mailer\MailerInterface;
+use FOS\UserBundle\Model\UserInterface;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Mailer service
  */
-class Mailer implements \SplObserver
+class Mailer implements \SplObserver, MailerInterface
 {
     /**
      * @var array
@@ -108,7 +111,9 @@ class Mailer implements \SplObserver
             $id = $domElement->getAttribute('data-name');
             $src = $domElement->getAttribute('src');
 
-            $path = $rootDir.'/../web/'.str_replace('/app_dev.php/', '', parse_url($src)['path']);
+            //Problem when path with first '/' ltrim for that
+            $srcPath = ltrim(str_replace('/app_dev.php/', '', parse_url($src)['path']), '/');
+            $path = $rootDir . '/../web/' . $srcPath;
 
             if (!empty($id) && !empty($src)) {
                 $data[$id] = $message->embed(
@@ -135,7 +140,7 @@ class Mailer implements \SplObserver
         }
 
         $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy(
-            [$category . 's' => true, 'enabled' => true, 'locked' => false, 'username' => ['$ne'=>'mb']]
+            [$category . 's' => true, 'enabled' => true, 'locked' => false, 'username' => ['$ne' => 'mb']]
         );
 
         if ($hotel) {
@@ -182,7 +187,7 @@ class Mailer implements \SplObserver
                 '%hotel%' => null
             ];
 
-            if ($data['hotel']) {
+            if (isset($data['hotel'])) {
                 $data['hotelName'] = $data['hotel']->getName();
                 $transParams['%hotel%'] = $data['hotel']->getName();
             }
@@ -190,7 +195,7 @@ class Mailer implements \SplObserver
             if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $this->locale) {
                 $translator->setLocale($recipient->getCommunicationLanguage());
                 $data['isSomeLanguage'] = false;
-                if ($data['hotel'] && $data['hotel']->getInternationalTitle()) {
+                if (isset($data['hotel']) && $data['hotel']->getInternationalTitle()) {
                     $data['hotelName'] = $data['hotel']->getInternationalTitle();
                     $transParams['%hotel%'] = $data['hotel']->getInternationalTitle();
                 }
@@ -224,5 +229,41 @@ class Mailer implements \SplObserver
         }
 
         return true;
+    }
+
+    /**
+     * Send an email to a user to confirm the account creation.
+     *
+     * @param UserInterface $user
+     */
+    public function sendConfirmationEmailMessage(UserInterface $user)
+    {
+        // TODO: Implement sendConfirmationEmailMessage() method.
+    }
+
+    /**
+     * Send an email to a user to confirm the password reset.
+     *
+     * @param UserInterface $user
+     */
+    public function sendResettingEmailMessage(UserInterface $user)
+    {
+        $translator = $this->container->get('translator');
+        $text = $translator->trans('resetting.email.subject', ['%username%' => $user->getUsername()], 'FOSUserBundle');
+        $confirmationUrl = $this->container->get('router')->generate('fos_user_resetting_reset', [
+            'token' => $user->getConfirmationToken()],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $linkText = $translator->trans('mailer.resetting_mail.reset_pass_button.text');
+
+        $this->send([$user], [
+            'buttonName' => $linkText,
+            'text' => $text,
+            'user' => $user,
+            'transParams' => [],
+            'linkText' => $linkText,
+            'link' => $confirmationUrl
+        ], '@MBHBase/Mailer/resettingPassword.html.twig');
     }
 }

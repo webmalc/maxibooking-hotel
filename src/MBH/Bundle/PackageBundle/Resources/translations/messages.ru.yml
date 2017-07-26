@@ -19,6 +19,169 @@ form.orderTouristType.add_to_package: Добавить как гостя?
 form.orderTouristType.phone: Телефон
 form.orderTouristType.phone: Телефон
 form.orderTouristType.email: E-mail
+mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu: 'Услуга по умолчанию'
+mbhpackagebundle.services.ordermanager.all_accommodations_removed: 'Размещения были удалены, так как был изменен тип номера'
+mbhpackagebundle.services.touristsmessenger.gost.ne.nayden: 'Гость не найден.'
+mbhpackagebundle.view.service.index.kategoriya: Категория
+mbhpackagebundle.view.service.index.vse.uslugi: 'Все услуги'
+mbhpackagebundle.view.package.index.daty: Даты
+csv.type.tariffType: 'Тип номера'
+mbhpackagebundle.view.report.accommodationtablepackage.zayekhali: Заехали
+mbhpackagebundle.view.report.accommodationtablepackage.vyyekhali: Выехали
+form.packageCopyType.packageCopyType: Гости
+csv.form.rest: Долг
+form.packageCopyType.services: Услуги
+mbhpackagebundle.view.report.roomtypestable.pereyti.k.zapisi: 'перейти к записи'
+mbhpackagebundle.view.report.invite.period: Период
+mbhpackagebundle.view.report.invite.kliyenty: Клиенты
+mbhpackagebundle.view.report.invite.tip.vizy: 'Тип визы'
+mbhpackagebundle.view.report.roomtypestable.mest: мест
+mbhpackagebundle.view.report.fillingtable.itog: Итог
+form.AddressObjectDecomposedType.corpus: Корпус
+mbhpackagebundle.view.package.accommodation.etazh: Этаж
+mbhpackagebundle.view.package.index.status.oplaty: 'Статус оплаты'
+mbhpackagebundle.view.report.usertable.itogo: Итого
+mbhpackagebundle.view.report.usertable.vse.polʹzovateli: 'Все пользователи'
+mbhpackagebundle.view.package.accommodation.status: Статус
+csv.form.tariff: Тариф
+tourist.migration.type_number: Номер
+form.packageServiceType.price: Цена
+csv.form.tariffAccomodation: Размещение
+form.organizationType.comment: Комментарий
+mbhpackagebundle.view.report.accommodation.nayti: Найти
+mbhpackagebundle.view.report.workshiftlist.sotrudnik: Сотрудник
+mbhpackagebundle.view.report.workshiftlist.kassa: Касса
+mbhpackagebundle.view.report.workshiftlist.na.nachalo.smeny: 'На начало смены'
+mbhpackagebundle.view.report.workshiftlist.na.konets.smeny: 'На конец смены'
+mbhpackagebundle.view.report.workshiftlist.zayekhavshikh: Заехавших
+mbhpackagebundle.view.report.workshiftlist.ne.zayekhavshikh: 'Не заехавших'
+mbhpackagebundle.view.report.workshiftlist.vyyekhavshikh: Выехавших
+mbhpackagebundle.view.report.workshiftlist.ne.vyyekhavshikh: 'Не выехавших'
+mbhpackagebundle.view.report.workshiftlist.prinyato: Принято
+mbhpackagebundle.view.report.workshiftlist.vydano: Выдано
+mbhpackagebundle.view.report.fillingtablerows.nomerov.v.prodazhe: 'Номеров в продаже'
+mbhpackagebundle.view.report.fillingtablerows.nomernoy.fond: 'Номерной фонд'
+mbhpackagebundle.view.report.fillingtablerows.zabronirovano.nomerov: 'Забронировано номеров'
+mbhpackagebundle.view.report.fillingtablerows.gostey.vsego: 'Гостей всего'
+mbhpackagebundle.view.report.fillingtablerows.polucheno.fakticheski: 'Получено фактически'
+mbhpackagebundle.view.report.porterrows.zayekhal: Заехал
+mbhpackagebundle.view.report.porterrows.vyyekhal: Выехал
+mbhpackagebundle.view.report.portersummary.broney: Броней
+mbhpackagebundle.view.report.portersummary.nochey: Ночей
+mbhpackagebundle.view.report.portersummary.gostey: Гостей
+mbhpackagebundle.view.report.portersummary.price: Цена
+mbhpackagebundle.view.report.portersummary.summa: Сумма
+mbhpackagebundle.view.report.portersummary.oplacheno: Оплачено
+mbhpackagebundle.view.report.portersummary.dolg: Долг
+mbhpackagebundle.view.documents.pdftemplates.confirmation.tsena: Цена
+mbhpackagebundle.view.documents.pdftemplates.confirmation.summa: Сумма
+csv.form.paids: Оплачено
+mbhpackagebundle.view.tourist.jsonbuttons.redaktirovaniye.zapisi: 'Редактирование записи'
+mbhpackagebundle.view.package.accommodation.da: Да
+mbhpackagebundle.view.report.workshifttable.prikhod: Приход
+mbhpackagebundle.view.report.workshifttable.raskhod: Расход
+mbhpackagebundle.view.report.roomtypestable.status.komnaty: 'Статус комнаты'
+mbhpackagebundle.view.report.roomtypestable.oplata: Оплата
+mbhpackagebundle.view.report.roomtypestable.zakaz: Заказ
+mbhpackagebundle.view.order.tabs.net: нет
+mbhpackagebundle.view.search.index.dobavleniye.gostya: 'Добавление гостя'
+mbhpackagebundle.view.tourist.editunwelcome.zhaloby.drugikh.oteley: 'Жалобы других отелей'
+mbhpackagebundle.view.tourist.editunwelcome.period.prozhivaniya: 'Период проживания'
+mbhpackagebundle.view.tourist.editunwelcome.otsenki: Оценки
+mbhpackagebundle.view.tourist.editunwelcome.grazhdanstvo.gostya: 'Гражданство гостя'
+mbhpackagebundle.view.tourist.editunwelcome.dobavleno: Добавлено
+mbhpackagebundle.view.package.accommodation.udaleniye.zapisi: 'Удаление записи'
+mbhpackagebundle.view.tourist.index.inostrannyye.grazhdane: 'Иностранные граждане'
+form.packageGuestType.fio: ФИО
+form.DocumentRelation.main: 'Основной документ'
+mbhpackagebundle.view.tourist.index.migratsionnaya.karta: 'Миграционная карта'
+mbhpackagebundle.view.tourist.index.dokumenty: Документы
+mbhpackagebundle.view.tourist.index.viza: Виза
+form.packageAccommodationType.room: Комната
+form.organizationType.address: Адрес
+form.packageGuestType.birth_date: 'Дата рождения'
+mbhpackagebundle.view.tourist.index.kontakty: Контакты
+mbhpackagebundle.view.package.late.early.check.modal.net: Нет
+form.packageMainType.promotion: Акция
+form.packageServiceType.amount: Количество
+form.packageMainType.tariff: Тариф
+mbhpackagebundle.view.package.accommodation.otmena: Отмена
+form.organizationType.name: Название
+mbhpackagebundle.view.package.accommodation.data.pereyezda: 'Дата переезда'
+mbhpackagebundle.view.package.accommodation.vybor.razmeshcheniya: 'Выбор размещения'
+mbhpackagebundle.view.package.accommodation.udobstva: Удобства
+mbhpackagebundle.view.package.guest.kliyent.v.chernom.spiske: 'Клиент в черном списке'
+mbhpackagebundle.view.package.guest.kliyent.ne.v.chernom.spiske: 'Клиент не в черном списке'
+mbhpackagebundle.view.package.orderpackages.ne.razmeshcheno: 'не размещено'
+csv.form.type: 'Тип брони'
+mbhpackagebundle.view.documents.documentformmodal.generatsiya.dokumenta: 'Генерация документа '
+mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa: АНКЕТА
+mbhpackagebundle.view.documents.pdftemplates.fms_form_5.blok.mashinochitayemykh.dannykh: 'Блок машиночитаемых данных'
+form.DocumentRelation.birthplace: 'Место рождения'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.vydan: выдан
+mbhpackagebundle.view.documents.pdftemplates.form_1_g.indeks.poseleniya: 'Индекс поселения'
+mbhpackagebundle.view.documents.pdftemplates.evidence.data.vydachi: 'дата выдачи'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.data.rozhdeniya: 'дата рождения'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.adres: адрес
+mbhpackagebundle.view.documents.pdftemplates.confirmation.tip.dokumenta: 'тип документа'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.seriya: серия
+mbhpackagebundle.view.documents.pdftemplates.confirmation.naimenovaniye.uslug: 'Наименование услуг'
+mbhpackagebundle.view.documents.pdftemplates.confirmation.zakazchik: Заказчик
+templateDocument.type.receipt: Расписка
+mbhpackagebundle.view.documents.pdftemplates.registration_card.registratsionnaya.kartochka: 'Регистрационная Карточка'
+form.packageGuestType.surname: Фамилия
+form.touristType.name: Имя
+form.packageGuestType.second_name: Отчество
+form.DocumentRelation.citizenship: Гражданство
+form.touristType.gender: Пол
+mbhpackagebundle.view.documents.pdftemplates.registration_card.firma: Фирма
+mbhpackagebundle.view.documents.pdftemplates.registration_card.vydan: Выдан
+form.AddressObjectDecomposedType.country: Страна
+form.organizationType.index: Индекс
+form.AddressObjectDecomposedType.city: Город
+form.AddressObjectDecomposedType.street: Улица
+mbhpackagebundle.view.documents.pdftemplates.registration_card.pribytiye: Прибытие
+form.organizationType.type: Тип
+mbhpackagebundle.view.documents.pdftemplates.registration_card.rasshifrovka.podpisi: 'Расшифровка подписи'
+mbhpackagebundle.form.packageservicetype.data: Дата
+mbhpackagebundle.view.documents.pdftemplates.registration_card.razresheniye.na.poseleniye: 'Разрешение на поселение'
+mbhpackagebundle.form.unwelcometype.dostupen.tolʹko.dlya.vas.i.ne.peredayetsya.v.servis.nezhelatelʹnykh.gostey: 'Доступен только для вас и не передается в сервис нежелательных гостей'
+mbhpackagebundle.form.orderdocumenttype.tip: Тип
+mbhpackagebundle.form.orderdocumenttype.tip.skana: 'Тип скана'
+mbhpackagebundle.form.orderdocumenttype.client: Клиент
+mbhpackagebundle.form.orderdocumenttype.comment: Комментарий
+controller.documentsController.table_row_tourist: Клиент
+mbhpackagebundle.form.orderdocumenttype.zamenit.fayl: 'Заменить файл'
+mbhpackagebundle.form.orderdocumenttype.file: Файл
+form.unwelcomeType.comment: Комментарий
+mbhpackagebundle.form.packagecsvtype.kol.vo.nochey: 'Кол-во ночей'
+mbhpackagebundle.form.packagecsvtype.kol.vo.chelovek: 'Кол-во человек'
+form.searchType.check_in: Заезд
+csv.form.tariffType: 'Тип номера'
+csv.type.adults: Взрослых
+csv.type.children: Детей
+mbhpackagebundle.form.packagemaintype.nomer.broni: 'Номер брони'
+tourist.visa.type_number: Номер
+form.packageGuestType.fio: ФИО
+form.packageGuestType.find_guest: 'Найти гостя'
+form.packageGuestType.placeholder_fio: 'Иванов Иван Иванович'
+form.touristType.placeholder_surname: Иванов
+form.touristType.surname: Фамилия
+form.packageGuestType.add_guest: 'Добавить гостя'
+form.packageGuestType.min_name: 'Слишком короткое имя'
+form.packageGuestType.max_name: 'Слишком длинное имя'
+controller.documentsController.table_row_name: Имя
+form.touristType.placeholder_name: Иван
+form.packageGuestType.min_surname: 'Слишком короткая фамилия'
+form.packageGuestType.max_surname: 'Слишком длинная фамилия'
+form.touristType.second_name: Отчество
+form.touristType.placeholder_second_name: Иванович
+form.packageGuestType.min_second_name: 'Слишком короткое отчество'
+form.packageGuestType.max_second_name: 'Слишком длинное отчество'
+form.touristType.birth_date: 'Дата рождения'
+form.orderTouristType.add_to_package: 'Добавить как гостя?'
+form.organizationType.phone: Телефон
+form.organizationType.email: E-mail
 form.orderType.source: Источник
 form.orderType.comment: Комментарий
 form.orderType.is_confirmed: Подтвержден?
@@ -43,7 +206,7 @@ form.packageCopyType.should_we_transfer_guests_to_selected_reservation: Пере
 form.packageCopyType.services: Услуги
 form.packageCopyType.should_we_transfer_all_services_to_selected_reservation: Перенести ли все услуги в выбранную бронь?
 form.packageCopyType.placement: Размещение
-form.packageCopyType..should_we_transfer_placement_to_selected_reservation: Перенести ли размещение в выбранную бронь?
+form.packageCopyType.should_we_transfer_placement_to_selected_reservation: Перенести ли размещение в выбранную бронь?
 form.packageGuestType.fio: ФИО
 form.packageGuestType.find_guest: Найти гостя
 form.packageGuestType.placeholder_fio: Иванов Иван Иванович
@@ -169,6 +332,8 @@ form.package_accommodation_type.check_out: Выезд
 form.package_accommodation_type.check_in.help: Дата начала размещения
 form.package_accommodation_type.check_out.help: Дата окончания размещения
 form.package_accommodation_type.note: Комментарий
+form.package_accommodation_type.is_automatically_changeable.label: Изменяемая?
+form.package_accommodation_type.is_automatically_changeable.help: Изменяется ли размещение автоматически при изменении дат въезда/выезда брони?
 controller.analyticsController.services_amount: 'Количество услуг'
 controller.analyticsController.proceeds: 'Выручка'
 controller.analyticsController.percentage: 'Процент'
@@ -743,8 +908,10 @@ chessboard_manager.without_accommodation.tile.text: Без размещения
 
 #package accommodation manipulator service
 accommodation_manipulator.error.room_busy: 'Невозможно создать размещение, так как в указанные дни комната "%roomName%" занята.'
+accommodation_manipulator.error.edited_room_busy: 'Невозможно изменить размещение, так как в указанные дни комната "%roomName%" занята.'
 accommodation_manipulator.error.incorrect_acc_to_package_dates: Интервал дат размещения должен находиться между датами заезда и выезда брони
 accommodation_manipulator.error.intersect_with_other_accommodations: Размещение пересекается с другими размещениями брони.
+accommodation_manipulator.error.accommodation_is_not_moveable: 'Размещение изменяемой брони в комнате %roomName%, начинающееся %beginDate% и заканчивающееся %endDate%, является неперемещаемым.'
 
 #accommodation.html.twig
 package.accommodation.rooms: Комнаты

@@ -104,6 +104,19 @@ channelmanager.notifications.prices.type.additionalPrice: "Цена за взр�
 channelmanager.notifications.prices.type.additionalChildrenPrice: "Цена за детское доп. место"
 channelmanager.notifications.restrictions.type.minBeforeArrival: "Мин. дней до заезда"
 channelmanager.notifications.restrictions.type.maxBeforeArrival: "Макс. дней до заезда"
+
+channelmanager.notifications.restrictions.type.minStay: "Мин. длина брони (сквозное)"
+channelmanager.notifications.restrictions.type.maxStay: "Макс. длина брони (сквозное)"
+channelmanager.notifications.restrictions.type.minStayArrival: "Мин. длина брони (заезд)"
+channelmanager.notifications.restrictions.type.maxStayArrival: "Макс. длина брони (заезд)"
+channelmanager.notifications.restrictions.type.maxGuest: "Макс. количество гостей"
+channelmanager.notifications.restrictions.type.minGuest: "Мин. количество гостей"
+channelmanager.notifications.restrictions.type.closedOnArrival: "Нет заезда"
+channelmanager.notifications.restrictions.type.closedOnDeparture: "Нет выезда"
+
+prices: 'Цены'
+restrictions: 'Условия и ограничения'
+
 channel_manager.logs.no_entries_in_file: Нет записей в файле логов.
 channel_manager.logs.small_title: логи
 channel_manager.logs.clear: Очистить

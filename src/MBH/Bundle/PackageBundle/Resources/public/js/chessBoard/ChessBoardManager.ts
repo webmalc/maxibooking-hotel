@@ -499,6 +499,8 @@ class ChessBoardManager {
                 return false;
             }
         });
+
+        return topOffset;
     }
 
     private getPackageLeftOffset(startDate) {

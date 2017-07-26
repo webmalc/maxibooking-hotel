@@ -258,6 +258,7 @@ mailer.userArrival.bye: 'Будем рады вас видеть!'
 mailer.base.rate.bad: Плохо
 mailer.base.rate.good: Хорошо
 mailer.base.rate.perfect: Отлично
+mailer.resetting_mail.reset_pass_button.text: Сбросить пароль
 debt: Долг
 partially_paid: Частично
 paid: Оплачено
@@ -589,3 +590,10 @@ views.partials.disable_button.entity_delete_form.remove: Удалить
 twig.extensiion.day_abbr: 'д.'
 twig.extensiion.hour_abbr: 'ч.'
 twig.extensiion.minute_abbr: 'мин.'
+# dashboard
+dashboard.modal.header: 'Предупреждения'
+dashboard.confirm.tooltip: 'Отметить прочитанным'
+dashboard.messages.hotel.errors: 'обнаружены следующие ошибки'
+dashboard.messages.roomType.roomCache: 'не выставлены "Номера в продаже" на следующие периоды'
+dashboard.messages.roomType.priceCache: 'не выставлены "Цены" основного тарифа на следующие периоды'
+dashboard.link: 'посмотреть'

@@ -44,7 +44,7 @@ class Builder implements ContainerAwareInterface
 
 
 
-        if ($checker->isGranted('ROLE_DOCUMENTS_GENERATOR')) {
+        if ($checker->isGranted('ROLE_DOCUMENTS_GENERATOR') && $this->container->getParameter('locale') == 'ru') {
 
             $rootItem
                 ->addChild('Docs header', [
@@ -181,16 +181,7 @@ class Builder implements ContainerAwareInterface
         //$types = $generatorFactory->getAvailableTypes();
 
         $types = [
-            TemplateGeneratorFactory::TYPE_CONFIRMATION,
-            TemplateGeneratorFactory::TYPE_CONFIRMATION_EN,
-            TemplateGeneratorFactory::TYPE_REGISTRATION_CARD,
-            TemplateGeneratorFactory::TYPE_FMS_FORM_5,
             XlsGeneratorFactory::TYPE_NOTICE,
-            TemplateGeneratorFactory::TYPE_EVIDENCE,
-            TemplateGeneratorFactory::TYPE_FORM_1_G,
-            TemplateGeneratorFactory::TYPE_RECEIPT,
-            TemplateGeneratorFactory::TYPE_BILL,
-            TemplateGeneratorFactory::TYPE_ACT,
         ];
 
         foreach ($types as $type) {

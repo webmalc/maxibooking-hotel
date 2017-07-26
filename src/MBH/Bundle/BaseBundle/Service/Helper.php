@@ -262,7 +262,6 @@ class Helper
         $currency = $this->container->get('mbh.currency')->info();
         $nul = 'ноль';
         $translator = $this->container->get('translator');
-        //TODO: Переводы по идее не нужны. Нужно изменять сам сервис.
         $ten = array(
             array(
                 '',
@@ -290,7 +289,7 @@ class Helper
             ),
         );
         $a20 = array(
-            $translator->trans('mbhbasebundle.service.helper.twelve'),
+            $translator->trans('mbhbasebundle.service.helper.ten'),
             $translator->trans('mbhbasebundle.service.helper.eleven'),
             $translator->trans('mbhbasebundle.service.helper.twelve'),
             $translator->trans('mbhbasebundle.service.helper.fourteen'),

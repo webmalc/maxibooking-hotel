@@ -428,11 +428,12 @@ class PackageRepository extends DocumentRepository
      */
     public function fetchQuery($data)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  DocumentManager */
         $dm = $this->getDocumentManager();
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
         $now = new \DateTime('midnight');
         $orderData = [];
+        $isShowDeleted = isset($data['deleted']) && $data['deleted'];
 
         //confirmed
         if (isset($data['confirmed']) && $data['confirmed'] != null) {
@@ -450,7 +451,15 @@ class PackageRepository extends DocumentRepository
             $orderData = array_merge($orderData, ['asIdsArray' => true, 'status' => $data['status']]);
         }
         if (!empty($orderData)) {
+            if ($isShowDeleted && $dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $dm->getFilterCollection()->disable('softdeleteable');
+            }
+
             $orders = $dm->getRepository('MBHPackageBundle:Order')->fetch($orderData);
+
+            if (!$dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $dm->getFilterCollection()->enable('softdeleteable');
+            }
             $qb->field('order.id')->in($orders);
         }
 
@@ -560,14 +569,34 @@ class PackageRepository extends DocumentRepository
                 ->getQuery()
                 ->execute();
 
-            $touristsIds = [];
-            foreach ($tourists as $tourist) {
-                $touristsIds[] = $tourist->getId();
-            }
+            $touristsIds = array_map(function ($tourist) {
+                return $tourist->getId();
+            }, $tourists->toArray());
 
             if (count($touristsIds)) {
                 $qb->addOr($qb->expr()->field('tourists.id')->in($touristsIds));
-                $qb->addOr($qb->expr()->field('mainTourist.id')->in($touristsIds));
+            }
+
+            $organizations = $dm->getRepository('MBHPackageBundle:Organization')
+                ->createQueryBuilder()
+                ->field('type')->equals('contragents')
+                ->field('name')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+                ->getQuery()
+                ->execute();
+
+            $organizationsIds = array_map(function ($organization) {
+                return $organization->getId();
+            }, $organizations->toArray());
+            $orders = $dm->getRepository('MBHPackageBundle:Order')
+                ->createQueryBuilder()
+                ->field('organization.id')->in($organizationsIds)
+                ->getQuery()
+                ->execute();
+            $ordersIds = array_map(function (Order $order) {
+                return $order->getId();
+            }, $orders->toArray());
+            if (count($ordersIds) > 0) {
+                $qb->addOr($qb->expr()->field('order.id')->in($ordersIds));
             }
 
             $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
@@ -626,7 +655,7 @@ class PackageRepository extends DocumentRepository
         }
 
         //deleted if
-        if (isset($data['deleted']) && $data['deleted'] || $dateType == 'deletedAt') {
+        if ($isShowDeleted || $dateType == 'deletedAt') {
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
             }
@@ -847,5 +876,14 @@ class PackageRepository extends DocumentRepository
             ->field('end')->lte($end);
 
         return $queryBuilder->getQuery()->execute();
+    }
+
+    /**
+     * @param $packageAccommodationId
+     * @return object
+     */
+    public function getPackageByPackageAccommodationId(string $packageAccommodationId)
+    {
+        return $this->findOneBy(['accommodations.id' => $packageAccommodationId]);
     }
 }

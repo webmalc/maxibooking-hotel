@@ -9,6 +9,7 @@ use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Document\SpecialRepository;
+use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -17,6 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use MBH\Bundle\PriceBundle\Lib\TariffFilter;
 
 /**
  * Class PackageMainType
@@ -122,6 +124,23 @@ class PackageMainType extends AbstractType
                     ]);
             }
         }
+        $builder->add('tariff', DocumentType::class, [
+            'label' => 'form.packageMainType.tariff',
+            'class' => 'MBH\Bundle\PriceBundle\Document\Tariff',
+            'required' => false,
+            'data' => null,
+            'mapped' => false,
+            'query_builder' => function (TariffRepository $dr) use ($package, $options) {
+                $filter = new TariffFilter();
+                $filter->setHotel($options['hotel'])
+                    ->setBegin(new \DateTime())
+                ;
+                return $dr->getFilteredQueryBuilder($filter)
+                    ->field('deletedAt')
+                    ->equals(null);
+            },
+            'group' => 'mbhpackagebundle.form.packagemaintype.cena',
+        ]);
         if (!$package->getTotalOverwrite() && $options['price']) {
             $builder->add('price', TextType::class, [
                 'label' => 'form.packageMainType.price',
@@ -219,10 +238,8 @@ class PackageMainType extends AbstractType
          ]);
     }
 
-
     public function getBlockPrefix()
     {
         return 'mbh_bundle_packagebundle_package_main_type';
     }
-
 }

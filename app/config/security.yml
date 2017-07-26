@@ -38,6 +38,7 @@ security:
     access_control:
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/media/cache/resolve, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/user/login$, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/_wdt, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' } 

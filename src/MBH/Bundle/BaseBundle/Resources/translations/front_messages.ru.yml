@@ -201,3 +201,10 @@ cash.not_confirmed: Не подтверждено
 001-add_dish_item.first_add_dishes: 'Сначала добавьте блюда в %hrefTagStart% соответствующем разделе'
 
 views.task.index.before: до
+
+
+accommodation.modal_title.add_accommodation: Добавить размещение
+accommodation.modal_title.change_accommodation: Изменить размещение
+
+app.bootstrap_switch_config.yes: да
+app.bootstrap_switch_config.no: нет

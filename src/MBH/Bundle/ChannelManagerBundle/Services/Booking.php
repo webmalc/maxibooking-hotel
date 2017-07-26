@@ -189,7 +189,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
             $this->addError($response);
             return false;
         }
-        return count($xml->xpath('/'. $params['element'] ?? 'ok')) ? true : false;
+        return count($xml->xpath('/'. ($params['element'] ?? 'ok'))) ? true : false;
     }
 
     /**

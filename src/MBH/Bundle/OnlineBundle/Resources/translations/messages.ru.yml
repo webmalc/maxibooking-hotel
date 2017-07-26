@@ -26,6 +26,10 @@ form.formType.used_children_ages.label: Возраста детей
 form.formType.used_children_ages.help: Показывать ли в онлайн форме поля возрастов детей
 form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: Использовать ли поле дату заезда и количестов ночей или дату заезда/выезда?
 form.formType.payment: Оплата
+form.formType.max_packages.help: 'Максимальное количество броней доступных для бронирования за раз'
+form.formType.max_packages.label: 'Максимальное количество броней'
+form.formType.room_type_choices: 'Типы номеров'
+form.formType.room_type_choices_desc: 'Типы номеров доступные для бронирования'
 form.formType.payment_type: Типы оплаты
 form.formType.reservation_payment_types_with_online_form: Типы оплаты при бронировании с помощью онлайн формы
 controller.apiController.reservation_error_occured_refresh_page_and_try_again: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'

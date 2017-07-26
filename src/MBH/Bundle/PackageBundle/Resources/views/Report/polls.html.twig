@@ -18,9 +18,9 @@
                 <input type="text" name="end" id="polls-report-filter-end" class="datepicker polls-report-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ?  'now'|date_modify("+1 day")|date('d.m.Y') : app.request.get('end')}}">
             </div>
 
-
-
-            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false} %}
+            <div class="input">
+                <button class="btn btn-primary" type="submit">Выбрать</button>
+            </div>
         </form>
     </div></div>
 

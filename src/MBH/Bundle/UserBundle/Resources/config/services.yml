@@ -1,7 +1,7 @@
 services:
     security.authentication.success_handler:
         class: MBH\Bundle\UserBundle\Security\AuthenticationSuccessHandler
-        arguments:  ["@security.http_utils", {}, "@mbh.mbhs"]
+        arguments:  ["@security.http_utils", {}, "@mbh.mbhs", "@mbh.dashboard"]
         tags:
             - { name: 'monolog.logger', channel: 'security' }
 
@@ -86,6 +86,20 @@ services:
         - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin, priority: "-1"}
       arguments: ["%mbh.recaptcha%"]
 
+    mbh.user.locale.listener:
+      class: MBH\Bundle\UserBundle\EventListener\UserLocalListener
+      arguments: ['@session']
+      tags:
+        - { name: kernel.event_listener, event: security.interactive_login, method: onInteractiveLogin }
+
+    mbh.resetting_subscriber:
+        class: MBH\Bundle\UserBundle\EventListener\ResettingSubscriber
+        arguments:
+            - "%mbh.recaptcha%"
+            - '@templating'
+            - '@translator'
+        tags:
+            - { name: kernel.event_subscriber}
     mbh.user_type:
       class: MBH\Bundle\UserBundle\Form\UserType
       arguments: ['@translator']

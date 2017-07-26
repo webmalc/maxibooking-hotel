@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\PackageBundle\Command;
 
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -40,6 +42,7 @@ class MailerCommand extends ContainerAwareCommand
         $tomorrow = new \DateTime('midnight + 1 day');
         $dayAfterTomorrow =  new \DateTime('midnight + 2 days');
 
+        /** @var PackageRepository $repo */
         $repo = $this->dm->getRepository('MBHPackageBundle:Package');
 
         //begin tomorrow report
@@ -133,13 +136,14 @@ class MailerCommand extends ContainerAwareCommand
         }
 
         //user polls
-        $packages = $repo->createQueryBuilder('p')
+        $packages = $repo->createQueryBuilder()
             ->field('end')->gte($yesterday)
             ->field('end')->lt($now)
             ->getQuery()
             ->execute();
         ;
         if (count($packages)) {
+            /** @var Package $package */
             foreach ($packages as $package) {
                 $order = $package->getOrder();
                 $payer = $order->getPayer();
@@ -153,7 +157,7 @@ class MailerCommand extends ContainerAwareCommand
                 $link = $router->generate('online_poll_list', [
                     'id' => $order->getId(),
                     'payerId' => $order->getPayer()->getId()
-                ], true);
+                ], $router::ABSOLUTE_URL);
 
                 if (!empty($linksParams['poll'])) {
                     $link = $linksParams['poll'] . '?link=' . $link;

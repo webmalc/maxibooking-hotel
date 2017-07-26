@@ -417,6 +417,7 @@ var ChessBoardManager = (function () {
                 return false;
             }
         });
+        return topOffset;
     };
     ChessBoardManager.prototype.getPackageLeftOffset = function (startDate) {
         var tableStartDate = ChessBoardManager.getTableStartDate();

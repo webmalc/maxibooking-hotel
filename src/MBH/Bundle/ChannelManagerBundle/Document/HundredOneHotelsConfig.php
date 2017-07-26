@@ -25,6 +25,11 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
 {
     use ConfigTrait;
 
+    public function getName()
+    {
+        return 'hundred_one_hotels';
+    }
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields

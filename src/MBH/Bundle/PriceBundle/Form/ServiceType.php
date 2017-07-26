@@ -8,12 +8,21 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class ServiceType
  */
 class ServiceType extends AbstractType
 {
+    /** @var  TranslatorInterface $translator */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -24,10 +33,10 @@ class ServiceType extends AbstractType
                 'attr' => ['placeholder' => 'mbhpricebundle.form.servicetype.seyf']
             ])
             ->add('title', TextType::class, [
-                'label' => 'mbhpricebundle.form.servicetype.vnutrenneye.nazvaniye',
+                'label' => 'mbhpricebundle.form.servicetype.vnutrenneyenazvaniye',
                 'group' => 'price.form.public_information',
                 'required' => false,
-                'attr' => ['placeholder' => 'price.form.save_summer' . ' ' . date('Y')],
+                'attr' => ['placeholder' => $this->translator->trans('price.form.save_summer') . ' ' . date('Y')],
                 'help' => 'price.form.name_for_using_inside_maxibooking'
             ])
             ->add('international_title', TextType::class, [
@@ -40,10 +49,10 @@ class ServiceType extends AbstractType
                 'label' => 'mbhpricebundle.form.servicetype.opisaniye',
                 'required' => false,
                 'group' => 'price.form.public_information',
-                'help' => 'mbhpricebundle.form.servicetype.opisaniye.uslugi.dlya.onlayn.bronirovaniya'
+                'help' => 'mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya'
             ])
             ->add('calcType', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'label' => 'mbhpricebundle.form.servicetype.tip.rascheta',
+                'label' => 'mbhpricebundle.form.servicetype.tiprascheta',
                 'group' => 'price.form.public_information',
                 'required' => true,
                 'placeholder' => '',
