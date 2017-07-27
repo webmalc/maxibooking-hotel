@@ -1,123 +1,115 @@
 mbhchannelmanagerbundle.services.ostrovok.net.ogranicheniy.dlya.sinkhronizatsii: 'Нет ограничений для синхронизации'
-form.bookingType.is_included: Включен?
-form.bookingType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.bookingType.is_included: 'Включен?'
+form.bookingType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
 form.bookingType.login: Логин
-form.bookingType.booking_api_com_access_login: Логин (username) для доступа к API Booking.com
+form.bookingType.booking_api_com_access_login: 'Логин (username) для доступа к API Booking.com'
 form.bookingType.password: Пароль
-form.bookingType.booking_api_com_password_access: Пароль (password) для доступа к API Booking.com
-form.bookingType.hotel_id: ID отеля
+form.bookingType.booking_api_com_password_access: 'Пароль (password) для доступа к API Booking.com'
+form.bookingType.hotel_id: 'ID отеля'
 form.bookingType.currency: Валюта
-form.bookingType.currency_help: Валюта конвертации цен
-form.bookingType.currencyDefaultRatio: Курс по умолчанию
-form.bookingType.currencyDefaultRatio_help: Курс, используемый при недоступности курса ЦБ РФ
-form.bookingType.hotel_id_in_booking_com: ID отеля в Booking.com
-form.oktogoType.is_included: Включен?
-form.oktogoType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.bookingType.currency_help: 'Валюта конвертации цен'
+form.bookingType.currencyDefaultRatio: 'Курс по умолчанию'
+form.bookingType.currencyDefaultRatio_help: 'Курс, используемый при недоступности курса ЦБ РФ'
+form.bookingType.hotel_id_in_booking_com: 'ID отеля в Booking.com'
+form.oktogoType.is_included: 'Включен?'
+form.oktogoType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
 form.oktogoType.login: Логин
-form.oktogoType.oktogo_api_login_access: Логин для доступа к API Oktogo.ru
+form.oktogoType.oktogo_api_login_access: 'Логин для доступа к API Oktogo.ru'
 form.oktogoType.password: Пароль
-form.oktogoType.oktogo_api_password_access: Пароль для доступа к API Oktogo.ru
-form.oktogoType.username: Имя пользователя
-form.oktogoType.oktogo_ru_username: Имя пользователя в Oktogo.ru
-form.roomType.room_type_id: ID типа номера
-form.roomType.in_service_settings: в настройках сервиса
-form.tariffType.tariff_id: ID тарифа
-form.tariffType.in_service_settings: в настройках сервиса
-form.vashotelType.in_included: Включен?
-form.vashotelType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
-form.vashotelType.api_key: Ключ API
-form.vashotelType.vashotel_ru_settings_key: Ключ, который задается в настройках гостиницы ВашОтель.RU
-form.vashotelType.hotel_id: ID отеля
-form.vashotelType.password_label: Ваш пароль
-form.vashotelType.password: Введите ваш пароль
-form.vashotelType.password_help: Пароль от сервиса ВашОтель.RU
-form.vashotelType.vashotel_ru_settings_hotel_id: ID отеля в настройках ВашОтель.RU
-form.vashotelType.breakfast: Завтрак?
-form.vashotelType.r0_or_BB: Какой тип питания использовать RO или BB?
-controller.bookingController.settings_saved_success: 'Настройки успешно сохранены.'
+form.oktogoType.oktogo_api_password_access: 'Пароль для доступа к API Oktogo.ru'
+form.oktogoType.username: 'Имя пользователя'
+form.oktogoType.oktogo_ru_username: 'Имя пользователя в Oktogo.ru'
+form.roomType.room_type_id: 'ID типа номера'
+form.roomType.in_service_settings: 'в настройках сервиса'
+form.tariffType.tariff_id: 'ID тарифа'
+form.tariffType.in_service_settings: 'в настройках сервиса'
+form.vashotelType.in_included: 'Включен?'
+form.vashotelType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
+form.vashotelType.api_key: 'Ключ API'
+form.vashotelType.vashotel_ru_settings_key: 'Ключ, который задается в настройках гостиницы ВашОтель.RU'
+form.vashotelType.hotel_id: 'ID отеля'
+form.vashotelType.password_label: 'Ваш пароль'
+form.vashotelType.password: 'Введите ваш пароль'
+form.vashotelType.password_help: 'Пароль от сервиса ВашОтель.RU'
+form.vashotelType.vashotel_ru_settings_hotel_id: 'ID отеля в настройках ВашОтель.RU'
+form.vashotelType.breakfast: 'Завтрак?'
+form.vashotelType.r0_or_BB: 'Какой тип питания использовать RO или BB?'
+controller.bookingController.settings_saved_success: 'Настройки успешно сохранены'
 controller.bookingController.packages_sync_start: 'Синхронизация броней успешно запущена. Уведомление о новых бронях придет на email.'
-controller.ostrovokController.settings_saved_success: 'Настройки успешно сохранены.'
-controller.channelManagerController.sync_end: 'Синхронизация запущена. Обновление будет окончено в течении 1-2 минут.'
-controller.oktogoController.settings_saved_success: 'Настройки успешно сохранены.'
-controller.oktogoController.rooms_sync_success: 'Номера успешно синхронизированы.'
+controller.ostrovokController.settings_saved_success: 'Настройки успешно сохранены'
+controller.channelManagerController.sync_end: 'Синхронизация окончена.'
+controller.oktogoController.settings_saved_success: 'Настройки успешно сохранены'
+controller.oktogoController.rooms_sync_success: 'Номера успешно синхронизированы'
 controller.oktogoController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
-controller.oktogoController.tariffs_sync_success: 'Тарифы успешно синхронизированы.'
+controller.oktogoController.tariffs_sync_success: 'Тарифы успешно синхронизированы'
 controller.vashotelController.rooms_sync_success: 'Номера успешно синхронизированы.'
 controller.vashotelController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
-controller.vashotelController.rooms_sync_success: 'Тарифы успешно синхронизированы.'
-controller.vashotelController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.vashotelController.settings_saved_success: 'Настройки успешно сохранены'
 controller.channel_manager_controller.logs_clear_successful: 'Логи успешно очищены.'
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
-roomtype.placeholder: 'тип номера соответствия номеру в канале'
+roomtype.placeholder: 'Тип номера соответствия номеру в канале'
 tarifftype.placeholder: 'тариф соответствия тарифу в канале'
-form.ostrovokType.in_included: Включен?
-form.ostrovokType.hotel_id: ID отеля
-form.ostrovokType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
-form.ostrovokType.ostrovok_ru_settings_hotel_id:  ID отеля в настройках Ostrovok.ru
-form.hundredOneHotels.is_included: Включен?
-form.hundredOneHotels.should_we_use_in_channel_manager: Использовать ли в Channel manager?
-form.hundredOneHotels.hotel_id: ID отеля
-form.hundredOneHotels.hotel_id_in_101_hotels: ID отеля в 101hotels.ru
-form.hundredOneHotels.api_key.label: Ключ API
-form.hundredIneHotels.api_key.help: Ключ API для отеля
-form.hundredOneHotels.api_key.placeholder: Ключ API
-form.hundredOneHotels.error.invalid_api_key: Неверный API ключ
-form.hundredOneHotels.error.invalid_hotel_id: Неверный ID отеля
+form.ostrovokType.in_included: 'Включен?'
+form.ostrovokType.hotel_id: 'ID отеля'
+form.ostrovokType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
+form.ostrovokType.ostrovok_ru_settings_hotel_id: 'ID отеля в настройках Ostrovok.ru'
+form.hundredOneHotels.is_included: 'Включен?'
+form.hundredOneHotels.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
+form.hundredOneHotels.hotel_id: 'ID отеля'
+form.hundredOneHotels.hotel_id_in_101_hotels: 'ID отеля в 101hotels.ru'
+form.hundredOneHotels.api_key.label: 'Ключ API'
+form.hundredIneHotels.api_key.help: 'Ключ API для отеля'
+form.hundredOneHotels.api_key.placeholder: 'Ключ API'
+form.hundredOneHotels.error.invalid_api_key: 'Неверный API ключ'
+form.hundredOneHotels.error.invalid_hotel_id: 'Неверный ID отеля'
 services.hundredOneHotels.invalid_room_type_id: 'ОШИБКА: тип комнат с id = %id% сервиса 101Hotels не синхронизирован ни с одним типом комнат maxibooking'
 services.hundredOneHotels.invalid_tariff_id: 'ОШИБКА: тип размещения с id = %id% сервиса 101Hotels не синхронизирован ни с одним тарифом maxibooking.'
 services.hundredOneHotels.nor_one_room_type: 'В данном отеле не существует ни одного типа номера'
 services.hundredOneHotels.nor_one_tariff: 'В данном отеле не существует ни одного тарифа'
-controller.hundredOneHotelsController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.hundredOneHotelsController.settings_saved_success: 'Настройки успешно сохранены'
 services.hundredOneHotels.cash_document_not_paid: 'Безналичный платеж не подтвержден'
 services.ostrovok.error_getting_price_for_number: 'Ошибка получения цены для номера %roomTypeName% для %numberOfAdults% вз.'
-
-#myAllocator
 form.myallocatorType.username: Логин
-form.myallocatorType.username_desc: Логин для доступа в личный кабинет. Не будет сохранен.
+form.myallocatorType.username_desc: 'Логин для доступа в личный кабинет. Не будет сохранен.'
 form.myallocatorType.password: Пароль
-form.myallocatorType.password_desc: Пароль для доступа в личный кабинет. Не будет сохранен.
-form.myallocatorType.isEnabled: Включен?
-form.myallocatorType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.myallocatorType.password_desc: 'Пароль для доступа в личный кабинет. Не будет сохранен.'
+form.myallocatorType.isEnabled: 'Включен?'
+form.myallocatorType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
 form.myallocatorType.hotels: Отели
-controller.myallocatorController.settings_saved_success: Настройки успешно сохранены
-controller.myallocatorController.invalid_credentials: Неверные логин/пароль для от личного кабинета
-view.myallocator.tariff.need_fill_main_settings: Необходимо сначала заполнить основные настройки.
-view.myallocator.tariff.need_bind_to_mb: Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".
-view.myallocator.layout.additional_channels: Дополнительные каналы
-view.myallocator.index.cm_bind_tomb: Сhannelmanager успешно привязан к MaxiBooking
-view.myallocator.index.remove_user: Удалить пользователя
-view.myallocator.index.choose_hotel: Выберите соотвествующий отель на форме ниже для ассоциации с MaxiBooking
-view.myallocator.index.enter_login_and_pass: Введите логи и пароль от кабинета для первичной привязки channelmanager`а к MaxiBooking
-view.myallocator.room.need_fill_main_settings: Необходимо сначала заполнить основные настройки.
-view.myallocator.room.need_bind_to_mb: Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".
-
-form.roomTypeTasks.checkIn: При заселении
-form.roomTypeTasks.checkIn.help: Задачи, создаваемые при заезде гостя
-form.roomTypeTasks.checkOut: При выезде
-form.roomTypeTasks.checkOut.help: При выезде гостя
-form.roomTypeTasks.daily: Каждые n дней проживания
-
-channelmanager.notifications.prices: "В разделе \"Цены\" указаны неподдерживаемые поля"
-channelmanager.notifications.restrictions: "В разделе \"Условия и ограничения\" указаны неподдерживаемые поля"
-channelmanager.notifications.prices.type.isPersonPrice: "Цена за человека"
-channelmanager.notifications.prices.type.additionalPrice: "Цена за взрослое доп. место"
-channelmanager.notifications.prices.type.additionalChildrenPrice: "Цена за детское доп. место"
-channelmanager.notifications.restrictions.type.minBeforeArrival: "Мин. дней до заезда"
-channelmanager.notifications.restrictions.type.maxBeforeArrival: "Макс. дней до заезда"
-
-channelmanager.notifications.restrictions.type.minStay: "Мин. длина брони (сквозное)"
-channelmanager.notifications.restrictions.type.maxStay: "Макс. длина брони (сквозное)"
-channelmanager.notifications.restrictions.type.minStayArrival: "Мин. длина брони (заезд)"
-channelmanager.notifications.restrictions.type.maxStayArrival: "Макс. длина брони (заезд)"
-channelmanager.notifications.restrictions.type.maxGuest: "Макс. количество гостей"
-channelmanager.notifications.restrictions.type.minGuest: "Мин. количество гостей"
-channelmanager.notifications.restrictions.type.closedOnArrival: "Нет заезда"
-channelmanager.notifications.restrictions.type.closedOnDeparture: "Нет выезда"
-
-prices: 'Цены'
+controller.myallocatorController.settings_saved_success: 'Настройки успешно сохранены'
+controller.myallocatorController.invalid_credentials: 'Неверные логин/пароль для от личного кабинета'
+view.myallocator.tariff.need_fill_main_settings: 'Необходимо сначала заполнить основные настройки.'
+view.myallocator.tariff.need_bind_to_mb: 'Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".'
+view.myallocator.layout.additional_channels: 'Дополнительные каналы'
+view.myallocator.index.cm_bind_tomb: 'Сhannelmanager успешно привязан к MaxiBooking'
+view.myallocator.index.remove_user: 'Удалить пользователя'
+view.myallocator.index.choose_hotel: 'Выберите соотвествующий отель на форме ниже для ассоциации с MaxiBooking'
+view.myallocator.index.enter_login_and_pass: 'Введите логин и пароль от кабинета для первичной привязки channelmanager`а к MaxiBooking'
+view.myallocator.room.need_fill_main_settings: 'Необходимо сначала заполнить основные настройки.'
+view.myallocator.room.need_bind_to_mb: 'Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".'
+form.roomTypeTasks.checkIn: 'При заселении'
+form.roomTypeTasks.checkIn.help: 'Задачи, создаваемые при заезде гостя'
+form.roomTypeTasks.checkOut: 'При выезде'
+form.roomTypeTasks.checkOut.help: 'При выезде гостя'
+form.roomTypeTasks.daily: 'Каждые n дней проживания'
+channelmanager.notifications.prices: 'В разделе "Цены" указаны неподдерживаемые поля'
+channelmanager.notifications.restrictions: 'В разделе "Условия и ограничения" указаны неподдерживаемые поля'
+channelmanager.notifications.prices.type.isPersonPrice: 'Цена за человека'
+channelmanager.notifications.prices.type.additionalPrice: 'Цена за взрослое доп. место'
+channelmanager.notifications.prices.type.additionalChildrenPrice: 'Цена за детское доп. место'
+channelmanager.notifications.restrictions.type.minBeforeArrival: 'Мин. дней до заезда'
+channelmanager.notifications.restrictions.type.maxBeforeArrival: 'Макс. дней до заезда'
+channelmanager.notifications.restrictions.type.minStay: 'Мин. длина брони (сквозное)'
+channelmanager.notifications.restrictions.type.maxStay: 'Макс. длина брони (сквозное)'
+channelmanager.notifications.restrictions.type.minStayArrival: 'Мин. длина брони (заезд)'
+channelmanager.notifications.restrictions.type.maxStayArrival: 'Макс. длина брони (заезд)'
+channelmanager.notifications.restrictions.type.maxGuest: 'Макс. количество гостей'
+channelmanager.notifications.restrictions.type.minGuest: 'Мин. количество гостей'
+channelmanager.notifications.restrictions.type.closedOnArrival: 'Нет заезда'
+channelmanager.notifications.restrictions.type.closedOnDeparture: 'Нет выезда'
+prices: Цены
 restrictions: 'Условия и ограничения'
-
-channel_manager.logs.no_entries_in_file: Нет записей в файле логов.
+channel_manager.logs.no_entries_in_file: 'Нет записей в файле логов.'
 channel_manager.logs.small_title: логи
 channel_manager.logs.clear: Очистить
-channel_manager.push_link.link_to_push_notifications: Ссылка для push уведомлений
+channel_manager.push_link.link_to_push_notifications: 'Ссылка для push уведомлений'

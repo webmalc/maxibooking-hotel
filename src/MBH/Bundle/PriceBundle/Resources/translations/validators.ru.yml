@@ -1,35 +1,33 @@
 mbhpricebundle.document.service.ne.vybrana.kategoriya: 'Не выбрана категория'
 mbhpricebundle.document.tariff.takoy.tarif.uzhe.sushchestvuyet: 'Такой тариф уже существует'
-invalid.ages: Возраст инфанта должен быть меньше возраста ребенка
-special.dates.error: Некорректно введены даты
-special.displayDates.error: Некорректно введены даты отображения спецпредложения
-mbhpricebundle.document.so_short_name: Слишком короткое имя
-mbhpricebundle.document.name_is_too_long: Слишком длинное имя
-mbhpricebundle.document.so_short_description: Слишком короткое описание
-mbhpricebundle.document.description_is_too_long: Слишком длинное описание
-mbhpricebundle.document.price_can_not_be_less_than_zero: Цена не может быть меньше нуля
-mbhpricebundle.room_cache_generator_type.number_of_places_cannot_be_less_then_one: Количество мест не может быть меньше минус одного
-mbhpricebundle.room_cache_generator_type.begin_cannot_be_more_end: Начало периода должно быть меньше конца периода.
-mbhpricebundle.room_cache_generator_type.period_length_cannot_be_more_then_year: Период не может быть больше года.
-mbhpricebundle.form.pricecachegeneratortype.price_cant_be_less_minus_one: 'Цена не может быть меньше минус одного'
+invalid.ages: 'Возраст инфанта должен быть меньше возраста ребенка'
+special.dates.error: 'Некорректно введены даты'
+special.displayDates.error: 'Некорректно введены даты отображения спецпредложения'
+mbhpricebundle.document.so_short_name: 'Слишком короткое имя'
+mbhpricebundle.document.name_is_too_long: 'Слишком длинное имя'
+mbhpricebundle.document.so_short_description: 'Слишком короткое описание'
+mbhpricebundle.document.description_is_too_long: 'Слишком длинное описание'
+mbhpricebundle.document.price_can_not_be_less_than_zero: 'Цена не может быть меньше нуля'
+mbhpricebundle.room_cache_generator_type.number_of_places_cannot_be_less_then_one: 'Количество мест не может быть меньше минус одного'
+mbhpricebundle.room_cache_generator_type.begin_cannot_be_more_end: 'Начало периода должно быть меньше конца периода.'
+mbhpricebundle.room_cache_generator_type.period_length_cannot_be_more_then_year: 'Период не может быть больше года.'
+mbhpricebundle.form.pricecachegeneratortype.price_cant_be_less_minus_one: 'Цена не может быть меньше -1'
 mbhpricebundle.form.pricecachegeneratortype.price_can_not_be_less_than_zero: 'Цена не может быть меньше нуля'
 mbhpricebundle.form.restrictiongeneratortype.kolichestvo_gostey_ne_mozhet_bit_menshe_nulia: 'Количество гостей не может быть меньше нуля'
-mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_menshe_odnogo_dnia: Период не может быть меньше одного дня
+mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_menshe_odnogo_dnia: 'Период не может быть меньше одного дня'
 mbhpricebundle.form.restrictiongeneratortype.nachalo_perioda_dolzhno_bit_menshe_konca_perioda: 'Начало периода должно быть меньше конца периода.'
 mbhpricebundle.form.restrictiongeneratortype.period_ne_mozhet_bit_bolshe_goda: 'Период не может быть больше года.'
 mbhpricebundle.form.restrictiongeneratortype.minimalnoe_kolichestvo_gostey_ne_mozhet_bit_bolshe_maximalnogo_kolichestva_gostey: 'Минимальное количество гостей не может быть больше максимального количества гостей'
 mbhpricebundle.promotion_type.fill_specified_fields: 'Заполните поля "%first_field%" или "%second_field%" или "%third_field%"'
-document.service_category.hotel.hotel_not_chosen: "Не выбран отель"
+document.service_category.hotel.hotel_not_chosen: 'Не выбран отель'
 document.service_category.full_title.too_short: 'Слишком короткое имя'
 document.service_category.full_title.too_long: 'Слишком длинное имя'
 document.service_category.title.too_long: 'Слишком короткое имя'
-document.service_category.title.too_long: 'Слишком длинное имя'
 document.service_category.description.too_short: 'Слишком короткое описание'
 document.service_category.description.too_long: 'Слишком длинное описание'
-document.tariff.hotel.hotel_not_chosen: "Не выбран отель"
+document.tariff.hotel.hotel_not_chosen: 'Не выбран отель'
 document.tariff.full_title.too_short: 'Слишком короткое имя'
 document.tariff.full_title.too_long: 'Слишком длинное имя'
 document.tariff.title.too_long: 'Слишком короткое имя'
-document.tariff.title.too_long: 'Слишком длинное имя'
 document.tariff.description.too_short: 'Слишком короткое описание'
 document.tariff.description.too_long: 'Слишком длинное описание'

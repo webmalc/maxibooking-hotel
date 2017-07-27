@@ -130,6 +130,7 @@ class PackageMainType extends AbstractType
             'required' => false,
             'data' => null,
             'mapped' => false,
+            'group' => 'form.packageMainType.price_group',
             'query_builder' => function (TariffRepository $dr) use ($package, $options) {
                 $filter = new TariffFilter();
                 $filter->setHotel($options['hotel'])
@@ -138,8 +139,7 @@ class PackageMainType extends AbstractType
                 return $dr->getFilteredQueryBuilder($filter)
                     ->field('deletedAt')
                     ->equals(null);
-            },
-            'group' => 'mbhpackagebundle.form.packagemaintype.cena',
+            }
         ]);
         if (!$package->getTotalOverwrite() && $options['price']) {
             $builder->add('price', TextType::class, [
