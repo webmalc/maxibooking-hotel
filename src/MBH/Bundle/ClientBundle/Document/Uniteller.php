@@ -164,8 +164,8 @@ class Uniteller implements PaymentSystemInterface
         $createdAt->modify('+30 minutes');
 
         return [
-            'action' => 'https://wpay.uniteller.ru/pay/',
-            'testAction' => 'https://test.wpay.uniteller.ru/pay/',
+            'action' => 'https://fpay.uniteller.ru/v1/pay',
+            'testAction' => 'https://fpaytest.uniteller.ru/v1/pay',
             'shopId' => $this->getUnitellerShopIDP(),
             'total' => $cashDocument->getTotal(),
             'orderId' => $cashDocument->getId(),

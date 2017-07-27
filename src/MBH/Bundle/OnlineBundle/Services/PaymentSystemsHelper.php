@@ -30,7 +30,7 @@ class PaymentSystemsHelper
                 'id' => $payer->getId()
             ],
             'lines' => $this->getUnitellerLineItems($order, $clientConfig),
-            'total' => $order->getPrice(true)
+            'total' => $order->getPrice(false)
         ]);
 
         $receiptSignature = mb_strtoupper(
