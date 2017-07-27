@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class TariffInheritanceType
@@ -15,7 +15,7 @@ class TariffInheritanceType extends AbstractType
 {
     private $translator;
 
-    public function __construct(DataCollectorTranslator $translator) {
+    public function __construct(TranslatorInterface $translator) {
         $this->translator = $translator;
     }
 

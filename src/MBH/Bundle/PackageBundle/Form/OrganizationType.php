@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
@@ -15,7 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Date as ConstrainDate;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Length;
@@ -27,11 +28,12 @@ use Symfony\Component\Validator\Constraints\Length;
  */
 class OrganizationType extends AbstractType
 {
-    /** @var  DataCollectorTranslator */
+    /** @var  TranslatorInterface */
     private $translator;
 
-    public function __construct(DataCollectorTranslator $translator) {
+    public function __construct(TranslatorInterface $translator, DocumentManager $documentManager) {
         $this->translator = $translator;
+        $this->documentManager = $documentManager;
     }
 
     const SCENARIO_NEW = 'new';
@@ -47,7 +49,6 @@ class OrganizationType extends AbstractType
         $scenario = $options['scenario'];
         $isFull = $options['isFull'];
         $id = $options['id'];
-        $this->documentManager = $options['dm'];
 
         if (!$isFull) {
             $builder->add('organization', TextType::class, [

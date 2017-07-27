@@ -15,7 +15,6 @@ use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Translation\DataCollectorTranslator;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -43,7 +42,7 @@ class ChessBoardDataBuilder
     private $floorIds;
     /** @var  ContainerInterface $container */
     private $container;
-    /** @var DataCollectorTranslator $translator */
+    /** @var TranslatorInterface $translator */
     private $translator;
     /** @var $accommodationManipulator PackageAccommodationManipulator */
     private $accommodationManipulator;

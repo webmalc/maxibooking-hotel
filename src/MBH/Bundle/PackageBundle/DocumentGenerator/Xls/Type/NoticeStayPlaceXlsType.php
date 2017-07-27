@@ -11,19 +11,18 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class NoticeStayPlaceXlsType
-
  */
 class NoticeStayPlaceXlsType extends AbstractType
 {
     private $dm;
-    /** @var  DataCollectorTranslator */
+    /** @var  TranslatorInterface */
     private $translator;
 
-    public function __construct(DocumentManager $dm, DataCollectorTranslator $translator) {
+    public function __construct(DocumentManager $dm, TranslatorInterface $translator) {
         $this->dm = $dm;
         $this->translator = $translator;
     }

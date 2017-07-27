@@ -4,12 +4,10 @@ namespace MBH\Bundle\PriceBundle\Form;
 
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\DataCollectorTranslator;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
