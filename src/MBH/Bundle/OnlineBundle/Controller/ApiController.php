@@ -528,25 +528,13 @@ class ApiController extends Controller
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         $formData = $clientConfig->getFormData($order->getCashDocuments()[0]);
-        $receipt = json_encode([
-            'lines' => [
-                'name' => '',
-                'price' => 'цена за единицу измерения',
-                'qty' => 'количество',
-                'sum' => $formData['total'],
-                'vat' => $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationRateCode() : null,
-                'taxmode' => $clientConfig->getUniteller() ? $clientConfig->getUniteller()->getTaxationRateCode() : null,
-            ]
-        ]);
-
-        $receiptSignature = mb_strtoupper(
-            hash("sha256", (
-                hash("sha256", $formData['shopId']) . '&' .
-                hash("sha256", $formData['orderId']) . '&' .
-                hash("sha256", $formData['data.total']) . '&' .
-                hash("sha256", $receipt) . '&' . hash("sha256", $formData['password']))
-            )
-        );
+        if ($clientConfig->getPaymentSystem() == 'uniteller') {
+            $receiptData = $this->get('mbh.payment_systems_helper')->getUnitellerReceiptData($order, $clientConfig);
+            $formData = array_merge($formData, [
+                'receipt' => $receiptData['receipt'],
+                'receiptSignature' => $receiptData['receiptSignature']
+            ]);
+        }
 
         if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
@@ -562,8 +550,7 @@ class ApiController extends Controller
                             ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle'
                         )
-                    ], $formData,
-                        ['receipt' => $receipt, 'receiptSignature' => $receiptSignature])
+                    ], $formData)
                 ]
             );
         }
