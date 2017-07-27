@@ -152,8 +152,8 @@ class UserType extends AbstractType
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year'),
             ))
             ->add('locale', LocaleType::class, [
-                'label' => 'form.userType.locale'
-
+                'label' => 'form.userType.locale',
+                'group' => 'form.userType.general_info',
             ])
         ;
 

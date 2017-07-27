@@ -1536,6 +1536,19 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getPricesByDateWithDiscount()
+    {
+        $prices = [];
+        foreach ($this->pricesByDate as $dateString => $price) {
+            $prices[$dateString] = $price - ($this->getDiscountMoney() / $this->getNights());
+        }
+
+        return $prices;
+    }
+
+    /**
      * @param array $prices
      * @return Package
      */
@@ -1589,12 +1602,13 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection|ArrayCollection
      */
     public function getAccommodations(): Collection
     {
         return $this->getSortedAccommodations();
     }
+
     /**
      * @return Special|null
      */
@@ -1628,7 +1642,6 @@ class Package extends Base implements \JsonSerializable
         usort($data, function ($a, $b) {
             /** @var PackageAccommodation $a*/
             /** @var PackageAccommodation $b*/
-            $c = 'd';
             return ($a->getBegin() < $b->getBegin())? -1 : 1;
         });
 
@@ -1664,9 +1677,19 @@ class Package extends Base implements \JsonSerializable
      * @param PackageAccommodation $accommodation
      * @return Package
      */
-    public function removeAccommodations(PackageAccommodation $accommodation)
+    public function removeAccommodation(PackageAccommodation $accommodation)
     {
         $this->accommodations->removeElement($accommodation);
+
+        return $this;
+    }
+
+    /**
+     * @return Package
+     */
+    public function removeAccommodations()
+    {
+        $this->accommodations = new ArrayCollection();
 
         return $this;
     }
@@ -1730,5 +1753,21 @@ class Package extends Base implements \JsonSerializable
         });
 
         return $accommodation->first();
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return PackagePrice|null
+     */
+    public function getPackagePriceByDate(\DateTime $date)
+    {
+        /** @var PackagePrice $price */
+        foreach ($this->getPrices() as $price) {
+            if ($price->getDate() == $date) {
+                return $price;
+            }
+        }
+
+        return null;
     }
 }

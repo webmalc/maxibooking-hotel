@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -72,6 +73,16 @@ class ClientConfigType extends AbstractType
                 'help' => 'form.clientConfigType.is_book_without_payer.help',
                 'group' => 'form.clientConfigType.search_group',
                 'required' => false,
+            ])
+            ->add('defaultAdultsQuantity', TextType::class, [
+                'group' => 'form.clientConfigType.search_group',
+                'label' => 'form.clientConfigType.default_adults_quantity.label',
+                'help' => 'form.clientConfigType.default_adults_quantity.help'
+            ])
+            ->add('defaultChildrenQuantity', TextType::class, [
+                'group' => 'form.clientConfigType.search_group',
+                'label' => 'form.clientConfigType.default_children_quantity.label',
+                'help' => 'form.clientConfigType.default_children_quantity.help'
             ])
         ;
     }

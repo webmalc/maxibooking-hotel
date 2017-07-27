@@ -27,8 +27,9 @@ class PackageAccommodationSubscriber implements EventSubscriber
 
         $document = $eventArgs->getDocument();
         if ($document instanceof PackageAccommodation) {
-            $package = $document->getPackage();
-            $package->removeAccommodations($document);
+            $package = $dm->getRepository('MBHPackageBundle:Package')
+                ->getPackageByPackageAccommodationId($document->getId());
+            $package->removeAccommodation($document);
             $class = $dm->getClassMetadata(get_class($package));
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $package);
         }
