@@ -12,6 +12,8 @@ form.clientConfigType.is_notice_unpaid: Отправлять уведомлен�
 form.clientConfigType.search_dates: Дополнительные дни поиска
 form.clientConfigType.search_dates_desc: Количество дополнительных дней для подбора броней.
 form.clientConfigType.is_disabled_room_type_category: Группы для типов номеров
+form.clientConfigType.is_send_mail_at_payment_confirmation.label: Оповещать о подтверждении платежа?
+form.clientConfigType.is_send_mail_at_payment_confirmation.help: Отправлять ли письмо по умолчанию при подтверждении кассового документа?
 form.clientConfigType.is_enabled_work_shift: Рабочие смены
 form.clientConfigType.instant_search: Быстрый поиск
 form.clientConfigType.instant_search_help: Поиск сразу при изменении полей?
