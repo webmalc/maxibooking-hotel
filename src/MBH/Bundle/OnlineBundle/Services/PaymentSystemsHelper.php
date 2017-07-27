@@ -1,5 +1,7 @@
 <?php
 
+namespace MBH\Bundle\OnlineBundle\Services;
+
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -35,8 +37,8 @@ class PaymentSystemsHelper
             hash("sha256", (
                 hash("sha256", $formData['shopId']) . '&' .
                 hash("sha256", $formData['orderId']) . '&' .
-                hash("sha256", $formData['data.total']) . '&' .
-                hash("sha256", $receipt) . '&' . hash("sha256", $formData['password']))
+                hash("sha256", $formData['total']) . '&' .
+                hash("sha256", $receipt) . '&' . hash("sha256", $clientConfig->getUniteller()->getUnitellerPassword()))
             )
         );
 

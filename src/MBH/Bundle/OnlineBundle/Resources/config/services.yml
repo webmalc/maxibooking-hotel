@@ -10,4 +10,4 @@ services:
         arguments: ["%kernel.logs_dir%/%kernel.environment%.online.log", 200]
 
     mbh.payment_systems_helper:
-        class: PaymentSystemsHelper
+        class: MBH\Bundle\OnlineBundle\Services\PaymentSystemsHelper
