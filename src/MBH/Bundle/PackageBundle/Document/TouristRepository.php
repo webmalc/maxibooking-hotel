@@ -63,7 +63,7 @@ class TouristRepository extends DocumentRepository
      * @param TouristQueryCriteria $criteria
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
-    private function queryCriteriaToBuilder(TouristQueryCriteria $criteria)
+    public function queryCriteriaToBuilder(TouristQueryCriteria $criteria)
     {
         $queryBuilder = $this->createQueryBuilder();
 

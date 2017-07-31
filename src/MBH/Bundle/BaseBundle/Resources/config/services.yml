@@ -245,3 +245,12 @@ services:
         arguments: ['%kernel.default_locale%']
         tags:
           - { name: kernel.event_subscriber }
+
+    mbh.export_data_handler:
+        class: MBH\Bundle\BaseBundle\Service\Export\ExportDataHandler
+
+    mbh.entities_exporter:
+        class: MBH\Bundle\BaseBundle\Service\Export\CSVExporter
+        arguments:
+            - '@mbh.export_data_handler'
+            - '@translator'

@@ -582,3 +582,7 @@ dashboard.messages.hotel.errors: 'обнаружены следующие оши
 dashboard.messages.roomType.roomCache: 'не выставлены "Номера в продаже" на следующие периоды'
 dashboard.messages.roomType.priceCache: 'не выставлены "Цены" основного тарифа на следующие периоды'
 dashboard.link: 'посмотреть'
+
+forms.export_type.main_group: Настройки генерируемого документа
+forms.export_type.fields.label: Названия полей
+forms.export_type.fields.help: Имена экспортируемых полей
