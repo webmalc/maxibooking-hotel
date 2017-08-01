@@ -5,6 +5,7 @@ namespace MBH\Bundle\BaseBundle\DataCollector;
 
 
 use Liip\ImagineBundle\Imagine\Cache\Resolver\WebPathResolver;
+use MongoDBODMProxies\__CG__\MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,10 +20,14 @@ class InstanceInfoCollector extends DataCollector
     /** @var  ContainerInterface */
     private $container;
 
+    private $client;
+
     public function __construct(KernelInterface $kernel)
     {
+
         $this->kernel = $kernel;
         $this->container = $this->kernel->getContainer();
+        $this->client = $kernel->getClient();
 
     }
 
@@ -30,14 +35,14 @@ class InstanceInfoCollector extends DataCollector
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
         $this->data = [
-            'user' => $request->server->get('MB_CLIENT'),
+            'user' => $this->client,
             'dirs' => $this->getInstanceDirs()
         ];
     }
 
     public function getUser()
     {
-        return $this->data['user'];
+        return $this->client;
     }
 
     public function getDirs()
@@ -53,7 +58,8 @@ class InstanceInfoCollector extends DataCollector
             'logDir' => $this->kernel->getLogDir(),
             'vichUpload:destination' => $this->getVichUploadFolder('upload_destination'),
             'vichUpload:uri_prefix' => $this->getVichUploadFolder('uri_prefix'),
-            'liip:cache:path' => $this->getLiipCachePath()
+            'liip:cache:path' => $this->getLiipCachePath(),
+            'orderDocument:path' => realpath((new OrderDocument())->getUploadRootDir($this->client))
         ];
 
         return $dirs;
