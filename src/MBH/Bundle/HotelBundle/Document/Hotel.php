@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="Hotels")
+ * @ODM\Document(collection="Hotels", repositoryClass="MBH\Bundle\HotelBundle\Document\HotelRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="validator.document.hotel.hotel_is_exist")
@@ -289,6 +289,12 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @Gedmo\Versioned()
      */
     protected $zipCode;
+
+    /**
+     * @var Image
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\BaseBundle\Document\Image", cascade={"persist"})
+     */
+    protected $logoImage;
 
     /**
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\BaseBundle\Document\Image")
@@ -1137,6 +1143,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     public function getLogoUrl()
     {
+
         if ($this->getFile() instanceof File) {
             return '/upload/hotelLogos/' . $this->getLogo();
         }
@@ -1558,6 +1565,27 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
+     * @return Image|null
+     */
+    public function getLogoImage(): ?Image
+    {
+        return $this->logoImage;
+    }
+
+    public function setLogoImage(Image $logoImage)
+    {
+        $this->logoImage = $logoImage;
+    }
+
+    public function removeLogoImage()
+    {
+        $this->logoImage = null;
+
+        return $this;
+    }
+
+
+    /**
      * @return mixed
      */
     public function getZipCode()
@@ -1594,4 +1622,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
         return $this;
     }
+
+
 }

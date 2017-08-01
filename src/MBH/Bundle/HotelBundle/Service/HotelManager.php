@@ -6,6 +6,7 @@ namespace MBH\Bundle\HotelBundle\Service;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Process\Process;
 
 /**
  * Class HotelManager
@@ -37,7 +38,8 @@ class HotelManager
         $this->dm->flush();
 
         $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-        $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &');
+        $client = $this->container->getParameter('client');
+        $process = new Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $client]);
         $process->run();
 
         return true;

@@ -5,8 +5,8 @@
 
 {% if hotel is defined and hotel %}
     {% set hotelName = hotel.name %}
-    {% if hotel.file %}
-        {% set logo = hotel.logoUrl %}
+    {% if hotel.logoImage %}
+        {% set logo = asset(vich_uploader_asset(hotel.logoImage, 'imageFile')) %}
     {% endif %}
     {% if hotel.organization %}
         {% set organization = hotel.organization.name %}

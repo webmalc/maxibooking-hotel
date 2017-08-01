@@ -366,7 +366,7 @@ class RoomRepository extends AbstractBaseRepository
     public function fetchFloors()
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
         $docs = $qb->distinct('floor')
             ->getQuery()
             ->execute();

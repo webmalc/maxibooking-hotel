@@ -123,6 +123,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'dates' => 'begin'
             ], $data));
 
+
         return [
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
@@ -331,11 +332,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
+        $total = $this->dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge(['count' => true], $data));
+
         $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
+
+
 
         return [
             'entities' => $entities,
-            'total' => $entities->count(),
+            'total' => $total,
             'draw' => $request->get('draw'),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
             'summary' => $summary

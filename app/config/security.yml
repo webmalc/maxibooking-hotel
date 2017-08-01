@@ -14,6 +14,8 @@ security:
             pattern:    ^/(_profiler|_wdt|css|js)
             security:   false
         main:
+#           Dev test only
+#            http_basic: ~
             pattern: ^/
             form_login:
                 always_use_default_target_path: false
@@ -36,6 +38,7 @@ security:
                 domain:   ~
 
     access_control:
+        - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }

@@ -23,6 +23,7 @@ use MBH\Bundle\PackageBundle\Validator\Constraints as MBHConstraints;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  * @MBHConstraints\PackageAccommodations()
+ * @ODM\Index(keys={"begin"="asc","end"="asc"})
  */
 
 class PackageAccommodation extends Base implements \JsonSerializable

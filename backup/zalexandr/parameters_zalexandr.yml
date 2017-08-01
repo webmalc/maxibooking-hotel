@@ -1,0 +1,53 @@
+parameters:
+    mailer_transport: smtp
+    mailer_host: smtp.example.com
+    mailer_user: robot@example.com
+    mailer_password: password
+    from_email: robot@example.com
+    mailer_encryption: ssl
+    mongodb_host: mbh-mongo
+    mongodb_port: 27017
+    mongodb_database: zalexandr
+    rabbitmq_user: rabbitmq
+    rabbitmq_password: rabbitmq
+    rabbitmq_host: mbh-rabbitmq
+    rabbitmq_vhost: /
+    rabbitmq_port: '5672'
+    secret: hBrNQaX3lh
+    mbhs_key: mySyperSecretKeyForMBHS
+    mbh_environment: prod
+    locale: ru
+    locale.currency: rub
+    debug_toolbar: true
+    debug_redirects: false
+    use_assetic_controller: false
+    router.request_context.host: zalexandr.maxibooking.ru
+    router.request_context.scheme: http
+    router.request_context.base_url: null
+    mbh_timezone: default
+    mbh_package_arrival_time: 12
+    mbh_package_departure_time: 14
+    mbh_package_notpaid_time: '-5 days'
+    mbh_online_form_max_packages: 5
+    mailer_user_arrival_links:
+        about: 'http://example.com/'
+        rooms: 'http://example.com/'
+        map: 'http://example.com/'
+        contacts: 'http://example.com/'
+    mbh_payment_systems_change: true
+    currency_ratio_fix: 1.015
+    mbh_redis: 'redis://mbh-redis'
+    mbh_cache:
+        is_enabled: false
+        prefix: zalexandr
+        lifetime: 7
+        logs: false
+        search:
+            months: 6
+            max_duration: 21
+            min_duration: 3
+    wkhtmltopdf_path: /usr/local/bin/wkhtmltopdf
+    mbh_modules:
+        tasks: true
+    client: zalexandr
+    mongodb_ssl: false

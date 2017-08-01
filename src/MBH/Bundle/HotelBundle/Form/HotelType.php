@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use MBH\Bundle\BaseBundle\Form\ImageType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -16,11 +17,6 @@ class HotelType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $logoHelp = 'views.hotel.form.hotelType.upload_file';
-        if($options['imageUrl']) {
-            $logoHelp = '<a href="'.$options['imageUrl'].'" class="fancybox">' . 'views.hotel.form.hotelType.see_image' . '</a></br><a class="text-danger" href="'.$options['removeImageUrl'].'"><i class="fa fa-trash-o"></i> ' . 'views.hotel.form.hotelType.delete' . '</a>';
-        }
-
         $builder
             ->add('fullTitle', TextType::class, [
                 'label' => 'form.hotelType.name',
@@ -53,14 +49,12 @@ class HotelType extends AbstractType
                 'attr' => ['class' => 'tinymce'],
                 'required' => false
             ])
-            ->add('file', FileType::class, [
-                'label' => 'form.hotelType.logo',
+            ->add('logoImage', HotelLogoImageType::class, [
+                'label' => 'form.hotel_logo.image_file.help',
                 'group' => 'form.hotelType.settings',
-                'help' => $logoHelp,
                 'required' => false,
-                'constraints' => [
-                    new \Symfony\Component\Validator\Constraints\Image()
-                ]
+                'logo_image_delete_url' => $options['logo_image_delete_url']
+
             ])
             ->add('isHostel', CheckboxType::class, [
                 'label' => 'form.hotelType.hostel',
@@ -84,7 +78,7 @@ class HotelType extends AbstractType
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
             'types' => [],
             'imageUrl' => null,
-            'removeImageUrl' => null
+            'logo_image_delete_url' => null
         ]);
     }
 

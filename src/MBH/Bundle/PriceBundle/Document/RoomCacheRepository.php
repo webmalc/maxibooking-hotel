@@ -91,7 +91,7 @@ class RoomCacheRepository extends DocumentRepository
         array $roomTypes = [],
         $tariffs = false
     ) {
-        $qb = $this->createQueryBuilder('q');
+        $qb = $this->createQueryBuilder();
 
         // hotel
         if (!empty($hotel)) {
