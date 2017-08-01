@@ -54,3 +54,13 @@ services:
     mbh.billing.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.installer.log", 200]
+
+    mbh.console.client_install:
+        class: MBH\Bundle\BillingBundle\Command\ClientInstallCommand
+        arguments: ["@mbh.billing.logger"]
+        tags: ['console.command']
+
+    mbh.console.billing_install:
+        class: MBH\Bundle\BillingBundle\Command\BillingInstallCommand
+        arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger"]
+        tags: ['console.command']

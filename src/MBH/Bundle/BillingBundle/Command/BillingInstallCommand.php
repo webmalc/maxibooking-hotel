@@ -10,6 +10,7 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,7 +18,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-class BillingInstallCommand extends ContainerAwareCommand
+class BillingInstallCommand extends Command
 {
 
     /** @var  array */
@@ -32,6 +33,15 @@ class BillingInstallCommand extends ContainerAwareCommand
     /** @var  Logger */
     protected $logger;
 
+    public function __construct(BillingApi $api, DocumentManager $dm, Logger $logger, $name = null)
+    {
+        $this->api = $api;
+        $this->dm = $dm;
+        $this->logger = $logger;
+        parent::__construct($name);
+    }
+
+
     protected function configure()
     {
         $this
@@ -42,9 +52,6 @@ class BillingInstallCommand extends ContainerAwareCommand
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
         $this->options = $resolver->resolve();
-        $this->api = $this->getContainer()->get('mbh.billing.api');
-        $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-        $this->logger = $this->getContainer()->get('mbh.billing.logger');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

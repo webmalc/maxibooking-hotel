@@ -6,15 +6,23 @@ namespace MBH\Bundle\BillingBundle\Command;
 
 use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-class ClientInstallCommand extends ContainerAwareCommand
+class ClientInstallCommand extends Command
 {
     /** @var  Logger */
     protected $logger;
+
+    public function __construct(Logger $logger)
+    {
+        $this->logger = $logger;
+        parent::__construct();
+    }
+
 
     protected function configure()
     {
@@ -23,8 +31,6 @@ class ClientInstallCommand extends ContainerAwareCommand
             ->setDescription('Do install new clients')
             ->addOption('clients', null, InputOption::VALUE_REQUIRED, 'User names (comma-separated)')
             ->addOption('billing', null, InputOption::VALUE_NONE, 'Is this a billing process install?');
-
-        $this->logger = $this->getContainer()->get('mbh.billing.logger');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
