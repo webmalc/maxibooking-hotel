@@ -48,7 +48,8 @@ src/MBH/Bundle/TestBundle/
 
 
 #for new multiinstall
-/app/config/clients
+/app/config/clients/*
+
 /var/clients
 
 #Eclipse
