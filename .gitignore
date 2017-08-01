@@ -42,6 +42,11 @@ web/online
 app/supervisor
 docker_zalex
 
+web/clients/
+backup/
+src/MBH/Bundle/TestBundle/
+
+
 #for new multiinstall
 /app/config/clients
 /var/clients
