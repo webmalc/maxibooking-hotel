@@ -5,9 +5,7 @@ namespace MBH\Bundle\BillingBundle\Controller;
 
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\BillingBundle\Lib\Model\Answer;
-use MBH\Bundle\BillingBundle\Lib\Model\string;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -32,7 +30,7 @@ class MaintenanceController extends BaseController
      * @ParamConverter()
      * @return Response
      */
-    public function installAction(string $client = null)
+    public function installAction(Client $client = null)
     {
         $application = new Application($this->container->get('kernel'));
         $application->setAutoExit(true);
@@ -57,7 +55,7 @@ class MaintenanceController extends BaseController
      * @ParamConverter()
      * @return Response
      */
-    public function deleteAction(string $client = null)
+    public function deleteAction(Client $client = null)
     {
 //        $installer = $this->container->get('mbh.billing.http_client_installer');
 //        if ($client) {

@@ -6,7 +6,6 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\BillingBundle\Lib\Model\string;
 
 class MaintenanceManager
 {

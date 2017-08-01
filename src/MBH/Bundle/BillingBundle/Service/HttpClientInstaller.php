@@ -9,7 +9,6 @@ use MBH\Bundle\BillingBundle\Lib\Exceptions\AfterInstallException;
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
 use MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager;
 use MBH\Bundle\BillingBundle\Lib\Model\Answer;
-use MBH\Bundle\BillingBundle\Lib\Model\string;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;

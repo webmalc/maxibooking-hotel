@@ -45,10 +45,13 @@ class Answer
 
     /**
      * @param bool $status
+     * @return $this
      */
     public function setStatus(bool $status)
     {
         $this->status = $status;
+
+        return $this;
     }
 
     /**

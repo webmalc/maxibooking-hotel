@@ -6,12 +6,10 @@ namespace MBH\Bundle\BillingBundle\Lib\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class string
+class Client
 {
 
     const DEFAULT_MAXIBOOKING_DOMAIN_NAME = 'maxibooking.ru';
-
-    const CACHE_PREFIX = 'install_';
 
     /** @var  string
      * @Assert\NotNull(groups={"installation"})

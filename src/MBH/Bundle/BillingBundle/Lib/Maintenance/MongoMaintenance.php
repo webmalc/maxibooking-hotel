@@ -5,7 +5,6 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
-use MBH\Bundle\BillingBundle\Lib\Model\string;
 use MongoDB\Client as MongoClient;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Exception\InvalidArgumentException;
