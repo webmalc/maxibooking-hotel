@@ -163,7 +163,7 @@ class Uniteller implements PaymentSystemInterface
         $payer = $cashDocument->getPayer();
         $createdAt = clone $cashDocument->getCreatedAt();
         $createdAt->modify('+30 minutes');
-        $this->getUnitellerReceiptData()
+
         return [
             'action' => 'https://fpay.uniteller.ru/v1/pay',
             'testAction' => 'https://fpaytest.uniteller.ru/v1/pay',
@@ -179,6 +179,8 @@ class Uniteller implements PaymentSystemInterface
             'touristPhone' => $payer ? $payer->getPhone(true) : null,
             'comment' => 'Order # ' . $cashDocument->getOrder()->getId() . '. CashDocument #' . $cashDocument->getId(),
             'signature' => $this->getSignature($cashDocument, $url),
+            'receipt' => $this->getReceipt($cashDocument),
+            'receiptSignature' => $this->getReceiptSignature($cashDocument)
         ];
     }
 
@@ -206,14 +208,14 @@ class Uniteller implements PaymentSystemInterface
 
     /**
      * @param CashDocument $cashDocument
-     * @return array
+     * @return string
      */
-    public function getUnitellerReceiptData(CashDocument $cashDocument)
+    public function getReceipt(CashDocument $cashDocument)
     {
         $order = $cashDocument->getOrder();
         /** @var \MBH\Bundle\PackageBundle\Document\Tourist $payer */
         $payer = $order->getPayer();
-        $receipt = base64_encode(json_encode([
+        return base64_encode(json_encode([
             'customer' => [
                 'phone' => $payer->getPhone(),
                 'email' => $payer->getEmail(),
@@ -222,13 +224,20 @@ class Uniteller implements PaymentSystemInterface
             'lines' => $this->getUnitellerLineItems($order),
             'total' => $cashDocument->getTotal()
         ]));
+    }
 
-        $receiptSignature = mb_strtoupper(
+    /**
+     * @param CashDocument $cashDocument
+     * @return array
+     */
+    public function getReceiptSignature(CashDocument $cashDocument)
+    {
+        return mb_strtoupper(
             hash("sha256", (
-                hash("sha256", $formData['shopId'])
-                . '&' . hash("sha256", $formData['orderId'])
-                . '&' . hash("sha256", $formData['total'])
-                . '&' . hash("sha256", $receipt)
+                hash("sha256", $this->getUnitellerShopIDP())
+                . '&' . hash("sha256", $cashDocument->getId())
+                . '&' . hash("sha256", $cashDocument->getTotal())
+                . '&' . hash("sha256", $this->getReceipt($cashDocument))
                 . '&' . hash("sha256", $this->getUnitellerPassword())
             ))
         );
@@ -239,11 +248,6 @@ class Uniteller implements PaymentSystemInterface
         // + '&' + sha256(Subtotal_P)
         // + '&' + sha256(Receipt)
         // + '&' + sha256(password) ) )
-
-        return [
-            'receipt' => $receipt,
-            'receiptSignature' => $receiptSignature
-        ];
     }
 
     /**
@@ -261,11 +265,7 @@ class Uniteller implements PaymentSystemInterface
 
             $this->addLineItem($packageLineName, $package->getPackagePrice(true), 1, $lineItems);
             foreach ($package->getServices() as $service) {
-                $this->addLineItem(
-                    $service->getService()->getName(),
-                    $service->getPrice(),
-                    $service->getTotalAmount(),
-                    $lineItems);
+                $this->addLineItem($service->getService()->getName(), $service->getPrice(), $service->getTotalAmount(), $lineItems);
             }
         }
 

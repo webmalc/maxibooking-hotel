@@ -527,15 +527,6 @@ class ApiController extends Controller
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        $formData = $clientConfig->getFormData($order->getCashDocuments()[0]);
-        if ($clientConfig->getPaymentSystem() == 'uniteller') {
-            $receiptData = $this->get('mbh.payment_systems_helper')->getUnitellerReceiptData($order, $clientConfig);
-            $formData = array_merge($formData, [
-                'receipt' => $receiptData['receipt'],
-                'receiptSignature' => $receiptData['receiptSignature']
-            ]);
-        }
-
         if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
         } else {
@@ -550,7 +541,7 @@ class ApiController extends Controller
                             ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle'
                         )
-                    ], $formData)
+                    ], $clientConfig->getFormData($order->getCashDocuments()[0]))
                 ]
             );
         }

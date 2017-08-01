@@ -10,7 +10,7 @@
     <input type="hidden" class="payment-system-form-comment" name="Comment" value="{{ data.comment|default('') }}">
     <input type="hidden" class="payment-system-form-signature" name="Signature" value="{{ data.signature|default('')}}">
     <input type="hidden" class="payment-system-form-currency" name="Currency" value="{{ data.currency|default('')}}">
-    <input type="hidden" name="Receipt" value="{{ data.receipt }}">
-    <input type="hidden" name="ReceiptSignature" value="{{ data.receiptSignature }}">
+    <input type="hidden" name="Receipt" value="{{ data.receipt|default('') }}">
+    <input type="hidden" name="ReceiptSignature" value="{{ data.receiptSignature|default('') }}">
     {% include 'MBHClientBundle:PaymentSystem:button.html.twig' with {'data': data} %}
 </form>
