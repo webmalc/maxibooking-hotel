@@ -23,24 +23,32 @@ class PaymentSystemsHelper
         $formData = $clientConfig->getFormData($order->getCashDocuments()[0]);
         /** @var \MBH\Bundle\PackageBundle\Document\Tourist $payer */
         $payer = $order->getPayer();
-        $receipt = json_encode([
+        $receipt = base64_encode(json_encode([
             'customer' => [
                 'phone' => $payer->getPhone(),
                 'email' => $payer->getEmail(),
                 'id' => $payer->getId()
             ],
             'lines' => $this->getUnitellerLineItems($order, $clientConfig),
-            'total' => $order->getPrice(false)
-        ]);
+            'total' => $formData['total']
+        ]));
 
         $receiptSignature = mb_strtoupper(
             hash("sha256", (
-                hash("sha256", $formData['shopId']) . '&' .
-                hash("sha256", $formData['orderId']) . '&' .
-                hash("sha256", $formData['total']) . '&' .
-                hash("sha256", $receipt) . '&' . hash("sha256", $clientConfig->getUniteller()->getUnitellerPassword()))
-            )
+                hash("sha256", $formData['shopId'])
+                . '&' . hash("sha256", $formData['orderId'])
+                . '&' . hash("sha256", $formData['total'])
+                . '&' . hash("sha256", $receipt)
+                . '&' . hash("sha256", $clientConfig->getUniteller()->getUnitellerPassword())
+            ))
         );
+        //uppercase(
+        // sha256(
+        // sha256(Shop_IDP)
+        // + '&' + sha256(Order_IDP)
+        // + '&' + sha256(Subtotal_P)
+        // + '&' + sha256(Receipt)
+        // + '&' + sha256(password) ) )
 
         return [
             'receipt' => $receipt,
@@ -91,7 +99,7 @@ class PaymentSystemsHelper
                 'qty' => $amount,
                 'sum' => $price * $amount,
                 'vat' => $config->getUniteller() ? $config->getUniteller()->getTaxationRateCode() : null,
-                'taxmode' => $config->getUniteller() ? $config->getUniteller()->getTaxationRateCode() : null,
+                'taxmode' => $config->getUniteller() ? $config->getUniteller()->getTaxationSystemCode() : null,
             ];
         }
     }

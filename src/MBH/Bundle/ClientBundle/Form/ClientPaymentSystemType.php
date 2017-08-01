@@ -181,11 +181,11 @@ class ClientPaymentSystemType extends AbstractType
             )
             ->add(
                 'unitellerPassword',
-                PasswordType::class,
+                TextType::class,
                 [
                     'label' => 'form.clientPaymentSystemType.uniteller_password',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params uniteller'],
+                    'attr' => ['class' => 'payment-system-params uniteller', 'type' => 'password'],
                     'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $unitellerPassword

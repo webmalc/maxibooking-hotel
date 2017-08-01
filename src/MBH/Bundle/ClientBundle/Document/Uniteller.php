@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\PackageBundle\Document\Order;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -162,7 +163,7 @@ class Uniteller implements PaymentSystemInterface
         $payer = $cashDocument->getPayer();
         $createdAt = clone $cashDocument->getCreatedAt();
         $createdAt->modify('+30 minutes');
-
+        $this->getUnitellerReceiptData()
         return [
             'action' => 'https://fpay.uniteller.ru/v1/pay',
             'testAction' => 'https://fpaytest.uniteller.ru/v1/pay',
@@ -201,6 +202,94 @@ class Uniteller implements PaymentSystemInterface
                 md5($this->getUnitellerPassword())                       // $password
             )
         );
+    }
+
+    /**
+     * @param CashDocument $cashDocument
+     * @return array
+     */
+    public function getUnitellerReceiptData(CashDocument $cashDocument)
+    {
+        $order = $cashDocument->getOrder();
+        /** @var \MBH\Bundle\PackageBundle\Document\Tourist $payer */
+        $payer = $order->getPayer();
+        $receipt = base64_encode(json_encode([
+            'customer' => [
+                'phone' => $payer->getPhone(),
+                'email' => $payer->getEmail(),
+                'id' => $payer->getId()
+            ],
+            'lines' => $this->getUnitellerLineItems($order),
+            'total' => $cashDocument->getTotal()
+        ]));
+
+        $receiptSignature = mb_strtoupper(
+            hash("sha256", (
+                hash("sha256", $formData['shopId'])
+                . '&' . hash("sha256", $formData['orderId'])
+                . '&' . hash("sha256", $formData['total'])
+                . '&' . hash("sha256", $receipt)
+                . '&' . hash("sha256", $this->getUnitellerPassword())
+            ))
+        );
+        //uppercase(
+        // sha256(
+        // sha256(Shop_IDP)
+        // + '&' + sha256(Order_IDP)
+        // + '&' + sha256(Subtotal_P)
+        // + '&' + sha256(Receipt)
+        // + '&' + sha256(password) ) )
+
+        return [
+            'receipt' => $receipt,
+            'receiptSignature' => $receiptSignature
+        ];
+    }
+
+    /**
+     * @param Order $order
+     * @return array
+     */
+    private function getUnitellerLineItems(Order $order)
+    {
+        $lineItems = [];
+
+        foreach ($order->getPackages() as $package) {
+            $packageLineName = 'Услуга проживания в номере категории "'
+                . $package->getRoomType()->getName()
+                . ' объекта размещения "' . $package->getHotel()->getName() . '"';
+
+            $this->addLineItem($packageLineName, $package->getPackagePrice(true), 1, $lineItems);
+            foreach ($package->getServices() as $service) {
+                $this->addLineItem(
+                    $service->getService()->getName(),
+                    $service->getPrice(),
+                    $service->getTotalAmount(),
+                    $lineItems);
+            }
+        }
+
+        return $lineItems;
+    }
+
+    /**
+     * @param $name
+     * @param $price
+     * @param $amount
+     * @param $lineItems
+     */
+    private function addLineItem($name, $price, $amount, &$lineItems)
+    {
+        if ($price > 0) {
+            $lineItems[] = [
+                'name' => $name,
+                'price' => $price,
+                'qty' => $amount,
+                'sum' => $price * $amount,
+                'vat' => $this->getTaxationRateCode(),
+                'taxmode' => $this->getTaxationSystemCode(),
+            ];
+        }
     }
 
     /**
