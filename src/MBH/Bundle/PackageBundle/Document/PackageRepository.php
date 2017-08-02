@@ -88,6 +88,7 @@ class PackageRepository extends DocumentRepository
 
         if ($group) {
             $result = [];
+            /** @var Package $package */
             foreach ($packages as $package) {
                 $roomType = $package->getRoomType();
                 $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
@@ -300,7 +301,7 @@ class PackageRepository extends DocumentRepository
 
     /**
      * @param Room $room
-     * @return Package|null
+     * @return array|Package|null|object
      */
     public function getPackageByAccommodation(Room $room, \DateTime $date)
     {
@@ -319,24 +320,18 @@ class PackageRepository extends DocumentRepository
     }
 
     /**
-     * @param $data
+     * @param Builder $qb
      * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \Exception
      */
-    public function fetchSummary($data)
+    public function fetchSummary(Builder $qb)
     {
-        unset($data['skip']);
-        unset($data['limit']);
-
-        $qb = $this->fetchQuery($data);
         $orderData = [];
         $orderQb = clone $qb;
         $ordersIds = $orderQb->distinct('order.$id')->getQuery()->execute();
 
         if (!empty($ordersIds)) {
             $dm = $this->getDocumentManager();
-            $orderQb = $dm->getRepository('MBHPackageBundle:Order')->createQueryBuilder('o');
+            $orderQb = $dm->getRepository('MBHPackageBundle:Order')->createQueryBuilder();
             $orderQb
                 ->field('id')
                 ->in(iterator_to_array($ordersIds))
@@ -362,9 +357,6 @@ class PackageRepository extends DocumentRepository
 
             $orderData = iterator_to_array($orderQb->getQuery()->execute());
         }
-
-
-        $qb = $this->fetchQuery($data);
 
         $qb->group(
             ['id' => 1],

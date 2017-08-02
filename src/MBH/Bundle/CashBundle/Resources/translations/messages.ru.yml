@@ -82,6 +82,8 @@ form.cashDocumentType.operation_type: Вид операции
 form.cashDocumentType.number: Номер
 form.cashDocumentType.comment: Комментарий
 form.cashDocumentType.is_paid: Оплачен?
+form.cashDocumentType.is_send_mail.label: 'Оповестить о подтверждении платежа?'
+form.cashDocumentType.is_send_mail.help: Отправить ли письмо при подтверждении кассового документа?
 controller.cashController.edit_record_success: 'Запись успешно отредактирована.'
 controller.cashController.payment_confirmed_success: 'Платеж успешно подтвержден'
 controller.cashController.beznal.v.tom.chisle.electronnie: 'Безнал (в т.ч. электронные)'

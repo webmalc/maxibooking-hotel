@@ -5,11 +5,8 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

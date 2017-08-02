@@ -285,3 +285,11 @@ services:
         public: false
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.image_migrate.log", 200]
+    mbh.export_data_handler:
+        class: MBH\Bundle\BaseBundle\Service\Export\ExportDataHandler
+
+    mbh.entities_exporter:
+        class: MBH\Bundle\BaseBundle\Service\Export\CSVExporter
+        arguments:
+            - '@mbh.export_data_handler'
+            - '@translator'

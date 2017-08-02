@@ -830,7 +830,6 @@ class ChessBoardManager {
     }
 
     /**
-     *
      * @param $element
      * @param intervalData
      * @returns {any}
@@ -880,7 +879,25 @@ class ChessBoardManager {
             });
         }
 
+        if (intervalData.isLateCheckOut && resizableHandlesValue.indexOf('e') > -1) {
+            this.addServicesDisplaying($element, '.ui-resizable-e', 'late-check-out-block');
+        }
+        if (intervalData.isEarlyCheckIn && resizableHandlesValue.indexOf('w') > -1) {
+            this.addServicesDisplaying($element, '.ui-resizable-w', 'early-checkin-block')
+        }
+
         return $element;
+    }
+
+    private addServicesDisplaying($element, sideElemBlockClass, addedClass) {
+        let $sideElement = $element.find(sideElemBlockClass);
+        if ($sideElement.length > 0) {
+            $sideElement.addClass(addedClass);
+        } else {
+            let laterCheckOutBlock = document.createElement('div');
+            laterCheckOutBlock.classList.add(addedClass);
+            $element.append(laterCheckOutBlock);
+        }
     }
 
     /**
