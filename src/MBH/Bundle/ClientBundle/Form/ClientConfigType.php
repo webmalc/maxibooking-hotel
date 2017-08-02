@@ -42,6 +42,12 @@ class ClientConfigType extends AbstractType
                 'group' => 'form.clientConfigType.main_group',
                 'required' => false,
             ])
+            ->add('isSendMailAtPaymentConfirmation', CheckboxType::class, [
+                'label' => 'form.clientConfigType.is_send_mail_at_payment_confirmation.label',
+                'help' => 'form.clientConfigType.is_send_mail_at_payment_confirmation.help',
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false,
+            ])
             ->add('searchDates', TextType::class, [
                 'label' => 'form.clientConfigType.search_dates',
                 'help' => 'form.clientConfigType.search_dates_desc',

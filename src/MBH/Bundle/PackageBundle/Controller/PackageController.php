@@ -4,11 +4,9 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
-use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
-use MBH\Bundle\PackageBundle\Document\DeleteReason;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
@@ -23,9 +21,8 @@ use MBH\Bundle\PackageBundle\Form\PackageAccommodationRoomType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PackageBundle\Lib\PackageAccommodationException;
-use MBH\Bundle\PackageBundle\Services\CsvGenerate;
+use MBH\Bundle\PackageBundle\Lib\PackageCreationException;
 use MBH\Bundle\PackageBundle\Services\OrderManager;
-use MBH\Bundle\PackageBundle\Services\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -37,9 +34,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Class PackageController
@@ -223,11 +218,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $generate = $this->get('mbh.package.csv.generator')->generateCsv($data, $formData);
             $response = new Response($generate);
             $response->setStatusCode(200);
-            $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+            $response->headers->set('Content-Type', 'text/csv; charset=windows-1251');
             $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
             return $response;
         }
-
 
         return [
             'form' => $form->createView(),
@@ -241,97 +235,21 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_VIEW')")
      * @Template()
+     * @param Request $request
+     * @return array
      */
     public function jsonAction(Request $request)
     {
         $this->dm->getFilterCollection()->enable('softdeleteable');
+        $qb = $this->get('mbh.order_manager')
+            ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected());
 
-        $data = [
-            'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
-            'roomType' => $request->get('roomType'),
-            'status' => $request->get('status'),
-            'deleted' => $request->get('deleted'),
-            'begin' => $request->get('begin'),
-            'end' => $request->get('end'),
-            'dates' => $request->get('dates'),
-            'skip' => $request->get('start'),
-            'limit' => $request->get('length'),
-            'query' => $request->get('search')['value'],
-            'order' => $request->get('order')['0']['column'],
-            'dir' => $request->get('order')['0']['dir'],
-            'paid' => $request->get('paid'),
-            'confirmed' => $request->get('confirmed'),
-        ];
-
-        //quick links
-        switch ($request->get('quick_link')) {
-            case 'begin-today':
-                $data['dates'] = 'begin';
-                $now = new \DateTime('midnight');
-                $data['begin'] = $now->format('d.m.Y');
-                $data['end'] = $now->format('d.m.Y');
-                $data['checkOut'] = false;
-                $data['checkIn'] = false;
-                break;
-
-            case 'begin-tomorrow':
-                $data['dates'] = 'begin';
-                $now = new \DateTime('midnight');
-                $now->modify('+1 day');
-                $data['begin'] = $now->format('d.m.Y');
-                $data['end'] = $now->format('d.m.Y');
-                $data['checkOut'] = false;
-                $data['checkIn'] = false;
-                break;
-
-            case 'live-now':
-                $data['filter'] = 'live_now';
-                $data['checkIn'] = true;
-                $data['checkOut'] = false;
-                break;
-
-            case 'without-approval':
-                $data['confirmed'] = '0';
-                break;
-
-            case 'without-accommodation':
-                $data['filter'] = 'without_accommodation';
-                $data['dates'] = 'begin';
-                $now = new \DateTime('midnight');
-                $data['end'] = $now->format('d.m.Y');
-                break;
-
-            case 'not-paid':
-                $data['paid'] = 'not_paid';
-                break;
-
-            case 'not-paid-time':
-                $notPaidTime = new \DateTime($this->container->getParameter('mbh.package.notpaid.time'));
-                $data['paid'] = 'not_paid';
-                $data['dates'] = 'createdAt';
-                $data['end'] = $notPaidTime->format('d.m.Y');
-                break;
-
-            case 'not-check-in':
-                $data['checkIn'] = false;
-                $data['dates'] = 'begin';
-                $now = new \DateTime('midnight');
-                $data['end'] = $now->format('d.m.Y');
-                break;
-
-            case 'created-by':
-                $data['createdBy'] = $this->getUser()->getUsername();
-                break;
-            default:
-        }
-
-        //List user package only
-        if (!$this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW_ALL')) {
-            $data['createdBy'] = $this->getUser()->getUsername();
-        }
-
-        $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
-        $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
+        $entities = $qb->getQuery()->execute();
+        $summary = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->fetchSummary($qb
+                ->limit(0)
+                ->skip(0));
 
         return [
             'entities' => $entities,
@@ -607,7 +525,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
-
 
         $form = $this->createForm(OrderTouristType::class, null, ['guest' => false]);
 

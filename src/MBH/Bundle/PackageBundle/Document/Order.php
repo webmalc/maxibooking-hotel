@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -287,7 +288,7 @@ class Order extends Base
     /**
      * Get packages
      *
-     * @return Package[] $packages
+     * @return Package[]|ArrayCollection $packages
      */
     public function getPackages()
     {

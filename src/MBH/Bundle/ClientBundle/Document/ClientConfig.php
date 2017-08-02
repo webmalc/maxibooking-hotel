@@ -117,7 +117,7 @@ class ClientConfig extends Base
     protected $uniteller;
 
     /**
-     * @var Uniteller
+     * @var Rbk
      * @ODM\EmbedOne(targetDocument="Rbk")
      */
     protected $rbk;
@@ -196,6 +196,32 @@ class ClientConfig extends Base
      * @ODM\Field(type="int")
      */
     protected $defaultChildrenQuantity = 0;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     */
+    protected $isSendMailAtPaymentConfirmation = false;
+
+    /**
+     * @return bool
+     */
+    public function isSendMailAtPaymentConfirmation(): bool
+    {
+        return $this->isSendMailAtPaymentConfirmation;
+    }
+
+    /**
+     * @param bool $isSendMailAtPaymentConfirmation
+     * @return ClientConfig
+     */
+    public function setIsSendMailAtPaymentConfirmation(bool $isSendMailAtPaymentConfirmation): ClientConfig
+    {
+        $this->isSendMailAtPaymentConfirmation = $isSendMailAtPaymentConfirmation;
+
+        return $this;
+    }
 
     /**
      * @return int
@@ -436,7 +462,7 @@ class ClientConfig extends Base
     }
 
     /**
-     * @return Uniteller
+     * @return Rbk
      */
     public function getRbk()
     {
@@ -444,7 +470,7 @@ class ClientConfig extends Base
     }
 
     /**
-     * @param Uniteller $rbk
+     * @param Rbk $rbk
      */
     public function setRbk($rbk)
     {

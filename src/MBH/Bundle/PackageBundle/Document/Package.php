@@ -320,7 +320,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * Assert\Range(
      *      min=1,
