@@ -931,6 +931,54 @@ var disableCheckboxListen = function () {
     });
 };
 
+function getExportButtonSettings(entityName, format, filterDataCallback) {
+    var exportUrl = Routing.generate('export_entities', {entityName: entityName, format: format});
+    return {
+        text: '<i class="fa fa-file-excel-o" title="' + format + '" data-toggle="tooltip" data-placement="bottom"></i>',
+        className: 'btn btn-default btn-sm',
+        action: function () {
+        $.ajax({
+            url: exportUrl,
+            type:'GET',
+            success: function (response) {
+                $('<div id="template-document-csv-modal" class="modal"></div>').insertAfter($('.content-wrapper'));
+                var $modal = $('#template-document-csv-modal');
+                $modal.html(response);
+                $modal.find('select').css('width', '100%').select2();
+                $modal.modal('show');
+
+                var $form = $modal.find("form");
+                $form.find('#export-send-button').click(function() {
+                    $.ajax({
+                        url: exportUrl,
+                        type: "POST",
+                        data: filterDataCallback() + '&' + $form.serialize(),
+                        success: function (response) {
+                            if (!response.error) {
+                                downloadCSV(entityName + '.csv', response);
+                                $modal.modal('hide');
+                            }
+                        }
+                    });
+                });
+            }
+        });
+        }
+    }
+}
+
+function downloadCSV(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=windows-1251,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
 
 $(document).ready(function () {
     'use strict';

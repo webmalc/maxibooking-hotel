@@ -5,7 +5,8 @@ mbhbasebundle.service.helper.dvesti: двести
 mbhbasebundle.service.helper.trista: триста
 mbhbasebundle.service.helper.chetyresta: четыреста
 mbhbasebundle.service.helper.miliarda: милиарда
-mbhbasebundle.service.helper.odna: Один
+mbhbasebundle.service.helper.one: Один
+mbhbasebundle.service.helper.odna: Одна
 mbhbasebundle.service.helper.dve: Два
 mbhbasebundle.service.helper.tri: Три
 mbhbasebundle.service.helper.chetire: Четыре
@@ -25,7 +26,10 @@ mbhbasebundle.service.helper.seventeen: Семнадцать
 mbhbasebundle.service.helper.eighteen: Восемнадцать
 mbhbasebundle.service.helper.nineteen: Девятнадцать
 mbhbasebundle.service.helper.million: миллион
+mbhbasebundle.service.helper.millionа: миллиона
+mbhbasebundle.service.helper.millionov: миллионов
 mbhbasebundle.service.helper.milliard: миллиард
+mbhbasebundle.service.helper.milliardov: миллиардов
 mbhbasebundle.view.partials.datepickerperiodselect.period: Период
 mbhbasebundle.view.pdftemplates.individual.izveshcheniye: Извещение
 mbhbasebundle.view.pdftemplates.individual.kassir: Кассир
@@ -153,11 +157,11 @@ mailer.online.backend.prepend: "Здравствуйте, %guest%!<br><br>Вы �
 mailer.online.backend.append: "Мы надеемся, что ваша поездка будет успешной, а пребывание в нашем отеле - комфортным.<br>Благодарим Вас за выбор нашего отеля!"
 mailer.online.backend.signature: "С уважением,<br>Отдел бронирования отеля «%hotel%»"
 
-
-
 mailer.order.confirm.user.subject: "Подтверждение заказа #%order% от %date%"
 mailer.order.confirm.user.prepend: "Здравствуйте, %guest%!<br><br>Ваш заказ был успешно подтвержден службой бронирования."
 mailer.order.confirm.user.append: "Благодарим Вас за выбор нашего отеля!"
+mailer.order.subject_text: Подтверждение оплаты путевки
+mailer.order.prepend_text: 'Оплата на сумму %paymentSum% успешно произведена!'
 
 mailer.report.arrival.subject: "Список ожидаемых гостей на ближайший заезд"
 mailer.user.arrival.subject: "Ждем с нетерпением вашего прибытия!"
@@ -221,6 +225,8 @@ mailer.order.name: Имя
 mailer.order.amount: Итого
 mailer.order.quantity: Количество
 mailer.order.client_info: 'Сведения о клиенте'
+mailer.order.payment_info: 'Сведения об оплате'
+mailer.order.total_paid: Всего оплачено
 mailer.order.phone: Телефон
 mailer.order.number: Номер
 mailer.order.numbers: Номеров
@@ -252,6 +258,7 @@ mailer.userArrival.bye: 'Будем рады вас видеть!'
 mailer.base.rate.bad: Плохо
 mailer.base.rate.good: Хорошо
 mailer.base.rate.perfect: Отлично
+mailer.resetting_mail.reset_pass_button.text: Сбросить пароль
 debt: Долг
 partially_paid: Частично
 paid: Оплачено
@@ -569,3 +576,15 @@ mbhbasebundle.view.pdftemplates.individual.vid.platezha: Вид платежа
 hide: скрыть
 show.more: Показать еще
 errors: Ошибки
+
+# dashboard
+dashboard.modal.header: 'Предупреждения'
+dashboard.confirm.tooltip: 'Отметить прочитанным'
+dashboard.messages.hotel.errors: 'обнаружены следующие ошибки'
+dashboard.messages.roomType.roomCache: 'не выставлены "Номера в продаже" на следующие периоды'
+dashboard.messages.roomType.priceCache: 'не выставлены "Цены" основного тарифа на следующие периоды'
+dashboard.link: 'посмотреть'
+
+forms.export_type.main_group: Настройки генерируемого документа
+forms.export_type.fields.label: Названия полей
+forms.export_type.fields.help: Имена экспортируемых полей

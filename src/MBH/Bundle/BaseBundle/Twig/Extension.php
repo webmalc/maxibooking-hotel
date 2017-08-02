@@ -1,6 +1,7 @@
 <?php
 namespace MBH\Bundle\BaseBundle\Twig;
 
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -20,6 +21,9 @@ class Extension extends \Twig_Extension
     * @var \Doctrine\ODM\MongoDB\DocumentManager
     */
     protected $dm;
+
+    private $clientConfig;
+    private $isClientConfigInit = false;
 
     public function __construct(ContainerInterface $container)
     {
@@ -113,11 +117,16 @@ class Extension extends \Twig_Extension
     }
 
     /**
-     * @return array
+     * @return ClientConfig
      */
-    public function clientConfig()
+    public function getClientConfig()
     {
-        return $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        if (!$this->isClientConfigInit) {
+            $this->clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+            $this->isClientConfigInit = true;
+        }
+
+        return $this->clientConfig;
     }
 
     /**
@@ -169,7 +178,7 @@ class Extension extends \Twig_Extension
         return [
             'currency' => new \Twig_SimpleFunction('currency', [$this, 'currency'], ['is_safe' => ['html']]),
             'user_cash' => new \Twig_SimpleFunction('user_cash', [$this, 'cashDocuments'], ['is_safe' => ['html']]),
-            'client_config' => new \Twig_SimpleFunction('client_config', [$this, 'clientConfig']),
+            'client_config' => new \Twig_SimpleFunction('client_config', [$this, 'getClientConfig']),
             'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
         ];

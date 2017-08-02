@@ -3,7 +3,6 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\DBAL\Query\QueryBuilder;
-use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -90,6 +89,7 @@ class PackageRepository extends DocumentRepository
 
         if ($group) {
             $result = [];
+            /** @var Package $package */
             foreach ($packages as $package) {
                 $roomType = $package->getRoomType();
                 $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
@@ -299,7 +299,7 @@ class PackageRepository extends DocumentRepository
 
     /**
      * @param Room $room
-     * @return Package|null
+     * @return array|Package|null|object
      */
     public function getPackageByAccommodation(Room $room, \DateTime $date)
     {
@@ -318,24 +318,18 @@ class PackageRepository extends DocumentRepository
     }
 
     /**
-     * @param $data
+     * @param Builder $qb
      * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \Exception
      */
-    public function fetchSummary($data)
+    public function fetchSummary(Builder $qb)
     {
-        unset($data['skip']);
-        unset($data['limit']);
-
-        $qb = $this->fetchQuery($data);
         $orderData = [];
         $orderQb = clone $qb;
         $ordersIds = $orderQb->distinct('order.$id')->getQuery()->execute();
 
         if (!empty($ordersIds)) {
             $dm = $this->getDocumentManager();
-            $orderQb = $dm->getRepository('MBHPackageBundle:Order')->createQueryBuilder('o');
+            $orderQb = $dm->getRepository('MBHPackageBundle:Order')->createQueryBuilder();
             $orderQb
                 ->field('id')
                 ->in(iterator_to_array($ordersIds))
@@ -361,9 +355,6 @@ class PackageRepository extends DocumentRepository
 
             $orderData = iterator_to_array($orderQb->getQuery()->execute());
         }
-
-
-        $qb = $this->fetchQuery($data);
 
         $qb->group(
             ['id' => 1],
@@ -428,11 +419,12 @@ class PackageRepository extends DocumentRepository
      */
     public function fetchQuery($data)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  DocumentManager */
         $dm = $this->getDocumentManager();
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
         $now = new \DateTime('midnight');
         $orderData = [];
+        $isShowDeleted = isset($data['deleted']) && $data['deleted'];
 
         //confirmed
         if (isset($data['confirmed']) && $data['confirmed'] != null) {
@@ -450,7 +442,15 @@ class PackageRepository extends DocumentRepository
             $orderData = array_merge($orderData, ['asIdsArray' => true, 'status' => $data['status']]);
         }
         if (!empty($orderData)) {
+            if ($isShowDeleted && $dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $dm->getFilterCollection()->disable('softdeleteable');
+            }
+
             $orders = $dm->getRepository('MBHPackageBundle:Order')->fetch($orderData);
+
+            if (!$dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $dm->getFilterCollection()->enable('softdeleteable');
+            }
             $qb->field('order.id')->in($orders);
         }
 
@@ -566,7 +566,28 @@ class PackageRepository extends DocumentRepository
 
             if (count($touristsIds)) {
                 $qb->addOr($qb->expr()->field('tourists.id')->in($touristsIds));
-                $qb->addOr($qb->expr()->field('mainTourist.id')->in($touristsIds));
+            }
+
+            $organizations = $dm->getRepository('MBHPackageBundle:Organization')
+                ->createQueryBuilder()
+                ->field('type')->equals('contragents')
+                ->field('name')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+                ->getQuery()
+                ->execute();
+
+            $organizationsIds = array_map(function ($organization) {
+                return $organization->getId();
+            }, $organizations->toArray());
+            $orders = $dm->getRepository('MBHPackageBundle:Order')
+                ->createQueryBuilder()
+                ->field('organization.id')->in($organizationsIds)
+                ->getQuery()
+                ->execute();
+            $ordersIds = array_map(function (Order $order) {
+                return $order->getId();
+            }, $orders->toArray());
+            if (count($ordersIds) > 0) {
+                $qb->addOr($qb->expr()->field('order.id')->in($ordersIds));
             }
 
             $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
@@ -625,7 +646,7 @@ class PackageRepository extends DocumentRepository
         }
 
         //deleted if
-        if (isset($data['deleted']) && $data['deleted'] || $dateType == 'deletedAt') {
+        if ($isShowDeleted || $dateType == 'deletedAt') {
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
             }
@@ -846,5 +867,14 @@ class PackageRepository extends DocumentRepository
             ->field('end')->lte($end);
 
         return $queryBuilder->getQuery()->execute();
+    }
+
+    /**
+     * @param $packageAccommodationId
+     * @return object
+     */
+    public function getPackageByPackageAccommodationId(string $packageAccommodationId)
+    {
+        return $this->findOneBy(['accommodations.id' => $packageAccommodationId]);
     }
 }

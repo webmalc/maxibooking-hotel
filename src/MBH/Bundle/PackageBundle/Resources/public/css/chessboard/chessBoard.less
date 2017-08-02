@@ -145,15 +145,24 @@ body {
 }
 
 .danger, .package {
-  background-color: rgba(221, 75, 57, 0.6);
+  background-color: #ff9e80;
+  .package-description, .ui-resizable-e, .ui-resizable-w  {
+    background-color: #c96f53;
+  }
 }
 
 .success {
-  background-color: rgba(0, 166, 90, 0.6);
+  background-color: #8bc34a !important;
+  .package-description, .ui-resizable-e, .ui-resizable-w  {
+    background-color: #7d8600;
+  }
 }
 
 .warning {
-  background-color: rgba(243, 156, 18, 0.6);
+  background-color: #fdd835;
+  .package-description, .ui-resizable-e, .ui-resizable-w  {
+    background-color: #c5a600;
+  }
 }
 
 #accommodation-chessBoard-content {
@@ -658,25 +667,28 @@ body {
   }
 }
 
-.ui-resizable-e, .ui-resizable-w {
+.ui-resizable-e, .ui-resizable-w, .late-check-out-block, .early-checkin-block {
   z-index: 150;
   width: 7px;
   height: @height;
   position: absolute;
-  background-color: rgba(221, 75, 57, 1);
   cursor: pointer;
   top: 0;
 }
 
-.ui-resizable-w {
+.ui-resizable-w, .early-checkin-block {
   border-left: 1px solid wheat;
   cursor: w-resize;
 }
 
-.ui-resizable-e {
+.ui-resizable-e, .late-check-out-block {
   right: 0;
   border-right: 1px solid wheat;
   cursor: e-resize;
+}
+
+.late-check-out-block, .early-checkin-block {
+  background-color: #65619b !important;
 }
 
 .remove-package-button, .divide-package-button {

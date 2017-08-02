@@ -71,7 +71,7 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
             foreach (self::SERVICES as $catName => $services) {
                 $category = $manager->getRepository('MBHPriceBundle:ServiceCategory')->findOneBy([
                     'system' => true,
-                    'fullTitle' => $catName,
+                    'fullTitle' => $trans->trans($catName),
                     'hotel.id' => $hotel->getId()
                 ])
                 ;

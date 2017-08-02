@@ -539,9 +539,13 @@ class Service extends Base
      */
     public function isIncludeDeparture()
     {
-        return $this->includeDeparture;
+        if ($this->getCalcType() == 'per_stay') {
+            return $this->includeDeparture;
+        }
+
+        return true;
     }
-    
+
     /**
      * includeArrival set
      *
@@ -566,6 +570,10 @@ class Service extends Base
      */
     public function isIncludeArrival()
     {
-        return $this->includeArrival;
+        if ($this->getCalcType() == 'per_stay') {
+            return $this->includeArrival;
+        }
+
+        return true;
     }
 }

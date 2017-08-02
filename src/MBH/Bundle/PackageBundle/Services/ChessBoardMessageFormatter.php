@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -11,10 +12,13 @@ class ChessBoardMessageFormatter
     private $translator;
     private $successfulMessages = [];
     private $errorMessages = [];
+    /** @var  DocumentManager */
+    private $dm;
 
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(TranslatorInterface $translator, DocumentManager $dm)
     {
         $this->translator = $translator;
+        $this->dm = $dm;
     }
 
     public function addSuccessfulMessage($messageId, array $params = [])
@@ -30,7 +34,8 @@ class ChessBoardMessageFormatter
     public function addSuccessRemoveAccommodationMessage(PackageAccommodation $accommodation)
     {
         /** @var Package $package */
-        $package = $accommodation->getPackage();
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->getPackageByPackageAccommodationId($accommodation->getId());
         $this->addSuccessfulMessage('controller.chessboard.accommodation_remove.success', [
             '%packageId%' => $package->getName(),
             '%payerInfo%' => $this->getPayerInfo($package),
@@ -52,7 +57,8 @@ class ChessBoardMessageFormatter
     public function addSuccessAddAccommodationMessage(PackageAccommodation $newAccommodation, Package $package = null)
     {
         if (!$package) {
-            $package = $newAccommodation->getPackage();
+            $package = $this->dm->getRepository('MBHPackageBundle:Package')
+                ->getPackageByPackageAccommodationId($newAccommodation->getId());
         }
         $this->addSuccessfulMessage('controller.chessboard.accommodation_divide.success', [
             '%packageId%' => $package->getName(),
