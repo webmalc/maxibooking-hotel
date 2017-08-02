@@ -83,7 +83,6 @@ class Cash
             ->setRecipients([$order->getMainTourist()])
             ->setFrom('system')
             ->setType('info')
-            ->setText('valera valakas')
             ->setLink('hide')
             ->setHotel($order->getFirstHotel())
             ->setOrder($order)
