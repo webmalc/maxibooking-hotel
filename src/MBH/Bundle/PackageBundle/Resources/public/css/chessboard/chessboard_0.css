@@ -655,7 +655,9 @@ body {
   cursor: pointer;
 }
 .ui-resizable-e,
-.ui-resizable-w {
+.ui-resizable-w,
+.late-check-out-block,
+.early-checkin-block {
   z-index: 150;
   width: 7px;
   height: 25px;
@@ -663,14 +665,20 @@ body {
   cursor: pointer;
   top: 0;
 }
-.ui-resizable-w {
+.ui-resizable-w,
+.early-checkin-block {
   border-left: 1px solid wheat;
   cursor: w-resize;
 }
-.ui-resizable-e {
+.ui-resizable-e,
+.late-check-out-block {
   right: 0;
   border-right: 1px solid wheat;
   cursor: e-resize;
+}
+.late-check-out-block,
+.early-checkin-block {
+  background-color: #65619b !important;
 }
 .remove-package-button,
 .divide-package-button {
