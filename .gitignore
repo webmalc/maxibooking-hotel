@@ -47,10 +47,11 @@ backup/
 src/MBH/Bundle/TestBundle/
 
 
-#for new multiinstall
-/app/config/clients/*
+
 
 /var/clients
+app/config/clients/
+
 
 #Eclipse
 tmp/
