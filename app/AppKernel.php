@@ -1,5 +1,6 @@
 <?php
 
+use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
@@ -34,6 +35,8 @@ class AppKernel extends Kernel
             new Lexik\Bundle\TranslationBundle\LexikTranslationBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
             new Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle(),
+            new DoctrineCacheBundle(),
+
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),

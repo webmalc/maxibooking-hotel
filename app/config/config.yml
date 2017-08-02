@@ -95,7 +95,7 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: file }
     encryption: "%mailer_encryption%"
-    
+
 # DoctrineMongoDBBundle Configuration
 doctrine_mongodb:
     connections:
@@ -198,6 +198,14 @@ knp_snappy:
 dinhkhanh_mongo_db_acl:
     acl_provider:
         default_database: "%mongodb_database%"
+
+doctrine_cache:
+    acl_cache:
+        id: 'doctrine_cache.providers.acl_apc_provider'
+    providers:
+        acl_apc_provider:
+            namespace: "%mongodb_database%_"
+            type: 'apc'
 
 liip_imagine:
     resolvers:
