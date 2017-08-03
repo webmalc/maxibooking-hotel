@@ -949,35 +949,13 @@ function getExportButtonSettings(entityName, format, filterDataCallback) {
 
                 var $form = $modal.find("form");
                 $form.find('#export-send-button').click(function() {
-                    $.ajax({
-                        url: exportUrl,
-                        type: "POST",
-                        data: filterDataCallback() + '&' + $form.serialize(),
-                        success: function (response) {
-                            if (!response.error) {
-                                downloadCSV(entityName + '.csv', response);
-                                $modal.modal('hide');
-                            }
-                        }
-                    });
+                    window.open(exportUrl + '?' + filterDataCallback() + '&' + $form.serialize());
+                    $modal.modal('hide');
                 });
             }
         });
         }
     }
-}
-
-function downloadCSV(filename, text) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=windows-1251,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
-
-    element.style.display = 'none';
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
 }
 
 $(document).ready(function () {
