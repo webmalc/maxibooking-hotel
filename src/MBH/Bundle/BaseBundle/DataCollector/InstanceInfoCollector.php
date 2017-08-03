@@ -20,29 +20,25 @@ class InstanceInfoCollector extends DataCollector
     /** @var  ContainerInterface */
     private $container;
 
-    private $client;
-
     public function __construct(KernelInterface $kernel)
     {
-
         $this->kernel = $kernel;
         $this->container = $this->kernel->getContainer();
-        $this->client = $kernel->getClient();
-
     }
 
 
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
         $this->data = [
-            'user' => $this->client,
+            'user' => $request->server->get('MB_CLIENT'),
             'dirs' => $this->getInstanceDirs()
         ];
     }
 
+
     public function getUser()
     {
-        return $this->client;
+        return $this->data['user'];
     }
 
     public function getDirs()
@@ -58,8 +54,7 @@ class InstanceInfoCollector extends DataCollector
             'logDir' => $this->kernel->getLogDir(),
             'vichUpload:destination' => $this->getVichUploadFolder('upload_destination'),
             'vichUpload:uri_prefix' => $this->getVichUploadFolder('uri_prefix'),
-            'liip:cache:path' => $this->getLiipCachePath(),
-            'orderDocument:path' => realpath((new OrderDocument())->getUploadRootDir($this->client))
+            'liip:cache:path' => $this->getLiipCachePath()
         ];
 
         return $dirs;
