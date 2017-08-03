@@ -27,6 +27,8 @@ class CSVExporter
     public function exportToCSV(Builder $qb, $entityName, $exportedFields = null): Response
     {
         $rawMongoData = $qb
+            ->limit(0)
+            ->skip(0)
             ->hydrate(false)
             ->getQuery()
             ->execute()
@@ -44,10 +46,10 @@ class CSVExporter
             $rows[] = join(';', $handledEntityData);
         }
         $content = join("\n", $rows);
-
+        $content = iconv('UTF-8', 'windows-1251', $content);
         $response = new Response($content);
         $response->setStatusCode(200);
-        $response->headers->set('Content-Type', 'text/csv; charset=windows-1251');
+        $response->headers->set('Content-Type', 'text/csv');
         $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
 
         return $response;
