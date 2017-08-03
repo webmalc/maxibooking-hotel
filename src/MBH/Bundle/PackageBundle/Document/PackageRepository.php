@@ -151,7 +151,7 @@ class PackageRepository extends DocumentRepository
             ->field('end')->gte($begin)
             ->field('virtualRoom')->notEqual(null)
             ->field('deletedAt')->equals(null);
-
+        $qb->sort('begin', 'asc');
         if ($roomType) {
             $qb->field('roomType.id')->equals($roomType->getId());
         }
