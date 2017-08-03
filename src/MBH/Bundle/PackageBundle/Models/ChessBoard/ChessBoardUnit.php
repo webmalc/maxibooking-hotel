@@ -23,6 +23,8 @@ class ChessBoardUnit implements \JsonSerializable
     /** @var  AuthorizationChecker $rightsChecker */
     private $rightsChecker;
     private $emptyIntervalData;
+    private $hasEarlyCheckin = false;
+    private $hasLateCheckout = false;
 
     const LEFT_RELATIVE_POSITION = 'left';
     const RIGHT_RELATIVE_POSITION = 'right';
@@ -38,16 +40,22 @@ class ChessBoardUnit implements \JsonSerializable
      * @param Package $package
      * @param PackageAccommodation|null $accommodation
      * @param array $emptyIntervalData
+     * @param bool $hasEarlyCheckin
+     * @param bool $hasLateCheckout
      * @return ChessBoardUnit
      */
     public function setInitData(
         Package $package,
         ?PackageAccommodation $accommodation = null,
-        array $emptyIntervalData = []
+        array $emptyIntervalData = [],
+        bool $hasEarlyCheckin = false,
+        bool $hasLateCheckout = false
     ) {
         $this->package = $package;
         $this->accommodation = $accommodation;
         $this->emptyIntervalData = $emptyIntervalData;
+        $this->hasEarlyCheckin = $hasEarlyCheckin;
+        $this->hasLateCheckout = $hasLateCheckout;
 
         return $this;
     }
@@ -71,8 +79,8 @@ class ChessBoardUnit implements \JsonSerializable
             'removePackage' => $this->hasRemovePackageRights($this->package),
             'updatePackage' => $this->hasUpdatePackageRights($this->package),
             'packageId' => $this->getPackageId(),
-            'isEarlyCheckIn' => $this->isEarlyCheckIn(),
-            'isLateCheckOut' => $this->isLateCheckOut()
+            'isEarlyCheckIn' => $this->hasEarlyCheckin,
+            'isLateCheckOut' => $this->hasLateCheckout
         ];
 
         if ($this->package->getPayer()) {
