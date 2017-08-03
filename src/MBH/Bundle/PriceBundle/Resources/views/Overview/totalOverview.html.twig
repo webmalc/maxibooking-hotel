@@ -1,0 +1,14 @@
+{% extends 'MBHPriceBundle:Overview:layout.html.twig' %}
+
+{% set small_title = 'price.views.overview.index.small_title'|trans({},'MBHPriceBundle') %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+{% include 'MBHPriceBundle:Overview:tabs.html.twig' with {'active': 2 } %}
+<div class="tab-content">
+    <div class="tab-pane active" id="home">
+
+    </div>
+</div>
+{% endblock %}
+

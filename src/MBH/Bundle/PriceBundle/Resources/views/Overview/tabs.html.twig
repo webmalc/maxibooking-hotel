@@ -1,0 +1,13 @@
+{% set menu = [
+{'route': 'room_overview', 'title': '<i class="fa fa-cog"></i> '~ 'price.views.overview.index.tab_name'|trans({}, 'MBHPriceBundle')},
+{'route': 'total_overview', 'title': '<i class="' ~ currency().icon ~ '"></i> '~ 'price.views.overview.limits.tab_name'|trans({}, 'MBHPriceBundle')},
+]
+%}
+
+<ul class="nav nav-tabs" role="tablist">
+    {% for item in menu %}
+        <li {% if loop.index == active %}class="active"{% endif %}>
+            <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route) }}"{% endif %}>{{item.title|raw}}</a>
+        </li>
+    {% endfor %}
+</ul>

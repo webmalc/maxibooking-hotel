@@ -536,3 +536,5 @@ mbhpricebundle.form.tarifftype.rebenok.do: Ребенок до
 mbhpricebundle.form.tarifftype.infant.do: Инфант до
 price.form.public_summer: Основной - лето
 mbhpricebundle.form.tarifftype.opisaniye.tarifa.dlya.onlayn.bronirovaniya: Описание тарифа для онлайн бронирования
+
+room_cache_controller.limit_of_rooms_exceeded: 'Для дней %busyDays% превышен лимит допустимых комнат'

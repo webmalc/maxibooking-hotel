@@ -63,3 +63,5 @@ form.documentTemplateType.hotel: Отель
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
 
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
+
+room_controller.limit_of_rooms_exceeded: 'Превышен лимит допустимых комнат'

@@ -138,7 +138,7 @@ class RoomCache extends Base
     /**
      * Set date
      *
-     * @param date $date
+     * @param \DateTime $date
      * @return self
      */
     public function setDate($date)

@@ -6,7 +6,6 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Form\RoomCacheGeneratorType;
-use MBH\Bundle\PriceBundle\Lib\RoomCacheGraphGenerator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -139,7 +138,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
      * @Security("is_granted('ROLE_ROOM_CACHE_EDIT')")
      * @Template("MBHPriceBundle:RoomCache:index.html.twig")
      * @param Request $request
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function saveAction(Request $request)
     {
@@ -152,6 +151,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms')
         );
 
+        $roomCachesByDates = [];
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
 
@@ -177,7 +177,6 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                     if (trim($totalRooms['rooms']) === '' || $totalRooms['rooms'] === null) {
                         continue;
                     }
-
                     $newRoomCache = new RoomCache();
                     $newRoomCache->setHotel($hotel)
                         ->setRoomType($roomType)
@@ -185,7 +184,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                         ->setTotalRooms((int) $totalRooms['rooms'])
                         ->setPackagesCount(0)
                     ;
-                    if ($tariffId && $tariff) {
+                    
+                    $roomCachesByDates[$newRoomCache->getDate()->format('d.m.Y')][] = $newRoomCache;
+                    if ($tariffId && isset($tariff) && !is_null($tariff)) {
                         $newRoomCache->setTariff($tariff);
                     }
 
@@ -195,7 +196,6 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 }
             }
         }
-        $this->dm->flush();
 
         //update
         foreach ($updateData as $roomCacheId => $val) {
@@ -219,12 +219,29 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             if ($validator->validate($roomCache)) {
                 $this->dm->persist($roomCache);
             }
+            $roomCachesByDates[$roomCache->getDate()->format('d.m.Y')][] = $roomCache;
         }
-        $this->dm->flush();
 
-        $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.tariffcontroller.update_successfully_saved'));
-        $this->get('mbh.channelmanager')->updateRoomsInBackground();
-        $this->get('mbh.cache')->clear('room_cache');
+        $busyDays = [];
+        $clientSettings = $this->get('mbh.client_limits_manager');
+        foreach ($roomCachesByDates as $dateString => $roomCachesByDate) {
+            $isExceedLimit = $clientSettings->isLimitOfRoomCachesExceeded($roomCachesByDate);
+            if ($isExceedLimit) {
+                $busyDays[] = $dateString;
+            }
+        }
+
+        if (count($busyDays) > 0) {
+            $this->addFlash('error',
+                $this->get('translator')->trans('room_cache_controller.limit_of_rooms_exceeded', [
+                    '%busyDays%' => join(', ', $busyDays)
+                ]));
+        } else {
+            $this->dm->flush();
+            $this->addFlash('success', 'price.tariffcontroller.update_successfully_saved');
+            $this->get('mbh.channelmanager')->updateRoomsInBackground();
+            $this->get('mbh.cache')->clear('room_cache');
+        }
 
         return $this->redirectToRoute('room_cache_overview', [
             'begin' => $request->get('begin'),
@@ -259,7 +276,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
      * @Security("is_granted('ROLE_ROOM_CACHE_EDIT')")
      * @Template("MBHPriceBundle:RoomCache:generator.html.twig")
      * @param Request $request
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function generatorSaveAction(Request $request)
     {
@@ -273,20 +290,22 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $request->getSession()->getFlashBag()->set('success', $this->container->get('translator')->trans('price.tariffcontroller.data_successfully_generated'));
-
             $data = $form->getData();
 
-            $this->get('mbh.room.cache')->update(
+            $error = $this->get('mbh.room.cache')->update(
                 $data['begin'], $data['end'], $hotel, $data['rooms'], false,  $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
             );
+            if (empty($error)) {
+                $this->addFlash('success', 'price.tariffcontroller.data_successfully_generated');
+                $this->get('mbh.channelmanager')->updateRoomsInBackground();
+                $this->get('mbh.cache')->clear('room_cache');
 
-            $this->get('mbh.channelmanager')->updateRoomsInBackground();
-            $this->get('mbh.cache')->clear('room_cache');
-
-            return $this->isSavedRequest() ?
-                $this->redirectToRoute('room_cache_generator') :
-                $this->redirectToRoute('room_cache_overview');
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('room_cache_generator') :
+                    $this->redirectToRoute('room_cache_overview');
+            } else {
+                $this->addFlash('error', $error);
+            }
         }
 
         return [

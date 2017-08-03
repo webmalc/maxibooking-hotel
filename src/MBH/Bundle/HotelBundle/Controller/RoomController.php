@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Form\RoomType as RoomForm;
@@ -102,8 +103,9 @@ class RoomController extends BaseController
             'hotelId' => $this->hotel->getId()
         ]);
         $form->handleRequest($request);
-
-        if ($form->isValid()) {
+        if ($this->get('mbh.client_limits_manager')->isLimitOfRoomsExceeded(1)) {
+            $this->addFlash('error', 'room_controller.limit_of_rooms_exceeded');
+        } elseif ($form->isValid()) {
             $this->dm->persist($room);
             $this->dm->flush();
 
@@ -176,10 +178,7 @@ class RoomController extends BaseController
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set(
-                'success',
-                $this->get('translator')->trans('controller.roomTypeController.record_edited_success')
-            );
+            $this->addFlash('success','controller.roomTypeController.record_edited_success');
 
             return $this->isSavedRequest() ?
                  $this->redirectToRoute('room_edit', ['id' => $entity->getId()]) :
@@ -236,39 +235,45 @@ class RoomController extends BaseController
      * @Security("is_granted('ROLE_ROOM_NEW')")
      * @Template("MBHHotelBundle:Room:generate.html.twig")
      * @ParamConverter(class="MBHHotelBundle:RoomType")
+     * @param Request $request
+     * @param RoomType $entity
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function generateProcessAction(Request $request, RoomType $entity)
     {
         $form = $this->createForm(RoomTypeGenerateRoomsType::class, null, [
             'hotel' => $this->hotel
         ]);
+
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $data = $form->getData();
+            $numberOfCreatedRooms = $data['to'] - $data['from'] + 1;
 
-            for ($i = (int)round($data['from']); $i <= (int)round($data['to']); $i++) {
-                $room = new Room();
-                $room->setFullTitle($data['prefix'] . $i)
-                    ->setRoomType($entity)
-                    ->setHousing(!empty($data['housing']) ? $data['housing'] : null)
-                    ->setFloor(!empty($data['floor']) ? $data['floor'] : null)
-                    ->setHotel($this->hotel)
-                    ->setIsSmoking(isset($data['isSmoking']) ? $data['isSmoking'] : false);
+            if ($this->get('mbh.client_limits_manager')->isLimitOfRoomsExceeded($numberOfCreatedRooms)) {
+                $this->addFlash('error', 'room_controller.limit_of_rooms_exceeded');
+            } else {
+                for ($i = (int)round($data['from']); $i <= (int)round($data['to']); $i++) {
+                    $room = new Room();
+                    $room->setFullTitle($data['prefix'] . $i)
+                        ->setRoomType($entity)
+                        ->setHousing(!empty($data['housing']) ? $data['housing'] : null)
+                        ->setFloor(!empty($data['floor']) ? $data['floor'] : null)
+                        ->setHotel($this->hotel)
+                        ->setIsSmoking(isset($data['isSmoking']) ? $data['isSmoking'] : false);
 
-                if (!count($this->get('validator')->validate(($room)))) {
-                    $this->dm->persist($room);
+                    if (!count($this->get('validator')->validate(($room)))) {
+                        $this->dm->persist($room);
+                    }
                 }
+
+                $this->dm->flush();
+
+                $this->addFlash('success', 'controller.roomTypeController.rooms_generation_success');
+
+                return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
             }
-
-            $this->dm->flush();
-
-            $request->getSession()->getFlashBag()->set(
-                'success',
-                $this->get('translator')->trans('controller.roomTypeController.rooms_generation_success')
-            );
-
-            return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
 
         return array(

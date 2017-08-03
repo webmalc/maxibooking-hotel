@@ -127,7 +127,6 @@ class RoomCache
         return $num;
     }
 
-
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -137,6 +136,7 @@ class RoomCache
      * @param array $availableRoomTypes
      * @param array $tariffs
      * @param array $weekdays
+     * @return string
      */
     public function update(
         \DateTime $begin,
@@ -148,13 +148,11 @@ class RoomCache
         array $tariffs = [],
         array $weekdays = []
     ) {
-
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $roomCaches = $updateCaches = $updates = $remove = [];
 
-        (empty($availableRoomTypes)) ? $roomTypes = $hotel->getRoomTypes()->toArray(
-        ) : $roomTypes = $availableRoomTypes;
+        $roomTypes = empty($availableRoomTypes) ? $hotel->getRoomTypes()->toArray() : $availableRoomTypes;
 
         // find && group old caches
         $oldRoomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
@@ -166,6 +164,7 @@ class RoomCache
                 empty($tariffs) ? null : $this->helper->toIds($tariffs)
             );
 
+        /** @var \MBH\Bundle\PriceBundle\Document\RoomCache $oldRoomCache */
         foreach ($oldRoomCaches as $oldRoomCache) {
             if (!empty($weekdays) && !in_array($oldRoomCache->getDate()->format('w'), $weekdays)) {
                 continue;
@@ -225,6 +224,16 @@ class RoomCache
         if ($rooms == -1) {
             $this->container->get('mbh.mongo')->remove('RoomCache', $remove);
         } else {
+            $outOfLimitRoomsDays = $this->container->get('mbh.client_limits_manager')
+                ->getDaysWithExceededLimitNumberOfRoomsInSell($begin, $end, $roomCaches, $updates);
+            if (count($outOfLimitRoomsDays) > 0) {
+                return $this->container
+                    ->get('translator')
+                    ->trans('room_cache_controller.limit_of_rooms_exceeded', [
+                        '%busyDays%' => join(', ', $outOfLimitRoomsDays)
+                    ]);
+            }
+
             $this->container->get('mbh.mongo')->batchInsert('RoomCache', $roomCaches);
             $this->container->get('mbh.mongo')->update('RoomCache', $updates);
             /** @var \AppKernel $kernel */
@@ -247,5 +256,7 @@ class RoomCache
                 )
             );
         }
+
+        return '';
     }
 }

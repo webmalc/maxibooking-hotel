@@ -157,4 +157,13 @@ class OverviewController extends Controller implements CheckHotelControllerInter
             'restrictions' => $restrictions
         ]);
     }
+
+    /**
+     * @Route("/total", name="total_overview")
+     * @Template()
+     */
+    public function totalOverviewAction()
+    {
+
+    }
 }

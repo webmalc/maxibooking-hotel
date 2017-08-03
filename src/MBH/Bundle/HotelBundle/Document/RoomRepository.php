@@ -309,7 +309,7 @@ class RoomRepository extends AbstractBaseRepository
         array $sort = null
     ) {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
 
         // hotel
         if ($hotel) {
@@ -358,6 +358,18 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         return $qb;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfEnabledRooms()
+    {
+        return $this
+            ->createQueryBuilder()
+            ->field('isEnabled')->equals(true)
+            ->getQuery()
+            ->count();
     }
 
     /**
