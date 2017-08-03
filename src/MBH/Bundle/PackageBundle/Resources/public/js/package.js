@@ -239,6 +239,7 @@ var docReadyPackages = function () {
 
     //package datatable
     var pTable = $('#package-table').dataTable({
+        searchDelay: 350,
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons: [
             {
@@ -257,12 +258,11 @@ var docReadyPackages = function () {
             {
                 text: '<i class="fa fa-file-excel-o" title="CSV" data-toggle="tooltip" data-placement="bottom"></i>',
                 className: 'btn btn-default btn-sm',
-                action: function ( e, dt, button, config ) {
+                action: function (e, dt, button, config) {
                     $.ajax({
                         url: Routing.generate('package_csv'),
-                        type:'POST',
-                        data: {
-                        } ,
+                        type: 'POST',
+                        data: {},
                         success: function (response) {
 
                             $('<div id="template-document-csv-modal" class="modal"> </div> ').insertAfter($('.content-wrapper'));
@@ -274,13 +274,13 @@ var docReadyPackages = function () {
 
                             $modal.find('input[type=checkbox]').bootstrapSwitch({
                                 'size': 'mini',
-                                'onColor' : 'success',
+                                'onColor': 'success',
                                 'onText': 'да',
                                 'offText': 'нет'
                             });
                             var form = $modal.find("form");
 
-                            form.submit(function(){
+                            form.submit(function () {
                                 $('#mbh_bundle_packagebundle_package_csv_type_roomType').val($('#package-filter-roomType').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_status').val($('#package-filter-status').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_deleted').val($('#package-filter-deleted').val())
@@ -303,7 +303,6 @@ var docReadyPackages = function () {
         "processing": true,
         "serverSide": true,
         "ordering": true,
-        "searchDelay": 2500,
         "ajax": {
             "url": Routing.generate('package_json'),
             "data": function (d) {
@@ -348,6 +347,48 @@ var docReadyPackages = function () {
         }
     });
 
+
+
+
+    // alert('alarma!');
+
+    var searchLock = false;
+    var trySearch = false;
+
+    var $searchInput = $('.dataTables_filter input');
+    $searchInput.unbind();
+    $searchInput.on('keyup', function (e){
+        searchTable($(this));
+    });
+
+    var searchTable = function($search) {
+        var value = $search.val();
+        if(value.length >= 4 || e.keyCode === 13) {
+            if(!searchLock) {
+                searchLock = true;
+                pTable.api().search(value).draw();
+                searchLock = false;
+            }
+            if(searchLock) {
+                trySearch = true;
+            }
+
+        }
+        return false;
+    };
+
+
+
+
+    /*$('.dataTables_filter input').change(function(e){e.preventDefault()} )*/
+
+        /*.unbind('keypress keyup input submit')
+        .on('keypress keyup input', function (e) {
+            e.preventDefault();
+            var value = $(this).val();
+
+            pTable.fnFilter(value);
+        });*/
     // package datatable filter
     (function () {
 
