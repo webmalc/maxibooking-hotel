@@ -287,8 +287,12 @@ class ChessBoardDataBuilder
                     ->execute();
 
                 $packagesIds = [];
+                $packagesByAccommodationIds = [];
                 foreach ($packages as $package) {
                     $packagesIds[$package->getId()] = $package->getId();
+                    foreach ($package->getAccommodations() as $accommodation) {
+                        $packagesByAccommodationIds[$accommodation->getId()] = $package;
+                    }
                 }
 
                 $this->loadRelatedToPackagesData($packages);
@@ -296,20 +300,15 @@ class ChessBoardDataBuilder
 
                 $packageAccommodationsData = [];
                 foreach ($accommodations as $accommodation) {
-                    /** @var Package $package */
-                    foreach ($packages as $package) {
+                    $package = $packagesByAccommodationIds[$accommodation->getId()];
+                    $data = [
+                        'package' => $package,
+                        'accommodation' => $accommodation,
+                    ];
+                    $data['Early check-in'] = isset($packageServicesByPackageIdAndCode[$package->getId()]['Early check-in']);
+                    $data['Late check-out'] = isset($packageServicesByPackageIdAndCode[$package->getId()]['Late check-out']);
 
-                        if ($package->getAccommodations()->contains($accommodation)) {
-                            $data = [
-                                'package' => $package,
-                                'accommodation' => $accommodation,
-                            ];
-                            $data['Early check-in'] = isset($packageServicesByPackageIdAndCode[$package->getId()]['Early check-in']);
-                            $data['Late check-out'] = isset($packageServicesByPackageIdAndCode[$package->getId()]['Late check-out']);
-
-                            $packageAccommodationsData[] = $data;
-                        }
-                    }
+                    $packageAccommodationsData[] = $data;
                 }
 
                 usort($packageAccommodationsData, function ($a, $b) {
