@@ -950,6 +950,7 @@ function getExportButtonSettings(entityName, format, filterDataCallback) {
                 var $form = $modal.find("form");
                 $form.find('#export-send-button').click(function() {
                     window.open(exportUrl + '?' + filterDataCallback() + '&' + $form.serialize());
+                    $modal.modal('hide');
                 });
             }
         });
