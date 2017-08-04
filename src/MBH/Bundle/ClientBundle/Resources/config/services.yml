@@ -43,3 +43,12 @@ services:
         arguments:
             - '@doctrine.odm.mongodb.document_manager'
             - '@session'
+    mbh.client_payment_system_type:
+        class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
+        arguments:
+            - '%mbh.payment_systems%'
+            - '%mbh.payment_systems.change%'
+            - '%mbh.payment_systems.default%'
+            - '%mbh.taxation%'
+        tags:
+            - { name: form.type }

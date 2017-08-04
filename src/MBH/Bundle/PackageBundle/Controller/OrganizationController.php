@@ -4,6 +4,9 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 
 use Doctrine\MongoDB\Query\Expr;
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
+use Imagine\Image\ImageInterface;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -125,10 +128,13 @@ class OrganizationController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
+                /** @var string|null $client */
+                $client = $this->container->get('kernel')->getClient();
+
                 $this->dm->persist($organization);
                 $this->dm->flush();
 
-                $organization->upload();
+                $organization->upload($client);
 
                 return $this->redirect($this->generateUrl('organizations', ['type' => $organization->getType()]));
             }
@@ -166,15 +172,20 @@ class OrganizationController extends Controller
                 $this->dm->persist($organization);
                 $this->dm->flush();
 
-                $imagine = new \Imagine\Gd\Imagine();
-                $size = new \Imagine\Image\Box(400, 200);
-                $mode = \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
-                if($stamp = $organization->getStamp() and $stamp instanceof UploadedFile) {
+
+
+                $imagine = new Imagine();
+                $size = new Box(400, 200);
+                $mode = ImageInterface::THUMBNAIL_OUTBOUND;
+                /** @var string|null $client */
+                $client = $this->container->get('kernel')->getClient();
+
+                if($stamp = $organization->getStamp($client) and $stamp instanceof UploadedFile) {
                     $imagine->open($stamp->getPathname())->thumbnail($size, $mode)->save($stamp->getPathname(), [
                         'format' => $stamp->getClientOriginalExtension()
                     ]);
 
-                    $organization->upload();
+                    $organization->upload($client);
                 }
 
                 return $this->isSavedRequest() ?

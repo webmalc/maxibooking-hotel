@@ -5,6 +5,7 @@ namespace MBH\Bundle\BaseBundle\DataCollector;
 
 
 use Liip\ImagineBundle\Imagine\Cache\Resolver\WebPathResolver;
+use MongoDBODMProxies\__CG__\MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,6 @@ class InstanceInfoCollector extends DataCollector
     {
         $this->kernel = $kernel;
         $this->container = $this->kernel->getContainer();
-
     }
 
 
@@ -34,6 +34,7 @@ class InstanceInfoCollector extends DataCollector
             'dirs' => $this->getInstanceDirs()
         ];
     }
+
 
     public function getUser()
     {

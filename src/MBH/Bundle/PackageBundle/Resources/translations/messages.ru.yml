@@ -162,7 +162,6 @@ csv.type.adults: Взрослых
 csv.type.children: Детей
 mbhpackagebundle.form.packagemaintype.nomer.broni: 'Номер брони'
 tourist.visa.type_number: Номер
-form.packageGuestType.fio: ФИО
 form.packageGuestType.find_guest: 'Найти гостя'
 form.packageGuestType.placeholder_fio: 'Иванов Иван Иванович'
 form.touristType.placeholder_surname: Иванов
@@ -176,6 +175,7 @@ form.packageGuestType.min_surname: 'Слишком короткая фамили
 form.packageGuestType.max_surname: 'Слишком длинная фамилия'
 form.touristType.second_name: Отчество
 form.touristType.placeholder_second_name: Иванович
+exportable.tourist.fio: ФИО
 form.packageGuestType.min_second_name: 'Слишком короткое отчество'
 form.packageGuestType.max_second_name: 'Слишком длинное отчество'
 form.touristType.birth_date: 'Дата рождения'
@@ -276,7 +276,6 @@ form.touristType.general_info: Общая информация
 form.touristType.placeholder_surname: Иванов
 form.touristType.name: Имя
 form.touristType.placeholder_name: Иван
-form.touristType.second_name: Отчество
 form.touristType.placeholder_second_name: Иванович
 form.touristType.birth_date: Дата рождения
 form.touristType.gender: Пол

@@ -8,7 +8,11 @@ scripts/deploy_to_test.sh
 /var/bootstrap.php.cache
 /var/cache/*
 /var/logs/*
-/var/clients/
+/var/clients/*
+!.gitkeep
+
+
+
 /src/MBH/Bundle/TestBundle
 !var/cache/.gitkeep
 !var/logs/.gitkeep
@@ -34,8 +38,6 @@ nbproject/
 /web/demo
 /web/index.html
 .idea/
-/parameters.yml
-parameters.yml
 /protectedUpload/1C/*
 /protectedUpload/orderDocuments/*
 /protectedUpload/vegaDocuments/*
@@ -49,11 +51,6 @@ web/clients/
 backup/
 src/MBH/Bundle/TestBundle/
 
-
-#for new multiinstall
-/app/config/clients/*
-
-/var/clients
 
 #Eclipse
 tmp/
@@ -119,7 +116,3 @@ GTAGS
 ctags
 env
 gtags
-
-web/clients/
-
-

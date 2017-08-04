@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Models\ChessBoard;
 
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 /**
@@ -22,6 +23,8 @@ class ChessBoardUnit implements \JsonSerializable
     /** @var  AuthorizationChecker $rightsChecker */
     private $rightsChecker;
     private $emptyIntervalData;
+    private $hasEarlyCheckin = false;
+    private $hasLateCheckout = false;
 
     const LEFT_RELATIVE_POSITION = 'left';
     const RIGHT_RELATIVE_POSITION = 'right';
@@ -37,16 +40,22 @@ class ChessBoardUnit implements \JsonSerializable
      * @param Package $package
      * @param PackageAccommodation|null $accommodation
      * @param array $emptyIntervalData
+     * @param bool $hasEarlyCheckin
+     * @param bool $hasLateCheckout
      * @return ChessBoardUnit
      */
     public function setInitData(
         Package $package,
         ?PackageAccommodation $accommodation = null,
-        array $emptyIntervalData = []
+        array $emptyIntervalData = [],
+        bool $hasEarlyCheckin = false,
+        bool $hasLateCheckout = false
     ) {
         $this->package = $package;
         $this->accommodation = $accommodation;
         $this->emptyIntervalData = $emptyIntervalData;
+        $this->hasEarlyCheckin = $hasEarlyCheckin;
+        $this->hasLateCheckout = $hasLateCheckout;
 
         return $this;
     }
@@ -69,7 +78,9 @@ class ChessBoardUnit implements \JsonSerializable
             'viewPackage' => $this->hasViewPackageRights($this->package),
             'removePackage' => $this->hasRemovePackageRights($this->package),
             'updatePackage' => $this->hasUpdatePackageRights($this->package),
-            'packageId' => $this->getPackageId()
+            'packageId' => $this->getPackageId(),
+            'isEarlyCheckIn' => $this->hasEarlyCheckin,
+            'isLateCheckOut' => $this->hasLateCheckout
         ];
 
         if ($this->package->getPayer()) {
@@ -123,6 +134,36 @@ class ChessBoardUnit implements \JsonSerializable
     {
         return $this->accommodation ?
             $this->accommodation->getRoom()->getRoomType()->getId() : $this->package->getRoomType()->getId();
+    }
+
+    /**
+     * @return bool
+     */
+    private function isEarlyCheckIn()
+    {
+        /** @var PackageService $service */
+        foreach ($this->package->getServices() as $service) {
+            if ($service->getService()->getCode() === 'Early check-in') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isLateCheckOut()
+    {
+        /** @var PackageService $service */
+        foreach ($this->package->getServices() as $service) {
+            if ($service->getService()->getCode() === 'Late check-out') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

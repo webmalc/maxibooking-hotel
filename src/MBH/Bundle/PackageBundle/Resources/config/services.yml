@@ -157,3 +157,9 @@ services:
     task_notice_unpaid_order:
       class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder
       arguments:  ["@mbh.notice.unpaid"]
+
+    mbh.tourist_manager:
+        class: MBH\Bundle\PackageBundle\Services\TouristManager
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@form.factory'

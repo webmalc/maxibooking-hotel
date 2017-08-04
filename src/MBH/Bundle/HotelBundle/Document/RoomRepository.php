@@ -98,6 +98,7 @@ class RoomRepository extends AbstractBaseRepository
      */
     public function getRoomsByType(Hotel $hotel, $grouped = true)
     {
+        $groupedRooms = null;
         $hotelRoomTypes = [];
         foreach ($hotel->getRoomTypes() as $roomType) {
             $hotelRoomTypes[] = $roomType->getId();

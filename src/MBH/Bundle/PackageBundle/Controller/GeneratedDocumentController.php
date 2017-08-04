@@ -123,11 +123,14 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
      */
     public function stampAction(Organization $entity)
     {
-        if (!$entity->getStamp()) {
+        /** @var string|null $client */
+        $client = $this->container->get('kernel')->getClient();
+
+        if (!$entity->getStamp($client)) {
             throw $this->createNotFoundException();
         }
 
-        $fp = fopen($entity->getStamp()->getPathname(), "rb");
+        $fp = fopen($entity->getStamp($client)->getPathname(), "rb");
         $str = stream_get_contents($fp);
         fclose($fp);
 
@@ -137,7 +140,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
         $str = $binary->getContent();*/
 
         $response = new Response($str, 200);
-        $response->headers->set('Content-Type', $entity->getStamp()->getMimeType());
+        $response->headers->set('Content-Type', $entity->getStamp($client)->getMimeType());
 
         return $response;
     }

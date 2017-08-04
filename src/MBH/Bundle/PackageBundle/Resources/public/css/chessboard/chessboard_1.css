@@ -111,7 +111,7 @@ body {
 }
 .danger,
 .package {
-  background-color: #ff9e80;
+  background-color: rgba(221, 75, 57, 0.6);
 }
 .danger .package-description,
 .package .package-description,
@@ -122,7 +122,7 @@ body {
   background-color: #c96f53;
 }
 .success {
-  background-color: #8bc34a !important;
+  background-color: rgba(0, 166, 90, 0.6) !important;
 }
 .success .package-description,
 .success .ui-resizable-e,
@@ -130,7 +130,7 @@ body {
   background-color: #7d8600;
 }
 .warning {
-  background-color: #fdd835;
+  background-color: rgba(243, 156, 18, 0.6);
 }
 .warning .package-description,
 .warning .ui-resizable-e,
@@ -655,7 +655,9 @@ body {
   cursor: pointer;
 }
 .ui-resizable-e,
-.ui-resizable-w {
+.ui-resizable-w,
+.late-check-out-block,
+.early-checkin-block {
   z-index: 150;
   width: 7px;
   height: 30px;
@@ -663,14 +665,20 @@ body {
   cursor: pointer;
   top: 0;
 }
-.ui-resizable-w {
+.ui-resizable-w,
+.early-checkin-block {
   border-left: 1px solid wheat;
   cursor: w-resize;
 }
-.ui-resizable-e {
+.ui-resizable-e,
+.late-check-out-block {
   right: 0;
   border-right: 1px solid wheat;
   cursor: e-resize;
+}
+.late-check-out-block,
+.early-checkin-block {
+  background-color: #65619b !important;
 }
 .remove-package-button,
 .divide-package-button {

@@ -5,6 +5,8 @@ namespace MBH\Bundle\CashBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\PreFlushEventArgs;
+use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\PdfGenerator;
 use MBH\Bundle\CashBundle\Document\CashDocument;
@@ -12,6 +14,7 @@ use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\ODM\MongoDB\Events;
 
 /**
  * Class CashDocumentSubscriber
@@ -38,7 +41,9 @@ class CashDocumentSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            'postPersist'
+            'postPersist',
+            Events::prePersist => 'prePersist',
+            Events::preUpdate => 'preUpdate'
         ];
     }
 
@@ -58,6 +63,42 @@ class CashDocumentSubscriber implements EventSubscriber
                 $session = $this->container->get('session');
                 $session->getFlashBag()->add('danger', $this->container->get('translator')->trans('cashDocumentSubscriber.document.dlia.pechati.ne.sozdan') . ' ' . $e->getMessage());
             }
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function prePersist(LifecycleEventArgs $args)
+    {
+        $cashDocument = $args->getDocument();
+        if ($cashDocument instanceof CashDocument) {
+            $this->trySendOnPaidNotification($cashDocument);
+        }
+    }
+
+    /**
+     * @param PreUpdateEventArgs $args
+     */
+    public function preUpdate(PreUpdateEventArgs $args)
+    {
+        $cashDocument = $args->getDocument();
+
+        if ($cashDocument instanceof CashDocument) {
+            /** @var CashDocument $cashDocument */
+            if ($args->hasChangedField('isPaid')) {
+                $this->trySendOnPaidNotification($cashDocument);
+            }
+        }
+    }
+
+    /**
+     * @param CashDocument $cashDocument
+     */
+    private function trySendOnPaidNotification(CashDocument $cashDocument)
+    {
+        if ($cashDocument->getIsPaid() && $cashDocument->isSendMail()) {
+            $this->container->get('mbh.cash')->sendMailAtCashDocumentConfirmation($cashDocument);
         }
     }
 
@@ -118,9 +159,12 @@ class CashDocumentSubscriber implements EventSubscriber
         if(!$myOrganization->getName())
             throw new Exception($this->container->get('translator')->trans('cashDocumentSubscriber.ne.ustanovleno.nazvanie.organizacii'));
 
+        /** @var \AppKernel $kernel */
+        $kernel = $this->container->get('kernel');
+        $client = $kernel->getClient();
         /** @var PdfGenerator $generator */
         $generator = $this->container->get('mbh.pdf_generator');
-        $generator->setPath($orderDocument->getUploadRootDir());
+        $generator->setPath($orderDocument->getUploadRootDir($client));
         $generator->save($id, $template, ['cashDocument' => $document, 'myOrganization' => $myOrganization]);
 
         $orderDocument->setCashDocument($document);

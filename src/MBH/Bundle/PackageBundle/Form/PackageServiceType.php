@@ -86,9 +86,9 @@ class PackageServiceType extends AbstractType
                 'label' => 'form.packageServiceType.time',
                 'required' => false,
                 'group' => 'form.packageServiceType.add_service',
-                'attr' => ['class' => 'sm'],
+                'attr' => ['style' => 'width: 90px'],
                 'widget' => 'single_text',
-                'html5' => false
+                'html5' => true
             ])
             ->add('amount', TextType::class, [
                 'label' => 'form.packageServiceType.amount',
