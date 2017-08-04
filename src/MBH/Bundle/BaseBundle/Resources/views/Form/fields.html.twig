@@ -75,6 +75,10 @@
     {% endspaceless %}
 {% endblock form_row %}
 
+{% block time_widget %}
+    <div class="bootstrap-timepicker timepicker" style="width: 60px">{{- form_widget(form) -}}</div>
+{% endblock %}
+
 {%- block datetime_widget -%}
     {% if widget == 'single_text' %}
         {{- block('form_widget_simple') -}}

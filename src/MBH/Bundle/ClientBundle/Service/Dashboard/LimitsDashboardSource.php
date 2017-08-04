@@ -10,6 +10,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class LimitsDashboardSource extends AbstractDashboardSource
 {
+    /**
+     * message default type
+     */
+    const TYPE = 'danger';
+
     /** @var  ClientLimitsManager */
     private $limitsManager;
 
