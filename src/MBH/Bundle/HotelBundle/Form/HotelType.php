@@ -9,16 +9,29 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class HotelType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $logoHelp = 'views.hotel.form.hotelType.upload_file';
         if($options['imageUrl']) {
-            $logoHelp = '<a href="'.$options['imageUrl'].'" class="fancybox">' . 'views.hotel.form.hotelType.see_image' . '</a></br><a class="text-danger" href="'.$options['removeImageUrl'].'"><i class="fa fa-trash-o"></i> ' . 'views.hotel.form.hotelType.delete' . '</a>';
+            $logoHelp = '<a href="'.$options['imageUrl'].'" class="fancybox">'
+                . $this->translator->trans('views.hotel.form.hotelType.see_image')
+                . '</a></br><a class="text-danger delete-link" href="'
+                . $options['removeImageUrl']
+                . '" data-text="'
+                . $this->translator->trans('views.hotel.form.hotelType.delete_modal_text')
+                . '"><i class="fa fa-trash-o"></i> '
+                . $this->translator->trans('views.hotel.form.hotelType.delete')
+                . '</a>';
         }
 
         $builder

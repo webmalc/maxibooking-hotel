@@ -84,6 +84,7 @@ class Cash
             ->setFrom('system')
             ->setType('info')
             ->setLink('hide')
+            ->setCategory('tourists')
             ->setHotel($order->getFirstHotel())
             ->setOrder($order)
             ->setSubject('mailer.order.subject_text')
