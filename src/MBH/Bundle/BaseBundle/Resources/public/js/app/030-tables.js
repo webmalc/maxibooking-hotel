@@ -17,9 +17,9 @@ var docReadyTables = function () {
         }
     });
 
-    //Datatables
+
     $.extend($.fn.dataTable.defaults, {
-        "searchDelay": 1200,
+        "searchDelay": 2500,
         "pageLength": 50,
         "stateSave": true,
         "language": {
