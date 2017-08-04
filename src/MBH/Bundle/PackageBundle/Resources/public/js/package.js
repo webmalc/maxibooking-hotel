@@ -238,7 +238,21 @@ var docReadyPackages = function () {
     }());
 
     //package datatable
-    var pTable = $('#package-table').dataTable({
+    var pTable = $('#package-table')
+        .on('init.dt', function () {
+            var  timeout = 0;
+            var $input = $('.dataTables_filter input');
+            $input.unbind();
+            $input.on('keyup keydown', function (event) {
+                clearTimeout(timeout);
+                var that = this;
+                timeout = setTimeout(function () {
+                    searchTable(event, $(that))
+                }, 500);
+            });
+
+        })
+        .dataTable({
         searchDelay: 350,
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons: [
@@ -347,49 +361,13 @@ var docReadyPackages = function () {
         }
     });
 
-
-
-
-    // alert('alarma!');
-
-    var searchLock = false;
-    var trySearch = false;
-
-    var $searchInput = $('.dataTables_filter input');
-    $searchInput.unbind();
-    $searchInput.on('keyup', function (e){
-        searchTable($(this));
-    });
-
-    var searchTable = function($search) {
+    var searchTable = function (event, $search) {
         var value = $search.val();
-        if(value.length >= 4 || e.keyCode === 13) {
-            if(!searchLock) {
-                searchLock = true;
-                pTable.api().search(value).draw();
-                searchLock = false;
-            }
-            if(searchLock) {
-                trySearch = true;
-            }
-
+        if (value.length >= 4 || event.keyCode === 13 || value.length === 0) {
+            pTable.api().search(value).draw();
         }
-        return false;
     };
 
-
-
-
-    /*$('.dataTables_filter input').change(function(e){e.preventDefault()} )*/
-
-        /*.unbind('keypress keyup input submit')
-        .on('keypress keyup input', function (e) {
-            e.preventDefault();
-            var value = $(this).val();
-
-            pTable.fnFilter(value);
-        });*/
-    // package datatable filter
     (function () {
 
         $('#package-table-quick-links li').each(function () {
