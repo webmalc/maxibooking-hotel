@@ -88,6 +88,10 @@ class Cash
             ->setHotel($order->getFirstHotel())
             ->setOrder($order)
             ->setSubject('mailer.order.subject_text')
+            ->setTranslateParams([
+                '%hotelName%' => $order->getFirstHotel()->getName(),
+                '%sum%' => $sumString
+            ])
             ->setAdditionalData([
                 'prependText' => $prependText,
                 'currencyText' => $currencyText

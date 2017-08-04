@@ -160,8 +160,8 @@ mailer.online.backend.signature: "С уважением,<br>Отдел брон�
 mailer.order.confirm.user.subject: "Подтверждение заказа #%order% от %date%"
 mailer.order.confirm.user.prepend: "Здравствуйте, %guest%!<br><br>Ваш заказ был успешно подтвержден службой бронирования."
 mailer.order.confirm.user.append: "Благодарим Вас за выбор нашего отеля!"
-mailer.order.subject_text: Подтверждение оплаты путевки
-mailer.order.prepend_text: 'Оплата на сумму %paymentSum% успешно произведена!'
+mailer.order.subject_text: 'Вас приветствует %hotelName%'
+mailer.order.prepend_text: 'От Вас получена оплата в размере %paymentSum%!'
 
 mailer.report.arrival.subject: "Список ожидаемых гостей на ближайший заезд"
 mailer.user.arrival.subject: "Ждем с нетерпением вашего прибытия!"
@@ -227,6 +227,7 @@ mailer.order.quantity: Количество
 mailer.order.client_info: 'Сведения о клиенте'
 mailer.order.payment_info: 'Сведения об оплате'
 mailer.order.total_paid: Всего оплачено
+mailer.order.surcharges: 'Доплата составляет'
 mailer.order.phone: Телефон
 mailer.order.number: Номер
 mailer.order.numbers: Номеров
