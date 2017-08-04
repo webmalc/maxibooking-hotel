@@ -101,7 +101,8 @@ class ExportController extends BaseController
         $className = $entityData['className'];
         $columnNames = array_keys($className::getExportableFieldsData());
         $form = $this->createForm(ExportType::class, null, [
-            'fieldChoices' => array_combine($columnNames, $columnNames)
+            'fieldChoices' => array_combine($columnNames, $columnNames),
+            'method' => 'GET',
         ]);
 
         $form->handleRequest($request);
