@@ -122,9 +122,6 @@ var docReadyServices = function() {
                     hide();
                 }
             };
-        timeInput.timepicker({
-            showMeridian: false
-        });
         nightsDiv.change(calc);
         personsDiv.change(calc);
         amountInput.change(calc);
