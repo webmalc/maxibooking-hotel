@@ -122,6 +122,10 @@ var docReadyServices = function() {
                     hide();
                 }
             };
+        timeInput.parent().addClass('bootstrap-timepicker');
+        timeInput.timepicker({
+            showMeridian: false
+        });
         nightsDiv.change(calc);
         personsDiv.change(calc);
         amountInput.change(calc);
