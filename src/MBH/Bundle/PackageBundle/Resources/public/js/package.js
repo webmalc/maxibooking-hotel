@@ -238,7 +238,22 @@ var docReadyPackages = function () {
     }());
 
     //package datatable
-    var pTable = $('#package-table').dataTable({
+    var pTable = $('#package-table')
+        .on('init.dt', function () {
+            var  timeout = 0;
+            var $input = $('.dataTables_filter input');
+            $input.unbind();
+            $input.on('keyup keydown', function (event) {
+                clearTimeout(timeout);
+                var that = this;
+                timeout = setTimeout(function () {
+                    searchTable(event, $(that))
+                }, 500);
+            });
+
+        })
+        .dataTable({
+        searchDelay: 350,
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons: [
             {
@@ -257,12 +272,11 @@ var docReadyPackages = function () {
             {
                 text: '<i class="fa fa-file-excel-o" title="CSV" data-toggle="tooltip" data-placement="bottom"></i>',
                 className: 'btn btn-default btn-sm',
-                action: function ( e, dt, button, config ) {
+                action: function (e, dt, button, config) {
                     $.ajax({
                         url: Routing.generate('package_csv'),
-                        type:'POST',
-                        data: {
-                        } ,
+                        type: 'POST',
+                        data: {},
                         success: function (response) {
 
                             $('<div id="template-document-csv-modal" class="modal"> </div> ').insertAfter($('.content-wrapper'));
@@ -274,13 +288,13 @@ var docReadyPackages = function () {
 
                             $modal.find('input[type=checkbox]').bootstrapSwitch({
                                 'size': 'mini',
-                                'onColor' : 'success',
+                                'onColor': 'success',
                                 'onText': 'да',
                                 'offText': 'нет'
                             });
                             var form = $modal.find("form");
 
-                            form.submit(function(){
+                            form.submit(function () {
                                 $('#mbh_bundle_packagebundle_package_csv_type_roomType').val($('#package-filter-roomType').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_status').val($('#package-filter-status').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_deleted').val($('#package-filter-deleted').val())
@@ -303,7 +317,6 @@ var docReadyPackages = function () {
         "processing": true,
         "serverSide": true,
         "ordering": true,
-        "searchDelay": 2500,
         "ajax": {
             "url": Routing.generate('package_json'),
             "data": function (d) {
@@ -348,7 +361,13 @@ var docReadyPackages = function () {
         }
     });
 
-    // package datatable filter
+    var searchTable = function (event, $search) {
+        var value = $search.val();
+        if (value.length >= 4 || event.keyCode === 13 || value.length === 0) {
+            pTable.api().search(value).draw();
+        }
+    };
+
     (function () {
 
         $('#package-table-quick-links li').each(function () {
