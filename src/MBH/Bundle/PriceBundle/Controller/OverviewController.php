@@ -162,8 +162,26 @@ class OverviewController extends Controller implements CheckHotelControllerInter
      * @Route("/total", name="total_overview")
      * @Template()
      */
-    public function totalOverviewAction()
+    public function totalOverviewAction(Request $request)
     {
+        $begin = $this->helper->getDateFromString($request->get('begin'));
+        if (!$begin) {
+            $begin = new \DateTime('midnight');
+        }
 
+        $end = $this->helper->getDateFromString($request->get('end'));
+        if (!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
+            $end = clone $begin;
+            $end->modify('+45 days');
+        }
+
+        $this->dm
+            ->getRepository('MBHPriceBundle:RoomCache')
+            ->getRawExistedRoomCaches($begin, $end);
+
+        return [
+            'begin' => $begin,
+            'end' => $end
+        ];
     }
 }
