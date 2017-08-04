@@ -14,12 +14,12 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class CSVExporter
 {
-    /** @var  ExportDataHandler */
+    /** @var  RawMongoDataHandler */
     private $dataHandler;
     /** @var  TranslatorInterface */
     private $translator;
 
-    public function __construct(ExportDataHandler $dataHandler, TranslatorInterface $translator) {
+    public function __construct(RawMongoDataHandler $dataHandler, TranslatorInterface $translator) {
         $this->dataHandler = $dataHandler;
         $this->translator = $translator;
     }
@@ -34,7 +34,7 @@ class CSVExporter
             ->execute()
             ->toArray();
 
-        $handledData = $this->dataHandler->handleRawMongoData($rawMongoData, $exportedFields, $entityName);
+        $handledData = $this->dataHandler->handleRawMongoData($rawMongoData, $entityName, $exportedFields);
 
         $exportedFieldsNames = [];
         foreach ($exportedFields as $exportedField) {

@@ -190,6 +190,12 @@ class RoomCacheRepository extends DocumentRepository
         return $result;
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array $selectedFields
+     * @return array
+     */
     public function getRawExistedRoomCaches(\DateTime $begin, \DateTime $end, array $selectedFields = [])
     {
         $qb = $this->fetchQueryBuilder($begin, $end, null, [], null);

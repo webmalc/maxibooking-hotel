@@ -8,7 +8,9 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Export;
 
-class ExportDataHandler
+use MBH\Bundle\BaseBundle\Lib\Exportable;
+
+class RawMongoDataHandler
 {
     const DEFAULT_DATE_FORMAT = 'd.m.Y H:i';
 
@@ -18,9 +20,10 @@ class ExportDataHandler
      * @param $entityName
      * @return array
      */
-    public function handleRawMongoData(array $mongoData, $fieldNames = null, $entityName)
+    public function handleRawMongoData(array $mongoData, $entityName, $fieldNames = null)
     {
         $resultData = [];
+        /** @var Exportable $entityName */
         $columnData = $entityName::getExportableFieldsData();
         foreach ($mongoData as $id => $entityData) {
             $handledData = [];
@@ -54,7 +57,7 @@ class ExportDataHandler
             if (isset($entityData[$columnData['field']])) {
                 $fieldData = $entityData[$columnData['field']];
                 if ($fieldData instanceof \MongoDate) {
-                    return $fieldData->toDateTime()->format(self::DEFAULT_DATE_FORMAT);
+                    return date(self::DEFAULT_DATE_FORMAT, $fieldData->sec);
                 } elseif ($fieldData instanceof \MongoId) {
                     return $fieldData->serialize();
                 }

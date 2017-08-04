@@ -159,10 +159,10 @@ class OverviewController extends Controller implements CheckHotelControllerInter
     }
 
     /**
-     * @Route("/total", name="total_overview")
+     * @Route("/total", name="total_rooms_overview")
      * @Template()
      */
-    public function totalOverviewAction(Request $request)
+    public function totalRoomsOverviewAction(Request $request)
     {
         $begin = $this->helper->getDateFromString($request->get('begin'));
         if (!$begin) {
@@ -175,9 +175,12 @@ class OverviewController extends Controller implements CheckHotelControllerInter
             $end->modify('+45 days');
         }
 
-        $this->dm
+
+        $fields = ['totalRooms', 'date'];
+        $rawRoomCachesData = $this->dm
             ->getRepository('MBHPriceBundle:RoomCache')
             ->getRawExistedRoomCaches($begin, $end);
+        $this->get('mbh.raw_mongo_data_handler')->handleRawMongoData($rawRoomCachesData)
 
         return [
             'begin' => $begin,

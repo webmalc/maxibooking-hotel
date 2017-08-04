@@ -49,6 +49,13 @@ class ClientLimitsManager
         return $numberOfExistedRooms > $this->getAvailableNumberOfRooms();
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array $rawNewRoomCachesData
+     * @param array $rawUpdatedRoomCaches
+     * @return array
+     */
     public function getDaysWithExceededLimitNumberOfRoomsInSell(
         \DateTime $begin,
         \DateTime $end,
@@ -102,7 +109,7 @@ class ClientLimitsManager
         return $daysWithExcessNumber;
     }
 
-    private function getAvailableNumberOfRooms()
+    public function getAvailableNumberOfRooms()
     {
         return $this->session->get(Client::AVAILABLE_NUMBER_OF_ROOMS);
     }
