@@ -2,15 +2,12 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
-use MBH\Bundle\BaseBundle\Form\ImageType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class HotelType extends AbstractType
 {
@@ -86,5 +83,16 @@ class HotelType extends AbstractType
     {
         return 'mbh_bundle_hotelbundle_hoteltype';
     }
-
+//$logoHelp = 'views.hotel.form.hotelType.upload_file';
+//if($options['imageUrl']) {
+//$logoHelp = '<a href="'.$options['imageUrl'].'" class="fancybox">'
+//. $this->translator->trans('views.hotel.form.hotelType.see_image')
+//. '</a></br><a class="text-danger delete-link" href="'
+//. $options['removeImageUrl']
+//. '" data-text="'
+//. $this->translator->trans('views.hotel.form.hotelType.delete_modal_text')
+//. '"><i class="fa fa-trash-o"></i> '
+//. $this->translator->trans('views.hotel.form.hotelType.delete')
+//. '</a>';
+//}
 }

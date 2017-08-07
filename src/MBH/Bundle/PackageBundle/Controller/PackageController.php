@@ -388,7 +388,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             //check by search
             $newTariff = $form->get('tariff')->getData();
             $orderManager = $this->get('mbh.order_manager');
-            if ($package->getPackagePrice() != $oldPackage->getPackagePrice()) {
+            if ($package->getPackagePrice() != $oldPackage->getPackagePrice()
+                && $package->getBegin() == $oldPackage->getBegin()
+                && $package->getEnd() == $oldPackage->getEnd()) {
                 $orderManager->updatePricesByDate($package, $newTariff);
             }
 

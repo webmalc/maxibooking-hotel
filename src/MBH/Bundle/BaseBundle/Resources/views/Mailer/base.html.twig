@@ -107,8 +107,13 @@
 
                 <div style="text-align: center;">
                 {% block subject %}
+                    {% set header =  headerText is defined ? headerText : subject %}
                     <h2 style="text-align: center; margin:55px 0 30px;font-family:Tahoma,Arial;font-size:26px;line-height:30px;color:#000;font-weight:normal;">
-                        {{ subject|trans(transParams)|default('') }}
+                        {% if headerText is defined and headerText %}
+                            {{ headerText|trans(transParams) }}
+                        {% else %}
+                            {{  subject|trans(transParams)|default('') }}
+                        {% endif %}
                     </h2>
                 {% endblock %}
 

@@ -622,6 +622,13 @@ class OrderManager implements Searchable
         foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
             $newPricesByDate[$day->format('d_m_Y')] = $newDailyPrice;
             $packagePrice = $package->getPackagePriceByDate($day);
+            if (is_null($packagePrice)) {
+                $prices =  $package->getPrices()->toArray();
+                $firstPackagePrice = current($prices);
+                $packagePrice = clone $firstPackagePrice;
+                $packagePrice->setDate($day);
+                $package->addPackagePrice($packagePrice);
+            }
             $packagePrice->setPrice($newDailyPrice);
             if (!is_null($tariff)) {
                 $packagePrice->setTariff($tariff);
