@@ -122,6 +122,7 @@ var docReadyServices = function() {
                     hide();
                 }
             };
+        timeInput.parent().addClass('bootstrap-timepicker');
         timeInput.timepicker({
             showMeridian: false
         });

@@ -122,7 +122,7 @@ class PackageRepository extends DocumentRepository
      * @param PackageQueryCriteria $criteria
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
-    protected function queryCriteriaToBuilder(PackageQueryCriteria $criteria)
+    public function queryCriteriaToBuilder(PackageQueryCriteria $criteria)
     {
         $queryBuilder = $this->createQueryBuilder();
         $now = new \DateTime('midnight');
