@@ -83,16 +83,5 @@ class HotelType extends AbstractType
     {
         return 'mbh_bundle_hotelbundle_hoteltype';
     }
-//$logoHelp = 'views.hotel.form.hotelType.upload_file';
-//if($options['imageUrl']) {
-//$logoHelp = '<a href="'.$options['imageUrl'].'" class="fancybox">'
-//. $this->translator->trans('views.hotel.form.hotelType.see_image')
-//. '</a></br><a class="text-danger delete-link" href="'
-//. $options['removeImageUrl']
-//. '" data-text="'
-//. $this->translator->trans('views.hotel.form.hotelType.delete_modal_text')
-//. '"><i class="fa fa-trash-o"></i> '
-//. $this->translator->trans('views.hotel.form.hotelType.delete')
-//. '</a>';
-//}
+
 }

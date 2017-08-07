@@ -47,8 +47,8 @@ web/assets
 web/online
 app/supervisor
 docker_zalex
-
 web/clients/
+!web/clients/.gitkeep
 backup/
 src/MBH/Bundle/TestBundle/
 
