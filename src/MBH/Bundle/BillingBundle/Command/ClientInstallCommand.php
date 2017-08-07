@@ -96,11 +96,12 @@ class ClientInstallCommand extends ContainerAwareCommand
             $maintenanceManager->install($clientName);
             $result = true;
             $message = 'Client '.$clientName.' was installed';
+            $this->addLogMessage($message);
         } catch (\Throwable $e) {
             $maintenanceManager->rollBack($clientName);
             $message = 'Client '.$clientName.'install error.'.$e->getMessage();
+            $this->addLogMessage($message, Logger::CRITICAL);
         }
-        $this->addLogMessage($message);
 
         return $result;
     }
@@ -118,16 +119,18 @@ class ClientInstallCommand extends ContainerAwareCommand
             $process->mustRun();
             $result = true;
             $message = 'Client '.$clientName.' after install success.';
+            $this->addLogMessage($message);
+
         } catch (\Throwable $e) {
             $message = 'Client '.$clientName.'after install error.'.$e->getMessage();
+            $this->addLogMessage($message, Logger::CRITICAL);
         }
-        $this->addLogMessage($message);
 
         return $result;
     }
 
-    private function addLogMessage(string $message)
+    private function addLogMessage(string $message, int $level = Logger::INFO)
     {
-        $this->logger->addInfo($message);
+        $this->logger->addRecord($level, $message);
     }
 }

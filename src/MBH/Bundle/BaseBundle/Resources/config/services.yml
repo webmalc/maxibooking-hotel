@@ -244,6 +244,24 @@ services:
         calls:
             - [pushHandler, ['@mbh.mailer.logger_handler']]
 
+    mbh.universal_command.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.universal_command.log", 200]
+
+    mbh.universal_command.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: ['app']
+        calls:
+            - [pushHandler, ['@mbh.universal_command.logger_handler']]
+
+    mbh_bundle_base.command.universal_command:
+        class: MBH\Bundle\BaseBundle\Command\UniversalCommand
+        arguments: ["@mbh.universal_command.logger"]
+        calls:
+            - [setContainer, ['@service_container']]
+        tags:
+            - { name: console.command }
+
     mbh.mailer.logger_handler:
         public: false
         class: Monolog\Handler\StreamHandler
@@ -280,11 +298,11 @@ services:
         arguments: [app]
         calls:
             - [pushHandler, ['@mbh.image_migrate.logger_handler']]
-
     mbh.image_migrate.logger_handler:
         public: false
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.image_migrate.log", 200]
+
     mbh.export_data_handler:
         class: MBH\Bundle\BaseBundle\Service\Export\ExportDataHandler
 

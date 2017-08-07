@@ -1,3 +1,9 @@
+2.0.0-beta.2
+============
+ 
+* add universal cli command [reference](http://redmine.maxi-booking.ru/issues/926#note-3)
+* fix protected upload path in stamp and documents
+
 2.0.0-beta.1
 ============
 * doctrine mongodb vendor update
