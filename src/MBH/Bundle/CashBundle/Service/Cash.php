@@ -84,9 +84,15 @@ class Cash
             ->setFrom('system')
             ->setType('info')
             ->setLink('hide')
+            ->setCategory('tourists')
             ->setHotel($order->getFirstHotel())
             ->setOrder($order)
             ->setSubject('mailer.order.subject_text')
+            ->setHeaderText('mailer.order.header_text')
+            ->setTranslateParams([
+                '%hotelName%' => $order->getFirstHotel()->getName(),
+                '%sum%' => $sumString
+            ])
             ->setAdditionalData([
                 'prependText' => $prependText,
                 'currencyText' => $currencyText
