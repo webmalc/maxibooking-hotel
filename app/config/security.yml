@@ -13,6 +13,10 @@ security:
         dev:
             pattern:    ^/(_profiler|_wdt|css|js)
             security:   false
+        # https://github.com/FriendsOfSymfony/FOSJsRoutingBundle/issues/140#issue-31895197
+        js_router:
+            pattern: ^/(js\/routing|profile\/js\/routing)
+            security: false
         main:
 #           Dev test only
 #            http_basic: ~
@@ -36,6 +40,7 @@ security:
                 lifetime: 3600
                 path:     /
                 domain:   ~
+
 
     access_control:
         - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

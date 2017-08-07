@@ -35,6 +35,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Class PackageController
@@ -63,6 +64,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'count' => true,
             'hotel' => $this->get('mbh.hotel.selector')->getSelected()
         ];
+
         /** @var PackageRepository $repository */
         $repository = $this->dm->getRepository('MBHPackageBundle:Package');
 
