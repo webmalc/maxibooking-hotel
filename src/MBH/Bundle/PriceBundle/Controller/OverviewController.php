@@ -180,7 +180,6 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         $rawRoomCachesData = $this->dm
             ->getRepository('MBHPriceBundle:RoomCache')
             ->getRawExistedRoomCaches($begin, $end);
-        $this->get('mbh.raw_mongo_data_handler')->handleRawMongoData($rawRoomCachesData)
 
         return [
             'begin' => $begin,

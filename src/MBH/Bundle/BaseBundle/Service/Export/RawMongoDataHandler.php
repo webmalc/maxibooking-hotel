@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danya
- * Date: 28.07.17
- * Time: 11:36
- */
 
 namespace MBH\Bundle\BaseBundle\Service\Export;
 
