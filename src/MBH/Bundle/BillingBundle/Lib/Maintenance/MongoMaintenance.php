@@ -27,13 +27,21 @@ final class MongoMaintenance extends AbstractMaintenance
 
     public function install(string $clientName)
     {
-
-        if ($this->isDBExist($clientName)) {
+        $dbName = $this->getCurrentDbName($clientName);
+        if ($this->isDBExist($dbName)) {
             $this->remove($clientName);
         }
 
-        $cloneResult = json_decode(trim($this->cloneDb($clientName)), true);
-        $isDbCloned = $this->isDBExist($clientName);
+        $cloneResult = json_decode(
+            trim(
+                $this->cloneDb(
+                    $this->options['sampleDbName'],
+                    $dbName
+                )
+            ),
+            true
+        );
+        $isDbCloned = $this->isDBExist($dbName);
 
         if (is_array($cloneResult) && $cloneResult['ok'] !== 1 || !$isDbCloned) {
             throw new ClientMaintenanceException("Error when clone DB");
@@ -43,15 +51,16 @@ final class MongoMaintenance extends AbstractMaintenance
 
     public function rollBack(string $clientName)
     {
-        if ($this->isDBExist($clientName)) {
-            $this->purgeDb($clientName);
+        $dbName = $this->getCurrentDbName($clientName);
+        if ($this->isDBExist($dbName)) {
+            $this->purgeDb($dbName);
         }
     }
 
     public function remove(string $clientName)
     {
         $this->dumpDb($clientName);
-        $this->purgeDb($clientName);
+        $this->purgeDb($this->getCurrentDbName($clientName));
     }
 
     public function update(string $clientName)
@@ -64,13 +73,19 @@ final class MongoMaintenance extends AbstractMaintenance
     }
 
 
-    private function dumpDb(string $client): void
+    private function dumpDb(string $clientName): void
     {
-        if (!$this->isDBExist($client)) {
+        $dbName = $this->getCurrentDbName($clientName);
+        if (!$this->isDBExist($dbName)) {
             throw new ClientMaintenanceException('Can not do DB backup! Database not exists');
         }
-        $backupFolder = $this->getBackupDir($client);
-        $backupCommand = sprintf("mongodump -d %s -o %s --host %s", $client, $backupFolder.'mongodb', $this->options['host'].':'.$this->options['port']);
+        $backupFolder = $this->getBackupDir($clientName);
+        $backupCommand = sprintf(
+            "mongodump -d %s -o %s --host %s",
+            $dbName,
+            $backupFolder.'mongodb',
+            $this->options['host'].':'.$this->options['port']
+        );
         $this->executeCommand($backupCommand);
     }
 
@@ -79,9 +94,9 @@ final class MongoMaintenance extends AbstractMaintenance
         $this->mongoClient->dropDatabase($dbName);
     }
 
-    private function cloneDb(string $dbName): ?string
+    private function cloneDb(string $sampleDb, string $dbName): ?string
     {
-        $sampleDb = $this->options['sampleDbName'];
+
         if (!$this->options['host'] || !$this->options['port'] || !$this->isDBExist($sampleDb)) {
             throw new ClientMaintenanceException('No host or port  or sample DB of MONGODB found. Cancel installation');
         }
@@ -125,12 +140,14 @@ final class MongoMaintenance extends AbstractMaintenance
                 [
                     'host' => $this->mainConfig['parameters']['mongodb_host'],
                     'port' => $this->mainConfig['parameters']['mongodb_port'],
-                    'sampleDbName' => 'maxibooking'
+                    'sampleDbName' => 'maxibooking',
                 ]
             );
     }
 
-
-
+    protected function getCurrentDbName(string $clientName)
+    {
+        return $this->getClientConfig($clientName)['parameters']['mongodb_database'];
+    }
 
 }
