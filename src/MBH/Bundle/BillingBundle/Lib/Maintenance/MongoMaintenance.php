@@ -15,6 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class MongoMaintenance extends AbstractMaintenance
 {
+    const SAMPLE_DB = 'maxibooking';
     /** @var string */
     protected $mongoClient;
 
@@ -59,8 +60,11 @@ final class MongoMaintenance extends AbstractMaintenance
 
     public function remove(string $clientName)
     {
-        $this->dumpDb($clientName);
-        $this->purgeDb($this->getCurrentDbName($clientName));
+        $dbName = $this->getCurrentDbName($clientName);
+        $backupFolder = $this->getBackupDir($clientName);
+
+        $this->dumpDb($dbName, $backupFolder);
+        $this->purgeDb($dbName);
     }
 
     public function update(string $clientName)
@@ -73,13 +77,13 @@ final class MongoMaintenance extends AbstractMaintenance
     }
 
 
-    private function dumpDb(string $clientName): void
+    private function dumpDb(string $dbName, string $backupFolder): void
     {
-        $dbName = $this->getCurrentDbName($clientName);
+
         if (!$this->isDBExist($dbName)) {
             throw new ClientMaintenanceException('Can not do DB backup! Database not exists');
         }
-        $backupFolder = $this->getBackupDir($clientName);
+
         $backupCommand = sprintf(
             "mongodump -d %s -o %s --host %s",
             $dbName,
@@ -140,7 +144,7 @@ final class MongoMaintenance extends AbstractMaintenance
                 [
                     'host' => $this->mainConfig['parameters']['mongodb_host'],
                     'port' => $this->mainConfig['parameters']['mongodb_port'],
-                    'sampleDbName' => 'maxibooking',
+                    'sampleDbName' => self::SAMPLE_DB,
                 ]
             );
     }
