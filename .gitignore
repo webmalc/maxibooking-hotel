@@ -41,6 +41,7 @@ nbproject/
 /protectedUpload/1C/*
 /protectedUpload/orderDocuments/*
 /protectedUpload/vegaDocuments/*
+/protectedUpload/clients/*
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
 web/online
