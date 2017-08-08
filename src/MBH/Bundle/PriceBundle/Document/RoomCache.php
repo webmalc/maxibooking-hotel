@@ -42,7 +42,7 @@ class RoomCache extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      * @ODM\Index()

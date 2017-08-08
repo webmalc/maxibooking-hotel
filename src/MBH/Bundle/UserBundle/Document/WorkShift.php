@@ -43,13 +43,13 @@ class WorkShift extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $begin;
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $end;
     /**
@@ -138,7 +138,7 @@ class WorkShift extends Base
     protected $closedBy;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $closedAt;
 

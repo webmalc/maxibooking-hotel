@@ -109,6 +109,9 @@ class ClientLimitsManager
         return $daysWithExcessNumber;
     }
 
+    /**
+     * @return mixed
+     */
     public function getAvailableNumberOfRooms()
     {
         return $this->session->get(Client::AVAILABLE_NUMBER_OF_ROOMS);

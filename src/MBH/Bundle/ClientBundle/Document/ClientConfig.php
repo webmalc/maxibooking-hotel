@@ -155,7 +155,7 @@ class ClientConfig extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Gedmo\Versioned
      * @Assert\Type(type="DateTime")
      */

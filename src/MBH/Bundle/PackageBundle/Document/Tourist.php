@@ -107,7 +107,7 @@ class Tourist extends Base implements \JsonSerializable, PayerInterface, Recipie
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="birthday")
+     * @ODM\Field(type="date", name="birthday")
      * @ODM\Index
      * @Assert\Date()
      */

@@ -23,7 +23,7 @@
         {% endembed %}
     </div>
     <div id="total-overview-table-wrapper" class="scrolling">
-        {#{% include 'MBHPackageBundle:Report:fillingTable.html.twig' with {'roomTypes': roomTypes, 'rangeDateList' : rangeDateList, 'tableDataByRoomType': tableDataByRoomType} %}#}
+        {% include 'MBHPriceBundle:Overview:totalRoomsOverviewTable.html.twig' with {'begin': begin, 'end' : end, 'report': report} %}
     </div>
 </div>
 {% endblock %}

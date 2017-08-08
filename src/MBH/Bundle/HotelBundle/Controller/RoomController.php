@@ -103,8 +103,14 @@ class RoomController extends BaseController
             'hotelId' => $this->hotel->getId()
         ]);
         $form->handleRequest($request);
-        if ($this->get('mbh.client_limits_manager')->isLimitOfRoomsExceeded(1)) {
-            $this->addFlash('error', 'room_controller.limit_of_rooms_exceeded');
+        $limitManager = $this->get('mbh.client_limits_manager');
+        if ($limitManager->isLimitOfRoomsExceeded(1)) {
+            $limitErrorMessage = $this->get('translator')
+                ->trans('room_controller.limit_of_rooms_exceeded', [
+                    '%availableNumberOfRooms%' => $limitManager->getAvailableNumberOfRooms(),
+                    '%overviewUrl%' => $this->generateUrl('total_rooms_overview')
+                ]);
+            $this->addFlash('error', $limitErrorMessage);
         } elseif ($form->isValid()) {
             $this->dm->persist($room);
             $this->dm->flush();
@@ -158,7 +164,7 @@ class RoomController extends BaseController
      * @Route("/{id}/edit", name="room_update")
      * @Method("POST")
      * @Security("is_granted('ROLE_ROOM_EDIT')")
-     * @Template("MBHHotelBundle:RoomType:editRoom.html.twig")
+     * @Template("MBHHotelBundle:RoomType:edit.html.twig")
      * @ParamConverter(class="MBHHotelBundle:Room")
      */
     public function updateAction(Request $request, Room $entity)
@@ -172,17 +178,30 @@ class RoomController extends BaseController
             'hotelId' => $entity->getHotel()->getId()
         ]);
 
+        $oldIsEnabledValue = $entity->getIsEnabled();
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->dm->persist($entity);
-            $this->dm->flush();
+            $limitManager = $this->get('mbh.client_limits_manager');
+            if ($entity->getIsEnabled()
+                && !$oldIsEnabledValue
+                && $limitManager->isLimitOfRoomsExceeded(1)) {
+                $limitErrorMessage = $this->get('translator')
+                    ->trans('room_controller.limit_of_rooms_exceeded', [
+                        '%availableNumberOfRooms%' => $limitManager->getAvailableNumberOfRooms(),
+                        '%overviewUrl%' => $this->generateUrl('total_rooms_overview')
+                    ]);
+                $this->addFlash('error', $limitErrorMessage);
+            } else {
+                $this->dm->persist($entity);
+                $this->dm->flush();
 
-            $this->addFlash('success','controller.roomTypeController.record_edited_success');
+                $this->addFlash('success', 'controller.roomTypeController.record_edited_success');
 
-            return $this->isSavedRequest() ?
-                 $this->redirectToRoute('room_edit', ['id' => $entity->getId()]) :
-                 $this->redirectToRoute('room_type', ['tab' => $entity->getRoomType()->getId()]);
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('room_edit', ['id' => $entity->getId()]) :
+                    $this->redirectToRoute('room_type', ['tab' => $entity->getRoomType()->getId()]);
+            }
         }
 
         return array(
@@ -251,8 +270,14 @@ class RoomController extends BaseController
             $data = $form->getData();
             $numberOfCreatedRooms = $data['to'] - $data['from'] + 1;
 
-            if ($this->get('mbh.client_limits_manager')->isLimitOfRoomsExceeded($numberOfCreatedRooms)) {
-                $this->addFlash('error', 'room_controller.limit_of_rooms_exceeded');
+            $limitManager = $this->get('mbh.client_limits_manager');
+            if ($limitManager->isLimitOfRoomsExceeded($numberOfCreatedRooms)) {
+                $limitErrorMessage = $this->get('translator')
+                    ->trans('room_controller.limit_of_rooms_exceeded', [
+                        '%availableNumberOfRooms%' => $limitManager->getAvailableNumberOfRooms(),
+                        '%overviewUrl%' => $this->generateUrl('total_rooms_overview')
+                    ]);
+                $this->addFlash('error', $limitErrorMessage);
             } else {
                 for ($i = (int)round($data['from']); $i <= (int)round($data['to']); $i++) {
                     $room = new Room();

@@ -51,7 +51,7 @@ class RestarauntSeat extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="begin")
+     * @ODM\Field(type="date", name="begin")
      * @Assert\NotNull(message= "validator.document.package.begin_not_specified")
      * @Assert\Date()
      */
@@ -60,7 +60,7 @@ class RestarauntSeat extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="end")
+     * @ODM\Field(type="date", name="end")
      * @Assert\NotNull(message= "validator.document.package.end_not_specified")
      * @Assert\Date()
      */

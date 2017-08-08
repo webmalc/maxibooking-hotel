@@ -55,7 +55,7 @@ class PriceCache extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      * @ODM\Index()
@@ -142,7 +142,7 @@ class PriceCache extends Base
     /**
      * @var \DateTime
      * @Gedmo\Timestampable(on="create")
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      */

@@ -74,19 +74,11 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $helper = $this->container->get('mbh.helper');
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        //dates
-        $begin = $helper->getDateFromString($request->get('begin'));
-        if(!$begin) {
-            $begin = new \DateTime('00:00');
-        }
-        $end = $helper->getDateFromString($request->get('end'));
-        if(!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
-            $end = clone $begin;
-            $end->modify('+45 days');
-        }
-
-        $to = clone $end;
-        $to->modify('+1 day');
+        $reportDates = $helper->getReportDates($request);
+        $begin = $reportDates['begin'];
+        /** @var \DateTime $end */
+        $end = $reportDates['end'];
+        $to = (clone $end)->modify('+1 day');
 
         $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $to);
 
@@ -223,19 +215,22 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         }
 
         $busyDays = [];
-        $clientSettings = $this->get('mbh.client_limits_manager');
+        $limitManager = $this->get('mbh.client_limits_manager');
         foreach ($roomCachesByDates as $dateString => $roomCachesByDate) {
-            $isExceedLimit = $clientSettings->isLimitOfRoomCachesExceeded($roomCachesByDate);
+            $isExceedLimit = $limitManager->isLimitOfRoomCachesExceeded($roomCachesByDate);
             if ($isExceedLimit) {
                 $busyDays[] = $dateString;
             }
         }
 
         if (count($busyDays) > 0) {
-            $this->addFlash('error',
-                $this->get('translator')->trans('room_cache_controller.limit_of_rooms_exceeded', [
-                    '%busyDays%' => join(', ', $busyDays)
-                ]));
+            $limitErrorMessage = $this->get('translator')
+                ->trans('room_cache_controller.limit_of_rooms_exceeded', [
+                    '%busyDays%' => join(', ', $busyDays),
+                    '%availableNumberOfRooms%' => $limitManager->getAvailableNumberOfRooms(),
+                    '%overviewUrl%' => $this->generateUrl('total_rooms_overview')
+                ]);
+            $this->addFlash('error', $limitErrorMessage);
         } else {
             $this->dm->flush();
             $this->addFlash('success', 'price.tariffcontroller.update_successfully_saved');

@@ -37,12 +37,12 @@ class Visa extends Base
     protected $number;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $issued;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $expiry;
     /**
@@ -52,12 +52,12 @@ class Visa extends Base
     protected $profession;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $arrivalTime;
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $departureTime;
 

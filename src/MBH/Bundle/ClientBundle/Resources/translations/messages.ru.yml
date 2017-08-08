@@ -68,4 +68,4 @@ clientbundle.controller.documentTemplateController.entry_successfully_created: '
 
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
 
-room_controller.limit_of_rooms_exceeded: 'Превышен лимит допустимых комнат'
+room_controller.limit_of_rooms_exceeded: 'Количество номеров в номерном фонде превышает максимально разрешенное по тарифу. Доступно по тарифу %availableNumberOfRooms%. Подробнее <a target="_blank" href="%overviewUrl%">информация по номерам</a>'

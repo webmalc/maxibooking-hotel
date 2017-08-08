@@ -47,7 +47,7 @@ class Message extends Base implements \JsonSerializable
     
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      */
     protected $end;
 

@@ -129,6 +129,11 @@ class Extension extends \Twig_Extension
         return $this->clientConfig;
     }
 
+    public function stringToDate($dateString, $dateFormat = 'd.m.Y')
+    {
+        return \DateTime::createFromFormat($dateFormat, $dateString);
+    }
+
     /**
      * @return array
      */
@@ -143,6 +148,7 @@ class Extension extends \Twig_Extension
             'convertMongoDate' => new \Twig_SimpleFilter('convertMongoDate', [$this, 'convertMongoDate']),
             'friendly_interval' => new \Twig_SimpleFilter('friendly_interval', [$this, 'friendlyInterval']),
             'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
+            'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate'])
         ];
     }
 

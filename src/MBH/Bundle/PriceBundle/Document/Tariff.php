@@ -120,7 +120,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="begin")
+     * @ODM\Field(type="date", name="begin")
      * @Assert\Date()
      * @ODM\Index()
      */
@@ -129,7 +129,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="end")
+     * @ODM\Field(type="date", name="end")
      * @Assert\Date()
      * @ODM\Index()
      */

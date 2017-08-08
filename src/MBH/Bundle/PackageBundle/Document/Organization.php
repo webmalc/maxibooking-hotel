@@ -72,7 +72,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
 
     /**
      * @var \DateTime
-     * @ODM\Date
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $registrationDate;

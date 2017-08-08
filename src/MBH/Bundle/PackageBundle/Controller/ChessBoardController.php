@@ -211,7 +211,7 @@ class ChessBoardController extends BaseController
             if (!$updatedRoom) {
                 $this->dm->remove($accommodation);
                 $this->dm->flush();
-                $messageFormatter->addSuccessRemoveAccommodationMessage($accommodation);
+                $messageFormatter->addSuccessRemoveAccommodationMessage($accommodation, $package);
             } else {
                 $this->updateAccommodation($package, $accommodation, $updatedRoom, $updatedBeginDate,
                     $updatedEndDate, $messageFormatter);

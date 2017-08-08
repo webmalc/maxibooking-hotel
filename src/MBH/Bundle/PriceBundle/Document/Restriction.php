@@ -42,7 +42,7 @@ class Restriction extends Base
 
     /**
      * @var \DateTime
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @ODM\Index()
      * @Assert\Date()
      * @Assert\NotNull()

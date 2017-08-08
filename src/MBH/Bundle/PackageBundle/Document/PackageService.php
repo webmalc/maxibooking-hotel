@@ -154,7 +154,7 @@ class PackageService extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      * @Assert\NotNull()
      */
@@ -163,7 +163,7 @@ class PackageService extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\DateTime()
      */
     protected $time;
@@ -171,7 +171,7 @@ class PackageService extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @Assert\Date()
      */
     protected $end;

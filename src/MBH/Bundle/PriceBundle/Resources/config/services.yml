@@ -81,3 +81,9 @@ services:
       arguments: ['@translator']
       tags:
           - {name: form.type}
+
+  mbh.total_overview_report:
+      class: MBH\Bundle\PriceBundle\Models\TotalOverviewReport
+      arguments:
+          - '@doctrine.odm.mongodb.document_manager'
+          - '@mbh.helper'

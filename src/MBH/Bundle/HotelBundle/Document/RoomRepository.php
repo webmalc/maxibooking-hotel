@@ -362,15 +362,17 @@ class RoomRepository extends AbstractBaseRepository
     }
 
     /**
+     * @param null $roomTypeIds
      * @return int
      */
-    public function getNumberOfEnabledRooms()
+    public function getNumberOfEnabledRooms($roomTypeIds = null)
     {
-        return $this
-            ->createQueryBuilder()
-            ->field('isEnabled')->equals(true)
-            ->getQuery()
-            ->count();
+        $qb = $this->createQueryBuilder()->field('isEnabled')->equals(true);
+        if (!is_null($roomTypeIds)) {
+            $qb->field('roomType.id')->in($roomTypeIds);
+        }
+
+        return $qb->getQuery()->count();
     }
 
     /**

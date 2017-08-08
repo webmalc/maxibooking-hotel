@@ -2,11 +2,20 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Export;
 
+use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Lib\Exportable;
+use MBH\Bundle\BaseBundle\Service\Helper;
 
 class RawMongoDataHandler
 {
     const DEFAULT_DATE_FORMAT = 'd.m.Y H:i';
+
+    /** @var  Helper */
+    private $helper;
+
+    public function __construct(Helper $helper) {
+        $this->helper = $helper;
+    }
 
     /**
      * @param array $mongoData

@@ -3,8 +3,10 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Document\Base;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Helper service
@@ -62,6 +64,20 @@ class Helper
         }
 
         return $result;
+    }
+
+    /**
+     * @param Base[] $documents
+     * @return array
+     */
+    public function sortById(array $documents)
+    {
+        $documentsByIds = [];
+        foreach ($documents as $document) {
+            $documentsByIds[$document->getId()] = $document;
+        }
+
+        return $documentsByIds;
     }
 
     /**
@@ -553,5 +569,28 @@ class Helper
         }
 
         return [];
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function getReportDates(Request $request)
+    {
+        $begin = $this->getDateFromString($request->get('begin'));
+        if (!$begin) {
+            $begin = new \DateTime('midnight');
+        }
+
+        $end = $this->getDateFromString($request->get('end'));
+        if (!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
+            $end = clone $begin;
+            $end->modify('+45 days');
+        }
+
+        return [
+            'begin' => $begin,
+            'end' => $end
+        ];
     }
 }

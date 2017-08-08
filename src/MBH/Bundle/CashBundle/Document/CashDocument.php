@@ -132,7 +132,7 @@ class CashDocument extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @ODM\Index()
      */
     protected $documentDate;
@@ -140,7 +140,7 @@ class CashDocument extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date()
+     * @ODM\Field(type="date")
      * @ODM\Index()
      */
     protected $paidDate;

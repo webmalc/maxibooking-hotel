@@ -39,7 +39,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="begin")
+     * @ODM\Field(type="date", name="begin")
      * @Assert\NotNull(message="not_null")
      * @Assert\Date()
      */
@@ -48,7 +48,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="end")
+     * @ODM\Field(type="date", name="end")
      * @Assert\NotNull(message="not_null")
      * @Assert\Date()
      */

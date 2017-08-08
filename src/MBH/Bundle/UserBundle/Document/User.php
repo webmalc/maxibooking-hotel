@@ -76,7 +76,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @ODM\Date(name="birthday")
+     * @ODM\Field(type="date", name="birthday")
      * @Assert\Date()
      */
     protected $birthday;

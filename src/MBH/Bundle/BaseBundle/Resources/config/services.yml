@@ -288,6 +288,8 @@ services:
 
     mbh.raw_mongo_data_handler:
         class: MBH\Bundle\BaseBundle\Service\Export\RawMongoDataHandler
+        arguments:
+            - '@mbh.helper'
 
     mbh.entities_exporter:
         class: MBH\Bundle\BaseBundle\Service\Export\CSVExporter
