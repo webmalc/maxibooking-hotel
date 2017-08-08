@@ -6,6 +6,7 @@ namespace MBH\Bundle\BillingBundle\Command;
 
 use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,6 +38,9 @@ class ClientInstallCommand extends ContainerAwareCommand
         $start = new \DateTime();
 
         $isBilling = $input->getOption('billing');
+        if (null === $input->getOption('clients')) {
+            throw new InvalidArgumentException("You must specify clients option");
+        }
         $clients = explode(',', trim($input->getOption('clients'), ','));
         $clientsForInstall = $this->getContainer()->get('mbh.service.client_list_getter')->getNotInstalledClients(
             $clients
