@@ -39,7 +39,7 @@ final class ParametersMaintenance extends AbstractMaintenance
         $this->removeFile($this->getClientConfigFileName($clientName));
     }
 
-    public function update(string $clientName)
+    public function update(string $clientName, string $serverIp = null)
     {
         // TODO: Implement update() method.
     }

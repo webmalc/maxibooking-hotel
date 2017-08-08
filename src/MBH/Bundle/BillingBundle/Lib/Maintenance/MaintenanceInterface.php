@@ -14,6 +14,6 @@ interface MaintenanceInterface
 
     public function restore(string $clientName);
 
-    public function update(string $clientName);
+    public function update(string $clientName, string $serverIp = null);
 
 }

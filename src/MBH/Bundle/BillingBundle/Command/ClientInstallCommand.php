@@ -16,6 +16,8 @@ class ClientInstallCommand extends ContainerAwareCommand
 {
     /** @var  Logger */
     protected $logger;
+    /** @var  OutputInterface */
+    protected $output;
 
     public function __construct(Logger $logger)
     {
@@ -36,7 +38,7 @@ class ClientInstallCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $start = new \DateTime();
-
+        $this->output = $output;
         $isBilling = $input->getOption('billing');
         if (null === $input->getOption('clients')) {
             throw new InvalidArgumentException("You must specify clients option");
@@ -135,6 +137,9 @@ class ClientInstallCommand extends ContainerAwareCommand
 
     private function addLogMessage(string $message, int $level = Logger::INFO)
     {
+        if ($this->output && $this->output instanceof OutputInterface) {
+            $this->output->writeln($message);
+        }
         $this->logger->addRecord($level, $message);
     }
 }

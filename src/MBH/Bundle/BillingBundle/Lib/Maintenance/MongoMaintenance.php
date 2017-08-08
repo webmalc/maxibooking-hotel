@@ -29,9 +29,7 @@ final class MongoMaintenance extends AbstractMaintenance
     public function install(string $clientName)
     {
         $dbName = $this->getCurrentDbName($clientName);
-        if ($this->isDBExist($dbName)) {
-            $this->remove($clientName);
-        }
+        $this->checkAndDumpDb($clientName, $dbName);
 
         $cloneResult = json_decode(
             trim(
@@ -50,6 +48,22 @@ final class MongoMaintenance extends AbstractMaintenance
 
     }
 
+    public function update(string $clientName, string $serverIp = null)
+    {
+        if (!$serverIp) {
+            throw new ClientMaintenanceException("Error when update, no server found");
+        }
+        $dbName = $this->getCurrentDbName($clientName);
+        $this->checkAndDumpDb($clientName, $dbName);
+        $this->copyRemoteDb($clientName, $serverIp);
+        $isDBCopy = $this->isDBExist($dbName);
+        if (!$isDBCopy) {
+            $this->restore($clientName);
+            throw new ClientMaintenanceException("Error when update ()");
+        }
+    }
+
+
     public function rollBack(string $clientName)
     {
         $dbName = $this->getCurrentDbName($clientName);
@@ -67,15 +81,20 @@ final class MongoMaintenance extends AbstractMaintenance
         $this->purgeDb($dbName);
     }
 
-    public function update(string $clientName)
-    {
-    }
-
     public function restore(string $clientName)
     {
-        // TODO: Implement restore() method.
+        //TODO: Restore db if update fail ?
+//        $dbName = $this->getCurrentDbName($clientName);
+
     }
 
+
+    private function checkAndDumpDb(string $clientName, string $dbName)
+    {
+        if ($this->isDBExist($dbName)) {
+            $this->remove($clientName);
+        }
+    }
 
     private function dumpDb(string $dbName, string $backupFolder): void
     {
@@ -87,7 +106,7 @@ final class MongoMaintenance extends AbstractMaintenance
         $backupCommand = sprintf(
             "mongodump -d %s -o %s --host %s",
             $dbName,
-            $backupFolder.'mongodb',
+            $backupFolder.'/mongodb'.(new \DateTime())->format('Y-m-d_H-i-s'),
             $this->options['host'].':'.$this->options['port']
         );
         $this->executeCommand($backupCommand);
@@ -96,6 +115,9 @@ final class MongoMaintenance extends AbstractMaintenance
     private function purgeDb(string $dbName)
     {
         $this->mongoClient->dropDatabase($dbName);
+        if ($this->isDBExist($dbName)) {
+            throw new ClientMaintenanceException("Error! DB was dropped, but still exists");
+        }
     }
 
     private function cloneDb(string $sampleDb, string $dbName): ?string
@@ -145,6 +167,9 @@ final class MongoMaintenance extends AbstractMaintenance
                     'host' => $this->mainConfig['parameters']['mongodb_host'],
                     'port' => $this->mainConfig['parameters']['mongodb_port'],
                     'sampleDbName' => self::SAMPLE_DB,
+                    'copyDbScript' => $this->getContainer()->get('kernel')->getRootDir(
+                        ).'/../scripts/deployScripts/mongoDbCopy.sh',
+
                 ]
             );
     }
@@ -152,6 +177,19 @@ final class MongoMaintenance extends AbstractMaintenance
     protected function getCurrentDbName(string $clientName)
     {
         return $this->getClientConfig($clientName)['parameters']['mongodb_database'];
+    }
+
+    protected function copyRemoteDb(string $clientName, string $serverIp)
+    {
+        $dbName = $this->getCurrentDbName($clientName);
+        $command = sprintf(
+            'bash %s %s %s %s %s',
+            $this->options['copyDbScript'],
+            $dbName,
+            $dbName,
+            $serverIp,
+            $this->options['host'].":".$this->options['port']);
+        $result = $this->executeCommand($command);
     }
 
 }

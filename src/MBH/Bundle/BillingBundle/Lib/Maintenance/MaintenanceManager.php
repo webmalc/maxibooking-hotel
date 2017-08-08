@@ -43,7 +43,8 @@ public function __construct()
 
     public function rollBack(string $clientName)
     {
-        foreach ($this->getMaintenances() as $maintenance) {
+        foreach (array_reverse($this->getMaintenances()->toArray()) as $maintenance) {
+            /** @var MaintenanceInterface $maintenance*/
             $maintenance->rollBack($clientName);
         }
     }
