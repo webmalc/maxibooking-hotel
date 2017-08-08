@@ -59,7 +59,7 @@ final class MongoMaintenance extends AbstractMaintenance
         $isDBCopy = $this->isDBExist($dbName);
         if (!$isDBCopy) {
             $this->restore($clientName);
-            throw new ClientMaintenanceException("Error when update ()");
+            throw new ClientMaintenanceException("Error when update client $clientName. No DB $dbName after copy");
         }
     }
 
