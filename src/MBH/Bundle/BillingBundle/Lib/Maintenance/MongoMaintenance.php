@@ -5,6 +5,7 @@ namespace MBH\Bundle\BillingBundle\Lib\Maintenance;
 
 
 use MBH\Bundle\BillingBundle\Lib\Exceptions\ClientMaintenanceException;
+use MBH\Bundle\BillingBundle\Lib\Exceptions\MongoMaintenanceException;
 use MongoDB\Client as MongoClient;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Exception\InvalidArgumentException;
@@ -59,7 +60,7 @@ final class MongoMaintenance extends AbstractMaintenance
         $isDBCopy = $this->isDBExist($dbName);
         if (!$isDBCopy) {
             $this->restore($clientName);
-            throw new ClientMaintenanceException("Error when update client $clientName. No DB $dbName after copy");
+            throw new MongoMaintenanceException("Error when update client $clientName. No DB $dbName after copy");
         }
     }
 
