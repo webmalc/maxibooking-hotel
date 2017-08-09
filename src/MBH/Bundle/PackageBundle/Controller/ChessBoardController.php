@@ -415,7 +415,7 @@ class ChessBoardController extends BaseController
                         $messageFormatter->addErrorMessage($additionResult);
                     }
                 } else {
-                    $messageFormatter->addSuccessRemoveAccommodationMessage($secondAccommodation);
+                    $messageFormatter->addSuccessRemoveAccommodationMessage($secondAccommodation, $package);
                     $this->dm->flush();
                 }
             }
