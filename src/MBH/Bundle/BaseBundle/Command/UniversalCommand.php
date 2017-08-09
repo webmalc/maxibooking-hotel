@@ -47,16 +47,17 @@ final class UniversalCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->output = $output;
-
+        $clients = null;
+        $isAll = $input->getOption('all');
         if ($srcClients = $input->getOption('clients')) {
-            if ($input->getOption('all')) {
-                throw new UniversalCommandException('Either clients or all param');
-            }
-            $clients = explode(',', $srcClients);
-        } elseif ($input->getOption('all')) {
-            $clients = null;
-        } else {
-            throw new UniversalCommandException('You MUST specify clients or all option');
+            $clients = explode(',', trim($srcClients, ','));
+        }
+        if (count($srcClients) && $isAll) {
+            throw new UniversalCommandException('Either clients or all param');
+        }
+
+        if (!count($srcClients) && !$isAll) {
+            throw new UniversalCommandException('At least one parameter must be specified "--clients  --all"');
         }
 
         $command = $input->getArgument('command_to_execute');
@@ -69,7 +70,9 @@ final class UniversalCommand extends Command
         $isDebug = $kernel->isDebug();
         $params = $input->getOption('params')??'';
         $consoleFolder = $kernel->getRootDir().'/../bin';
+
         $clients = $this->getClients($clients);
+
         if ($exclude = $input->getOption('exclude')) {
             $clients = array_diff($clients, explode(",", $exclude));
         }
@@ -97,13 +100,11 @@ final class UniversalCommand extends Command
     }
 
 
-    protected function getClients(string $clients = null): ?array
+    protected function getClients(array $clients = null): ?array
     {
         $clientsGetter = $this->container->get('mbh.service.client_list_getter');
 
-        return $clients ? $clientsGetter->getExistingClients(
-            explode(',', trim($clients, ','))
-        ) : $clientsGetter->getClientsList();
+        return $clients ? $clientsGetter->getExistingClients($clients) : $clientsGetter->getClientsList();
     }
 
 

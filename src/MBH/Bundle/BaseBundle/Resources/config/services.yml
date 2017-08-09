@@ -311,3 +311,17 @@ services:
         arguments:
             - '@mbh.export_data_handler'
             - '@translator'
+
+    mbh.command.image_migrate:
+        class: MBH\Bundle\BaseBundle\Command\ImageMigrateCommand
+        arguments: ['@mbh.service.ssh_commands', '@mbh.app.root_dir', '@mbh.client.name']
+        tags:
+            - { name: console.command }
+
+    mbh.client.name:
+        class: AppKernel
+        factory: ['@kernel',getClient]
+
+    mbh.app.root_dir:
+        class: AppKernel
+        factory: ['@kernel',getRootDir]

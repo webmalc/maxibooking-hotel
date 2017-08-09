@@ -51,6 +51,9 @@ web/clients/
 !web/clients/.gitkeep
 backup/
 src/MBH/Bundle/TestBundle/
+docker/php-fpm/keys/*
+!docker/php-fpm/keys/.gitkeep
+
 
 
 #Eclipse

@@ -53,6 +53,7 @@ mbh-php-fpm:
     - ./php-fpm/start.sh:/start.sh
     - ./php-fpm/fish:/root/.config/fish/functions
     - /tmp/:/tmp/
+    - ./php-fpm/keys:/root/.ssh
   links:
     - mbh-memcached
     - mbh-mongo
