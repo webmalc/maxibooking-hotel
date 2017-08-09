@@ -150,6 +150,9 @@ class OrderManager implements Searchable
         $isSuccessFull = true;
         $dangerNotifications = [];
         if ($package->getRoomType()->getId() !== $oldPackage->getRoomType()->getId()) {
+            foreach ($package->getAccommodations() as $accommodation) {
+                $this->dm->remove($accommodation);
+            }
             $package->removeAccommodations();
             $dangerNotifications[] = 'mbhpackagebundle.services.ordermanager.all_accommodations_removed';
         } elseif ($package->getBegin() != $oldPackage->getBegin() || $package->getEnd() != $oldPackage->getEnd()) {
