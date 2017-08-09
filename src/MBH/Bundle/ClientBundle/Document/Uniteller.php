@@ -54,7 +54,7 @@ class Uniteller implements PaymentSystemInterface
      * @param float $taxationRateCode
      * @return Uniteller
      */
-    public function setTaxationRateCode(float $taxationRateCode): Uniteller
+    public function setTaxationRateCode(?float $taxationRateCode): Uniteller
     {
         $this->taxationRateCode = $taxationRateCode;
 
@@ -73,7 +73,7 @@ class Uniteller implements PaymentSystemInterface
      * @param float $taxationSystemCode
      * @return Uniteller
      */
-    public function setTaxationSystemCode(float $taxationSystemCode): Uniteller
+    public function setTaxationSystemCode(?float $taxationSystemCode): Uniteller
     {
         $this->taxationSystemCode = $taxationSystemCode;
 

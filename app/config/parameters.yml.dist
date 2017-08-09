@@ -79,3 +79,5 @@ parameters:
 
   #mongodb_ssl
   mongodb_ssl: false
+
+  uniteller_with_fiscalization: true

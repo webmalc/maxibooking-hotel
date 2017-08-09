@@ -10,7 +10,9 @@
     <input type="hidden" class="payment-system-form-comment" name="Comment" value="{{ data.comment|default('') }}">
     <input type="hidden" class="payment-system-form-signature" name="Signature" value="{{ data.signature|default('')}}">
     <input type="hidden" class="payment-system-form-currency" name="Currency" value="{{ data.currency|default('')}}">
-    <input type="hidden" name="Receipt" value="{{ data.receipt|default('') }}">
-    <input type="hidden" name="ReceiptSignature" value="{{ data.receiptSignature|default('') }}">
+    {% if data.unitellerWithFiscalization is not defined or data.unitellerWithFiscalization %}
+        <input type="hidden" name="Receipt" value="{{ data.receipt|default('') }}">
+        <input type="hidden" name="ReceiptSignature" value="{{ data.receiptSignature|default('') }}">
+    {% endif %}
     {% include 'MBHClientBundle:PaymentSystem:button.html.twig' with {'data': data} %}
 </form>

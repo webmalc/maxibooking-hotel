@@ -35,5 +35,6 @@ services:
             - '%mbh.payment_systems.change%'
             - '%mbh.payment_systems.default%'
             - '%mbh.taxation%'
+            - '%uniteller_with_fiscalization%'
         tags:
             - { name: form.type }

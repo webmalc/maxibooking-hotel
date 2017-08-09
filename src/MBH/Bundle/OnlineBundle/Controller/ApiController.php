@@ -526,6 +526,12 @@ class ApiController extends Controller
         $message .= $packageStr . ': ' . implode(', ', $packages) . '.';
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $formData = $clientConfig->getFormData($order->getCashDocuments()[0]);
+        if ($clientConfig->getPaymentSystem() == 'uniteller' && !$this->getParameter('uniteller_with_fiscalization')) {
+            $formData['action'] = 'https://wpay.uniteller.ru/pay/';
+            $formData['testAction'] = 'https://test.wpay.uniteller.ru/pay/';
+            $formData['unitellerWithFiscalization'] = false;
+        }
 
         if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
@@ -541,7 +547,7 @@ class ApiController extends Controller
                             ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle'
                         )
-                    ], $clientConfig->getFormData($order->getCashDocuments()[0]))
+                    ], $formData)
                 ]
             );
         }

@@ -17,12 +17,14 @@ class ClientPaymentSystemType extends AbstractType
     private $paymentSystemsChange;
     private $paymentSystemsDefault;
     private $taxationRateCodes;
+    private $isUnitellerWithFiscalization;
 
-    public function __construct($paymentSystems, $paymentSystemsChange, $paymentSystemsDefault, $taxationRateCodes) {
+    public function __construct($paymentSystems, $paymentSystemsChange, $paymentSystemsDefault, $taxationRateCodes, $isUnitellerWithFiscalization) {
         $this->paymentSystems = $paymentSystems;
         $this->paymentSystemsChange = $paymentSystemsChange;
         $this->paymentSystemsDefault = $paymentSystemsDefault;
         $this->taxationRateCodes = $taxationRateCodes;
+        $this->isUnitellerWithFiscalization = $isUnitellerWithFiscalization;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -199,7 +201,7 @@ class ClientPaymentSystemType extends AbstractType
                     'choices' => $this->taxationRateCodes['rate_codes'],
                     'mapped' => false,
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params uniteller'],
+                    'attr' => ['class' => 'payment-system-params' . ($this->isUnitellerWithFiscalization ? ' uniteller' : '')],
                     'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'data' => $taxationRateCode
                 ]
@@ -212,7 +214,7 @@ class ClientPaymentSystemType extends AbstractType
                     'choices' => $this->taxationRateCodes['system_codes'],
                     'mapped' => false,
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params uniteller'],
+                    'attr' => ['class' => 'payment-system-params' . ($this->isUnitellerWithFiscalization ? ' uniteller' : '')],
                     'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'data' => $taxationSystemCode
                 ]
