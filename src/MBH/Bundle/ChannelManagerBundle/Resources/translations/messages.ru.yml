@@ -80,6 +80,37 @@ form.myallocatorType.hotels: Отели
 controller.myallocatorController.settings_saved_success: Настройки успешно сохранены
 controller.myallocatorController.invalid_credentials: Неверные логин/пароль для от личного кабинета
 
+#expedia
+controller.expediaController.settings_saved_success: 'Настройки успешно сохранены.'
+services.expedia.invalid_tariff_id: Тариф для данной брони не синхронизирован с тарифом Maxibooking
+services.expedia.nor_one_tariff: Не найдено ни одного тарифа для данного отеля
+services.expedia.invalid_room_type_id: Тип комнаты данной брони не синхронизирован с типом комнаты Maxibooking
+services.expedia.nor_one_room_type: Не найдено ни одного типа комнат для данного отеля
+services.expedia.invalid_authorization_data: Введены некорректные имя пользователя или пароль
+services.expedia.booking_notification.error: Ошибка в оповещении сервиса о принятия заказа
+form.expedia.isEnabled: Включен?
+form.expedia.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.expedia.hotel_id: ID отеля
+form.expedia.hotel_id.help: ID отеля в Expedia Partner Central
+form.expedia.password.label: Пароль
+form.expedia.password.help: Пароль для входа в аккаунт Expedia
+form.expedia.password.placeholder: Пароль
+form.expedia.username.label: Имя пользователя
+form.expedia.username.help: Имя пользователя для входа в аккаунт Expedia
+form.expedia.username.placeholder: Имя пользователя
+order_info.expedia.need_сonfirm_cash_payment_document: Необходимо подвердить кассовый документ о платеже
+order_info.expedia.need_сonfirm_cash_tax_document: Необходимо подвердить кассовый документ о комиссии
+order_info.expedia.required_data_missing: Ошибка при обработке синхронизации броней. В полученных от сервиса данных отсутствуют %elementDescription%
+order_info.expedia.required_order_data: 'обязательные данные: "%dataAttribute% заказа"'
+order_info.expedia.required_hotel_id: 'данные об id отеля'
+order_info.expedia.user_comment: 'Комментарий заказчика'
+order_info.expedia.add_promotion: 'Доп. услуга'
+order_info.expedia.payment_instructions: 'Тип платежа'
+order_info.expedia.bedding_preferences: 'Пожелание по размещению'
+order_info.expedia.multi_room_booking_info: 'Доп.информация о множественном  бронировании'
+expedia_request_data_formatter.max_stay.error: 'В сервисе Expedia.com по умолачнию установлен максимальный срок брони %count% дней'
+expedia_request_data_formatter.min_stay.error: 'В сервисе Expedia.com по умолачнию установлен минимальный срок брони %count% дней'
+package_info.expedia.child_age: Возраст ребенка
 
 form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkIn.help: Задачи, создаваемые при заезде гостя

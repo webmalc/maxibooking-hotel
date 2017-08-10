@@ -355,6 +355,8 @@ class Builder implements ContainerAwareInterface
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
 
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
+            $menu['services']->addChild('expedia', ['route' => 'expedia', 'label' => 'Expedia'])
+                ->setAttributes(['icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
         }

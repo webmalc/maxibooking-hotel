@@ -74,6 +74,33 @@ channelManager.oktogo.notification.delete: "Удален заказ %order% из
 channelManager.oktogo.notification.error.subject: Ошибка Oktogo.ru
 channelManager.oktogo.notification.error: "Ошибка при обработке заказа Oktogo.ru. Информация: %info%"
 
+channelManager.expedia.notification.subject.new: Новый заказ Expedia.com
+channelManager.expedia.notification.subject.edit: Изменен заказ Expedia.com
+channelManager.expedia.notification.subject.delete: Удален заказ Expedia.com
+channelManager.expedia.notification.new: "Новый заказ %order% из Expedia.com. Номера броней: %packages%"
+channelManager.expedia.notification.edit: "Изменен заказ %order% из Expedia.com. Номера броней: %packages%"
+channelManager.expedia.notification.delete: "Удален заказ %order% из Expedia.com. Номера броней: %packages%"
+channelManager.expedia.notification.error.subject: Ошибка Expedia.com
+channelManager.expedia.notification.error: "Ошибка при обработке заказа Expedia.com. Информация: %info%"
+
+channelManager.venere.notification.subject.new: Новый заказ Venere.com
+channelManager.venere.notification.subject.edit: Изменен заказ Venere.com
+channelManager.venere.notification.subject.delete: Удален заказ Venere.com
+channelManager.venere.notification.new: "Новый заказ %order% из Venere.com. Номера броней: %packages%"
+channelManager.venere.notification.edit: "Изменен заказ %order% из Venere.com. Номера броней: %packages%"
+channelManager.venere.notification.delete: "Удален заказ %order% из Venere.com. Номера броней: %packages%"
+channelManager.venere.notification.error.subject: Ошибка Venere.com
+channelManager.venere.notification.error: "Ошибка при обработке заказа Venere.com. Информация: %info%"
+
+channelManager.hotels.notification.subject.new: Новый заказ Hotels.com
+channelManager.hotels.notification.subject.edit: Изменен заказ Hotels.com
+channelManager.hotels.notification.subject.delete: Удален заказ Hotels.com
+channelManager.hotels.notification.new: "Новый заказ %order% из Hotels.com. Номера броней: %packages%"
+channelManager.hotels.notification.edit: "Изменен заказ %order% из Hotels.com. Номера броней: %packages%"
+channelManager.hotels.notification.delete: "Удален заказ %order% из Hotels.com. Номера броней: %packages%"
+channelManager.hotels.notification.error.subject: Ошибка Hotels.com
+channelManager.hotels.notification.error: "Ошибка при обработке заказа Hotels.com. Информация: %info%"
+
 channelManager.booking.notification.bottom: Внимание! Требуется ручная обработка ситуации.
 
 channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы отель, типы номеров, тарифы или услуги

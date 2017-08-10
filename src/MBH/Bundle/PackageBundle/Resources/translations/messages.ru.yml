@@ -537,6 +537,9 @@ manager.channel_manager.myallocator: Myalllocator
 manager.channel_manager.ostrovok: Островок
 manager.channel_manager.101Hotels: 101 Отель
 manager.channel_manager.oktogo: Oktogo
+manager.channel_manager.expedia: Expedia
+manager.channel_manager.hotels: Hotels
+manager.channel_manager.venere: Venere
 
 csv.type.package: Тип брони
 csv.type.order.type: Тип заказа

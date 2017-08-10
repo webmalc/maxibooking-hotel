@@ -109,7 +109,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         if (!$config && !$config->getIsEnabled()) {
             return null;
         }
-         
+
         $trans = $this->container->get('translator');
         $overview = new ChannelManagerOverview();
         $overview->setBegin($begin)
@@ -130,7 +130,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                         return $trans->trans($prefix . '.type.' . $element);
                     }
                 }, array_keys($types))));
-            
+
                 $addMethod = 'add' . ucfirst($method);
                 $overview->$addMethod($val, $message);
             }
@@ -638,31 +638,47 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * @param array $data
      * @param array $headers
      * @param bool $error
-     * @param $post $error
+     * @param string $method
      * @return mixed
      */
-    public function send($url, $data = [], $headers = null, $error = false, $post = true)
+    public function send($url, $data = [], $headers = null, $error = false, $method = 'POST')
     {
-        $ch = curl_init($url);
+        $ch = curl_init();
 
-        if ($post) {
+        if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
         }
+        if ($method == 'PUT') {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        }
+        if (static::TEST) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
+
+        //TODO: ИСПРАВИТЬ ДЛЯ ПРОДА!!!
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         if ($headers) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
-        if ($post && !empty($data)) {
-            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+        if (!empty($data)) {
+            if ($method == 'POST' || $method == 'PUT') {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            } elseif ($method == 'GET') {
+                $url = $url . '?' . http_build_query($data);
+            }
+        }
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        if (($method == 'POST' || $method == 'PUT') && !empty($data)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
         curl_setopt($ch, CURLOPT_VERBOSE, 1);
 
-        if (static::TEST) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        }
         $output = curl_exec($ch);
 
         if (!$output && $error) {
