@@ -7,6 +7,7 @@ parameters:
       uah: {text: 'грн.', small: 'коп.', icon: 'fa fa-money'}
       kzt: {text: 'тенге', small: 'тиын', icon: 'fa fa-money'}
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
+      usd: {text: '$', small: '$', icon: 'fa fa-usd'}
 
     # ReCaptcha
     mbh.recaptcha:
@@ -245,6 +246,10 @@ parameters:
           api_password: VCuMhanjdxiC
           vendor_password: 0Rp0XJGubJ9rfoUy4niNGcBPErf20VJZ
           url: http://mbhs.maxibooking.ru/client/channelmanager/push/myallocator
+        expedia:
+          title: 'Expedia'
+          service: 'mbh.channelmanager.expedia'
+
         hundred_one_hotels:
           title: '101 Отель'
           service: 'mbh.channelmanager.hundred_one_hotels'
