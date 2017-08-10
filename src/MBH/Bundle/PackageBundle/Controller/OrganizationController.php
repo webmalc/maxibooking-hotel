@@ -4,6 +4,9 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 
 use Doctrine\MongoDB\Query\Expr;
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
+use Imagine\Image\ImageInterface;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -16,7 +19,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Class OrganizationController
@@ -126,10 +128,12 @@ class OrganizationController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
+                /** @var string|null $clientName */
+                $clientName = $this->container->get('kernel')->getClient();
                 $this->dm->persist($organization);
                 $this->dm->flush();
 
-                $organization->upload();
+                $organization->upload($clientName);
 
                 return $this->redirect($this->generateUrl('organizations', ['type' => $organization->getType()]));
             }
@@ -145,11 +149,12 @@ class OrganizationController extends Controller
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ORGANIZATION_EDIT')")
      * @ParamConverter("organization", class="MBHPackageBundle:Organization")
-     * @Template()
+     * @Template("@MBHPackage/Organization/edit.html.twig")
      */
     public function editAction(Organization $organization, Request $request)
     {
-        $imageUrl = $organization->getStamp() ? $this->generateUrl('stamp', ['id' => $organization->getId()], UrlGeneratorInterface::ABSOLUTE_URL) : null;
+        $clientName = $this->get('kernel')->getClient();
+        $imageUrl = $organization->getStamp($clientName) ? $this->generateUrl('stamp', ['id' => $organization->getId()]) : null;
 
         $form = $this->createForm(OrganizationType::class, $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
@@ -166,16 +171,18 @@ class OrganizationController extends Controller
             if ($form->isValid()) {
                 $this->dm->persist($organization);
                 $this->dm->flush();
+                $imagine = new Imagine();
+                $size = new Box(400, 200);
+                $mode = ImageInterface::THUMBNAIL_OUTBOUND;
+                /** @var string|null $clientName */
+                $clientName = $this->container->get('kernel')->getClient();
 
-                $imagine = new \Imagine\Gd\Imagine();
-                $size = new \Imagine\Image\Box(400, 200);
-                $mode = \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
-                if($stamp = $organization->getStamp() and $stamp instanceof UploadedFile) {
+                if($stamp = $organization->getStamp($clientName) and $stamp instanceof UploadedFile) {
                     $imagine->open($stamp->getPathname())->thumbnail($size, $mode)->save($stamp->getPathname(), [
                         'format' => $stamp->getClientOriginalExtension()
                     ]);
 
-                    $organization->upload();
+                    $organization->upload($clientName);
                 }
 
                 return $this->isSavedRequest() ?
@@ -196,13 +203,13 @@ class OrganizationController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_ORGANIZATION_DELETE')")
      * @ParamConverter("organization", class="MBHPackageBundle:Organization")
-     * @Template()
      * @param Organization $organization
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Organization $organization)
     {
         $response = $this->deleteEntity($organization->getId(), 'MBHPackageBundle:Organization', 'organizations');
+
         return $response;
     }
 

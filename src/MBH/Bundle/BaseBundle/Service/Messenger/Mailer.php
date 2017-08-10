@@ -7,8 +7,10 @@ use FOS\UserBundle\Model\UserInterface;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Monolog\Logger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -51,6 +53,17 @@ class Mailer implements \SplObserver, MailerInterface
      */
     private $permissions;
 
+    /** @var  Logger */
+    protected $logger;
+
+    /** @var  TranslatorInterface */
+    protected $translator;
+
+    /**
+     * Mailer constructor.
+     * @param ContainerInterface $container
+     */
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -60,6 +73,8 @@ class Mailer implements \SplObserver, MailerInterface
         $this->dm = $this->container->get('doctrine_mongodb');
         $this->locale = $this->container->getParameter('locale');
         $this->permissions = $this->container->get('mbh.hotel.selector');
+        $this->logger = $this->container->get('mbh.mailer.logger');
+        $this->translator = $this->container->get('translator');
     }
 
     /**
@@ -114,12 +129,20 @@ class Mailer implements \SplObserver, MailerInterface
 
             //Problem when path with first '/' ltrim for that
             $srcPath = ltrim(str_replace('/app_dev.php/', '', parse_url($src)['path']), '/');
-            $path = $rootDir . '/../web/' . $srcPath;
-
-            if (!empty($id) && !empty($src)) {
+            $path = $rootDir.'/../web/'.$srcPath;
+            /** TODO: Problem with no yet cache image
+             * @link https://github.com/liip/LiipImagineBundle/issues/242#issuecomment-71647135
+             */
+            if (!empty($id) && !empty($src) && is_file($path)) {
                 $data[$id] = $message->embed(
                     \Swift_Image::fromPath($path)
                 );
+            } else {
+                $errorMessage = 'mailer.image.not.exists';
+                $transParams = [
+                    '%path%' => $path,
+                ];
+                $this->logger->addAlert($this->translator->trans($errorMessage, $transParams));
             }
         }
 
@@ -174,31 +197,43 @@ class Mailer implements \SplObserver, MailerInterface
             );
         }
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
-        $message = \Swift_Message::newInstance();
-        empty($template) ? $template = $this->params['template'] : $template;
+        $message = new \Swift_Message();
+        $template = $template?:$this->params['template'];
 
         $data['hotelName'] = 'MaxiBooking';
         $data = $this->addImages($data, $message, $template);
         $translator = $this->container->get('translator');
 
+
+
         foreach ($recipients as $recipient) {
+
             //@todo move to notifier
             $transParams = [
                 '%guest%' => $recipient->getName(),
                 '%hotel%' => null
+
             ];
 
-            if (isset($data['hotel'])) {
-                $data['hotelName'] = $data['hotel']->getName();
-                $transParams['%hotel%'] = $data['hotel']->getName();
+            if (!$recipient->getEmail()) {
+                $errorMessage = 'mailer.recipient.empty.email';
+                $this->logger->addAlert($translator->trans($errorMessage, $transParams));
+                continue;
+            }
+
+            /** @var Hotel $hotel */
+            if ($hotel = $data['hotel']) {
+                $data['hotelName'] = $hotel->getName();
+                $transParams['%hotel%'] = $hotel->getName();
             }
 
             if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $this->locale) {
                 $translator->setLocale($recipient->getCommunicationLanguage());
                 $data['isSomeLanguage'] = false;
-                if (isset($data['hotel']) && $data['hotel']->getInternationalTitle()) {
-                    $data['hotelName'] = $data['hotel']->getInternationalTitle();
-                    $transParams['%hotel%'] = $data['hotel']->getInternationalTitle();
+                /** @var Hotel $hotel */
+                if ($hotel = $data['hotel'] && $hotel->getInternationalTitle()) {
+                    $data['hotelName'] = $hotel->getInternationalTitle();
+                    $transParams['%hotel%'] = $hotel->getInternationalTitle();
                 }
             } else {
                 $translator->setLocale($this->locale);
@@ -259,6 +294,7 @@ class Mailer implements \SplObserver, MailerInterface
         $linkText = $translator->trans('mailer.resetting_mail.reset_pass_button.text');
 
         $this->send([$user], [
+            'hotel' => null,
             'buttonName' => $linkText,
             'text' => $text,
             'user' => $user,

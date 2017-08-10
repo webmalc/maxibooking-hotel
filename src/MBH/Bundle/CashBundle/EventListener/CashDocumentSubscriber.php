@@ -158,9 +158,12 @@ class CashDocumentSubscriber implements EventSubscriber
         if(!$myOrganization->getName())
             throw new Exception($this->container->get('translator')->trans('cashDocumentSubscriber.ne.ustanovleno.nazvanie.organizacii'));
 
+        /** @var \AppKernel $kernel */
+        $kernel = $this->container->get('kernel');
+        $client = $kernel->getClient();
         /** @var PdfGenerator $generator */
         $generator = $this->container->get('mbh.pdf_generator');
-        $generator->setPath($orderDocument->getUploadRootDir());
+        $generator->setPath($orderDocument->getUploadRootDir($client));
         $generator->save($id, $template, ['cashDocument' => $document, 'myOrganization' => $myOrganization]);
 
         $orderDocument->setCashDocument($document);

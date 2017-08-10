@@ -55,10 +55,10 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
         }
 
         $orderDocumentTypes = $this->container->getParameter('mbh.order.document.types');
-        $vagaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
-        $docTypes = $orderDocumentTypes + $vagaDocumentTypes;
+        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+        $docTypes = $orderDocumentTypes + $vegaDocumentTypes;
 
-        $groupDocTypes = ['' => $orderDocumentTypes, 'Vega' => $vagaDocumentTypes];
+        $groupDocTypes = ['' => $orderDocumentTypes, 'Vega' => $vegaDocumentTypes];
         $scanTypes = $this->container->get('mbh.vega.dictionary_provider')->getScanTypes();
 
         $form = $this->createForm(OrderDocumentType::class, $orderDocument, [
@@ -67,11 +67,15 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
             'touristIds' => $touristIds
         ]);
 
+        /** @var string|null $client */
+        $client = $this->container->get('kernel')->getClient();
+
+
         if ($request->isMethod("POST")) {
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $orderDocument->upload();
+                $orderDocument->upload($client);
                 $package->getOrder()->addDocument($orderDocument);
                 $this->dm->persist($package);
                 $this->dm->flush();
@@ -157,7 +161,10 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
             throw $this->createNotFoundException();
         }
 
-        $fp = fopen($document->getPath(), "rb");
+        /** @var string|null $client */
+        $client = $this->container->get('kernel')->getClient();
+
+        $fp = fopen($document->getPath($client), "rb");
         $str = stream_get_contents($fp);
         fclose($fp);
 
@@ -166,7 +173,7 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
 
         if ($download) {
             $headers['Content-Disposition'] = 'attachment; filename="'.$document->getOriginalName().'"';
-            $headers['Content-Length'] = filesize($document->getPath());
+            $headers['Content-Length'] = filesize($document->getPath($client));
         }
 
         $response = new Response($str, 200, $headers);
@@ -215,9 +222,12 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                if (!$orderDocument->isUploaded()) {
-                    $orderDocument->upload();
-                    $oldOrderDocument->deleteFile();
+                /** @var string|null $client */
+                $client = $this->container->get('kernel')->getClient();
+
+                if (!$orderDocument->isUploaded($client)) {
+                    $orderDocument->upload($client);
+                    $oldOrderDocument->deleteFile($client);
                 }
                 $this->dm->persist($orderDocument);
                 $this->dm->flush();

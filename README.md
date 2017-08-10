@@ -1,6 +1,20 @@
 MaxiBooking Hotel project
 ========================
 
+Client maintenance cli commands
+--------
+**Install clients**
+```bash
+bin/console mbh:client:install --clients=client1,client2 --env=prod
+```
+**Cache clear for clients**
+```bash
+bin/console mbh:cache:clear --clients=client1,client2 --env=prod
+``` 
+
+
+
+
 scripts
 -------
 * **scripts/docker/start.sh** запуск docker контейнеров
@@ -16,6 +30,7 @@ phpstorm
 * **cli php interpreter**: {{project_dir}}/scripts/docker/php.sh
 * **phpunit**: {{project_dir}}/scripts/docker/phpunit.sh
 * **xdebug**: add directory mappings to server settings
+* **cli debug**: XDEBUG_CONFIG="ideKey=PHPSTORM" PHP_IDE_CONFIG="serverName=cli"
 
 search ru text
 ---------

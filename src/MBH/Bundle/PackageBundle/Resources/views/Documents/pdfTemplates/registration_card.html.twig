@@ -139,8 +139,8 @@
                             </div>
                         </td>
                         <td style="width: 20%">
-                            {% if hotel.logoUrl %}
-                                <img src="{{ absolute_url(asset(hotel.logoUrl)) }}" style="height: 80px;float: right;">
+                            {% if hotel.logoImage %}
+                                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile'))) }}" style="height: 80px;float: right;">
                             {% endif %}
                         </td>
                     </tr>

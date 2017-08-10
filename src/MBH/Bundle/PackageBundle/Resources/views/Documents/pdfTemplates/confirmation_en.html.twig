@@ -115,9 +115,9 @@
                 {% endif %}
             </p>
         </div>
-        {% if hotel and hotel.logoUrl %}
+        {% if hotel and hotel.logoImage %}
             <div class="logo">
-                <img src="{{ asset(hotel.logoUrl)|imagine_filter('thumb_95x80') }}">
+                <img src="{{ asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80')) }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>

@@ -30,12 +30,11 @@ class PackageAccommodationRepository extends DocumentRepository
         return $qb->getQuery()->execute();
     }
 
-
     public function getWithAccommodationQB(
         \DateTime $begin = null,
-        \DateTime $end = null,
-        $rooms = null,
-        $excludePackages = null
+       \DateTime $end = null,
+       $rooms = null,
+       $excludePackages = null
     ) {
         /** Find PackageAccommodations  */
         $accQb = $this->createQueryBuilder();
@@ -79,12 +78,10 @@ class PackageAccommodationRepository extends DocumentRepository
         \DateTime $end = null,
         $rooms = null,
         $excludePackages = null,
-        $departure = true,
-        bool $hydrate = true
+        $departure = true
     )
     {
         $accQb = $this->getWithAccommodationQB($begin, $end, $rooms, $excludePackages);
-        $accQb->hydrate($hydrate);
 
         return $accQb->getQuery()->execute();
     }

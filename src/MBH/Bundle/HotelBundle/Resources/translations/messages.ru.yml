@@ -59,6 +59,8 @@ form.contact_info_type.email.help: Электронная почта конта�
 form.hotel_contact_information.contact_info.group: Данные контактов поддержки клиента
 form.hotel_images.image_file.label: Изображение
 form.hotel_images.image_file.help: Изображение отеля для онлайн бронирования
+form.hotel_logo.image_file.help: Логотип отеля
+form.hotel_logo.group: Настройки логотипа
 form.hotel_images.image_is_default.label: Основное?
 form.hotel_images.image_is_default.help: Является ли изображение основным для отеля?
 form.hotelType.name: Название
@@ -306,3 +308,7 @@ views.hotel.form.hotelType.upload_file: Загрузите файл
 views.hotel.form.hotelType.see_image: Просмотреть изображение
 views.hotel.form.hotelType.delete: Удалить
 views.hotel.form.hotelType.delete_modal_text: Точно удалить это изображение?
+
+views.hotel.roomType.editImages.edit.priority: Настройка приоритета показа
+views.hotel.roomType.editImages.edit.priority.save: Сохранить приоритет
+views.hotel.roomType.editImages.edit.priority.close: Закрыть

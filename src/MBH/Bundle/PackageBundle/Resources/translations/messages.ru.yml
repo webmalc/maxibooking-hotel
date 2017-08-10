@@ -1007,7 +1007,7 @@ mbhpackagebundle.view.tourist.index.adres: Адрес
 mbhpackagebundle.view.tourist.index.data.rozhdeniya: Дата рождения
 mbhpackagebundle.view.tourist.jsonbuttons.udaleniye.zapisi: Удаленные записи
 windows.search.error: 'Не найдены номера из-за системы "Окна". Тип номера: %room_type%'
-controller.packageController.record_edited_success_services: 'Даты услуг измены вместе с бронью' 
+controller.packageController.record_edited_success_services: 'Даты услуг изменены вместе с бронью'
 
 mbh.package_bundle.fixtures.delete_reason_data.denial: Отказ
 mbh.package_bundle.fixtures.delete_reason_data.error: Ошибка

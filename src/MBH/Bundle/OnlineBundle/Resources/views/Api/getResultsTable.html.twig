@@ -35,10 +35,21 @@
                                 <td class="mbh-left">
                         <span class="mbh-results-tariff"
                               data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
-                                    {% if result.roomType.getMainImage is not empty %}
-                                        <img class="mbh-roomType-image"
-                                             src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getMainImage.getWebPath }}">
+                                    <div id="mbh-results-image-wrapper">
+                                    {% if result.roomType.mainImage is not empty %}
+                                       {% set image = result.roomType.getMainImage %}
+                                        <a href="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('scaler')) }}"
+                                            class="fancybox" data-fancybox="group-{{ result.roomType.id }}">
+                                        <img class="main" src="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('thumb_155x155')) }}">
+                                        </a>
                                     {% endif %}
+                                    {% for image in result.roomType.onlineImagesByPriority if not image.isMain %}
+                                        <a href="{{ asset(vich_uploader_asset(image, 'imageFile')|imagine_filter('scaler')) }}"
+                                        class="fancybox" data-fancybox="group-{{ result.roomType.id }}">
+                                            <img src="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('thumb_50x50')) }}">
+                                        </a>
+                                    {% endfor %}
+                                    </div>
                                     <span class="mbh-results-roomType"
                                           data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle(app.request.locale) }}</span>
                                     {% if hotels|length > 1 %}<span class="mbh-results-hotel"
@@ -77,8 +88,8 @@
                                             <li data-value="
                                             	{{ price }}
                                             " class="{{ priceTourists }}">
-                                                
-                                                
+
+
                                                 {% if result.tariff.defaultPromotion and result.tariff.defaultPromotion.isPercentDiscount %}
                                                 <div class="mbh-price-old" style="white-space: nowrap;">{{ (price/((100 - result.tariff.defaultPromotion.discount)/100))|round|number_format }}&nbsp;<i class="fa fa-ruble"></i></div>
                                                 {% endif %}
@@ -148,7 +159,7 @@
 
 <script>
 $(document).ready(function(){
-    
+
     $('.booking-button').each(function() {
         var $button = $(this);
         var $selectWrapper = $button.siblings('span');
@@ -171,6 +182,6 @@ $(document).ready(function(){
             };
         });
     });
-    
+
 });
 </script>

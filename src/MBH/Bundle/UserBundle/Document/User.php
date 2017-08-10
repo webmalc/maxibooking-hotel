@@ -183,6 +183,11 @@ class User extends BaseUser implements RecipientInterface
     protected $locale = 'ru';
 
     /**
+     * @ODM\Field(type="date")
+     * @Assert\DateTime()
+     */
+    protected $expiresAt;
+    /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
      */

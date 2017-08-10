@@ -80,9 +80,9 @@
         <div class="title">
             <h2>{{ 'mbhpackagebundle.view.documents.pdftemplates.schet'|trans }} № {{ package.numberWithPrefix }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ 'now'|date('d.m.Y H:i') }}.</h2>
         </div>
-        {% if hotel and hotel.logoUrl %}
+        {% if hotel and hotel.logoImage %}
             <div class="logo">
-                <img src="{{ absolute_url(asset(hotel.logoUrl)) }}">
+                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile'))) }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>

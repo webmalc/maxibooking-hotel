@@ -1,10 +1,11 @@
 {% extends 'MBHHotelBundle:Hotel:layout.html.twig' %}
 
+{% form_theme form.logoImage '@MBHHotel/Form/hotelLogoImageTypeImageFile.html.twig' %}
+
 {% set small_title = 'views.hotel.edit.editing_number'|trans({}, 'MBHHotelBundle') ~ entity.id %}
 {% set layout = "tabs" %}
 
 {% block content %}
-
     {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 1, 'entity': entity} %}
 
     <div class="tab-content">

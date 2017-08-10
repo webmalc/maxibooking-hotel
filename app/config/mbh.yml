@@ -19,7 +19,7 @@ parameters:
     mbh.weekdays: {1: 'Понедельник', 2: 'Вторник', 3: 'Среда', 4: 'Четверг', 5: 'Пятница', 6: 'Суббота', 0: 'Воскресенье'}
 
     mbh.mongodb:
-      url: "%mongodb_url%"
+      url: "mongodb://%mongodb_host%:%mongodb_port%/%mongodb_database%"
       db : "%mongodb_database%"
 
     mbh.environment: "%mbh_environment%"
