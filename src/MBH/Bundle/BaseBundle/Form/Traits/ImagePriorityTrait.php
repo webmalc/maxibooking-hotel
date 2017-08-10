@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints\Range;
 
 trait ImagePriorityTrait
 {
-    public function addPriorityType(FormBuilderInterface $builder, array $options)
+    public function addPriorityType(FormBuilderInterface $builder)
     {
         $builder
             ->add(
@@ -36,6 +36,7 @@ trait ImagePriorityTrait
                             ]
                         ),
                     ],
+                    'data' => 0
                 ]
             );
     }
