@@ -242,7 +242,6 @@
             <div class="days">
                 <div class="clearfix" style="display: inline-block;">
                     <div class="calendarRows clearfix ">
-
                         <!---------------------------- ROOMS ------------------------->
                         <div class="rooms" style="margin-top: {{ headerHeight }}px;">
                             {% for roomTypeId, roomTypeData in roomTypesData %}
@@ -270,17 +269,12 @@
                                                 {% endfor %}
                                             {% else %}
                                                 {% for day in days %}
-                                                    {#{% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}#}
-                                                    {#{% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}#}
                                                     <li class=" tile tile-bookable tile-free both">
                                                         <div class="no-accommodation-date" data-container="body"
                                                              data-placement="bottom" data-html="true"
                                                              title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}" tabindex="0"
                                                              data-date="{{ day|date('d.m.Y') }}"
                                                              data-toggle="popover">
-                                                            {#<div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}#}
-                                                            {#<span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>#}
-                                                            {#</div>#}
                                                         </div>
                                                     </li>
                                                 {% endfor %}
@@ -292,17 +286,12 @@
                                             <ul class="calendarDates list-unstyled"
                                                 id="{{ 'no_accommodation' ~ roomTypeId }}">
                                                 {% for day in days %}
-                                                    {#{% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}#}
-                                                    {#{% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}#}
                                                     <li class=" tile tile-bookable tile-free both">
                                                         <div class="no-accommodation-date" data-container="body"
                                                              data-placement="bottom" data-html="true"
                                                              title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}" tabindex="0"
                                                              data-date="{{ day|date('d.m.Y') }}"
                                                              data-toggle="popover">
-                                                            {#<div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}#}
-                                                            {#<span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>#}
-                                                            {#</div>#}
                                                         </div>
                                                     </li>
                                                 {% endfor %}
@@ -349,6 +338,7 @@
                         <input type="hidden" class="modalBlockId" name="modalBlockId">
                         <input type="hidden" class="modalAccommodationId" name="accommodationId">
                         <input type="hidden" class="isDivide">
+                        <input type="hidden" id="modal-room-type-id">
                         <div class="row text-center" id="package-modal-change-alert"></div>
                         <div id="concise_package_update">
                             <table class="table not-auto-datatable table-striped">

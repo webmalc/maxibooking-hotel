@@ -6,6 +6,7 @@ namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 
 
@@ -36,7 +37,7 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
     private function getSource(): array
     {
         return [
-            '101Отель' => '101hotels',
+            '101Отель' => HundredOneHotels::CHANNEL_MANAGER_TYPE,
             'Островок' => 'ostrovok',
             'Oktogo' => 'oktogo',
             'Booking.com' => 'booking',

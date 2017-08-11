@@ -11,7 +11,6 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
-use MBH\Bundle\PackageBundle\Form\ChessBoardConciseType;
 use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter;
@@ -106,10 +105,11 @@ class ChessBoardController extends BaseController
         $displayDisabledRoomType = !$clientConfig->isIsDisableableOn();
         $canBookWithoutPayer = $clientConfig->isCanBookWithoutPayer();
 
+        $this->dm->getRepository('MBHVegaBundle:VegaState');
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
         $tourist->setBirthplace(new BirthPlace());
-        $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneBy(['originalName' => 'РОССИЯ']));
         $tourist->getDocumentRelation()->setType('vega_russian_passport');
 
         return [
@@ -216,8 +216,28 @@ class ChessBoardController extends BaseController
                 $this->updateAccommodation($package, $accommodation, $updatedRoom, $updatedBeginDate,
                     $updatedEndDate, $messageFormatter);
             }
-        } else {
+        //Добавляется новое размещение
+        } elseif (!is_null($updatedRoom)) {
             $this->addAccommodation($updatedBeginDate, $updatedEndDate, $updatedRoom, $package, $messageFormatter);
+        //Изменяется тип комнаты у брони без размещения
+        } elseif (!is_null($newRoomType = $this->dm->find('MBHHotelBundle:RoomType', $request->request->get('roomTypeId')))) {
+            //Если у брони нет размещений, то можно изменить тип номера
+            if ($package->getAccommodations()->count() == 0) {
+                $newPackage = clone $package;
+                $newPackage->setRoomType($newRoomType);
+                $result = $this->container->get('mbh.order_manager')->updatePackage($package, $newPackage);
+                if ($result instanceof Package) {
+                    $this->dm->persist($newPackage);
+                    $this->dm->flush();
+                    $messageFormatter->addSuccessPackageUpdateMessage();
+                } else {
+                    $messageFormatter->addErrorMessage($result);
+                }
+            } else {
+                $messageFormatter->addErrorMessage('controller.chessboard.can_not_change_room_type_for_package_with_accommodations');
+            }
+        } else {
+            throw new \Exception('Incorrect request');
         }
 
         return new JsonResponse(json_encode($messageFormatter->getMessages()));
@@ -262,7 +282,7 @@ class ChessBoardController extends BaseController
         if ($isEndDateChanged && $isLastAccommodation
             //Если дата окончания размещения больше чем дата выезда брони
             && (($updatedEndDate->getTimestamp() > $package->getEnd()->getTimestamp())
-                //... или дата выезда брони равна дате окончания размещения, то изменяем дату выезда брони
+            //... или дата выезда брони равна дате окончания размещения, то изменяем дату выезда брони
                 || ($package->getEnd()->getTimestamp() == $accommodation->getEnd()->getTimestamp()))
         ) {
             $package->setEnd(clone $updatedEndDate);
@@ -379,7 +399,7 @@ class ChessBoardController extends BaseController
         $messageFormatter = $this->get('mbh.chess_board.message_formatter');
         $translator = $this->get('translator');
         $helper = $this->container->get('mbh.helper');
-
+        /** @var Package $package */
         $package = $this->dm->getRepository('MBHPackageBundle:Package')
             ->getPackageByPackageAccommodationId($firstAccommodation->getId());
         $accommodationEnd = $firstAccommodation->getEnd();

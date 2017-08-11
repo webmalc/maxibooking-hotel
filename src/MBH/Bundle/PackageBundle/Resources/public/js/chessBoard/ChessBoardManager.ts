@@ -374,6 +374,7 @@ class ChessBoardManager {
         let packageDiv = templatePackageElement.cloneNode(true);
         packageDiv.style.width = packageWidth + 'px';
         packageDiv.id = packageItem.id;
+
         let description = document.createElement('div');
         let packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
         let descriptionText = packageName ? packageName.substr(0, packageCellCount * 5 - 1) : '';
@@ -384,6 +385,31 @@ class ChessBoardManager {
         packageDiv.appendChild(description);
         description.style.width = Math.floor(descriptionText.length * ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH) + 'px';
         packageDiv.classList.add(packageItem.paidStatus);
+
+        description.setAttribute('data-toggle', 'popover');
+        description.setAttribute('data-html', "true");
+        description.setAttribute('data-container', "body");
+        description.setAttribute('title', packageItem.number);
+        description.setAttribute('data-placement', 'top');
+        let descriptionPopoverContent = '<b>Номер</b>:' + packageItem.number
+            + (packageItem.payer ? '<br><b>Плательщик: </b>' + packageItem.payer : '')
+            + '<br><b>Цена: </b>' + packageItem.price
+            + '<br><b>Заезд брони: </b>' + packageItem.packageBegin
+            + '<br><b>Выезд брони: </b>' + packageItem.packageBegin
+            + '<br><b>Заехали: </b>' + (packageItem.isCheckIn ? 'да' : 'нет')
+            + '<br><b>Выехали: </b>' + (packageItem.packageBegin ? 'да' : 'нет');
+        description.setAttribute('data-content', descriptionPopoverContent);
+        packageDiv.onmousemove = function () {
+            let descriptionElement = this.getElementsByClassName('package-description')[0];
+            let popoverId = descriptionElement.getAttribute('aria-describedby');
+            if (popoverId == null) {
+                $(descriptionElement).popover('show');
+            }
+        };
+        packageDiv.onmouseleave = function () {
+            let descriptionElement = this.getElementsByClassName('package-description')[0];
+            $(descriptionElement).popover('hide');
+        };
 
         if (packageItem.position == 'middle' || packageItem.position == 'left') {
             packageDiv.classList.add('with-right-divider');
@@ -996,6 +1022,7 @@ class ChessBoardManager {
 
         $popoverElements.unbind('shown.bs.popover');
         $popoverElements.on('shown.bs.popover', function () {
+            //remove unplaced package from popover
             let lastPackage = $('.package').last();
             if (lastPackage.attr('unplaced')) {
                 lastPackage.remove();

@@ -404,6 +404,7 @@ var ActionManager = (function () {
         modal.find('#modal-end-date').text(intervalEnd);
         modal.find('#modal-room-id').text(newIntervalData.accommodation);
         modal.find('#modal-room-type-name').text(roomTypes[newIntervalData.roomType]);
+        modal.find('#modal-room-type-id').text(newIntervalData.roomType);
         modal.find('#modal-room-name').text(newIntervalData.accommodation
             ? rooms[newIntervalData.accommodation] : Translator.trans('action_manager.update_modal.without_accommodation'));
         modal.modal('show');
@@ -425,6 +426,7 @@ var ActionManager = (function () {
             'begin': modal.find('#modal-begin-date').text(),
             'end': modal.find('#modal-end-date').text(),
             'roomId': modal.find('#modal-room-id').text(),
+            'roomTypeId': modal.find('#modal-room-type-id').text(),
             'isDivide': modal.find('input.isDivide').val(),
             'payer': payerText
         };
