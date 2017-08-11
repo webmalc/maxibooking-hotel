@@ -51,6 +51,7 @@ class ClientDBRemoteToLocalCommand extends ContainerAwareCommand
             try {
                 $this->addLogMessage('Try to db update '.$clientName);
                 $this->mongoMaintenance->update($clientName, $server);
+                $this->addLogMessage('Db update done for '.$clientName);
             } catch (MongoMaintenanceException $e) {
                 $this->addLogMessage($clientName.$e->getMessage(), Logger::ALERT);
             }
