@@ -40,6 +40,42 @@ services:
     mbh.channelmanager.hoh_request_formatter:
         class: MBH\Bundle\ChannelManagerBundle\Model\HundredOneHotels\HOHRequestFormatter
 
+    mbh.channelmanager.expedia:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia
+        arguments: ['@service_container']
+
+    mbh.channelmanager.expedia_type:
+        class: MBH\Bundle\ChannelManagerBundle\Form\ExpediaType
+
+    mbh.channelmanager.expedia_request_formatter:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestFormatter
+
+    mbh.channelmanager.expedia_request_data_formatter:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestDataFormatter
+        arguments: ['@service_container']
+
+    mbh.channelmanager.helper:
+        class: MBH\Bundle\ChannelManagerBundle\Services\ChannelManagerHelper
+
+    mbh.channelmanager.order_handler:
+        class: MBH\Bundle\ChannelManagerBundle\Services\OrderHandler
+        arguments: ['@doctrine_mongodb.odm.document_manager']
+
+    mbh.channelmanager.expedia_response_handler:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaResponseHandler
+        arguments: ['@service_container']
+        shared: false
+
+    mbh.channelmanager.expedia_order_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaOrderInfo
+        arguments: ['@service_container']
+        shared: false
+
+    mbh.channelmanager.expedia_package_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaPackageInfo
+        arguments: ['@service_container']
+        shared: false
+
     mbh.channelmanager.booking_type:
       class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
       arguments: ['@mbh.currency']

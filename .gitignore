@@ -42,6 +42,7 @@ nbproject/
 /protectedUpload/orderDocuments/*
 /protectedUpload/vegaDocuments/*
 /protectedUpload/clients/*
+!/protectedUpload/clients/.gitkeep
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
 web/online
@@ -51,6 +52,11 @@ web/clients/
 !web/clients/.gitkeep
 backup/
 src/MBH/Bundle/TestBundle/
+docker/php-fpm/keys/*
+!docker/php-fpm/keys/.gitkeep
+docker/nginx/fastcgi_param_client
+
+
 
 
 #Eclipse

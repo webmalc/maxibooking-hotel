@@ -100,7 +100,7 @@ class SearchType extends AbstractType
                 'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
             ))
             ->add('end', DateType::class, array(
-                'label' => 'Отъезд',
+                'label' => 'form.searchType.check_out',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => true,

@@ -19,7 +19,7 @@
                 {% for image in images %}
                     <div class="col-md-1">
                         <span>{{ 'image.priority'|trans }}</span>&nbsp;<span class="label label-success" data-toggle="modal" data-target="#modal-default" data-roomtype="{{ entity.id }}" data-image="{{ image.id }}">{{ image.priority }}</span>
-                        <a href=" {% if image.getWidth() >= 800 or image.getHeight()>=800 %} {{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('scaler')) }} {% else %} {{ asset(image.getPath()) }} {% endif %}"
+                        <a href=" {% if image.getWidth() >= 800 or image.getHeight()>=800 %} {{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('scaler')) }} {% else %} {{ asset(vich_uploader_asset(image, 'imageFile')) }} {% endif %}"
                            class="fancybox" rel="gallery" data-fancybox-title="{{ image.imageName }}">
                             <img src="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('thumb_100x100')) }}" class="img-thumbnail"/>
                         </a>

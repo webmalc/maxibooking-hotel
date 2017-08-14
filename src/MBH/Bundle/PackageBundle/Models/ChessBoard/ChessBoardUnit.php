@@ -8,8 +8,9 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 /**
- * Данные об интервале в шахматке. Может представлять данные об интервале размещения,
- * ... интервале без размещения частично размещенной брони и неразмещенной брони
+ * .
+ * Data about interval in chessboard. Can display data about interval of accommodation,
+ * ... interval without accommodation partly placed package and unplaced package
  *
  * Class ChessBoardUnit
  * @package MBH\Bundle\PackageBundle\Models\ChessBoard
@@ -139,8 +140,8 @@ class ChessBoardUnit implements \JsonSerializable
     }
 
     /**
-     * Получение относительного положения размещения по отношению к остальным размещениям брони
-     * Размещение может занимать полное время брони, быть первым размещением, последним размещением или промежуточным
+     * Obtaining the relative position of places relative to other package locations
+     * Accommodation can take full advantage, being the first placement, last placement or intermediate
      *
      * @param PackageAccommodation $accommodation
      * @param Package $package

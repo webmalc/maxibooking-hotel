@@ -163,3 +163,17 @@ services:
         arguments:
             - '@doctrine.odm.mongodb.document_manager'
             - '@form.factory'
+
+    mbh.notice_stay_place_xls_type:
+      class: MBH\Bundle\PackageBundle\DocumentGenerator\Xls\Type\NoticeStayPlaceXlsType
+      arguments:
+          - '@doctrine_mongodb.odm.document_manager'
+          - '@translator'
+      tags:
+          - {name: form.type}
+
+    mbh.organization_type:
+      class: MBH\Bundle\PackageBundle\Form\OrganizationType
+      arguments: ['@translator', '@doctrine.odm.mongodb.document_manager']
+      tags:
+          - {name: form.type}

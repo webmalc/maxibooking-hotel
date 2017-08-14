@@ -1,13 +1,14 @@
+/*global Translator */
 $(document).ready(function() {
     'use strict';
     var $unwelcomeForm = $('#mbh_package_bundle_unwelcome');
     var levels = [
         '',
-        'Незначительная',
-        'Низкая',
-        'Средняя',
-        'Высокая',
-        'Очень высокая'
+        Translator.trans('unwelcome.levels.minor'),
+        Translator.trans('unwelcome.levels.low'),
+        Translator.trans('unwelcome.levels.middle'),
+        Translator.trans('unwelcome.levels.high'),
+        Translator.trans('unwelcome.levels.very_high')
     ];
 
     var levelColors = [
@@ -41,7 +42,7 @@ $(document).ready(function() {
             }
             $label.css('color', color);
         })
-    }
+    };
 
     updateRadioLabel($radioInputs.filter(function () {
         return $(this).prop('checked');

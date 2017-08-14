@@ -109,7 +109,6 @@ class ChessBoardManager {
         };
 
         let $reportFilter = $('#accommodation-report-filter');
-
         $('.daterangepicker-input').daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
             mbh.datarangepicker.on($reportFilter.find('.begin-datepicker.mbh-daterangepicker'), $reportFilter.find('.end-datepicker.mbh-daterangepicker'), picker);
         });
@@ -794,7 +793,7 @@ class ChessBoardManager {
     }
 
     private getGriddedHeightValue(height) {
-        //1 - бордер
+        //1px - border
         let packageElementHeight = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1;
 
         return Math.floor(height / packageElementHeight) * packageElementHeight - 1;
@@ -809,7 +808,7 @@ class ChessBoardManager {
     }
 
     /**
-     * Получение строки, содержащей первые буквы сторон, в которые можно расширять бронь.(e - east, w - west)
+     * Getting the line, containing first letters of sides in which enable widening (e - east, w - west)
      * @param intervalData
      * @returns {string}
      */

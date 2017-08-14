@@ -205,6 +205,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig", mappedBy="hotel") */
     protected $myallocatorConfig;
 
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig", mappedBy="hotel") */
+    protected $expediaConfig;
+
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig", mappedBy="hotel") */
     protected $hundredOneHotelsConfig;
 
@@ -1119,6 +1122,27 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     {
         $this->flat = $flat;
     }
+
+
+    /**
+     * @return mixed
+     */
+    public function getExpediaConfig()
+    {
+        return $this->expediaConfig;
+    }
+
+    /**
+     * @param mixed $expediaConfig
+     * @return $this
+     */
+    public function setExpediaConfig($expediaConfig)
+    {
+        $this->expediaConfig = $expediaConfig;
+
+        return $this;
+    }
+
 
     /**
      * @return Housing[]

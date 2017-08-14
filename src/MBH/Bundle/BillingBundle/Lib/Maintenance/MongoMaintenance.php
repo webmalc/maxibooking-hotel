@@ -180,7 +180,7 @@ final class MongoMaintenance extends AbstractMaintenance
         return $this->getClientConfig($clientName)['parameters']['mongodb_database'];
     }
 
-    protected function copyRemoteDb(string $clientName, string $serverIp)
+    protected function copyRemoteDb(string $clientName, string $serverIp): ?string
     {
         $dbName = $this->getCurrentDbName($clientName);
         $command = sprintf(
@@ -190,7 +190,8 @@ final class MongoMaintenance extends AbstractMaintenance
             $dbName,
             $serverIp,
             $this->options['host'].":".$this->options['port']);
-        $result = $this->executeCommand($command);
+
+        return $this->executeCommand($command);
     }
 
 }
