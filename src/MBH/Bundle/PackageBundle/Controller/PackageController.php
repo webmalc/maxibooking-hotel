@@ -995,13 +995,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         });
 
         $this->dm->getFilterCollection()->enable('softdeleteable');
+        $currentDateTime = $this->getParameter('mbh.timezone') !== 'default'
+            ? new \DateTime('now', new \DateTimeZone($this->getParameter('mbh.timezone')))
+            : new \DateTime();
 
         if (!$package->getArrivalTime()) {
-            $package->setArrivalTime(new \DateTime());
+            $package->setArrivalTime($currentDateTime);
         }
 
         if (!$package->getDepartureTime()) {
-            $package->setDepartureTime(new \DateTime());
+            $package->setDepartureTime($currentDateTime);
         }
 
         $hasEarlyCheckIn = false;
@@ -1022,8 +1025,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
             'debt' => $package->getPaidStatus() != 'success' && !$package->getIsCheckOut(),
             'hasEarlyCheckIn' => $hasEarlyCheckIn,
-            'hasLateCheckOut' => $hasLateCheckOut,
-            'timeZone' => $this->getParameter('mbh.timezone')
+            'hasLateCheckOut' => $hasLateCheckOut
         ]);
 
         $authorizationChecker = $this->container->get('security.authorization_checker');
