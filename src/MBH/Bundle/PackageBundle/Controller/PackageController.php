@@ -46,7 +46,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * List entities
      *
-     * @Route("/", name="package")
+     * @Route("/", name="package", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_VIEW')")
      * @Template()
@@ -995,13 +995,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         });
 
         $this->dm->getFilterCollection()->enable('softdeleteable');
+        $currentDateTime = $this->getParameter('mbh.timezone') !== 'default'
+            ? new \DateTime('now', new \DateTimeZone($this->getParameter('mbh.timezone')))
+            : new \DateTime();
 
         if (!$package->getArrivalTime()) {
-            $package->setArrivalTime(new \DateTime());
+            $package->setArrivalTime($currentDateTime);
         }
 
         if (!$package->getDepartureTime()) {
-            $package->setDepartureTime(new \DateTime());
+            $package->setDepartureTime($currentDateTime);
         }
 
         $hasEarlyCheckIn = false;

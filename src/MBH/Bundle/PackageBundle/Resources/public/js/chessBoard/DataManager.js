@@ -229,6 +229,18 @@ var DataManager = (function () {
             }
         }
     };
+    DataManager.prototype.getPackageAccommodations = function (packageId) {
+        var packageAccommodations = [];
+        for (var accommodationId in this._accommodations) {
+            if (this._accommodations.hasOwnProperty(accommodationId)) {
+                var accommodationData = this._accommodations[accommodationId];
+                if (accommodationData.packageId == packageId) {
+                    packageAccommodations.push(accommodationData);
+                }
+            }
+        }
+        return packageAccommodations;
+    };
     DataManager.prototype.getAccommodationIntervalById = function (id) {
         return this._accommodations[id];
     };

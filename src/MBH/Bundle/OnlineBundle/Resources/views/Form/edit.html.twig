@@ -36,7 +36,7 @@
                 </div>
                 <div class="panel-body">
                     {% set code1  = '<div id="mbh-form-wrapper"><a href="http://maxi-booking.ru/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
-                    {% set code2  = '<script>var mbhForm = {form_url: "' ~ url('online_form_iframe', {formId: entity.id}) ~ '", calendar_url: "' ~ url('online_form_calendar') ~ '"};</script>' %}
+                    {% set code2  = '<script>var mbhForm = {form_url: "' ~ url('online_form_iframe', {formId: entity.id}) ~ '", calendar_url: "' ~ url('online_form_calendar') ~ '"}; var frameWidth = "' ~ (entity.fullWidth ? '100%' : entity.frameWidth) ~ '"; var frameHeight = "' ~ entity.frameHeight ~ '"</script>' %}
                     {% set code3  = '<script src="' ~ absolute_url(asset('/bundles/mbhonline/js/online/load-form.js')) ~'"></script>' %}
                     <div class="row spacer-bottom">
                         <div class="col-md-3"><small>{{ 'views.form.index.to_form_place'|trans({}, 'MBHOnlineBundle') }}</small></div>

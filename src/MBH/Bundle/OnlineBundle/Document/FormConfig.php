@@ -162,6 +162,87 @@ class FormConfig extends Base
      */
     private $maxPackages = 5;
 
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int")
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     */
+    private $frameWidth = 300;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="int")
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     */
+    private $frameHeight = 400;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\Type(type="bool")
+     */
+    private $isFullWidth = false;
+
+    /**
+     * @return bool
+     */
+    public function isFullWidth(): bool
+    {
+        return $this->isFullWidth;
+    }
+
+    /**
+     * @param bool $isFullWidth
+     * @return FormConfig
+     */
+    public function setIsFullWidth(bool $isFullWidth): FormConfig
+    {
+        $this->isFullWidth = $isFullWidth;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFrameWidth(): int
+    {
+        return $this->frameWidth;
+    }
+
+    /**
+     * @param int $frameWidth
+     * @return FormConfig
+     */
+    public function setFrameWidth(int $frameWidth): FormConfig
+    {
+        $this->frameWidth = $frameWidth;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFrameHeight(): int
+    {
+        return $this->frameHeight;
+    }
+
+    /**
+     * @param int $frameHeight
+     * @return FormConfig
+     */
+    public function setFrameHeight(int $frameHeight): FormConfig
+    {
+        $this->frameHeight = $frameHeight;
+
+        return $this;
+    }
 
     public function __construct()
     {
