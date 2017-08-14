@@ -372,8 +372,10 @@ var ActionManager = (function () {
         if (alertMessageData.modalContentClass) {
             var $modalContent_1 = $updateForm.closest('.modal-content');
             $modalContent_1.addClass(alertMessageData.modalContentClass);
+            $('#package-modal-change-alert').removeClass('text-center');
             var onWithModalClassWindowClosed_1 = function () {
                 $modalContent_1.removeClass(alertMessageData.modalContentClass);
+                $('#package-modal-change-alert').addClass('text-center');
             };
             $continueButton.click(function () {
                 onWithModalClassWindowClosed_1();
