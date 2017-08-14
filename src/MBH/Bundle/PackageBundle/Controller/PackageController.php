@@ -46,7 +46,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * List entities
      *
-     * @Route("/", name="package")
+     * @Route("/", name="package", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_VIEW')")
      * @Template()
