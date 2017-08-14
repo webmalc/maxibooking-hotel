@@ -296,6 +296,9 @@ form.touristType.placeholder_phone: +7(925)3456512
 form.touristType.email: E-mail
 form.touristType.placeholder_email: mail@exapmple.com
 form.touristType.note: Примечание
+package.accommodaton_modal.change_room_type: Изменить тип номера
+package.accommodaton_modal.continue_button.text: Продолжить
+package.accommodaton_modal.chessboard_button.text: Шахматка
 form.package_accommodation_type.check_in: Заезд
 form.package_accommodation_type.check_out: Выезд
 form.package_accommodation_type.check_in.help: Дата начала размещения

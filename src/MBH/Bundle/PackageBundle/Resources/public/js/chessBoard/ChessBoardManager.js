@@ -152,10 +152,11 @@ var ChessBoardManager = (function () {
         $slider.slider({ tooltip: 'hide', reverseed: true });
         $slider.on('slideStop', function () {
             var sliderValue = $('#ex1').slider('getValue');
-            ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
-            _this.currentSizeConfigNumber = sliderValue;
-            window.location.reload();
-            // this.setStyles(sliderValue);
+            if (_this.currentSizeConfigNumber !== sliderValue) {
+                ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
+                _this.currentSizeConfigNumber = sliderValue;
+                window.location.reload();
+            }
         });
     };
     ChessBoardManager.setCookie = function (name, value, options) {
@@ -316,30 +317,31 @@ var ChessBoardManager = (function () {
         packageDiv.appendChild(description);
         description.style.width = Math.floor(descriptionText.length * ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH) + 'px';
         packageDiv.classList.add(packageItem.paidStatus);
-        description.setAttribute('data-toggle', 'popover');
-        description.setAttribute('data-html', "true");
-        description.setAttribute('data-container', "body");
-        description.setAttribute('title', packageItem.number);
-        description.setAttribute('data-placement', 'top');
-        var descriptionPopoverContent = '<b>Номер</b>:' + packageItem.number
-            + (packageItem.payer ? '<br><b>Плательщик: </b>' + packageItem.payer : '')
-            + '<br><b>Цена: </b>' + packageItem.price
-            + '<br><b>Заезд брони: </b>' + packageItem.packageBegin
-            + '<br><b>Выезд брони: </b>' + packageItem.packageBegin
-            + '<br><b>Заехали: </b>' + (packageItem.isCheckIn ? 'да' : 'нет')
-            + '<br><b>Выехали: </b>' + (packageItem.packageBegin ? 'да' : 'нет');
-        description.setAttribute('data-content', descriptionPopoverContent);
-        packageDiv.onmousemove = function () {
-            var descriptionElement = this.getElementsByClassName('package-description')[0];
-            var popoverId = descriptionElement.getAttribute('aria-describedby');
-            if (popoverId == null) {
-                $(descriptionElement).popover('show');
-            }
-        };
-        packageDiv.onmouseleave = function () {
-            var descriptionElement = this.getElementsByClassName('package-description')[0];
-            $(descriptionElement).popover('hide');
-        };
+        //
+        // description.setAttribute('data-toggle', 'popover');
+        // description.setAttribute('data-html', "true");
+        // description.setAttribute('data-container', "body");
+        // description.setAttribute('title', packageItem.number);
+        // description.setAttribute('data-placement', 'top');
+        // let descriptionPopoverContent = '<b>Номер</b>:' + packageItem.number
+        //     + (packageItem.payer ? '<br><b>Плательщик: </b>' + packageItem.payer : '')
+        //     + '<br><b>Цена: </b>' + packageItem.price
+        //     + '<br><b>Заезд брони: </b>' + packageItem.packageBegin
+        //     + '<br><b>Выезд брони: </b>' + packageItem.packageBegin
+        //     + '<br><b>Заехали: </b>' + (packageItem.isCheckIn ? 'да' : 'нет')
+        //     + '<br><b>Выехали: </b>' + (packageItem.packageBegin ? 'да' : 'нет');
+        // description.setAttribute('data-content', descriptionPopoverContent);
+        // packageDiv.onmousemove = function () {
+        //     let descriptionElement = this.getElementsByClassName('package-description')[0];
+        //     let popoverId = descriptionElement.getAttribute('aria-describedby');
+        //     if (popoverId == null) {
+        //         $(descriptionElement).popover('show');
+        //     }
+        // };
+        // packageDiv.onmouseleave = function () {
+        //     let descriptionElement = this.getElementsByClassName('package-description')[0];
+        //     $(descriptionElement).popover('hide');
+        // };
         if (packageItem.position == 'middle' || packageItem.position == 'left') {
             packageDiv.classList.add('with-right-divider');
         }

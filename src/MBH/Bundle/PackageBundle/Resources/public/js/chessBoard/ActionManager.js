@@ -252,26 +252,41 @@ var ActionManager = (function () {
         var modalAlertDiv = document.getElementById('package-modal-change-alert');
         modalAlertDiv.innerHTML = '';
         var newIntervalData = this.dataManager.chessBoardManager.getPackageData(packageElement);
-        if (intervalData && changedSide) {
-            var alertMessageData = ActionManager.getAlertData(changedSide, intervalData, newIntervalData);
+        var isNewAccommodationInAnotherRoomType = ActionManager.isNewAccommodationInAnotherRoomType(newIntervalData, intervalData);
+        if (isNewAccommodationInAnotherRoomType || (intervalData && changedSide)) {
+            var alertMessageData = this.getAlertMessage(newIntervalData, intervalData, isNewAccommodationInAnotherRoomType);
             if (alertMessageData) {
                 ActionManager.showAlertMessage(alertMessageData, $updateForm);
             }
         }
         ActionManager.showEditedUpdateModal(intervalData, newIntervalData, isDivide, changedSide);
     };
-    ActionManager.getAlertData = function (changedSide, intervalData, newIntervalData) {
-        if (changedSide == 'right') {
-            return ActionManager.getAlertMessage(newIntervalData, intervalData);
-        }
-        else if (changedSide == 'left') {
-            return ActionManager.getAlertMessage(newIntervalData, intervalData);
-        }
-        else if (changedSide == 'both') {
-            return ActionManager.getAlertMessage(newIntervalData, intervalData);
-        }
+    ActionManager.isNewAccommodationInAnotherRoomType = function (accommodationData, intervalData) {
+        var isNewAccommodation = !intervalData.isAccommodationInterval
+            || ActionManager.isPackageBeginChanged(accommodationData, intervalData)
+            || ActionManager.isPackageEndChanged(accommodationData, intervalData);
+        return accommodationData.roomType !== intervalData.packageRoomTypeId && isNewAccommodation;
     };
-    ActionManager.getAlertMessage = function (newIntervalData, intervalData) {
+    ActionManager.prototype.getAlertMessage = function (newIntervalData, intervalData, isNewAccommodationInAnotherRoomType) {
+        if (isNewAccommodationInAnotherRoomType) {
+            var packageAccommodations = this.dataManager.getPackageAccommodations(intervalData.packageId);
+            var existsAccommodationWithCurrentRoomType = packageAccommodations.some(function (accommodationData) {
+                return accommodationData.packageRoomTypeId === accommodationData.roomTypeId;
+            });
+            var warningMessageId = existsAccommodationWithCurrentRoomType
+                ? 'package_bundle.accommodations.warning_before_setting_accoommodation_with_existed_accommodation'
+                : 'package_bundle.accommodations.warning_before_setting_accoommodation';
+            return {
+                message: Translator.trans(warningMessageId, {
+                    accommodationRoomTypeName: roomTypes[newIntervalData.roomType],
+                    packageRoomType: roomTypes[intervalData.packageRoomTypeId],
+                    chessboard_route: Routing.generate('chess_board_home'),
+                    packages_route: Routing.generate('package')
+                }),
+                resolved: true,
+                modalContentClass: 'modal-danger'
+            };
+        }
         var packageBeginChanged = ActionManager.isPackageBeginChanged(newIntervalData, intervalData);
         var packageEndChanged = ActionManager.isPackageEndChanged(newIntervalData, intervalData);
         var packageBeginAndEndChanged = packageBeginChanged && packageEndChanged;
@@ -353,7 +368,20 @@ var ActionManager = (function () {
             $continueButton.show();
         }
         var $modalAlertDiv = $('#package-modal-change-alert');
-        $modalAlertDiv.text(alertMessageData.message);
+        $modalAlertDiv.html(alertMessageData.message);
+        if (alertMessageData.modalContentClass) {
+            var $modalContent_1 = $updateForm.closest('.modal-content');
+            $modalContent_1.addClass(alertMessageData.modalContentClass);
+            var onWithModalClassWindowClosed_1 = function () {
+                $modalContent_1.removeClass(alertMessageData.modalContentClass);
+            };
+            $continueButton.click(function () {
+                onWithModalClassWindowClosed_1();
+            });
+            $('#packageModal').on('hidden.bs.modal', function () {
+                onWithModalClassWindowClosed_1();
+            });
+        }
         $modalAlertDiv.show();
         var $confirmButton = $('#packageModalConfirmButton');
         $confirmButton.hide();

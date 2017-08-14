@@ -72,6 +72,7 @@ class ChessBoardUnit implements \JsonSerializable
             'paidStatus' => $this->package->getPaidStatus(),
             'packageBegin' => $this->package->getBegin()->format('d.m.Y'),
             'packageEnd' => $this->package->getEnd()->format('d.m.Y'),
+            'packageRoomTypeId' => $this->package->getRoomType()->getId(),
             'isCheckIn' => $this->package->getIsCheckIn(),
             'isCheckOut' => $this->package->getIsCheckOut(),
             'isLocked' => $this->package->getIsLocked(),
@@ -80,7 +81,8 @@ class ChessBoardUnit implements \JsonSerializable
             'updatePackage' => $this->hasUpdatePackageRights($this->package),
             'packageId' => $this->getPackageId(),
             'isEarlyCheckIn' => $this->hasEarlyCheckin,
-            'isLateCheckOut' => $this->hasLateCheckout
+            'isLateCheckOut' => $this->hasLateCheckout,
+            'isAccommodationInterval' => !is_null($this->accommodation)
         ];
 
         if ($this->package->getPayer()) {
@@ -134,36 +136,6 @@ class ChessBoardUnit implements \JsonSerializable
     {
         return $this->accommodation ?
             $this->accommodation->getRoom()->getRoomType()->getId() : $this->package->getRoomType()->getId();
-    }
-
-    /**
-     * @return bool
-     */
-    private function isEarlyCheckIn()
-    {
-        /** @var PackageService $service */
-        foreach ($this->package->getServices() as $service) {
-            if ($service->getService()->getCode() === 'Early check-in') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @return bool
-     */
-    private function isLateCheckOut()
-    {
-        /** @var PackageService $service */
-        foreach ($this->package->getServices() as $service) {
-            if ($service->getService()->getCode() === 'Late check-out') {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
