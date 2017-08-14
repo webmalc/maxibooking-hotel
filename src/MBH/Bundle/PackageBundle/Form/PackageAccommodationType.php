@@ -43,7 +43,6 @@ class PackageAccommodationType extends AbstractType
             'date_widget' => 'single_text',
             'attr' => ['placeholder' => '12:00', 'class' => 'input-time'],
             'date_format' => 'dd.MM.yyyy',
-            'data' => new \DateTime('now', new \DateTimeZone($options['timeZone']))
         ];
 
         if ($options['hasEarlyCheckIn']) {
@@ -77,7 +76,6 @@ class PackageAccommodationType extends AbstractType
             'date_widget' => 'single_text',
             'attr' => ['placeholder' => '12:00', 'class' => 'input-time'],
             'date_format' => 'dd.MM.yyyy',
-            'data' => new \DateTime('now', new \DateTimeZone($options['timeZone']))
         ];
 
         if ($options['hasLateCheckOut']) {
@@ -98,7 +96,6 @@ class PackageAccommodationType extends AbstractType
             'roomStatusIcons' => [],
             'hasEarlyCheckIn' => false,
             'hasLateCheckOut' => false,
-            'timeZone' => null
         ]);
     }
 
