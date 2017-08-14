@@ -9,7 +9,7 @@
         {% block content %}
             {{ form_start(form, {attr: {class: 'form-inline remember filter-form icon-label-form', id: 'special-filter-form'}}) }}
             <div class="form-group">
-                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                <label><i class="fa fa-calendar" title='{{ 'mbhpricebundle.view.tariff.index.daty'|trans }}' data-toggle='tooltip'></i></label>
                 {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} —
                 {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
             </div>
@@ -22,7 +22,7 @@
                 {{ form_widget(form.roomType) }}
             </div>
             <div class="form-group">
-                <label><i class="fa fa-check" title="Показывать выключенные?" data-toggle="tooltip"></i></label>
+                <label><i class="fa fa-check" title="{{ 'mbhpricebundle.view.tariff.index.show_disabled'|trans }}" data-toggle="tooltip"></i></label>
                 {{ form_widget(form.isEnabled) }}
             </div>
             {{ form_widget(form._token) }}

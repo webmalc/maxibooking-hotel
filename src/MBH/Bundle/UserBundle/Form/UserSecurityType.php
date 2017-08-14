@@ -3,6 +3,7 @@
 namespace MBH\Bundle\UserBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Form\Type\RolesType;
 use Symfony\Component\Form\AbstractType;
@@ -22,7 +23,7 @@ class UserSecurityType extends AbstractType
                 'value' => true,
                 'required' => false,
             ])
-            ->add('twoFactorAuthentication',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+            ->add('twoFactorAuthentication',  InvertChoiceType::class, [
                 'group' => 'form.userType.settings',
                 'label' => 'form.userType.two_factor',
                 'choices' => array_combine(User::getTwoFactorTypes(), User::getTwoFactorTypes()),
@@ -35,7 +36,7 @@ class UserSecurityType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'required' => false,
                 'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year'],
-                'help' => 'Если не указано - срок действия пользователя неограничен'
+                'help' => 'form.userType.expires_at.help'
             ])
             ->add('groups', DocumentType::class, [
                 'class' => 'MBHUserBundle:Group',

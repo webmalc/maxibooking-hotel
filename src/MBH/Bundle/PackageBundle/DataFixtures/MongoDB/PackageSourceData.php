@@ -2,41 +2,49 @@
 
 namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 
-
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-
-class PackageSourceData extends AbstractFixture implements OrderedFixtureInterface
+/**
+ * Class PackageSourceData
+ * @package MBH\Bundle\PackageBundle\DataFixtures\MongoDB
+ */
+class PackageSourceData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function load(ObjectManager $manager)
     {
+        foreach ($this->getSource() as $titleId => $value) {
+            $title = in_array($value, ['online', 'offline', 'regular_customer', 'recommendet_friend'])
+                ? $this->container->get('translator')->trans($titleId)
+                : $titleId;
 
-        foreach ($this->getSource() as $Source => $value) {
-            if ($manager->getRepository('MBHPackageBundle:PackageSource')->findBy(['fullTitle' => $Source, 'code' => $value])) {
+            if ($manager->getRepository('MBHPackageBundle:PackageSource')->findBy(['fullTitle' => $title, 'code' => $value])) {
                 continue;
             }
 
             $packageSource = new PackageSource();
             $packageSource
-                ->setFullTitle($Source)
+                ->setFullTitle($title)
                 ->setCode($value)
                 ->setSystem(true);
 
             $manager->persist($packageSource);
             $manager->flush();
 
-            $this->setReference($Source, $packageSource);
+            $this->setReference($value, $packageSource);
         }
-
     }
 
     private function getSource(): array
     {
         return [
-            '101Отель' => '101hotels',
+            '101 Отель' => '101hotels',
             'Островок' => 'ostrovok',
             'Oktogo' => 'oktogo',
             'Booking.com' => 'booking',
@@ -46,10 +54,10 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
             'Venere.com' => 'venere',
             'Hotels.com' => 'hotels',
             'ВашОтель.ру' => 'vashotel',
-            'Он-лайн бронирование' => 'online',
-            'Менеджер' => 'offline',
-            'Постоянный клиент' => 'regular_customer',
-            'Рекомендация знакомых' => 'recommendet_friend',
+            'fixtures.package_source_data.on_line_reservation' => 'online',
+            'fixtures.package_source_data.manager' => 'offline',
+            'fixtures.package_source_data.regulat_customer' => 'regular_customer',
+            'fixtures.package_source_data.recomendation_of_friends' => 'recommendet_friend',
         ];
     }
 

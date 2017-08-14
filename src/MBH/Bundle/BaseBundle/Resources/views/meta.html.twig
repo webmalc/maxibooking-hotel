@@ -114,12 +114,14 @@
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}
 
-            {% if locale == 'en' %}
+            {% if locale starts with 'en' %}
                 {% set bootstrapLocale = 'en-GB' %}
                 {% set select2Locale = 'en' %}
-            {% elseif locale == 'ru' %}
+                {% set frontMessagesLocale = 'en' %}
+            {% elseif locale starts with 'ru' %}
                 {% set bootstrapLocale = 'ru' %}
                 {% set select2Locale = 'ru' %}
+                {% set frontMessagesLocale = 'ru' %}
             {% endif %}
             {% set bootstrapLocaleFile = 'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.' ~ bootstrapLocale ~ '.min.js' %}
             {% set select2LocaleFile = 'assets/vendor/select2/dist/js/i18n/' ~ select2Locale ~ '.js' %}
