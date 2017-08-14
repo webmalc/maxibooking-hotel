@@ -62,7 +62,8 @@ class AclOwnerMaker
     }
 
     /**
-     * Назначить владельца документу и добавить внести его в ACL
+     * Assign ownership of the document and add it to ACL
+     *
      * @param User $user
      * @param Base $document
      * @param bool $isSetAcl

@@ -1,4 +1,4 @@
-/*global window, $, services, document, datepicker, deleteLink, Routing, mbh */
+/*global window, $, services, document, datepicker, deleteLink, Routing, mbh, Translator */
 
 var docReadyTourists = function () {
     'use strict';
@@ -7,7 +7,14 @@ var docReadyTourists = function () {
     //roomType rooms datatables
     var $touristTable = $('#tourist-table');
     var $citizenshipSelect = $touristForm.find('#form_citizenship');
+    var touristFilterFormCallback = function () {
+        return $.param({'form' : getTouristFilterFormData($touristForm, $citizenshipSelect)});
+    };
     $touristTable.dataTable({
+        dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
+        buttons: [
+            getExportButtonSettings('tourist', 'csv', touristFilterFormCallback)
+        ],
         "processing": true,
         "serverSide": true,
         "ordering": false,
@@ -15,12 +22,7 @@ var docReadyTourists = function () {
             "method": "POST",
             "url": Routing.generate('tourist_json'),
             "data": function (requestData) {
-                requestData.form = {
-                    begin: $touristForm.find('#form_begin').val(),
-                    end: $touristForm.find('#form_end').val(),
-                    citizenship: $citizenshipSelect.val(),
-                    _token: $touristForm.find('#form__token').val()
-                };
+                requestData.form = getTouristFilterFormData($touristForm, $citizenshipSelect);
                 return requestData;
             }
         },
@@ -94,7 +96,6 @@ var docReadyTourists = function () {
             return;
         }
 
-
         var details;
         $organization.mbhOrganizationSelectPlugin();
         select2Text($organization).select2({
@@ -111,15 +112,14 @@ var docReadyTourists = function () {
                     details = data.details;
                     $.each(data.list, function (k, v) {
                         var d = details[v.id];
-                        data.list[k].text = v.text + ' ' + '(ИНН ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
+                        data.list[k].text = v.text + ' ' + '(' + Translator.trans('tourist.inn') +' ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
                     });
 
                     return {results: data.list};
                 }
             },
             dropdownCssClass: "bigdrop"
-        })
-        var $organization = $('#organization_organization');
+        });
         $organization.on('change', function () {
             var value = $(this).val();
             var detail = details[value];
@@ -135,7 +135,7 @@ var docReadyTourists = function () {
     var $authorityOrganCodeInput = $('#mbh_document_relation_authorityOrganCode');
     select2Text($('#mbh_document_relation_authorityOrgan')).select2({
         minimumInputLength: 3,
-        placeholder: "Сделайте выбор",
+        placeholder: Translator.trans('tourist.make_a_choice'),
         allowClear: true,
         ajax: {
             url: Routing.generate('authority_organ_json_list'),
@@ -209,3 +209,11 @@ $(document).ready(function () {
     docReadyTourists();
 });
 
+function getTouristFilterFormData($touristForm, $citizenshipSelect) {
+    return {
+        begin: $touristForm.find('#mbhpackage_bundle_tourist_filter_form_begin').val(),
+        end: $touristForm.find('#mbhpackage_bundle_tourist_filter_form_end').val(),
+        citizenship: $citizenshipSelect.val(),
+        _token: $touristForm.find('#mbhpackage_bundle_tourist_filter_form__token').val()
+    }
+}

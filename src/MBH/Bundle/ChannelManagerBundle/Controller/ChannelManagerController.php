@@ -53,10 +53,9 @@ class ChannelManagerController extends Controller
             if ($request->getMethod() == 'POST') {
                 file_put_contents($file, '');
 
-                $request->getSession()->getFlashBag()
-                    ->set(
+                $this->addFlash(
                         'success',
-                        $this->get('translator')->trans('Логи успешно очищены.')
+                        $this->get('translator')->trans('controller.channel_manager_controller.logs_clear_successful')
                     );
 
                 return $this->redirect($this->generateUrl('channel_manager_logs'));

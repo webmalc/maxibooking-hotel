@@ -1,9 +1,18 @@
-/*global document, window, $, alert */
+/*global document, window, $, alert, Translator */
+
 $(document).ready(function () {
     'use strict';
     var $hints = [
-            '1 - Отвратительно', '2 - Ужасно', '3 - Плохо', '4 - Достаточно плохо', '5 - Удовлетворительно',
-            '6 - Приемлемо', '7 - Достаточно хорошо', '8 - Хорошо', '9 - Очень хорошо', '10 - Превосходно!',
+            '1 -' + Translator.trans("polls_user_script.disgusting"),
+            '2 -' + Translator.trans("polls_user_script.terribble"),
+            '3 -' + Translator.trans("polls_user_script.bad"),
+            '4 -' + Translator.trans("polls_user_script.bad_enogh"),
+            '5 -' + Translator.trans("polls_user_script.passably"),
+            '6 -' + Translator.trans("polls_user_script.acceptable"),
+            '7 -' + Translator.trans("polls_user_script.good_enough"),
+            '8 -' + Translator.trans("polls_user_script.good"),
+            '9 -' + Translator.trans("polls_user_script.very_good"),
+            '10 -' + Translator.trans("polls_user_script.excellent") + '!'
         ],
         cScore = 0;
 
@@ -21,13 +30,13 @@ $(document).ready(function () {
             half: false,
             cancel: true,
             cancelPlace: 'left',
-            cancelHint: 'Сбросить оценку',
+            cancelHint: Translator.trans("polls_user_script.reset_rating"),
             cancelClass: 'mb-rate-cancel',
             number: 10,
             target: '.mb-rank-result-screen[rel="' + $id + '"]',
             hints: $hints,
             targetKeep: true,
-            targetText: '0 - Без ответа',
+            targetText: '0 - ' + Translator.trans("polls_user_script.no_answer"),
             targetFormat: '{score}',
             click: function (score, evt) {
                 cScore = Math.ceil(score / 2);
@@ -41,7 +50,7 @@ $(document).ready(function () {
     $('.mb-rank-submit').click(function () {
         var cnt = $('.mb-rank-result[value!=""]').length;
         if (cnt < 6) {
-            alert('Пожалуйста, выставите вашу оценку по крайней мере по 5 пунктам! \nБольшое спасибо!');
+            alert(Translator.trans("polls_user_script.please_set_rating") + ' \n' + Translator.trans("polls_user_script.many_thanks") + '!');
             return;
         }
         $('#mb-rank-form').submit();

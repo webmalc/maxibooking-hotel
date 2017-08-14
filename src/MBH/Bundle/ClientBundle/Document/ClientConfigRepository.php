@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ClientBundle\Document;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
@@ -14,8 +15,8 @@ class ClientConfigRepository extends DocumentRepository
      */
     public function fetchConfig()
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        /* @var $dm  DocumentManager */
+        $qb = $this->createQueryBuilder();
         $config = $qb->getQuery()->getSingleResult();
 
         if (!$config) {

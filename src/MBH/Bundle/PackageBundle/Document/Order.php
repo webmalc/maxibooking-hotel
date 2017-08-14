@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -177,7 +178,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "101Hotels","oktogo"},
+     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "101Hotels","oktogo"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      * @ODM\Index()
@@ -287,7 +288,7 @@ class Order extends Base
     /**
      * Get packages
      *
-     * @return Package[] $packages
+     * @return Package[]|ArrayCollection $packages
      */
     public function getPackages()
     {
@@ -993,5 +994,4 @@ class Order extends Base
         $this->onlinePaymentType = $onlinePaymentType;
         return $this;
     }
-
 }

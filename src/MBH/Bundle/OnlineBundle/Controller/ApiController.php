@@ -2,12 +2,11 @@
 
 namespace MBH\Bundle\OnlineBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -73,7 +72,7 @@ class ApiController extends Controller
             'formConfig' => $formConfig
         ];
     }
-    
+
     /**
      * Orders xml
      * @Route("/orders/{begin}/{end}/{id}/{sign}/{type}", name="online_orders", defaults={"_format"="xml", "id"=null})
@@ -107,8 +106,7 @@ class ApiController extends Controller
         $qb = $this->dm->getRepository('MBHPackageBundle:Package')
             ->createQueryBuilder()
             ->field('roomType.id')->in($this->get('mbh.helper')->toIds($hotel->getRoomTypes()))
-            ->sort('updatedAt', 'desc');
-        ;
+            ->sort('updatedAt', 'desc');;
 
         if ($type == 'live') {
             $qb
@@ -147,12 +145,13 @@ class ApiController extends Controller
         }
 
         $hotelsQb = $dm->getRepository('MBHHotelBundle:Hotel')
-            ->createQueryBuilder('q')
+            ->createQueryBuilder()
             ->sort('fullTitle', 'asc');
 
         $configHotelsIds = $this->get('mbh.helper')->toIds($formConfig->getHotels());
 
         $hotels = [];
+        /** @var Hotel $hotel */
         foreach ($hotelsQb->getQuery()->execute() as $hotel) {
             if ($configHotelsIds && !in_array($hotel->getId(), $configHotelsIds)) {
                 continue;
@@ -217,16 +216,14 @@ class ApiController extends Controller
      */
     public function checkOrderAction(Request $request)
     {
-
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /** @var DocumentManager $dm */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $logger = $this->get('mbh.online.logger');
         $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP' . $request->getClientIp() . '. Post data: ' . implode(
-            '; ',
-            $_POST
-        ) . ' . Keys: ' . implode('; ', array_keys($_POST));
-
+                '; ',
+                $_POST
+            ) . ' . Keys: ' . implode('; ', array_keys($_POST));
 
         if (!$clientConfig) {
             $logger->info('FAIL. ' . $logText . ' .Not found config');
@@ -262,6 +259,7 @@ class ApiController extends Controller
         }
 
         //send notifications
+        /** @var Order $order */
         $order = $cashDocument->getOrder();
         $package = $order->getPackages()[0];
         $params = [
@@ -416,7 +414,7 @@ class ApiController extends Controller
                 $facilityArray[$key] = $val;
             }
         }
-        
+
         return [
             'defaultTariff' => $defaultTariff ?? null,
             'facilityArray' => $facilityArray,
@@ -535,15 +533,15 @@ class ApiController extends Controller
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig',
                 [
-                    'data' => array_merge(['test' => false, 'currency' => strtoupper($this->getParameter('locale.currency')),
+                    'data' => array_merge(['test' => false,
+                        'currency' => strtoupper($this->getParameter('locale.currency')),
+
                         'buttonText' => $this->get('translator')->trans(
                             'views.api.make_payment_for_order_id',
                             ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle'
                         )
-                    ], $clientConfig->getFormData(
-                        $order->getCashDocuments()[0]
-                    ))
+                    ], $clientConfig->getFormData($order->getCashDocuments()[0]))
                 ]
             );
         }

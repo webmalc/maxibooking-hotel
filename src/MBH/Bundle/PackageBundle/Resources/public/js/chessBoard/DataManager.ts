@@ -267,6 +267,20 @@ class DataManager {
             }
         }
     }
+    
+    public getPackageAccommodations(packageId) {
+        let packageAccommodations = [];
+        for (let accommodationId in this._accommodations) {
+            if (this._accommodations.hasOwnProperty(accommodationId)) {
+                let accommodationData = this._accommodations[accommodationId];
+                if (accommodationData.packageId == packageId) {
+                    packageAccommodations.push(accommodationData);
+                }
+            }
+        }
+
+        return packageAccommodations;
+    }
 
     public getAccommodationIntervalById(id) {
         return this._accommodations[id]

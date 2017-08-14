@@ -5,7 +5,6 @@ namespace MBH\Bundle\PackageBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\NoteTrait;
-use MBH\Bundle\BaseBundle\Document\Traits\PackageTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -24,6 +23,7 @@ use MBH\Bundle\PackageBundle\Validator\Constraints as MBHConstraints;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  * @MBHConstraints\PackageAccommodations()
+ * @ODM\Index(keys={"begin"="asc","end"="asc"})
  */
 
 class PackageAccommodation extends Base implements \JsonSerializable
@@ -35,8 +35,6 @@ class PackageAccommodation extends Base implements \JsonSerializable
     use BlameableDocument;
 
     use NoteTrait;
-
-    use PackageTrait;
 
     /**
      * @var \DateTime
@@ -70,6 +68,31 @@ class PackageAccommodation extends Base implements \JsonSerializable
      * @Assert\NotNull
      */
     protected $isAutomaticallyChangeable = true;
+
+    /**
+     * this field used only for validator
+     * @var Package
+     */
+    protected $packageForValidator;
+
+    /**
+     * @param Package $package
+     * @return $this
+     */
+    public function setPackageForValidator(Package $package)
+    {
+        $this->packageForValidator = $package;
+
+        return $this;
+    }
+
+    /**
+     * @return Package
+     */
+    public function getPackageForValidator(): ?Package
+    {
+        return $this->packageForValidator;
+    }
 
     /**
      * @return bool

@@ -19,9 +19,10 @@ trait LoggerTrait
 
     /**
      * @param array $message
+     * @param string $client
      * @return string
      */
-    public function logStart(array $message):string
+    public function logStart(array $message, string $client = ''):string
     {
         $log = self::class . ': message get. data: ';
 
@@ -34,6 +35,8 @@ trait LoggerTrait
             }
             $log .= $key . ' - ' . $value . '; ';
         }
+
+        $log .= ' client: '.$client;
         $this->logger->info($log);
 
         return $log;

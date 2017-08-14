@@ -44,7 +44,7 @@
            title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}'
            class='{{ entity.order.payer ? '' : 'danger' }}'>{% if entity.order.payer %}{{ entity.order.payer.shortName }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
         <small>
-            <br>{% if entity.adults > 0 %}{{ entity.adults }} вз.{% endif %}{% if entity.adults > 0 and entity.children > 0 %}+{% endif %}{% if entity.children > 0 %}{{ entity.children }} рб.{% endif %}
+            <br>{% if entity.adults > 0 %}{{ entity.adults }} {{ 'report.porter_rows.number_of_adults'|trans}}{% endif %}{% if entity.adults > 0 and entity.children > 0 %}+{% endif %}{% if entity.children > 0 %}{{ entity.children }} {{ 'report.porter_rows.number_of_children'|trans}}{% endif %}
         </small>
     </td>
     <td class="text-right">
@@ -82,7 +82,7 @@
         <td class="text-right">
             {% if entity.isCheckIn %}
                 {{ entity.arrivalTime|mbh_format }} {{ entity.arrivalTime|date('H:i') }}<br>
-                <small>&nbsp;{{ 'mbhpackagebundle.view.report.porterrows.zayekhal'|trans }} </small>
+                <small>&nbsp;{{ 'report.porter_rows.arrived'|trans}}</small>
             {% else %}
                 {{ entity.begin|mbh_format }}
             {% endif %}
@@ -91,7 +91,7 @@
         <td class="text-right">
             {% if entity.isCheckOut %}
                 {{ entity.departureTime|mbh_format }} {{ entity.arrivalTime|date('H:i') }}<br>
-                <small>&nbsp;{{ 'mbhpackagebundle.view.report.porterrows.vyyekhal'|trans }} </small>
+                <small>&nbsp;{{ 'report.porter_rows.departured'|trans}}</small>
             {% else %}
                 {{ entity.end|mbh_format }}<br>
             {% endif %}

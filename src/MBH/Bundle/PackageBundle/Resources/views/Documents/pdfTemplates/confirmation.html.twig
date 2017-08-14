@@ -107,9 +107,9 @@
             {{ 'mbhpackagebundle.view.documents.pdftemplates.zakaza'|trans }} № {{ package.order.id }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ package.order.createdAt|date("d.m.Y") }} {{ 'mbhpackagebundle.view.documents.pdftemplates.g'|trans }}.
         </p>
     </div>
-    {% if hotel and hotel.logoUrl %}
+    {% if hotel and hotel.logoImage %}
         <div class="logo">
-            <img src="{{ asset(hotel.logoUrl)|imagine_filter('thumb_95x80') }}">
+            <img src="{{ asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_95x80')) }}">
         </div>
     {% endif %}
     <div style="clear: both"></div>

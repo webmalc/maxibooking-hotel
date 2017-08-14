@@ -1,3 +1,33 @@
+2.0.0-beta.3
+============
+* merge Xpedia branch
+
+2.0.0-beta.2
+============
+ 
+* add universal cli command [reference](http://redmine.maxi-booking.ru/issues/926#note-3)
+* fix protected upload path in stamp and documents
+
+2.0.0-beta.1
+============
+* doctrine mongodb vendor update
+* add acl cache
+* add fork acl provider https://github.com/webmalc/MongoDBAclBundle.git
+* add primes to PackageRepository::fetch()
+* change images to Image document in Hotel  and RoomType
+* change logo in mail templates
+* check empty email addresses before generate mail (add to log if emtpy) 
+* check is file exists before attach to mail
+* add priority to roomType images
+* each client in own file folder
+* change task runner (rabbitmq consumer) to multi clients
+* add service get all clients 
+* add generator for ChannelManager pull queue in RMQ
+* add complex indexes in some repos
+* add MBHBillingBundle, move maintenance commands
+* add cache:clear command for all users
+
+
 1.5.10
 ============
 * online form improvements && fixes

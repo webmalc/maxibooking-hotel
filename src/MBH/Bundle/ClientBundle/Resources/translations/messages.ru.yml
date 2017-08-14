@@ -12,6 +12,8 @@ form.clientConfigType.is_notice_unpaid: Отправлять уведомлен�
 form.clientConfigType.search_dates: Дополнительные дни поиска
 form.clientConfigType.search_dates_desc: Количество дополнительных дней для подбора броней.
 form.clientConfigType.is_disabled_room_type_category: Группы для типов номеров
+form.clientConfigType.is_send_mail_at_payment_confirmation.label: Оповещать о подтверждении платежа?
+form.clientConfigType.is_send_mail_at_payment_confirmation.help: Отправлять ли письмо по умолчанию при подтверждении кассового документа?
 form.clientConfigType.is_enabled_work_shift: Рабочие смены
 form.clientConfigType.instant_search: Быстрый поиск
 form.clientConfigType.instant_search_help: Поиск сразу при изменении полей?
@@ -26,6 +28,8 @@ form.clientPaymentSystemType.moneymail_shop_id: ID магазина (Shop_IDP)
 form.clientPaymentSystemType.moneymail_key: Ключ магазина (Key)
 form.clientPaymentSystemType.uniteller_shop_id: ID магазина (Shop_IDP)
 form.clientPaymentSystemType.uniteller_password: Пароль магазина (Password)
+form.clientPaymentSystemType.uniteller.taxation_rate_code: Код ставки налогооблажения
+form.clientPaymentSystemType.uniteller.taxation_system_code: Код системы налогооблажения
 form.clientPaymentSystemType.rbk_eshop_id: ID магазина (eshopId)
 form.clientPaymentSystemType.rbk_secret_key: Ключ магазина (secretKey)
 form.clientPaymentSystemType.shop_login: Логин магазина
@@ -40,22 +44,25 @@ form.clientPaymentSystemType.successUrlDesc: URl для перенаправле
 form.clientPaymentSystemType.failUrlDesc: URl для перенаправления пользователя после неуспешной оплаты
 form.clientPaymentSystemType.payment_system_group: Платежная система
 form.clientPaymentSystemType.payment_system_group_links: Ссылки
-mailer.notice.unpaid.packages: Неоплаченные брони
-mailer.notice.unpaid.order.list: Список броней с просроченной оплатой
-mailer.notice.unpaid.package.list: № Заказа
-mailer.notice.unpaid.need.price: Сумма к оплате
+mailer.notice.unpaid.packages: 'Неоплаченные брони'
+mailer.notice.unpaid.order.list: 'Список броней с просроченной оплатой'
+mailer.notice.unpaid.package.list: '№ Заказа'
+mailer.notice.unpaid.need.price: 'Сумма к оплате'
 mailer.notice.unpaid.paid: Оплачено
 mailer.notice.unpaid.phone: Телефон
-mailer.notice.unpaid.mobile.phone: Мобильный телефон
-mailer.notice.unpaid.no.data: Нет данных
+mailer.notice.unpaid.mobile.phone: 'Мобильный телефон'
+mailer.notice.unpaid.no.data: 'Нет данных'
 mailer.notice.unpaid.full_name: ФИО
-form.clientConfigType.search_tariffs: Количество тарифов
-form.clientConfigType.search_tariffs_desc: Количество тарифов выводимое по умолчанию при подборе
-form.clientConfigType.add_start_date: Начальная дата
-form.clientConfigType.is_book_without_payer.label: Бронировать без плательщика?
-form.clientConfigType.is_book_without_payer.help: Разрешено ли создавать заказы без указания плательщика?
+form.clientConfigType.search_tariffs: 'Количество тарифов'
+form.clientConfigType.search_tariffs_desc: 'Количество тарифов выводимое по умолчанию при подборе'
+form.clientConfigType.add_start_date: 'Начальная дата'
+form.clientConfigType.is_book_without_payer.label: 'Бронировать без плательщика?'
+form.clientConfigType.is_book_without_payer.help: 'Разрешено ли создавать заказы без указания плательщика?'
+form.clientConfigType.default_adults_quantity.label: 'Количество взрослых'
+form.clientConfigType.default_adults_quantity.help: 'Количество взрослых в форме поиска по умолчанию'
+form.clientConfigType.default_children_quantity.label: 'Количество детей'
+form.clientConfigType.default_children_quantity.help: 'Количество детей в форме поиска по умолчанию'
 form.clientPaymentSystemType.payment_system_paypal_login: Логин
 form.documentTemplateType.hotel: Отель
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
-
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'

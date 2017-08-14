@@ -4,6 +4,7 @@ namespace MBH\Bundle\CashBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
@@ -17,7 +18,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class CashDocumentType
-
  */
 class CashDocumentType extends AbstractType
 {
@@ -30,6 +30,11 @@ class CashDocumentType extends AbstractType
     {
         $payers = [];
         $this->documentManager = $options['dm'];
+
+        $clientConfig = $this->documentManager->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        /** @var CashDocument $cashDocument */
+        $cashDocument = $builder->getData();
+
         foreach ($options['payers'] as $payer) {
             $text = $payer->getName();
             if ($payer instanceof Organization) {
@@ -99,6 +104,16 @@ class CashDocumentType extends AbstractType
                 'label' => 'form.cashDocumentType.is_paid',
                 'required' => false,
                 'group' => $options['groupName'],
+            ])
+            ->add(
+                'isSendMail', CheckboxType::class, [
+                'label' => 'form.cashDocumentType.is_send_mail.label',
+                'help' => 'form.cashDocumentType.is_send_mail.help',
+                'required' => false,
+                'group' => $options['groupName'],
+                'data' => !is_null($cashDocument) && !is_null($cashDocument->isSendMail())
+                    ? $cashDocument->isSendMail()
+                    : $clientConfig->isSendMailAtPaymentConfirmation()
             ])
             ->add('paid_date', DateType::class, [
                 'label' => 'form.cashDocumentType.paid_date',

@@ -170,7 +170,8 @@ class SearchCacheCommand extends ContainerAwareCommand
 
             //run command
             $command = 'nohup php ' . $console . self::TITLE .' --begin='. $pair[0]->format('d.m.Y') .' --end='. $pair[1]->format('d.m.Y') .' --force --env=prod';
-            $process = new Process($command);
+            $client = $this->getContainer()->getParameter('client');
+            $process = new Process($command, null, [\AppKernel::CLIENT_VARIABLE => $client]);
             $process->setTimeout(null)->setIdleTimeout(null)->run();
             $timeSearch = $startSearch->diff(new \DateTime());
             $logger->info('SEARCH: '. $command);

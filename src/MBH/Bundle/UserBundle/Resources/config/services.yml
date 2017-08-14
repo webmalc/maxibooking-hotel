@@ -91,3 +91,17 @@ services:
       arguments: ['@session']
       tags:
         - { name: kernel.event_listener, event: security.interactive_login, method: onInteractiveLogin }
+
+    mbh.resetting_subscriber:
+        class: MBH\Bundle\UserBundle\EventListener\ResettingSubscriber
+        arguments:
+            - "%mbh.recaptcha%"
+            - '@templating'
+            - '@translator'
+        tags:
+            - { name: kernel.event_subscriber}
+    mbh.user_type:
+      class: MBH\Bundle\UserBundle\Form\UserType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}

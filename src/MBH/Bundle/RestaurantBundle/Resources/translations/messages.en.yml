@@ -1,0 +1,81 @@
+restaurant.common.small_title: List
+restaurant.common.save: 'Save changes'
+restaurant.category.form.fullTitle.label: Title
+restaurant.category.form.title.help: 'Title only visible inside MaxiBooknig system'
+restaurant.ingredient.add: 'Add ingredient'
+restaurant.ingredient.active: Availability
+restaurant.ingredient.form.fullTitle.placeholder: Name
+restaurant.ingredient.form.title.placeholder: 'Internal label'
+restaurant.ingredient.form.title.help: 'Title only visible inside MaxiBooknig system'
+restaurant.ingredient.form.price.help: 'Enter ingredient price'
+restaurant.ingredient.form.calcType.label: 'Measure unit'
+restaurant.ingredient.form.calcType.help: 'Choose measure unit for the ingredient'
+restaurant.ingredient.form.is_enable.label: Show
+restaurant.dishmenu.small_title: List
+restaurant.dishmenu.category.action.new: 'New dish category'
+restaurant.dishmenu.category.form.fullTitle.placeholder: Name
+restaurant.dishmenu.category.form.title.label: 'Internal name'
+restaurant.dishmenu.category.form.title.placeholder: Name
+restaurant.dishmenu.category.form.title.help: 'Display name (visible in MaxiBooking only)'
+restaurant.dishmenu.item.small_title: 'Add dish to the category'
+restaurant.dishmenu.item.edit_small_title: 'Edit dish in the category'
+restaurant.dishmenu.item.action.new: 'Add a new dish'
+restaurant.dishmenu.item.action.edit: 'Edit dish'
+restaurant.dishmenu.item.action.delete: 'Delete dish'
+restaurant.dishmenu.item.helper.new: 'Create a dish in the category'
+restaurant.dishmenu.item.form.fullTitle.label: Label
+restaurant.dishmenu.item.form.fullTitle.placeholder: 'Dish name required'
+restaurant.dishmenu.item.form.fullTitle.help: 'Dish name'
+restaurant.dishmenu.item.form.title.label: 'Internal label'
+restaurant.dishmenu.item.form.title.placeholder: 'Enter internal dish label'
+restaurant.dishmenu.item.form.title.help: 'Internal label'
+restaurant.dishmenu.item.form.price.label: Price
+restaurant.dishmenu.item.form.costprice.label: 'Net cost'
+restaurant.dishmenu.item.form.costprice.help: 'Net price of a dish'
+restaurant.dishmenu.item.form.description.label: Description
+restaurant.dishmenu.item.form.description.placeholder: 'Enter dish description'
+restaurant.dishmenu.item.form.description.help: 'Dish description'
+restaurant.dishmenu.item.form.margin.label: 'Margin %'
+restaurant.dishmenu.item.form.margin.disabled: 'Margin is set, price is being generated automatically'
+restaurant.dishmenu.item.form.amount.help: Number
+restaurant.dishmenu.item.form.amount.placeholder: 'Number of ingredients'
+restaurant.dishmenu.item.form.dishIngredients.label: 'Dish ingredients'
+restaurant.dishmenu.item.form.is_enable.label: Show
+restaurant.dishmenu.item.form.is_enable.help: 'Show dish in order list'
+restaurant.dishorder.status.payed: Paid
+restaurant.dishorder.title: Orders
+restaurant.dishorder.common.addsuccess: 'Order succesfully created'
+restaurant.dishorder.common.editsuccess: 'Order successfully edited'
+restaurant.dishorder.common.noitems: 'No orders'
+restaurant.dishorder.table.number: 'Order #'
+restaurant.dishorder.table.table: Table
+restaurant.dishorder.table.price: Price
+restaurant.dishorder.table.freezed: Paid
+restaurant.dishorder.table.doing: Actions
+restaurant.dishorder.table.content: Content
+restaurant.dishorder.table.payer: Payer
+restaurant.dishorder.table.time: Date
+restaurant.dishorder.actions.tolist: List
+restaurant.dishorder.actions.list.small_title: 'Add order'
+restaurant.dishorder.actions.showfreeze.small_title: 'View order'
+restaurant.dishorder.actions.edit: 'Edit order'
+restaurant.dishorder.actions.delete: 'Delete order'
+restaurant.dishorder.actions.isfreezed: Paid
+restaurant.dishorder.form.table.placeholder: 'Enter table number'
+restaurant.dishorder.form.dishes.label: 'List of dishes'
+restaurant.dishorder.form.order.help: 'Enter reservation or room number'
+restaurant.table.item.helper.inputcountchairs: 'Enter number of adult seats'
+restaurant.table.common.addsuccess: 'Table successfully added'
+restaurant.table.actions.list.small_title: 'List of tables'
+restaurant.table.form.title.help: 'Title only visible inside MaxiBooknig system'
+restaurant.table.form.title.placeholder: 'Table near a window'
+restaurant.table.form.is_enable.label: Enabled
+restaurant.exceptions.editsuccsess: 'Entry successfully edited.'
+restaurant.exceptions.danger: 'Warning! Not all settings were saved successfully.'
+restaurantbundle.controller.entity_successful_created: 'Entry successfully added.'
+restaurantbundle.controller.entry_successfully_edited: 'Entry successfully edited.'
+restaurantbundle.controller.attention_not_all_parameter_successful_saved: 'Warning! Not all settings were saved successfully.'
+restaurantbundle.form.paid: Paid
+restaurantbundle.form.not_paid: 'Not paid'
+views.form.amount.add: Add
+restaurant.dishmenu.item.form.is_marging.label: Margin

@@ -1,50 +1,50 @@
 analytics.index.sales_date: 'Даты продажи'
 analytics.index.report_type: 'Тип отчета'
 analytics.index.room_type: 'Тип номера'
-analytics.index.all_rooms: Все номера
+analytics.index.all_rooms: 'Все номера'
 analytics.index.cumulative: 'Накопительный?'
 analytics.index.monthly: 'По месяцам?'
-analytics.layout.analytics: 'Аналитика'
+analytics.layout.analytics: Аналитика
 order.cash.order_editing: 'редактирование заказа #'
 order.cash.deleted: удален
-order.cash.paid_price: 'Оплачено/Цена:'
+order.cash.paid_price: 'Оплачено / Цена:'
 order.cash.paid: оплачен
-order.cash.not_paid: не оплачен
+order.cash.not_paid: 'Не оплачен'
 order.cash.payer: Плательщик
 order.cash.income: Приход
 order.cash.outcome: Расход
 order.cash.is_paid: Оплачен
-order.cash.payment_way: Способ оплаты
-order.cash.operation_type: Вид операции
+order.cash.payment_way: 'Способ оплаты'
+order.cash.operation_type: 'Вид операции'
 order.cash.date: Дата
 order.cash.removed: Удален
 order.cash.no: нет
-order.cash.edit_record: Редактирование записи
-order.cash.remove_record: Удаление записи
-order.cash.confirm_payment: Подтверждение платежа
-order.cash.pay_payment: Оплата платежа
-order.cash.are_you_sure_to_confirm_payment: Точно подтвердить платеж на сумму
-order.cash.are_you_sure_to_pay_payment: Точно оплатить платеж на сумму
+order.cash.edit_record: 'Редактирование записи'
+order.cash.remove_record: 'Удаление записи'
+order.cash.confirm_payment: 'Подтверждение платежа'
+order.cash.pay_payment: 'Оплата платежа'
+order.cash.are_you_sure_to_confirm_payment: 'Точно подтвердить платеж на сумму'
+order.cash.are_you_sure_to_pay_payment: 'Точно оплатить платеж на сумму'
 order.cash.confirm: Подтвердить
 order.cash.pay: Подтвердить
 order.cash.short_pay: оплатить
-order.cash.cash_documents_not_found: Кассовые документы не найдены.
+order.cash.cash_documents_not_found: 'Кассовые документы не найдены.'
 order.edit.order_editing: 'редактирование заказа #'
 order.edit.deleted: удален
 order.edit.room: Номер
 order.edit.card: Карта
-order.edit.paid_price: Оплачено/Цена
+order.edit.paid_price: 'Оплачено / Цена'
 order.edit.paid: оплачен
-order.edit.not_paid: не оплачен
-order.edit.order_type: Тип заказа
+order.edit.not_paid: 'Не оплачен'
+order.edit.order_type: 'Тип заказа'
 order.edit.payer: Плательщик
-order.edit.not_specified: не указан
-order.edit.is_confirmed: Подтвержден?
+order.edit.not_specified: 'не указан'
+order.edit.is_confirmed: 'Подтвержден?'
 order.edit.is_confirmed_yes: да
 order.edit.is_confirmed_no: нет
 order.layout.reservation: Бронирование
 order.navbar.delete_order: 'Удалить заказ'
-order.navbar.lock: 'Блокировать'
+order.navbar.lock: Блокировать
 order.packages.dates: Даты
 order.packages.placement: Размещение
 order.packages.guests: Гости
@@ -52,153 +52,144 @@ order.packages.price: Стоимость
 order.packages.created: Создана
 order.packages.reservation_type: 'Тип брони:'
 order.packages.deleted: удалена
-order.packages.record_edit: Редактирование записи
-order.packages.go_to_placement: Перейти к размещению
-order.packages.edit_reservation: Редактирование брони
-order.packages.delete_reservation: Удаление брони
-order.packages.reservations_not_found: Брони не найдены.
-order.tabs.not_confirmed: 'не подтвержден'
-order.tabs.order_info: Информация о заказе
+order.packages.record_edit: 'Редактирование записи'
+order.packages.go_to_placement: 'Перейти к размещению'
+order.packages.edit_reservation: 'Редактирование брони'
+order.packages.delete_reservation: 'Удаление брони'
+order.packages.reservations_not_found: 'Брони не найдены.'
+order.tabs.not_confirmed: 'Не подтвержден'
+order.tabs.order_info: 'Информация о заказе'
 order.tabs.reservations: Брони
 order.tabs.payer: Плательщик
 order.tabs.calculations: Расчеты
 order.touristEdit.edit_order: 'редактирование заказа #'
 order.touristEdit.deleted: удален
-order.touristEdit.payer_not_specified: Плательщик не указан.
-order.touristEdit.organization_not_specified: Организация не указана.
+order.touristEdit.payer_not_specified: 'Плательщик не указан.'
+order.touristEdit.organization_not_specified: 'Организация не указана.'
 order.touristEdit.fio: ФИО
-order.touristEdit.birth_date: Дата рождения
+order.touristEdit.birth_date: 'Дата рождения'
 order.touristEdit.gender: Пол
 order.touristEdit.phone: Телефон
 order.touristEdit.email: E-mail
 order.touristEdit.address: Адрес
 order.touristEdit.document: Документ
-order.touristEdit.delete_payer: Удалить плательщика
-order.touristEdit.delete_organization: Удалить организацию
-order.package.add: Добавить бронь в заказ
-package.accommodation.edit_reservation: 'редактирование брони'
-package.accommodation.deleted: удалена
+order.touristEdit.delete_payer: 'Удалить плательщика'
+order.touristEdit.delete_organization: 'Удалить организацию'
+order.package.add: 'Добавить бронь в заказ'
+package.accommodation.edit_reservation: 'Редактирование брони'
+package.accommodation.deleted: Удалена
 package.accommodation.placement: 'Размещение:'
-package.accommodation.guests: гости
-package.accommodation.stopped: заехали
-
-package.accommodation.placement_not_specified: Размещение не указано
+package.accommodation.guests: Гости
+package.accommodation.stopped: Заехали
+package.accommodation.placement_not_specified: 'Размещение не указано'
 package.actions: Действия
-package.actions.save_and_close: Сохранить и закрыть
+package.actions.save_and_close: 'Сохранить и закрыть'
 package.actions.unlock: Разблокировать
 package.actions.locked: Заблокировано
-package.actions.guests_stopped: Гости заехали
-package.actions.guests_check_out: Гости выехали
+package.actions.guests_stopped: 'Гости заехали'
+package.actions.guests_check_out: 'Гости выехали'
 package.actions.accommodation: Размещение
 package.actions.search: Поиск
 package.actions.delete: Удаление
 package.action.relocation: Переселение
 package.action.action_header: Действия
-package.action.resetTotalOverwrite: Снять блокировку брони
-package.action.resetTotalOverwrite.modal_window_text: Внесенные Вами данные могут быть перезаписаны через channel manager
-package.action.resetTotalOverwrite.modal_window_delete_button_text: Снять блокировку
-
-package.actions.docs: Генерация документов
+package.action.resetTotalOverwrite: 'Снять блокировку брони'
+package.action.resetTotalOverwrite.modal_window_text: 'Внесенные Вами данные могут быть перезаписаны через channel manager'
+package.action.resetTotalOverwrite.modal_window_delete_button_text: 'Снять блокировку'
+package.actions.docs: 'Генерация документов'
 package.actions.confirmation: Подтверждение
-package.actions.confirmation_en: Подтверждение (EN)
-package.actions.registration_card: Регистрационная карта
-package.actions.fms_form_5: Анкета ФМС (Форма 5)
-package.actions.evidence: Свидетельство о регистрации
-package.actions.form_1_g: Анкета (Форма 1-Г)
+package.actions.confirmation_en: Подтверждение
+package.actions.registration_card: 'Регистрационная карта'
+package.actions.fms_form_5: 'Анкета ФМС (Форма 5)'
+package.actions.evidence: 'Свидетельство регистрации'
+package.actions.form_1_g: 'Анкета (Форма 1-Г)'
 package.actions.receipt: Расписка
 package.actions.bill: Счёт
 package.actions.act: Акт
-package.actions.xls_notice: Уведомление о прибытии ИГ
-
-package.window.not.virtual.room: Брони без номера
+package.actions.xls_notice: 'Уведомление о прибытии ИГ'
+package.window.not.virtual.room: 'Брони без номера'
 package.window.not.virtual.room.expand: Развернуть
 package.window.not.virtual.room.turn: Свернуть
-
-package.actions.find_similar:  Найти похожую
+package.actions.find_similar: 'Найти похожую'
 package.actions.cancel: Отмена
-package.actions.save: 'Сохранить'
-package.actions.delete: Удалить
-package.cash.edit_reservation: 'редактирование брони '
-package.cash.deleted: удалена
-package.cash.paid_price: 'Оплачено/Цена:'
-package.cash.paid: оплачена
-package.cash.not_paid: не оплачена
+package.actions.save: Сохранить
+package.cash.edit_reservation: 'Редактирование брони'
+package.cash.deleted: Удалена
+package.cash.paid_price: 'Оплачено / Цена:'
+package.cash.paid: Оплачена
+package.cash.not_paid: 'Не оплачено'
 package.cash.income: Приход
 package.cash.outcome: Расход
-package.cash.payment_way: Способ оплаты
-package.cash.operation_type: Вид операции
+package.cash.payment_way: 'Способ оплаты'
+package.cash.operation_type: 'Вид операции'
 package.cash.date: Дата
 package.cash.removed: Удалена
-package.cash.edit_record: Редактирование записи
-package.cash.payment_way: Способ оплаты
-package.cash.confirm_payment: Подтверждение платежа
-package.cash.are_you_sure_to_confirm_payment: Точно подтвердить платеж на сумму
+package.cash.edit_record: 'Редактирование записи'
+package.cash.confirm_payment: 'Подтверждение платежа'
+package.cash.are_you_sure_to_confirm_payment: 'Точно подтвердить платеж на сумму'
 package.cash.confirm: Подтвердить
-package.cash.delete_record: Удаление записи
+package.cash.delete_record: 'Удаление записи'
 package.copy.edit_reservation: 'редактирование брони '
-package.copy.deleted: удалена
-package.copy.edit_reservation: 'редактирование брони '
+package.copy.deleted: Удалена
 package.edit.edit_reservation: 'редактирование брони '
-package.copy.deleted: удалена
 package.edit.price: Цена
-package.edit.price_by_day: Цена по дням
+package.edit.price_by_day: 'Цена по дням'
 package.edit.dates: Даты
 package.edit.guests: Гости
 package.edit.adults: 'Взрослых:'
 package.edit.children: 'Детей:'
 package.edit.tariff: Тариф
 package.edit.room: Комната
-package.edit.paid: оплачена
-package.edit.not_paid: не оплачена
-package.edit.service_price: Цена услуг
-package.edit.order_type: Тип заказа
-package.edit.deleted: удалена
-package.edit.is_confirmed: Подтверждена?
-package.edit.virtual_room: Виртуальный номер
+package.edit.paid: Оплачена
+package.edit.not_paid: 'Не оплачено'
+package.edit.service_price: 'Цена услуг'
+package.edit.order_type: 'Тип заказа'
+package.edit.deleted: Удалена
+package.edit.is_confirmed: 'Подтверждена?'
+package.edit.virtual_room: 'Виртуальный номер'
 package.edit.is_confirmed_yes: да
 package.edit.is_confirmed_no: нет
 package.edit.print_act: Распечатать
-package.editTabs.reservation_info: Общая информация
+package.editTabs.reservation_info: 'Общая информация'
 package.editTabs.guests: Гости
 package.editTabs.services: Услуги
 package.editTabs.placement: Размещение
 package.editTabs.documents: Документы
-package.editTabs.data_transfer: Перенос данных
-package.editTabs.order: Заказ #
-package.guest.edit_reservation: "редактирование брони "
-package.guest.deleted: удалена
+package.editTabs.data_transfer: 'Перенос данных'
+package.editTabs.order: Заказ
+package.guest.edit_reservation: 'Редактирование брони'
+package.guest.deleted: Удалена
 package.guest.guests_not_added: 'Не добавлено гостей:'
 package.guest.phone: Телефон
 package.guest.email: E-mail
-package.guest.birth_date: Дата рождения
+package.guest.birth_date: 'Дата рождения'
 package.guest.age: Возраст
 package.guest.passport: Паспорт
 package.guest.address: Адрес
 package.guest.main: Основной
-package.guest.edit_record:  Редактирование записи
-package.guest.write_a_client: Написать клиенту
-package.guest.delete_record: Удаление записи
-package.index.reservations_list: "список броней"
+package.guest.edit_record: 'Редактирование записи'
+package.guest.write_a_client: 'Написать клиенту'
+package.guest.delete_record: 'Удаление записи'
+package.index.reservations_list: 'Список броней'
 package.index.check_in: Заезд
 package.index.check_out: Выезд
-package.index.create: Создание
+package.index.create: Создан
 package.index.accommodation: Проживание
 package.index.deletedAt: Удаление
 package.index.paid: Оплачена
-package.index.partly_paid: Частично оплачена
-package.index.not_paid: не оплачена
-package.index.is_confirmed: Подтверждена?
+package.index.partly_paid: 'Частично оплачена'
+package.index.not_paid: 'Не оплачено'
+package.index.is_confirmed: 'Подтверждена?'
 package.index.is_confirmed_yes: Да
 package.index.is_confirmed_no: Нет
-package.index.check_in_today: заезд сегодня
-package.index.check_in_tomorrow: заезд завтра
-package.index.checked_in_now: живут сейчас
-package.index.not_confirmed: не подтвержденные
-package.index.without_placement: без размещения
-package.index.not_paid: не оплаченные
-package.index.not_paid_in_time: просроченные
-package.index.not_checked_in: не заехавшие
-package.index.my_reservations: мои брони
+package.index.check_in_today: 'Заезд сегодня'
+package.index.check_in_tomorrow: 'Заезд завтра'
+package.index.checked_in_now: 'Живут сейчас'
+package.index.not_confirmed: 'Не подтвержденные'
+package.index.without_placement: 'Без размещения'
+package.index.not_paid_in_time: Просроченные
+package.index.not_checked_in: 'Не заехавшие'
+package.index.my_reservations: 'Мои брони'
 package.index.order: Заказ
 package.index.dates: Даты
 package.index.placement: Размещение
@@ -207,33 +198,33 @@ package.index.price: Стоимость
 package.index.created: Создана
 package.index.default: Основной
 package.index.isUpdated: Обновлён
-package.index.selection: 'Подбор'
+package.index.selection: Размещение
 package.index.porter_link: 'Отчет портье'
-package.index.deleted: Удаленные?
-package.json.reservation_type: 'Тип брони:'
-package.json.edit_record: Редактирование записи
+package.index.deleted: 'Удаленные?'
+package.json.reservation_type: 'Тип брони'
+package.json.edit_record: 'Редактирование записи'
 package.json.edit_record.order: заказа
 package.json.deleted: удалена
 package.json.corrupted: ошибка
-package.json.edit_order: Редактирование заказа
-package.json.deleted_order: удален
-package.json.go_to_placement: Перейти к размещению
-package.json.not_placed: не размещено
-package.json.go_to_payer: Перейти к плательщику
-package.json.no_payer: нет плательщика
-package.json.go_to_calculations: Перейти к расчетам
-package.json.today: Сегодня,
-package.jsonButtons.confirm_order: Подтверждение заказа
-package.jsonButtons.edit_record: Редактирование записи
-package.jsonButtons.delete_record: Удаление записи
-package.jsonButtons.view_record: Просмотр записи
-package.layout.reservation: "Бронирование"
+package.json.edit_order: 'Редактирование заказа'
+package.json.deleted_order: Удален
+package.json.go_to_placement: 'Перейти к размещению'
+package.json.not_placed: 'Не размещено'
+package.json.go_to_payer: 'Перейти к плательщику'
+package.json.no_payer: 'Нет плательщика'
+package.json.go_to_calculations: 'Перейти к расчетам'
+package.json.today: 'Сегодня,'
+package.jsonButtons.confirm_order: 'Подтверждение заказа'
+package.jsonButtons.edit_record: 'Редактирование записи'
+package.jsonButtons.delete_record: 'Удаление записи'
+package.jsonButtons.view_record: 'Просмотр записи'
+package.layout.reservation: Бронирование
 package.listTabs.list: Список
 package.listTabs.chess: Шахматка
 package.listTabs.placement: Размещение
 package.listTabs.clients: Клиенты
-package.new.reservation_error: "ошибка бронирования"
-package.new.reservation_error_try_again: При бронировании произошла ошибка. Попробуйте еще раз.
+package.new.reservation_error: 'Ошибка бронирования'
+package.new.reservation_error_try_again: 'При бронировании произошла ошибка. Попробуйте еще раз.'
 package.pdf.executor: 'Исполнитель:'
 package.pdf.address: Адрес
 package.pdf.short_city_extend: г
@@ -244,10 +235,10 @@ package.pdf.short_street_extend: ул
 package.pdf.inn: ИНН
 package.pdf.notifies_customers: 'извещает Заказчика:'
 package.pdf.with_an_address: 'расположенный по адресу:'
-package.pdf.count_paid_total: Всего оплачено услуг на сумму
+package.pdf.count_paid_total: 'Всего оплачено услуг на сумму'
 package.pdf.customer: 'Заказчик:'
 package.pdf.not_specified: 'Не указан'
-package.pdf.services_name: Наименование работ, услуг
+package.pdf.services_name: 'Наименование работ, услуг'
 package.pdf.persons: Чел.
 package.pdf.date: Дата
 package.pdf.method: Вид
@@ -257,19 +248,19 @@ package.pdf.amount: Кол-во
 package.pdf.unit: Ед.
 package.pdf.price: Цена
 package.pdf.sum: Сумма
-package.pdf.hotel_accommodation: Проживание в отеле
+package.pdf.hotel_accommodation: 'Проживание в отеле'
 package.pdf.night: ночь
-package.pdf.conditions: Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.
+package.pdf.conditions: 'Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.'
 package.pdf.executor_caps: ИСПОЛНИТЕЛЬ
 package.pdf.customer_caps: ЗАКАЗЧИК
-package.service.edit_reservation: "редактирование брони "
+package.service.edit_reservation: 'редактирование брони '
 package.service.paid: оплачена
-package.service.not_paid: не оплачена
+package.service.not_paid: 'Не оплачено'
 package.service.name: Название
 package.service: Услуга
 package.service.items: '{% amount %} шт.'
 package.service.per_persons: '{0} на {% persons %} гостей|{1} на {% persons %} гостя|]1,Inf] на {% persons %} гостей'
-package.service.nights_amount: Количество суток
+package.service.nights_amount: 'Количество суток'
 package.service.nights: Суток
 package.service.guests_amount: Гостей
 package.service.guests: Гостей
@@ -281,49 +272,46 @@ package.service.title: Наименование
 package.service.order: Заказ
 package.service.date: Дата
 package.service.price: Цена
-package.service.calculation_type: Тип расчета
+package.service.calculation_type: 'Тип расчета'
 package.service.result: Стоимость
 package.service.payment: Оплата
 package.service.dept: Долг
 package.service.comment: Комментарий
-package.service.creation_date: Дата создания
+package.service.creation_date: 'Дата создания'
 package.service.createAt: Создана
-package.service.delete_record: Удаление записи
-package.service.add_services: Добавить услуги?
+package.service.delete_record: 'Удаление записи'
+package.service.add_services: 'Добавить услуги?'
 package.service.time: Время
-package.service.edit_record: Редактирование записи
-package.editService.edit_service: "Редактирование услуги "
-
-package.service.index.show_deleted: Показать удаленные
+package.service.edit_record: 'Редактирование записи'
+package.editService.edit_service: 'Редактирование услуги '
+package.service.index.show_deleted: 'Показать удаленные'
 package.service.index.filter: Фильтр
 package.service.index.period: Период
-package.service.index.byDay: По дням
+package.service.index.byDay: 'По дням'
 package.service.index.result: Итого
-
-
-report.accommodation.placement: "размещение"
+report.accommodation.placement: размещение
 report.accommodation.dates: Даты
-report.accommodation.room_type: Тип номера
-report.accommodationTable.no_room_found: Номера не найдены.
+report.accommodation.room_type: 'Тип номера'
+report.accommodationTable.no_room_found: 'Номера не найдены.'
 report.accommodationTable.room: Номер
-report.accommodationTable.no_main_guest: "Нет основного гостя"
+report.accommodationTable.no_main_guest: 'Нет основного гостя'
 report.accommodationTable.price: '. Цена:'
 report.accommodationTable.type: '. Тип:'
 report.accommodationTable.early_check_in: '. Ранний заезд'
 report.accommodationTable.late_check_out: '. Поздний выезд'
 report.room.dates: Даты
-report.room.room_type: Тип номера
-report.roomsCells.rooms_amount: Всего номеров
-report.roomsCells.occupied_rooms_amount: Занято номеров
-report.roomsCells.empty_rooms_amount: Свободно номеров
-report.roomsCells.select_check_in_date_for_reservation: Выбрать дату заезда для бронирования
-report.roomsTable.no_room_types: Нет типов номеров у выбранного отеля.
+report.room.room_type: 'Тип номера'
+report.roomsCells.rooms_amount: 'Всего номеров'
+report.roomsCells.occupied_rooms_amount: 'Занято номеров'
+report.roomsCells.empty_rooms_amount: 'Свободно номеров'
+report.roomsCells.select_check_in_date_for_reservation: 'Выбрать дату заезда для бронирования'
+report.roomsTable.no_room_types: 'Нет типов номеров у выбранного отеля.'
 report.roomsTable.room: Номер
 report.roomsTable.whole_hotel: 'Весь отель'
-search.index.search: "поиск"
-search.index.enter_search_data: Введите данные для подбора проживания.
-search.layout.room_search: "Подбор проживания"
-search.results.tariff_search: Поиск по тарифам
+search.index.search: Поиск
+search.index.enter_search_data: 'Введите данные для подбора проживания.'
+search.layout.room_search: 'Подбор проживания'
+search.results.tariff_search: 'Поиск по тарифам'
 search.results.green: зеленый
 search.results.main_tariffs: '- основные тарифы'
 search.results.blue: синий
@@ -339,22 +327,22 @@ search.results.tariff: Тариф
 search.results.quantity: Кол-во
 search.results.guests: Гости
 search.results.price: Цена
-search.results.total_beds: Свободно койко-мест
-search.results.total_rooms: Свободно номеров
-search.results.reservate: Бронировать
+search.results.total_beds: 'Свободно койко-мест'
+search.results.total_rooms: 'Свободно номеров'
+search.results.reservate: Разместить
 search.results.accommodation: Разместить
-search.results.nothing_found_for_your_request:  По вашему запросу ничего не найдено.
-search.results.enter_search_data: Введите данные для подбора проживания.
-source.edit.edit_reservation_source: "редактрирование источники брони #"
-source.index.reservation_source: "источник броней"
-source.index.services: "Услуги"
-source.index.fms: "Для ФМС"
-source.index.filling: "Заполняемость"
+search.results.nothing_found_for_your_request: 'По вашему запросу ничего не найдено.'
+search.results.enter_search_data: 'Введите данные для подбора проживания.'
+source.edit.edit_reservation_source: 'редактрирование источники брони #'
+source.index.reservation_source: 'источник броней'
+source.index.services: Услуги
+source.index.fms: 'Для ФМС'
+source.index.filling: Заполняемость
 source.index.name: Название
-source.index.inner_name: Внутреннее название
+source.index.inner_name: 'Внутреннее название'
 source.index.created: Создан
-source.index.edit_record: Редактирование записи
-source.index.delete_record: Удаление записи
+source.index.edit_record: 'Редактирование записи'
+source.index.delete_record: 'Удаление записи'
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Невозможно удалить запись с существующими бронями. Брони: '
 analytics.layout.report: Отчеты
 report.layout.title: Отчеты
@@ -364,89 +352,78 @@ package.index.summary.debt: Долг
 package.index.summary.nights: Ночей
 package.index.summary.guests: Гостей
 package.index.name: Название
-package.index.inner_name: Внутреннее название
-package.index.created: Создан
-package.index.delete_reason: причины удаления
-package.index.edit_record: Редактирование записи
-package.index.delete_record: Удаление записи
-package.edit.edit_delete_reasons: редактирование причины удаления
-accommodation.alert: Не рекомендуется размещать гостей до их заезда в отель
-
-
-# Organizations
+package.index.inner_name: 'Внутреннее название'
+package.index.delete_reason: 'Причины удаления'
+package.index.edit_record: 'Редактирование записи'
+package.index.delete_record: 'Удаление записи'
+package.edit.edit_delete_reasons: 'редактирование причины удаления'
+accommodation.alert: 'Не рекомендуется размещать гостей до их заезда в отель'
 organizations.breadcrumbs.list: Организации
-organizations.breadcrumbs.add: Добавить организацию
-organizations.breadcrumbs.edit: Редактировать организацию
+organizations.breadcrumbs.add: 'Добавить организацию'
+organizations.breadcrumbs.edit: 'Редактировать организацию'
 organizations.confirm_delete: 'Вы действительно хотите удалить организацию "%organization_name%"'
-
-payer.confirmation.notification: Ваш заказ %order% подтвержден
-
-package.corrupted.message.text: Создана поврежденная бронь %package%
-
-# Task
+payer.confirmation.notification: 'Ваш заказ %order% подтвержден'
+package.corrupted.message.text: 'Создана поврежденная бронь %package%'
 task.status: Статус
 task.priority: Приоритет
 task.performer: Исполнитель
 task.group: Группа
-
-#Polls
 poll.question.category.service: 'сервис приема и регистрации'
 poll.question.amiability: 'Приветливость персонала отеля на приеме'
 poll.question.doc_speed: 'Скорость оформления документов и выдачи номера'
 poll.question.rules: 'Доступность правил размещения в отеле'
-
 poll.question.category.accommodation: 'комфорт размещения'
 poll.question.room_comfort: 'Комфорт и комплектация вашего номера'
 poll.question.beds_comfort: 'Комфорт и удобство кроватей'
 poll.question.room_service: 'Уборка и сервис номеров'
 poll.other.note: Комментарий
-
 poll.question.category.hotel: 'наш отель'
 poll.question.hotel_location: 'Расположение отеля и доступность инфраструктуры'
 poll.question.hotel_food: 'Качество и разнообразие питания'
 poll.question.hotel_entertainment: 'Качество и разнообразие мест отдыха и развлечений'
 poll.controller.save_success: 'Спасибо! Ваша оценка успешно сохранена!'
-
-report.poll.small_title: 'Оценки'
+views.list.hotel_management_system: 'Система управления отелем'
+views.list.rate_please: 'Пожалуйста, оцените'
+views.list.your_review_wishes: 'Ваш отзыв или пожелание'
+views.list.your_review_sentences_or_wishes: 'Ваш отзыв, предложения или пожелания'
+views.list.not_necessary: необязательно
+views.list.send: ОТПРАВИТЬ
+views.list.based_on_technologies_mb: 'Основано на технологиях MAXIBOOKING LLC'
+views.list.review_comiled: 'Отзыв по этому заказу уже оставлен!'
+views.list.we_were_glad_to_recieve_you: 'Мы были рады принимать вас и надеемся, что ваше пребывание в нашем отеле было комфортным и приятным'
+views.list.please_fill_questionnaire: 'Пожалуйста, заполните небольшую анкету гостя, ваша оценка поможет нам развиваться и улучшать наш сервис. Мы будем рады видеть Вас снова!'
+report.poll.small_title: Оценки
 report.poll.invite: 'Визовые приглашения'
 report.poll.small_title_order: 'Оценки заказа '
 views.report.polls.th.order: Заказ
 views.report.polls.th.hotel: Отель
 mbhpackagebundle.view.report.polls.daty: Даты
-views.report.polls.not_found: Ничего не найдено.
+views.report.polls.not_found: 'Ничего не найдено.'
 views.report.polls.view_record: 'Перейти к результатам'
-
-mbh.package.arrivals.tourism: "Отдых/туризм"
-mbh.package.arrivals.work: "Работа/стажировка"
-mbh.package.arrivals.study: "Курсы/учеба"
-mbh.package.arrivals.residence: "Временное проживание"
-mbh.package.arrivals.other: "Другое"
-
-report.users.small_title: 'Пользователи'
+mbh.package.arrivals.tourism: Отдых/туризм
+mbh.package.arrivals.work: Работа/стажировка
+mbh.package.arrivals.study: Курсы/учеба
+mbh.package.arrivals.residence: 'Временное проживание'
+mbh.package.arrivals.other: Другое
+report.users.small_title: Пользователи
 report.users.roomtype: 'Номерной фонд'
 report.users.error: 'Брони не найдены'
-
-report.porter.small_title: 'Портье'
+report.porter.small_title: Портье
 report.porter.error: 'Даты заданы неверно'
 report.porter.arrivals.empty: 'Брони не найдены'
-
 report.porter.live.empty: 'Брони не найдены'
 report.porter.live.debt: Оплата
 report.porter.live.departure: Выезд
 report.porter.live.arrival: Заезд
 report.porter.live.table: Проживающие
-
 report.porter.lives.table: Проживающие
 report.porter.arrivals.table: Заезжающие
 report.porter.out.table: Выезд
-
 report.porter.note: Комментарий
-
 report.work_shift.small_title: 'Рабочие смены'
-
-modal.form.delete.reasons.confirmation: Точно удалить эту запись?
-modal.form.delete.reasons.package: Причина удаления брони
-modal.form.delete.reasons.order: Причина удаления заказа
-modal.form.delete.reasons.reason_default: Не указана
+modal.form.delete.reasons.confirmation: 'Точно удалить эту запись?'
+modal.form.delete.reasons.package: 'Причина удаления брони'
+modal.form.delete.reasons.order: 'Причина удаления заказа'
+modal.form.delete.reasons.reason_default: 'Не указана'
 modal.form.delete.reasons.close: Отмена
 modal.form.delete.reasons.delete: Удалить

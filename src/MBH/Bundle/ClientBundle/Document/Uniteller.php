@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\PackageBundle\Document\Order;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -29,6 +30,55 @@ class Uniteller implements PaymentSystemInterface
      * @ODM\Field(type="string")
      */
     protected $unitellerPassword;
+    /**
+     * @var float
+     * @ODM\Field(type="float")
+     */
+    protected $taxationRateCode;
+
+    /**
+     * @var float
+     * @ODM\Field(type="float")
+     */
+    protected $taxationSystemCode;
+
+    /**
+     * @return float
+     */
+    public function getTaxationRateCode(): ?float
+    {
+        return $this->taxationRateCode;
+    }
+
+    /**
+     * @param float $taxationRateCode
+     * @return Uniteller
+     */
+    public function setTaxationRateCode(float $taxationRateCode): Uniteller
+    {
+        $this->taxationRateCode = $taxationRateCode;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTaxationSystemCode(): ?float
+    {
+        return $this->taxationSystemCode;
+    }
+
+    /**
+     * @param float $taxationSystemCode
+     * @return Uniteller
+     */
+    public function setTaxationSystemCode(float $taxationSystemCode): Uniteller
+    {
+        $this->taxationSystemCode = $taxationSystemCode;
+
+        return $this;
+    }
 
     /**
      * Set unitellerShopIDP
@@ -115,8 +165,8 @@ class Uniteller implements PaymentSystemInterface
         $createdAt->modify('+30 minutes');
 
         return [
-            'action' => 'https://wpay.uniteller.ru/pay/',
-            'testAction' => 'https://test.wpay.uniteller.ru/pay/',
+            'action' => 'https://fpay.uniteller.ru/v1/pay',
+            'testAction' => 'https://fpaytest.uniteller.ru/v1/pay',
             'shopId' => $this->getUnitellerShopIDP(),
             'total' => $cashDocument->getTotal(),
             'orderId' => $cashDocument->getId(),
@@ -129,6 +179,8 @@ class Uniteller implements PaymentSystemInterface
             'touristPhone' => $payer ? $payer->getPhone(true) : null,
             'comment' => 'Order # ' . $cashDocument->getOrder()->getId() . '. CashDocument #' . $cashDocument->getId(),
             'signature' => $this->getSignature($cashDocument, $url),
+            'receipt' => $this->getReceipt($cashDocument),
+            'receiptSignature' => $this->getReceiptSignature($cashDocument)
         ];
     }
 
@@ -152,6 +204,122 @@ class Uniteller implements PaymentSystemInterface
                 md5($this->getUnitellerPassword())                       // $password
             )
         );
+    }
+
+    /**
+     * @param CashDocument $cashDocument
+     * @return string
+     */
+    public function getReceipt(CashDocument $cashDocument)
+    {
+        $order = $cashDocument->getOrder();
+        /** @var \MBH\Bundle\PackageBundle\Document\Tourist $payer */
+        $payer = $order->getPayer();
+        return base64_encode(json_encode([
+            'customer' => [
+                'phone' => $payer->getPhone(),
+                'email' => $payer->getEmail(),
+                'id' => $payer->getId()
+            ],
+            'lines' => $this->getUnitellerLineItems($order, $cashDocument),
+            'total' => $cashDocument->getTotal()
+        ]));
+    }
+
+    /**
+     * @param CashDocument $cashDocument
+     * @return array
+     */
+    public function getReceiptSignature(CashDocument $cashDocument)
+    {
+        return mb_strtoupper(
+            hash("sha256", (
+                hash("sha256", $this->getUnitellerShopIDP())
+                . '&' . hash("sha256", $cashDocument->getId())
+                . '&' . hash("sha256", $cashDocument->getTotal())
+                . '&' . hash("sha256", $this->getReceipt($cashDocument))
+                . '&' . hash("sha256", $this->getUnitellerPassword())
+            ))
+        );
+    }
+
+    /**
+     * @param Order $order
+     * @param CashDocument $cashDocument
+     * @return array
+     */
+    private function getUnitellerLineItems(Order $order, CashDocument $cashDocument)
+    {
+        $lineItems = [];
+
+        $priceFraction = $cashDocument->getTotal() / $order->getPrice();
+        $beginText = $priceFraction === 1
+            ? 'Услуга '
+            : (round($priceFraction, 2) * 100) . '% от стоимости услуги ';
+
+        foreach ($order->getPackages() as $package) {
+            $packageLineName = $beginText . 'проживания в номере категории "'
+                . $package->getRoomType()->getName()
+                . ' объекта размещения "' . $package->getHotel()->getName() . '"';
+            $packageLinePrice = ($package->getPackagePrice() * $cashDocument->getTotal()) / $order->getPrice();
+            $this->addLineItem($packageLineName, $packageLinePrice, 1, $lineItems);
+
+            foreach ($package->getServices() as $service) {
+                $serviceLineName = $beginText . ' "' . $service->getService()->getName() . '"';
+                $serviceLinePrice = ($service->getPrice() * $cashDocument->getTotal()) / $order->getPrice();
+                $this->addLineItem($serviceLineName, $serviceLinePrice, $service->getTotalAmount(), $lineItems);
+            }
+        }
+
+        $lineItems = $this->adjustLastLineItemPrice($lineItems, $cashDocument->getTotal());
+        
+        return $lineItems;
+    }
+
+    /**
+     * Корректирует стоимость последнего итема платежа для схождения с полной стоимостью. Несхождение может произойти в результате округления стоимостей.
+     *
+     * @param $lineItems
+     * @param $totalAmount
+     * @return mixed
+     */
+    private function adjustLastLineItemPrice($lineItems, $totalAmount)
+    {
+        for ($i = (count($lineItems) - 1); $i >= 0; $i--) {
+            $lineItem = $lineItems[$i];
+            if ($lineItem['qty'] == 1 || ($lineItem['qty'] % 2) == 0) {
+                $lineItemPrice = $totalAmount;
+                foreach ($lineItems as $lineItemNumber => $lineItem) {
+                    if ($lineItemNumber != $i) {
+                        $lineItemPrice -= $lineItem['sum'];
+                    }
+                }
+                $lineItem['sum'] = $lineItemPrice;
+                break;
+            }
+        }
+
+        return $lineItems;
+    }
+    
+    /**
+     * @param $name
+     * @param $price
+     * @param $amount
+     * @param $lineItems
+     */
+    private function addLineItem($name, $price, $amount, &$lineItems)
+    {
+        if ($price > 0) {
+            $lineItems[] = [
+                'name' => $name,
+                'price' => $price,
+                'qty' => $amount,
+                'sum' => $price * $amount,
+                'vat' => $this->getTaxationRateCode(),
+                'taxmode' => $this->getTaxationSystemCode(),
+            ];
+        }
     }
 
     /**

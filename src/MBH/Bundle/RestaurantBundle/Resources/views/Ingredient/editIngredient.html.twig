@@ -1,6 +1,6 @@
 {% extends 'MBHRestaurantBundle:Ingredient:layout.html.twig' %}
 
-{% set small_title = "редактирование ингредиента в категории <" ~ entry.category.name ~ ">" %}
+{% set small_title = 'restaurant.ingredient.editIngredient.small_title'|trans({'%categoryName%' : entry.category.name}) %}
 {% set layout = 'box' %}
 
 {% block content %}

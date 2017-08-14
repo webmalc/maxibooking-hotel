@@ -3,10 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\DBAL\Query\QueryBuilder;
-use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -90,6 +88,7 @@ class PackageRepository extends DocumentRepository
 
         if ($group) {
             $result = [];
+            /** @var Package $package */
             foreach ($packages as $package) {
                 $roomType = $package->getRoomType();
                 $result[$roomType->getId()][$package->getVirtualRoom()->getId()][] = $package;
@@ -123,7 +122,7 @@ class PackageRepository extends DocumentRepository
      * @param PackageQueryCriteria $criteria
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
-    protected function queryCriteriaToBuilder(PackageQueryCriteria $criteria)
+    public function queryCriteriaToBuilder(PackageQueryCriteria $criteria)
     {
         $queryBuilder = $this->createQueryBuilder();
         $now = new \DateTime('midnight');
@@ -220,7 +219,7 @@ class PackageRepository extends DocumentRepository
             $query = trim($criteria->query);
             $tourists = $this->dm->getRepository('MBHPackageBundle:Tourist')
                 ->createQueryBuilder()
-                ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+                ->field('fullName')->equals(new \MongoRegex('/^.*'.$query.'.*/ui'))
                 ->getQuery()
                 ->execute();
 
@@ -234,7 +233,9 @@ class PackageRepository extends DocumentRepository
                 $queryBuilder->addOr($queryBuilder->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')));
+            $queryBuilder->addOr(
+                $queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/^.*'.$query.'.*/ui'))
+            );
         }
 
         //isCheckIn
@@ -294,12 +295,13 @@ class PackageRepository extends DocumentRepository
             ->field('tourists.id')->equals($tourist->getId())
             ->limit(1)
             ->getQuery()->getSingleResult();
+
         return $package;
     }
 
     /**
      * @param Room $room
-     * @return Package|null
+     * @return array|Package|null|object
      */
     public function getPackageByAccommodation(Room $room, \DateTime $date)
     {
@@ -318,24 +320,18 @@ class PackageRepository extends DocumentRepository
     }
 
     /**
-     * @param $data
+     * @param Builder $qb
      * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \Exception
      */
-    public function fetchSummary($data)
+    public function fetchSummary(Builder $qb)
     {
-        unset($data['skip']);
-        unset($data['limit']);
-
-        $qb = $this->fetchQuery($data);
         $orderData = [];
         $orderQb = clone $qb;
         $ordersIds = $orderQb->distinct('order.$id')->getQuery()->execute();
 
         if (!empty($ordersIds)) {
             $dm = $this->getDocumentManager();
-            $orderQb = $dm->getRepository('MBHPackageBundle:Order')->createQueryBuilder('o');
+            $orderQb = $dm->getRepository('MBHPackageBundle:Order')->createQueryBuilder();
             $orderQb
                 ->field('id')
                 ->in(iterator_to_array($ordersIds))
@@ -361,9 +357,6 @@ class PackageRepository extends DocumentRepository
 
             $orderData = iterator_to_array($orderQb->getQuery()->execute());
         }
-
-
-        $qb = $this->fetchQuery($data);
 
         $qb->group(
             ['id' => 1],
@@ -405,10 +398,11 @@ class PackageRepository extends DocumentRepository
 
         if (!empty($packageResult[0])) {
             if (!empty($orderData[0])) {
-                $summary =  array_merge($packageResult[0], $orderData[0]);
+                $summary = array_merge($packageResult[0], $orderData[0]);
                 if (isset($summary['paid'])) {
                     $summary['debt'] = $summary['total'] - $summary['paid'];
                 }
+
                 return $summary;
             }
 
@@ -506,23 +500,29 @@ class PackageRepository extends DocumentRepository
         }
 
         if (isset($data['begin']) && !$data['begin'] instanceof \DateTime) {
-            $data['begin'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['begin'] . ' 00:00:00');
+            $data['begin'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['begin'].' 00:00:00');
         }
 
         if (isset($data['end']) && !$data['end'] instanceof \DateTime) {
-            $data['end'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['end'] . ' 00:00:00');
+            $data['end'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['end'].' 00:00:00');
         }
 
         if ($dateType == 'accommodation') {
             if ($data['begin'] && $data['end']) {
                 $expr = $qb->expr();
-                $expr->addOr($qb->expr()
-                    ->field('begin')->gte($data['begin'])->lte($data['end']));
-                $expr->addOr($qb->expr()
-                    ->field('end')->gte($data['begin'])->lte($data['end']));
-                $expr->addOr($qb->expr()
-                    ->field('begin')->lte($data['begin'])
-                    ->field('end')->gte($data['end']));
+                $expr->addOr(
+                    $qb->expr()
+                        ->field('begin')->gte($data['begin'])->lte($data['end'])
+                );
+                $expr->addOr(
+                    $qb->expr()
+                        ->field('end')->gte($data['begin'])->lte($data['end'])
+                );
+                $expr->addOr(
+                    $qb->expr()
+                        ->field('begin')->lte($data['begin'])
+                        ->field('end')->gte($data['end'])
+                );
 
                 $qb->addAnd($expr);
             }
@@ -565,13 +565,16 @@ class PackageRepository extends DocumentRepository
             $query = trim($data['query']);
             $tourists = $dm->getRepository('MBHPackageBundle:Tourist')
                 ->createQueryBuilder()
-                ->field('fullName')->equals(new \MongoRegex('/^.*' . $query . '.*/ui'))
+                ->field('fullName')->equals(new \MongoRegex('/^.*'.$query.'.*/ui'))
                 ->getQuery()
                 ->execute();
 
-            $touristsIds = array_map(function ($tourist) {
-                return $tourist->getId();
-            }, $tourists->toArray());
+            $touristsIds = array_map(
+                function ($tourist) {
+                    return $tourist->getId();
+                },
+                $tourists->toArray()
+            );
 
             if (count($touristsIds)) {
                 $qb->addOr($qb->expr()->field('tourists.id')->in($touristsIds));
@@ -599,7 +602,7 @@ class PackageRepository extends DocumentRepository
                 $qb->addOr($qb->expr()->field('order.id')->in($ordersIds));
             }
 
-            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
+            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*'.$query.'.*/ui')));
         }
 
         //isCheckIn
@@ -630,7 +633,7 @@ class PackageRepository extends DocumentRepository
             4 => 'mainTourist',
             5 => 'price',
             6 => 'createdAt',
-            7 => 'end'
+            7 => 'end',
         ];
         if (isset($data['order']) && isset($cols[$data['order']])) {
             $order = $cols[$data['order']];
@@ -678,10 +681,15 @@ class PackageRepository extends DocumentRepository
     public function fetch($data)
     {
         $qb = $this->fetchQuery($data);
-
         if (isset($data['count']) && $data['count']) {
             $docs = $qb->getQuery()->count();
         } else {
+            $qb->field('order')->prime(true);
+            $qb->field('accommodations')->prime(true);
+            $qb->field('accommodation')->prime(true);
+            $qb->field('tariff')->prime(true);
+            $qb->field('roomType')->prime(true);
+            $qb->field('tourists')->prime(true);
             $docs = $qb->getQuery()->execute();
         }
 
@@ -697,13 +705,18 @@ class PackageRepository extends DocumentRepository
     {
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder
-            ->addOr($queryBuilder->expr()
-                ->field('begin')->gte(new \DateTime('midnight'))
-                ->field('begin')->lte(new \DateTime('midnight + 1 day')))
-            ->addOr($queryBuilder->expr()
-                ->field('begin')->lte(new \DateTime('midnight'))
-                ->field('begin')->gte(new \DateTime('midnight - ' . (int)$limit . ' days'))
-                ->field('isCheckIn')->equals(false));
+            ->addOr(
+                $queryBuilder->expr()
+                    ->field('begin')->gte(new \DateTime('midnight'))
+                    ->field('begin')->lte(new \DateTime('midnight + 1 day'))
+            )
+            ->addOr(
+                $queryBuilder->expr()
+                    ->field('begin')->lte(new \DateTime('midnight'))
+                    ->field('begin')->gte(new \DateTime('midnight - '.(int)$limit.' days'))
+                    ->field('isCheckIn')->equals(false)
+            );
+
         return $queryBuilder;
     }
 
@@ -715,6 +728,7 @@ class PackageRepository extends DocumentRepository
             ->field('end')->gte(new \DateTime('midnight'))
             ->field('isCheckIn')->equals(true)
             ->field('isCheckOut')->equals(false);
+
         return $queryBuilder;
     }
 
@@ -727,13 +741,18 @@ class PackageRepository extends DocumentRepository
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder
             ->field('isCheckIn')->equals(true)
-            ->addOr($queryBuilder->expr()
-                ->field('end')->gte(new \DateTime('midnight'))
-                ->field('end')->lte(new \DateTime('midnight + 1 day')))
-            ->addOr($queryBuilder->expr()
-                ->field('end')->lte(new \DateTime('midnight'))
-                ->field('end')->gte(new \DateTime('midnight - ' . (int)$limit . ' days'))
-                ->field('isCheckOut')->equals(false));
+            ->addOr(
+                $queryBuilder->expr()
+                    ->field('end')->gte(new \DateTime('midnight'))
+                    ->field('end')->lte(new \DateTime('midnight + 1 day'))
+            )
+            ->addOr(
+                $queryBuilder->expr()
+                    ->field('end')->lte(new \DateTime('midnight'))
+                    ->field('end')->gte(new \DateTime('midnight - '.(int)$limit.' days'))
+                    ->field('isCheckOut')->equals(false)
+            );
+
         return $queryBuilder;
     }
 
@@ -743,7 +762,8 @@ class PackageRepository extends DocumentRepository
      */
     protected function getQueryBuilderByType($type)
     {
-        $method = 'get' . ucfirst($type) . 'QueryBuilder';
+        $method = 'get'.ucfirst($type).'QueryBuilder';
+
         return method_exists($this, $method) ? $this->$method() : null;
     }
 
@@ -796,16 +816,17 @@ class PackageRepository extends DocumentRepository
             if ($type == 'arrivals') {
                 $queryBuilder
                     ->field('isCheckIn')->equals(false)
-                    ->field('begin')->gte(new \DateTime('midnight - ' . (int)$limit . ' days'))
+                    ->field('begin')->gte(new \DateTime('midnight - '.(int)$limit.' days'))
                     ->field('begin')->lte(new \DateTime('midnight'));
             }
             if ($type == 'out') {
                 $queryBuilder
                     ->field('isCheckOut')->equals(false)
-                    ->field('end')->gte(new \DateTime('midnight - ' . (int)$limit . ' days'))
+                    ->field('end')->gte(new \DateTime('midnight - '.(int)$limit.' days'))
                     ->field('end')->lte(new \DateTime('midnight'));
             }
         }
+
         return $queryBuilder->getQuery()->count();
     }
 
@@ -841,10 +862,10 @@ class PackageRepository extends DocumentRepository
         $queryRoom = $this->getDocumentManager()->getRepository('MBHHotelBundle:Room')->createQueryBuilder();
         $queryRoom
             ->addOr(
-                $queryRoom->expr()->field('fullTitle')->equals(new \MongoRegex('/.*' . $term . '.*/i'))
+                $queryRoom->expr()->field('fullTitle')->equals(new \MongoRegex('/.*'.$term.'.*/i'))
             )
             ->addOr(
-                $queryRoom->expr()->field('title')->equals(new \MongoRegex('/.*' . $term . '.*/i'))
+                $queryRoom->expr()->field('title')->equals(new \MongoRegex('/.*'.$term.'.*/i'))
             );
 
         $rooms = $queryRoom->getQuery()->execute();
@@ -854,7 +875,7 @@ class PackageRepository extends DocumentRepository
         $queryPackage = $this->createQueryBuilder();
         $queryPackage
             ->addOr($queryPackage->expr()->field('accommodation.id')->in($roomIds))
-            ->addOr($queryPackage->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $term . '.*/i')))
+            ->addOr($queryPackage->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*'.$term.'.*/i')))
             ->field('departureTime')->exists(false)
             ->field('begin')->lte(new \DateTime('midnight'))
             ->field('end')->gte(new \DateTime('midnight'));
@@ -876,5 +897,14 @@ class PackageRepository extends DocumentRepository
             ->field('end')->lte($end);
 
         return $queryBuilder->getQuery()->execute();
+    }
+
+    /**
+     * @param $packageAccommodationId
+     * @return object
+     */
+    public function getPackageByPackageAccommodationId(string $packageAccommodationId)
+    {
+        return $this->findOneBy(['accommodations.id' => $packageAccommodationId]);
     }
 }

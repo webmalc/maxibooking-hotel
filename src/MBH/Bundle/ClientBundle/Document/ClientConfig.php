@@ -117,7 +117,7 @@ class ClientConfig extends Base
     protected $uniteller;
 
     /**
-     * @var Uniteller
+     * @var Rbk
      * @ODM\EmbedOne(targetDocument="Rbk")
      */
     protected $rbk;
@@ -161,7 +161,6 @@ class ClientConfig extends Base
      */
     protected $beginDate;
 
-
     /**
      * @var integer
      * @Gedmo\Versioned
@@ -185,6 +184,82 @@ class ClientConfig extends Base
      * @ODM\Field(type="bool")
      */
     protected $canBookWithoutPayer = true;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $defaultAdultsQuantity = 1;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $defaultChildrenQuantity = 0;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     */
+    protected $isSendMailAtPaymentConfirmation = false;
+
+    /**
+     * @return bool
+     */
+    public function isSendMailAtPaymentConfirmation(): bool
+    {
+        return $this->isSendMailAtPaymentConfirmation;
+    }
+
+    /**
+     * @param bool $isSendMailAtPaymentConfirmation
+     * @return ClientConfig
+     */
+    public function setIsSendMailAtPaymentConfirmation(bool $isSendMailAtPaymentConfirmation): ClientConfig
+    {
+        $this->isSendMailAtPaymentConfirmation = $isSendMailAtPaymentConfirmation;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultAdultsQuantity(): int
+    {
+        return $this->defaultAdultsQuantity;
+    }
+
+    /**
+     * @param int $defaultAdultsQuantity
+     * @return ClientConfig
+     */
+    public function setDefaultAdultsQuantity(int $defaultAdultsQuantity): ClientConfig
+    {
+        $this->defaultAdultsQuantity = $defaultAdultsQuantity;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultChildrenQuantity(): int
+    {
+        return $this->defaultChildrenQuantity;
+    }
+
+    /**
+     * @param int $defaultChildrenQuantity
+     * @return ClientConfig
+     */
+    public function setDefaultChildrenQuantity(int $defaultChildrenQuantity): ClientConfig
+    {
+        $this->defaultChildrenQuantity = $defaultChildrenQuantity;
+
+        return $this;
+    }
 
     /**
      * @return bool
@@ -387,7 +462,7 @@ class ClientConfig extends Base
     }
 
     /**
-     * @return Uniteller
+     * @return Rbk
      */
     public function getRbk()
     {
@@ -395,7 +470,7 @@ class ClientConfig extends Base
     }
 
     /**
-     * @param Uniteller $rbk
+     * @param Rbk $rbk
      */
     public function setRbk($rbk)
     {

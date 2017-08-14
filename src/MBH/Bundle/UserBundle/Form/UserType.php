@@ -17,7 +17,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -25,6 +25,11 @@ class UserType extends AbstractType
 {
     private $isNew;
     private $roles;
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -152,8 +157,8 @@ class UserType extends AbstractType
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year'),
             ))
             ->add('locale', LocaleType::class, [
-                'label' => 'form.userType.locale'
-
+                'label' => 'form.userType.locale',
+                'group' => 'form.userType.general_info',
             ])
         ;
 
@@ -161,7 +166,7 @@ class UserType extends AbstractType
             $form = $event->getForm();
             $hotelsFiled = $form->get('hotels');
             if ($form->get('isEnabledWorkShift')->getData() && count($hotelsFiled->getData()) != 1) {
-                $hotelsFiled->addError(new FormError('Для включения рабочих смен должен быть выбран один отель'));
+                $hotelsFiled->addError(new FormError($this->translator->trans('form.userType.need_at_least_one_hotel')));
             }
         };
 

@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @MBHValidator\User
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
+ * @MongoDBUnique(fields="email", message="validator.user.email_is_busy")
  * @MongoDBUnique(fields="username", message="mbhuserbundle.document.user.takoy.login.uzhe.zaregistrirovan")
  */
 class User extends BaseUser implements RecipientInterface
@@ -180,8 +180,13 @@ class User extends BaseUser implements RecipientInterface
      * @var string
      * @ODM\Field(type="string")
      */
-    protected $locale = 'en';
+    protected $locale = 'ru';
 
+    /**
+     * @ODM\Field(type="date")
+     * @Assert\DateTime()
+     */
+    protected $expiresAt;
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
