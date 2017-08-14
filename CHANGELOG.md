@@ -1,6 +1,7 @@
 2.0.0-beta.3
 ============
 * merge Xpedia branch
+* merge translation branch
 
 2.0.0-beta.2
 ============
