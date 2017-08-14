@@ -79,6 +79,9 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
     public function editAction(Request $request, FormConfig $entity)
     {
         $this->setLocaleByRequest();
+        $oldConfigWidth = $entity->getFrameWidth();
+        $oldConfigHeight = $entity->getFrameHeight();
+        $onFullWidth = $entity->isFullWidth();
 
         $form = $this->createForm(FormType::class, $entity, [
             'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']
@@ -91,9 +94,13 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.formController.settings_saved_success'))
-            ;
+            $this->addFlash('success', 'controller.formController.settings_saved_success');
+
+            if ($entity->getFrameHeight() != $oldConfigHeight
+                || $entity->getFrameWidth() !== $oldConfigWidth
+                || $onFullWidth != $entity->isFullWidth()) {
+                $this->addFlash('warning', 'controller.formController.frame_sizes_changed');
+            }
 
             return $this->afterSaveRedirect('online_form', $entity->getId());
         }

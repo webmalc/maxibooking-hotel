@@ -5,6 +5,8 @@ namespace MBH\Bundle\OnlineBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -109,6 +111,24 @@ class FormType extends AbstractType
                 'group' => 'form.formType.parameters',
                 'required' => true,
                 'help' => 'form.formType.resultsUrl_help'
+            ])
+            ->add('isFullWidth', CheckboxType::class, [
+                'group' => 'form.formType.parameters',
+                'label' => 'form.formType.frame_width.is_full_width.label',
+                'required' => false,
+                'help' => 'form.formType.frame_width.is_full_width.help'
+            ])
+            ->add('frameWidth', IntegerType::class, [
+                'label' => 'form.formType.frame_width.label',
+                'group' => 'form.formType.parameters',
+                'required' => true,
+                'help' => 'form.formType.frame_width.help'
+            ])
+            ->add('frameHeight', IntegerType::class, [
+                'label' => 'form.formType.frame_height.label',
+                'group' => 'form.formType.parameters',
+                'required' => true,
+                'help' => 'form.formType.frame_height.help'
             ])
             ->add(
                 'paymentTypes',
