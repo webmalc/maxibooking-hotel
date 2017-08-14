@@ -1,21 +1,23 @@
-validator.document.bookingConfig.no_h otel_selected: Не выбран отель
-validator.document.bookingConfig.login_not_specified: Не указан логин (username)
-validator.document.bookingConfig.password_not_specified: Не указан пароль (password)
-validator.document.bookingConfig.no_hotel_id_specified: Не указан Id отеля
-validator.document.oktogoConfig.no_hotel_selected: Не выбран отель
-validator.document.oktogoConfig.no_login_specified: Не указан логин (login)
-validator.document.oktogoConfig.no_username_specified: Не указано имя пользователя (username)
-validator.document.oktogoConfig.no_password_specified: Не указан пароль
-validator.document.vashotelConfig.no_hotel_selected: Не выбран отель
-validator.document.ostrovokConfig.no_hotel_selected: Не выбран отель
-validator.document.vashotelConfig.no_api_key_specified: Не указан ключ API
-validator.document.vashotelConfig.no_hotel_id_specified: Не указан Id отеля
-validator.document.vashotelConfig.no_password: Не заполнен пароль
-validator.document.hundredOneHotelsConfig.no_hotel_selected: Не выбран отель
-validator.document.hundredOneHotelsConfig.no_hotel_id_specified: Не указан Id отеля
-validator.document.hundredOneHotelsConfig.no_api_key_specified: Не указан ключ API отеля
+'validator.document.bookingConfig.no_h otel_selected': 'Не выбран отель'
+validator.document.bookingConfig.login_not_specified: 'Не указан логин (username)'
+validator.document.bookingConfig.password_not_specified: 'Не указан пароль (password)'
+validator.document.bookingConfig.no_hotel_id_specified: 'Не указан Id отеля'
+validator.document.oktogoConfig.no_hotel_selected: 'Не выбран отель'
+validator.document.oktogoConfig.no_login_specified: 'Не указан логин (login)'
+validator.document.oktogoConfig.no_username_specified: 'Не указано имя пользователя (username)'
+validator.document.oktogoConfig.no_password_specified: 'Не указан пароль'
+validator.document.vashotelConfig.no_hotel_selected: 'Не выбран отель'
+validator.document.ostrovokConfig.no_hotel_selected: 'Не выбран отель'
+validator.document.vashotelConfig.no_api_key_specified: 'Не указан ключ API'
+validator.document.vashotelConfig.no_hotel_id_specified: 'Не указан Id отеля'
+validator.document.vashotelConfig.no_password: 'Не заполнен пароль'
+validator.document.hundredOneHotelsConfig.no_hotel_selected: 'Не выбран отель'
+validator.document.hundredOneHotelsConfig.no_hotel_id_specified: 'Не указан Id отеля'
+validator.document.hundredOneHotelsConfig.no_api_key_specified: 'Не указан ключ API отеля'
 roomtype.validation: 'Выбрано более одного типа номера'
 tarifftype.validation: 'Выбрано более одного типа тарифа'
+validator.default_currency: 'Курс по умолчанию обязателен к заполнению'
+document.myallocatorConfig.no_hotel_selected: 'Не выбран отель'
 validator.default_currency: Курс по умолчанию обязателен к заполнению
 document.myallocatorConfig.no_hotel_selected: Не выбран отель
 validator.document.expediaConfig.no_hotel_id_specified: Не указан id отеля

@@ -1,5 +1,5 @@
-vega_residence: 'Residence'
-vega_visa: 'Visa'
+vega_residence: Residence
+vega_visa: Visa
 vega_military_spare: 'Military spare'
 vega_temporary_identity: 'Temporary Identity'
 vega_diplomatic_passport: 'Diplomatic Passport'
@@ -7,21 +7,26 @@ vega_travel_passport: 'Travel Passport'
 vega_russian_passport: 'Russian Passport'
 vega_ussr_passports: 'Ussr Passports'
 vega_passport_IG: 'Passport IG'
-vega_seaman: 'Seaman'
-vega_temporary_residence permit_IG: 'Temporary Presidence permit IG'
+vega_seaman: Seaman
+'vega_temporary_residence permit_IG': 'Temporary Presidence permit IG'
 vega_predost_temporate_asylum: 'Predost temporate asylum'
-vega_refugee: 'Refugee'
+vega_refugee: Refugee
 vega_birth_certificate: 'Birth certificate'
 vega_st_of_birth_ig: 'St of birth ig'
 vega_service_passports: 'Service passports'
 vega_refugee_certificate: 'Refugee certificate'
-vega_id_card_person_of_military: 'Id_card_person_of_military'
+vega_id_card_person_of_military: Id_card_person_of_military
 vega_residence_permit_stateless_persons: 'Residence permit stateless persons'
-vega_military_id_soldier: 'Military_id_soldier'
-vega_travel_passport biometrics: 'Travel passport biometrics'
-vega_temporary_residence permit stateless persons: 'Temporary residence permit stateless persons'
+vega_military_id_soldier: Military_id_soldier
+'vega_travel_passport biometrics': 'Travel passport biometrics'
+'vega_temporary_residence permit stateless persons': 'Temporary residence permit stateless persons'
 vega_migration_cart: 'Migration cart'
-vega_ig_arrival_notice: 'Ig_arrival_notice'
+vega_ig_arrival_notice: Ig_arrival_notice
 vega_return_certificate: 'Return certificate'
 vega_non_citizen_passport: 'Non citizen passport'
 vega_national_id_republic_of_kazakhstan: 'National id republic of kazakhstan'
+'vega_national_id_republic_of_kazakhstan''': 'National id republic of kazakhstan'
+vegabundle.resources.views.ivanov: Surname
+vegabundle.resources.views.ivan: Name
+vegabundle.resources.views.ivanovich: 'Middle name'
+vegabundle.resources.views.muzh: Male

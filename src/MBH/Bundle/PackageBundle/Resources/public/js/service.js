@@ -1,4 +1,4 @@
-/*global window, $, services, document, select2, mbh */
+/*global window, $, services, document, select2, mbh, Translator */
 
 var docReadyServices = function() {
     "use strict";
@@ -40,7 +40,8 @@ var docReadyServices = function() {
                 personsInput.val(personsInput.val() || 1);
                 nightsInput.val(nightsInput.val() || 1);
                 amountInput.closest('div.input-group').next('span.help-block').html('');
-                serviceHelp.html('<small>Услуга для добавления к броне</small>');
+                serviceHelp.html('<small>' + Translator.trans('service.service_for_addtition_to_package') + '</small>');
+                serviceHelp.html('<small>' + Translator.trans('service.service_for_addtition_to_package') + '</small>');
             },
             calc = function() {
 
@@ -49,7 +50,7 @@ var docReadyServices = function() {
                 if (serviceInput.val() !== null && typeof info !== 'undefined') {
                     var nights = nightsInput.val(),
                         price = priceInput.val() * amountInput.val() * nights * personsInput.val();
-                    amountInput.closest('div.input-group').next('span.help-block').html($.number(price, 2) + ' ' + mbh.currency.text + ' за ' + amountInput.val() + ' шт.');
+                    amountInput.closest('div.input-group').next('span.help-block').html($.number(price, 2) + ' ' + mbh.currency.text + ' ' + Translator.trans('service.price_for_amount', {'amount' : amountInput.val()}));
                 }
             },
             show = function(info) {
@@ -77,7 +78,7 @@ var docReadyServices = function() {
                     recalcDiv.show();
                 }
 
-                var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' за 1 человека ' : ' ';
+                var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' ' + Translator.trans('service.for_one_man') + ' ' : ' ';
 
                 if (info.calcType !== 'day_percent') {
                     serviceHelp.html($.number(info.price, 2) + ' ' + mbh.currency.text + peoplesStr + info.calcTypeStr);

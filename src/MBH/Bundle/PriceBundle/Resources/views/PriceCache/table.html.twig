@@ -39,16 +39,16 @@
                 {% endif %}
 
                 {% if roomType.isChildPrices %}
-                    {% set categories = categories|merge({'childPrice': 'Цена за детское осн. место'}) %}
+                    {% set categories = categories|merge({'childPrice': 'mbhpricebundle.view.pricecache.table.price_for_children_main_place'|trans}) %}
                 {% endif %}
 
                 {% if roomType.additionalPlaces > 0 %}
-                    {% set categories = categories|merge({'additionalPrice': 'Цена за взрослое доп. место', 'additionalChildrenPrice': 'Цена за детское доп. место' }) %}
+                    {% set categories = categories|merge({'additionalPrice': 'mbhpricebundle.view.pricecache.table.price_for_adult_main_place'|trans, 'additionalChildrenPrice': 'mbhpricebundle.view.pricecache.table.price_for_children_additional_place'|trans }) %}
                 {% endif %}
 
                 {% if roomType.additionalPlaces > 1 and roomType.isIndividualAdditionalPrices %}
                     {% for num in 1..(roomType.additionalPlaces - 1) %}
-                        {% set categories = categories|merge({('additionalPrice' ~ num): 'Цена за взрослое доп. место #' ~ (num + 1), ('additionalChildrenPrice' ~ num): 'Цена за детское доп. место #'  ~ (num + 1) }) %}
+                        {% set categories = categories|merge({('additionalPrice' ~ num): 'mbhpricebundle.view.pricecache.table.price_for_adult_main_place'|trans ~ '#' ~ (num + 1), ('additionalChildrenPrice' ~ num): 'mbhpricebundle.view.pricecache.table.price_for_children_main_place' ~ '#'  ~ (num + 1) }) %}
                     {% endfor %}
                 {% endif %}
 

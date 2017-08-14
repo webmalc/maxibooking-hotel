@@ -67,7 +67,7 @@
                                         {% for priceTourists, price  in result.prices %}
                                             {% set arr = priceTourists|split('_') %}
                                             <option value="{{ priceTourists }}">
-                                                {% if arr[0] %}{{ arr[0] }} вз.{% endif %}{% if arr[1] and arr[0] %}+{% endif %}{% if arr[1] %}{{ arr[1] }} рб.{% endif %}
+                                                {% if arr[0] %}{{ arr[0] }} {{ 'views.api.getResultsTable.number_of_adults'|trans}}{% endif %}{% if arr[1] and arr[0] %}+{% endif %}{% if arr[1] %}{{ arr[1] }} {{ 'views.api.getResultsTable.number_of_children'|trans}}{% endif %}
                                             </option>
                                         {% endfor %}
                                     </select>

@@ -85,7 +85,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
         if($type == XlsGeneratorFactory::TYPE_NOTICE) {
             $options['tourists'] = $this->dm->getRepository('MBHPackageBundle:Tourist')->getForeignTouristsByPackage($entity);
             if(empty($options['tourists'])) {
-                $error = 'В данной брони нет иностранных граждан';
+                $error = $this->get('translator')->trans('controller.generated_document_controller.document_modal_form.package_has_not_foreign');
             }
         }
 

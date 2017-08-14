@@ -478,7 +478,7 @@ class OrderManager implements Searchable
                     $defaultService->isRecalcWithPackage()
                 )
                 ->setPackage($package)
-                ->setNote($this->container->get('translator')->trans('mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu'));
+                ->setNote($this->container->get('translator')->trans('order_manager.package_service_comment.default_service'));
 
             $package->addService($packageService);
             $this->dm->persist($packageService);

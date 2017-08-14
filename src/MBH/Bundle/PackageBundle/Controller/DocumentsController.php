@@ -192,7 +192,7 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
      * @ParamConverter("order", class="MBHPackageBundle:Order")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @Template()
-     * @return RedirectResponse|null
+     * @return array|null|RedirectResponse
      */
     public function editAction(Order $entity, Package $package, $name, Request $request)
     {

@@ -38,8 +38,8 @@ class InvitedTouristType extends AbstractType
                 'label' => 'Обращение',
                 'expanded' => true,
                 'choices' => [
-                    'Господин',
-                    'Госпожа'
+                    'mbhonlinebundle.form.invitedtouristtype.mister',
+                    'mbhonlinebundle.form.invitedtouristtype.mistress'
                 ],
                 'empty_value' => null,
                 'constraints' => [

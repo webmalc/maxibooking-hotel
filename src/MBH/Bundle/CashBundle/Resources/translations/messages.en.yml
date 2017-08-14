@@ -1,0 +1,19 @@
+form.cashDocumentType.number: Room
+form.cashDocumentType.sum: Sum
+form.cashDocumentType.payer: Payer
+form.cashDocumentType.organization: Organisation
+form.cashDocumentType.tourist: Client
+form.cashDocumentType.article: Article
+form.cashDocumentType.placeholder_fio: 'Full name'
+form.cashDocumentType.payment_way: 'Payment option'
+form.cashDocumentType.document_date: 'Document date'
+form.cashDocumentType.paid_date: 'Payment date'
+form.cashDocumentType.operation_type: 'Transaction type'
+form.cashDocumentType.comment: Comments
+form.cashDocumentType.is_paid: 'Paid?'
+controller.cashController.edit_record_success: 'Entry successfully edited.'
+controller.cashController.payment_confirmed_success: 'Payment successfully confirmed'
+cashDocumentCriteria.type.order: 'With Order number'
+cashDocumentCriteria.type.other: 'Without Order number'
+mbhcashbundle.service.onecexporter.vidplatezha: 'Payment type'
+mbhcashbundle.view.cash.index.ostatok.po.kasse: 'Cashdesk balance'
