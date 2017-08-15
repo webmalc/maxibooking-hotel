@@ -86,9 +86,11 @@ class ImageMigrateCommand extends ContainerAwareCommand
         $this->logger = $container->get('mbh.image_migrate.logger');
         $this->webDir = $container->get('kernel')->getRootDir().'/../web';
 
+        $this->logger->addInfo('Try to migrate images for client '.$this->clientName);
         $this->hotelLogoMigrate();
         $this->roomTypeImagesMigrate();
         $this->protectedUploadMigrate();
+        $this->logger->addInfo('Image migrate process is done for client '.$this->clientName);
 
         if ($isForce) {
             $this->dm->flush();
@@ -109,8 +111,9 @@ class ImageMigrateCommand extends ContainerAwareCommand
                 if ($image && $image instanceof Image) {
                     $hotel->setLogoImage($image);
                 }
-
-            };
+            } else {
+                $this->logger->addInfo('No found logo for hotel '.$hotel->getName());
+            }
         }
     }
 
@@ -130,6 +133,9 @@ class ImageMigrateCommand extends ContainerAwareCommand
                 if ($image && $image instanceof Image) {
                     $roomType->addOnlineImage($image);
                 }
+            }
+            if (!count($roomTypeOldImages)) {
+                $this->logger->addInfo('No found roomtype images for client '.$this->clientName);
             }
         }
     }
