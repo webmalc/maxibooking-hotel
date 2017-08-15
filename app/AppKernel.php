@@ -20,15 +20,7 @@ class AppKernel extends Kernel
     {
         $this->client = $client;
         parent::__construct($environment, $debug);
-        //After PHPUnit 6.1 version
-        //PHP Fatal error:  Class 'PHPUnit_Framework_TestCase' not found in /var/www/mbh/vendor/liip/functional-test-bundle/Utils/HttpAssertions.php on line 20
-        //https://github.com/liip/LiipFunctionalTestBundle/pull/322
-        //TODO: Remove after problem fix.
-        if ($environment === 'test') {
-            if (!class_exists('\PHPUnit_Framework_TestCase') && class_exists('\PHPUnit\Framework\TestCase')) {
-                class_alias('\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase');
-            }
-        }
+
     }
 
     public function registerBundles()
