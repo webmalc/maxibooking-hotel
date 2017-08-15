@@ -125,7 +125,7 @@
             {% endif %}
             {% set bootstrapLocaleFile = 'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.' ~ bootstrapLocale ~ '.min.js' %}
             {% set select2LocaleFile = 'assets/vendor/select2/dist/js/i18n/' ~ select2Locale ~ '.js' %}
-            {% set frontMessagesFile = 'js/translations/front_messages/' ~ locale ~ '.js' %}
+            {% set frontMessagesFile = 'js/translations/front_messages/' ~ frontMessagesLocale ~ '.js' %}
 
             <script type="text/javascript" src="{{ asset(bootstrapLocaleFile) }}"></script>
             <script type="text/javascript" src="{{ asset(select2LocaleFile) }}"></script>

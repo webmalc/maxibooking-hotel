@@ -43,6 +43,31 @@ class Uniteller implements PaymentSystemInterface
     protected $taxationSystemCode;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isWithFiscalization = true;
+
+    /**
+     * @return bool
+     */
+    public function isWithFiscalization(): bool
+    {
+        return $this->isWithFiscalization;
+    }
+
+    /**
+     * @param bool $isWithFiscalization
+     * @return Uniteller
+     */
+    public function setIsWithFiscalization(bool $isWithFiscalization): Uniteller
+    {
+        $this->isWithFiscalization = $isWithFiscalization;
+
+        return $this;
+    }
+
+    /**
      * @return float
      */
     public function getTaxationRateCode(): ?float
@@ -54,7 +79,7 @@ class Uniteller implements PaymentSystemInterface
      * @param float $taxationRateCode
      * @return Uniteller
      */
-    public function setTaxationRateCode(float $taxationRateCode): Uniteller
+    public function setTaxationRateCode(?float $taxationRateCode): Uniteller
     {
         $this->taxationRateCode = $taxationRateCode;
 
@@ -73,7 +98,7 @@ class Uniteller implements PaymentSystemInterface
      * @param float $taxationSystemCode
      * @return Uniteller
      */
-    public function setTaxationSystemCode(float $taxationSystemCode): Uniteller
+    public function setTaxationSystemCode(?float $taxationSystemCode): Uniteller
     {
         $this->taxationSystemCode = $taxationSystemCode;
 

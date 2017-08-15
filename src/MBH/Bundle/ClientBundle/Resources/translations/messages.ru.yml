@@ -26,6 +26,7 @@ form.clientPaymentSystemType.payanyway_service: Сервис PAYANYWAY
 form.clientPaymentSystemType.moneymail_service: Сервис MoneyMail
 form.clientPaymentSystemType.moneymail_shop_id: ID магазина (Shop_IDP)
 form.clientPaymentSystemType.moneymail_key: Ключ магазина (Key)
+form.clientPaymentSystemType.uniteller_is_with_fiscalization.label: 'С фискализацией платежа?'
 form.clientPaymentSystemType.uniteller_shop_id: ID магазина (Shop_IDP)
 form.clientPaymentSystemType.uniteller_password: Пароль магазина (Password)
 form.clientPaymentSystemType.uniteller.taxation_rate_code: Код ставки налогооблажения
