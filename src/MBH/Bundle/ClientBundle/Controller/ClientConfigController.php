@@ -149,6 +149,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $uniteller
                         ->setUnitellerShopIDP($form->get('unitellerShopIDP')->getData())
                         ->setUnitellerPassword($form->get('unitellerPassword')->getData())
+                        ->setIsWithFiscalization($form->get('isUnitellerWithFiscalization')->getData())
                         ->setTaxationRateCode($form->get('taxationRateCode')->getData())
                         ->setTaxationSystemCode($form->get('taxationSystemCode')->getData());
                     $entity->setUniteller($uniteller);

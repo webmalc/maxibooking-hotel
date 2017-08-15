@@ -5,8 +5,8 @@ namespace MBH\Bundle\ClientBundle\Form;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -32,7 +32,7 @@ class ClientPaymentSystemType extends AbstractType
         $robokassaMerchantLogin = $robokassaMerchantPass1 = $robokassaMerchantPass2 = null;
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
-        $unitellerShopIDP = $unitellerPassword = $taxationSystemCode = $taxationRateCode = null;
+        $unitellerIsWithFiscalization = $unitellerShopIDP = $unitellerPassword = $taxationSystemCode = $taxationRateCode = null;
         $rbkEshopId = $rbkSecretKey = null;
         $paypalLogin = null;
         $default = $this->paymentSystemsDefault;
@@ -47,6 +47,7 @@ class ClientPaymentSystemType extends AbstractType
             $moneymailKey = $entity->getMoneymail() ? $entity->getMoneymail()->getMoneymailKey() : '';
             $unitellerShopIDP = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerShopIDP() : '';
             $unitellerPassword = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerPassword() : '';
+            $unitellerIsWithFiscalization = $entity->getUniteller() ? $entity->getUniteller()->isWithFiscalization(): '';
             $taxationRateCode = $entity->getUniteller() ? $entity->getUniteller()->getTaxationRateCode() : '';
             $taxationSystemCode = $entity->getUniteller() ? $entity->getUniteller()->getTaxationSystemCode() : '';
             $rbkEshopId = $entity->getRbk() ? $entity->getRbk()->getRbkEshopId() : '';
@@ -83,6 +84,13 @@ class ClientPaymentSystemType extends AbstractType
                 );
         }
         $builder
+            ->add('isUnitellerWithFiscalization', CheckboxType::class, [
+                'mapped' => false,
+                'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
+                'group' => 'form.clientPaymentSystemType.payment_system_group',
+                'data' => $unitellerIsWithFiscalization,
+                'required' => false
+            ])
             ->add(
                 'robokassaMerchantLogin',
                 TextType::class,
