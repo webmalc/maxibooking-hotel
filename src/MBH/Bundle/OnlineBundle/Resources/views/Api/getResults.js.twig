@@ -41,7 +41,7 @@ jQuery(document).ready(function() {
                 return jQuery('#mbh-form-locale').val();
             },
             waiting = function() {
-                var text = Translator.trans("package.processing");
+                var text = '{{ "package.processing"|trans({}, 'front_messages')}}';
                 wrapper.html('<div class="mbh-results-info alert alert-info"><i class="fa fa-spinner fa-spin"></i> ' + text + '</div>');
             },
             getUrlVars = function() {
@@ -138,7 +138,9 @@ jQuery(document).ready(function() {
                         if (parseInt(per_person.attr('data-change'), 10)) {
                             var touriststHash = touristVal.split('_'),
                                 totalTourists = parseInt(touriststHash[0], 10) + parseInt(touriststHash[1], 10);
-                            per_person.html(Translator.trans("api.get_results.price_for", totalTourists));
+                            var touristsPhrase = (totalTourists === 1) ? ' человека' : ' человек';
+
+                            per_person.html('цена за ' + totalTourists + touristsPhrase);
                         }
                     };
                     jQuery('.mbh-results-tourists-select').click(function() {
