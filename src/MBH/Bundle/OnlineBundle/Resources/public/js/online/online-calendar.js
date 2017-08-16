@@ -5,7 +5,7 @@ $(document).ready(function () {
     var currentLocale = locale.val();
     var datePickerDefaultOptions = {dateFormat: "dd.mm.yy", firstDay: 1, isRTL: false};
     if (!currentLocale || currentLocale === 'ru') {
-        Translator.locale = 'ru';g
+        Translator.locale = 'ru';
         jQuery.datepicker.regional.ru =
             {
                 closeText: Translator.trans("online.online-calendar.close"),
