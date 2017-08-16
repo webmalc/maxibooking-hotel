@@ -6,7 +6,7 @@ if (typeof(mbh) !== 'undefined') {
 }
 function addLoadEvent(func) {
     var oldonload = window.onload;
-    if (typeof window.onload != 'function') {
+    if (typeof window.onload !== 'function') {
         window.onload = func;
     } else {
         window.onload = function() {
@@ -58,23 +58,23 @@ addLoadEvent(function() {
             return;
         }
         var target = null;
-        if (e.data.target == 'form') {
+        if (e.data.target === 'form') {
             target = formIframe; 
         }
-        if (e.data.target == 'calendar') {
+        if (e.data.target === 'calendar') {
             target = formCalendar; 
         }
         if (target) {
             target.contentWindow.postMessage(e.data, '*');
         }
-        if (e.data.action == 'showCalendar') {
+        if (e.data.action === 'showCalendar') {
             var c = getCoords(formIframe);
             formCalendar.style.display = 'block';
             formCalendar.style.top = (e.data.top + c.top - 10) + 'px';
             formCalendar.style.left = (e.data.left + c.left) + 'px';
             formCalendar.contentWindow.postMessage(e.data, '*');
         }
-        if (e.data.action == 'hideCalendar') {
+        if (e.data.action === 'hideCalendar') {
             hideCalendar();
         }
     };

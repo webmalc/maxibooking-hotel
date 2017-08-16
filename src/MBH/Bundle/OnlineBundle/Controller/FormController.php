@@ -38,6 +38,8 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ONLINE_FORM_EDIT')")
      * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function newAction(Request $request)
     {
