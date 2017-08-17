@@ -162,7 +162,6 @@ class Service extends Base
      * @var bool
      * @Gedmo\Versioned
      * @ODM\Boolean()
-     * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     private $includeArrival;
@@ -171,7 +170,6 @@ class Service extends Base
      * @var bool
      * @Gedmo\Versioned
      * @ODM\Boolean()
-     * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     private $includeDeparture;

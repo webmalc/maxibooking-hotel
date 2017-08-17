@@ -23,6 +23,20 @@
                 }
             });
         }
+        if (document.getElementById('mbh_bundle_onlinebundle_form_type_js')) {
+            CodeMirror.fromTextArea(document.getElementById('mbh_bundle_onlinebundle_form_type_js'), {
+                lineNumbers: true,
+                mode: 'js',
+                extraKeys: {
+                    "F11": function(cm) {
+                        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                    },
+                    "Esc": function(cm) {
+                        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+                    }
+                }
+            });
+        }
     </script>
 {% endblock %}
 

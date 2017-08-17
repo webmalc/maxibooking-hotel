@@ -135,6 +135,13 @@ class FormConfig extends Base
 
     /**
      * @var string
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="string")
+     */
+    protected $js;
+
+    /**
+     * @var string
      * @Gedmo\Versioned
      * @Assert\NotNull()
      * @Assert\Url()
@@ -186,6 +193,25 @@ class FormConfig extends Base
      * @Assert\Type(type="bool")
      */
     private $isFullWidth = false;
+
+    /**
+     * @return string
+     */
+    public function getJs(): ?string
+    {
+        return $this->js;
+    }
+
+    /**
+     * @param string $js
+     * @return FormConfig
+     */
+    public function setJs(string $js): FormConfig
+    {
+        $this->js = $js;
+
+        return $this;
+    }
 
     /**
      * @return bool

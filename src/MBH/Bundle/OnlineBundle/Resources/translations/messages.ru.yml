@@ -48,6 +48,8 @@ online_invite.voting_code: 'Код голосования для вставки 
 form.formType.css_label: css
 form.formType.css: Оформление
 form.formType.css_help: 'Дополнительные css-стили для онлайн формы'
+form.formType.js_label: javascript
+form.formType.js_group: Javascript
 form.formType.theme_label: 'Тема'
 form.formType.resultsUrl_label: 'Страница результатов'
 form.formType.resultsUrl_help: 'URL страницы для вывода результатов поиска'

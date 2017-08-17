@@ -14,10 +14,19 @@
     <div id="mbh-form-wrapper" style="overflow: hidden; height: auto">
         <a href="http://maxi-booking.ru/" style="background-color: white; padding: 10px;">{{ 'views.api.get_form_iframe.online_booking_system'|trans}}</a>
     </div>
-    {% if formConfig and formConfig.css %}
-        <style>
-         {{ formConfig.css }}
-        </style>  
+    {% if formConfig %}
+        {% if formConfig.css %}
+            <style>
+                {{ formConfig.css }}
+            </style>
+        {% endif %}
+        {% if formConfig.js %}
+        <script>
+            window.onload = function () {
+                {{ formConfig.js }}
+            };
+        </script>
+        {% endif %}
     {% endif %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
