@@ -235,6 +235,19 @@ class User extends BaseUser implements RecipientInterface
     }
 
     /**
+     * @param mixed $expiresAt
+     * @return User
+     */
+    public function setExpiresAt(\DateTime $expiresAt = null)
+    {
+        $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
+
+
+    /**
      * Get firstName
      *
      * @return string $firstName
@@ -604,6 +617,5 @@ class User extends BaseUser implements RecipientInterface
     {
         $this->locale = $locale;
     }
-
 
 }

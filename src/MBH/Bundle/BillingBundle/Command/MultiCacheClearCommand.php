@@ -33,9 +33,11 @@ class MultiCacheClearCommand extends ContainerAwareCommand
 
         $clientsGetter = $this->getContainer()->get('mbh.service.client_list_getter');
         $clients = $input->getOption('clients');
-        $clients = explode(',', trim($clients, ','));
+        if (null !== $clients) {
+            $clients = explode(',', trim($clients, ','));
+        }
 
-        $clearClients = empty($clients)?$clientsGetter->getExistingClients($clients):$clientsGetter->getClientsList();
+        $clearClients = (!empty($clients))?$clientsGetter->getExistingClients($clients):$clientsGetter->getClientsList();
         if (!empty($clearClients)) {
 
             $kernel = $this->getContainer()->get('kernel');

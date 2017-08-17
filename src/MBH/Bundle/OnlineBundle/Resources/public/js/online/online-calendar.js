@@ -3,9 +3,9 @@ $(document).ready(function () {
     'use strict';
     var locale = jQuery('#mbh-calendar-locale');
     var currentLocale = locale.val();
-
     var datePickerDefaultOptions = {dateFormat: "dd.mm.yy", firstDay: 1, isRTL: false};
-    if (!currentLocale || currentLocale == 'ru') {
+    if (!currentLocale || currentLocale === 'ru') {
+        Translator.locale = 'ru';
         jQuery.datepicker.regional.ru =
             {
                 closeText: Translator.trans("online.online-calendar.close"),
@@ -91,7 +91,7 @@ $(document).ready(function () {
     });
 
     var setDate = function (e) {
-        if (e.data.type == 'mbh' && e.data.date) {
+        if (e.data.type === 'mbh' && e.data.date) {
             $('#mbh-calendar-datepicker').datepicker('setDate', e.data.date);
         }
     };
@@ -101,4 +101,6 @@ $(document).ready(function () {
     else {
         window.attachEvent("onmessage", setDate);
     }
+
+
 });

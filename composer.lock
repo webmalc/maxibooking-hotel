@@ -225,7 +225,7 @@
             "support": {
                 "source": "https://github.com/webmalc/MongoDBAclBundle/tree/master"
             },
-            "time": "2017-06-28 10:42:05"
+            "time": "2017-06-28T10:42:05+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1150,7 +1150,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2017-07-07 05:37:08"
+            "time": "2017-07-07T05:37:08+00:00"
         },
         {
             "name": "doctrine/mongodb-odm",
@@ -1233,7 +1233,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2017-06-23 09:22:43"
+            "time": "2017-06-23T09:22:43+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -1307,7 +1307,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2017-06-07 14:25:20"
+            "time": "2017-06-07T14:25:20+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -2926,7 +2926,7 @@
                 "i18n",
                 "translation"
             ],
-            "time": "2017-07-16 15:18:56"
+            "time": "2017-07-16T15:18:56+00:00"
         },
         {
             "name": "liip/imagine-bundle",
@@ -3277,7 +3277,7 @@
                 "manager",
                 "myallocator"
             ],
-            "time": "2017-02-06 23:10:05"
+            "time": "2017-02-06T23:10:05+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -3445,7 +3445,7 @@
                 "templating",
                 "twig"
             ],
-            "time": "2016-02-09 14:23:53"
+            "time": "2016-02-09T14:23:53+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -4487,7 +4487,7 @@
                 "translatable",
                 "tree"
             ],
-            "time": "2017-01-13 18:32:32"
+            "time": "2017-01-13T18:32:32+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
