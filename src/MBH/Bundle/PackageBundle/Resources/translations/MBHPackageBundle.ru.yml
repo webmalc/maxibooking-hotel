@@ -329,7 +329,7 @@ search.results.guests: Гости
 search.results.price: Цена
 search.results.total_beds: 'Свободно койко-мест'
 search.results.total_rooms: 'Свободно номеров'
-search.results.reservate: Разместить
+search.results.reservate: 'Бронировать'
 search.results.accommodation: Разместить
 search.results.nothing_found_for_your_request: 'По вашему запросу ничего не найдено.'
 search.results.enter_search_data: 'Введите данные для подбора проживания.'

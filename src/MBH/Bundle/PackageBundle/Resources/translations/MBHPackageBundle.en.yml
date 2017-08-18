@@ -312,7 +312,7 @@ search.results.guests: Guests
 search.results.price: Price
 search.results.total_beds: 'Available beds'
 search.results.total_rooms: 'Available rooms'
-search.results.reservate: Accomodate
+search.results.reservate: Reservate
 search.results.accommodation: Accomodate
 search.results.nothing_found_for_your_request: 'Nothing found'
 search.results.enter_search_data: 'Enter parameters for room selection'
