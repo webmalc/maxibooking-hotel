@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\BaseBundle\Document\NotificationConfig;
+use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -409,6 +411,8 @@ class ChannelManager
             ->setCategory('error')
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'))
+            ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
+            ->setMessageType(MessageTypes::CHANNEL_MANAGER)
         ;
         $notifier
             ->setMessage($message)

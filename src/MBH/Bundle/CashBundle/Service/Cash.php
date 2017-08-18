@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\CashBundle\Service;
 
+use MBH\Bundle\BaseBundle\Document\NotificationConfig;
+use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -98,7 +100,10 @@ class Cash
                 'currencyText' => $currencyText
             ])
             ->setTemplate('MBHBaseBundle:Mailer:cashDocConfirmation.html.twig')
-            ->setEnd(new \DateTime('+1 minute'));
+            ->setEnd(new \DateTime('+1 minute'))
+            ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
+            ->setMessageType(MessageTypes::CASH_DOC_CONFIRMATION)
+        ;
 
         $notifier
             ->setMessage($message)

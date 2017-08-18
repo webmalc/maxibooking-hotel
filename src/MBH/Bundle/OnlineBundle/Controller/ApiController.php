@@ -4,6 +4,8 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Document\NotificationConfig;
+use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -281,7 +283,10 @@ class ApiController extends Controller
             ->setAutohide(false)
             ->setEnd(new \DateTime('+10 minute'))
             ->setLink($this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]))
-            ->setLinkText('mailer.to_order');
+            ->setLinkText('mailer.to_order')
+            ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
+            ->setMessageType(MessageTypes::ONLINE_PAYMENT_CONFIRM)
+        ;
 
         //send to backend
         $notifier
@@ -298,7 +303,10 @@ class ApiController extends Controller
                 ->setTranslateParams($params)
                 ->setAdditionalData([
                     'fromText' => $order->getFirstHotel()
-                ]);
+                ])
+                ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
+                ->setMessageType(MessageTypes::ONLINE_PAYMENT_CONFIRM)
+            ;
             $this->get('mbh.notifier.mailer')
                 ->setMessage($message)
                 ->notify();
@@ -578,7 +586,10 @@ class ApiController extends Controller
                 ->setHotel($hotel)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
-                ->setEnd(new \DateTime('+1 minute'));
+                ->setEnd(new \DateTime('+1 minute'))
+                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
+                ->setMessageType(MessageTypes::ONLINE_ORDER)
+            ;
             $notifier
                 ->setMessage($message)
                 ->notify();
@@ -607,7 +618,10 @@ class ApiController extends Controller
                     ->setEnd(new \DateTime('+1 minute'))
                     ->addRecipient($payer)
                     ->setLink('hide')
-                    ->setSignature('mailer.online.user.signature');
+                    ->setSignature('mailer.online.user.signature')
+                    ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
+                    ->setMessageType(MessageTypes::ONLINE_ORDER)
+                ;
 
                 $params = $this->container->getParameter('mailer_user_arrival_links');
 

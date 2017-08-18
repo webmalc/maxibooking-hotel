@@ -2,13 +2,16 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
+use MBH\Bundle\BaseBundle\Document\NotificationConfig;
+use MBH\Bundle\BaseBundle\Lib\ChoicerInterface;
+use MBH\Bundle\BaseBundle\Lib\NotifierChoicerException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 
 /**
  * NotifierMessage
  */
-class NotifierMessage
+class NotifierMessage implements ChoicerInterface
 {
     /**
      * @var string
@@ -31,7 +34,7 @@ class NotifierMessage
     private $from;
 
     /**
-     * @var RecipientInterface
+     * @var RecipientInterface[]
      */
     private $recipients = [];
 
@@ -99,6 +102,11 @@ class NotifierMessage
      * @var string
      */
     private $headerText = null;
+    /** @var string */
+    private $receiverGroup = null;
+    /** @var string */
+    private $messageType = null;
+
 
     /**
      * @return string
@@ -452,5 +460,56 @@ class NotifierMessage
 
         return $this;
     }
+
+
+    /**
+     * @param string $receiverGroup
+     * @return $this
+     * @throws NotifierChoicerException
+     */
+    public function setReceiverGroup(string $receiverGroup)
+    {
+        if (in_array($receiverGroup, NotificationConfig::RECEIVERS_GROUP)) {
+            $this->receiverGroup = $receiverGroup;
+        } else {
+            $message = sprintf('No group %s found. Available groups are %s', $receiverGroup, implode(
+                " ",
+                NotificationConfig::RECEIVERS_GROUP)
+            );
+            throw new NotifierChoicerException($message);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * @return null|string
+     */
+    public function getReceiverGroup(): ?string
+    {
+        return $this->receiverGroup;
+    }
+
+    /**
+     * @param string $messageType
+     * @return $this
+     */
+    public function setMessageType(string $messageType)
+    {
+        $this->messageType = $messageType;
+
+        return $this;
+    }
+
+
+    /**
+     * @return null|string
+     */
+    public function getMessageType(): ?string
+    {
+        return $this->messageType;
+    }
+
 
 }

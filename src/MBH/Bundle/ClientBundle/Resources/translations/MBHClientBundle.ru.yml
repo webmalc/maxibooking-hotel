@@ -2,6 +2,7 @@ views.clientConfig.index.editing: Редактирование
 views.clientConfig.layout.parameters: Параметры
 client.tabs.params: Параметры
 client.tabs.payment_system: 'Платежная система'
+client.tabs.notification: 'Настройки уведомлений'
 views.documentTempalte.index: 'Шаблоны документов'
 views.documentTempalte.new: Создание
 views.documentTempalte.edit: Редактирование

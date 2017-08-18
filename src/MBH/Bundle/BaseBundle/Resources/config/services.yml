@@ -325,3 +325,13 @@ services:
     mbh.app.root_dir:
         class: AppKernel
         factory: ['@kernel',getRootDir]
+
+    mbh.notification_config_repository:
+        class: MBH\Bundle\BaseBundle\Document\NotificationConfigRepository
+        factory: ["@doctrine_mongodb.odm.default_document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\BaseBundle\Document\NotificationConfig
+
+    mbh.service.email_receive_choicer:
+        class: MBH\Bundle\BaseBundle\Service\EmailReceiveChoicer
+        arguments: ['@mbh.notification_config_repository']

@@ -525,3 +525,21 @@ image.priority: 'Приоритет'
 forms.export_type.main_group: Настройки генерируемого документа
 forms.export_type.fields.label: Названия полей
 forms.export_type.fields.help: Имена экспортируемых полей
+
+notifier.config.label.client: Почтовые уведомления клиентов
+notifier.config.label.stuff: Почтовые уведомления персонала
+
+notifier.config.label.cash_confirm: Оплата документа
+notifier.config.label.arrival: Прибытие
+notifier.config.label.feedback: Отзыв
+notifier.config.label.online_order: Бронь Онлайн
+notifier.config.label.channel_manager_order: Channel Manager
+notifier.config.label.online_payment_confirm: Онлайн оплата
+
+notifier.config.title.cash_confirm: Уведомление о подтверждении документа оплаты
+notifier.config.title.arrival: Уведомление о прибытии
+notifier.config.title.feedback: Письмо с просьбой о отзыве
+notifier.config.title.online: Уведомление о брони из онлайн формы
+notifier.config.title.channel_manager: Уведомление брони от ChannelManager
+notifier.config.title.online_payment_confirm: Подтверждение онлайн оплаты
+

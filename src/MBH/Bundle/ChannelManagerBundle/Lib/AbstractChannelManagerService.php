@@ -2,7 +2,9 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use MBH\Bundle\BaseBundle\Document\NotificationConfig;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
@@ -736,7 +738,10 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setType('danger')
                 ->setCategory('notification')
                 ->setAutohide(false)
-                ->setEnd(new \DateTime('+10 minute'));
+                ->setEnd(new \DateTime('+10 minute'))
+                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
+                ->setMessageType(MessageTypes::CHANNEL_MANAGER)
+            ;
 
             return $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
@@ -782,6 +787,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setOrder($order)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'))
+                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
+                ->setMessageType(MessageTypes::CHANNEL_MANAGER)
+
             ;
 
             $notifier->setMessage($message)->notify();

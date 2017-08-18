@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ClientBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Form\NotificationConfigType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
@@ -197,5 +198,26 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableModeBool);
 
         return $this->redirectToRoute($route);
+    }
+
+    /**
+     * @Route("/notification_config_edit", name="client_notification_config")
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
+     * @Template()
+     */
+    public function notifierConfigAction(Request $request)
+    {
+        $notificationConfig = $this->dm->getRepository('MBHBaseBundle:NotificationConfig')->fetchConfig();
+        $form = $this->createForm(NotificationConfigType::class, $notificationConfig);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->dm->flush();
+        }
+
+        return [
+            'entity' => $notificationConfig,
+            'form' => $form->createView(),
+            'logs' => $this->logs($notificationConfig)
+        ];
     }
 }

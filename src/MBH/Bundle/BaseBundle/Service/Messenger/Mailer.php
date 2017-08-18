@@ -5,6 +5,8 @@ namespace MBH\Bundle\BaseBundle\Service\Messenger;
 use FOS\UserBundle\Mailer\MailerInterface;
 use FOS\UserBundle\Model\UserInterface;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BaseBundle\Lib\NotifierChoicerException;
+use MBH\Bundle\BaseBundle\Service\EmailReceiveChoicer;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Monolog\Logger;
@@ -58,6 +60,8 @@ class Mailer implements \SplObserver, MailerInterface
 
     /** @var  TranslatorInterface */
     protected $translator;
+    /** @var EmailReceiveChoicer */
+    protected $choicer;
 
     /**
      * Mailer constructor.
@@ -75,6 +79,7 @@ class Mailer implements \SplObserver, MailerInterface
         $this->permissions = $this->container->get('mbh.hotel.selector');
         $this->logger = $this->container->get('mbh.mailer.logger');
         $this->translator = $this->container->get('translator');
+        $this->choicer = $this->container->get('mbh.service.email_receive_choicer');
     }
 
     /**
@@ -93,9 +98,15 @@ class Mailer implements \SplObserver, MailerInterface
     public function update(\SplSubject $notifier)
     {
         /** @var NotifierMessage $message */
+        /** @var Notifier $notifier */
         $message = $notifier->getMessage();
-
-        if ($message->getEmail()) {
+        try {
+            $choice = $this->choicer->makeChoice($message);
+        } catch (NotifierChoicerException $exception) {
+            $choice = true;
+            $this->logger->addRecord(Logger::WARNING, $exception->getMessage());
+        }
+        if ($choice && $message->getEmail()) {
             $this->send($message->getRecipients(), array_merge([
                 'text' => $message->getText(),
                 'type' => $message->getType(),
