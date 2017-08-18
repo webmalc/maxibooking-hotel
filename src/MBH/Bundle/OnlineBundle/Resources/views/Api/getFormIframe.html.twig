@@ -23,7 +23,7 @@
         {% if formConfig.js %}
         <script>
             window.onload = function () {
-                {{ formConfig.js }}
+                {{ formConfig.js|raw }}
             };
         </script>
         {% endif %}
