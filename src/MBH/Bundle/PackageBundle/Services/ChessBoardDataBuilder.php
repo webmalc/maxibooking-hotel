@@ -554,19 +554,10 @@ class ChessBoardDataBuilder
 
             foreach ($roomsByRoomType as $room) {
                 /** @var Room $room */
-                //TODO: Переделать
-                $houseDetails = '';
-                if ($room->getHousing()) {
-                    $houseDetails .= "Корпус \"" . $room->getHousing()->getName() . "\"<br>";
-                }
-                if ($room->getFloor()) {
-                    $houseDetails .= 'Этаж ' . $room->getFloor();
-                }
-
                 $roomsData[$room->getId()] = [
                     'name' => $room->getName(),
                     'statuses' => $room->getStatus()->toArray(),
-                    'houseDetails' => $houseDetails
+                    'room' => $room
                 ];
             }
         }

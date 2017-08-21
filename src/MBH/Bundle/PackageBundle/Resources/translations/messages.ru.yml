@@ -692,6 +692,8 @@ manager.channel_manager.venere: Venere
 validator.form.image.min.error: Превышено минимальное значение
 validator.form.image.max.error: Превышено максимальное занчение
 validator.form.image.type.error: Не корректное значение данных
+csv.type.package: Тип брони
+csv.type.order.type: Тип заказа
 csv.type.begin: С
 csv.type.end: По
 csv.type.tariffAccomodation: Размещение
