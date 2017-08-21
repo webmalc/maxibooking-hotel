@@ -195,7 +195,7 @@ ROLE_FORCE_BOOKING: 'Force reservation'
 ROLE_PACKAGE_DELETE_REASON: 'Reservation deletion reason'
 ROLE_TOURIST: Guest
 ROLE_PORTER_REPORT: 'Portier report'
-ROLE_ACCOMMODATION_REPORT: 'Accomodation report'
+ROLE_ACCOMMODATION_REPORT: 'View chessboard'
 ROLE_SERVICES_REPORT: 'Services report'
 ROLE_ORGANIZATION: Organisations
 ROLE_POLLS_REPORT: 'Ratings report'

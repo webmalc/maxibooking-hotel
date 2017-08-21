@@ -152,6 +152,14 @@ class FormType extends AbstractType
                     'attr' => ['rows' => 60]
                 ]
             )
+            ->add('js',
+                TextareaType::class,
+                [
+                    'group' => 'form.formType.js_group',
+                    'label' => 'form.formType.js_label',
+                    'required' => false,
+                    'attr' => ['rows' => 10]
+                ])
             ->add(
                 'theme',
                 ChoiceType::class,

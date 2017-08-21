@@ -78,7 +78,7 @@ class ChessBoardController extends BaseController
      * @Route("/", name="chess_board_home", options={"expose"=true})
      * @Template()
      * @param Request $request
-     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
+     * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @return array
      */
     public function indexAction(Request $request)
@@ -428,7 +428,7 @@ class ChessBoardController extends BaseController
      * @Method({"GET"})
      * @Route("/packages", name="chessboard_packages", options={"expose"=true})
      * @param Request $request
-     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
+     * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @return JsonResponse
      */
     public function getPackagesData(Request $request)
