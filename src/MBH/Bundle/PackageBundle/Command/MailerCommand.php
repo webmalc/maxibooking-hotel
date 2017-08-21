@@ -48,7 +48,7 @@ class MailerCommand extends ContainerAwareCommand
         $repo = $this->dm->getRepository('MBHPackageBundle:Package');
 
         //begin tomorrow report
-        $packages = $repo->createQueryBuilder('p')
+        $packages = $repo->createQueryBuilder()
             ->field('begin')->gte($tomorrow)
             ->field('begin')->lt($dayAfterTomorrow)
             ->getQuery()

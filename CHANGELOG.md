@@ -1,3 +1,8 @@
+2.1.0
+============
+* add mail restriction for different mailer types
+* add global swiftmailer log
+
 2.0.0-beta.3
 ============
 * merge Xpedia branch

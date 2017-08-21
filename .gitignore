@@ -1,5 +1,6 @@
 index.html
 azovsky_remote/
+develop_folder/
 /web/test
 scripts/deploy_to_test.sh
 /scripts/upload
@@ -124,3 +125,4 @@ GTAGS
 ctags
 env
 gtags
+
