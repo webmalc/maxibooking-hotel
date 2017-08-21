@@ -335,3 +335,15 @@ services:
     mbh.service.email_receive_choicer:
         class: MBH\Bundle\BaseBundle\Service\EmailReceiveChoicer
         arguments: ['@mbh.notification_config_repository']
+
+    mbh.swiftmailer.array.logger:
+        public: false
+        class: MBH\Bundle\BaseBundle\Lib\SwiftMailerLogger
+        arguments: ['@mbh.mailer.logger']
+
+    mbh.swiftmailer.logger:
+        class: Swift_Plugins_LoggerPlugin
+        arguments: ["@mbh.swiftmailer.array.logger"]
+        tags:
+            - { name: 'swiftmailer.default.plugin' }
+
