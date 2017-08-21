@@ -51,7 +51,7 @@ class NotificationConfig extends Base
      * @var  array
      * @ODM\Field(type="collection")
      * @Assert\Choice(
-     *     callback={"MessageTypes","getStuffOptionsList"},
+     *     callback={"MBH\Bundle\BaseBundle\Lib\MessageTypes","getStuffOptionsList"},
      *     multiple=true
      *     )
      */
@@ -61,7 +61,7 @@ class NotificationConfig extends Base
      * @var  array
      * @ODM\Field(type="collection")
      * @Assert\Choice(
-     *     callback={"MessageTypes","getClientOptionsList"},
+     *     callback={"MBH\Bundle\BaseBundle\Lib\MessageTypes","getClientOptionsList"},
      *     multiple=true
      * )
      */

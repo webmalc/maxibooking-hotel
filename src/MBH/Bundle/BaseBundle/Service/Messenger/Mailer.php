@@ -101,7 +101,7 @@ class Mailer implements \SplObserver, MailerInterface
         /** @var Notifier $notifier */
         $message = $notifier->getMessage();
         try {
-            $choice = $this->choicer->makeChoice($message);
+            $choice = $this->makeChoice($message);
         } catch (NotifierChoicerException $exception) {
             $choice = true;
             $this->logger->addRecord(Logger::WARNING, $exception->getMessage());
@@ -313,5 +313,10 @@ class Mailer implements \SplObserver, MailerInterface
             'linkText' => $linkText,
             'link' => $confirmationUrl
         ], '@MBHBase/Mailer/resettingPassword.html.twig');
+    }
+
+    private function makeChoice(NotifierMessage $message)
+    {
+        return $this->choicer->makeChoice($message);
     }
 }

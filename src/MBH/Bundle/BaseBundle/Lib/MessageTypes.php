@@ -12,12 +12,17 @@ class MessageTypes
     public const ONLINE_PAYMENT_CONFIRM = 'online_payment_confirm';
     public const ARRIVAL = 'arrival';
     public const FEEDBACK = 'feedback';
+    public const UNPAID = 'unpaid';
+    public const CONFIRM_ORDER = 'confirm_order';
+    public const TASK = 'task';
 
     public const STUFF_GROUP = [
         self::ARRIVAL,
         self::CHANNEL_MANAGER,
         self::ONLINE_ORDER,
-        self::ONLINE_PAYMENT_CONFIRM
+        self::ONLINE_PAYMENT_CONFIRM,
+        self::TASK,
+        self::UNPAID
     ];
 
     public const CLIENT_GROUP = [
@@ -26,6 +31,7 @@ class MessageTypes
         self::ONLINE_PAYMENT_CONFIRM,
         self::CASH_DOC_CONFIRMATION,
         self::ONLINE_ORDER,
+        self::CONFIRM_ORDER
     ];
 
     public static function getClientOptionsList(): ?array

@@ -3,7 +3,9 @@
 namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use MBH\Bundle\BaseBundle\Document\NotificationConfig;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -95,7 +97,10 @@ class NoticeUnpaid
                     ->setAdditionalData([
                         'orders' => $arrayData
                     ])
-                    ->setEnd(new \DateTime('+1 minute'));
+                    ->setEnd(new \DateTime('+1 minute'))
+                    ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
+                    ->setMessageType(MessageTypes::UNPAID)
+                ;
 
 
                 $this->notifier

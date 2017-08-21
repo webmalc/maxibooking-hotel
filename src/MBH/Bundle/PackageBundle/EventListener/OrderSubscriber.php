@@ -4,6 +4,8 @@ namespace MBH\Bundle\PackageBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
+use MBH\Bundle\BaseBundle\Document\NotificationConfig;
+use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -159,6 +161,8 @@ class OrderSubscriber implements EventSubscriber
                                 ->addRecipient($entity->getPayer())
                                 ->setLink('hide')
                                 ->setSignature('mailer.online.user.signature')
+                                ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
+                                ->setMessageType(MessageTypes::CONFIRM_ORDER)
                             ;
                             $notifier
                                 ->setMessage($message)

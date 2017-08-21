@@ -32,7 +32,7 @@ class EmailReceiveChoicer
             $messageType = $message->getMessageType();
             $method = 'getEmail'.ucfirst($receiverGroup);
             try {
-                $allowType = $this->notificationConfig->$method;
+                $allowType = $this->notificationConfig->$method();
                 $choice = in_array($messageType, $allowType);
             } catch (\Throwable $e) {
                 $message = sprintf('No method %s in %s.', $method, get_class($this->notificationConfig));
