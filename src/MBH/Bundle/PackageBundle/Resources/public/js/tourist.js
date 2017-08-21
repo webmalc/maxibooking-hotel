@@ -120,7 +120,8 @@ var docReadyTourists = function () {
             },
             dropdownCssClass: "bigdrop"
         });
-        $organization.on('change', function () {
+
+        $('#organization_organization').on('change', function () {
             var value = $(this).val();
             var detail = details[value];
             $.each(detail, function (key, value) {
