@@ -91,6 +91,10 @@ mbhpackagebundle.view.tourist.editunwelcome.grazhdanstvo.gostya: 'Граждан
 mbhpackagebundle.view.tourist.editunwelcome.dobavleno: Добавлено
 mbhpackagebundle.view.package.accommodation.udaleniye.zapisi: 'Удаление записи'
 mbhpackagebundle.view.tourist.index.inostrannyye.grazhdane: 'Иностранные граждане'
+tourist.new_country_modal.country_creation: 'Добавление страны'
+tourist.new_country_modal.country_name: Название страны
+tourist.new_country_modal.close: Закрыть
+tourist.new_country_modal.add: Добавить
 form.packageGuestType.fio: ФИО
 form.DocumentRelation.main: 'Основной документ'
 mbhpackagebundle.view.tourist.index.migratsionnaya.karta: 'Миграционная карта'
@@ -476,6 +480,7 @@ form.TouristExtendedType.address_object: 'Адрес в виде кода'
 form.TouristExtendedType.address_object_decomposed: 'Адрес проживания'
 form.TouristExtendedType.address_object_combined: 'Адрес проживания'
 form.BirthplaceType.country: Страна
+form.BirthplaceType.country.help: 'Если страна не найдена, добавьте её, нажав на плюс <a class="add-country-button"><i class="fa fa-plus"></i></a>'
 form.BirthplaceType.city: Город
 form.BirthplaceType.main_region: 'Регион (область)'
 form.BirthplaceType.district: Район

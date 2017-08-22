@@ -68,7 +68,8 @@ class DocumentRelationType extends AbstractType
                     'group' => 'form.DocumentRelation.citizenship',
                     'query_builder' => function(DocumentRepository $repository){
                         return $repository->createQueryBuilder()->sort(['name' => 1]);
-                    }
+                    },
+                    'help' => $options['isFormInTouristController'] ? 'form.BirthplaceType.country.help' : null
                 ]);
         }
         $builder
@@ -173,7 +174,8 @@ class DocumentRelationType extends AbstractType
                     },
                     'placeholder' => '',
                     'required' => false,
-                    'property_path' => 'birthplace.country'
+                    'property_path' => 'birthplace.country',
+                    'help' => $options['isFormInTouristController'] ? 'form.BirthplaceType.country.help' : null
                 ])
                 ->add('main_region', TextType::class, [
                     'group' => 'form.DocumentRelation.birthplace',
@@ -221,6 +223,7 @@ class DocumentRelationType extends AbstractType
             //'cascade_validation' => true
             'citizenship' => true,
             'birthplace' => true,
+            'isFormInTouristController' => false
         ]);
     }
 

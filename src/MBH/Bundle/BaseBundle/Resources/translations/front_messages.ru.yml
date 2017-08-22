@@ -39,6 +39,7 @@ work_shift.take_shift: 'Принять смену'
 work_shift.and_confirm_payments: 'и подтвердить N платежей на сумму'
 tourist.make_a_choice: 'Сделайте выбор'
 tourist.inn: ИНН
+tourist.new_country.error.field_is_empty: 'Поле названия страны не заполнено'
 service.service_for_addtition_to_package: 'Услуга для добавления к броне'
 service.price_for_amount: 'за  %amount%  шт.'
 service.for_one_man: 'за 1 человека'
