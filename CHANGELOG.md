@@ -1,3 +1,7 @@
+2.1.1
+============
+* \#974 fix generate doc fms
+
 2.1.0
 ============
 * add mail restriction for different mailer types
