@@ -36,6 +36,8 @@ class ApiController extends Controller
      */
     public function getFormCalendarAction()
     {
+        $this->setLocaleByRequest();
+
         return [];
     }
 
@@ -736,6 +738,7 @@ class ApiController extends Controller
      */
     public function getResultsAction($id = null)
     {
+        $this->setLocaleByRequest();
         $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
 
         if (!$formConfig || !$formConfig->getEnabled()) {

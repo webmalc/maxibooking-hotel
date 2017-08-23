@@ -156,6 +156,8 @@ class BaseController extends Controller
         $locale = $request->get('locale');
         if ($locale) {
             $this->setLocale($locale);
+        } else {
+            $this->setLocale($this->getParameter('locale'));
         }
     }
 

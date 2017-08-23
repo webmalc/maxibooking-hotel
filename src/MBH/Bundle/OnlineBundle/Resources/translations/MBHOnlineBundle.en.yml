@@ -1,7 +1,7 @@
 views.api.form.rooms_reservation: Reservation
 views.api.form.hotel: Hotel
-views.api.form.check_in_date: 'Check in date'
-views.api.form.check_out_date: 'Check out date'
+views.api.form.check_in_date: 'Check in'
+views.api.form.check_out_date: 'Check out'
 views.api.form.nights_amount: Nights
 views.api.form.room_type: 'Room type'
 views.api.form.adults: Adults

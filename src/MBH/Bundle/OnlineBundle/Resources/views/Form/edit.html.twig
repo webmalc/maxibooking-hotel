@@ -9,7 +9,7 @@
 
         {% if entity %}
             <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
-            <li><a href="#online-form-tune" data-toggle="tab"><i class="fa fa-crosshairs"> </i> {{ 'views.form.index.edit_templates'|trans({}, 'MBHOnlineBundle') }}</a></li>
+            {#<li><a href="#online-form-tune" data-toggle="tab"><i class="fa fa-crosshairs"> </i> {{ 'views.form.index.edit_templates'|trans({}, 'MBHOnlineBundle') }}</a></li>#}
         {% else %}
             <li class="disabled"><a href="#" data-toggle="tooltip" title='{{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}'><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
         {%  endif %}
@@ -23,7 +23,6 @@
             {{ form_widget(form) }}
             {% include 'MBHBaseBundle:Actions:new.html.twig' %}
             {{ form_end(form) }}
-
             {%  if entity %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
             {%  endif %}

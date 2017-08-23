@@ -45,6 +45,7 @@
                     {% set choices = choices|merge(hotel.roomTypes) %}
                 {% endfor %}
             {% endif %}
+            <option value="">- any -</option>
             {% for roomType in choices %}
                 <option value="{{ roomType.id }}" {{ choices|length == 1 ? 'selected' }}>{{ roomType.localeTitle(app.request.locale) }}</option>
             {% endfor %}

@@ -1,8 +1,9 @@
 /*global window, $, document */
 $(document).ready(function () {
     'use strict';
-    var locale = jQuery('#mbh-calendar-locale');
-    var currentLocale = locale.val();
+    // var locale = jQuery('#mbh-calendar-locale');
+    // var currentLocale = locale.val();
+    var currentLocale = document.documentElement.lang;
     var datePickerDefaultOptions = {dateFormat: "dd.mm.yy", firstDay: 1, isRTL: false};
     if (!currentLocale || currentLocale === 'ru') {
         Translator.locale = 'ru';
