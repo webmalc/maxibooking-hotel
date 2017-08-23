@@ -131,6 +131,7 @@ class ImageMigrateCommand extends ContainerAwareCommand
                 $oldImageName = $roomTypeOldImage->getName();
                 $image = $this->getNewImage($oldImageWebPath, $oldImageName);
                 if ($image && $image instanceof Image) {
+                    $image->setIsDefault(true);
                     $roomType->addOnlineImage($image);
                 }
             }

@@ -12,6 +12,8 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 
@@ -161,6 +163,34 @@ class FormType extends AbstractType
                     'attr' => ['rows' => 10]
                 ])
             ->add(
+                'formTemplate',
+                TextareaType::class,
+                [
+                    'group' => 'form.formType.template',
+                    'label' => 'form.formType.template_label',
+                    'required' => false,
+                    'help' => 'form.formType.template_help',
+                    'attr' => ['rows' => 60]
+                ]
+            )
+            ->add(
+                'cssLibraries',
+                ChoiceType::class,
+                [
+                    'group' => 'form.formType.css',
+                    'choices' => FormConfig::getCssLibrariesList(),
+                    'required' => false,
+                    'label' => 'form.formType.label.css_libraries',
+                    'help' => 'form.formType.help.css_libraries',
+                    'choice_attr' => function ($value) {
+                        return [
+                            'title' => $value,
+                        ];
+                    },
+                    'multiple' => true
+                ]
+            )
+            ->add(
                 'theme',
                 ChoiceType::class,
                 [
@@ -173,6 +203,13 @@ class FormType extends AbstractType
             )
         ;
     }
+
+    public function finishView(FormView $view, FormInterface $form, array $options)
+    {
+        //TODO: restore twig template default
+        $view->children['formTemplate']->vars['twig_sample'] = null;
+    }
+
 
     public function configureOptions(OptionsResolver $resolver)
     {

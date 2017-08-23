@@ -40,6 +40,10 @@ class FormConfig extends Base
         "yeti" => "https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css",
         "bootstrap" => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
     ];
+
+    const CSS_LIBRARIES = [
+        "font_awesome" => "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    ];
     
     /**
      * Hook timestampable behavior
@@ -195,6 +199,24 @@ class FormConfig extends Base
     private $isFullWidth = false;
 
     /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Type(type="string")
+     * @Assert\Length(
+     *     max=65536
+     * )
+     */
+    private $formTemplate;
+
+    /**
+     * @var array
+     * @Gedmo\Versioned
+     * @ODM\Collection
+          * @Assert\Choice(callback = "getCssLibrariesList", multiple = true)
+     */
+    private $cssLibraries;
+
+    /**
      * @return string
      */
     public function getJs(): ?string
@@ -206,7 +228,7 @@ class FormConfig extends Base
      * @param string $js
      * @return FormConfig
      */
-    public function setJs(string $js): FormConfig
+    public function setJs(string $js = null): FormConfig
     {
         $this->js = $js;
 
@@ -331,6 +353,11 @@ class FormConfig extends Base
     public static function getThemes()
     {
         return self::THEMES;
+    }
+
+    public static function getCssLibrariesList()
+    {
+        return self::CSS_LIBRARIES;
     }
 
     /**
@@ -537,4 +564,46 @@ class FormConfig extends Base
         $this->resultsUrl = $resultsUrl;
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getFormTemplate(): ?string
+    {
+        return $this->formTemplate;
+    }
+
+    /**
+     * @param string $formTemplate
+     * @return FormConfig
+     */
+    public function setFormTemplate(string $formTemplate = null): FormConfig
+    {
+        $this->formTemplate = $formTemplate;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCssLibraries()
+    {
+        return $this->cssLibraries;
+    }
+
+    /**
+     * @param array $cssLibraries
+     * @return FormConfig
+     */
+    public function setCssLibraries(array $cssLibraries = null): FormConfig
+    {
+        $this->cssLibraries = $cssLibraries;
+
+        return $this;
+    }
+
+
+
+
 }

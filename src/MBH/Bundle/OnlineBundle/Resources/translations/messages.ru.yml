@@ -59,6 +59,12 @@ form.formType.frame_width.label: Ширина
 form.formType.frame_width.help: Ширина фрейма
 form.formType.frame_height.label: Высота
 form.formType.frame_height.help: Высота фрейма
+form.formType.label.css_libraries: CSS библиотеки
+form.formType.help.css_libraries: Подключение дополнительных css библиотек
+
+form.formType.template: Шаблоны
+form.formType.template_label: Шаблон формы
+form.formType.template_help: Шаблон формы поиска
 
 onlinebundle.resources.views.hotels: Отели
 onlinebundle.resources.views.room_types: 'Типы номеров'

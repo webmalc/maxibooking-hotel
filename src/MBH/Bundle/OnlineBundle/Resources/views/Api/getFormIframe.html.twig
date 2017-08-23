@@ -8,6 +8,11 @@
     {% if formConfig and formConfig.theme %}
         <link rel="stylesheet" href="{{ formConfig.theme }}">
     {% endif %}
+    {% if formConfig and formConfig.cssLibraries is defined and formConfig.cssLibraries is iterable %}
+        {% for link in formConfig.cssLibraries %}
+            <link rel="stylesheet" href="{{ link }}">
+        {% endfor %}
+    {% endif %}
 </head>
 
 <body style="background-color: transparent;">
@@ -17,7 +22,7 @@
     {% if formConfig %}
         {% if formConfig.css %}
             <style>
-                {{ formConfig.css }}
+                {{ formConfig.css|raw }}
             </style>
         {% endif %}
         {% if formConfig.js %}
