@@ -13,4 +13,5 @@
         {{ form_end(form) }}
     </div>
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tourist_delete' } %}
+    {% include 'MBHPackageBundle:Tourist:newCountryModal.html.twig' %}
 {% endblock %}
