@@ -509,6 +509,15 @@ body {
   }
 }
 
+.late-check-out-block, .early-checkin-block {
+  z-index: 150;
+  width: 7px;
+  height: @height;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+}
+
 .ui-resizable-e, .ui-resizable-w {
   position: absolute;
   border-bottom: ((@height / 2) - 1) solid transparent;
@@ -585,6 +594,10 @@ body {
   top: 0;
   left: 0;
   height: 0;
+}
+
+.late-check-out-block, .early-checkin-block {
+  background-color: #65619b !important;
 }
 
 .remove-package-button, .divide-package-button {

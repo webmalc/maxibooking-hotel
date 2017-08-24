@@ -140,7 +140,7 @@ var ChessBoardManager = (function () {
                         var packageData = self.getPackageData($(newPackage));
                         self.saveNewPackage(packageData);
                     }
-                    // self.updateTable();
+                    self.updateTable();
                 };
                 this.ondragstart = function () {
                     return false;

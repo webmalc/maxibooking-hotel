@@ -296,7 +296,7 @@
                         <li class="tile tile-bookable tile-free both {% if isWeekend %}weekend{% endif %}">
                             <div class="day">
                                 <div class="{{ isWeekend ? 'text-danger' }}{{ isNow ? 'text-info' }}">{{ day|date('d.m') }}
-                                    <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>
+                                    <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|trans({}, 'front_messages')|lower : day|date('Y') }}</span>
                                 </div>
                             </div>
                         </li>
