@@ -1,0 +1,51 @@
+form.clientConfigType.main_group: 'Main settings'
+form.clientConfigType.search_group: 'Reservation selection parameters'
+form.clientConfigType.search_windows: 'Use "windows" in search?'
+form.clientConfigType.search_windows_desc: 'Try to fill "windows" while selecting a room'
+form.clientConfigType.sms_notification: 'SMS notification?'
+form.clientConfigType.notice_unpaid: Notification
+form.clientConfigType.is_notice_unpaid: 'Send unpaid reservation notification in N days'
+form.clientConfigType.search_dates: 'Additional dates in search results'
+form.clientConfigType.search_dates_desc: 'Number of additional dates when searching for available rooms'
+form.clientConfigType.is_disabled_room_type_category: 'Room type groups'
+form.clientConfigType.is_enabled_work_shift: 'Work shifts'
+form.clientConfigType.instant_search: 'Quick search'
+form.clientConfigType.instant_search_help: 'Search immediately on data input?'
+form.clientConfigType.default_notice_doc: Host
+form.clientConfigType.default_notice_doc_desc: 'Default host of foreign citizens'
+form.clientConfigType.is_sms_notification_turned_on: 'Guest SMS notifications'
+form.clientPaymentSystemType.payment_system: 'Payment system'
+form.clientPaymentSystemType.robokassa_service: RoboKassa
+form.clientPaymentSystemType.payanyway_service: PayAnyWay
+form.clientPaymentSystemType.moneymail_service: MoneyMail
+form.clientPaymentSystemType.moneymail_shop_id: 'Shop IDP'
+form.clientPaymentSystemType.moneymail_key: Key
+form.clientPaymentSystemType.uniteller_shop_id: 'Shop IDP'
+form.clientPaymentSystemType.uniteller_password: Password
+form.clientPaymentSystemType.rbk_eshop_id: eshopId
+form.clientPaymentSystemType.rbk_secret_key: secretKey
+form.clientPaymentSystemType.shop_login: Login
+form.clientPaymentSystemType.password_one: 'Password 1'
+form.clientPaymentSystemType.password_two: 'Password 2'
+form.clientPaymentSystemType.extended_account_number: 'Extended account number'
+form.clientPaymentSystemType.data_integrity_code: 'Data integrity check code'
+controller.clientConfig.params_success_save: 'Settings successfully saved'
+form.clientPaymentSystemType.successUrl: 'Successful payment URI'
+form.clientPaymentSystemType.failUrl: 'Unsuccessful payment URI'
+form.clientPaymentSystemType.successUrlDesc: 'Redirection URI for successful payment'
+form.clientPaymentSystemType.failUrlDesc: 'Redirection URI for payment denial'
+form.clientPaymentSystemType.payment_system_group: 'Payment system'
+form.clientPaymentSystemType.payment_system_group_links: Links
+mailer.notice.unpaid.order.list: 'List of reservations with overdue payment'
+form.clientConfigType.search_tariffs: 'Number of rates'
+form.clientConfigType.search_tariffs_desc: 'Default number of rates shown while booking'
+form.clientConfigType.add_start_date: 'Start date'
+mbhclientbundle.form.documenttemplatetype.nazvaniye: Title
+mbhclientbundle.form.documenttemplatetype.shablon: Template
+mbhclientbundle.form.documenttemplatetype.oriyentatsiya: Orientation
+mbhclientbundle.form.documenttemplatetype.organizatsiya: Organisation
+form.clientConfigType.is_book_without_payer.label: 'Reserve with no payer'
+form.clientConfigType.is_book_without_payer.help: 'Allow adding reservation when payer is not specified'
+form.clientPaymentSystemType.payment_system_paypal_login: Login
+form.documentTemplateType.hotel: Hotel
+clientbundle.controller.documentTemplateController.entry_successfully_created: 'Entry successfully added.'

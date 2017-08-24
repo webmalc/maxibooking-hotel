@@ -2,6 +2,9 @@
 
 namespace MBH\Bundle\CashBundle\Service;
 
+use MBH\Bundle\BaseBundle\Document\NotificationConfig;
+use MBH\Bundle\BaseBundle\Lib\MessageTypes;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
@@ -48,6 +51,7 @@ class Cash
             ])
         ;
 
+        /** @var CashDocument $cash */
         foreach ($docs as $cash) {
             if ($cash->getOperation() == 'in') {
                 $result['totalIn'] += $cash->getTotal();
@@ -63,4 +67,46 @@ class Cash
         return $result;
     }
 
+    public function sendMailAtCashDocumentConfirmation(CashDocument $cashDocument)
+    {
+        $order = $cashDocument->getOrder();
+        $notifier = $this->container->get('mbh.notifier.mailer');
+        $message = $notifier::createMessage();
+
+        $localCurrency = $this->container->getParameter('locale.currency');
+        $currencyText = $this->container->getParameter('mbh.currency.data')[$localCurrency]['text'];
+        $sumString = '<strong>' . $cashDocument->getTotal() . ' ' . $currencyText . '</strong>';
+
+        $prependText = '<span style="font-size: 18px">'
+           . $this->container->get('translator')->trans('mailer.order.prepend_text', ['%paymentSum%' => $sumString])
+            . '</span>';
+
+        $message
+            ->setRecipients([$order->getMainTourist()])
+            ->setFrom('system')
+            ->setType('info')
+            ->setLink('hide')
+            ->setCategory('tourists')
+            ->setHotel($order->getFirstHotel())
+            ->setOrder($order)
+            ->setSubject('mailer.order.subject_text')
+            ->setHeaderText('mailer.order.header_text')
+            ->setTranslateParams([
+                '%hotelName%' => $order->getFirstHotel()->getName(),
+                '%sum%' => $sumString
+            ])
+            ->setAdditionalData([
+                'prependText' => $prependText,
+                'currencyText' => $currencyText
+            ])
+            ->setTemplate('MBHBaseBundle:Mailer:cashDocConfirmation.html.twig')
+            ->setEnd(new \DateTime('+1 minute'))
+            ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
+            ->setMessageType(MessageTypes::CASH_DOC_CONFIRMATION)
+        ;
+
+        $notifier
+            ->setMessage($message)
+            ->notify();
+    }
 }

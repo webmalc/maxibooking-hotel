@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
@@ -12,8 +11,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class AddressObjectDecomposedType
- *
-
  */
 class AddressObjectDecomposedType extends AbstractType
 {
@@ -71,7 +68,7 @@ class AddressObjectDecomposedType extends AbstractType
             ->add('address_object', TextType::class, [
                 'label' => 'form.TouristExtendedType.address_object',
                 'required' => false,
-                'help' => 'Передача адреса в виде кода (AOID) Федеральной информационной адресной системы (ФИАС)'
+                'help' => 'form.AddressObjectDecomposedType.address_object.help'
             ]);
         ;
     }
@@ -82,7 +79,6 @@ class AddressObjectDecomposedType extends AbstractType
             'data_class' => 'MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed'
         ]);
     }
-
 
     /**
      * Returns the name of this type.

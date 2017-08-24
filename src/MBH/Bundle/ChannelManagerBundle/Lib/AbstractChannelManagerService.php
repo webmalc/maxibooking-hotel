@@ -2,7 +2,9 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use MBH\Bundle\BaseBundle\Document\NotificationConfig;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
@@ -109,7 +111,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         if (!$config && !$config->getIsEnabled()) {
             return null;
         }
-         
+
         $trans = $this->container->get('translator');
         $overview = new ChannelManagerOverview();
         $overview->setBegin($begin)
@@ -130,7 +132,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                         return '"' . $trans->trans($prefix . '.type.' . $element) . '"';
                     }
                 }, array_keys($types))));
-            
+
                 $addMethod = 'add' . ucfirst($method);
                 $overview->$addMethod($val, $message);
             }
@@ -638,31 +640,47 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * @param array $data
      * @param array $headers
      * @param bool $error
-     * @param $post $error
+     * @param string $method
      * @return mixed
      */
-    public function send($url, $data = [], $headers = null, $error = false, $post = true)
+    public function send($url, $data = [], $headers = null, $error = false, $method = 'POST')
     {
-        $ch = curl_init($url);
+        $ch = curl_init();
 
-        if ($post) {
+        if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
         }
+        if ($method == 'PUT') {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        }
+        if (static::TEST) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
+
+        //TODO: ИСПРАВИТЬ ДЛЯ ПРОДА!!!
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         if ($headers) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
-        if ($post && !empty($data)) {
-            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+        if (!empty($data)) {
+            if ($method == 'POST' || $method == 'PUT') {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            } elseif ($method == 'GET') {
+                $url = $url . '?' . http_build_query($data);
+            }
+        }
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        if (($method == 'POST' || $method == 'PUT') && !empty($data)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
         curl_setopt($ch, CURLOPT_VERBOSE, 1);
 
-        if (static::TEST) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        }
         $output = curl_exec($ch);
 
         if (!$output && $error) {
@@ -720,7 +738,10 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setType('danger')
                 ->setCategory('notification')
                 ->setAutohide(false)
-                ->setEnd(new \DateTime('+10 minute'));
+                ->setEnd(new \DateTime('+10 minute'))
+                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
+                ->setMessageType(MessageTypes::CHANNEL_MANAGER)
+            ;
 
             return $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
@@ -766,6 +787,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setOrder($order)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'))
+                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
+                ->setMessageType(MessageTypes::CHANNEL_MANAGER)
+
             ;
 
             $notifier->setMessage($message)->notify();

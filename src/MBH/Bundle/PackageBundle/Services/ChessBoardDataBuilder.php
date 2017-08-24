@@ -11,8 +11,10 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Models\ChessBoard\ChessBoardUnit;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Translation\DataCollectorTranslator;
@@ -192,7 +194,10 @@ class ChessBoardDataBuilder
         foreach ($this->getRoomTypeIds() as $roomTypeId) {
             $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
         }
-        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($packageQueryCriteria);
+        $packages = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->findByQueryCriteria($packageQueryCriteria);
+
         $this->loadRelatedToPackagesData($packages);
 
         return $packages;
@@ -237,7 +242,14 @@ class ChessBoardDataBuilder
             $package = $packageAccommodationData['package'];
             $accommodation = $packageAccommodationData['accommodation'];
             $intervalData = $this->container
-                ->get('mbh.chess_board_unit')->setInitData($package, $accommodation);
+                ->get('mbh.chess_board_unit')
+                ->setInitData(
+                    $package,
+                    $accommodation,
+                    [],
+                    $packageAccommodationData['Early check-in'],
+                    $packageAccommodationData['Late check-out']
+                );
             $accommodationIntervals[$intervalData->getId()] = $intervalData;
         }
 
@@ -266,37 +278,39 @@ class ChessBoardDataBuilder
                     return $accommodation->getId();
                 }, $accommodations);
 
+                /** @var Package[] $packages */
                 $packages = $this->dm
                     ->getRepository('MBHPackageBundle:Package')
                     ->createQueryBuilder()
                     ->field('accommodations.id')->in($accommodationsIds)
                     ->getQuery()
                     ->execute();
-                $this->loadRelatedToPackagesData($packages);
 
                 $packagesIds = [];
-                $packageAccommodationsData = array_map(function (PackageAccommodation $accommodation) use ($packages, $packagesIds) {
-                    /** @var Package $package */
-                    foreach ($packages as $package) {
-                        $packagesIds[$package->getId()] = $package->getId();
-                        if ($package->getAccommodations()->contains($accommodation)) {
-                            return [
-                                'package' => $package,
-                                'accommodation' => $accommodation
-                            ];
-                        }
+                $packagesByAccommodationIds = [];
+                foreach ($packages as $package) {
+                    $packagesIds[$package->getId()] = $package->getId();
+                    foreach ($package->getAccommodations() as $accommodation) {
+                        $packagesByAccommodationIds[$accommodation->getId()] = $package;
                     }
-                    throw new \Exception('Accommodation must relate to package');
-                }, $accommodations);
+                }
 
-                $this->dm
-                    ->getRepository('MBHPackageBundle:PackageService')
-                    ->createQueryBuilder()
-                    ->field('package.id')->in($packagesIds)
-                    ->getQuery()
-                    ->execute();
+                $this->loadRelatedToPackagesData($packages);
+                $packageServicesByPackageIdAndCode = $this->getPackageServicesByPackageIdAndCode($packagesIds);
 
-                //сортируем по id брони
+                $packageAccommodationsData = [];
+                foreach ($accommodations as $accommodation) {
+                    $package = $packagesByAccommodationIds[$accommodation->getId()];
+                    $data = [
+                        'package' => $package,
+                        'accommodation' => $accommodation,
+                    ];
+                    $data['Early check-in'] = isset($packageServicesByPackageIdAndCode[$package->getId()]['Early check-in']);
+                    $data['Late check-out'] = isset($packageServicesByPackageIdAndCode[$package->getId()]['Late check-out']);
+
+                    $packageAccommodationsData[] = $data;
+                }
+
                 usort($packageAccommodationsData, function ($a, $b) {
                     /** @var Package $aPackage */
                     $aPackage = $a['package'];
@@ -322,6 +336,37 @@ class ChessBoardDataBuilder
         }
 
         return $this->packageAccommodationsData;
+    }
+
+    private function getPackageServicesByPackageIdAndCode($packagesIds)
+    {
+        $lateCheckInAndLateCheckoutServices = $this->dm
+            ->getRepository('MBHPriceBundle:Service')
+            ->createQueryBuilder()
+            ->field('code')->in(['Early check-in', 'Late check-out'])
+            ->getQuery()
+            ->execute();
+
+        $lateCheckInAndLateCheckoutServicesIds = array_map(function (Service $service) {
+            return $service->getId();
+        }, $lateCheckInAndLateCheckoutServices->toArray());
+
+        /** @var PackageService[] $packageServices */
+        $packageServices = $this->dm
+            ->getRepository('MBHPackageBundle:PackageService')
+            ->createQueryBuilder()
+            ->field('package.id')->in($packagesIds)
+            ->field('service.id')->in($lateCheckInAndLateCheckoutServicesIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $packageServicesByPackageIdAndCode = [];
+        foreach ($packageServices as $packageService) {
+            $packageServicesByPackageIdAndCode[$packageService->getPackage()->getId()][$packageService->getService()->getCode()] = $packageService;
+        }
+
+        return $packageServicesByPackageIdAndCode;
     }
 
     /**
@@ -509,19 +554,10 @@ class ChessBoardDataBuilder
 
             foreach ($roomsByRoomType as $room) {
                 /** @var Room $room */
-                //TODO: Переделать
-                $houseDetails = '';
-                if ($room->getHousing()) {
-                    $houseDetails .= "Корпус \"" . $room->getHousing()->getName() . "\"<br>";
-                }
-                if ($room->getFloor()) {
-                    $houseDetails .= 'Этаж ' . $room->getFloor();
-                }
-
                 $roomsData[$room->getId()] = [
                     'name' => $room->getName(),
                     'statuses' => $room->getStatus()->toArray(),
-                    'houseDetails' => $houseDetails
+                    'room' => $room
                 ];
             }
         }
@@ -593,7 +629,6 @@ class ChessBoardDataBuilder
     {
         $orderIds = [];
         $touristIds = [];
-        $packagesIds = [];
         /** @var Package $package */
         foreach ($packages as $package) {
             /** @var PersistentCollection $tourists */
@@ -604,11 +639,10 @@ class ChessBoardDataBuilder
             }
             $touristIds = array_merge($touristIds, $ids);
             $orderIds[] = $package->getOrder()->getId();
-            $packagesIds[] = $package->getId();
         }
 
         if (count($touristIds) > 0) {
-            $this->dm
+            $tourists = $this->dm
                 ->getRepository('MBHPackageBundle:Tourist')
                 ->createQueryBuilder()
                 ->field('id')->in($touristIds)
@@ -618,7 +652,7 @@ class ChessBoardDataBuilder
         }
 
         if (count($orderIds) > 0) {
-            $this->dm
+            $orders = $this->dm
                 ->getRepository('MBHPackageBundle:Order')
                 ->createQueryBuilder()
                 ->field('id')->in($orderIds)

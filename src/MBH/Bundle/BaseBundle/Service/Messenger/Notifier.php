@@ -81,6 +81,7 @@ class Notifier implements \SplSubject
 
     /**
      * @return $this
+     * @throws \Exception
      */
     public function notify()
     {
@@ -106,6 +107,7 @@ class Notifier implements \SplSubject
                         }elseif($env == 'test' && php_sapi_name() == 'cli') {
                             echo $e;
                         }
+                        throw $e;
                     }
                 }
             }

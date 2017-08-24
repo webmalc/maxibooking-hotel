@@ -5,19 +5,27 @@ namespace MBH\Bundle\PackageBundle\DocumentGenerator\Xls\Type;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class NoticeStayPlaceXlsType
-
  */
 class NoticeStayPlaceXlsType extends AbstractType
 {
     private $dm;
+    /** @var  TranslatorInterface */
+    private $translator;
+
+    public function __construct(DocumentManager $dm, TranslatorInterface $translator) {
+        $this->dm = $dm;
+        $this->translator = $translator;
+    }
 
     /**
      * {@inheritdoc}
@@ -25,16 +33,16 @@ class NoticeStayPlaceXlsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $tourists = [];
-        $this->dm = $options['dm'];
 
         /** @var Tourist $tourist */
         foreach($options['tourists'] as $tourist) {
             if($tourist) {
                 $citizenship = $tourist->getCitizenship();
-                $tourists[$tourist->getId()] = $tourist->getFullName() . ' (' . ($citizenship ? $citizenship->getName() : 'Не указано') . ')';
+                $citizenshipName = $citizenship ? $citizenship->getName() : $this->translator->trans('form.notice_stay_place_xls_type.not_specified');
+                $tourists[$tourist->getId()] = $tourist->getFullName() . ' (' . $citizenshipName . ')';
             }
         }
-        $builder->add('tourist',  \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
+        $builder->add('tourist',  InvertChoiceType::class, [
             'required' => true,
             'label' => 'form.task.tourist',
             'choices' => $tourists,
@@ -56,7 +64,6 @@ class NoticeStayPlaceXlsType extends AbstractType
     {
         $resolver->setDefaults([
             'tourists' => [],
-            'dm' => null
         ]);
     }
 

@@ -6,7 +6,7 @@ if (typeof(mbh) !== 'undefined') {
 }
 function addLoadEvent(func) {
     var oldonload = window.onload;
-    if (typeof window.onload != 'function') {
+    if (typeof window.onload !== 'function') {
         window.onload = func;
     } else {
         window.onload = function() {
@@ -42,8 +42,11 @@ addLoadEvent(function() {
     }
     var urlIndex = window.location.href.indexOf('?');
     var url = urlIndex !== -1 ? window.location.href.slice(urlIndex) : '';
-    formWrapper.innerHTML = '<iframe id="mbh-form-iframe" scrolling="no" frameborder="0" width="300" height="400" src="' + config.form_url + url +'"></iframe>';
-    document.body.innerHTML += '<iframe id="mbh-form-calendar" style="display: none; position: absolute; top: 0px;" scrolling="no" frameborder="0" width="310" height="270" src="' + config.calendar_url + '"></iframe>';
+    var iframeWidth = typeof(frameWidth) !== 'undefined' ? frameWidth : 300;
+    var iframeHeight = typeof(frameHeight) !== 'undefined' ? frameHeight : 400;
+    formWrapper.innerHTML = '<iframe id="mbh-form-iframe" scrolling="no" frameborder="0" width="'
+        + iframeWidth + '" height="' + iframeHeight + '" src="' + config.form_url + url +'"></iframe>';
+    document.body.innerHTML += '<iframe id="mbh-form-calendar" style="display: none; z-index: 1000; position: absolute; top: 0px;" scrolling="no" frameborder="0" width="310" height="270" src="' + config.calendar_url + '"></iframe>';
 
     var formIframe = document.getElementById('mbh-form-iframe');
     var formCalendar = document.getElementById('mbh-form-calendar');
@@ -55,23 +58,23 @@ addLoadEvent(function() {
             return;
         }
         var target = null;
-        if (e.data.target == 'form') {
+        if (e.data.target === 'form') {
             target = formIframe; 
         }
-        if (e.data.target == 'calendar') {
+        if (e.data.target === 'calendar') {
             target = formCalendar; 
         }
         if (target) {
             target.contentWindow.postMessage(e.data, '*');
         }
-        if (e.data.action == 'showCalendar') {
+        if (e.data.action === 'showCalendar') {
             var c = getCoords(formIframe);
             formCalendar.style.display = 'block';
             formCalendar.style.top = (e.data.top + c.top - 10) + 'px';
             formCalendar.style.left = (e.data.left + c.left) + 'px';
             formCalendar.contentWindow.postMessage(e.data, '*');
         }
-        if (e.data.action == 'hideCalendar') {
+        if (e.data.action === 'hideCalendar') {
             hideCalendar();
         }
     };

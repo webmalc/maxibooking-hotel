@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ClientBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Form\NotificationConfigType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ColorsConfig;
 use MBH\Bundle\ClientBundle\Document\Moneymail;
@@ -20,7 +21,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -53,6 +53,8 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Method("POST")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @Template("MBHClientBundle:ClientConfig:index.html.twig")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function saveAction(Request $request)
     {
@@ -71,8 +73,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.clientConfig.params_success_save'));
+            $this->addFlash('success', 'controller.clientConfig.params_success_save');
 
             return $this->redirect($this->generateUrl('client_config'));
         }
@@ -96,10 +97,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         $form = $this->createForm(ClientPaymentSystemType::class, $entity, [
-            'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
             'entity' => $entity,
-            'change' => $this->container->getParameter('mbh.payment_systems.change'),
-            'default' => $this->container->getParameter('mbh.payment_systems.default'),
         ]);
 
         return [
@@ -116,17 +114,14 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @Template("MBHClientBundle:ClientConfig:paymentSystem.html.twig")
      * @param $request Request
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function paymentSystemSaveAction(Request $request)
     {
         $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         $form = $this->createForm(ClientPaymentSystemType::class, $entity, [
-            'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
             'entity' => $entity,
-            'change' => $this->container->getParameter('mbh.payment_systems.change'),
-            'default' => $this->container->getParameter('mbh.payment_systems.default'),
         ]);
 
         $form->handleRequest($request);
@@ -155,8 +150,12 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     break;
                 case 'uniteller':
                     $uniteller = new Uniteller();
-                    $uniteller->setUnitellerShopIDP($form->get('unitellerShopIDP')->getData())
-                        ->setUnitellerPassword($form->get('unitellerPassword')->getData());
+                    $uniteller
+                        ->setUnitellerShopIDP($form->get('unitellerShopIDP')->getData())
+                        ->setUnitellerPassword($form->get('unitellerPassword')->getData())
+                        ->setIsWithFiscalization($form->get('isUnitellerWithFiscalization')->getData())
+                        ->setTaxationRateCode($form->get('taxationRateCode')->getData())
+                        ->setTaxationSystemCode($form->get('taxationSystemCode')->getData());
                     $entity->setUniteller($uniteller);
                     break;
                 case 'rbk':
@@ -177,8 +176,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.clientConfig.params_success_save'));
+            $this->addFlash('success', 'controller.clientConfig.params_success_save');
 
             return $this->redirect($this->generateUrl('client_payment_system'));
         }
@@ -203,6 +201,27 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         $this->dm->getRepository('MBHClientBundle:ClientConfig')->changeDisableableMode($disableModeBool);
 
         return $this->redirectToRoute($route);
+    }
+
+    /**
+     * @Route("/notification_config_edit", name="client_notification_config")
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
+     * @Template()
+     */
+    public function notifierConfigAction(Request $request)
+    {
+        $notificationConfig = $this->dm->getRepository('MBHBaseBundle:NotificationConfig')->fetchConfig();
+        $form = $this->createForm(NotificationConfigType::class, $notificationConfig);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->dm->flush();
+        }
+
+        return [
+            'entity' => $notificationConfig,
+            'form' => $form->createView(),
+            'logs' => $this->logs($notificationConfig)
+        ];
     }
 
     /**

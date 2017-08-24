@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\BaseBundle\Document\NotificationConfig;
+use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -41,6 +43,8 @@ class ChannelManager
      */
     protected $env;
 
+    protected $client;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -49,6 +53,7 @@ class ChannelManager
         $this->console = $container->get('kernel')->getRootDir() . '/../bin/console ';
         $this->env = $this->container->get('kernel')->getEnvironment();
         $this->logger = $container->get('mbh.channelmanager.logger');
+        $this->client = $container->getParameter('client');
     }
 
     /**
@@ -97,7 +102,7 @@ class ChannelManager
     {
         $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:configs ' . $env . '> /dev/null 2>&1 &');
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:configs ' . $env . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -106,7 +111,7 @@ class ChannelManager
     {
         $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:close ' . $env . '> /dev/null 2>&1 &');
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:close ' . $env . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -120,7 +125,7 @@ class ChannelManager
         $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
         $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update ' . $env . $begin . $end . '> /dev/null 2>&1 &');
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -134,7 +139,7 @@ class ChannelManager
         $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
         $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=rooms ' . $env . $begin . $end . '> /dev/null 2>&1 &');
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=rooms ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -148,7 +153,7 @@ class ChannelManager
         $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
         $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=prices ' . $env . $begin . $end . '> /dev/null 2>&1 &');
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=prices ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -162,7 +167,7 @@ class ChannelManager
         $serviceTitle ? $service = ' --service=' . $serviceTitle : '';
         $old ? $old = ' --old' : '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:pull ' . $env . $service . $old . '> /dev/null 2>&1 &');
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:pull ' . $env . $service . $old . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -176,7 +181,7 @@ class ChannelManager
         $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
         $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=restrictions ' . $env . $begin . $end . '> /dev/null 2>&1 &');
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=restrictions ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
         $process->run();
     }
 
@@ -244,7 +249,7 @@ class ChannelManager
      * @param \DateTime $end
      * @param RoomType $roomType
      * @throw \Exception
-     * @return array
+     * @return array|bool
      */
     public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
@@ -276,7 +281,7 @@ class ChannelManager
      * @param \DateTime $end
      * @param RoomType $roomType
      * @throw \Exception
-     * @return array
+     * @return array|bool
      */
     public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
@@ -308,7 +313,7 @@ class ChannelManager
      * @param \DateTime $end
      * @param RoomType $roomType
      * @throw \Exception
-     * @return array
+     * @return bool
      */
     public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
@@ -406,6 +411,8 @@ class ChannelManager
             ->setCategory('error')
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'))
+            ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
+            ->setMessageType(MessageTypes::CHANNEL_MANAGER)
         ;
         $notifier
             ->setMessage($message)

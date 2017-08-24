@@ -161,10 +161,11 @@ var ChessBoardManager = (function () {
         $slider.slider({ tooltip: 'hide', reverseed: true });
         $slider.on('slideStop', function () {
             var sliderValue = $('#ex1').slider('getValue');
-            ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
-            _this.currentSizeConfigNumber = sliderValue;
-            window.location.reload();
-            // this.setStyles(sliderValue);
+            if (_this.currentSizeConfigNumber !== sliderValue) {
+                ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
+                _this.currentSizeConfigNumber = sliderValue;
+                window.location.reload();
+            }
         });
     };
     ChessBoardManager.setCookie = function (name, value, options) {
@@ -344,6 +345,31 @@ var ChessBoardManager = (function () {
         packageDiv.appendChild(description);
         description.style.width = Math.floor(descriptionText.length * ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH) + 'px';
         packageDiv.classList.add(packageItem.paidStatus);
+        //
+        // description.setAttribute('data-toggle', 'popover');
+        // description.setAttribute('data-html', "true");
+        // description.setAttribute('data-container', "body");
+        // description.setAttribute('title', packageItem.number);
+        // description.setAttribute('data-placement', 'top');
+        // let descriptionPopoverContent = '<b>Номер</b>:' + packageItem.number
+        //     + (packageItem.payer ? '<br><b>Плательщик: </b>' + packageItem.payer : '')
+        //     + '<br><b>Цена: </b>' + packageItem.price
+        //     + '<br><b>Заезд брони: </b>' + packageItem.packageBegin
+        //     + '<br><b>Выезд брони: </b>' + packageItem.packageBegin
+        //     + '<br><b>Заехали: </b>' + (packageItem.isCheckIn ? 'да' : 'нет')
+        //     + '<br><b>Выехали: </b>' + (packageItem.packageBegin ? 'да' : 'нет');
+        // description.setAttribute('data-content', descriptionPopoverContent);
+        // packageDiv.onmousemove = function () {
+        //     let descriptionElement = this.getElementsByClassName('package-description')[0];
+        //     let popoverId = descriptionElement.getAttribute('aria-describedby');
+        //     if (popoverId == null) {
+        //         $(descriptionElement).popover('show');
+        //     }
+        // };
+        // packageDiv.onmouseleave = function () {
+        //     let descriptionElement = this.getElementsByClassName('package-description')[0];
+        //     $(descriptionElement).popover('hide');
+        // };
         if (packageItem.position == 'middle' || packageItem.position == 'left') {
             packageDiv.classList.add('with-right-divider');
             packageDiv.classList.remove('package-with-right-arrow');
@@ -715,7 +741,7 @@ var ChessBoardManager = (function () {
         });
     };
     ChessBoardManager.prototype.getGriddedHeightValue = function (height) {
-        //1 - бордер
+        //1px - border
         var packageElementHeight = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1;
         return Math.floor(height / packageElementHeight) * packageElementHeight;
     };
@@ -726,7 +752,7 @@ var ChessBoardManager = (function () {
         return intervalMomentEnd.isAfter(this.tableEndDate);
     };
     /**
-     * Получение строки, содержащей первые буквы сторон, в которые можно расширять бронь.(e - east, w - west)
+     * Getting the line, containing first letters of sides in which enable widening (e - east, w - west)
      * @param intervalData
      * @returns {string}
      */
@@ -775,7 +801,6 @@ var ChessBoardManager = (function () {
         return resizableHandlesValue;
     };
     /**
-     *
      * @param $element
      * @param intervalData
      * @returns {any}
@@ -826,7 +851,24 @@ var ChessBoardManager = (function () {
                 }
             });
         }
+        if (intervalData.isLateCheckOut && resizableHandlesValue.indexOf('e') > -1) {
+            this.addServicesDisplaying($element, '.ui-resizable-e', 'late-check-out-block');
+        }
+        if (intervalData.isEarlyCheckIn && resizableHandlesValue.indexOf('w') > -1) {
+            this.addServicesDisplaying($element, '.ui-resizable-w', 'early-checkin-block');
+        }
         return $element;
+    };
+    ChessBoardManager.prototype.addServicesDisplaying = function ($element, sideElemBlockClass, addedClass) {
+        var $sideElement = $element.find(sideElemBlockClass);
+        if ($sideElement.length > 0) {
+            $sideElement.addClass(addedClass);
+        }
+        else {
+            var laterCheckOutBlock = document.createElement('div');
+            laterCheckOutBlock.classList.add(addedClass);
+            $element.append(laterCheckOutBlock);
+        }
     };
     /**
      * Получение данных о брони на основании данных о текущем положении элемента, отображающего бронь.
@@ -915,6 +957,7 @@ var ChessBoardManager = (function () {
         var $popoverElements = $('.no-accommodation-date.achtung');
         $popoverElements.unbind('shown.bs.popover');
         $popoverElements.on('shown.bs.popover', function () {
+            //remove unplaced package from popover
             var lastPackage = $('.package').last();
             if (lastPackage.attr('unplaced')) {
                 lastPackage.remove();

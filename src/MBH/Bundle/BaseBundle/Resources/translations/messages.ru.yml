@@ -6,7 +6,7 @@ mbhbasebundle.service.helper.trista: триста
 mbhbasebundle.service.helper.chetyresta: четыреста
 mbhbasebundle.service.helper.miliarda: милиарда
 mbhbasebundle.service.helper.one: Один
-mbhbasebundle.service.helper.odna: Одна
+mbhbasebundle.service.helper.odna: Один
 mbhbasebundle.service.helper.dve: Два
 mbhbasebundle.service.helper.tri: Три
 mbhbasebundle.service.helper.chetire: Четыре
@@ -56,12 +56,11 @@ mbhbasebundle.view.pdftemplates.organization.nds: НДС
 mbhbasebundle.view.pdftemplates.organization.nasummu: 'на сумму '
 mbhbasebundle.view.pdftemplates.individual.kpp: 'КПП '
 mbhbasebundle.view.pdftemplates.individual.bik: БИК
-mbhbasebundle.view.pdftemplates.individual.schët: счёт
+mbhbasebundle.view.pdftemplates.individual.schët: Счёт
 mbhbasebundle.view.pdftemplates.individual.adresplatelʹshchika: 'адрес плательщика'
 mbhbasebundle.view.pdftemplates.individual.zakaz: 'Заказ '
 mbhbasebundle.view.navbar.summa: сумма
 mbhbasebundle.view.mailer.order.nalichnymivotele: 'Наличными в отеле'
-mbhbasebundle.view.pdftemplates.organization.bankpoluchatelya: 'Банк получателя'
 mbhbasebundle.view.pdftemplates.organization.bik: Бик
 mbhbasebundle.view.pdftemplates.organization.poluchatelʹ: Получатель
 mbhbasebundle.view.pdftemplates.organization.schetnaoplatu: 'Счет на оплату '
@@ -71,8 +70,6 @@ mbhbasebundle.view.pdftemplates.organization.pokupatelʹ: Покупатель
 mbhbasebundle.view.pdftemplates.organization.tovary: 'Товары '
 mbhbasebundle.view.pdftemplates.organization.kol: Кол
 mbhbasebundle.view.pdftemplates.organization.yed: Ед
-mbhbasebundle.view.pdftemplates.organization.tsena: Цена
-mbhbasebundle.view.pdftemplates.organization.summa: Сумма
 mbhbasebundle.view.pdftemplates.organization.uslugiotelyaposchetu: 'Услуги отеля по счету '
 mbhbasebundle.view.pdftemplates.organization.usl: усл
 mbhbasebundle.view.pdftemplates.organization.itog: Итог
@@ -80,36 +77,27 @@ mbhbasebundle.view.pdftemplates.organization.beznaloga: 'Без налога '
 mbhbasebundle.view.pdftemplates.organization.vsegokoplate: 'Всего к оплате'
 mbhbasebundle.view.pdftemplates.organization.vsegonaimenovaniy: 'Всего наименований '
 mbhbasebundle.view.pdftemplates.organization.rukovoditelʹ: Руководитель
-mbhbasebundle.view.pdftemplates.organization.bukhgalter: Бухгалтер
-mbhbasebundle.view.pdftemplates.individual.izveshcheniye: Извещение
 mbhbasebundle.view.pdftemplates.individual.inn: 'ИНН '
 mbhbasebundle.view.pdftemplates.individual.raschetnyyschet: 'Расчетный счет '
 mbhbasebundle.view.pdftemplates.individual.korr: Корр
 mbhbasebundle.view.pdftemplates.individual.familiyai: 'Фамилия И.О.'
-mbhbasebundle.view.pdftemplates.individual.kassir: Кассир
-mbhbasebundle.view.pdftemplates.individual.vidplatezha: 'Вид платежа'
 mbhbasebundle.view.pdftemplates.individual.data: Дата
 mbhbasebundle.view.pdftemplates.individual.summa: Сумма
 mbhbasebundle.view.pdftemplates.individual.uslugiotelyaposchetu: 'Услуги отеля по счету '
 mbhbasebundle.view.pdftemplates.individual.platelʹshchik: Плательщик
-mbhbasebundle.view.pdftemplates.individual.penya: Пеня
-mbhbasebundle.view.pdftemplates.individual.vsego: Всего
 mbhbasebundle.view.partials.entitydeleteform.udalitʹ: Удалить
-mbhbasebundle.view.partials.datepickerperiodselect.period: Период
-mbhbasebundle.view.partials.datepickerperiodselect.vchera: вчера
-mbhbasebundle.view.partials.datepickerperiodselect.segodnya: сегодня
-mbhbasebundle.view.partials.datepickerperiodselect.zavtra: завтра
-mbhbasebundle.view.partials.datepickerperiodselect.nedelya: неделя
-mbhbasebundle.view.partials.datepickerperiodselect.mesyats: месяц
+mbhbasebundle.view.partials.datepickerperiodselect.vchera: Вчера
+mbhbasebundle.view.partials.datepickerperiodselect.segodnya: Сегодня
+mbhbasebundle.view.partials.datepickerperiodselect.zavtra: Завтра
+mbhbasebundle.view.partials.datepickerperiodselect.nedelya: Неделя
+mbhbasebundle.view.partials.datepickerperiodselect.mesyats: Месяц
 mbhbasebundle.view.navbar.svernutʹmenyu: 'Свернуть меню'
 mbhbasebundle.view.navbar.kassa: Касса
 mbhbasebundle.view.navbar.dokument: 'Документ '
-mbhbasebundle.view.navbar.nepodtverzhden: 'не подтвержден'
-mbhbasebundle.view.navbar.pereytivkassu: 'Перейти в кассу'
+mbhbasebundle.view.navbar.nepodtverzhden: 'Не подтвержден'
 mbhbasebundle.view.navbar.smena: 'Смена '
 mbhbasebundle.view.navbar.zablokirovatʹsmenu: 'Заблокировать смену'
 mbhbasebundle.view.navbar.vyberiteotelʹ: 'Выберите отель'
-mbhbasebundle.view.navbar.spisokoteley: 'Список отелей'
 mbhbasebundle.view.navbar.voshel: 'Вошел '
 mbhbasebundle.view.navbar.profilʹ: Профиль
 mbhbasebundle.view.navbar.vyyti: Выйти
@@ -131,53 +119,15 @@ twig.extension.november: нояб
 twig.extension.december: дек
 landscape: книжная
 portrait: альбомная
-controller.baseController.delete_record_success: 'Запись успешно удалена.'
+controller.baseController.delete_record_success: 'Запись успешно удалена'
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Нельзя удалить запись с существующими бронями'
 mailer.to_order: 'Перейти к заказу'
 mailer.to_package: 'Перейти к брони'
 mailer.base.linkText: 'Перейти в «МаксиБукинг»'
-
 cancel: отмена
-security.two_factor.code: "код для входа"
-security.two_factor.invalid_code: "Неверный код для входа"
-mailer.two_factor.subject: "Код для входа в «МаксиБукинг»"
-mailer.online.user.map: "Схема проезда"
-mailer.online.payment.backend: "По заказу #%order% поступил платеж на сумму %cash%.<br> Плательщик: %payer%"
-mailer.online.payment.user: "Ваш платеж по заказу #%order% прошел успешно."
-mailer.online.payment.subject: "Платеж по заказу #%order%"
-
-mailer.online.user.subject: "Добро пожаловать в «%hotel%»"
-mailer.online.user.prepend: "Здравствуйте, %guest%!<br><br>Вы успешно оформили заявку о бронировании номера в нашем отеле. В ближайшее время, мы свяжемся с Вами для подтверждения заказа и уточнения деталей заезда и размещения."
-mailer.online.user.append: "Мы надеемся, что ваша поездка будет успешной, а пребывание в нашем отеле - комфортным.<br>Благодарим Вас за выбор нашего отеля!"
-mailer.online.user.signature: "С уважением,<br>Отдел бронирования отеля «%hotel%»"
-
-mailer.online.backend.subject: "Поступил новый заказ с вашего сайта."
-mailer.online.backend.text: "Поступил новый заказ #%orderID% с вашего сайта."
-mailer.online.backend.prepend: "Здравствуйте, %guest%!<br><br>Вы успешно оформили заявку о бронировании номера в нашем отеле. В ближайшее время, мы свяжемся с Вами для подтверждения заказа и уточнения деталей заезда и размещения."
-mailer.online.backend.append: "Мы надеемся, что ваша поездка будет успешной, а пребывание в нашем отеле - комфортным.<br>Благодарим Вас за выбор нашего отеля!"
-mailer.online.backend.signature: "С уважением,<br>Отдел бронирования отеля «%hotel%»"
-
-
-
-mailer.order.confirm.user.subject: "Подтверждение заказа #%order% от %date%"
-mailer.order.confirm.user.prepend: "Здравствуйте, %guest%!<br><br>Ваш заказ был успешно подтвержден службой бронирования."
-mailer.order.confirm.user.append: "Благодарим Вас за выбор нашего отеля!"
-
-mailer.report.arrival.subject: "Список ожидаемых гостей на ближайший заезд"
-mailer.user.arrival.subject: "Ждем с нетерпением вашего прибытия!"
-
-mailer.report.user.poll.subject: "Спасибо, что вы выбрали наш отель!"
-mailer.online.user.poll.prepend: "Здравствуйте, %guest%!<br><br>Мы благодарны, что вы выбрали наш отель и надеемся, что пребывание в нашем отеле было комфортным и удобным для вас.<br><br>Мы хотели бы попросить вас оценить качество предоставленных услуг нашим отелем.<br>Это поможет нам развиваться и совершенствовать наш сервис!."
-mailer.online.user.poll.append: "Будем рады видеть вас снова!"
-mailer.online.user.poll.link: "Оцените качество обслуживания"
-
-
-# Mailer
-mailer.base.address: Система управления отелем
-mailer.base.estimate_our_service: Оцените наш сервис
-mailer.base.generated_mail: Письмо сгенерировано автоматически системой управления отелем «МаксиБукинг»
-
-mailer.reportArrival.expectedGuest: Ожидаемые гости
+security.two_factor.code: 'код для входа'
+security.two_factor.invalid_code: 'Неверный код для входа'
+mailer.two_factor.subject: 'Код для входа в «МаксиБукинг»'
 mailer.online.user.map: 'Схема проезда'
 mailer.online.payment.backend: 'По заказу #%order% поступил платеж на сумму %cash%.<br> Плательщик: %payer%'
 mailer.online.payment.user: 'Ваш платеж по заказу #%order% прошел успешно.'
@@ -215,8 +165,9 @@ mailer.reportArrival.not_paid: 'Без оплаты'
 mailer.reportArrival.pure_payment: 'Частичная опл.'
 mailer.reportArrival.transfer: Трансфер
 mailer.reportArrival.guests: Гостей
+mailer.reportArrival.number_of_adults: вз.
+mailer.reportArrival.number_of_children: рб.
 mailer.order.duty: Долг
-mailer.order.date: Дата
 mailer.order.cost: Стоимость
 mailer.order.booked_numbers: 'Забронированные номера'
 mailer.order.additional_services: 'Дополнительные услуги'
@@ -225,6 +176,9 @@ mailer.order.name: Имя
 mailer.order.amount: Итого
 mailer.order.quantity: Количество
 mailer.order.client_info: 'Сведения о клиенте'
+mailer.order.payment_info: 'Сведения об оплате'
+mailer.order.total_paid: Всего оплачено
+mailer.order.surcharges: 'Доплата составляет'
 mailer.order.phone: Телефон
 mailer.order.number: Номер
 mailer.order.numbers: Номеров
@@ -246,7 +200,7 @@ mailer.closedTasks.number: Номер
 mailer.closedTasks.performer: Исполнитель
 mailer.closedTasks.closed: Закрыта
 mailer.userArrival.greet: 'Здравствуйте, {name}!'
-mailer.userArrival.reminder: 'Спешим напомнить, что для вас зарезервирован номер в нашем отеле на ЗАВТРА {begin} Пожалуйста, свяжитесь с нами в случае изменения времени прибытия или параметров пребывания в нашем отеле.'
+mailer.userArrival.reminder: 'Спешим напомнить, что для вас зарезервирован номер в нашем отеле на ЗАВТРА {begin} Пожалуйста, свяжитесь с нами в случае изменения времени прибытия.'
 mailer.userArrival.reminder2: 'По комплектации вашего номера, условиям заселения, а также о дополнительных услугах нашего отеля вы можете узнать на нашем сайте.'
 mailer.userArrival.about_hotel: 'Об отеле'
 mailer.userArrival.numbers_servies: 'Номера и услуги'
@@ -256,6 +210,9 @@ mailer.userArrival.bye: 'Будем рады вас видеть!'
 mailer.base.rate.bad: Плохо
 mailer.base.rate.good: Хорошо
 mailer.base.rate.perfect: Отлично
+mailer.resetting_mail.reset_pass_button.text: 'Сбросить пароль'
+mailer.recipient.empty.email: 'Пустая почта у получателя %guest%'
+mailer.image.not.exists: 'Не существует файла %path%. Возмжожно не создан кеш файла'
 mailer.resetting_mail.reset_pass_button.text: Сбросить пароль
 debt: Долг
 partially_paid: Частично
@@ -263,15 +220,15 @@ paid: Оплачено
 no_paid: 'Не оплачено'
 overpaid: Переплачено
 confirmed: подтвержден
-not.confirmed: 'не подтвержден'
+not.confirmed: 'Не подтвержден'
 'no': нет
 dash: '-'
-not.stopped: 'не заехали'
+not.stopped: 'Не заехали'
 stopped: заехали
 left: выехали
 exception.relation_delete.message: 'Запись имеет связанные данные  (%total%).'
 exception.relation_delete.message.task: 'Невозможно удалить. Этот Тип имеет существующие задачи  (%total%)'
-exception.relation_delete.message.taskType: 'Невозможно удалить. Категория имеет существующие типы задач  (%total%)'
+exception.relation_delete.message.taskType: 'Невозможно удалить. Категория имеет существующие типы задач (%total%).'
 exception.relation_delete.message.roomTypeCategory: 'Невозможно удалить. Группа привязана к существующим номерам'
 exception.hotel_relation_delete.message.documentTemplate: 'Невозможно удалить данный отель, так как для него существуют шаблоны документов (%total%).'
 exception.organization_relation_delete.message.documentTemplate: 'Невозможно удалить данную организацию, так как для неё существуют шаблоны документов (%total%).'
@@ -289,10 +246,7 @@ exception.hotel_relation_delete.message.housing: 'Невозможно удал�
 exception.hotel_relation_delete.message.priceCache: 'Невозможно удалить данные об отеле, так как он содержит информацию о ценах на номера (%total%).'
 exception.hotel_relation_delete.message.restriction: 'Невозможно удалить данные об отеле, так как он содержит информацию об ограничениях на брони (%total%).'
 exception.hotel_relation_delete.message.roomCache: 'Невозможно удалить данные об отеле, так как он содержит информацию о номерах в продаже (%total%).'
-exception.hotel_relation_delete.message.serviceCategory: 'Невозможно удалить данные об отеле, так как он содержит информацию о категориях услуг (%total%).'
-exception.hotel_relation_delete.message.dishMenuCategory: 'Невозможно удалить данные об отеле, так как он содержит информацию о категориях блюд (%total%).'
 exception.hotel_relation_delete.message.dishOrderItem: 'Невозможно удалить данные об отеле, так как он содержит информацию о заказах (%total%).'
-exception.hotel_relation_delete.message.ingredientCategory: 'Невозможно удалить данные об отеле, так как он содержит информацию о категориях ингредиентов (%total%).'
 exception.hotel_relation_delete.message.table: 'Невозможно удалить данные об отеле, так как он содержит информацию о столиках (%total%).'
 exception.hotel_relation_delete.message.invoice: 'Невозможно удалить данные об отеле, так как он содержит информацию о товарных накладных (%total%).'
 exception.hotel_relation_delete.message.record: 'Невозможно удалить данные об отеле, так как он содержит информацию о связанных с ним записях о приходах-расходах (%total%).'
@@ -306,10 +260,9 @@ exception.room_relation_delete.message.task: 'Невозможно удалит�
 exception.room_relation_delete.message.package: 'Невозможно удалить данные о комнате, так как существуют связанные с ней брони (%total%).'
 exception.user_relation_delete.message.task: 'Невозможно удалить данного пользователя, так как он отмечен исполнителем для задачи (%total%).'
 exception.user_relation_delete.message.workShift: 'Невозможно удалить данного пользователя, так как он отмечен закрывавшим рабочую смену (%total%).'
-exception.group_relation_delete.message.taskType: 'Невозможно удалить группу пользователя, так как она используется как стандартная для типа задачи'
+exception.group_relation_delete.message.taskType: 'Невозможно удалить группу пользователя, так как она используется как стандартная для типа задачи.'
 exception.group_relation_delete.message.user: 'Невозможно удалить группу пользователя, так как существуют пользователи данной группы (%total%).'
 exception.roomStatus_relation_delete.message.taskType: 'Невозможно удалить статус комнаты, так как он используется в типах задач (%total%).'
-exception.roomStatus_relation_delete.message.taskType: 'Невозможно удалить заказ, так как он содержит брони (%total%).'
 exception.tariff_relation_delete.message.priceCache: 'Невозможно удалить тариф, так как он используется в ценах номеров (%total%).'
 exception.tariff_relation_delete.message.restriction: 'Невозможно удалить тариф, так как он используется для ограничений тарифов (%total%).'
 exception.tariff_relation_delete.message.roomCache: 'Невозможно удалить тариф, так как он используется в текущих номерах в продаже (%total%).'
@@ -339,26 +292,26 @@ exception.vegaState_relation_delete.message.touristCitizenship: 'Невозмо�
 exception.vegaState_relation_delete.message.touristBirthplace: 'Невозможно удалить данные о стране, так как существуют клиенты, рожденный в ней (%total%).'
 exception.housing_relation_delete.message.room: 'Невозможно удалить корпус, так как существуют комнаты, относящиеся к нему (%total%).'
 exception.ingredient_relation_delete.message.dishIngredient: 'Невозможно удалить ингредиент, так как он используется в блюдах (%total%).'
+exception.ingredient_relation_delete.message.dish: 'Невозможно удалить блюдо, т.к. оно фигурирует в заказах. Вы всегда можете его скрыть в %hrefTagStart% меню редактирования'
 exception.special_relation_delete.message.package: 'Невозможно удалить спецпредложение, так как существуют брони, относящиеся к нему (%total%).'
-
-subscriber.cannot_delete_room_in_sale_error: Невозможно удалить комнату, так как она находится в продаже.
+subscriber.cannot_delete_room_in_sale_error: 'Невозможно удалить комнату, так как она находится в продаже.'
 tariff.main: 'основной тариф'
 tariffs: тарифы
-room: номер
-rooms: номера
+room: Номер
+rooms: Номера
 bed: койко-место
 beds: койко-места
 form.main.group: 'Основная информация'
 form.filter: Фильтр
 info: Информация
-list: список
+list: Список
 migration.card: 'Миграционная карта'
 visa: Виза
 form.facilitiesType.label: Удобства
 form.facilitiesType.placeholder: 'Выберите удобства'
 entry.actions.delete: 'Удалить запись'
 entry.actions.delete.confirmation: 'Вы действительно хотите удалить запись «%doc%»?'
-entry.actions.edit: 'Редактировать запись'
+entry.actions.edit: Редактировать
 entry.actions.copy: 'Копировать запись'
 form.languageType.label: Язык
 languages.en: Английский
@@ -376,115 +329,101 @@ per_piece: шт.
 per_grm: гр.
 per_l: л.
 per_ml: мл.
-
 menu.header.navigation: Навигация
 menu.header.settings: Настройки
 menu.label.broni: Брони
 menu.label.podbor: Подбор
 menu.label.portie: Портье
-menu.label.portie.nomfond: Номерной фонд
+menu.label.portie.nomfond: 'Номерной фонд'
 menu.label.portie.shah: Шахматка
 menu.label.portie.arrdep: Заезд/Выезд
-
-menu.label.nomandprice: Номера и цены
+menu.label.nomandprice: 'Номера и цены'
 menu.label.nomandprice.tariff: Тарифы
 menu.label.nomandprice.overview: Обзор
-menu.label.nomandprice.roomsell: Номера в продаже
+menu.label.nomandprice.roomsell: 'Номера в продаже'
 menu.label.nomandprice.prices: Цены
-menu.label.nomandprice.restriction: Условия и ограничения
+menu.label.nomandprice.restriction: 'Условия и ограничения'
 menu.label.nomandprice.services: Услуги
 menu.label.nomandprice.promotions: Акции
-menu.label.task:  Задачи
+menu.label.task: Задачи
 menu.label.cash: Касса
 menu.label.warehouse: Склад
 menu.label.restaurant: Ресторан
 menu.label.reports: Отчеты
 menu.label.reports.services: Услуги
-menu.label.reports.clients: Клиенты
-menu.label.reports.organizations: Организации
+menu.label.reports.clients: Гости
+menu.label.reports.organizations: Организация
 menu.label.reports.filling: Заполняемость
 menu.label.reports.managers: Менеджеры
-menu.label.reports.invite: Визовые приглашения
+menu.label.reports.invite: 'Визовые приглашения'
 menu.label.reports.analystics: Аналитика
 menu.label.reports.polls: Оценки
-menu.label.reports.work_shift: Рабочие смены
-menu.label.reports.fms: Для ФМС
-
+menu.label.reports.windows: Окна
+menu.label.reports.work_shift: 'Рабочие смены'
+menu.label.reports.fms: 'Для ФМС'
+menu.settings.label.header: Настройки
 menu.settings.label.hotels: Отели
 menu.settings.label.housing: Корпуса
-menu.settings.label.room_types: Номерной фонд
-
-menu.room_type_category: Группы номеров
-
+menu.settings.label.room_types: 'Номерной фонд'
+menu.room_type_category: 'Группы номеров'
 menu.settings.label.restaurant: Ресторан
 menu.settings.label.restaurant.ingredients: Ингредиенты
-menu.settings.label.restaurant.dishmenu: Меню блюд
-menu.settings.label.restaurant.tables: Управление столиками
-
+menu.settings.label.restaurant.dishmenu: 'Меню блюд'
+menu.settings.label.restaurant.tables: 'Управление столиками'
 menu.configs.config: Настройки
 menu.configs.users: Пользователи
 menu.configs.groups: Группы
 menu.configs.sources: Источники
-menu.configs.templates: Шаблоны документов
+menu.configs.delete_reasons: 'Причины удаления'
+menu.configs.templates: 'Шаблоны документов'
 menu.configs.parameters: Параметры
-menu.configs.tasktype: Типы задач
+menu.configs.tasktype: 'Типы задач'
 menu.configs.warehouse: Склад
-
 menu.communication.label: Взаимодействие
-menu.communication.label.advanced: Дополнительные каналы
-menu.communication.label.yh: ВашОтель
-menu.communication.label.onlineform: Онлайн форма
+menu.communication.label.advanced: MyAllocator
+menu.communication.label.your_hotel: ВашОтель
+menu.communication.label.onlineform: 'Онлайн форма'
 menu.communication.label.polls: Оценки
-menu.communication.label.invite: Визовое приглашение
-menu.communication.label.hundred_one_hotels: 101 Отель
-
-menu.hotel_new.label: Создать новый отель
-
-menu.help.noarrival: Количество незаехавших броней
-menu.help.nodepart: Количество невыехавших броней
-
+menu.communication.label.invite: 'Визовое приглашение'
+menu.communication.label.hundred_one_hotels: '101 Отель'
+menu.hotel_new.label: 'Создать новый отель'
+menu.help.noarrival: 'Количество незаехавших броней'
+menu.help.nodepart: 'Количество невыехавших броней'
 save: сохранить
-show: показать
-cancel: отмена
-
+show: Показать
 entity.new.title: создание
-entity.edit.title: "редактирование &lt;%title%&gt;"
-entity.list.title: "список"
-
-form.info.group: Основная информация
+entity.edit.title: 'редактирование &lt;%title%&gt;'
+entity.list.title: Список
+form.info.group: 'Основная информация'
 form.fullTitle: Название
-form.title: Внутреннее название
+form.title: 'Внутреннее название'
 form.description: Описание
-form.title.help: Название для использования внутри MaxiBooking
-form.begin: Начало
+form.title.help: 'Название для использования внутри MaxiBooking'
+form.begin: 'Начало периода'
 form.end: Конец
 form.group.config: Настройки
-isEnabled: Включена
-
-document.saved: Запись успешно сохранена.
-
+isEnabled: 'Включена?'
+document.saved: 'Запись успешно сохранена'
 position: Позиция
-position.help: Позиция записи для сортировки
+position.help: 'Позиция записи для сортировки'
 configuration: Настройки
-
 app.resources.twigBundle.translations.error: Ошибка
-
 basebundle.menu.navigation: Навигация
 basebundle.menu.booking: Брони
 basebundle.menu.picking: Подбор
-basebundle.menu.number_unsettled_armor: Количество незаехавших броней
-basebundle.menu.number_unintelligible_armor: Количество невыехавших броней
+basebundle.menu.number_unsettled_armor: 'Количество незаехавших броней'
+basebundle.menu.number_unintelligible_armor: 'Количество невыехавших броней'
 basebundle.menu.receptionist: Портье
-basebundle.menu.number_of_rooms: Номерной фонд
+basebundle.menu.number_of_rooms: 'Номерной фонд'
 basebundle.menu.arrival_departure: Заезд/Выезд
 basebundle.menu.chess_player: Шахматка
-basebundle.menu.number_and_price: Номера и цены
+basebundle.menu.number_and_price: 'Номера и цены'
 basebundle.menu.tasks: Задачи
 basebundle.menu.tariffs: Тарифы
 basebundle.menu.view: Обзор
-basebundle.menu.room_in_sales: Номера в продаже
+basebundle.menu.room_in_sales: 'Номера в продаже'
 basebundle.menu.price: Цены
-basebundle.menu.terms_and_conditions: Условия и ограничения
+basebundle.menu.terms_and_conditions: 'Условия и ограничения'
 basebundle.menu.services: Услуги
 basebundle.menu.actions: Акции
 basebundle.menu.cass: Касса
@@ -493,92 +432,121 @@ basebundle.menu.clients: Клиенты
 basebundle.menu.organization: Организации
 basebundle.menu.occupancy: Заполняемость
 basebundle.menu.managers: Менеджеры
-basebundle.menu.visa_invations: Визовые приглашения
+basebundle.menu.visa_invations: 'Визовые приглашения'
 basebundle.menu.analitics: Аналитика
 basebundle.menu.assessments: Оценки
 basebundle.menu.windows: Окна
-basebundle.menu.work_shifts: Рабочие смены
+basebundle.menu.work_shifts: 'Рабочие смены'
 basebundle.menu.settings: Настройки
 basebundle.menu.hotels: Отели
 basebundle.menu.shells: Корпуса
-basebundle.menu.groups_numbers: Группы номеров
+basebundle.menu.groups_numbers: 'Группы номеров'
 basebundle.menu.restorant: Ресторан
 basebundle.menu.ingredients: Ингредиенты
-basebundle.menu.menu_of_dishes: Меню блюд
+basebundle.menu.menu_of_dishes: 'Меню блюд'
 basebundle.menu.tables: Столы
 basebundle.menu.users: Пользователи
 basebundle.menu.groups: Группы
 basebundle.menu.sources: Источники
-basebundle.menu.reasond_of_removal: Причины удаления
-basebundle.menu.templates_of_document: Шаблоны документов
+basebundle.menu.reasond_of_removal: 'Причины удаления'
+basebundle.menu.templates_of_document: 'Шаблоны документов'
 basebundle.menu.parammeters: Параметры
-basebundle.menu.type_of_task: Типы задач
+basebundle.menu.type_of_task: 'Типы задач'
 basebundle.menu.warehouse: Склад
 basebundle.menu.interaction: Взаимодействие
-basebundle.menu.additional_channels: Дополнительные каналы
+basebundle.menu.additional_channels: 'Дополнительные каналы'
 basebundle.menu.vashotel: ВашОтель
-basebundle.menu.onlineform: Онлайн форма
+basebundle.menu.onlineform: 'Онлайн форма'
 basebundle.menu.estimates: Оценки
-basebundle.menu.visa_invitation: Визовое приглашение
-basebundle.menu.create_new_hotel: Создать новый отель
-basebundle.menu.navigation: Навигация
-
-mbhbasebundle.view.pdftemplates.organization.bank.poluchatelya: Банк получателя
-mbhbasebundle.view.pdftemplates.organization.bik: Бик
+basebundle.menu.visa_invitation: 'Визовое приглашение'
+basebundle.menu.create_new_hotel: 'Создать новый отель'
+mbhbasebundle.view.pdftemplates.organization.bank.poluchatelya: 'Банк получателя'
 mbhbasebundle.view.pdftemplates.organization.sch: Cч
-mbhbasebundle.view.pdftemplates.organization.inn: ИНН
-mbhbasebundle.view.pdftemplates.organization.kpp: КПП
 mbhbasebundle.view.pdftemplates.organization.poluchatel: Получатель
-mbhbasebundle.view.pdftemplates.organization.chet_na_oplatu: Счет на оплату
+mbhbasebundle.view.pdftemplates.organization.chet_na_oplatu: 'Счет на оплату'
 mbhbasebundle.view.pdftemplates.organization.postavshik: Поставщик
-mbhbasebundle.view.pdftemplates.organization.tel: тел
 mbhbasebundle.view.pdftemplates.organization.pokupatel: Покупатель
-mbhbasebundle.view.pdftemplates.organization.tovary_raboty_uslugi: Товары (работы, услуги)
+mbhbasebundle.view.pdftemplates.organization.tovary_raboty_uslugi: 'Товары (работы, услуги)'
 mbhbasebundle.view.pdftemplates.organization.ed: Ед
-mbhbasebundle.view.pdftemplates.organization.uslugi_otela_po_schetu: Услуги отеля по счету
-mbhbasebundle.view.pdftemplates.organization.zakaz: Заказ
-mbhbasebundle.view.pdftemplates.organization.ot: от
+mbhbasebundle.view.pdftemplates.organization.uslugi_otela_po_schetu: 'Услуги отеля по счету'
 mbhbasebundle.view.pdftemplates.organization.g: г
-mbhbasebundle.view.pdftemplates.organization.itog: Итог
-mbhbasebundle.view.pdftemplates.organization.bez_naloga: Без налога (НДС)
-mbhbasebundle.view.pdftemplates.organization.vsego_k_oplate: Всего к оплате
-mbhbasebundle.view.pdftemplates.organization.vsego_naimenovanii: Всего наименований 1, на сумму
+mbhbasebundle.view.pdftemplates.organization.bez_naloga: 'Без налога (НДС)'
+mbhbasebundle.view.pdftemplates.organization.vsego_k_oplate: 'Всего к оплате'
+mbhbasebundle.view.pdftemplates.organization.vsego_naimenovanii: 'Всего наименований 1, на сумму'
 mbhbasebundle.view.pdftemplates.organization.rukovoditel: Руководитель
-
 mbhbasebundle.views.partials.yesterday: вчера
 mbhbasebundle.views.partials.today: сегодня
 mbhbasebundle.views.partials.tomorrow: завтра
 mbhbasebundle.views.partials.week: неделя
 mbhbasebundle.views.partials.month: месяц
-
 mbhbasebundle.views.mailer.vz: вз
 mbhbasebundle.views.mailer.rb: рб
-mbhbasebundle.views.mailer.dla_poluchenia_coda_dostupa_otskaniruite_etc: Для получения кода доступа отсканируйте смартфоном QR-штрихкод с картинки с помощью приложения
-
-mbhbasebundle.views.minimize_menu: Свернуть меню
+mbhbasebundle.views.mailer.dla_poluchenia_coda_dostupa_otskaniruite_etc: 'Для получения кода доступа отсканируйте смартфоном QR-штрихкод с картинки с помощью приложения'
+mbhbasebundle.views.minimize_menu: 'Свернуть меню'
 mbhbasebundle.views.kass: Касса
 mbhbasebundle.views.doc: Документ
-mbhbasebundle.views.sum: сумма
-mbhbasebundle.views.not_allow: не подтвержден
-mbhbasebundle.view.navbar.pereyti.v.kassu: Перейти в кассу
+mbhbasebundle.views.sum: Сумма
+mbhbasebundle.views.not_allow: 'Не подтвержден'
+mbhbasebundle.view.navbar.pereyti.v.kassu: 'Перейти в кассу'
 mbhbasebundle.view.navbar.change: Смена
 mbhbasebundle.view.navbar.ch: ч
-mbhbasebundle.view.navbar.booking_change: Заблокировать смену
-mbhbasebundle.view.navbar.select_hotel: Выберите отель
-mbhbasebundle.view.navbar.spisok.oteley: Список отелей
+mbhbasebundle.view.navbar.booking_change: 'Заблокировать смену'
+mbhbasebundle.view.navbar.select_hotel: 'Выберите отель'
+mbhbasebundle.view.navbar.spisok.oteley: 'Список отелей'
 mbhbasebundle.view.navbar.input: Вошел
 mbhbasebundle.view.navbar.profile: Профиль
 mbhbasebundle.view.navbar.output: Выйти
-
-mbhbasebundle.view.pdftemplates.individual.vid.platezha: Вид платежа
+mbhbasebundle.view.pdftemplates.individual.vid.platezha: 'Вид платежа'
 hide: скрыть
-show.more: Показать еще
+show.more: 'Показать еще'
 errors: Ошибки
-
-# dashboard
-dashboard.modal.header: 'Предупреждения'
+controllers.export_controller.yes: Да
+controllers.export_controller.no: Нет
+views.partials.disable_button.show_disabled_room_types: 'Показывать отключенные типы комнат'
+views.partials.disable_button.entity_delete_form.remove: Удалить
+twig.extensiion.day_abbr: д.
+twig.extensiion.hour_abbr: ч.
+twig.extensiion.minute_abbr: мин.
+dashboard.modal.header: Предупреждения
 dashboard.confirm.tooltip: 'Отметить прочитанным'
 dashboard.messages.hotel.errors: 'обнаружены следующие ошибки'
 dashboard.messages.roomType.roomCache: 'не выставлены "Номера в продаже" на следующие периоды'
 dashboard.messages.roomType.priceCache: 'не выставлены "Цены" основного тарифа на следующие периоды'
-dashboard.link: 'посмотреть'
+dashboard.link: посмотреть
+menu.communication.label.yh: ВашОтель
+
+form.image.is_default.label: 'Основное?'
+form.image.is_default.help: 'Является ли изображение основным'
+form.image.file.label: 'Изображение'
+form.image.file.help: 'Загрузить изображение'
+form.image.priority.label : 'Приоритет показа'
+form.image.priority.help : 'Приоритет показа (опционально) -1000 ... 1000'
+image.priority: 'Приоритет'
+forms.export_type.main_group: Настройки генерируемого документа
+forms.export_type.fields.label: Названия полей
+forms.export_type.fields.help: Имена экспортируемых полей
+
+notifier.config.label.client: Почтовые уведомления клиентов
+notifier.config.label.stuff: Почтовые уведомления персонала
+
+notifier.config.label.cash_confirm: Оплата документа
+notifier.config.label.arrival: Прибытие
+notifier.config.label.feedback: Оценка
+notifier.config.label.online_order: Бронь Онлайн
+notifier.config.label.channel_manager_order: Channel Manager
+notifier.config.label.online_payment_confirm: Онлайн оплата
+notifier.config.label.confirm_order: Подтверждение
+notifier.config.label.unpaid: Неоплата
+notifier.config.label.task: Задачи
+
+notifier.config.title.cash_confirm: Уведомление о подтверждении документа оплаты
+notifier.config.title.arrival: Уведомление о прибытии
+notifier.config.title.feedback: Письмо с просьбой об оценке
+notifier.config.title.online: Уведомление о брони из онлайн формы
+notifier.config.title.channel_manager: Уведомление брони от ChannelManager
+notifier.config.title.online_payment_confirm: Подтверждение онлайн оплаты
+notifier.config.title.confirm_order: Подтверждение заказа
+notifier.config.title.unpaid: Уведомление о заказе без оплаты
+notifier.config.title.online_order: Уведомление о брони сделанной онлайн (форма)
+notifier.config.title.task: Уведомления о задачах
+

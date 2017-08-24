@@ -31,7 +31,7 @@
     '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
 
     <script type="text/javascript" src="{{ asset_url }}"></script>
-    {# Передаем данные о бронях для обработки на клиенте #}
+    {# pass package data for processing on client-side #}
     <script>
         var packages = JSON.parse('{{ packages|raw }}');
         var leftRoomsData = JSON.parse('{{ leftRoomsJsonData|raw }}');
@@ -282,7 +282,7 @@
                         <li class="tile tile-not-selected tile-free both not-standard-tile"
                             style="width:{{ monthDays.daysCount * tableCellWidth }}px;">
                             <div class="month" style="width:{{ monthDays.daysCount * tableCellWidth }}px;">
-                                {{ monthDays.daysCount > 2 ? months[monthDays.month] ~ ', ' ~ monthDays.year }}
+                                {{ monthDays.daysCount > 2 ? (months[monthDays.month])|trans({}, 'front_messages') ~ ', ' ~ monthDays.year }}
                             </div>
                         </li>
                     {% endfor %}
@@ -306,6 +306,7 @@
         </div>
         <!---------------------------- ROOM TYPES ------------------------->
         <div id="roomTypeColumn">
+            {% set roomTitleLength = ((headerWidth / titleSubFontSize) * 1.3)|round(1, 'floor') %}
             {% for roomTypeId, roomTypeData in roomTypesData %}
                 {% if roomTypeData['rooms']|length > 0 %}
                     <div class="clearfix">
@@ -313,9 +314,11 @@
                             <li class="tile tile-not-selected tile-free both not-standard-tile"
                                 style="width:{{ headerWidth }}px; background-color: white;">
                                 <div class="title">
-                                    <strong {% if not roomTypeData.isEnabled %} class="disabled-room-type"{% endif %}
+                                    <strong  {% if not roomTypeData.isEnabled %} class="disabled-room-type"{% endif %}
+                                            {% if roomTypeData.name|length > roomTitleLength %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ roomTypeData.name }}" {% endif %}
                                             class="text-info">
-                                        <i class="fa fa-bed"></i> {{ roomTypeData.name[0:30] }}</strong></div>
+
+                                        <i class="fa fa-bed"></i> {{ roomTypeData.name[0:roomTitleLength] }}</strong></div>
                             </li>
                             <li class="tile tile-not-selected tile-free both not-standard-tile"
                                 style="width:{{ headerWidth }}px;">
@@ -329,17 +332,20 @@
                                 <li class="tile tile-not-selected tile-free both not-standard-tile"
                                     style="width:{{ headerWidth }}px;">
                                     <div class="title-sub">
-                                        {# Настройка названий комнат и тултипов к ним #}
                                         {% set toolTip = '' %}
-                                        {% if roomData.name|length > 20 %} {% set toolTip =  roomData.name ~ "<br>" %}{% endif %}
-                                        {% if roomData.houseDetails %} {% set toolTip = toolTip ~ roomData.houseDetails %}{% endif %}
-
-                                        {% set roomShortInfo = roomData.name %}
-                                        {% if roomData.name|length < 4 and roomData.houseDetails %}
-                                            {% set roomShortInfo = roomShortInfo ~  ' (' ~ roomData.houseDetails[0:16] ~ ')' %}
+                                        {% if roomData.room.housing %}
+                                            {% set toolTip = 'chessboard.index.housing'|trans ~ ' "' ~ roomData.room.housing.name ~'"' %}
+                                        {% endif %}
+                                        {% if roomData.room.floor %}
+                                            {% set floorText = "chessboard.index.floor"|trans ~ " " ~ roomData.room.floor %}
+                                            {% if toolTip is empty %}
+                                                {% set toolTip = floorText %}
+                                            {% else %}
+                                                {% set toolTip = toolTip ~ '<br>' ~ floorText %}
+                                            {% endif %}
                                         {% endif %}
 
-                                        <a {% if toolTip != '' %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ toolTip }}" {% endif %}>{{ roomShortInfo[0:20] }}</a>
+                                        <a {% if toolTip != '' %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ toolTip }}" {% endif %}>{{ roomData.name[0:20] }}</a>
 
                                         <div class="text-right" style="height: {{ tileFontSize }}px;">
                                             {% if roomData.statuses is iterable and roomData.statuses is not empty %}
@@ -423,8 +429,7 @@
                                                     <li class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
                                                         <div class="no-accommodation-date" data-container="body"
                                                              data-placement="bottom" data-html="true"
-                                                             title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}"
-                                                             tabindex="0"
+                                                             title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}" tabindex="0"
                                                              data-date="{{ day|date('d.m.Y') }}"
                                                              data-toggle="popover">
                                                         </div>
@@ -441,7 +446,7 @@
                                                         <li class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
                                                             <div class="date">
                                                                 <div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}
-                                                                    <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>
+                                                                    <span>{{ day|date('Y') == 'now'|date('Y') ? (weekdays[day|date('N')])|trans({}, 'front_messages')|lower : day|date('Y') }}</span>
                                                                 </div>
                                                             </div>
                                                         </li>
@@ -473,6 +478,7 @@
                         <input type="hidden" class="modalBlockId" name="modalBlockId">
                         <input type="hidden" class="modalAccommodationId" name="accommodationId">
                         <input type="hidden" class="isDivide">
+                        <input type="hidden" id="modal-room-type-id">
                         <div class="row text-center" id="package-modal-change-alert"></div>
                         <div id="concise_package_update">
                             <table class="table not-auto-datatable table-striped">
@@ -528,7 +534,7 @@
                         </button>
                         <button type="button" class="btn btn-primary" style="display: none;"
                                 id="package-modal-continue-button">
-                            {{ 'modal.chessBoard.button.yes_text'|trans }}
+                            {{ 'package.accommodaton_modal.continue_button.text'|trans }}
                         </button>
                         <button type="button" id="packageModalConfirmButton" class="btn btn-primary">
                             {{ 'modal.chessBoard.save'|trans }}

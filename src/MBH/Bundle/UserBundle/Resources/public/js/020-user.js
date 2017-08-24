@@ -5,7 +5,13 @@ $(document).ready(function () {
     $('.password').pwstrength({
         ui: {
             showVerdictsInsideProgressBar: true,
-            verdicts: ["Плохой", "Обычный", "Хороший", "Отличный", "Супер"]
+            verdicts: [
+                Translator.trans("020_user.bad"),
+                Translator.trans("020_user.normal"),
+                Translator.trans("020_user.good"),
+                Translator.trans("020_user.excellent"),
+                Translator.trans("020_user.super")
+            ]
         },
         common: {
             minChar: 1
@@ -15,7 +21,7 @@ $(document).ready(function () {
     var $authorityOrgan = $('#mbh_document_relation_authorityOrgan');
     select2Text($authorityOrgan).select2({
         minimumInputLength: 3,
-        placeholder: "Сделайте выбор",
+        placeholder: Translator.trans("020_user.make_a_choice"),
         allowClear: true,
         ajax: {
             url: Routing.generate('authority_organ_json_list'),

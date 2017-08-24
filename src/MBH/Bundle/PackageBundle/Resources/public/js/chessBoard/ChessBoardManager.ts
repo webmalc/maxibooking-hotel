@@ -179,7 +179,7 @@ class ChessBoardManager {
                         let packageData = self.getPackageData($(newPackage));
                         self.saveNewPackage(packageData);
                     }
-                    // self.updateTable();
+                    self.updateTable();
                 };
                 this.ondragstart = function () {
                     return false;
@@ -202,10 +202,11 @@ class ChessBoardManager {
         $slider.slider({tooltip : 'hide', reverseed: true});
         $slider.on('slideStop', () => {
             let sliderValue = $('#ex1').slider('getValue');
-            ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
-            this.currentSizeConfigNumber = sliderValue;
-            window.location.reload();
-            // this.setStyles(sliderValue);
+            if (this.currentSizeConfigNumber !== sliderValue) {
+                ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
+                this.currentSizeConfigNumber = sliderValue;
+                window.location.reload();
+            }
         });
     }
 
@@ -404,6 +405,7 @@ class ChessBoardManager {
 
         let packageDiv = templatePackageElement.cloneNode(true);
         packageDiv.id = packageItem.id;
+
         let description = document.createElement('div');
         let packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
         let descriptionText = packageName ? packageName.substr(0, packageCellCount * 5 - 4) : '';
@@ -414,6 +416,31 @@ class ChessBoardManager {
         packageDiv.appendChild(description);
         description.style.width = Math.floor(descriptionText.length * ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH) + 'px';
         packageDiv.classList.add(packageItem.paidStatus);
+        //
+        // description.setAttribute('data-toggle', 'popover');
+        // description.setAttribute('data-html', "true");
+        // description.setAttribute('data-container', "body");
+        // description.setAttribute('title', packageItem.number);
+        // description.setAttribute('data-placement', 'top');
+        // let descriptionPopoverContent = '<b>Номер</b>:' + packageItem.number
+        //     + (packageItem.payer ? '<br><b>Плательщик: </b>' + packageItem.payer : '')
+        //     + '<br><b>Цена: </b>' + packageItem.price
+        //     + '<br><b>Заезд брони: </b>' + packageItem.packageBegin
+        //     + '<br><b>Выезд брони: </b>' + packageItem.packageBegin
+        //     + '<br><b>Заехали: </b>' + (packageItem.isCheckIn ? 'да' : 'нет')
+        //     + '<br><b>Выехали: </b>' + (packageItem.packageBegin ? 'да' : 'нет');
+        // description.setAttribute('data-content', descriptionPopoverContent);
+        // packageDiv.onmousemove = function () {
+        //     let descriptionElement = this.getElementsByClassName('package-description')[0];
+        //     let popoverId = descriptionElement.getAttribute('aria-describedby');
+        //     if (popoverId == null) {
+        //         $(descriptionElement).popover('show');
+        //     }
+        // };
+        // packageDiv.onmouseleave = function () {
+        //     let descriptionElement = this.getElementsByClassName('package-description')[0];
+        //     $(descriptionElement).popover('hide');
+        // };
 
         if (packageItem.position == 'middle' || packageItem.position == 'left') {
             packageDiv.classList.add('with-right-divider');
@@ -429,7 +456,7 @@ class ChessBoardManager {
         } else {
             packageWidth -= this.arrowWidth;
         }
-        
+
         if (packageItem.position == 'middle' || packageItem.position == 'right') {
             packageDiv.classList.add('with-left-divider');
             packageDiv.classList.remove('package-with-left-arrow');
@@ -555,7 +582,7 @@ class ChessBoardManager {
         if ($(element).hasClass('with-left-divider')) {
             packageDateOffset -= this.arrowWidth;
         }
-        
+
         return packageDateOffset + this.getPackageToMiddayOffset();
     }
 
@@ -816,8 +843,8 @@ class ChessBoardManager {
         });
     }
 
-    protected getGriddedHeightValue(height) {
-        //1 - бордер
+    private getGriddedHeightValue(height) {
+        //1px - border
         let packageElementHeight = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1;
 
         return Math.floor(height / packageElementHeight) * packageElementHeight;
@@ -832,7 +859,7 @@ class ChessBoardManager {
     }
 
     /**
-     * Получение строки, содержащей первые буквы сторон, в которые можно расширять бронь.(e - east, w - west)
+     * Getting the line, containing first letters of sides in which enable widening (e - east, w - west)
      * @param intervalData
      * @returns {string}
      */
@@ -880,7 +907,6 @@ class ChessBoardManager {
     }
 
     /**
-     *
      * @param $element
      * @param intervalData
      * @returns {any}
@@ -930,7 +956,25 @@ class ChessBoardManager {
             });
         }
 
+        if (intervalData.isLateCheckOut && resizableHandlesValue.indexOf('e') > -1) {
+            this.addServicesDisplaying($element, '.ui-resizable-e', 'late-check-out-block');
+        }
+        if (intervalData.isEarlyCheckIn && resizableHandlesValue.indexOf('w') > -1) {
+            this.addServicesDisplaying($element, '.ui-resizable-w', 'early-checkin-block')
+        }
+
         return $element;
+    }
+
+    private addServicesDisplaying($element, sideElemBlockClass, addedClass) {
+        let $sideElement = $element.find(sideElemBlockClass);
+        if ($sideElement.length > 0) {
+            $sideElement.addClass(addedClass);
+        } else {
+            let laterCheckOutBlock = document.createElement('div');
+            laterCheckOutBlock.classList.add(addedClass);
+            $element.append(laterCheckOutBlock);
+        }
     }
 
     /**
@@ -1030,6 +1074,7 @@ class ChessBoardManager {
 
         $popoverElements.unbind('shown.bs.popover');
         $popoverElements.on('shown.bs.popover', function () {
+            //remove unplaced package from popover
             let lastPackage = $('.package').last();
             if (lastPackage.attr('unplaced')) {
                 lastPackage.remove();

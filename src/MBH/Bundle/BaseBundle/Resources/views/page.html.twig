@@ -25,9 +25,9 @@
     <div class="content-wrapper main-container">
 
         {% block print_hotel_logo %}
-            {% if selected_hotel() and selected_hotel().logo %}
+            {% if selected_hotel() and selected_hotel().logoImage %}
                 <div id="print-hotel-logo">
-                    <img class="grayscale" src="{{ asset(selected_hotel().logoUrl)|imagine_filter('thumb_95x80') }}"/>
+                    <img class="grayscale" src="{{ asset(vich_uploader_asset(selected_hotel().logoImage, 'imageFile')|imagine_filter('thumb_95x80') ) }}"/>
                 </div>
             {% endif %}
         {% endblock %}

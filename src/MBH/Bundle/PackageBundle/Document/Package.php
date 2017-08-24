@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -84,7 +85,7 @@ class Package extends Base implements \JsonSerializable
 
     /**
      * @ODM\ReferenceMany(targetDocument="PackageAccommodation", inversedBy="package", cascade={"persist"})
-     *
+     * @ODM\Index()
      */
     protected $accommodations;
 
@@ -245,7 +246,7 @@ class Package extends Base implements \JsonSerializable
     protected $pricesByDate = [];
 
     /**
-     * @var PackagePrice
+     * @var PackagePrice[]
      * @ODM\EmbedMany(targetDocument="PackagePrice")
      */
     protected $prices;
@@ -287,7 +288,7 @@ class Package extends Base implements \JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "ostrovok", "oktogo", "myallocator", "101Hotels"},
+     *      choices = {"vashotel", "booking", "expedia", "hotels", "venere", "ostrovok", "oktogo", "myallocator", "101Hotels"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      * @ODM\Index()
@@ -320,7 +321,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * Assert\Range(
      *      min=1,
@@ -757,6 +758,7 @@ class Package extends Base implements \JsonSerializable
         $this->restarauntSeat = new ArrayCollection();
         $this->tourists = new ArrayCollection();
         $this->accommodations = new ArrayCollection();
+        $this->prices = new ArrayCollection();
     }
 
 
@@ -1528,7 +1530,7 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
-     * @return PackagePrice
+     * @return PackagePrice[]|PersistentCollection
      */
     public function getPrices()
     {
@@ -1555,6 +1557,17 @@ class Package extends Base implements \JsonSerializable
     public function setPrices($prices)
     {
         $this->prices = $prices;
+        return $this;
+    }
+
+    /**
+     * @param PackagePrice $packagePrice
+     * @return Package
+     */
+    public function addPackagePrice(PackagePrice $packagePrice)
+    {
+        $this->prices->add($packagePrice);
+
         return $this;
     }
 

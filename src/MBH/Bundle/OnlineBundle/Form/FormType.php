@@ -5,11 +5,15 @@ namespace MBH\Bundle\OnlineBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 
@@ -110,6 +114,24 @@ class FormType extends AbstractType
                 'required' => true,
                 'help' => 'form.formType.resultsUrl_help'
             ])
+            ->add('isFullWidth', CheckboxType::class, [
+                'group' => 'form.formType.parameters',
+                'label' => 'form.formType.frame_width.is_full_width.label',
+                'required' => false,
+                'help' => 'form.formType.frame_width.is_full_width.help'
+            ])
+            ->add('frameWidth', IntegerType::class, [
+                'label' => 'form.formType.frame_width.label',
+                'group' => 'form.formType.parameters',
+                'required' => true,
+                'help' => 'form.formType.frame_width.help'
+            ])
+            ->add('frameHeight', IntegerType::class, [
+                'label' => 'form.formType.frame_height.label',
+                'group' => 'form.formType.parameters',
+                'required' => true,
+                'help' => 'form.formType.frame_height.help'
+            ])
             ->add(
                 'paymentTypes',
                 \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
@@ -132,6 +154,42 @@ class FormType extends AbstractType
                     'attr' => ['rows' => 60]
                 ]
             )
+            ->add('js',
+                TextareaType::class,
+                [
+                    'group' => 'form.formType.js_group',
+                    'label' => 'form.formType.js_label',
+                    'required' => false,
+                    'attr' => ['rows' => 10]
+                ])
+            ->add(
+                'formTemplate',
+                TextareaType::class,
+                [
+                    'group' => 'form.formType.template',
+                    'label' => 'form.formType.template_label',
+                    'required' => false,
+                    'help' => 'form.formType.template_help',
+                    'attr' => ['rows' => 60]
+                ]
+            )
+            ->add(
+                'cssLibraries',
+                ChoiceType::class,
+                [
+                    'group' => 'form.formType.css',
+                    'choices' => FormConfig::getCssLibrariesList(),
+                    'required' => false,
+                    'label' => 'form.formType.label.css_libraries',
+                    'help' => 'form.formType.help.css_libraries',
+                    'choice_attr' => function ($value) {
+                        return [
+                            'title' => $value,
+                        ];
+                    },
+                    'multiple' => true
+                ]
+            )
             ->add(
                 'theme',
                 ChoiceType::class,
@@ -145,6 +203,13 @@ class FormType extends AbstractType
             )
         ;
     }
+
+    public function finishView(FormView $view, FormInterface $form, array $options)
+    {
+        //TODO: restore twig template default
+        $view->children['formTemplate']->vars['twig_sample'] = null;
+    }
+
 
     public function configureOptions(OptionsResolver $resolver)
     {

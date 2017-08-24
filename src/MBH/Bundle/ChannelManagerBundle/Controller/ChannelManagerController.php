@@ -48,15 +48,15 @@ class ChannelManagerController extends Controller
 
         $root = $this->get('kernel')->getRootDir();
         $env = $this->get('kernel')->getEnvironment();
-        $file = $root.'/../var/logs/'.$env.'.channelmanager.log';
+        $file = $this->container->get('mbh.channelmanager.logger_handler')->getUrl();
+
         if (file_exists($file) && is_readable($file)) {
             if ($request->getMethod() == 'POST') {
                 file_put_contents($file, '');
 
-                $request->getSession()->getFlashBag()
-                    ->set(
+                $this->addFlash(
                         'success',
-                        $this->get('translator')->trans('Логи успешно очищены.')
+                        $this->get('translator')->trans('controller.channel_manager_controller.logs_clear_successful')
                     );
 
                 return $this->redirect($this->generateUrl('channel_manager_logs'));

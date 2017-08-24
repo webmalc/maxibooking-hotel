@@ -139,8 +139,8 @@
                             </div>
                         </td>
                         <td style="width: 20%">
-                            {% if hotel.logoUrl %}
-                                <img src="{{ absolute_url(asset(hotel.logoUrl)) }}" style="height: 80px;float: right;">
+                            {% if hotel.logoImage %}
+                                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile'))) }}" style="height: 80px;float: right;">
                             {% endif %}
                         </td>
                     </tr>
@@ -674,7 +674,9 @@
                                 font-size: 14px;
                             }
                         </style>
-
+                        <div style="font-size: 14px;">
+                            Я,____________________________________________________________в соответствии с ФЗ № 152-ФЗ от 27.07.2006, даю {% if organization %}{{ organization.name }}{% endif %} согласие на обработку персональных данных, а именно: сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передачу (предоставление), обезличивание, удаление сроком на 14 (четырнадцать) месяцев. Порядок отзыва настоящего согласия мне понятен.
+                        </div>
                         <div class="signature">
                             <div>SIGNATURE</div>
                             <small>{{ 'mbhpackagebundle.view.documents.pdftemplates.PPodpis'|trans }}</small>

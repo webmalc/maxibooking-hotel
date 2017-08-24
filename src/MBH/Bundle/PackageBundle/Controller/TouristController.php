@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
+use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
@@ -17,11 +18,13 @@ use MBH\Bundle\PackageBundle\Document\UnwelcomeRepository;
 use MBH\Bundle\PackageBundle\Document\Visa;
 use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
 use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
+use MBH\Bundle\PackageBundle\Form\TouristFilterForm;
 use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
 use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
 use MBH\Bundle\PackageBundle\Form\UnwelcomeType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
+use MBH\Bundle\VegaBundle\Document\VegaState;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -47,43 +50,13 @@ class TouristController extends Controller
      */
     public function indexAction()
     {
-        $form = $this->getTouristFilterForm();
+        $form = $this->createForm(TouristFilterForm::class);
         $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
 
         return [
             'form' => $form->createView(),
             'vegaDocumentTypes' => $vegaDocumentTypes
         ];
-    }
-
-    public function getTouristFilterForm()
-    {
-        $form = $this->createFormBuilder(null, [
-            'data_class' => TouristQueryCriteria::class
-        ])
-            ->add('begin', DateType::class, [
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'required' => false
-            ])
-            ->add('end', DateType::class, [
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'required' => false
-            ])
-            ->add('citizenship', \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class, [
-                'required' => false,
-                'choices' => [
-                    TouristQueryCriteria::CITIZENSHIP_NATIVE => 'Граждане РФ',
-                    TouristQueryCriteria::CITIZENSHIP_FOREIGN => 'Иностранные граждане'
-                ]
-            ])
-            ->add('search', TextType::class, [
-                'required' => false
-            ])
-            ->getForm();
-
-        return $form;
     }
 
     /**
@@ -93,41 +66,26 @@ class TouristController extends Controller
      * @Method("POST")
      * @Security("is_granted('ROLE_TOURIST_REPORT')")
      * @Template()
+     * @param Request $request
+     * @return array|JsonResponse
      */
     public function jsonAction(Request $request)
     {
-        $tableParams = ClientDataTableParams::createFromRequest($request);
-        $formData = (array)$request->get('form');
-        $form = $this->getTouristFilterForm();
-        $formData['search'] = $tableParams->getSearch();
+        $qbData = $this->get('mbh.tourist_manager')
+            ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected());
 
-        $form->submit($formData);
-        if (!$form->isValid()) {
-            return new JsonResponse(['error' => $form->getErrors()[0]->getMessage()]);
+        if (!$qbData instanceof Builder) {
+            return new JsonResponse(['error' => $qbData]);
         }
-
-        /** @var TouristQueryCriteria $criteria */
-        $criteria = $form->getData();
-
-        /** @var TouristRepository $touristRepository */
-        $touristRepository = $this->dm->getRepository('MBHPackageBundle:Tourist');
-
-        if ($criteria->begin && $criteria->end) {
-            $diff = $criteria->begin->diff($criteria->end);
-            if ($diff->y == 1 && $diff->m > 0 || $diff->y > 1) {
-                $begin = clone($criteria->begin);
-                $criteria->end = $begin->modify('+ 1 year');
-            }
-        }
-
-        $tourists = $touristRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
+        $tourists = $qbData->getQuery()->execute();
 
         /** @var PackageRepository $packageRepository */
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
         $packageCriteria = new PackageQueryCriteria();
-        $packageCriteria->begin = $criteria->begin;
-        $packageCriteria->end = $criteria->end;
+        $formData = $request->request->get('form');
+        $packageCriteria->begin = $this->helper->getDateFromString($formData['begin']);
+        $packageCriteria->end = $this->helper->getDateFromString($formData['end']);
 
         $touristPackages = [];
         foreach ($tourists as $tourist) {
@@ -348,7 +306,8 @@ class TouristController extends Controller
         $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType('vega_russian_passport');
 
         $form = $this->createForm(DocumentRelationType::class, $entity, [
-            'method' => Request::METHOD_POST
+            'method' => Request::METHOD_POST,
+            'isFormInTouristController' => true
         ]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
@@ -374,6 +333,44 @@ class TouristController extends Controller
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
+    }
+
+    /**
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
+     * @Method({"POST"})
+     * @Route("/add_new_country", name="new_vega_state", options={"expose": true})
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addNewCountryAction(Request $request)
+    {
+        $isSuccess = true;
+        $countryName = $request->request->get('countryName');
+        $country = (new VegaState())
+            ->setName($countryName)
+            ->setOriginalName($countryName);
+
+        $errors = $this->get('validator')->validate($country);
+        if (count($errors) > 0) {
+            $isSuccess = false;
+            $errorsList = [];
+            foreach ($errors as $error) {
+                $errorsList[] = $error->getMessage();
+            }
+
+            return new JsonResponse([
+                'success' => $isSuccess,
+                'errors' => $errorsList
+            ]);
+        } else {
+            $this->dm->persist($country);
+            $this->dm->flush();
+        }
+
+        return new JsonResponse([
+            'success' => $isSuccess,
+            'country' => ['id' => $country->getId(), 'name' => $country->getName()]
+        ]);
     }
 
     /**

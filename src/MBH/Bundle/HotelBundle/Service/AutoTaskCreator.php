@@ -30,11 +30,14 @@ class AutoTaskCreator
      * @var DocumentManager
      */
     protected $dm;
+    /** @var  string */
+    protected $client;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
+        $this->client = $container->getParameter('client');
     }
 
     /**
