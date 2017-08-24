@@ -17,6 +17,10 @@ old_sound_rabbit_mq:
       task_command_runner:
         connection:       default
         exchange_options: {name: 'task_command_runner', type: direct}
+      task_cache_recalculate:
+              connection:       default
+              exchange_options: {name: 'task_cache_recalculate', type: direct}
+
     consumers:
       task_command_runner:
         connection:       default
@@ -24,3 +28,9 @@ old_sound_rabbit_mq:
         queue_options:    {name: 'task_command_runner'}
         callback:         task_command_runner
         # idle_timeout:     10
+      task_cache_recalculate:
+              connection:       default
+              exchange_options: {name: 'task_cache_recalculate', type: direct}
+              queue_options:    {name: 'task_cache_recalculate'}
+              callback:         task_command_runner
+              # idle_timeout:     10

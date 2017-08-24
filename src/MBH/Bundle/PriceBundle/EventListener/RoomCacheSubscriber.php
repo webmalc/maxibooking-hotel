@@ -43,7 +43,7 @@ class RoomCacheSubscriber implements EventSubscriber
         }
         /** @var \AppKernel $kernel */
         $kernel = $this->container->get('kernel');
-        $this->container->get('old_sound_rabbit_mq.task_command_runner_producer')->publish(
+        $this->container->get('old_sound_rabbit_mq.task_cache_recalculate_producer')->publish(
             serialize(
                 new Command(
                     'mbh:cache:recalculate',

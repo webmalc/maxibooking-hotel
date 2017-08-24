@@ -1,6 +1,8 @@
 2.1.1
 ============
 * \#974 fix generate doc fms
+* split queues 
+* add dedicated consumer cache recalculate 
 
 2.1.0
 ============
