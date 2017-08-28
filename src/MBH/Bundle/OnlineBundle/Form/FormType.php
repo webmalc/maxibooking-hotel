@@ -3,6 +3,7 @@
 namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -161,8 +162,9 @@ class FormType extends AbstractType
                     'label' => 'form.formType.js_label',
                     'required' => false,
                     'attr' => ['rows' => 10]
-                ])
-            ->add(
+                ]);
+        if ($options['user'] === User::SYSTEM_USER) {
+            $builder->add(
                 'formTemplate',
                 TextareaType::class,
                 [
@@ -170,10 +172,12 @@ class FormType extends AbstractType
                     'label' => 'form.formType.template_label',
                     'required' => false,
                     'help' => 'form.formType.template_help',
-                    'attr' => ['rows' => 60]
+                    'attr' => ['rows' => 60],
                 ]
-            )
-            ->add(
+            );
+        }
+
+        $builder->add(
                 'cssLibraries',
                 ChoiceType::class,
                 [
@@ -206,8 +210,10 @@ class FormType extends AbstractType
 
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
-        //TODO: restore twig template default
-        $view->children['formTemplate']->vars['twig_sample'] = null;
+        //TODO: implement restore twig template default?
+        if (isset($view->children['formTemplate'])) {
+            $view->children['formTemplate']->vars['twig_sample'] = null;
+        }
     }
 
 
@@ -216,7 +222,8 @@ class FormType extends AbstractType
         $resolver->setDefaults(
             array(
                 'data_class' => 'MBH\Bundle\OnlineBundle\Document\FormConfig',
-                'paymentTypes' => []
+                'paymentTypes' => [],
+                'user' => null
             )
         );
     }

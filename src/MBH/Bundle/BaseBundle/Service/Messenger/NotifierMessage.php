@@ -102,6 +102,7 @@ class NotifierMessage implements ChoicerInterface
      * @var string
      */
     private $headerText = null;
+
     /** @var string */
     private $receiverGroup = null;
     /** @var string */

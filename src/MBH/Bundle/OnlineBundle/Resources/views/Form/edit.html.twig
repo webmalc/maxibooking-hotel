@@ -1,5 +1,7 @@
 {% extends 'MBHOnlineBundle:Form:layout.html.twig' %}
-{% form_theme form.formTemplate '@MBHOnline/Form/Template/formTemplate.html.twig'  %}
+{% if form.formTemplate is defined %}
+    {% form_theme form.formTemplate '@MBHOnline/Form/Template/formTemplate.html.twig'  %}
+{% endif %}
 {% set small_title = 'views.form.index.edit'|trans({}, 'MBHOnlineBundle') %}
 {% set layout = "tabs" %}
 

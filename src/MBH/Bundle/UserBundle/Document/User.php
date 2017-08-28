@@ -29,6 +29,7 @@ class User extends BaseUser implements RecipientInterface
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
     const TWO_FACTOR_TYPES = ['email', 'google'];
+    const SYSTEM_USER = 'mb';
 
     /**
      * @var string

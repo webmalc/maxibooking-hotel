@@ -17,7 +17,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-
 class NotificationConfig extends Base
 {
     const RECEIVER_CLIENT = 'client';
@@ -25,7 +24,7 @@ class NotificationConfig extends Base
 
     const RECEIVERS_GROUP = [
         self::RECEIVER_CLIENT,
-        self::RECEIVER_STUFF
+        self::RECEIVER_STUFF,
     ];
 
     /**
