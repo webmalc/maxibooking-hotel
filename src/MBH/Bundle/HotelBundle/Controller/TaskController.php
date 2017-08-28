@@ -4,10 +4,9 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Document\NotificationConfig;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
@@ -22,7 +21,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -305,8 +303,7 @@ class TaskController extends Controller
                 ->setText('mailer.new_task.text')
                 ->setTranslateParams(['%taskType%' => $task->getType()->getTitle()])
                 ->setLink($this->generateUrl('task'))
-                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
-                ->setMessageType(MessageTypes::TASK);
+                ->setMessageType(NotificationType::TASK_TYPE);
             foreach ($recipients as $recipient) {
                 $message->addRecipient($recipient);
             }

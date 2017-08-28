@@ -2,9 +2,8 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
-use MBH\Bundle\BaseBundle\Document\NotificationConfig;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\BaseBundle\Lib\MessageTypes;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
@@ -13,7 +12,6 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Doctrine\ODM\MongoDB\Query\Builder;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerOverview;
 use Doctrine\MongoDB\CursorInterface;
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
@@ -739,8 +737,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setCategory('notification')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+10 minute'))
-                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
-                ->setMessageType(MessageTypes::CHANNEL_MANAGER)
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
             ;
 
             return $notifier->setMessage($message)->notify();
@@ -787,8 +784,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setOrder($order)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'))
-                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
-                ->setMessageType(MessageTypes::CHANNEL_MANAGER)
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
 
             ;
 

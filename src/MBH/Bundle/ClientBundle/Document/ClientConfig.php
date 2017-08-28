@@ -7,6 +7,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,6 +37,11 @@ class ClientConfig extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    /**
+     * List of notification types allow to client (not stuff)
+     */
+    use AllowNotificationTypesTrait;
 
     /**
      * @var boolean

@@ -3,6 +3,10 @@
 namespace MBH\Bundle\UserBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -26,6 +30,8 @@ class UserType extends AbstractType
     private $isNew;
     private $roles;
     private $translator;
+    /** @var  DocumentManager */
+    private $dm;
 
     public function __construct(TranslatorInterface $translator) {
         $this->translator = $translator;
@@ -112,6 +118,38 @@ class UserType extends AbstractType
                 'value' => true,
                 'required' => false,
             ])
+            ->add(
+                'allowNotificationTypes',
+                DocumentType::class,
+                [
+                    'group' => 'form.clientConfigType.notification_group',
+                    'label' => 'form.clientConfigType.notification.staff.label',
+                    'help' => 'form.clientConfigType.notification.staff.help',
+                    'required' => false,
+                    'multiple' => true,
+                    'class' => NotificationType::class,
+                    'query_builder' => function (DocumentRepository $repository) {
+                        return $repository
+                            ->createQueryBuilder()
+                            ->field('owner')
+                            ->in(
+                                [
+                                    NotificationType::OWNER_STUFF,
+                                    NotificationType::OWNER_ALL,
+                                ]
+                            );
+                    },
+                    'choice_label' => function (NotificationType $type) {
+                        return 'notifier.config.label.'.$type->getType();
+                    },
+                    'choice_attr' => function (NotificationType $type) {
+                        return ['title' => 'notifier.config.title.'.$type->getType()];
+                    },
+                    #http://symfony.com/blog/new-in-symfony-2-7-form-and-validator-updates#added-choice-translation-domain-domain-to-avoid-translating-options
+                    'choice_translation_domain' => true
+                ]
+            )
+
             ->add('taskNotify', CheckboxType::class, [
                 'group' => 'form.userType.notifications_fieldset',
                 'label' => 'form.userType.taskNotify',

@@ -60,8 +60,6 @@ class Mailer implements \SplObserver, MailerInterface
 
     /** @var  TranslatorInterface */
     protected $translator;
-    /** @var EmailReceiveChoicer */
-    protected $choicer;
 
     /**
      * Mailer constructor.
@@ -79,7 +77,6 @@ class Mailer implements \SplObserver, MailerInterface
         $this->permissions = $this->container->get('mbh.hotel.selector');
         $this->logger = $this->container->get('mbh.mailer.logger');
         $this->translator = $this->container->get('translator');
-        $this->choicer = $this->container->get('mbh.service.email_receive_choicer');
     }
 
     /**
@@ -100,13 +97,8 @@ class Mailer implements \SplObserver, MailerInterface
         /** @var NotifierMessage $message */
         /** @var Notifier $notifier */
         $message = $notifier->getMessage();
-        try {
-            $choice = $this->makeChoice($message);
-        } catch (NotifierChoicerException $exception) {
-            $choice = true;
-            $this->logger->addRecord(Logger::WARNING, $exception->getMessage());
-        }
-        if ($choice && $message->getEmail()) {
+
+        if ($message->getEmail()) {
             $this->send($message->getRecipients(), array_merge([
                 'text' => $message->getText(),
                 'type' => $message->getType(),
@@ -118,7 +110,8 @@ class Mailer implements \SplObserver, MailerInterface
                 'order' => $message->getOrder(),
                 'signature' => $message->getSignature(),
                 'transParams' => $message->getTranslateParams(),
-                'headerText' => $message->getHeaderText()
+                'headerText' => $message->getHeaderText(),
+                'messageType' => $message->getMessageType()
             ], $message->getAdditionalData()), $message->getTemplate());
         }
     }
@@ -166,7 +159,7 @@ class Mailer implements \SplObserver, MailerInterface
      * @return mixed
      * @throws Exception
      */
-    public function getSystemRecipients($category = null, Hotel $hotel = null)
+    public function getSystemRecipients($category = null, Hotel $hotel = null, string $messageType = null)
     {
         $error = 'Failed to send email. There is not a single recipient.';
 
@@ -203,8 +196,8 @@ class Mailer implements \SplObserver, MailerInterface
         if (empty($recipients)) {
 
             $recipients = $this->getSystemRecipients(
-                isset($data['category']) ? $data['category'] : null,
-                isset($data['hotel']) ? $data['hotel'] : null
+                $data['category'] ?? null,
+                $data['hotel'] ?? null
             );
         }
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
@@ -315,8 +308,4 @@ class Mailer implements \SplObserver, MailerInterface
         ], '@MBHBase/Mailer/resettingPassword.html.twig');
     }
 
-    private function makeChoice(NotifierMessage $message)
-    {
-        return $this->choicer->makeChoice($message);
-    }
 }

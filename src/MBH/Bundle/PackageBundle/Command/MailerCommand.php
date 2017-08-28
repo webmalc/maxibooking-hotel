@@ -2,8 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Command;
 
-use MBH\Bundle\BaseBundle\Document\NotificationConfig;
-use MBH\Bundle\BaseBundle\Lib\MessageTypes;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -92,8 +91,7 @@ class MailerCommand extends ContainerAwareCommand
                 ->setTemplate('MBHBaseBundle:Mailer:reportArrival.html.twig')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+1 minute'))
-                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
-                ->setMessageType(MessageTypes::ARRIVAL)
+                ->setMessageType(NotificationType::ARRIVAL_TYPE)
             ;
             $notifier
                 ->setMessage($message)
@@ -130,8 +128,7 @@ class MailerCommand extends ContainerAwareCommand
                     ->addRecipient($payer)
                     ->setLink('hide')
                     ->setSignature('mailer.online.user.signature')
-                    ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
-                    ->setMessageType(MessageTypes::ARRIVAL)
+                    ->setMessageType(NotificationType::ARRIVAL_TYPE)
                 ;
                 $notifier
                     ->setMessage($message)
@@ -190,8 +187,7 @@ class MailerCommand extends ContainerAwareCommand
                     ->setLink($link)
                     ->setLinkText('mailer.online.user.poll.link')
                     ->setSignature('mailer.online.user.signature')
-                    ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
-                    ->setMessageType(MessageTypes::FEEDBACK)
+                    ->setMessageType(NotificationType::FEEDBACK_TYPE)
                 ;
                 $notifier
                     ->setMessage($message)

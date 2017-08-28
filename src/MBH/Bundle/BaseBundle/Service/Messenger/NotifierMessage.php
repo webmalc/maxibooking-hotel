@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
-use MBH\Bundle\BaseBundle\Document\NotificationConfig;
 use MBH\Bundle\BaseBundle\Lib\ChoicerInterface;
 use MBH\Bundle\BaseBundle\Lib\NotifierChoicerException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -104,8 +103,6 @@ class NotifierMessage implements ChoicerInterface
     private $headerText = null;
 
     /** @var string */
-    private $receiverGroup = null;
-    /** @var string */
     private $messageType = null;
 
 
@@ -193,6 +190,7 @@ class NotifierMessage implements ChoicerInterface
     }
 
     /**
+     * @deprecated Use setMessageType
      * @param $type
      * @return $this
      */
@@ -462,35 +460,6 @@ class NotifierMessage implements ChoicerInterface
         return $this;
     }
 
-
-    /**
-     * @param string $receiverGroup
-     * @return $this
-     * @throws NotifierChoicerException
-     */
-    public function setReceiverGroup(string $receiverGroup)
-    {
-        if (in_array($receiverGroup, NotificationConfig::RECEIVERS_GROUP)) {
-            $this->receiverGroup = $receiverGroup;
-        } else {
-            $message = sprintf('No group %s found. Available groups are %s', $receiverGroup, implode(
-                " ",
-                NotificationConfig::RECEIVERS_GROUP)
-            );
-            throw new NotifierChoicerException($message);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * @return null|string
-     */
-    public function getReceiverGroup(): ?string
-    {
-        return $this->receiverGroup;
-    }
 
     /**
      * @param string $messageType

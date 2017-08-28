@@ -4,8 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Document\NotificationConfig;
-use MBH\Bundle\BaseBundle\Lib\MessageTypes;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -295,8 +294,7 @@ class ApiController extends Controller
                 $this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()])
             )
             ->setLinkText('mailer.to_order')
-            ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
-            ->setMessageType(MessageTypes::ONLINE_PAYMENT_CONFIRM);
+            ->setMessageType(NotificationType::ONLINE_PAYMENT_CONFIRM_TYPE);
 
         //send to backend
         $notifier
@@ -316,8 +314,7 @@ class ApiController extends Controller
                         'fromText' => $order->getFirstHotel(),
                     ]
                 )
-                ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
-                ->setMessageType(MessageTypes::ONLINE_PAYMENT_CONFIRM);
+                ->setMessageType(NotificationType::ONLINE_PAYMENT_CONFIRM_TYPE);
             $this->get('mbh.notifier.mailer')
                 ->setMessage($message)
                 ->notify();
@@ -619,8 +616,7 @@ class ApiController extends Controller
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+1 minute'))
-                ->setReceiverGroup(NotificationConfig::RECEIVER_STUFF)
-                ->setMessageType(MessageTypes::ONLINE_ORDER);
+                ->setMessageType(NotificationType::ONLINE_ORDER_TYPE);
             $notifier
                 ->setMessage($message)
                 ->notify();
@@ -652,8 +648,7 @@ class ApiController extends Controller
                     ->addRecipient($payer)
                     ->setLink('hide')
                     ->setSignature('mailer.online.user.signature')
-                    ->setReceiverGroup(NotificationConfig::RECEIVER_CLIENT)
-                    ->setMessageType(MessageTypes::ONLINE_ORDER);
+                    ->setMessageType(NotificationType::ONLINE_ORDER_TYPE);
 
                 $params = $this->container->getParameter('mailer_user_arrival_links');
 

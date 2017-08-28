@@ -526,9 +526,6 @@ forms.export_type.main_group: Настройки генерируемого до
 forms.export_type.fields.label: Названия полей
 forms.export_type.fields.help: Имена экспортируемых полей
 
-notifier.config.label.client: Почтовые уведомления клиентов
-notifier.config.label.stuff: Почтовые уведомления персонала
-
 notifier.config.label.cash_confirm: Оплата документа
 notifier.config.label.arrival: Прибытие
 notifier.config.label.feedback: Оценка
@@ -543,10 +540,13 @@ notifier.config.title.cash_confirm: Уведомление о подтвержд
 notifier.config.title.arrival: Уведомление о прибытии
 notifier.config.title.feedback: Письмо с просьбой об оценке
 notifier.config.title.online: Уведомление о брони из онлайн формы
-notifier.config.title.channel_manager: Уведомление брони от ChannelManager
+notifier.config.title.channel_manager_order: Уведомление брони от ChannelManager
 notifier.config.title.online_payment_confirm: Подтверждение онлайн оплаты
 notifier.config.title.confirm_order: Подтверждение заказа
 notifier.config.title.unpaid: Уведомление о заказе без оплаты
 notifier.config.title.online_order: Уведомление о брони сделанной онлайн (форма)
 notifier.config.title.task: Уведомления о задачах
 
+form.clientConfigType.notification_group: Настройка уведомлений
+form.clientConfigType.notification.label: Список уведомлений для клиентов
+form.clientConfigType.notification.help: Выберите тип уведомлений доступный для рассылки клиентам

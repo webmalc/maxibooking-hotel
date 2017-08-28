@@ -102,6 +102,6 @@ services:
             - { name: kernel.event_subscriber}
     mbh.user_type:
       class: MBH\Bundle\UserBundle\Form\UserType
-      arguments: ['@translator']
+      arguments: ['@translator', '@doctrine_mongodb.odm.default_document_manager']
       tags:
           - {name: form.type}

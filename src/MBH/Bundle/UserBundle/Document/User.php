@@ -8,6 +8,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
@@ -30,6 +31,8 @@ class User extends BaseUser implements RecipientInterface
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
     const TWO_FACTOR_TYPES = ['email', 'google'];
     const SYSTEM_USER = 'mb';
+
+    use AllowNotificationTypesTrait;
 
     /**
      * @var string
@@ -90,6 +93,7 @@ class User extends BaseUser implements RecipientInterface
      * @Assert\Type(type="boolean")
      */
     protected $notifications = true;
+
 
     /**
      * @var boolean
