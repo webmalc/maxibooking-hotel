@@ -262,6 +262,7 @@ class Mailer implements \SplObserver, MailerInterface
      * @param \Swift_Message $message
      * @param $template
      * @return mixed
+     * @throws MailerNotificationException
      */
     public function addImages($data, \Swift_Message $message, $template)
     {

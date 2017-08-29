@@ -62,7 +62,7 @@ class UserController extends Controller
     {
         $entity = new User();
 
-        $allowNotificationTypes = $this->dm->getRepository('MBHBaseBundle:NotificationType')->getClientTypes();
+        $allowNotificationTypes = $this->dm->getRepository('MBHBaseBundle:NotificationType')->getStuffType();
 
         $entity->setAllowNotificationTypes($allowNotificationTypes->toArray());
         $form = $this->createForm(UserType::class,
