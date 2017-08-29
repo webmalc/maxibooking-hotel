@@ -69,7 +69,7 @@ class NotificationTypeData extends AbstractFixture implements OrderedFixtureInte
         return [
             NotificationType::CASH_DOC_CONFIRMATION_TYPE,
             NotificationType::FEEDBACK_TYPE,
-            NotificationType::CASH_DOC_CONFIRMATION_TYPE
+            NotificationType::CONFIRM_ORDER_TYPE
         ];
     }
 

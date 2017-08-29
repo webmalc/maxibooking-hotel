@@ -99,13 +99,13 @@ services:
       calls:
         - [attach, ["@mbh.system.messenger"]]
         - [attach, ["@mbh.mailer"]]
-      arguments: ['@service_container']
+      arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.notifier.mailer:
           class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
           calls:
             - [attach, ["@mbh.mailer"]]
-          arguments: ['@service_container']
+          arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.mailer:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Mailer

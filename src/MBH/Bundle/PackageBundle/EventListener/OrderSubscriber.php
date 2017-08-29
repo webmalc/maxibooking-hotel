@@ -166,6 +166,7 @@ class OrderSubscriber implements EventSubscriber
                                 ->notify()
                             ;
 
+                            //TODO: Must be logged
                         } catch (\Exception $e) {
                             return false;
                         }

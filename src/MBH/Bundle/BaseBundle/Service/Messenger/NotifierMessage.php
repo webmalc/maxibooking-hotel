@@ -3,14 +3,13 @@
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use MBH\Bundle\BaseBundle\Lib\ChoicerInterface;
-use MBH\Bundle\BaseBundle\Lib\NotifierChoicerException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 
 /**
  * NotifierMessage
  */
-class NotifierMessage implements ChoicerInterface
+class NotifierMessage
 {
     /**
      * @var string
@@ -190,7 +189,6 @@ class NotifierMessage implements ChoicerInterface
     }
 
     /**
-     * @deprecated Use setMessageType
      * @param $type
      * @return $this
      */
@@ -336,6 +334,7 @@ class NotifierMessage implements ChoicerInterface
     }
 
     /**
+     * @deprecated Use setMessageType
      * @param $category
      * @return $this
      */

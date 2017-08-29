@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
- * @ODM\Document(collection="Users")
+ * @ODM\Document(collection="Users", repositoryClass="UserRepository")
  * @Gedmo\Loggable
  * @MBHValidator\User
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
