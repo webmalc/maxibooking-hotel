@@ -1,3 +1,10 @@
+2.2.0
+============
+* \#968 rebuild message restriction
+* add messagetypes fixtures
+* add messagetypes migrations
+* change some fixtures 
+
 2.1.1
 ============
 * \#974 fix generate doc fms

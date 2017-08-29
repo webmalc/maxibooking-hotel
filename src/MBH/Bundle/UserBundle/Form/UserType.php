@@ -109,15 +109,6 @@ class UserType extends AbstractType
                 'group' => 'form.userType.settings',
                 'required' => false,
             ])
-        ;
-
-        $builder
-            ->add('notifications', CheckboxType::class, [
-                'group' => 'form.userType.notifications_fieldset',
-                'label' => 'form.userType.notifications',
-                'value' => true,
-                'required' => false,
-            ])
             ->add(
                 'allowNotificationTypes',
                 DocumentType::class,
@@ -149,25 +140,6 @@ class UserType extends AbstractType
                     'choice_translation_domain' => true
                 ]
             )
-
-            ->add('taskNotify', CheckboxType::class, [
-                'group' => 'form.userType.notifications_fieldset',
-                'label' => 'form.userType.taskNotify',
-                'value' => true,
-                'required' => false,
-            ])
-            ->add('reports', CheckboxType::class, [
-                'group' => 'form.userType.notifications_fieldset',
-                'label' => 'form.userType.reports',
-                'value' => true,
-                'required' => false,
-            ])
-            ->add('errors', CheckboxType::class, [
-                'group' => 'form.userType.notifications_fieldset',
-                'label' => 'form.userType.errors',
-                'value' => true,
-                'required' => false,
-            ])
             ->add('lastName', TextType::class, [
                 'required' => false,
                 'label' => 'form.userType.surname',
