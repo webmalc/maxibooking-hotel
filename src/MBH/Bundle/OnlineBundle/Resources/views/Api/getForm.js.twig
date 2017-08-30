@@ -30,6 +30,18 @@ jQuery(document).ready(function() {
         }
     };
 
+    var resizeHandler = function () {
+        var formHeight = document.getElementById('mbh-form-wrapper').clientHeight;
+        window.parent.postMessage({
+            type: 'mbh',
+            action: 'formResize',
+            formHeight: formHeight
+        }, '*')
+    };
+    setInterval(function() {
+        resizeHandler();
+    }, 300);
+
     if (window.addEventListener) {
         window.addEventListener("message", processMessage, false);
     } else {

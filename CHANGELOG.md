@@ -1,3 +1,7 @@
+2.2.1
+============
+* form iframe change size
+
 2.2.0
 ============
 * \#968 rebuild message restriction
