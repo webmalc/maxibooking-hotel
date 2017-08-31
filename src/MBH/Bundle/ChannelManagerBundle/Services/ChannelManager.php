@@ -278,6 +278,7 @@ class ChannelManager
         $result = false;
         foreach ($this->services as $service) {
             try {
+                $this->logger->info('Start room update for '.$service['title']);
                 $noError = $result[$service['key']]['result'] = $service['service']->updateRooms(
                     $begin,
                     $end,
@@ -315,6 +316,7 @@ class ChannelManager
         $result = false;
         foreach ($this->services as $service) {
             try {
+                $this->logger->info('Start price update for '.$service['title']);
                 $noError = $result[$service['key']]['result'] = $service['service']->updatePrices(
                     $begin,
                     $end,
@@ -352,6 +354,7 @@ class ChannelManager
         $result = false;
         foreach ($this->services as $service) {
             try {
+                $this->logger->info('Start restrictions update for '.$service['title']);
                 $noError = $result[$service['key']]['result'] = $service['service']->updateRestrictions(
                     $begin,
                     $end,
@@ -409,6 +412,7 @@ class ChannelManager
                 continue;
             }
             try {
+                $this->logger->info('Start pullOrders for '.$service['title']);
                 $noError = $result[$service['key']]['result'] = $service['service']->pullOrders($old);
                 if (!$noError) {
                     $this->logger->error($serviceTitle.' error when pull orders');

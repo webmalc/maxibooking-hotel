@@ -42,7 +42,7 @@ class CommandRunner implements ConsumerInterface
                 null,
                 [\AppKernel::CLIENT_VARIABLE => $command->getClient()],
                 null,
-                180
+                300
             );
             $command->isAsync() ? $process->start() : $process->run();
 
