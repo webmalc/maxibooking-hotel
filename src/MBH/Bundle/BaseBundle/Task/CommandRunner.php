@@ -31,16 +31,17 @@ class CommandRunner implements ConsumerInterface
             $command = unserialize($message->body);
             /** @var Command $command */
             $message = $command->getCommandParams();
+            $message['Recieved command'] = $command->getCommand();
             $this->logStart($message, $command->getClient());
 
             $consolePath = $this->kernel->getRootDir().'/../bin/console';
             $commandLine = $consolePath.' '.$this->createCommandLine($command);
+
             $process = new Process(
                 $commandLine,
                 null,
                 [\AppKernel::CLIENT_VARIABLE => $command->getClient()]
             );
-
             $command->isAsync() ? $process->start() : $process->run();
 
             if ($command->isLogOutput() && !$command->isAsync()) {

@@ -1,3 +1,7 @@
+2.2.2
+============
+* move channelmanager update in background to RabbitMQ Queue
+
 2.2.1
 ============
 * form iframe change size

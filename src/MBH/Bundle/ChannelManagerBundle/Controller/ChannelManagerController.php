@@ -38,7 +38,7 @@ class ChannelManagerController extends Controller
      *
      * @Route("/logs", name="channel_manager_logs")
      * @Method({"GET", "POST"})
-     * @return Response
+     * @return Response|array
      * @Template()
      * @Security("is_granted('ROLE_ADMIN')")
      */
