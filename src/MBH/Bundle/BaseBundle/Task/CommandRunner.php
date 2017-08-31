@@ -40,7 +40,9 @@ class CommandRunner implements ConsumerInterface
             $process = new Process(
                 $commandLine,
                 null,
-                [\AppKernel::CLIENT_VARIABLE => $command->getClient()]
+                [\AppKernel::CLIENT_VARIABLE => $command->getClient()],
+                null,
+                180
             );
             $command->isAsync() ? $process->start() : $process->run();
 
