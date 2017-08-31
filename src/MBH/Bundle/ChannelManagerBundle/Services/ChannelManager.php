@@ -248,6 +248,7 @@ class ChannelManager
                 }
 
                 if (!$noError) {
+                    $this->logger->error($service['key'].' error when UPDATE');
                     $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
@@ -284,6 +285,7 @@ class ChannelManager
                 );
 
                 if (!$noError) {
+                    $this->logger->error($service['key'].' error when updateRooms orders');
                     $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
@@ -320,6 +322,7 @@ class ChannelManager
                 );
 
                 if (!$noError) {
+                    $this->logger->error($service['key'].' error when updatePrices orders');
                     $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
@@ -356,6 +359,8 @@ class ChannelManager
                 );
 
                 if (!$noError) {
+
+                    $this->logger->error($service['key'].' error when updateRestrictions orders');
                     $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
@@ -406,6 +411,7 @@ class ChannelManager
             try {
                 $noError = $result[$service['key']]['result'] = $service['service']->pullOrders($old);
                 if (!$noError) {
+                    $this->logger->error($serviceTitle.' error when pull orders');
                     $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
