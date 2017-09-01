@@ -49,12 +49,13 @@ class ApiHandler
     {
         /** @var FormConfig $formConfig */
         $formConfig = $this->dm
-            ->getRepository('MBHOnlineBundle:FormConfig')
-            ->findOneBy(['hotels.id' => $onlineFormId]);
-        if (!is_null($formConfig)) {
+            ->find('MBHOnlineBundle:FormConfig', $onlineFormId);
+
+        if (is_null($formConfig)) {
             if (!is_null($onlineFormId)) {
                 $responseCompiler->addErrorMessage(ApiResponseCompiler::FORM_CONFIG_NOT_EXISTS);
             }
+        } else {
             if (!$formConfig->getIsEnabled()) {
                 $responseCompiler->addErrorMessage(ApiResponseCompiler::FORM_CONFIG_NOT_ENABLED);
             }

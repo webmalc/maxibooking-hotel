@@ -71,15 +71,15 @@ class ExternalApiController extends BaseController
 
         /** @var FormConfig $formConfig */
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
+        $requestHandler->addErrorMessage('form id: ' . $formConfig->getId());
         if ($responseCompiler->isSuccessFull()) {
             $responseData = [];
             $domainName = $this->getParameter('router.request_context.host');
             /** @var RoomType $roomType */
             foreach ($roomTypes as $roomType) {
                 if (is_null($formConfig)
-                    || !is_array($formConfig->getRoomTypeChoices())
-                    || !$formConfig->getRoomTypes()
-                    || in_array($roomType, $formConfig->getRoomTypeChoices())
+                    || ($formConfig->getHotels()->contains($roomType->getHotel())
+                        && (!$formConfig->getRoomTypes() || $formConfig->getRoomTypeChoices()->contains($roomType)))
                 ) {
                     $responseData[] = $roomType->getJsonSerialized($isFull, $domainName);
                 }
@@ -108,11 +108,16 @@ class ExternalApiController extends BaseController
         $isFull = !empty($queryData->get('isFull')) ? $queryData->get('isFull') === 'true' : false;
         $isOnline = !empty($queryData->get('isOnline')) ? $queryData->get('isOnline') === 'true' : true;
 
+        /** @var FormConfig $formConfig */
+        $onlineFormId = $queryData->get('onlineFormId');
+        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
+
         $hotelIds = $queryData->get('hotelIds');
 
         $tariffsQB = $this->dm
             ->getRepository('MBHPriceBundle:Tariff')
             ->fetchQueryBuilder(null, null, $isEnabled, $isOnline);
+
         if (!is_null($hotelIds)) {
             $tariffsQB->field('hotel.id')->in($hotelIds);
         }
@@ -123,7 +128,9 @@ class ExternalApiController extends BaseController
         $responseData = [];
         /** @var Tariff $tariff */
         foreach ($tariffs as $tariff) {
-            $responseData[] = $tariff->getJsonSerialized($isFull);
+            if (is_null($formConfig) || $formConfig->getHotels()->contains($tariff->getHotel())) {
+                $responseData[] = $tariff->getJsonSerialized($isFull);
+            }
         }
 
         return $responseCompiler
