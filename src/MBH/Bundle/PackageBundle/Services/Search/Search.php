@@ -551,7 +551,7 @@ class Search implements SearchInterface
 
         $groupedPackages = [];
         foreach ($packages as $package) {
-            $groupedPackages[$package->getVirtualRoom()->getId()][] = $package;
+            $groupedPackages[$package->getVirtualRoom()->getId()][] = [$package->getBegin(), $package->getEnd()];
         }
 
         $rooms = $this->dm->getRepository('MBHHotelBundle:Room')
@@ -572,37 +572,37 @@ class Search implements SearchInterface
         $emptyRooms =  new \SplObjectStorage();
 
         foreach ($rooms as $room) {
-  576             if (isset($groupedPackages[$room->getId()])) {
-! 577                 $roomPackages = [];
-! 578                 foreach ($groupedPackages[$room->getId()] as $i => $pairs) {
-+ 579                     if (!$i) {
-+ 580                         $roomPackages[$i] = $pairs;
-+ 581                         continue;
-+ 582                     }                                                                                                                                                                                                                    
-+ 583                     if ($roomPackages[$i-1][1] == $pairs[0]) {
-+ 584                         $roomPackages[$i][1] = $pairs[1];
-+ 585                         $roomPackages[$i][0] = $roomPackages[$i-1][0];
-+ 586                         unset($roomPackages[$i-1]);
-+ 587                     } else {
-+ 588                         $roomPackages[$i] = $pairs;
-+ 589                     }
-+ 590                 }
-+ 591                 foreach ($roomPackages as $package) {
-+ 592 
-+ 593                     if ($package[0] == $result->getEnd() || $package[1] == $result->getBegin()) {
-+ 594 
-  595                         $preferredRooms->attach($room);
-! 596                     } elseif ($package[0] == $end || $package[1] == $begin) {
-  597                         $preferredRooms->attach($room);
-  598                     } else {
-  599                         $preferredRooms->detach($room);
-  600                         break;
-  601                     }
-  602                 }
-  603             } else {
-  604                 $emptyRooms->attach($room);
-  605             }
-  606   }
+            if (isset($groupedPackages[$room->getId()])) {
+                $roomPackages = [];
+                foreach ($groupedPackages[$room->getId()] as $i => $pairs) {
+                    if (!$i) {
+                        $roomPackages[$i] = $pairs;
+                        continue;
+                    }
+                    if ($roomPackages[$i-1][1] == $pairs[0]) {
+                        $roomPackages[$i][1] = $pairs[1];
+                        $roomPackages[$i][0] = $roomPackages[$i-1][0];
+                        unset($roomPackages[$i-1]);
+                    } else {
+                        $roomPackages[$i] = $pairs;
+                    }
+                }
+                foreach ($roomPackages as $package) {
+
+                    if ($package[0] == $result->getEnd() || $package[1] == $result->getBegin()) {
+
+                        $preferredRooms->attach($room);
+                    } elseif ($package[0] == $end || $package[1] == $begin) {
+                        $preferredRooms->attach($room);
+                    } else {
+                        $preferredRooms->detach($room);
+                        break;
+                    }
+                }
+            } else {
+                $emptyRooms->attach($room);
+            }
+  }
         $result->setRoomsCount($emptyRooms->count() + $preferredRooms->count());
 
         $collection = $preferredRooms->count() ? $preferredRooms :  $emptyRooms;
