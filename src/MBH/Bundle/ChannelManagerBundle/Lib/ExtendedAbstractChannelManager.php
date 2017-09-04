@@ -241,7 +241,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         return $result;
     }
 
-    public function handlePullOrdersResponse($response, $config, &$result)
+    public function handlePullOrdersResponse($response, $config, &$result, $isFirstPulling = false)
     {
         $responseHandler = $this->getResponseHandler($response, $config);
         $orderHandler = $this->container->get('mbh.channelmanager.order_handler');
@@ -259,6 +259,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                         $this->dm->getFilterCollection()->disable('softdeleteable');
                     }
                 }
+
                 //old order
                 $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
                     [
@@ -266,20 +267,22 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                         'channelManagerType' => $orderInfo->getChannelManagerName()
                     ]
                 );
+
                 if ($orderInfo->isOrderModified()) {
                     if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                         $this->dm->getFilterCollection()->enable('softdeleteable');
                     }
                 }
+
                 //new
-                if ($orderInfo->isHandleAsNew($order)) {
+                if ($orderInfo->isHandledAsNew($order) || $isFirstPulling) {
                     $result = $orderHandler->createOrder($orderInfo, $order);
                     $this->notify($result, $orderInfo->getChannelManagerName(), 'new');
 
                 }
 
                 //edited
-                if ($orderInfo->isHandleAsModified($order)) {
+                if ($orderInfo->isHandledAsModified($order)) {
                     $result = $orderHandler->createOrder($orderInfo, $order);
                     if ($orderInfo->getModifiedDate()) {
                         $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
@@ -288,7 +291,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 }
 
                 //delete
-                if ($orderInfo->isHandleAsCancelled($order)) {
+                if ($orderInfo->isHandledAsCancelled($order)) {
                     $this->dm->persist($order);
                     $this->dm->flush();
                     $this->notify($order, $orderInfo->getChannelManagerName(), 'delete');
@@ -297,13 +300,13 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                     $result = true;
                 };
 
-                if (($orderInfo->isOrderModified() || $orderInfo->isOrderCancelled()) && !$order) {
+                if (($orderInfo->isOrderModified() || $orderInfo->isOrderCancelled()) && !$order && !$isFirstPulling) {
                     $this->notifyError(
                         $orderInfo->getChannelManagerName(),
                         '#' . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName()
                     );
                 }
-//                $this->notifyServiceAboutReservation($orderInfo, $config);
+                $this->notifyServiceAboutReservation($orderInfo, $config);
             };
         }
     }

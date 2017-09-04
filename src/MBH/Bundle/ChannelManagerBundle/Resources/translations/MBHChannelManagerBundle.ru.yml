@@ -34,6 +34,8 @@ views.tabs.must_fill_main_settings: 'Необходимо заполнить о�
 views.ostrovok.layout.ostrovok: Ostrovok
 views.hundredOneHotels.layout.hundredOneHotels: '101 отель'
 views.hundredOneHotels.settings: Настройки
+views.expedia.actions.sync_old_orders: Брони
+views.expedia.actions.sync_old_orders.title: Синхронизировать брони
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия .'
 
 channelManager.booking.notification.subject.new: 'Новый заказ Booking.com'

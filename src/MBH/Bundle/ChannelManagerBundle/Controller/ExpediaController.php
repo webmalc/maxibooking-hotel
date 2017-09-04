@@ -179,4 +179,21 @@ class ExpediaController extends Controller
             'logs' => $this->logs($config)
         ];
     }
+
+    /**
+     * Sync old packages
+     * @Route("/packages/sync", name="expedia_packages_sync")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_EXPEDIA')")
+     */
+    public function syncOldOrders()
+    {
+        $this->get('mbh.channelmanager.expedia')->pullAllOrders();
+        $this->addFlash(
+            'warning',
+            $this->get('translator')->trans('controller.expediaController.old_ordes_sync_start')
+        );
+
+        return $this->redirect($this->generateUrl('expedia'));
+    }
 }
