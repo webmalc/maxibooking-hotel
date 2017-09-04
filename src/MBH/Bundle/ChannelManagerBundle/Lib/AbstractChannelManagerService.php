@@ -711,7 +711,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     /**
      * @param $service
      * @param null $info
-     * @return bool
+     * @return bool|\MBH\Bundle\BaseBundle\Service\Messenger\Notifier
      */
     public function notifyError($service, $info = null)
     {
@@ -827,5 +827,22 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         } catch (Exception $e) {
             return $amount / $config->getCurrencyDefaultRatio();
         }
+    }
+
+    /**
+     * @param Order $order
+     * @param $isModified
+     * @return string
+     */
+    public function getUnexpectedOrderError(Order $order, $isModified)
+    {
+        $errorMessageId = $isModified
+            ? 'services.channel_manager.error.unexpected_modified_order'
+            : 'services.channel_manager.error.unexpected_removed_order';
+
+        return $this->container->get('translator')->trans($errorMessageId, [
+            '%orderId%' => $order->getChannelManagerId(),
+            '%service_name%' => $order->getChannelManagerType()
+        ], 'MBHChannelManagerBundle');
     }
 }

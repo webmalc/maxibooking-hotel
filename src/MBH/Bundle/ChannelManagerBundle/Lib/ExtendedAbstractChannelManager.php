@@ -280,7 +280,6 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 if ($orderInfo->isHandledAsNew($order) || $isFirstPulling) {
                     $result = $orderHandler->createOrder($orderInfo, $order);
                     $this->notify($result, $orderInfo->getChannelManagerName(), 'new');
-
                 }
 
                 //edited
@@ -303,10 +302,14 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 };
 
                 if (($orderInfo->isOrderModified() || $orderInfo->isOrderCancelled()) && !$order && !$isFirstPulling) {
-                    $this->notifyError(
-                        $orderInfo->getChannelManagerName(),
-                        '#' . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName()
-                    );
+                    if ($orderInfo->isOrderModified()) {
+                        $result = $orderHandler->createOrder($orderInfo, $order);
+                        $this->notifyError($orderInfo->getChannelManagerName(), $this->getUnexpectedOrderError($result, true));
+                    }
+
+                    if ($orderInfo->isOrderCancelled()) {
+                        $this->notifyError($orderInfo->getChannelManagerName(), $this->getUnexpectedOrderError($result, false));
+                    }
                 }
                 $this->notifyServiceAboutReservation($orderInfo, $config);
             };

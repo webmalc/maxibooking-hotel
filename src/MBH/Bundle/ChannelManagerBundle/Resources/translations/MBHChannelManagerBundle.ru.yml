@@ -37,6 +37,8 @@ views.hundredOneHotels.settings: Настройки
 views.expedia.actions.sync_old_orders: Брони
 views.expedia.actions.sync_old_orders.title: Синхронизировать брони
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия .'
+services.channel_manager.error.unexpected_modified_order: 'Поступила информация об изменении брони номер "%orderId%" из системы бронирования "%service_name%". Однако в программе "Максибукинг" информации о такой брони нет. Новая бронь с поступившими данными создана. Воспользуйтесь личным кабинетом системы бронирования "%service_name%" для уточнения информации об измененной брони. И сообщите, пожалуйста, об ошибке в службу поддержки программы Максибукинг.'
+services.channel_manager.error.unexpected_removed_order: 'Поступила информация об отмене брони номер "%orderId%" из системы бронирования "%service_name%". Однако в программе "Максибукинг" информации о такой брони нет. Воспользуйтесь личным кабинетом системы бронирования "%service_name%" для уточнения информации об отмененной брони. Сообщите, пожалуйста, об ошибке в службу поддержки программы Максибукинг.'
 
 channelManager.booking.notification.subject.new: 'Новый заказ Booking.com'
 channelManager.booking.notification.subject.edit: 'Изменен заказ Booking.com'

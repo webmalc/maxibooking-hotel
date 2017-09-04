@@ -63,8 +63,10 @@ class HundredOneHotels extends Base
         /** @var HundredOneHotelsConfig $config */
         foreach ($this->getConfig() as $config) {
             $this->log('begin update rooms for hotel "' . $config->getHotel()->getName() . '"');
+
             /** @var HOHRequestFormatter $requestFormatter */
             $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
+
             /** @var HundredOneHotelsConfig $config */
             //$roomTypes array[roomTypeId => [roomId('syncId'), roomType('doc')]]
             $roomTypes = $this->getRoomTypes($config, true);
@@ -100,6 +102,8 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest($config);
+            $this->log(json_encode($request));
+
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
             $result = $this->checkResponse($sendResult);
 
@@ -126,9 +130,10 @@ class HundredOneHotels extends Base
         /** @var HundredOneHotelsConfig $config */
         foreach ($this->getConfig() as $config) {
             $this->log('begin update prices for hotel "' . $config->getHotel()->getName() . '"');
-            /** @var HundredOneHotelsConfig $config */
+
             //array [service TariffId][syncId(service TariffId)=> doc(maxi Tariff)]
             $tariffs = $this->getTariffs($config, true);
+
             $serviceTariffs = $this->pullTariffs($config);
             $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
             //$roomTypes array[roomId => [roomId('syncId'), roomType('doc')]]
@@ -193,6 +198,7 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest($config);
+            $this->log(json_encode($request));
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
 
             if ($result) {
@@ -453,10 +459,13 @@ class HundredOneHotels extends Base
                 };
 
                 if (in_array($orderInfo->getLastAction(), ['modified', 'cancelled']) && !$order) {
-                    $this->notifyError(
-                        self::CHANNEL_MANAGER_TYPE,
-                        '#' . $orderInfo->getChannelManagerId() . ' ' . $orderInfo->getPayerName()
-                    );
+                    if ($orderInfo->getLastAction() === 'modified') {
+                        $result = $this->createOrder($orderInfo, null);
+                        $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, true));
+                    }
+                    if ($orderInfo->getLastAction() === 'cancelled') {
+                        $this->notifyError(self::CHANNEL_MANAGER_TYPE, $this->getUnexpectedOrderError($result, false));
+                    }
                 }
             };
         }
