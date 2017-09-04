@@ -60,7 +60,9 @@ class HundredOneHotels extends Base
         $end = $this->getDefaultEnd($begin, $end);
 
         // iterate hotels
+        /** @var HundredOneHotelsConfig $config */
         foreach ($this->getConfig() as $config) {
+            $this->log('begin update rooms for hotel "' . $config->getHotel()->getName() . '"');
             /** @var HOHRequestFormatter $requestFormatter */
             $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
             /** @var HundredOneHotelsConfig $config */
@@ -101,6 +103,7 @@ class HundredOneHotels extends Base
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
             $result = $this->checkResponse($sendResult);
 
+            $this->log('response for update rooms request:');
             $this->log($sendResult);
         }
         return $result;
@@ -120,7 +123,9 @@ class HundredOneHotels extends Base
         $end = $this->getDefaultEnd($begin, $end);
         $calc = $this->container->get('mbh.calculation');
         // iterate hotels
+        /** @var HundredOneHotelsConfig $config */
         foreach ($this->getConfig() as $config) {
+            $this->log('begin update prices for hotel "' . $config->getHotel()->getName() . '"');
             /** @var HundredOneHotelsConfig $config */
             //array [service TariffId][syncId(service TariffId)=> doc(maxi Tariff)]
             $tariffs = $this->getTariffs($config, true);
@@ -194,6 +199,7 @@ class HundredOneHotels extends Base
                 $result = $this->checkResponse($sendResult);
             }
 
+            $this->log('response for update prices request:');
             $this->log($sendResult);
         }
 
@@ -214,10 +220,11 @@ class HundredOneHotels extends Base
         $end = $this->getDefaultEnd($begin, $end);
 
         // iterate hotels
+        /** @var HundredOneHotelsConfig $config */
         foreach ($this->getConfig() as $config) {
+            $this->log('begin update restrictions for hotel "' . $config->getHotel()->getName() . '"');
             /** @var HOHRequestFormatter $requestFormatter */
             $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
-            /** @var HundredOneHotelsConfig $config */
             $roomTypes = $this->getRoomTypes($config, true);
             $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
@@ -342,6 +349,7 @@ class HundredOneHotels extends Base
                 $result = $this->checkResponse($sendResult);
             }
 
+            $this->log('response for update restrictions request:');
             $this->log($sendResult);
         }
 
@@ -366,7 +374,9 @@ class HundredOneHotels extends Base
     {
         $result = true;
 
+        /** @var HundredOneHotelsConfig $config */
         foreach ($this->getConfig() as $config) {
+            $this->log('begin pulling orders for hotel "' . $config->getHotel()->getName() . '" with id "' . $config->getHotel()->getId() . '"');
             /** @var HOHRequestFormatter $requestFormatter */
             $requestFormatter = $this->container->get('mbh.channelmanager.hoh_request_formatter');
             $startTime = new \DateTime('- 1 hour');
@@ -375,9 +385,8 @@ class HundredOneHotels extends Base
             $request = $requestFormatter->getRequest($config, 'get_bookings');
 
             $serviceOrders = $this->send(static::BASE_URL, $request, null, true, true);
+            $this->log($serviceOrders);
             $serviceOrders = json_decode($serviceOrders, true);
-
-            $this->log('Reservations count: ' . count($serviceOrders['data']));
 
             $tariffs = $this->getTariffs($config, true);
             $roomTypes = $this->getRoomTypes($config, true);
@@ -396,7 +405,7 @@ class HundredOneHotels extends Base
                 $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
                     [
                         'channelManagerId' => $orderInfo->getChannelManagerId(),
-                        'channelManagerType' => self::CHANNEL_MANAGER_TYPE
+                        'channelManagerType' => self::CHANNEL_MANAGER_TYPE,
                     ]
                 );
                 if ($orderInfo->getLastAction() == 'modified') {
@@ -628,7 +637,7 @@ class HundredOneHotels extends Base
                 $result[$placement['id']] = [
                     'title' => $placement['name'] . "\n(" . $roomType['name'] . ')',
                     'occupantCount' => $placement['occupancy'],
-                    'rooms' => [$roomType['id']]
+                    'rooms' => [$roomType['id']],
                 ];
             }
         }
@@ -699,7 +708,7 @@ class HundredOneHotels extends Base
         $roomTypes = $this->getRoomTypes($config);
         $closedData[] = [
             'start' => $requestFormatter->formatDate($firstDate),
-            'end' => $requestFormatter->formatDate($endDate)
+            'end' => $requestFormatter->formatDate($endDate),
         ];
         foreach ($roomTypes as $roomType) {
             $closedData[0]['closed'][$roomType['syncId']] = 1;
