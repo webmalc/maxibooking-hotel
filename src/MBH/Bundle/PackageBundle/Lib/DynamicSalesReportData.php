@@ -150,6 +150,6 @@ class DynamicSalesReportData
             return DynamicSales::getRoundedValue(end($periodData), $option);
         }
 
-        throw new \Exception('Invalid option' . $option);
+        throw new \Exception('Invalid option ' . $option);
     }
 }

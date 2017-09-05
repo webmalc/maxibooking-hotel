@@ -32,10 +32,10 @@ class DynamicSalesDay
     protected $priceOfCancelledForPeriod = 0;
     protected $priceOfPaidCancelled = 0;
     protected $sumOfPayment = 0;
-    private $sumOfPaidMinusCancelled = 0;
     private $sumOfPaidForCancelledForPeriod = 0;
-    private $numberOfPaid = 0;
+    private $sumOfPaid = 0;
     private $sumPaidToClientsForCancelledForPeriod = 0;
+    private $sumOfPaidMinusCancelledForPeriod;
     protected $toArrayData;
 
     private $isToArrayDataInit = false;
@@ -45,8 +45,8 @@ class DynamicSalesDay
     private $isPriceOfCancelledInit = false;
     private $isPriceOfPaidCancelledInit = false;
     private $isSumOfPaymentInit = false;
-    private $isNumberOfPaidInit = false;
-    private $isSumOfPaidMinusCancelledInit = false;
+    private $isSumOfPaidInit = false;
+    private $isSumOfPaidMinusCancelledForPeriodInit = false;
     private $isSumOfPaidForCancelledForPeriodInit = false;
     private $isSumPaidToClientsForCancelledForPeriodInit = false;
 
@@ -227,29 +227,38 @@ class DynamicSalesDay
      */
     public function getPriceOfPaidCancelled()
     {
-//        if (!$this->isPriceOfPaidCancelledInit) {
-//            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-//                $this->dm->getFilterCollection()->disable('softdeleteable');
-//            }
-//
-//            foreach ($this->cancelledPackages as $cancelledPackage) {
-//                //in case if order entirely removed from db
-//                try {
-//                    if ($cancelledPackage->getIsPaid()) {
-//                        $this->priceOfPaidCancelled += $cancelledPackage->getPrice();
-//                    }
-//                } catch (DocumentNotFoundException $exception) {
-//                }
-//            }
-//
-//            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-//                $this->dm->getFilterCollection()->enable('softdeleteable');
-//            }
-//            $this->isPriceOfPaidCancelledInit = true;
-//        }
+        if (!$this->isPriceOfPaidCancelledInit) {
+            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+            }
 
-//        return $this->priceOfPaidCancelled;
-        return 0;
+            foreach ($this->cancelledPackages as $cancelledPackage) {
+                //in case if order entirely removed from db
+                try {
+                    if ($cancelledPackage->getIsPaid()) {
+                        $this->priceOfPaidCancelled += $this->getPackageFee($cancelledPackage);
+                    }
+                } catch (DocumentNotFoundException $exception) {
+                }
+            }
+
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+            $this->isPriceOfPaidCancelledInit = true;
+        }
+
+        return $this->priceOfPaidCancelled;
+    }
+
+    private function getPackageFee(Package $package)
+    {
+        $orderPayment = $package->getOrder()->getPaid();
+        $priceRatio = $package->getOrder()->getPrice() != 0
+            ? $package->getPrice() / $package->getOrder()->getPrice()
+            : 0;
+
+        return $orderPayment * $priceRatio;
     }
 
     /**
@@ -266,8 +275,7 @@ class DynamicSalesDay
 //            $this->isSumOfPaymentInit = true;
 //        }
 //
-//        return $this->sumOfPayment;
-        return 0;
+        return $this->sumOfPayment;
     }
 
     /**
@@ -280,96 +288,81 @@ class DynamicSalesDay
         return $this->getSumOfPayment() + $previousDayValue;
     }
 
-    public function getNumberOfPaid()
+    public function getSumOfPaid()
     {
-        if (!$this->isNumberOfPaidInit) {
+        if (!$this->isSumOfPaidInit) {
             if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->disable('softdeleteable');
             }
             foreach ($this->createdPackages as $createdPackage) {
                 if ($createdPackage->getIsPaid()) {
-                    $this->numberOfPaid++;
+                    $this->sumOfPaid += $createdPackage->getPrice();
                 }
             }
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
             }
-            $this->isNumberOfPaidInit = true;
+            $this->isSumOfPaidInit = true;
         }
 
-        return $this->numberOfPaid;
+        return $this->sumOfPaid;
     }
 
-    public function getNumberOfPaidForPeriod()
+    public function getSumOfPaidForPeriod()
     {
-        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getNumberOfPaidForPeriod() : 0;
+        $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getSumOfPaidForPeriod() : 0;
 
-        return $this->getNumberOfPaid() + $previousDayValue;
+        return $this->getSumOfPaid() + $previousDayValue;
     }
 
-    public function getSumOfPaidMinusCancelled()
-    {
-//        if (!$this->isSumOfPaidMinusCancelledInit) {
-//            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-//                $this->dm->getFilterCollection()->disable('softdeleteable');
-//            }
-//            foreach ($this->cashDocuments as $cashDocument) {
-//                if ($cashDocument->getOperation() == 'in' && empty($cashDocument->getOrder()->getDeletedAt())) {
-//                    $this->sumOfPaidMinusCancelled += $cashDocument->getTotal();
-//                }
-//            }
-//            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-//                $this->dm->getFilterCollection()->enable('softdeleteable');
-//            }
-//            $this->isSumOfPaidMinusCancelledInit = true;
-//        }
-//
-//        return $this->sumOfPaidMinusCancelled;
-        return 0;
+    public function getSumOfPaidMinusCancelledForPeriod() {
+        if (!$this->isSumOfPaidMinusCancelledForPeriodInit) {
+            $this->sumOfPaidMinusCancelledForPeriod = $this->getSumOfPaidForPeriod() - $this->getPriceOfCancelledForPeriod();
+            $this->isSumOfPaidMinusCancelledForPeriodInit = true;
+        }
+        return $this->sumOfPaidMinusCancelledForPeriod;
     }
 
     public function getSumOfPaidForCancelledForPeriod()
     {
-//        if (!$this->isSumOfPaidForCancelledForPeriodInit) {
-//            $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getSumOfPaidForCancelledForPeriod() : 0;
-//            $currentDayValue = 0;
-//
-//            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-//                $this->dm->getFilterCollection()->disable('softdeleteable');
-//            }
-//            foreach ($this->cashDocuments as $cashDocument) {
-//                if ($cashDocument->getOperation() == 'in' && !empty($cashDocument->getOrder()->getDeletedAt())) {
-//                    $currentDayValue += $cashDocument->getTotal();
-//                }
-//            }
-//            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-//                $this->dm->getFilterCollection()->enable('softdeleteable');
-//            }
-//
-//            $this->sumOfPaidForCancelledForPeriod = $previousDayValue + $currentDayValue;
-//            $this->isSumOfPaidForCancelledForPeriodInit = true;
-//        }
-//
-//        return $this->sumOfPaidForCancelledForPeriod;
-        return 0;
+        if (!$this->isSumOfPaidForCancelledForPeriodInit) {
+            $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getSumOfPaidForCancelledForPeriod() : 0;
+            $currentDayValue = 0;
+
+            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+            }
+            foreach ($this->cashDocuments as $cashDocument) {
+                if ($cashDocument->getOperation() == 'in' && !empty($cashDocument->getOrder()->getDeletedAt())) {
+                    $currentDayValue += $cashDocument->getTotal();
+                }
+            }
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+
+            $this->sumOfPaidForCancelledForPeriod = $previousDayValue + $currentDayValue;
+            $this->isSumOfPaidForCancelledForPeriodInit = true;
+        }
+
+        return $this->sumOfPaidForCancelledForPeriod;
     }
 
     public function getSumPaidToClientsForCancelledForPeriod()
     {
-//        if (!$this->isSumPaidToClientsForCancelledForPeriodInit) {
-//            $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getSumPaidToClientsForCancelledForPeriod() : 0;
-//            $currentDayValue = 0;
-//            foreach ($this->cashDocuments as $cashDocument) {
-//                if ($cashDocument->getOperation() == 'out' && !empty($cashDocument->getOrder()->getDeletedAt())) {
-//                    $currentDayValue += $cashDocument->getTotal();
-//                }
-//            }
-//            $this->sumPaidToClientsForCancelledForPeriod = $previousDayValue + $currentDayValue;
-//            $this->isSumPaidToClientsForCancelledForPeriodInit = true;
-//        }
-//
-//        return $this->sumPaidToClientsForCancelledForPeriod;
-        return 0;
+        if (!$this->isSumPaidToClientsForCancelledForPeriodInit) {
+            $previousDayValue = !is_null($this->previousDay) ? $this->previousDay->getSumPaidToClientsForCancelledForPeriod() : 0;
+            $currentDayValue = 0;
+            foreach ($this->cashDocuments as $cashDocument) {
+                if ($cashDocument->getOperation() == 'out' && !empty($cashDocument->getOrder()->getDeletedAt())) {
+                    $currentDayValue += $cashDocument->getTotal();
+                }
+            }
+            $this->sumPaidToClientsForCancelledForPeriod = $previousDayValue + $currentDayValue;
+            $this->isSumPaidToClientsForCancelledForPeriodInit = true;
+        }
+
+        return $this->sumPaidToClientsForCancelledForPeriod;
     }
 
     public function getSpecifiedValue($option)
@@ -393,9 +386,9 @@ class DynamicSalesDay
                 DynamicSales::PRICE_OF_CANCELLED_OPTION => $this->getPriceOfCancelled(),
                 DynamicSales::PRICE_OF_PAID_CANCELLED_OPTION => $this->getPriceOfPaidCancelled(),
                 DynamicSales::PRICE_OF_CANCELLED_FOR_PERIOD_OPTION => $this->getPriceOfCancelledForPeriod(),
-                DynamicSales::NUMBER_OF_PAID_OPTION => $this->getNumberOfPaid(),
-                DynamicSales::NUMBER_OF_PAID_FOR_PERIOD_OPTION => $this->getNumberOfPaidForPeriod(),
-                DynamicSales::SUM_OF_PAID_MINUS_CANCELLED_OPTION => $this->getSumOfPaidMinusCancelled(),
+                DynamicSales::SUM_OF_PAID => $this->getSumOfPaid(),
+                DynamicSales::NUMBER_OF_PAID_FOR_PERIOD_OPTION => $this->getSumOfPaidForPeriod(),
+                DynamicSales::SUM_OF_PAID_MINUS_CANCELLED_OPTION => $this->getSumOfPaidMinusCancelledForPeriod(),
                 DynamicSales::SUM_OF_PAID_FOR_CANCELLED_FOR_PERIOD_OPTION => $this->getSumOfPaidForCancelledForPeriod(),
                 DynamicSales::SUM_PAID_TO_CLIENTS_FOR_REMOVED_FOR_PERIOD_OPTION => $this->getSumPaidToClientsForCancelledForPeriod()
             ];

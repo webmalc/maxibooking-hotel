@@ -62,8 +62,8 @@ class DynamicSalesGeneratorTest  extends WebTestCase
         $this->assertEquals($tenthDynamicSalesDay->getNumberOfCancelled(), 1);
         $this->assertEquals($tenthDynamicSalesDay->getPriceOfCancelled(), 430);
         $this->assertEquals($tenthDynamicSalesDay->getPriceOfCancelledForPeriod(), 7930);
-        $this->assertEquals($tenthDynamicSalesDay->getNumberOfPaid(), 1);
-        $this->assertEquals($tenthDynamicSalesDay->getNumberOfPaidForPeriod(), 3);
+        $this->assertEquals($tenthDynamicSalesDay->getSumOfPaid(), 1);
+        $this->assertEquals($tenthDynamicSalesDay->getSumOfPaidForPeriod(), 3);
         //TODO: Поменять впоследствии
         $this->assertEquals($tenthDynamicSalesDay->getPriceOfPaidCancelled(), 0);
         $this->assertEquals($tenthDynamicSalesDay->getSumOfPayment(), 0);
@@ -114,8 +114,8 @@ class DynamicSalesGeneratorTest  extends WebTestCase
         $this->assertEquals($fourthSalesDay->getNumberOfCancelled(), 1);
         $this->assertEquals($fourthSalesDay->getPriceOfCancelled(), 7500);
         $this->assertEquals($fourthSalesDay->getPriceOfCancelledForPeriod(), 7500);
-        $this->assertEquals($fourthSalesDay->getNumberOfPaid(), 1);
-        $this->assertEquals($fourthSalesDay->getNumberOfPaidForPeriod(), 1);
+        $this->assertEquals($fourthSalesDay->getSumOfPaid(), 1);
+        $this->assertEquals($fourthSalesDay->getSumOfPaidForPeriod(), 1);
         //TODO: Поменять впоследствии
         $this->assertEquals($fourthSalesDay->getPriceOfPaidCancelled(), 0);
         $this->assertEquals($fourthSalesDay->getSumOfPayment(), 0);
