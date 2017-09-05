@@ -491,10 +491,27 @@ var docReadyPackages = function () {
     discountInit($('#mbh_bundle_packagebundle_package_main_type_discount'), $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount'))
 }
 
+var doFixVirtualRoom = function () {
+    bindSwitchHandlers();
+    canIChangeVirtualRoom();
+};
+var canIChangeVirtualRoom = function () {
+    $("#mbh_bundle_packagebundle_package_main_type_virtualRoom").prop("disabled", checkFixVirtualRoomStatus());
+};
+var checkFixVirtualRoomStatus = function () {
+    return $('#mbh_bundle_packagebundle_package_main_type_isFixVirtualRoom').bootstrapSwitch('state');
+};
+var bindSwitchHandlers = function () {
+    $('#mbh_bundle_packagebundle_package_main_type_isFixVirtualRoom').on('switchChange.bootstrapSwitch', canIChangeVirtualRoom);
+};
+
+
 
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
+    doFixVirtualRoom();
+
     //package ajax tabs
     (function () {
         var tabs = $('#package-tabs');
@@ -519,7 +536,7 @@ $(document).ready(function () {
                 docReadyPackages();
                 docReadyCash();
                 docReadyDocs();
-
+                doFixVirtualRoom();
             });
         });
     }());

@@ -466,25 +466,28 @@ class Search implements SearchInterface
                 $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
                     ->fetchBaseTariff($result->getRoomType()->getHotel(), null, $this->memcached);
 
-                //check windows
-                $virtualResult = $this->setVirtualRoom(
-                    $result,
-                    $baseTariff,
-                    $query->getExcludePackage(),
-                    $query->getPreferredVirtualRoom()
-                );
+                if (!$query->isFixVirtualRoom) {
+                    //check windows
+                    $virtualResult = $this->setVirtualRoom(
+                        $result,
+                        $baseTariff,
+                        $query->getExcludePackage(),
+                        $query->getPreferredVirtualRoom()
+                    );
 
-                if (!$virtualResult) {
-                    if ($query->getIsShowNoVirtRoomFlash()) {
-                        $session->getFlashBag()->add(
-                            'search',
-                            $trans->trans(
-                                'windows.search.error',
-                                ['%room_type%' => $result->getRoomType()]
-                            )
-                        );
+                    if (!$virtualResult) {
+                        if ($query->getIsShowNoVirtRoomFlash()) {
+                            $session->getFlashBag()->add(
+                                'search',
+                                $trans->trans(
+                                    'windows.search.error',
+                                    ['%room_type%' => $result->getRoomType()]
+                                )
+                            );
+                        }
+                        continue;
                     }
-                    continue;
+
                 }
 
                 $roomTypeObjId = $result->getRoomTypeInterfaceObject()->getId() . '_' . $result->getTariff()->getId();

@@ -135,6 +135,9 @@ class SearchQuery
      */
     protected $excludePackage;
 
+    /** @var  boolean */
+    public $isFixVirtualRoom;
+
     /**
      * Additional days for search
      * @var int

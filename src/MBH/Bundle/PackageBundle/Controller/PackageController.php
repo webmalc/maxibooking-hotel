@@ -473,8 +473,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid() && !$package->getIsLocked()) {
             //check by search
             $newTariff = $form->get('tariff')->getData();
+            $isFixVirtualRoom = $form->get('isFixVirtualRoom')->getData();
             $result = $this->container->get('mbh.order_manager')
-                ->updatePackage($oldPackage, $package, $newTariff);
+                ->updatePackage($oldPackage, $package, $newTariff, $isFixVirtualRoom);
             /** @var FlashBagInterface $flashBag */
             $flashBag = $request->getSession()->getFlashBag();
             if ($result instanceof Package) {

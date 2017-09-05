@@ -109,7 +109,7 @@ class OrderManager
      * @param Tariff $updateTariff
      * @return Package|string
      */
-    public function updatePackage(Package $old, Package $new, Tariff $updateTariff = null)
+    public function updatePackage(Package $old, Package $new, Tariff $updateTariff = null, bool $isFixVirtualRoom = false)
     {
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -151,7 +151,7 @@ class OrderManager
         //search for packages
         $tariff = $updateTariff ?? $new->getTariff();
         $promotion = $new->getPromotion() ? $new->getPromotion() : null;
-        $promotion = $promotion ?? $tariff->getDefaultPromotion();
+        $promotion = $tariff->getDefaultPromotion() ?? $promotion;
         $oldEnd = clone $old->getEnd();
 
         $query = new SearchQuery();
@@ -170,6 +170,7 @@ class OrderManager
         $query->setSpecial($new->getSpecial());
         $query->memcached = false;
         $query->setExcludePackage($new);
+        $query->isFixVirtualRoom = $isFixVirtualRoom;
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -188,10 +189,11 @@ class OrderManager
 
             $new->setPrice($results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren()))
                 ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
-                ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
-                ->setVirtualRoom($results[0]->getVirtualRoom())
+                ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()));
+            if (!$isFixVirtualRoom) {
+                $new->setVirtualRoom($results[0]->getVirtualRoom());
+            }
             ;
-
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
             return $new;

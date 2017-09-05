@@ -62,7 +62,7 @@ class PackageMainType extends AbstractType
                 'class' => 'MBHHotelBundle:RoomType',
                 'group' => 'Номер',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
-                    return $dr->createQueryBuilder('q')
+                    return $dr->createQueryBuilder()
                         ->field('hotel.id')->equals($options['hotel']->getId())
                         ->field('deletedAt')->equals(null)
                         ->sort(['fullTitle' => 'asc', 'title' => 'asc']);
@@ -143,7 +143,16 @@ class PackageMainType extends AbstractType
                     ->equals(null);
             },
             'group' => 'Цена',
-        ]);
+        ])
+            ->add('isFixVirtualRoom', CheckboxType::class, [
+                'label' => 'Зафиксировать виртуал.номер',
+                'help' =>  'Виртуальный номер при перерасчете не изменяется',
+                'required' => false,
+                'data' => true,
+                'mapped' => false,
+                'group' => 'Цена'
+            ])
+        ;
         if (!$package->getTotalOverwrite() && $options['price']) {
             $builder->add('price', TextType::class, [
                 'label' => 'form.packageMainType.price',
@@ -177,7 +186,6 @@ class PackageMainType extends AbstractType
                     'label' => 'form.packageMainType.special',
                     'class' => 'MBH\Bundle\PriceBundle\Document\Special',
                     'required' => false,
-                    'group' => 'Спецпредложение',
                     'query_builder' => function (DocumentRepository $dr) use ($package) {
                         $filter = new SpecialFilter();
                         $filter->setHotel($package->getHotel())
