@@ -1028,4 +1028,36 @@ class PackageRepository extends DocumentRepository
 
         return $queryBuilder->getQuery()->execute();
     }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array $roomTypes
+     * @param bool $isSorted
+     * @return mixed
+     */
+    public function getPackagesByCreationDatesAndRoomTypeIds(\DateTime $begin, \DateTime $end, $roomTypes = null, $isSorted = true){
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
+            ->field('createdAt')->gte($begin)
+            ->field('createdAt')->lte($end)
+            ->sort('createdAt', 'asc');
+
+        if($roomTypes) {
+            $queryBuilder->field('roomType.id')->in($roomTypes);
+        }
+
+        $packages = $queryBuilder->getQuery()->execute();
+        if (!$isSorted) {
+            return $packages;
+        }
+
+        $sortedPackages = [];
+        /** @var Package $package */
+        foreach ($packages as $package) {
+            $sortedPackages[$package->getRoomType()->getId()][$package->getCreatedAt()->format('d.m.Y')][] = $package;
+        }
+
+        return $sortedPackages;
+    }
 }

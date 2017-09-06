@@ -458,3 +458,38 @@ modal.form.delete.reasons.order: Причина удаления заказа
 modal.form.delete.reasons.reason_default: Не указана
 modal.form.delete.reasons.close: Отмена
 modal.form.delete.reasons.delete: Удалить
+
+#Dynamic Sale
+package.dynamic.sale: 'Динамика продаж'
+package.dynamic.sale.search: 'Показать'
+dynamic.sales.layout.title: Отчеты
+dynamic.sales.range_is_over_error: 'Период не должен превышать %numberOfDays% дней'
+
+dynamic.sales.day.periods: Периоды
+dynamic.sales.day.summary: Итого
+dynamic.sales.day.total-sales-price-for-period: Объем броней за период/руб
+dynamic.sales.day.total-sales-price: Объем броней за сутки/руб
+dynamic.sales.day.number-of-created-packages: Создано броней за сутки
+dynamic.sales.day.number-of-created-packages-for-period: Создано броней за период
+dynamic.sales.day.number-of-paid: Оплачено броней за сутки
+dynamic.sales.day.number-of-paid-for-period: Оплачено броней на дату итого
+dynamic.sales.day.number-of-cancelled: Аннулировано броней за сутки
+dynamic.sales.day.price-of-cancelled: Аннулировано броней за сутки в рублях
+dynamic.sales.day.price-of-cancelled-for-period: Аннулировано броней за период в рублях
+dynamic.sales.day.price-of-paid-cancelled: Аннулировано оплаченных броней за сутки в рублях
+dynamic.sales.day.sum-of-paid-minus-cancelled: Оплачено броней на дату итого минус аннулированные
+dynamic.sales.day.sales.comparison: Сравнение
+dynamic.sales.day.sales.summ: Сумма
+dynamic.sales.day.sales.amounts: Кол-во
+dynamic.sales.day.sales.volume: Объем броней за сутки/руб
+dynamic.sales.day.number-of-man-days-for-period: Брони в чел/днях за период
+dynamic.sales.day.number-of-man-days: Брони в чел/днях за сутки
+dynamic.sales.day.number-of-package-days-for-period: Брони в номеро/днях за период
+dynamic.sales.day.number-of-package-days: Брони в номеро/днях за сутки
+dynamic.sales.day.sum-of-paid-for-cancelled-for-period: А/Р броней за период
+dynamic.sales.day.sum-paid-to-clients-for-period-for-removed: Оплата А/Р броней за период
+
+dynamic.sales.dates: Даты
+dynamic.sales.show.title: Что показывать ?
+dynamic.sales.type.room: Тип номера
+dynamic.sales.result: Итого
