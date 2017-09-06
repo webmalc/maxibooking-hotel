@@ -79,3 +79,4 @@ parameters:
   packaging.month_count: 5
 
   dev_delivery_addresses: ['info@maxi-booking.ru']
+  mbh_dynamic_sale_period: 90

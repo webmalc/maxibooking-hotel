@@ -7,6 +7,7 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -105,14 +106,14 @@ class OrderManager
     /**
      * @param Package $old
      * @param Package $new
+     * @param Tariff $updateTariff
      * @return Package|string
      */
-    public function updatePackage(Package $old, Package $new)
+    public function updatePackage(Package $old, Package $new, Tariff $updateTariff = null, bool $isFixVirtualRoom = false)
     {
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
         }
-
         //check changes
         if (
             $old->getBegin() == $new->getBegin() &&
@@ -122,7 +123,8 @@ class OrderManager
             $old->getChildren() == $new->getChildren() &&
             $old->getPromotion() == $new->getPromotion() &&
             $old->getSpecial() == $new->getSpecial() &&
-            $old->getIsForceBooking() == $new->getIsForceBooking()
+            $old->getIsForceBooking() == $new->getIsForceBooking() &&
+            ($updateTariff == null || $updateTariff->getId() == $old->getTariff()->getId())
         ) {
             return $new;
         }
@@ -147,27 +149,35 @@ class OrderManager
         }
 
         //search for packages
+        $tariff = $updateTariff ?? $new->getTariff();
+        $promotion = $new->getPromotion() ? $new->getPromotion() : null;
+        $promotion = $tariff->getDefaultPromotion() ?? $promotion;
         $oldEnd = clone $old->getEnd();
+
         $query = new SearchQuery();
         $query->begin = $new->getBegin();
         $query->end = $new->getEnd();
         $query->adults = $new->getAdults();
         $query->children = $new->getChildren();
-        $query->tariff = $new->getTariff();
+        $query->tariff = $tariff;
         $query->addRoomType($new->getRoomType()->getId());
         $query->addExcludeRoomType($old->getRoomType()->getId());
         $query->excludeBegin = $old->getBegin();
         $query->excludeEnd = $oldEnd->modify('-1 day');
         $query->forceRoomTypes = true;
-        $query->setPromotion($new->getPromotion() ? $new->getPromotion() : false);
+        $query->setPromotion($promotion);
         $query->forceBooking = $new->getIsForceBooking();
         $query->setSpecial($new->getSpecial());
         $query->memcached = false;
         $query->setExcludePackage($new);
+        $query->isFixVirtualRoom = $isFixVirtualRoom;
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
         if (count($results) == 1) {
+            $new->setTariff($results[0]->getTariff())
+                ->setPromotion($promotion)
+            ;
             //recalculate cache
             $this->container->get('mbh.room.cache')->recalculate(
                 $old->getBegin(), $oldEnd, $old->getRoomType(), $old->getTariff(), false
@@ -179,10 +189,11 @@ class OrderManager
 
             $new->setPrice($results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren()))
                 ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
-                ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
-                ->setVirtualRoom($results[0]->getVirtualRoom())
+                ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()));
+            if (!$isFixVirtualRoom) {
+                $new->setVirtualRoom($results[0]->getVirtualRoom());
+            }
             ;
-
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
             return $new;
@@ -371,7 +382,8 @@ class OrderManager
         //search for packages
         $query = new SearchQuery();
         $query->begin = $this->helper->getDateFromString($data['begin']);
-        $query->end = $this->helper->getDateFromString($data['end']);;
+        $query->end = $this->helper->getDateFromString($data['end']);
+
         $query->adults = (int)$data['adults'];
         $query->children = (int)$data['children'];
         $query->tariff = !empty($data['tariff']) ? $data['tariff'] : null;

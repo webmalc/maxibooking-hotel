@@ -438,3 +438,5 @@ special.virtualRoom: Виртуальная комната
 special.virtualRoom.help: Выбор виртуальной комнаты
 
 
+
+form.packageMainType.tariff: 'Тариф для пересчета'

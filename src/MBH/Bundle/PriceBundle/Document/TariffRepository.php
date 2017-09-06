@@ -247,7 +247,7 @@ class TariffRepository extends DocumentRepository
         }
 
         if ($filter->getHotel()) {
-            $qb->field('hotel')->references($filter->getHotel());
+            $qb->field('hotel.id')->equals($filter->getHotel()->getId());
         }
 
         $qb->sort(['position' => 'desc', 'fullTitle' => 'asc']);

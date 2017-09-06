@@ -46,7 +46,7 @@ class Tariff extends Base implements ConditionsInterface
     use BlameableDocument;
 
     use ConditionsTrait;
-
+    
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="tariffs")
