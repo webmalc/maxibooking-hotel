@@ -491,8 +491,8 @@ class ChessBoardDataBuilder
                 usort($rooms, function ($first, $second) {
                     /** @var Room $first */
                     /** @var Room $second */
-                    $firstRoomIntName = intval($first->getName());
-                    $secondRoomIntName = intval($second->getName());
+                    $firstRoomIntName = $this->helper->getFirstNumberFromString($first->getName());
+                    $secondRoomIntName = $this->helper->getFirstNumberFromString($second->getName());
 
                     if (!$firstRoomIntName && is_numeric($secondRoomIntName)) {
                         return 1;
