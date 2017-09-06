@@ -57,21 +57,22 @@ class DynamicSalesPeriod
 
     /**
      * @param $option
-     * @return int|float
+     * @return float|int
+     * @throws \Exception
      */
     public function getTotalValue($option)
     {
-        $result = 0;
         if (in_array($option, DynamicSales::SINGLE_DAY_OPTIONS)) {
+            $sum = 0;
             foreach ($this->dynamicSalesDays as $dynamicSalesDay) {
-                //TODO: Сумму или среднее? Уточнить
-                $result += $dynamicSalesDay->getSpecifiedValue($option);
+                $sum += $dynamicSalesDay->getSpecifiedValue($option);
             }
+            return DynamicSales::getRoundedValue($sum / count($this->dynamicSalesDays), $option);
         } elseif (in_array($option, DynamicSales::FOR_PERIOD_OPTIONS)) {
             $lastDayData = end($this->dynamicSalesDays);
-            $result = $lastDayData->getSpecifiedValue($option);
+            return DynamicSales::getRoundedValue($lastDayData->getSpecifiedValue($option), $option);
         }
 
-        return $result;
+        throw new \Exception('Invalid option' . $option);
     }
 }

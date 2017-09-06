@@ -19,7 +19,7 @@ class DynamicSales
     const PRICE_OF_CANCELLED_OPTION = 'price-of-cancelled';
     const PRICE_OF_PAID_CANCELLED_OPTION = 'price-of-paid-cancelled';
     const PRICE_OF_CANCELLED_FOR_PERIOD_OPTION = 'price-of-cancelled-for-period';
-    const NUMBER_OF_PAID_OPTION = 'number-of-paid';
+    const SUM_OF_PAID = 'number-of-paid';
     const NUMBER_OF_PAID_FOR_PERIOD_OPTION = 'number-of-paid-for-period';
     const SUM_OF_PAID_MINUS_CANCELLED_OPTION = 'sum-of-paid-minus-cancelled';
     const SUM_OF_PAID_FOR_CANCELLED_FOR_PERIOD_OPTION = 'sum-of-paid-for-cancelled-for-period';
@@ -38,7 +38,7 @@ class DynamicSales
         self::PRICE_OF_CANCELLED_OPTION,
         self::PRICE_OF_PAID_CANCELLED_OPTION,
         self::PRICE_OF_CANCELLED_FOR_PERIOD_OPTION,
-        self::NUMBER_OF_PAID_OPTION,
+        self::SUM_OF_PAID,
         self::SUM_OF_PAID_MINUS_CANCELLED_OPTION,
         self::SUM_OF_PAID_FOR_CANCELLED_FOR_PERIOD_OPTION,
         self::SUM_PAID_TO_CLIENTS_FOR_REMOVED_FOR_PERIOD_OPTION
@@ -63,7 +63,7 @@ class DynamicSales
         self::NUMBER_OF_CANCELLED_OPTION,
         self::PRICE_OF_CANCELLED_OPTION,
         self::PRICE_OF_PAID_CANCELLED_OPTION,
-        self::NUMBER_OF_PAID_OPTION,
+        self::SUM_OF_PAID,
         self::SUM_OF_PAID_MINUS_CANCELLED_OPTION
     ];
 
@@ -76,7 +76,6 @@ class DynamicSales
      * @var DynamicSalesPeriod[]
      */
     protected $periods = [];
-
     private $comparisonData = [];
     private $relativeComparisonData = [];
 
@@ -127,6 +126,12 @@ class DynamicSales
         return $this->getPeriods()[$periodNumber];
     }
 
+    /**
+     * @param $firstPeriodNumber
+     * @param $secondPeriodNumber
+     * @param $dayNumber
+     * @return bool
+     */
     public function hasBothPeriodsDayByNumber($firstPeriodNumber, $secondPeriodNumber, $dayNumber)
     {
         $firsPeriodDaysQuantity = count($this->getPeriodByNumber($firstPeriodNumber)->getDynamicSalesDays());
@@ -135,6 +140,12 @@ class DynamicSales
         return ($firsPeriodDaysQuantity > $dayNumber) && ($secondPeriodDaysQuantity > $dayNumber);
     }
 
+    /**
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @return mixed
+     */
     public function getDayValue($comparedPeriodNumber, $dayNumber, $option)
     {
         /** @var DynamicSalesDay $specifiedDay */
@@ -143,7 +154,29 @@ class DynamicSales
         return $specifiedDay->getSpecifiedValue($option);
     }
 
-    public function getComparisonData($comparedPeriodNumber, $dayNumber, $option)
+    /**
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @param bool $isRelative
+     * @return float|int|mixed
+     */
+    public function getComparativeData($comparedPeriodNumber, $dayNumber, $option, $isRelative = false)
+    {
+        return $isRelative
+            ? $this->getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
+            : $this->getAbsoluteComparativeData($comparedPeriodNumber, $dayNumber, $option);
+    }
+
+    /**
+     * return absolute comparative value
+     *
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @return mixed
+     */
+    private function getAbsoluteComparativeData($comparedPeriodNumber, $dayNumber, $option)
     {
         if (isset($this->comparisonData[$comparedPeriodNumber][$option][$dayNumber])) {
             $result = $this->comparisonData[$comparedPeriodNumber][$option][$dayNumber];
@@ -157,7 +190,15 @@ class DynamicSales
         return $result;
     }
 
-    public function getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
+    /**
+     * Return relative data in percents
+     *
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @return float|int
+     */
+    private function getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
     {
         if (isset($this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber])) {
             $result = $this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber];
@@ -165,10 +206,56 @@ class DynamicSales
             $mainPeriodData = $this->getDayValue(0, $dayNumber, $option);
             $comparedPeriodData = $this->getDayValue($comparedPeriodNumber, $dayNumber, $option);
 
-            $result = DynamicSalesGenerator::getRelativeComparisonValue($comparedPeriodData, $mainPeriodData);
+            $result = DynamicSalesGenerator::getRelativeComparativeValue($comparedPeriodData, $mainPeriodData);
             $this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber] = $result;
         }
 
         return $result;
+    }
+
+    /**
+     * @param $comparedPeriodNumber
+     * @param $option
+     * @param bool $isRelative
+     * @return float|int
+     * @throws \Exception
+     */
+    public function getComparativeTotalData($comparedPeriodNumber, $option, $isRelative = false)
+    {
+        /** @var DynamicSalesPeriod $period */
+        $period = $this->getPeriods()[$comparedPeriodNumber];
+        $periodTotalValue = $period->getTotalValue($option);
+        /** @var DynamicSalesPeriod $mainPeriod */
+        $mainPeriod = $this->getPeriods()[0];
+        $mainPeriodTotalValue = $mainPeriod->getTotalValue($option);
+
+        if ($isRelative) {
+            $result = DynamicSalesGenerator::getRelativeComparativeValue($periodTotalValue, $mainPeriodTotalValue);
+        } else {
+            $result = $mainPeriodTotalValue - $periodTotalValue;
+        }
+
+        return DynamicSales::getRoundedValue($result, $option);
+    }
+
+    /**
+     * @param $value
+     * @param $option
+     * @return bool
+     */
+    public static function getRoundedValue($value, $option)
+    {
+        $isPriceOption = in_array($option, [
+            self::TOTAL_SALES_PRICE_OPTION,
+            self::TOTAL_SALES_PRICE_FOR_PERIOD_OPTION,
+            self::SUM_PAID_TO_CLIENTS_FOR_REMOVED_FOR_PERIOD_OPTION,
+            self::PRICE_OF_CANCELLED_FOR_PERIOD_OPTION,
+            self::PRICE_OF_CANCELLED_OPTION,
+            self::PRICE_OF_PAID_CANCELLED_OPTION
+        ]);
+
+        $precision = $isPriceOption ? 2 : 0;
+
+        return round($value, $precision);
     }
 }

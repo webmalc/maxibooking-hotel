@@ -3,6 +3,8 @@
 {% set small_title = 'package.dynamic.sale'|trans({}, 'MBHPackageBundle') %}
 {% set layout = 'box' %}
 {% block content %}
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'dynamic-sales-widget'} %}
     <form id="dynamic-sale-filter" class="form-inline filter-form " role="form">
         <div class="input">
@@ -62,6 +64,23 @@
     </form>
     </div>
     </div>
-    <div id="dynamic-sales-table-wrapper" class=""></div>
-{% endblock %}
+    <div id="dynamic-sales-table-wrapper" class="scrolling"></div>
 
+    <div class="modal fade" tabindex="-1" role="dialog" id="graph-modal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="graph-wrapper">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+{% endblock %}

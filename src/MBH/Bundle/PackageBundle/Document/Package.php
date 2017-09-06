@@ -245,7 +245,7 @@ class Package extends Base implements \JsonSerializable
     protected $pricesByDate = [];
 
     /**
-     * @var PackagePrice
+     * @var PackagePrice[]
      * @ODM\EmbedMany(targetDocument="PackagePrice")
      */
     protected $prices;

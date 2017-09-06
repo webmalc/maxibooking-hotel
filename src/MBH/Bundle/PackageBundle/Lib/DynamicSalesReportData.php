@@ -21,7 +21,32 @@ class DynamicSalesReportData
     private $comparisonTotalValues = [];
 
     private $relativeComparisonData = [];
+    
+    private $errors = [];
 
+    /**
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @param $error
+     * @return $this
+     */
+    public function addError($error)
+    {
+        $this->errors[] = $error;
+        
+        return $this;
+    }
+    
+    /**
+     * @param DynamicSales $dynamicSales
+     * @return $this
+     */
     public function addDynamicSales(DynamicSales $dynamicSales)
     {
         $this->dynamicSales[] = $dynamicSales;
@@ -29,11 +54,20 @@ class DynamicSalesReportData
         return $this;
     }
 
+    /**
+     * @return DynamicSales[]
+     */
     public function getDynamicSales()
     {
         return $this->dynamicSales;
     }
 
+    /**
+     * @param $dayNumber
+     * @param $option
+     * @param $periodNumber
+     * @return int|mixed
+     */
     public function getTotalValueByDay($dayNumber, $option, $periodNumber)
     {
         if (isset($this->totalValues[$periodNumber][$option][$dayNumber])) {
@@ -52,6 +86,12 @@ class DynamicSalesReportData
         return $result;
     }
 
+    /**
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @return int|mixed
+     */
     public function getComparisonData($comparedPeriodNumber, $dayNumber, $option)
     {
         if (isset($this->comparisonTotalValues[$comparedPeriodNumber][$option][$dayNumber])) {
@@ -66,6 +106,12 @@ class DynamicSalesReportData
         return $result;
     }
 
+    /**
+     * @param $comparedPeriodNumber
+     * @param $dayNumber
+     * @param $option
+     * @return float|int
+     */
     public function getRelativeComparisonData($comparedPeriodNumber, $dayNumber, $option)
     {
         if (isset($this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber])) {
@@ -73,31 +119,58 @@ class DynamicSalesReportData
         } else {
             $mainPeriodData = $this->getTotalValueByDay($dayNumber, $option, 0);
             $comparedPeriodData = $this->getTotalValueByDay($dayNumber, $option, $comparedPeriodNumber);
-            $result = DynamicSalesGenerator::getRelativeComparisonValue($comparedPeriodData, $mainPeriodData);
+            $result = DynamicSalesGenerator::getRelativeComparativeValue($comparedPeriodData, $mainPeriodData);
             $this->relativeComparisonData[$comparedPeriodNumber][$option][$dayNumber] = $result;
         }
 
         return $result;
     }
 
-    public function getTotalComparisonData($comparedPeriodNumber, $option)
+    /**
+     * @param $comparedPeriodNumber
+     * @param $option
+     * @param bool $isRelative
+     * @return float|int
+     */
+    public function getComparativeTotalData($comparedPeriodNumber, $option, $isRelative = false)
     {
-        $result = 0;
-        foreach ($this->relativeComparisonData[$comparedPeriodNumber][$option] as $dayComparisonValue) {
-            //TODO: Уточнить значение
-            $result += $dayComparisonValue;
+        $mainPeriodsSum = 0;
+        $comparedPeriodSum = 0;
+        foreach ($this->getDynamicSales() as $dynamicSale) {
+            /** @var DynamicSalesPeriod $mainPeriod */
+            $mainPeriod = $dynamicSale->getPeriods()[0];
+            /** @var DynamicSalesPeriod $comparedPeriod */
+            $comparedPeriod = $dynamicSale->getPeriods()[$comparedPeriodNumber];
+            $mainPeriodsSum += $mainPeriod->getTotalValue($option);
+            $comparedPeriodSum += $comparedPeriod->getTotalValue($option);
         }
 
-        return $result;
+        return $isRelative
+            ? DynamicSalesGenerator::getRelativeComparativeValue($comparedPeriodSum,  $mainPeriodsSum)
+            : ($mainPeriodsSum - $comparedPeriodSum);
     }
 
+    /**
+     * @param $periodNumber
+     * @param $option
+     * @return float|mixed
+     * @throws \Exception
+     */
     public function getTotalValue($periodNumber, $option)
     {
-        $result = 0;
-        foreach ($this->totalValues[$periodNumber][$option] as $dayTotalValue) {
-            $result += $dayTotalValue;
+        $periodData = $this->totalValues[$periodNumber][$option];
+
+        if (in_array($option, DynamicSales::SINGLE_DAY_OPTIONS)) {
+            $sum = 0;
+            foreach ($periodData as $dayTotalValue) {
+                $sum += $dayTotalValue;
+            }
+
+            return DynamicSales::getRoundedValue($sum / count($periodData), $option);
+        } elseif (in_array($option, DynamicSales::FOR_PERIOD_OPTIONS)) {
+            return DynamicSales::getRoundedValue(end($periodData), $option);
         }
 
-        return $result;
+        throw new \Exception('Invalid option ' . $option);
     }
 }

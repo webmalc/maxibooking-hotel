@@ -48,17 +48,19 @@ class CashDocumentData extends AbstractFixture implements OrderedFixtureInterfac
         foreach (self::CASH_DOCUMENTS_DATA as $cashDocumentData) {
             /** @var Order $order */
             $order = $this->getReference('order' . $cashDocumentData['orderNumber']);
-            $cashDocument = (new CashDocument())
-                ->setOrder($order)
-                ->setMethod($cashDocumentData['method'])
-                ->setOperation($cashDocumentData['operation'])
-                ->setIsConfirmed($cashDocumentData['isConfirmed'])
-                ->setTotal($order->getPrice())
-                ->setPaidDate($order->getCreatedAt())
-                ->setTouristPayer($order->getMainTourist());
+            if ($order->getPaid()) {
+                $cashDocument = (new CashDocument())
+                    ->setOrder($order)
+                    ->setMethod($cashDocumentData['method'])
+                    ->setOperation($cashDocumentData['operation'])
+                    ->setIsConfirmed($cashDocumentData['isConfirmed'])
+                    ->setTotal($order->getPaid())
+                    ->setPaidDate($order->getCreatedAt())
+                    ->setTouristPayer($order->getMainTourist());
 
-            $manager->persist($cashDocument);
-            $this->setReference('cash_doc' . $cashDocumentData['orderNumber'], $cashDocument);
+                $manager->persist($cashDocument);
+                $this->setReference('cash_doc' . $cashDocumentData['orderNumber'], $cashDocument);
+            }
         }
 
         $manager->flush();

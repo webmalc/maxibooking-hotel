@@ -43,7 +43,7 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
         }
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
-        foreach ($hotels as $hotel) {
+        foreach ($hotels as $hotelNumber => $hotel) {
             foreach (self::DATA as $key => $data) {
                 $roomType = new RoomType();
                 $roomType
@@ -67,7 +67,8 @@ class RoomTypeData extends AbstractFixture implements OrderedFixtureInterface, C
                 }
                 $manager->flush();
 
-                $this->setReference($key, $roomType);
+                $roomTypeReference = $key . '/' . $hotelNumber;
+                $this->setReference($roomTypeReference, $roomType);
             }
         }
     }

@@ -94,40 +94,151 @@ class DynamicSalesGenerator
     }
 
     /**
-     * @param $packagesByPeriods
-     * @return array
+     * @param $filterBeginDates
+     * @param $filterEndDates
+     * @param $roomTypes
+     * @return DynamicSalesReportData
      */
-    private function getCashDocumentsByPaidDate(array $packagesByPeriods)
+    public function getDynamicSalesReportData($filterBeginDates, $filterEndDates, $roomTypes)
     {
-        $cashDocumentsByPaidDate = [];
+        $roomTypesIds = $this->helper->toIds($roomTypes);
+        $periods = [];
+        $packagesByPeriods = [];
+        $dynamicSalesReportData = new DynamicSalesReportData();
+
+        for ($i = 0; $i < count($filterBeginDates); $i++) {
+
+            $periodBegin = \DateTime::createFromFormat('d.m.Y', $filterBeginDates[$i]);
+            $periodEnd = \DateTime::createFromFormat('d.m.Y', $filterEndDates[$i]);
+
+            if ($periodEnd->diff($periodBegin)->days > $this->dynamicSalesReportMaxDayRange) {
+                $dynamicSalesReportData->addError(
+                    $this->translator
+                        ->trans(
+                            'dynamic.sales.range_is_over_error',
+                            ['%numberOfDays%' => $this->dynamicSalesReportMaxDayRange],
+                            'MBHPackageBundle'
+                        )
+                );
+
+                return $dynamicSalesReportData;
+            }
+
+            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+            }
+            $periodPackages = $this->dm->getRepository('MBHPackageBundle:Package')
+                ->getPackagesByCreationDatesAndRoomTypeIds($periodBegin, $periodEnd, $roomTypesIds);
+
+            $packagesByPeriods[$i] = $periodPackages;
+
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+
+            $datePeriodEnd = (clone $periodEnd)->add(new \DateInterval('P1D'));
+            $periods[$i] = new \DatePeriod($periodBegin, new \DateInterval('P1D'), $datePeriodEnd);
+        }
+
+        $allPackages = [];
+
+        /** @var RoomType $roomType */
+        foreach ($roomTypes as $roomType) {
+            $dynamicSale = new DynamicSales();
+            $dynamicSale->setRoomType($roomType);
+
+            foreach ($periods as $periodNumber => $datePeriod) {
+                $packagesByCreationDates = isset($packagesByPeriods[$periodNumber][$roomType->getId()])
+                    ? $packagesByPeriods[$periodNumber][$roomType->getId()]
+                    : [];
+
+                $allPackages = array_merge($allPackages, $packagesByCreationDates);
+
+                $packagesByCancellationDates = $this->getPackagesByCancellationDate($packagesByCreationDates);
+                $allPackages = array_merge($allPackages, $packagesByCancellationDates);
+
+                $dynamicSalesPeriod = new DynamicSalesPeriod();
+                $dynamicSalesPeriod->setDatePeriod($datePeriod);
+                $this->fillDynamicSalesPeriodData(
+                    $dynamicSalesPeriod,
+                    $packagesByCreationDates,
+                    $packagesByCancellationDates
+                );
+                $dynamicSale->addPeriods($dynamicSalesPeriod);
+            }
+
+            $dynamicSalesReportData->addDynamicSales($dynamicSale);
+        }
+
+        $relatedOrdersIds = [];
+        foreach ($allPackages as $packagesByDate) {
+            $relatedOrdersIds = array_merge(
+                $relatedOrdersIds,
+                array_map(
+                    function (Package $package) {
+                        return $package->getOrder()->getId();
+                    },
+                    $packagesByDate
+                )
+            );
+        }
         if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->disable('softdeleteable');
         }
-        foreach ($packagesByPeriods as $packagesByPeriod) {
-            foreach ($packagesByPeriod as $packagesByDate) {
-                /** @var Package $package */
-                foreach ($packagesByDate as $package) {
-                    /** @var CashDocument $cashDocument */
-                    try {
-                        if (!is_null($package->getOrder()->getCashDocuments())) {
-                            foreach ($package->getOrder()->getCashDocuments() as $cashDocument) {
-                                if (is_null($cashDocument->getPaidDate())) {
-                                    $sdf =123;
-                                }
-                                //TODO: Решить здесь что делать
-//                                $cashDocumentsByPaidDate[$cashDocument->getPaidDate()->format('d.m.Y')][$cashDocument->getId()] = $cashDocument;
-                            }
-                        }
-                    } catch (DocumentNotFoundException $exception) {}
-                }
-            }
-        }
+        $relatedOrders = $this->dm
+            ->getRepository('MBHPackageBundle:Order')
+            ->createQueryBuilder()
+            ->field('id')->in($relatedOrdersIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+        $relatedToOrdersPackages = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->createQueryBuilder()
+            ->field('order.id')->in($relatedOrdersIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
         }
 
-        return $cashDocumentsByPaidDate;
+        return $dynamicSalesReportData;
     }
+
+    /**
+     * @param DynamicSalesPeriod $salesPeriod
+     * @param array $packagesByCreationDates
+     * @param $packagesByCancellationDates
+     * @return DynamicSalesPeriod
+     */
+    private function fillDynamicSalesPeriodData(
+        DynamicSalesPeriod $salesPeriod,
+        array $packagesByCreationDates,
+        $packagesByCancellationDates
+    ) {
+        $previousDayData = null;
+
+        /** @var \DateTime $day */
+        foreach ($salesPeriod->getDatePeriod() as $dayNumber => $day) {
+            $dayString = $day->format('d.m.Y');
+
+            $packagesByCreationDate = isset($packagesByCreationDates[$dayString])
+                ? $packagesByCreationDates[$dayString]
+                : [];
+
+            $packagesByCancellationDate = isset($packagesByCancellationDates[$dayString]) ? $packagesByCancellationDates[$dayString] : [];
+
+            $infoDay = $this->container->get('mbh.dynamic_sales_report.dynamic_sales_day');
+            $infoDay->setDate($day);
+            $infoDay->setInitData($packagesByCreationDate, $packagesByCancellationDate, $previousDayData);
+            $salesPeriod->addDynamicSalesDay($infoDay);
+            $previousDayData = $infoDay;
+        }
+
+        return $salesPeriod;
+    }
+
 
     /**
      * @param $packagesByCreationDates
@@ -137,10 +248,12 @@ class DynamicSalesGenerator
     {
         $packagesByCancellationDate = [];
         /** @var Package $package */
-        foreach ($packagesByCreationDates as $package) {
-            if (!empty($package->getDeletedAt())) {
-                $cancellationDateString = $package->getDeletedAt()->format('d.m.Y');
-                $packagesByCancellationDate[$cancellationDateString] = $package;
+        foreach ($packagesByCreationDates as $packagesByDate) {
+            foreach ($packagesByDate as $package) {
+                if (!empty($package->getDeletedAt())) {
+                    $cancellationDateString = $package->getDeletedAt()->format('d.m.Y');
+                    $packagesByCancellationDate[$cancellationDateString][] = $package;
+                }
             }
         }
 
@@ -148,106 +261,11 @@ class DynamicSalesGenerator
     }
 
     /**
-     * @param DynamicSalesPeriod $salesPeriod
-     * @param array $packagesByCreationDates
-     * @param CashDocument[] $cashDocumentsByPaidDate
-     * @return DynamicSalesPeriod
+     * @param $comparedPeriodData
+     * @param $mainPeriodData
+     * @return float|int
      */
-    private function fillDynamicSalesPeriodData(
-        DynamicSalesPeriod $salesPeriod,
-        array $packagesByCreationDates,
-        $cashDocumentsByPaidDate
-    ) {
-        $previousDayData = null;
-
-        /** @var \DateTime $day */
-        foreach ($salesPeriod->getDatePeriod() as $dayNumber => $day) {
-            $dayString = $day->format('d.m.Y');
-
-            $cashDocuments = isset($cashDocumentsByPaidDate[$dayString]) ? $cashDocumentsByPaidDate[$dayString] : [];
-
-            $packagesByCreationDate = isset($packagesByCreationDates[$dayString])
-                ? $packagesByCreationDates[$dayString]
-                : [];
-
-            $packagesByCancellationDate = $this->getPackagesByCancellationDate($packagesByCreationDate);
-
-            $infoDay = $this->container->get('mbh.dynamic_sales_report.dynamic_sales_day');
-            $infoDay->setDate($day);
-            $infoDay->setInitData($packagesByCreationDate, $packagesByCancellationDate, $cashDocuments, $previousDayData);
-            $salesPeriod->addDynamicSalesDay($infoDay);
-            $previousDayData = $infoDay;
-        }
-
-        return $salesPeriod;
-    }
-
-    /**
-     * @param $filterBeginDates
-     * @param $filterEndDates
-     * @param $roomTypes
-     * @return DynamicSalesReportData
-     */
-    private function getDynamicSalesReportData($filterBeginDates, $filterEndDates, $roomTypes)
-    {
-        $roomTypesIds = $this->helper->toIds($roomTypes);
-        $periods = [];
-        $packagesByPeriods = [];
-
-        for ($i = 0; $i < count($filterBeginDates); $i++) {
-
-            $periodBegin = \DateTime::createFromFormat('d.m.Y', $filterBeginDates[$i]);
-            $periodEnd = \DateTime::createFromFormat('d.m.Y', $filterEndDates[$i]);
-//
-//            if ($periodEnd->diff($periodBegin)->days > $this->dynamicSalesReportMaxDayRange) {
-//                return [
-//                    'error' => $this->translator
-//                        ->trans('dynamic.sales.range_is_over_error',
-//                            ['%numberOfDays%' => $this->dynamicSalesReportMaxDayRange],
-//                            'MBHPackageBundle')
-//                ];
-//            }
-
-            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-                $this->dm->getFilterCollection()->disable('softdeleteable');
-            }
-
-            $packagesByPeriods[$i] = $this->dm->getRepository('MBHPackageBundle:Package')
-                ->getPackagesByCreationDatesAndRoomTypeIds($periodBegin, $periodEnd, $roomTypesIds);
-            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-                $this->dm->getFilterCollection()->enable('softdeleteable');
-            }
-
-            $datePeriodEnd = (clone $periodEnd)->add(new \DateInterval('P1D'));
-            $periods[$i] = new \DatePeriod($periodBegin, new \DateInterval('P1D'), $datePeriodEnd);
-        }
-
-        $dynamicSalesReportData = new DynamicSalesReportData();
-
-        /** @var RoomType $roomType */
-        foreach ($roomTypes as $roomType) {
-            $dynamicSale = new DynamicSales();
-            $dynamicSale->setRoomType($roomType);
-
-            foreach ($periods as $periodNumber => $datePeriod) {
-                $cashDocumentsByPaidDate = $this->getCashDocumentsByPaidDate($packagesByPeriods[$periodNumber]);
-                $packagesByPeriodAndRoomType = isset($packagesByPeriods[$periodNumber][$roomType->getId()])
-                    ? $packagesByPeriods[$periodNumber][$roomType->getId()]
-                    : [];
-
-                $dynamicSalesPeriod = new DynamicSalesPeriod();
-                $dynamicSalesPeriod->setDatePeriod($datePeriod);
-                $this->fillDynamicSalesPeriodData($dynamicSalesPeriod, $packagesByPeriodAndRoomType, $cashDocumentsByPaidDate);
-                $dynamicSale->addPeriods($dynamicSalesPeriod);
-            }
-
-            $dynamicSalesReportData->addDynamicSales($dynamicSale);
-        }
-
-        return $dynamicSalesReportData;
-    }
-
-    public static function getRelativeComparisonValue($comparedPeriodData, $mainPeriodData)
+    public static function getRelativeComparativeValue($comparedPeriodData, $mainPeriodData)
     {
         if ($comparedPeriodData == 0 && $mainPeriodData != 0) {
             return 100;

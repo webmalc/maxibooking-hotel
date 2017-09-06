@@ -8,6 +8,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
 /**
@@ -58,8 +59,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
         ],
         [
             'number' => '5',
-            'adults' => '3',
-            'children' => '2',
+            'adults' => 3,
+            'children' => 2,
             'price' => '8000.0',
             'paid' => '8000',
             'regDayAgo' => 5,
@@ -75,6 +76,27 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 5,
             'beginAfter' => 0,
             'length' => 3
+        ],
+        [
+            'number' => '16',
+            'adults' => 1,
+            'children' => 0,
+            'price' => 430,
+            'paid' => 560,
+            'regDayAgo' => 6,
+            'beginAfter' => 0,
+            'length' => 3,
+            'cancelledAgo' => 6
+        ],
+        [
+            'number' => '17',
+            'adults' =>2,
+            'children' => 0,
+            'price' => 14430,
+            'paid' => 14430,
+            'regDayAgo' => 6,
+            'beginAfter' => 0,
+            'length' => 3,
         ],
         [
             'number' => '7',
@@ -98,8 +120,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
         ],
         [
             'number' => '9',
-            'adults' => 1,
-            'children' => 0,
+            'adults' => 2,
+            'children' => 1,
             'price' => 7000,
             'paid' => 50,
             'regDayAgo' => 6,
@@ -114,7 +136,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 7500,
             'regDayAgo' => 7,
             'beginAfter' => 7,
-            'length' => 6
+            'length' => 6,
+            'cancelledAgo' => 7
         ],
         [
             'number' => 11,
@@ -178,11 +201,13 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
         $touristKeys = array_keys(TouristData::TOURIST_DATA);
         $tourist = $this->getReference($touristKeys[array_rand($touristKeys, 1)]);
         $order = (new Order())
+            ->setPrice($data['price'])
             ->setPaid($data['paid'])
             ->setStatus('offline')
             ->setTotalOverwrite($data['price'])
             ->setSource($this->getReference('Booking.com'))
             ->setMainTourist($tourist)
+            ->setCreatedBy($this->getReference('user-admin'))
             ->setCreatedAt((new \DateTime())->modify('-' . $data['regDayAgo'] . 'days'));
 
         $this->setReference('order' . $data['number'], $order);
@@ -198,8 +223,9 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
     public function persistPackage(ObjectManager $manager)
     {
         /** @var Tariff $tariff */
-        $tariff = $this->getReference('main-tariff');
-        $roomType = $this->getReference('roomtype-double');
+        $tariff = $this->getReference('main-tariff/0');
+        /** @var RoomType $roomType */
+        $roomType = $this->getReference('roomtype-double/0');
 
         foreach (self::DATA as $packageData) {
             $order = $this->persistOrder($manager, $packageData);
@@ -208,10 +234,10 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             $dateOfCreation = new \DateTime('-' . $packageData['regDayAgo'] . 'days');
 
             $package = new Package();
-            /** @var RoomType $roomType */
             $package
                 ->setAdults($packageData['adults'])
-                ->setNumber($packageData['number'] . '/1')
+                ->setNumber(1)
+                ->setNumberWithPrefix($packageData['number'] . '/1')
                 ->setChildren($packageData['children'])
                 ->setPrice($packageData['price'])
                 ->setOrder($order)
@@ -219,7 +245,22 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
                 ->setRoomType($roomType)
                 ->setBegin($beginDate)
                 ->setCreatedAt($dateOfCreation)
+                ->setCreatedBy($this->getReference('user-admin'))
                 ->setEnd($endDate);
+
+            if (isset($packageData['cancelledAgo'])) {
+                $cancellationDate = (new \DateTime())->modify('-' . $packageData['cancelledAgo'] . 'days');
+                $package->setDeletedAt($cancellationDate);
+                $order->setDeletedAt($cancellationDate);
+            }
+
+            $prices = [];
+            for ($i = 0; $i < $package->getNights(); $i++) {
+                $date = (clone $package->getBegin())->modify('+' . $i . 'days');
+                $price = $package->getPrice() / $package->getNights();
+                $prices[] = new PackagePrice($date, $price, $package->getTariff());
+            }
+            $package->setPrices($prices);
 
             $manager->persist($package);
             $manager->flush();

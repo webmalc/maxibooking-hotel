@@ -2,7 +2,7 @@
 namespace MBH\Bundle\PriceBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\DataFixtures\AbstractFixture;
+use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -13,9 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  * Class PriceData
 
  */
-class TariffData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+class TariffData extends AbstractFixture implements OrderedFixtureInterface
 {
-    use ContainerAwareTrait;
 
     /**
      * {@inheritDoc}
@@ -24,11 +23,11 @@ class TariffData extends AbstractFixture implements OrderedFixtureInterface, Con
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
-        foreach ($hotels as $hotel) {
+        foreach ($hotels as $hotelNumber => $hotel) {
             $baseTariff = $manager->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
 
             if ($baseTariff) {
-                return $baseTariff;
+                continue;
             }
 
             $tariff = new Tariff();
@@ -38,9 +37,22 @@ class TariffData extends AbstractFixture implements OrderedFixtureInterface, Con
                 ->setMinPerPrepay(25)
                 ->setHotel($hotel);
             $manager->persist($tariff);
+            
             $manager->flush();
+            $this->setReference('main-tariff/' . $hotelNumber, $tariff);
 
-            $this->setReference('main-tariff', $tariff);
+            if ($this->getEnv() == 'test') {
+                $special = new Tariff();
+                $special->setFullTitle('Special tariff')
+                ->setIsDefault(false)
+                ->setIsOnline(true)
+                ->setMinPerPrepay(55)
+                ->setHotel($hotel);
+                $manager->persist($special);
+
+                $manager->flush();
+                $this->setReference('special-tariff/' . $hotelNumber, $special);
+            }
         }
     }
 
