@@ -21,7 +21,28 @@ class DynamicSalesReportData
     private $comparisonTotalValues = [];
 
     private $relativeComparisonData = [];
+    
+    private $errors = [];
 
+    /**
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @param $error
+     * @return $this
+     */
+    public function addError($error)
+    {
+        $this->errors[] = $error;
+        
+        return $this;
+    }
+    
     /**
      * @param DynamicSales $dynamicSales
      * @return $this

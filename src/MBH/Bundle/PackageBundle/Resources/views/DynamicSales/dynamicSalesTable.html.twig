@@ -1,6 +1,8 @@
 {% set dateCellHeight = 41 %}
-{% if error is defined and error is not empty and error %}
-    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
+{% if dynamicSalesData.errors|length > 0 %}
+    {% for error in dynamicSalesData.errors %}
+        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
+    {% endfor %}
 {% else %}
     {% set roomTypesQuantity = dynamicSalesData.dynamicSales|length %}
     {% if roomTypesQuantity > 0 %}
