@@ -174,6 +174,8 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['icon' => 'fa fa-star']);
         $menu['reports']->addChild('package_moving', ['route' => 'package_moving', 'label' => 'Перемешение'])
             ->setAttributes(['icon' => 'fa fa-arrows-v']);
+        $menu['reports']->addChild('dynamic_sale', ['route' => 'dynamic_sales', 'label' => 'Динамика продаж'])
+            ->setAttributes(['icon' => 'fa fa-bar-chart']);
 
         if ($this->config && $this->config->getSearchWindows()) {
             $menu['reports']->addChild('report_windows', ['route' => 'report_windows', 'label' => 'Окна'])
