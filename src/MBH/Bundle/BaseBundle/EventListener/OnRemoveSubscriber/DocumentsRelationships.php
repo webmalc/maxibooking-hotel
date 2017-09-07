@@ -16,6 +16,8 @@ use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
+use MBH\Bundle\PackageBundle\Document\DeleteReason;
+use MBH\Bundle\PackageBundle\Document\DeleteReasonCategory;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -50,6 +52,9 @@ class DocumentsRelationships
     public static function getRelationships()
     {
         return [
+            DeleteReason::class => [
+                new Relationship(DeleteReasonCategory::class, 'deleteReasons', 'exception.relation_delete.message.task')
+            ],
             TaskType::class => [
                 new Relationship(Task::class, 'type', 'exception.relation_delete.message.task')
             ],

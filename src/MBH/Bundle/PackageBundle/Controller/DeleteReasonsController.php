@@ -1,5 +1,6 @@
 <?php namespace MBH\Bundle\PackageBundle\Controller;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\DeleteReason;
@@ -7,13 +8,11 @@ use MBH\Bundle\PackageBundle\Document\DeleteReasonCategory;
 use MBH\Bundle\PackageBundle\Form\DeleteReasonCategoryType;
 use MBH\Bundle\PackageBundle\Form\DeleteReasonsType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("management/delete_reasons")
@@ -32,13 +31,24 @@ class DeleteReasonsController extends Controller implements CheckHotelController
     public function indexAction()
     {
         $entities = $this->dm->getRepository(DeleteReasonCategory::class)->createQueryBuilder()
-            ->field('hotel.id')->equals($this->hotel->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()
-            ->execute();
+            ->execute()
+            ->toArray()
+        ;
+
+        $noCategoryReason = $this->dm->getRepository(DeleteReason::class)->findBy(['category' => null]);
+        if (count($noCategoryReason)) {
+            $emptyCategory = $this->dm
+                ->getRepository(DeleteReasonCategory::class)
+                ->getEmptyCategory(new ArrayCollection($noCategoryReason));
+            if ($emptyCategory) {
+                $entities[$emptyCategory->getId()] = $emptyCategory;
+            }
+        }
 
         return [
-            'entities' => $entities
+            'entities' => $entities,
         ];
     }
 
@@ -53,7 +63,6 @@ class DeleteReasonsController extends Controller implements CheckHotelController
     public function newCategoryAction(Request $request)
     {
         $entity = new DeleteReasonCategory();
-        $entity->setHotel($this->hotel);
 
         $form = $this->createForm(DeleteReasonCategoryType::class, $entity);
         $form->handleRequest($request);
@@ -81,7 +90,7 @@ class DeleteReasonsController extends Controller implements CheckHotelController
      */
     public function editCategoryAction(Request $request, DeleteReasonCategory $category)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($category->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($this->hotel, $this->getUser())) {
             throw $this->createNotFoundException();
         }
 
@@ -126,11 +135,9 @@ class DeleteReasonsController extends Controller implements CheckHotelController
      */
     public function newItemAction(Request $request,DeleteReasonCategory $category)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($category->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($this->hotel, $this->getUser())) {
             throw $this->createNotFoundException();
         }
-
-//        $deleteReasons = $this->dm->getRepository(DeleteReason::class)->findByHotelByCategoryId($this->helper, $this->hotel);
 
         $item = new DeleteReason();
         $item->setCategory($category);
@@ -139,6 +146,9 @@ class DeleteReasonsController extends Controller implements CheckHotelController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($item->getIsDefault()) {
+                $this->setDefaultReason($item);
+            }
             $this->dm->persist($item);
             $this->dm->flush();
 
@@ -151,7 +161,6 @@ class DeleteReasonsController extends Controller implements CheckHotelController
             'form' => $form->createView(),
             'entry' => $item,
             'entity' => $category
-//            'delete_reasons' => $ingredients
         ];
     }
 
@@ -160,25 +169,24 @@ class DeleteReasonsController extends Controller implements CheckHotelController
      *
      * @Route("/{id}/edit/deletereasonsitem", name="package_delete_reasons_item_edit")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_PACKAGE_DELETE_REASONS')")
+     * @Security("is_granted('ROLE_PACKAGE_DELETE_REASONS_ITEM_EDIT')")
      * @Template("@MBHPackage/DeleteReasons/newItem.html.twig")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editItemAction(Request $request, DeleteReason $item)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($item->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($this->hotel, $this->getUser())) {
             throw $this->createNotFoundException();
         }
-
-        $ingredients = $this->dm->getRepository('MBHRestaurantBundle:Ingredient')->findByHotelByCategoryId($this->helper, $this->hotel);
 
         $form = $this->createForm(DeleteReasonsType::class, $item);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            $this->dm->persist($item);
+            if ($item->getIsDefault()) {
+                $this->setDefaultReason($item);
+            }
             $this->dm->flush();
             $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
 
@@ -194,7 +202,6 @@ class DeleteReasonsController extends Controller implements CheckHotelController
             'entry' => $item,
             'entity' => $item->getCategory(),
             'logs' => $this->logs($item),
-            'ingredients' => $ingredients
         ];
     }
 
@@ -206,7 +213,18 @@ class DeleteReasonsController extends Controller implements CheckHotelController
      */
     public function deleteItemAction(DeleteReason $dishMenuItem)
     {
-        return $this->deleteEntity($dishMenuItem->getId(), 'MBHRestaurantBundle:DishMenuItem', 'package_delete_reasons_item', ['tab' => $dishMenuItem->getCategory()->getId() ]);
+        return $this->deleteEntity($dishMenuItem->getId(), 'MBHPackageBundle:DeleteReason', 'package_delete_reasons_item', ['tab' => $dishMenuItem->getCategory()->getId() ]);
+    }
+
+    private function setDefaultReason(DeleteReason $newDefaultReason)
+    {
+        $allReasons = $this->dm->getRepository(DeleteReason::class)->findAll();
+        if (count($allReasons)) {
+            foreach ($allReasons as $reason) {
+                /** @var DeleteReason $reason */
+                $reason->setIsDefault($reason === $newDefaultReason);
+            }
+        }
     }
 
 }

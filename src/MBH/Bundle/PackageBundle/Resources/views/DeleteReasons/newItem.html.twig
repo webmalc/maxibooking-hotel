@@ -4,7 +4,7 @@
 {% set layout = 'box' %}
 
 {% block content %}
-        {{ form_start(form, {'action': path('package_delete_reasons_item_new', {id: entity.id}), 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_start(form, {'action': path('package_delete_reasons_item_edit', {id: entry.id}), 'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}
         {% include 'MBHBaseBundle:Actions:new.html.twig' %}
         {{ form_end(form) }}

@@ -43,7 +43,6 @@
                             <tr>
                                 <th class="td-xs"></th>
                                 <th>{{ 'delete.reasons.namelabel'|trans }}</th>
-                                <th class="td-md text-center">{{ 'delete.reasons.item.active'|trans|capitalize }}</th>
                                 <th class="td-sm text-center">{{ 'delete.reasons.common.doing'|trans|capitalize }}</th>
                             </tr>
                             </thead>
@@ -51,11 +50,8 @@
                             {% for entry in entity.deleteReasons %}
                                 <tr>
                                     <td><i class="fa fa-times-circle-o"></i></td>
-                                    <td class="text-center">
+                                    <td class="text-left">
                                         {{ entry.name }}
-                                    </td>
-                                    <td class="text-center">
-                                        <input disabled="disabled" class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                                     </td>
                                     <td class="table-actions-td text-center">
                                         {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entry, 'route': 'package_delete_reasons_item'} %}{% endembed %}
@@ -88,12 +84,3 @@
         </div>
 
 {% endblock content %}
-
-{#{% block scripts %}#}
-    {#{{ parent() }}#}
-    {#{% javascripts filter='uglifyjs2'#}
-    {#'@MBHRestaurantBundle/Resources/public/js/006-quicksave-form-tab-sent.js'#}
-    {#%}#}
-    {#<script type="text/javascript" src="{{ asset_url }}"></script>#}
-    {#{% endjavascripts %}#}
-{#{% endblock %}#}

@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
- * @ODM\Document(collection="DeleteReasonCategory")
+ * @ODM\Document(collection="DeleteReasonCategory", repositoryClass="DeleteReasonCategoryRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle","hotel"}, message="validator.document.category.unique")
@@ -69,14 +69,6 @@ class DeleteReasonCategory extends Base
     protected $title;
 
     /**
-     * @var Hotel
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="dishMenuCategories")
-     * @Assert\NotNull(message="validator.document.dishMenuCategory.hotel")
-     */
-    protected $hotel;
-
-    /**
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\DeleteReason", mappedBy="category", cascade={"remove"} )
      */
     protected $deleteReasons;
@@ -123,25 +115,7 @@ class DeleteReasonCategory extends Base
     public function setTitle($title)
     {
         $this->title = $title;
-        return $this;
-    }
 
-    /**
-     * @return mixed
-     */
-    public function getHotel()
-    {
-        return $this->hotel;
-    }
-
-    /**
-     * @param mixed $hotel
-     * @return $this
-     */
-
-    public function setHotel(Hotel $hotel)
-    {
-        $this->hotel = $hotel;
         return $this;
     }
 
@@ -157,9 +131,14 @@ class DeleteReasonCategory extends Base
      * @param mixed $deleteReasons
      * @return $this
      */
-    public function setDeleteReasons($deleteReasons)
+    public function setDeleteReasons(ArrayCollection $deleteReasons)
     {
+        foreach ($deleteReasons as $reason) {
+            /** @var DeleteReason $reason */
+            $reason->setCategory($this);
+        }
         $this->deleteReasons = $deleteReasons;
+
         return $this;
     }
 }
