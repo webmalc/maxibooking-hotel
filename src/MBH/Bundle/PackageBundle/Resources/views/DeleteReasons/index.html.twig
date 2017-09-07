@@ -1,52 +1,99 @@
-{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+{% extends "@MBHPackage/DeleteReasons/layout.html.twig" %}
 
-{% set small_title = "package.index.delete_reason"|trans({}, "MBHPackageBundle")  %}
-{% set layout='box' %}
+{% set small_title = 'delete.reasons.item.small_title'|trans %}
+{% set layout = "tabs" %}
 
 {% block content %}
-    <table class="table {#not-auto-datatable#} table-striped table-hover table-condensed table-icons table-actions">
-        <thead>
-        <tr>
-            <th class="td-xs"></th>
-            <th>{{ "package.index.name"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md">{{ "package.index.created"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-sm text-center">{{ "package.index.default"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-sm"></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for reason in reasons %}
-            <tr>
-                <td class="text-center table-icon"><i class="fa fa-compass"></i></td>
-                <td>
-                    <a href="{{ path('package_delete_reasons_edit', { 'id': reason.id }) }}" rel="main" fullTitle="{{ "package.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ reason.fullTitle }}{% if reason.system %} <small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</a>
-                </td>
-                <td>{{ reason.createdAt|date('d.m.Y') }}</td>
-                <th class="text-center">
-                    {% if reason.isDefault %}
-                        <span class="label label-success">Да</span>
-                    {% else %}
-                        <span class="label label-default">Нет</span>
-                    {% endif %}
-                </th>
-                <td class="table-actions-td text-center">
-                    <a href="{{ path('package_delete_reasons_edit', { 'id': reason.id }) }}" class="btn btn-success btn-xs" fullTitle="{{ "package.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                        <i class="fa fa-pencil-square-o"></i>
-                    </a>
-                    {% if reason.system == false  %}
-                        <a href="{{ path('delete_reasons_delete', { 'id': reason.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ "package.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                            <i class="fa fa-trash-o"></i>
-                        </a>
-                    {% endif %}
-                </td>
-            </tr>
+    <ul class="nav nav-tabs" role="tablist">
+        {% for entity in entities %}
+            <li {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}class="active"{% endif %}>
+                <a href="#{{entity.id}}" role="tab" data-toggle="tab">
+                    <i class="fa fa-times-circle-o"></i>  {{entity.name}}
+                    {% if entity.system is defined and entity.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
+                </a>
+            </li>
         {% endfor %}
-        </tbody>
-    </table>
+        {% if is_granted('ROLE_PACKAGE_DELETE_REASONS') %}
+            <li>
+                <a href="{{ path('package_delete_reasons_category_new') }}"><i class="fa fa-plus"></i> {{ 'delete.reasons.category.action.new'|trans|capitalize }}</a>
+            </li>
+        {% endif %}
+    </ul>
 
-    {{ form_start(form, {'action': path('package_delete_reasons'), 'attr': {'class': 'hidden-print form-horizontal'}}) }}
-    {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:new_plus_actions.html.twig' with {'save_close': false} %}
-    {{ form_end(form) }}
+        <!-- Tabs content -->
+        <div class="tab-content">
+            {% for entity in entities %}
+                <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}" id="{{entity.id}}">
+                    <!-- Tab actions -->
+                    <div class="btn-list spacer-bottom text-right">
+                        {% if is_granted('ROLE_PACKAGE_DELETE_REASONS') %}
+                            <a href="{{ path('package_delete_reasons_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'delete.reasons.category.edit'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-edit"></i> {{ 'delete.reasons.common.edit'|trans|capitalize }}</a>
+                        {% endif %}
+                        {% if is_granted('ROLE_PACKAGE_DELETE_REASONS') %}
+                            <a href="{{ path('package_delete_reasons_item_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="{{ 'delete.reasons.item.helper.new'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-plus"></i> {{ 'delete.reasons.item.action.new'|trans|capitalize }}</a>
+                        {% endif %}
+                        {% if is_granted('ROLE_PACKAGE_DELETE_REASONS') %}
+                            <a href="{{ path('package_delete_reasons_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="{{ 'delete.reasons.category.delete'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-trash-o"></i> {{ 'delete.reasons.common.delete'|trans|capitalize }}</a>
+                        {% endif %}
+                    </div>
 
-{% endblock %}
+                    {% if entity.deletereasons.count %}
+                        <table class="table table-actions table-striped table-hover table-condensed table-icons">
+                            <thead>
+                            <tr>
+                                <th class="td-xs"></th>
+                                <th>{{ 'delete.reasons.namelabel'|trans }}</th>
+                                <th class="td-md text-center">{{ 'delete.reasons.item.active'|trans|capitalize }}</th>
+                                <th class="td-sm text-center">{{ 'delete.reasons.common.doing'|trans|capitalize }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for entry in entity.deleteReasons %}
+                                <tr>
+                                    <td><i class="fa fa-times-circle-o"></i></td>
+                                    <td class="text-center">
+                                        {{ entry.name }}
+                                    </td>
+                                    <td class="text-center">
+                                        <input disabled="disabled" class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
+                                    </td>
+                                    <td class="table-actions-td text-center">
+                                        {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entry, 'route': 'package_delete_reasons_item'} %}{% endembed %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'delete.reasons.category.noitems'|trans|capitalize }}. <a href="{{ path('package_delete_reasons_item_new', {'id': entity.id }) }}">{{ 'delete.reasons.item.action.new'|trans|capitalize }}?</a></div>
+                    {% endif %}
+
+                    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+                        <div class="container-fluid">
+                            <ul class="nav navbar-nav">
+                                {% if is_granted('ROLE_PACKAGE_DELETE_REASONS') and  entity.deleteReasons.count %}
+                                    <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'delete.reasons.common.save'|trans|capitalize }}</button></li>
+                                {% endif %}
+                                {% if is_granted('ROLE_PACKAGE_DELETE_REASONS') %}
+                                    <li><button onclick="location.href = '{{ path('package_delete_reasons_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> {{ 'delete.reasons.category.new'|trans|capitalize }}</button></li>
+                                {% endif %}
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li id='list-export-add-{{ loop.index }}'></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+{% endblock content %}
+
+{#{% block scripts %}#}
+    {#{{ parent() }}#}
+    {#{% javascripts filter='uglifyjs2'#}
+    {#'@MBHRestaurantBundle/Resources/public/js/006-quicksave-form-tab-sent.js'#}
+    {#%}#}
+    {#<script type="text/javascript" src="{{ asset_url }}"></script>#}
+    {#{% endjavascripts %}#}
+{#{% endblock %}#}

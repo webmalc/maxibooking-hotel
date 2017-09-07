@@ -1,33 +1,27 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zalex
- * Date: 22.06.16
- * Time: 15:11
- */
-
-namespace MBH\Bundle\RestaurantBundle\Document;
 
 
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
-use Doctrine\Common\Collections\ArrayCollection;
+namespace MBH\Bundle\PackageBundle\Document;
+
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Doctrine\Common\Collections\ArrayCollection;
+use Gedmo\Blameable\Traits\BlameableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
- * @ODM\Document(collection="DishMenuCategory")
+ * @ODM\Document(collection="DeleteReasonCategory")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle","hotel"}, message="validator.document.category.unique")
  */
-class DishMenuCategory extends Base
+class DeleteReasonCategory extends Base
 {
     /**
      * Hook timestampable behavior
@@ -73,7 +67,7 @@ class DishMenuCategory extends Base
      * )
      */
     protected $title;
-    
+
     /**
      * @var Hotel
      * @Gedmo\Versioned
@@ -83,9 +77,9 @@ class DishMenuCategory extends Base
     protected $hotel;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\DishMenuItem", mappedBy="category", cascade={"remove"} )
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\DeleteReason", mappedBy="category", cascade={"remove"} )
      */
-    protected $dishMenuItems;
+    protected $deleteReasons;
 
     /**
      * DishMenuCategory constructor.
@@ -93,7 +87,7 @@ class DishMenuCategory extends Base
      */
     public function __construct()
     {
-        $this->dishMenuItems = new ArrayCollection();
+        $this->deleteReasons = new ArrayCollection();
     }
 
     /**
@@ -154,19 +148,18 @@ class DishMenuCategory extends Base
     /**
      * @return mixed
      */
-    public function getDishMenuItems()
+    public function getDeleteReasons()
     {
-        return $this->dishMenuItems;
+        return $this->deleteReasons;
     }
 
     /**
-     * @param mixed $dishMenuItems
+     * @param mixed $deleteReasons
      * @return $this
      */
-    public function setDishMenuItems($dishMenuItems)
+    public function setDeleteReasons($deleteReasons)
     {
-        $this->dishMenuItems = $dishMenuItems;
+        $this->deleteReasons = $deleteReasons;
         return $this;
     }
-
 }

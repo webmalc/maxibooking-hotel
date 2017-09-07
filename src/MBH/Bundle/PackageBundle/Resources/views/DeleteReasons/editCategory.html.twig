@@ -1,0 +1,14 @@
+{% extends '@MBHPackage/DeleteReasons/layout.html.twig' %}
+
+{% set small_title = 'delete.reasons.category.action.edit'|trans ~" #" ~ entity.id %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('package_delete_reasons_category_edit', {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_delete_reasons_category_delete', 'delete_role':'ROLE_PACKAGE_DELETE_REASONS' } %}
+    {{ form_end(form) }}
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'restaurant_dishmenu_category_delete' } %}
+
+{% endblock %}
