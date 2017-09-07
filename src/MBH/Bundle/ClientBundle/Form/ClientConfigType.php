@@ -118,7 +118,8 @@ class ClientConfigType extends AbstractType
             ->add('beginDateOffset', TextType::class, [
                 'group' => 'form.clientConfigType.main_group',
                 'required' => false,
-                'label' => 'start date offset'
+                'label' => 'form.clientConfigType.begin_date_offset.label',
+                'help' => 'form.clientConfigType.begin_date_offset.help'
             ])
             ->add(
                 'can_book_without_payer',
