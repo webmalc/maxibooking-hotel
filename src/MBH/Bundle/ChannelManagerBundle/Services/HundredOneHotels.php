@@ -21,6 +21,17 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 
 class HundredOneHotels extends Base
 {
+    const UNAVAIBLE_PRICES = [
+    ];
+
+    const UNAVAIBLE_RESTRICTIONS = [
+        'maxStay' => null,
+        'minStayArrival' => null,
+        'maxStayArrival' => null,
+        'minBeforeArrival' => null,
+        'maxBeforeArrival' => null,
+    ];
+
     /**
      * Config class
      */
@@ -639,7 +650,12 @@ class HundredOneHotels extends Base
         $response = json_decode($response, true);
 
         $responseCode = $response['response'];
-        return $responseCode == 1 ? true : false;
+        $isSuccess = $responseCode == 1;
+        if (!$isSuccess) {
+            $this->addError(json_encode($response['errors']));
+        }
+
+        return $isSuccess;
     }
 
     /**
@@ -653,7 +669,7 @@ class HundredOneHotels extends Base
         $request = $requestFormatter->getRequest($config, 'get_hotel');
         $response = $this->send(self::BASE_URL, $request, null, true);
         $response = json_decode($response, true);
-        if ($response['response'] === 1) {
+        if ($this->checkResponse($response)) {
             return null;
         } else {
             $error = $response['errors'][0];

@@ -5,7 +5,6 @@ namespace MBH\Bundle\HotelBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
@@ -19,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Process\Process;
 
 class HotelController extends Controller
 {
@@ -117,7 +117,8 @@ class HotelController extends Controller
 
             //todo: create services
             $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-            $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &');
+            $client = $this->container->getParameter('client');
+            $process = new Process('nohup php ' . $console . 'doctrine:mongodb:fixtures:load --append --no-debug > /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $client]);
             $process->run();
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
@@ -143,10 +144,6 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
-
-            $entity->uploadFile();
-
-            $this->dm->persist($entity);
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()
@@ -177,9 +174,10 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
 
+        $logoImageDeleteUrl = $this->generateUrl('hotel_delete_logo_image', ['id' => $entity->getId()]);
+
         $form = $this->createForm(HotelType::class, $entity, [
-            'imageUrl' => $entity->getLogoUrl(),
-            'removeImageUrl' => $this->generateUrl('hotel_delete_logo', ['id' => $entity->getId()])
+            'logo_image_delete_url' => $logoImageDeleteUrl
         ]);
 
         return array(
@@ -210,6 +208,20 @@ class HotelController extends Controller
     }
 
     /**
+     * @param Hotel $hotel
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @Route("/{id}/logoImage/delete", name="hotel_delete_logo_image")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
+     */
+    public function deleteImageLogoAction(Hotel $hotel)
+    {
+        $hotel->removeLogoImage();
+        $this->dm->flush();
+
+        return $this->redirect($this->generateUrl('hotel_edit', ['id' => $hotel->getId()]));
+    }
+
+    /**
      * Displays a form to edit extended config of an existing entity.
      *
      * @Route("/{id}/edit/extended", name="hotel_edit_extended")
@@ -217,7 +229,7 @@ class HotelController extends Controller
      * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template()
      * @param Hotel $entity
-     * @return Response
+     * @return array
      */
     public function extendedAction(Hotel $entity)
     {
@@ -297,8 +309,10 @@ class HotelController extends Controller
             $this->dm->persist($hotel);
             $this->dm->flush();
 
-            $this->addFlash('success',
-                $this->get('translator')->trans('controller.hotelController.record_edited_success'));
+            $this->addFlash(
+                'success',
+                $this->get('translator')->trans('controller.hotelController.record_edited_success')
+            );
 
             return $this->afterSaveRedirect('hotel', $hotel->getId(), [], '_contact_information');
         }
@@ -400,11 +414,8 @@ class HotelController extends Controller
     {
         foreach ($hotel->getImages() as $image) {
             /** @var Image $image */
-            if ($image->getIsDefault() && $image->getId() != $newMainImage->getId()) {
-                $image->setIsDefault(false);
-            }
+            $image->setIsDefault($image->getId() == $newMainImage->getId());
         }
-        $newMainImage->setIsDefault(true);
 
         return $hotel;
     }
@@ -455,8 +466,6 @@ class HotelController extends Controller
 
         foreach ($regions as $region) {
             foreach ($region->getCities() as $city) {
-
-
                 $data[] = [
                     'id' => $city->getId(),
                     'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' . $city->getTitle()

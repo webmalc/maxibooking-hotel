@@ -2,12 +2,12 @@
 
 namespace MBH\Bundle\PriceBundle\Services;
 
-
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PackageInfo;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use Symfony\Component\Process\Process;
 
 /**
@@ -48,7 +48,10 @@ class RoomCache
     public function recalculate(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff, $decrease = true)
     {
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $begin, $end, $roomType->getHotel(), [$roomType->getId()]
+            $begin,
+            $end,
+            $roomType->getHotel(),
+            [$roomType->getId()]
         );
 
         foreach ($roomCaches as $roomCache) {
@@ -78,14 +81,16 @@ class RoomCache
 
         /** @var \MBH\Bundle\PriceBundle\Document\RoomCache[] $caches */
         $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $begin, $end, null, $roomTypes
+            $begin,
+            $end,
+            null,
+            $roomTypes
         );
 
         $num = 0;
         $batchSize = 3;
 
         foreach ($caches as $cache) {
-
             $qb = $this->dm->getRepository('MBHPackageBundle:Package')
                 ->createQueryBuilder()
                 ->field('begin')->lte($cache->getDate())
@@ -102,7 +107,6 @@ class RoomCache
                 $cache->setPackagesCount($total);
             }
             if (!count($cache->getPackageInfo()) && $total) {
-
                 $packages = $qb->getQuery()->execute();
                 foreach ($packages as $package) {
                     $tariff = $package->getTariff();
@@ -143,25 +147,32 @@ class RoomCache
         array $availableRoomTypes = [],
         array $tariffs = [],
         array $weekdays = []
-    )
-    {
+    ) {
+
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $roomCaches = $updateCaches = $updates = $remove = [];
 
-        (empty($availableRoomTypes)) ? $roomTypes = $hotel->getRoomTypes()->toArray() : $roomTypes = $availableRoomTypes;
+        (empty($availableRoomTypes)) ? $roomTypes = $hotel->getRoomTypes()->toArray(
+        ) : $roomTypes = $availableRoomTypes;
 
         // find && group old caches
         $oldRoomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
-            ->fetch($begin, $end, $hotel, $this->helper->toIds($roomTypes), empty($tariffs) ? null : $this->helper->toIds($tariffs));
+            ->fetch(
+                $begin,
+                $end,
+                $hotel,
+                $this->helper->toIds($roomTypes),
+                empty($tariffs) ? null : $this->helper->toIds($tariffs)
+            );
 
         foreach ($oldRoomCaches as $oldRoomCache) {
-
             if (!empty($weekdays) && !in_array($oldRoomCache->getDate()->format('w'), $weekdays)) {
                 continue;
             }
 
-            $updateCaches[$oldRoomCache->getTariff() ? $oldRoomCache->getTariff()->getId() : 0][$oldRoomCache->getDate()->format('d.m.Y')][$oldRoomCache->getRoomType()->getId()] = $oldRoomCache;
+            $updateCaches[$oldRoomCache->getTariff() ? $oldRoomCache->getTariff()->getId() : 0][$oldRoomCache->getDate(
+            )->format('d.m.Y')][$oldRoomCache->getRoomType()->getId()] = $oldRoomCache;
 
             if ($rooms == -1) {
                 if ($oldRoomCache->getPackagesCount() <= 0) {
@@ -176,8 +187,8 @@ class RoomCache
                     'packagesCount' => $oldRoomCache->getPackagesCount(),
                     'totalRooms' => (int)$rooms,
                     'leftRooms' => (int)$rooms - $oldRoomCache->getPackagesCount(),
-                    'isClosed' => $isClosed
-                ]
+                    'isClosed' => $isClosed,
+                ],
             ];
         }
 
@@ -186,8 +197,9 @@ class RoomCache
         foreach ($tariffs as $tariff) {
             foreach ($roomTypes as $roomType) {
                 foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $endWithDay) as $date) {
-
-                    if (isset($updateCaches[$tariff ? $tariff->getId() : 0][$date->format('d.m.Y')][$roomType->getId()])) {
+                    if (isset(
+                        $updateCaches[$tariff ? $tariff->getId() : 0][$date->format('d.m.Y')][$roomType->getId()]
+                    )) {
                         continue;
                     }
 
@@ -204,9 +216,8 @@ class RoomCache
                         'packagesCount' => (int)0,
                         'leftRooms' => (int)$rooms,
                         'isEnabled' => true,
-                        'isClosed' => $isClosed
+                        'isClosed' => $isClosed,
                     ];
-
                 }
             }
         }
@@ -216,13 +227,25 @@ class RoomCache
         } else {
             $this->container->get('mbh.mongo')->batchInsert('RoomCache', $roomCaches);
             $this->container->get('mbh.mongo')->update('RoomCache', $updates);
-            $this->container->get('old_sound_rabbit_mq.task_room_cache_recalculate_producer')->publish(serialize(
+            /** @var \AppKernel $kernel */
+            $kernel = $this->container->get('kernel');
+            $command = new Command(
+                'mbh:cache:recalculate',
                 [
-                    'begin' => $begin,
-                    'end' => $end,
-                    'roomTypes' => $this->helper->toIds($roomTypes)
-                ]
-            ));
+                    '--roomTypes' => implode(',', $this->helper->toIds($roomTypes)),
+                    '--begin' => $begin->format('d.m.Y'),
+                    '--end' => $end->format('d.m.Y'),
+                ],
+                $kernel->getClient(),
+                $kernel->getEnvironment(),
+                $kernel->isDebug()
+            );
+
+            $this->container->get('old_sound_rabbit_mq.task_cache_recalculate_producer')->publish(
+                serialize(
+                    $command
+                )
+            );
         }
     }
 }

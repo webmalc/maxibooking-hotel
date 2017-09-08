@@ -1,0 +1,53 @@
+form.profileType.enter_new_password: 'Enter the new password'
+form.userType.authentication_data: 'Authentication data'
+form.userType.new_password: 'New password'
+form.password: Password
+form.password_confirmation: 'Confirm password'
+form.userType.confirm_password: 'Confirm password'
+form.userType.login: Login
+form.userType.settings: Settings
+form.userType.security_extended: 'Extended rights'
+form.userType.roles: Roles
+form.userType.groups: Groups
+form.userType.hotels: Hotels
+form.userType.hotels_user_has_access_to: 'Hotels available to this user'
+form.userType.is_included: 'Enabled?'
+form.userType.expires_at: 'Valid until'
+form.userType.surname: Surname
+form.userType.two_factor: 'Two-factor autentification'
+form.userType.general_info: 'General information'
+form.userType.placeholder_surname: Smith
+form.userType.name: Name
+form.userType.patronymic: 'Middle name'
+form.userType.birth_date: 'Date of birth'
+form.userType.placeholder_name: John
+form.userType.placeholder_patronymic: Michael
+controller.profileController.new_password_saved_success: 'New password successfully saved'
+controller.profileController.record_saved_success: 'User successfully added'
+controller.profileController.record_edited_success: 'Entry successfully edited.'
+controller.group.create_success: 'Group successfully added'
+controller.group.update_success: 'Group successfully updated'
+form.groupType.group.main: 'General information'
+form.groupType.group.roles: Permissions
+form.groupType.name: Title
+form.groupType.name.placeholder: 'Senior manager'
+form.userType.notifications_fieldset: Notifications
+form.userType.notifications: 'Bookings?'
+form.userType.taskNotify: 'Tasks?'
+form.userType.notifications_help: 'Receive notifications on email?'
+form.userType.reports: 'Analytics?'
+form.userType.reports_help: 'Receive analytics on email?'
+form.userType.errors: 'Errors?'
+form.userType.errors_help: 'Receive notification about errors on email?'
+views.user.tabs.main_info_required: 'Necessary to fill out main data'
+views.user.tabs.main_info: 'Main data'
+views.user.tabs.address: Address
+views.user.tabs.security: Security
+workShift.statuses.open: Open
+workShift.statuses.locked: Blocked
+workShift.statuses.closed: Closed
+workShift.notification.work_shift_expired: 'Work shift is lasting for more than 12 hours. Please close it'
+form.userType.expires_at.help: 'If not selected, this user does not expire'
+form.userType.need_at_least_one_hotel: 'For shifts to take place, at least one hotel must be selected'
+view.google.enter_code: 'Please enter Google Autentificator code'
+view.google.check_mail: 'If your Google Authentificator isn''t set up, please check your e-mail for instructions'

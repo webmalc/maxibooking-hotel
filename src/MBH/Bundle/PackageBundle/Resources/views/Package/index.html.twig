@@ -7,11 +7,10 @@
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'dishorder-table-filter-widget'} %}
         <form id="package-table-filter" class="form-inline remember" role="form">
             <div class="input">
-
-                <i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.package.index.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp <input type="text"
+                <i class="fa fa-calendar" title='{{ 'package.index.dates'|trans }}' data-toggle='tooltip'></i>&nbsp <input type="text"
                                                                                               id="package-filter-begin"
                                                                                               class="datepicker package-filter begin-datepicker form-control input-sm"
-                                                                                              data-date-format="dd.mm.yyyy" value="{{  (date(client_config().beginDate) < date('midnight'))  or client_config().beginDate is empty or client_config().beginDate is not defined ? 'now'|date('d.m.Y') : client_config().beginDate|date('d.m.Y') }}">
+                                                                                              data-date-format="dd.mm.yyyy" value="{{ filter_begin_date()|date('d.m.Y') }}">
             </div>
             <div class="input">
                 — &nbsp <input type="text" id="package-filter-end"
@@ -28,8 +27,8 @@
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa-bed" title='{{ 'mbhpackagebundle.view.package.index.tip.nomera'|trans }} ' data-toggle='tooltip'></i>&nbsp <select
-                        data-placeholder="{{ 'mbhpackagebundle.view.package.index.tip.nomera'|trans }} " id="package-filter-roomType"
+                <i class="fa fa-bed" title='{{ 'package.index.room_type'|trans }}' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="{{ 'package.index.room_type'|trans }}" id="package-filter-roomType"
                         class="package-filter form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
@@ -38,8 +37,8 @@
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa-paper-plane" title='{{ 'mbhpackagebundle.view.package.index.tip.broni'|trans }} ' data-toggle='tooltip'></i>&nbsp <select
-                        data-placeholder="{{ 'mbhpackagebundle.view.package.index.tip.broni'|trans }} " id="package-filter-status"
+                <i class="fa fa-paper-plane" title='{{ 'package.index.package_type'|trans }}' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="{{ 'package.index.package_type'|trans }}" id="package-filter-status"
                         class="package-filter form-control input-sm plain-html">
                     <option></option>
                     {% for key, status in statuses %}
@@ -49,8 +48,8 @@
                 </select>
             </div>
             <div class="input">
-                <i class="{{ currency().icon }}" title='{{ 'mbhpackagebundle.view.package.index.status.oplaty'|trans }} ' data-toggle='tooltip'></i>&nbsp <select
-                        data-placeholder="{{ 'mbhpackagebundle.view.package.index.status.oplaty'|trans }} " id="package-filter-paid"
+                <i class="{{ currency().icon }}" title='{{ 'package.index.payment_status'|trans }}' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="{{ 'package.index.payment_status'|trans }}" id="package-filter-paid"
                         class="package-filter form-control input-sm">
                     <option></option>
                     <option value="paid">{{ 'package.index.paid'|trans({}, 'MBHPackageBundle') }}</option>
@@ -144,12 +143,14 @@
                 : </b> <span id="package-summary-nights">-</span></span>
         <span class="package-summary-row"><b>{{ 'package.index.summary.guests'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-guests">-</span></span>
+        {% if is_granted('ROLE_PRICE_SUMMARY') %}
         <span class="package-summary-row"><b>{{ 'package.index.summary.total'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-total">-</span></span>
         <span class="package-summary-row"><b>{{ 'package.index.summary.paid'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-paid">-</span></span>
         <span class="package-summary-row"><b>{{ 'package.index.summary.debt'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-debt">-</span></span>
+        {% endif %}
     </div>
 
     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">

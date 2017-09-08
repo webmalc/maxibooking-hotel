@@ -4,11 +4,13 @@ namespace MBH\Bundle\PackageBundle\Models\ChessBoard;
 
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 /**
- * Данные об интервале в шахматке. Может представлять данные об интервале размещения,
- * ... интервале без размещения частично размещенной брони и неразмещенной брони
+ * .
+ * Data about interval in chessboard. Can display data about interval of accommodation,
+ * ... interval without accommodation partly placed package and unplaced package
  *
  * Class ChessBoardUnit
  * @package MBH\Bundle\PackageBundle\Models\ChessBoard
@@ -22,6 +24,8 @@ class ChessBoardUnit implements \JsonSerializable
     /** @var  AuthorizationChecker $rightsChecker */
     private $rightsChecker;
     private $emptyIntervalData;
+    private $hasEarlyCheckin = false;
+    private $hasLateCheckout = false;
 
     const LEFT_RELATIVE_POSITION = 'left';
     const RIGHT_RELATIVE_POSITION = 'right';
@@ -37,16 +41,22 @@ class ChessBoardUnit implements \JsonSerializable
      * @param Package $package
      * @param PackageAccommodation|null $accommodation
      * @param array $emptyIntervalData
+     * @param bool $hasEarlyCheckin
+     * @param bool $hasLateCheckout
      * @return ChessBoardUnit
      */
     public function setInitData(
         Package $package,
         ?PackageAccommodation $accommodation = null,
-        array $emptyIntervalData = []
+        array $emptyIntervalData = [],
+        bool $hasEarlyCheckin = false,
+        bool $hasLateCheckout = false
     ) {
         $this->package = $package;
         $this->accommodation = $accommodation;
         $this->emptyIntervalData = $emptyIntervalData;
+        $this->hasEarlyCheckin = $hasEarlyCheckin;
+        $this->hasLateCheckout = $hasLateCheckout;
 
         return $this;
     }
@@ -63,13 +73,17 @@ class ChessBoardUnit implements \JsonSerializable
             'paidStatus' => $this->package->getPaidStatus(),
             'packageBegin' => $this->package->getBegin()->format('d.m.Y'),
             'packageEnd' => $this->package->getEnd()->format('d.m.Y'),
+            'packageRoomTypeId' => $this->package->getRoomType()->getId(),
             'isCheckIn' => $this->package->getIsCheckIn(),
             'isCheckOut' => $this->package->getIsCheckOut(),
             'isLocked' => $this->package->getIsLocked(),
             'viewPackage' => $this->hasViewPackageRights($this->package),
             'removePackage' => $this->hasRemovePackageRights($this->package),
             'updatePackage' => $this->hasUpdatePackageRights($this->package),
-            'packageId' => $this->getPackageId()
+            'packageId' => $this->getPackageId(),
+            'isEarlyCheckIn' => $this->hasEarlyCheckin,
+            'isLateCheckOut' => $this->hasLateCheckout,
+            'isAccommodationInterval' => !is_null($this->accommodation)
         ];
 
         if ($this->package->getPayer()) {
@@ -126,8 +140,8 @@ class ChessBoardUnit implements \JsonSerializable
     }
 
     /**
-     * Получение относительного положения размещения по отношению к остальным размещениям брони
-     * Размещение может занимать полное время брони, быть первым размещением, последним размещением или промежуточным
+     * Obtaining the relative position of places relative to other package locations
+     * Accommodation can take full advantage, being the first placement, last placement or intermediate
      *
      * @param PackageAccommodation $accommodation
      * @param Package $package
@@ -177,8 +191,7 @@ class ChessBoardUnit implements \JsonSerializable
     {
         return ($this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE')
         && ($this->rightsChecker->isGranted('ROLE_PACKAGE_DELETE_ALL')
-            || $this->rightsChecker->isGranted('DELETE', $package)
-            ) ? true : false);
+            || $this->rightsChecker->isGranted('DELETE', $package)) ? true : false);
     }
 
     private function hasViewPackageRights(Package $package)

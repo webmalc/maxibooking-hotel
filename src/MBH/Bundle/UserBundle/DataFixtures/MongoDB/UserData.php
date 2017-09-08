@@ -52,7 +52,7 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
     public function load(ObjectManager $manager)
     {
         $repo = $manager->getRepository('MBHUserBundle:User');
-
+        $notificationTypes = $manager->getRepository('MBHBaseBundle:NotificationType')->getStuffType()->toArray();
         if (!count($repo->findAll())) {
             foreach (self::USERS as $key => $userData) {
                 $user = new User();
@@ -66,6 +66,7 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
                 if (isset($userData['group']) ) {
                     $user->addGroup($this->getReference($userData['group']));
                 }
+                $user->setAllowNotificationTypes($notificationTypes);
 
                 $manager->persist($user);
                 $manager->flush();

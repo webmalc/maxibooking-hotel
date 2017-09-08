@@ -25,7 +25,7 @@ $(function () {
         $addDishItemButton.popover({
             trigger: 'click focus',
             html: true,
-            content: "<span>Сначала добавьте блюда в <a href = \""+link+"\">соответствующем разделе</a></span>"
+            content: Translator.trans("001-add_dish_item.first_add_dishes", {"hrefTagStart" : '<a href = \"' + link + '\">'})
         });
     }
 
@@ -37,7 +37,6 @@ $(function () {
         var newPrototype = prototype.replace(/__name__/g, serviceIndex);
         var $prototype = $(newPrototype);
         $servicesList.append($prototype);
-        //На событие подписан спиннер для количества
         $(document).trigger('prototypeAdded', $prototype);
         ++serviceIndex;
     });

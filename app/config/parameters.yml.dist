@@ -9,7 +9,8 @@ parameters:
   mailer_encryption: ssl
 
   #MongoBD
-  mongodb_url: 'mongodb://mbh-mongo:27017/mbh'
+  mongodb_host: mbh-mongo
+  mongodb_port: 27017
   mongodb_database: mbh
 
   #Rabbitmq
@@ -47,7 +48,7 @@ parameters:
     rooms: 'http://example.com/'
     map: 'http://example.com/'
     contacts: 'http://example.com/'
-    poll: 'http://example.com'
+    #poll: 'http://example.com'
 
   #Cash
   mbh_payment_systems_change: true
@@ -71,4 +72,11 @@ parameters:
 
   mbh_modules:
     tasks: true
+
+  #client name for env
+  client: ''
+
+
+  #mongodb_ssl
+  mongodb_ssl: false
   mbh_dynamic_sale_period: 90

@@ -2,7 +2,10 @@
 
 namespace MBH\Bundle\ClientBundle\Form;
 
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -10,17 +13,29 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ClientPaymentSystemType extends AbstractType
 {
+    private $paymentSystems;
+    private $paymentSystemsChange;
+    private $paymentSystemsDefault;
+    private $taxationRateCodes;
+
+    public function __construct($paymentSystems, $paymentSystemsChange, $paymentSystemsDefault, $taxationRateCodes) {
+        $this->paymentSystems = $paymentSystems;
+        $this->paymentSystemsChange = $paymentSystemsChange;
+        $this->paymentSystemsDefault = $paymentSystemsDefault;
+        $this->taxationRateCodes = $taxationRateCodes;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var ClientConfig $entity */
         $entity = $options['entity'];
         $robokassaMerchantLogin = $robokassaMerchantPass1 = $robokassaMerchantPass2 = null;
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
-        $unitellerShopIDP = $unitellerPassword = null;
+        $unitellerIsWithFiscalization = $unitellerShopIDP = $unitellerPassword = $taxationSystemCode = $taxationRateCode = null;
         $rbkEshopId = $rbkSecretKey = null;
-        $paypalLogin =  null;
-        $default = $options['default'];
+        $paypalLogin = null;
+        $default = $this->paymentSystemsDefault;
 
         if ($entity) {
             $robokassaMerchantLogin = $entity->getRobokassa() ? $entity->getRobokassa()->getRobokassaMerchantLogin() : '';
@@ -32,6 +47,9 @@ class ClientPaymentSystemType extends AbstractType
             $moneymailKey = $entity->getMoneymail() ? $entity->getMoneymail()->getMoneymailKey() : '';
             $unitellerShopIDP = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerShopIDP() : '';
             $unitellerPassword = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerPassword() : '';
+            $unitellerIsWithFiscalization = $entity->getUniteller() ? $entity->getUniteller()->isWithFiscalization(): true;
+            $taxationRateCode = $entity->getUniteller() ? $entity->getUniteller()->getTaxationRateCode() : '';
+            $taxationSystemCode = $entity->getUniteller() ? $entity->getUniteller()->getTaxationSystemCode() : '';
             $rbkEshopId = $entity->getRbk() ? $entity->getRbk()->getRbkEshopId() : '';
             $rbkSecretKey = $entity->getRbk() ? $entity->getRbk()->getRbkSecretKey() : '';
             $paypalLogin = $entity->getPaypal() ? $entity->getPaypal()->getPaypalLogin() : '';
@@ -41,7 +59,7 @@ class ClientPaymentSystemType extends AbstractType
             }
         }
 
-        if (!$options['change']) {
+        if (!$this->paymentSystemsChange) {
             $builder
                 ->add(
                     'paymentSystem',
@@ -57,7 +75,7 @@ class ClientPaymentSystemType extends AbstractType
                     \MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType::class,
                     [
                         'label' => 'form.clientPaymentSystemType.payment_system',
-                        'choices' => $options['paymentTypes'],
+                        'choices' => $this->paymentSystems,
                         'group' => 'form.clientPaymentSystemType.payment_system_group',
                         'placeholder' => '',
                         'data' => $default,
@@ -66,6 +84,13 @@ class ClientPaymentSystemType extends AbstractType
                 );
         }
         $builder
+            ->add('isUnitellerWithFiscalization', CheckboxType::class, [
+                'mapped' => false,
+                'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
+                'group' => 'form.clientPaymentSystemType.payment_system_group',
+                'data' => $unitellerIsWithFiscalization,
+                'required' => false
+            ])
             ->add(
                 'robokassaMerchantLogin',
                 TextType::class,
@@ -168,10 +193,36 @@ class ClientPaymentSystemType extends AbstractType
                 [
                     'label' => 'form.clientPaymentSystemType.uniteller_password',
                     'required' => false,
-                    'attr' => ['class' => 'payment-system-params uniteller'],
+                    'attr' => ['class' => 'payment-system-params uniteller', 'type' => 'password'],
                     'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $unitellerPassword
+                ]
+            )
+            ->add(
+                'taxationRateCode',
+                InvertChoiceType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
+                    'choices' => $this->taxationRateCodes['rate_codes'],
+                    'mapped' => false,
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params uniteller'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'data' => $taxationRateCode
+                ]
+            )
+            ->add(
+                'taxationSystemCode',
+                InvertChoiceType::class,
+                [
+                    'label' => 'form.clientPaymentSystemType.uniteller.taxation_system_code',
+                    'choices' => $this->taxationRateCodes['system_codes'],
+                    'mapped' => false,
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params uniteller'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
+                    'data' => $taxationSystemCode
                 ]
             )
             ->add(
@@ -229,18 +280,16 @@ class ClientPaymentSystemType extends AbstractType
                     'group' => 'form.clientPaymentSystemType.payment_system_group_links',
                     'required' => false,
                 ]
-            )
-        ;
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\ClientBundle\Document\ClientConfig',
-            'paymentTypes' => [],
             'entity' => null,
-            'default' => null,
-            'change' => false
+            'taxationRateCodes' => null,
+            'taxationSystemCode' => null
         ]);
     }
 

@@ -1,10 +1,28 @@
 <?php
 
+use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
+use MBH\Bundle\BillingBundle\MBHBillingBundle;
+use MBH\Bundle\TestBundle\MBHTestBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
+    /** @var string */
+    const CLIENT_VARIABLE = 'MB_CLIENT';
+    /** @var string */
+    const CLIENTS_CONFIG_FOLDER = '/app/config/clients';
+
+    /** @var  string */
+    protected $client;
+
+    public function __construct($environment, $debug, $client = null)
+    {
+        $this->client = $client;
+        parent::__construct($environment, $debug);
+
+    }
+
     public function registerBundles()
     {
         $bundles = array(
@@ -34,6 +52,8 @@ class AppKernel extends Kernel
             new Lexik\Bundle\TranslationBundle\LexikTranslationBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
             new Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle(),
+            new DoctrineCacheBundle(),
+
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),
@@ -49,6 +69,7 @@ class AppKernel extends Kernel
             new MBH\Bundle\VegaBundle\MBHVegaBundle(),
             new MBH\Bundle\WarehouseBundle\MBHWarehouseBundle(),
             new MBH\Bundle\RestaurantBundle\MBHRestaurantBundle(),
+            new MBHBillingBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
@@ -57,6 +78,8 @@ class AppKernel extends Kernel
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
+            $bundles[] = new Fidry\PsyshBundle\PsyshBundle();
+//            $bundles[] = new MBHTestBundle();
         }
 
         return $bundles;
@@ -66,16 +89,36 @@ class AppKernel extends Kernel
     {
         return __DIR__;
     }
+
     public function getCacheDir()
     {
-        return dirname(__DIR__).'/var/cache/'.$this->getEnvironment();
+        return dirname(
+                __DIR__
+            ).'/var/'.($this->client ? 'clients/'.$this->client.'/' : '').'cache/'.$this->getEnvironment();
     }
+
     public function getLogDir()
     {
-        return dirname(__DIR__).'/var/logs';
+        return dirname(__DIR__).'/var/'.($this->client ? 'clients/'.$this->client.'/' : '').'logs';
     }
+
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
+        if ($this->client) {
+            $loader->load($this->getClientConfigFolder().'/parameters_'.$this->client.'.yml');
+        } else {
+            $loader->load($this->getRootDir().'/config/parameters.yml');
+        }
+    }
+
+    public function getClient(): ?string
+    {
+        return $this->client;
+    }
+
+    public function getClientConfigFolder(): string
+    {
+        return $this->getRootDir().'/..'.self::CLIENTS_CONFIG_FOLDER;
     }
 }

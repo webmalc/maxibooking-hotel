@@ -251,67 +251,70 @@ class Helper
     }
 
     /**
-     * Возвращает сумму прописью
+     * Returns the amount in words
      * @author runcore
      * @uses morph(...)
+     * @param $num
+     * @return string
      */
     public function num2str($num)
     {
         $currency = $this->container->get('mbh.currency')->info();
         $nul = 'ноль';
+        $translator = $this->container->get('translator');
         $ten = array(
             array(
                 '',
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.one'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.two'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.three'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.four'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.five'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.six'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.seven'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.eight'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.nine'),
+                $translator->trans('mbhbasebundle.service.helper.one'),
+                $translator->trans('mbhbasebundle.service.helper.dve'),
+                $translator->trans('mbhbasebundle.service.helper.tri'),
+                $translator->trans('mbhbasebundle.service.helper.chetire'),
+                $translator->trans('mbhbasebundle.service.helper.piat'),
+                $translator->trans('mbhbasebundle.service.helper.shest'),
+                $translator->trans('mbhbasebundle.service.helper.sem'),
+                $translator->trans('mbhbasebundle.service.helper.vosem'),
+                $translator->trans('mbhbasebundle.service.helper.deviat'),
             ),
             array(
                 '',
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.odna'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.dve'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.tri'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.chetire'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.piat'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.shest'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.sem'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.vosem'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.deviat'),
+                $translator->trans('mbhbasebundle.service.helper.odna'),
+                $translator->trans('mbhbasebundle.service.helper.dve'),
+                $translator->trans('mbhbasebundle.service.helper.tri'),
+                $translator->trans('mbhbasebundle.service.helper.chetire'),
+                $translator->trans('mbhbasebundle.service.helper.piat'),
+                $translator->trans('mbhbasebundle.service.helper.shest'),
+                $translator->trans('mbhbasebundle.service.helper.sem'),
+                $translator->trans('mbhbasebundle.service.helper.vosem'),
+                $translator->trans('mbhbasebundle.service.helper.deviat'),
             ),
         );
         $a20 = array(
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.twelve'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.eleven'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.twelve'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.fourteen'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.fifteen'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.sixteen'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.seventeen'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.eighteen'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.nineteen'),
+            $translator->trans('mbhbasebundle.service.helper.ten'),
+            $translator->trans('mbhbasebundle.service.helper.eleven'),
+            $translator->trans('mbhbasebundle.service.helper.twelve'),
+            $translator->trans('mbhbasebundle.service.helper.fourteen'),
+            $translator->trans('mbhbasebundle.service.helper.fifteen'),
+            $translator->trans('mbhbasebundle.service.helper.sixteen'),
+            $translator->trans('mbhbasebundle.service.helper.seventeen'),
+            $translator->trans('mbhbasebundle.service.helper.eighteen'),
+            $translator->trans('mbhbasebundle.service.helper.nineteen'),
         );
         $tens = array(
             2 => 'двадцать',
             'тридцать',
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.sorok'),
+            $translator->trans('mbhbasebundle.service.helper.sorok'),
             'пятьдесят',
             'шестьдесят',
             'семьдесят',
             'восемьдесят',
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.devyanosto')
+            $translator->trans('mbhbasebundle.service.helper.devyanosto')
         );
         $hundred = array(
             '',
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.sto'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.dvesti'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.trista'),
-            $this->container->get('translator')->trans('mbhbasebundle.service.helper.chetyresta'),
+            $translator->trans('mbhbasebundle.service.helper.sto'),
+            $translator->trans('mbhbasebundle.service.helper.dvesti'),
+            $translator->trans('mbhbasebundle.service.helper.trista'),
+            $translator->trans('mbhbasebundle.service.helper.chetyresta'),
             'пятьсот',
             'шестьсот',
             'семьсот',
@@ -323,13 +326,13 @@ class Helper
             array($currency['text'], $currency['text'], $currency['text'], 0),
             array('тысяча', 'тысячи', 'тысяч', 1),
             array(
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.million'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.millionа'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.millionов'), 0),
+                $translator->trans('mbhbasebundle.service.helper.million'),
+                $translator->trans('mbhbasebundle.service.helper.millionа'),
+                $translator->trans('mbhbasebundle.service.helper.millionov'), 0),
             array(
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.milliard'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.miliarda'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.milliardов'), 0),
+                $translator->trans('mbhbasebundle.service.helper.milliard'),
+                $translator->trans('mbhbasebundle.service.helper.miliarda'),
+                $translator->trans('mbhbasebundle.service.helper.milliardov'), 0),
         );
         //
         list($rub, $kop) = explode('.', sprintf("%015.2f", floatval($num)));

@@ -1,12 +1,12 @@
-/*global $, window, document, $ */
+/*global $, window, document, $, Translator */
 
-var toggler = function (id) {
+var toggler = function(id) {
     $("#" + id).toggle();
 }
 
-var closePopovers = function () {
+var closePopovers = function() {
     'use strict';
-    $('body').on('click', function (e) {
+    $('body').on('click', function(e) {
         //only buttons
         if ($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0) {
             $('[data-toggle="popover"]').popover('hide');
@@ -14,9 +14,10 @@ var closePopovers = function () {
     });
 };
 
-var getUrlVars = function () {
+var getUrlVars = function() {
     'use strict';
-    var vars = [], hash,
+    var vars = [],
+        hash,
         hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
     for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');
@@ -26,9 +27,10 @@ var getUrlVars = function () {
     return vars;
 };
 
-var getHashVars = function () {
+var getHashVars = function() {
     'use strict';
-    var vars = [], hash,
+    var vars = [],
+        hash,
         hashes = window.location.hash.slice(window.location.hash.indexOf('#') + 1).split('&');
     for (var i = 0; i < hashes.length; i++) {
         hash = decodeURIComponent(hashes[i]).split('=');
@@ -38,20 +40,20 @@ var getHashVars = function () {
     return vars;
 };
 
-var dangerTr = function () {
+var dangerTr = function() {
     'use strict';
     $('span.danger-tr').closest('tr').addClass('danger');
 }
 
 mbh.loader = {
-    html: '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>',
+    html: '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>'+ Translator.trans("package.processing") +'...</div>',
     acceptTo: function($container) {
         $container.html(this.html);
     }
 }
 
 mbh.error = {
-    html: '<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Произошла ошибка во время запроса. Попробуйте еще раз.</div>',
+    html: '<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>'+ Translator.trans("010-app.error_occured") +'.</div>',
     acceptTo: function($container) {
         $container.html(this.html);
     }
@@ -59,9 +61,8 @@ mbh.error = {
 
 mbh.alert = {
     $alert: $('#entity-delete-confirmation'),
-    show: function(href, header, text, buttonText, buttonIcon, buttonClass, action, $this)
-    {
-        $("#entity-delete-button").off('click').on('click', function (e) {
+    show: function(href, header, text, buttonText, buttonIcon, buttonClass, action, $this) {
+        $("#entity-delete-button").off('click').on('click', function(e) {
             e.preventDefault();
             if (action) {
                 var actionType = typeof action;
@@ -73,7 +74,7 @@ mbh.alert = {
                         mbh.utils.executeFunctionByName(action, window, $this); //eval(action + '($this)');
                         break;
                 }
-            } else if(href) {
+            } else if (href) {
                 window.location.href = href;
             } else {
                 throw new Error('...');
@@ -95,8 +96,7 @@ mbh.alert = {
 
 mbh.datatablesOptions = {
     dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-    buttons: [
-        {
+    buttons: [{
             extend: 'excel',
             text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
             className: 'btn btn-default btn-sm',
@@ -163,21 +163,28 @@ mbh.highchartsOptions = {
     }
 };
 
+mbh.bootstrapSwitchConfig = {
+    'size': 'small',
+    'onText': Translator.trans('app.bootstrap_switch_config.yes'),
+    'offText': Translator.trans('app.bootstrap_switch_config.no'),
+    'onColor': 'success'
+};
+
 $('#work-shift-lock').on('click', function(e) {
     e.preventDefault();
     var $this = $(this);
-    var header = 'Блокирование смены';
-    var text = 'Вы уверены, что хотите блокировать текущую смену';
-    var buttonText = 'Блокировать';
+    var header = Translator.trans("010-app.shift_lock");
+    var text = Translator.trans("010-app.sure_block_shift");
+    var buttonText = Translator.trans("010-app.block");
     var buttonIcon = 'danger';
     var buttonClass = 'info';
     mbh.alert.show($this.attr('href'), header, text, buttonText, buttonIcon, buttonClass);
 });
 
 
-var deleteLink = function () {
+var deleteLink = function() {
     'use strict';
-    $('.delete-link').on('click', function (event) {
+    $('.delete-link').on('click', function(event) {
         event.preventDefault();
 
         var $this = $(this);
@@ -258,29 +265,34 @@ var deleteLink = function () {
 };*/
 
 
-$(document).ready(function () {
+$(document).ready(function() {
     'use strict';
 
     var workShiftMenu = $('#work-shift-menu');
     if (workShiftMenu.length == 1) {
         $('#logout-btn').on('click', function(e) {
             e.preventDefault();
-            mbh.alert.show(this.href, 'Рабочая смена не закрыта', 'Рабочая смена не закрыта', 'Выйти', 'fa-sign-out', 'danger');
+            mbh.alert.show(this.href,
+                Translator.trans("010-app.work_shift_not_closed"),
+                Translator.trans("010-app.work_shift_not_closed"),
+                Translator.trans("010-app.go_out"),
+                'fa-sign-out',
+                'danger');
         })
     }
 
     //scrolling height
-    (function () {
+    (function() {
         if (!$('.scrolling').length) {
             return null;
         }
-        var height = function () {
+        var height = function() {
             var isActionsPanelExists = $('#actions').length > 0;
             if (!isActionsPanelExists) {
                 document.body.style.paddingBottom = 0;
             }
             var bottomOffset = isActionsPanelExists ? 85 : 45;
-            $('.scrolling').height(function () {
+            $('.scrolling').height(function() {
                 return $(window).height() - $(this).offset().top - bottomOffset;
             });
         };
@@ -295,25 +307,29 @@ $(document).ready(function () {
     deleteLink();
 
     //autohide messages
-    window.setTimeout(function () {
-        $(".autohide").fadeTo(400, 0).slideUp(400, function () {
+    window.setTimeout(function() {
+        $(".autohide").fadeTo(400, 0).slideUp(400, function() {
             $(this).remove();
         });
     }, 5000);
 
     //fancybox
-    $('.fancybox').fancybox({'type': 'image'});
-    $('.image-fancybox').fancybox({'type': 'image'});
+    $('.fancybox').fancybox({
+        'type': 'image'
+    });
+    $('.image-fancybox').fancybox({
+        'type': 'image'
+    });
 
     //popovers
     $('[data-toggle="popover"]').popover();
     closePopovers();
 
     //sidebar
-    (function () {
+    (function() {
         'use strict';
 
-        $('.sidebar-toggle').click(function () {
+        $('.sidebar-toggle').click(function() {
             if ($('body').hasClass('sidebar-collapse')) {
                 localStorage.setItem('sidebar-collapse', 'open');
             } else {
@@ -321,24 +337,59 @@ $(document).ready(function () {
             }
         });
     }());
+
+    //dashboard
+    (function() {
+        'use strict';
+        $('.dashboard-confirm-button').click(function() {
+            var that = $(this);
+            var hideMessage = function (response) {
+                that.parent('div.alert').alert('close');
+                var num = $('.dashboard-confirm-button').length;
+                var conuter = $('#dashboard-counter');
+                if (conuter) {
+                    conuter.html(num);
+                    if (!num) {
+                        $('#dashboard-notifications').hide();
+                    }
+                }
+            };
+            $.ajax({
+                url: Routing.generate('dashboard_confirm', {id: that.attr('data-id')}),
+                beforeSend: function () {
+                    that.html('<i class="fa fa-spinner fa-spin"></i>');
+                },
+                success: hideMessage,
+                error: hideMessage
+            });
+        });
+
+        if (!mbh.justLogin) {
+            return;
+        }
+        var link = $('#dashboard-link');
+        if (link.length) {
+            link.trigger('click');
+        }
+    }());
 });
 
 var $taskCounter = $('#task-counter');
-var updateTaskCounter = function () {
+var updateTaskCounter = function() {
     $.ajax({
         url: Routing.generate('task_ajax_total_my_open'),
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
             if (response.total == 0) {
                 $taskCounter.html('');
             } else {
                 $taskCounter.html(response.total);
             }
         }
-    })
-}
+    });
+};
 
-var delay = 1000 * 60 * 5;//5 minutes
-setInterval(function () {
-    updateTaskCounter()
+var delay = 1000 * 60 * 5; //5 minutes
+setInterval(function() {
+    updateTaskCounter();
 }, delay);

@@ -1,66 +1,119 @@
-{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
-{% block document %}
-    <style>
-        /* Header */
-        .header .title {
-            float: left;
-            padding-top: 20px;
-            width: 500px;
-        }
-        .header .title h2 {
-            margin: 5px 0
-        }
-        .header .logo {
-            float: right
-        }
-        .header .logo img{
-            height: 80px; max-width: 200px;
-        }
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Pdf</title>
+</head>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
+      rel='stylesheet' type='text/css'>
+<body>
+<style>
+    body {
+        font-family: "Open Sans"; /*Arial*/
+        font-size: 16px;
+    }
 
-        .main{
-            padding-top: 20px;
-        }
+    .document {
+        padding-top: 0px;
+        width: 900px;
+        margin: 0 auto;
+    }
 
-        .main th {
-            text-align: center;
-        }
-        .services {
-            margin-top: 10px;
-        }
-        .services td {
-            padding: 3px;
-        }
-    </style>
+    .ib {
+        display: inline-block;
+    }
+
+    .area {
+        border-bottom: solid #000000 1px;
+    }
+
+    .left {
+        float: left;
+    }
+
+    .right {
+        float: right;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .indent {
+        text-indent: 1.5em;
+    }
+
+    .upper {
+        text-transform: uppercase;
+    }
+
+    .header .title {
+        float: left;
+        padding-top: 20px;
+        width: 500px;
+    }
+
+    .header .title h2 {
+        margin: 5px 0
+    }
+
+    .header .logo {
+        float: right
+    }
+
+    .header .logo img {
+        height: 80px;
+        max-width: 200px;
+    }
+
+    .main {
+        padding-top: 20px;
+    }
+
+    .main th {
+        text-align: center;
+    }
+
+    .services {
+        margin-top: 10px;
+    }
+
+    .services td {
+        padding: 3px;
+    }
+</style>
+<div class="document">
     <!-- Header -->
     {% set hotel = null %}
-    {% if entity.roomType and entity.roomType.hotel %}
-        {% set hotel = entity.roomType.hotel %}
+    {% if package.roomType and package.roomType.hotel %}
+        {% set hotel = package.roomType.hotel %}
     {% endif %}
 
     <div class="header">
         <div class="title">
-            <h2>{{ 'mbhpackagebundle.view.documents.pdftemplates.act'|trans }} № {{ entity.numberWithPrefix }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ 'now'|date('d.m.Y') }}.</h2>
+            <h2>{{ 'mbhpackagebundle.view.documents.pdftemplates.act'|trans }}
+                № {{ package.numberWithPrefix }} {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }} {{ 'now'|date('d.m.Y') }}
+                .</h2>
         </div>
-        {% if hotel and hotel.logoUrl %}
+        {% if hotel and hotel.logImage %}
             <div class="logo">
-                <img src="{{ absolute_url(asset(hotel.logoUrl)) }}">
+                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile'))) }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>
     </div>
     <hr>
 
-
     <div class="main">
         <table border="0" width="100%">
             <tr>
                 <td width="15%">{{ "package.pdf.executor"|trans({}, "MBHPackageBundle") }}</td>
-                <td width="85%"><strong>{{ entity.address.name }}</strong></td>
+                <td width="85%"><strong>{{ package.address.name }}</strong></td>
             </tr>
             <tr>
                 <td>{{ "package.pdf.customer"|trans({}, "MBHPackageBundle") }} </td>
                 <td>
-                    <strong>{{ entity.order.payer.name|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong>
+                    <strong>{{ package.order.payer.name|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong>
                 </td>
             </tr>
         </table>
@@ -79,16 +132,11 @@
             </thead>
             <tbody>
 
-            {% if formParams.hasFull is defined and formParams.hasFull %}
-                {% set packages = entity.order.packages %}
-            {% else %}
-                {% set packages = [entity] %}
-            {% endif %}
-
+            {% set packages = package.order.packages %}
             {% set counter = 0 %}
             {% for package in packages %}
+                {% set counter = counter + 1 %}
                 {% for date,data in package.pricesByDateByPrice %}
-                    {% set counter = counter + 1 %}
                     <tr>
                         <td align="center">{{ counter }}</td>
                         <td>
@@ -105,41 +153,37 @@
                 {% endfor %}
             {% endfor %}
 
-            {% if formParams.hasFull is defined and formParams.hasFull %}
-                {% set packages = entity.order.packages %}
-            {% else %}
-                {% set packages = [entity] %}
-            {% endif %}
-
-            {% if formParams.hasServices is defined and formParams.hasServices %}
-                {% for serviceGroup in packageServicesByType %}
-                    {% set counter = counter + 1 %}
-                    <tr>
-                        <td align="center">{{ counter }}</td>
-                        <td>{{ serviceGroup.byService.name }}</td>
-                        <td align="center">{{ serviceGroup.actuallyAmount }}</td>
-                        <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
-                        <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
-                        <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
-                    </tr>
-                {% endfor %}
-            {% endif %}
+            {% for serviceGroup in packageServicesByType %}
+                {% set counter = counter + 1 %}
+                <tr>
+                    <td align="center">{{ counter }}</td>
+                    <td>{{ serviceGroup.byService.name }}</td>
+                    <td align="center">{{ serviceGroup.actuallyAmount }}</td>
+                    <td align="center">{{ 'mbhpackagebundle.view.documents.pdftemplates.ht'|trans }}.</td>
+                    <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
+                    <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
 
         <!-- Total -->
         <table border="0" width="100%">
             <tr>
-                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.itogo'|trans }}:</strong></td>
+                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.itogo'|trans }}:</strong>
+                </td>
                 <td align="right" style="width: 100px;"><strong>{{ total|number_format(2) }}</strong></td>
             </tr>
             <tr>
-                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.v_tom_chisle_nds'|trans }}:</strong></td>
-                <td align="right"><strong>0</strong></td>
+                <td align="right"><strong>{{ 'mbhpackagebundle.view.documents.pdftemplates.v_tom_chisle_nds'|trans }}
+                        :</strong></td>
+                <td align="right"><strong>{{ (total * 0.18)|number_format(2) }}</strong></td>
             </tr>
         </table>
 
-        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ counter }}, {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>{{ 'mbhpackagebundle.view.documents.pdftemplates.vsego_okazano_uslug'|trans }} {{ counter }}
+            , {{ 'mbhpackagebundle.view.documents.pdftemplates.na_summu'|trans }} {{ total|number_format(2) }} {{ currency().text }}
+            <br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
         <p>{{ "package.pdf.conditions"|trans({}, "MBHPackageBundle") }}</p>
@@ -164,8 +208,9 @@
             </tr>
         </table>
 
-        {% if formParams.hasStamp is defined and formParams.hasStamp and hotel.organization and hotel.organization.stamp %}
-            <img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px" src="{{ hotel.organization.stamp }}">
+        {% if hotel.organization and hotel.organization.stamp %}
+            <img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px"
+                 src="{{ hotel.organization.stamp }}">
         {% endif %}
 
         <style>
@@ -174,13 +219,12 @@
                 width: 100%;
             }
 
-            .signatures .area{
+            .signatures .area {
                 border-bottom: 1px solid #000;
                 height: 80px;
             }
         </style>
     </div>
-{% endblock %}
-
-
-
+</div>
+</body>
+</html>

@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -14,7 +15,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class PackageVirtualRoomType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         /** @var Package $package */
@@ -22,10 +22,10 @@ class PackageVirtualRoomType extends AbstractType
 
         $builder
             ->add('virtualRoom', DocumentType::class, [
-                'label' => 'mbhpackagebundle.form.packagevirtualroomtype.nomer',
+                'label' => 'form.packagevirtualroomtype.nomer',
                 'class' => 'MBHHotelBundle:Room',
-                'group' => 'Виртуальный номер',
-                'query_builder' => function (DocumentRepository $dr) use ($package) {
+                'group' => 'form.packagevirtualroomtype.virt_room.group',
+                'query_builder' => function (RoomRepository $dr) use ($package) {
                     return $dr->getVirtualRoomsForPackageQB($package);
                 },
                 'required' => false

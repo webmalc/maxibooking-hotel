@@ -9,10 +9,8 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-
 /**
  * Class TariffServiceType
-
  */
 class TariffServiceType extends AbstractType
 {
@@ -43,7 +41,7 @@ class TariffServiceType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'style' => 'width:80px',
-                    'placeholder' => 'Весь срок',
+                    'placeholder' => 'mbhpricebundle.form.tariffservicetype.whole_period',
                 ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
@@ -79,7 +77,6 @@ class TariffServiceType extends AbstractType
             'services' => []
         ]);
     }
-
 
     public function getBlockPrefix()
     {

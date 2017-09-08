@@ -1,34 +1,44 @@
-{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
-{% block document %}
-    {#<style>
-        .table .field {
-            /*height: 40px;*/
-            font-size: 14px;
-        }
-
-        .table .field .title {
-            float: left;
-            width: 80px;
-        }
-
-        .table .field .title div:first-child {
-            text-transform: uppercase;
-        }
-
-        .table .field .field .title div:last-child {
-            font-size: 13px;
-        }
-
-        .table td {
-            clear: both;
-        }
-
-        .table .area {
-            height: 30px;
-            margin-left: 81px;
-            font-size: 14px
-        }
-    </style>#}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Pdf</title>
+</head>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+<body>
+<style>
+    body{
+        font-family: "Open Sans"; /*Arial*/
+        font-size: 16px;
+    }
+    .document{
+        padding-top: 0px;
+        width: 900px;
+        margin: 0 auto;
+    }
+    .ib{
+        display: inline-block;
+    }
+    .area {
+        border-bottom: solid #000000 1px;
+    }
+    .left {
+        float: left;
+    }
+    .right {
+        float: right;
+    }
+    .center {
+        text-align: center;
+    }
+    .indent {
+        text-indent: 1.5em;
+    }
+    .upper {
+        text-transform: uppercase;
+    }
+</style>
+<div class="document">
     <style>
         .two-list {
             width: 900px;
@@ -72,37 +82,39 @@
     {% set tourist = null %}
     {% set hotel = null %}
 
-
     {% set arrival = null %}
     {% set departure = null %}
 
-    {% if entity.begin %}
-        {% set arrival = entity.begin|date('d.m.Y') %}
+    {% if package.begin %}
+        {% set arrival = package.begin|date('d.m.Y') %}
     {% endif %}
 
-    {% if entity.end %}
-        {% set departure = entity.end|date('d.m.Y') %}
+    {% if package.end %}
+        {% set departure = package.end|date('d.m.Y') %}
     {% endif %}
 
-    {% if entity.arrivalTime %}
-        {% set arrival = entity.arrivalTime|date('d.m.Y') %}
+    {% if package.arrivalTime %}
+        {% set arrival = package.arrivalTime|date('d.m.Y') %}
     {% endif %}
 
-    {% if entity.departureTime %}
-        {% set departure = entity.departureTime|date('d.m.Y') %}
-    {% endif %}
-
-
-    {% if entity.order and entity.order.organization %}
-        {% set organization = entity.order.organization %}
-    {% endif %}
-
-    {% if entity.roomType and entity.roomType.hotel %}
-        {% set hotel = entity.roomType.hotel %}
+    {% if package.departureTime %}
+        {% set departure = package.departureTime|date('d.m.Y') %}
     {% endif %}
 
 
-    {% for tourist in tourists %}
+    {% if package.order and package.order.organization %}
+        {% set organization = package.order.organization %}
+    {% endif %}
+
+    {% if package.roomType and package.roomType.hotel %}
+        {% set hotel = package.roomType.hotel %}
+    {% endif %}
+
+
+    {% for tourist in package.tourists %}
+        {% if loop.index != 1 %}
+            <div style="page-break-after: always;"></div>
+        {% endif %}
         <div>
             <div class="two-list">
                 <div class="form">
@@ -130,10 +142,10 @@
                             <div class="field">
                                 <div class="center area" style="margin-top: 6px; font-size: 11px; font-weight: bold;">
                                     &nbsp
-                                    {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.address %}
-                                        {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
-                                    {% elseif entity.roomType.hotel.region and entity.roomType.hotel.city %}
-                                        {{ entity.roomType.hotel.region }} {{ 'package.resources.views.g'|trans }}. {{ entity.roomType.hotel.city }}{% if entity.roomType.hotel.street  %}, {{ entity.roomType.hotel.street }}{% endif %}{% if entity.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ entity.roomType.hotel.house }}{% if entity.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ entity.roomType.hotel.corpus }}{% endif %}{% endif %}
+                                    {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.address %}
+                                        {{ package.accommodation.housing.city }} {{ package.accommodation.housing.address }}
+                                    {% elseif package.roomType.hotel.region and package.roomType.hotel.city %}
+                                        {{ package.roomType.hotel.region }} {{ 'package.resources.views.g'|trans }}. {{ package.roomType.hotel.city }}{% if package.roomType.hotel.street  %}, {{ package.roomType.hotel.street }}{% endif %}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ package.roomType.hotel.house }}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ package.roomType.hotel.corpus }}{% endif %}{% endif %}
                                     {% endif %}
                                 </div>
                                 <div class="center" style="font-size: 9px">
@@ -160,7 +172,7 @@
                                         <div class="title">
                                             {{ 'package.resources.views.room'|trans }} №
                                         </div>
-                                        <div class="area">&nbsp{% if entity and entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
+                                        <div class="area">&nbsp{% if package and package.accommodation %}{{ package.accommodation.fullTitle }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -328,7 +340,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="area" style="margin-left: 0px">
-                                            &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
+                                            &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan ? tourist.documentRelation.authorityOrgan : tourist.documentRelation.authorityOrganText }} {% endif %}
                                         </div>
                                     </div>
                                 </td>
@@ -477,20 +489,6 @@
                 </style>
 
                 <div class="left-form">
-                    {#<div>
-                        <div style="margin: 10px 5px 0;float: right; width: 100px; font-size: 16px;">Форма №5</div>
-                        <div style="clear: both"></div>
-                    </div>
-
-                    <div style="margin-left: 20px; font-size: 12px;">{{ 'mbhpackagebundle.view.documents.pdftemplates.fms_form_5.blok.mashinochitayemykh.dannykh'|trans }} </div>
-                    <div class="block">
-
-                    </div>
-
-                    <div style="text-align: center">Ф.И.О</div>#}
-
-
-
 
                     <div class="form" style="border-right: none">
                         <table style="margin-top:5px;width: 445px;" class="center">
@@ -517,10 +515,10 @@
                                 <div class="field">
                                     <div class="center area" style="margin-top: 6px; font-size: 11px; font-weight: bold;">
                                         &nbsp
-                                        {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.address %}
-                                            {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
-                                        {% elseif entity.roomType.hotel.region and entity.roomType.hotel.city %}
-                                            {{ entity.roomType.hotel.region }} {{ 'package.resources.views.g'|trans }} {{ entity.roomType.hotel.city }}{% if entity.roomType.hotel.street  %}, {{ entity.roomType.hotel.street }}{% endif %}{% if entity.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ entity.roomType.hotel.house }}{% if entity.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ entity.roomType.hotel.corpus }}{% endif %}{% endif %}
+                                        {% if package.accommodation and package.accommodation.housing and package.accommodation.housing.city and package.accommodation.housing.address %}
+                                            {{ package.accommodation.housing.city }} {{ package.accommodation.housing.address }}
+                                        {% elseif package.roomType.hotel.region and package.roomType.hotel.city %}
+                                            {{ package.roomType.hotel.region }} {{ 'package.resources.views.g'|trans }} {{ package.roomType.hotel.city }}{% if package.roomType.hotel.street  %}, {{ package.roomType.hotel.street }}{% endif %}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.d'|trans }} {{ package.roomType.hotel.house }}{% if package.roomType.hotel.house %}, {{ 'package.resources.views.kor'|trans }} {{ package.roomType.hotel.corpus }}{% endif %}{% endif %}
                                         {% endif %}
                                     </div>
                                     <div class="center" style="font-size: 9px">
@@ -547,7 +545,7 @@
                                             <div class="title">
                                                 {{ 'package.resources.views.room'|trans }} №
                                             </div>
-                                            <div class="area">&nbsp{% if entity and entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
+                                            <div class="area">&nbsp{% if package and package.accommodation %}{{ package.accommodation.fullTitle }}{% endif %}</div>
                                         </div>
                                     </td>
                                 </tr>
@@ -715,7 +713,7 @@
                                     <td colspan="3">
                                         <div class="field">
                                             <div class="area" style="margin-left: 0px">
-                                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
+                                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan ? tourist.documentRelation.authorityOrgan : tourist.documentRelation.authorityOrganText }} {% endif %}
                                             </div>
                                         </div>
                                     </td>
@@ -861,4 +859,6 @@
             {% endif %}
         </div>
     {% endfor %}
-{% endblock %}
+</div>
+</body>
+</html>

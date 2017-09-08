@@ -20,7 +20,7 @@
 
             {% if package.isForceBooking %}
                 <div class="alert alert-warning">
-                    <i class="fa fa-exclamation-circle"></i> Бронь создана с игнорированием условий и ограничений
+                    <i class="fa fa-exclamation-circle"></i> {{ 'package.edit.package_created_with_ignoring_conditions'|trans}}
                 </div>
             {% endif %}
 
@@ -66,7 +66,7 @@
                                     {% if package.prices|length > 5 %}
                                         <p>
                                             <small>
-                                                <a href="javascript: toggler('price-by-days')">показать/скрыть</a>
+                                                <a href="javascript: toggler('price-by-days')">{{ 'package.edit.show_display'|trans}}</a>
                                             </small>
                                         </p>
                                     {% endif %}
@@ -76,18 +76,18 @@
                                             <small>
                                                 {{ price.date|date('d.m.Y') }} -
                                                 <strong>{{ price.price|number_format(2) }}</strong> -
-                                                <a data-toggle="tooltip" title="{{ 'mbhpackagebundle.view.package.edit.tarif'|trans }} "
+                                                <a data-toggle="tooltip" title="{{ 'package.edit.tariff'|trans }}"
                                                    href="{{ path('tariff_edit', {id: price.tariff.id}) }}">
                                                     <i class="fa fa-sliders"></i> {{ price.tariff }}
                                                 </a>
                                                 {% if price.promotion %}
-                                                    - <a data-toggle="tooltip" title="{{ 'mbhpackagebundle.view.package.edit.aktsiya'|trans }} "
+                                                    - <a data-toggle="tooltip" title="{{ 'package.edit.promotions'|trans }}"
                                                          href="{{ path('promotion_edit', {id: price.promotion.id}) }}">
                                                     <i class="fa fa-bookmark"></i> {{ price.promotion }}
                                                 </a>
                                                 {% endif %}
                                                 {% if price.special %}
-                                                    - <a data-toggle="tooltip" title="{{ 'mbhpackagebundle.view.package.edit.aktsiya'|trans }} "
+                                                    - <a data-toggle="tooltip" title="{{ 'package.edit.promotions'|trans }}"
                                                          href="{{ path('special_edit', {id: price.special.id}) }}">
                                                     <i class="fa fa-star"></i> {{ price.special }}
                                                 </a>
@@ -109,7 +109,7 @@
                                     {% if package.pricesByDate|length > 5 %}
                                         <p>
                                             <small>
-                                                <a href="javascript: toggler('price-by-days')">показать/скрыть</a>
+                                                <a href="javascript: toggler('price-by-days')">{{ 'package.edit.show_display'|trans}}</a>
                                             </small>
                                         </p>
                                     {% endif %}

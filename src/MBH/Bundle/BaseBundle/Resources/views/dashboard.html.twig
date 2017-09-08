@@ -1,0 +1,9 @@
+{% if dashboard_messages|length %}
+<li class="notifications-menu" id="dashboard-notifications">
+    <a href="#" data-toggle="modal" data-target="#dashboard-modal" id="dashboard-link">
+        <i class="fa fa-bell-o faa-ring animated faa-slow"></i>
+        <span class="label label-danger" id="dashboard-counter">{{ dashboard_messages|length }}</span>
+    </a>
+</li>
+{% endif %}
+

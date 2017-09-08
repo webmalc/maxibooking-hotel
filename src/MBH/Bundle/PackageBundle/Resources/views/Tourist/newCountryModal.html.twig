@@ -1,0 +1,27 @@
+<div id="new-country-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">{{ 'tourist.new_country_modal.country_creation'|trans }}</h4>
+            </div>
+            <div class="modal-body">
+                <div id="loader" style="display:none">
+
+                </div>
+                <div id="new-country-content">
+                    <div class="form-group">
+                        <label for="new-country-name" class="control-label">{{ 'tourist.new_country_modal.country_name'|trans }}:</label>
+                        <input type="text" class="form-control" id="new-country-name">
+                    </div>
+                    <div id="country-name-error"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'tourist.new_country_modal.close'|trans }}</button>
+                <button type="button" id="new-country-create" class="btn btn-primary">{{ 'tourist.new_country_modal.add'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>

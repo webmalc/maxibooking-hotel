@@ -1,0 +1,27 @@
+{% extends 'MBHBaseBundle::login.html.twig' %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block content %}
+
+<form name="resetForm" action="{{ path('fos_user_resetting_reset', {'token': token}) }}" class="fos_user_resetting_reset" role="form" method="post" accept-charset="UTF-8">
+    <div class="form-group has-feedback">
+        <label for="fos_user_resetting_form_plainPassword_first" class="required">Новый пароль:</label>
+        <input type="password" name="fos_user_resetting_form[plainPassword][first]" class="form-control" id="fos_user_resetting_form_plainPassword_first" required>
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+    </div>
+    <div class="form-group has-feedback">
+        <label for="fos_user_resetting_form_plainPassword_second" class="required">Подтвердите пароль:</label>
+        <input type="password" name="fos_user_resetting_form[plainPassword][second]" class="form-control" id="fos_user_resetting_form_plainPassword_second" required>
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+    </div>
+    <div class="row margin-left-sm">
+        <div class="col-xs-7 col-xs-offset-5">
+            <button type="submit" name="_submit" class="btn btn-primary btn-block btn-flat">
+                <i class="fa fa-sign-in"></i> {{ 'resetting.reset.submit'|trans({}, 'FOSUserBundle') }}
+            </button>
+        </div><!-- /.col -->
+    </div>
+    {{ form_row(form._token) }}
+</form>
+{% endblock %}

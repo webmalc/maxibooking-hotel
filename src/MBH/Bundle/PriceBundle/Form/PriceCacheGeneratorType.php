@@ -15,7 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -28,11 +28,11 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class PriceCacheGeneratorType extends AbstractType
 {
     /**
-     * @var DataCollectorTranslator
+     * @var TranslatorInterface
      */
     private $translator;
 
-    public function __construct(DataCollectorTranslator $translator) {
+    public function __construct(TranslatorInterface $translator) {
         $this->translator = $translator;
     }
 

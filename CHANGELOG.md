@@ -1,3 +1,72 @@
+2.2.2
+============
+* move channelmanager update in background to RabbitMQ Queue
+
+2.2.1
+============
+* form iframe change size
+
+2.2.0
+============
+* \#968 rebuild message restriction
+* add messagetypes fixtures
+* add messagetypes migrations
+* change some fixtures 
+
+2.1.1
+============
+* \#974 fix generate doc fms
+* split queues 
+* add dedicated consumer cache recalculate 
+
+2.1.0
+============
+* add mail restriction for different mailer types
+* add global swiftmailer log
+
+2.0.0-beta.3
+============
+* merge Xpedia branch
+* merge translation branch
+
+2.0.0-beta.2
+============
+ 
+* add universal cli command [reference](http://redmine.maxi-booking.ru/issues/926#note-3)
+* fix protected upload path in stamp and documents
+
+2.0.0-beta.1
+============
+* doctrine mongodb vendor update
+* add acl cache
+* add fork acl provider https://github.com/webmalc/MongoDBAclBundle.git
+* add primes to PackageRepository::fetch()
+* change images to Image document in Hotel  and RoomType
+* change logo in mail templates
+* check empty email addresses before generate mail (add to log if emtpy) 
+* check is file exists before attach to mail
+* add priority to roomType images
+* each client in own file folder
+* change task runner (rabbitmq consumer) to multi clients
+* add service get all clients 
+* add generator for ChannelManager pull queue in RMQ
+* add complex indexes in some repos
+* add MBHBillingBundle, move maintenance commands
+* add cache:clear command for all users
+
+
+1.5.10
+============
+* online form improvements && fixes
+* package searchDelay
+* cashDocuments - search by payer
+* user locale
+
+1.5.9
+=============
+* new rabbitmq (redmine #644)
+* fix translations
+
 1.5.8
 =============
 * booking.com: fix (redmine #717)

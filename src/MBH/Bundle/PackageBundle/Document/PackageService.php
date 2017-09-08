@@ -646,7 +646,7 @@ class PackageService extends Base
      * @param bool $includeDeparture
      * @return self
      */
-    public function setIncludeDeparture(bool $includeDeparture): self
+    public function setIncludeDeparture(?bool $includeDeparture): self
     {
         $this->includeDeparture = $includeDeparture;
 
@@ -669,7 +669,7 @@ class PackageService extends Base
      * @param bool $includeArrival
      * @return self
      */
-    public function setIncludeArrival(bool $includeArrival): self
+    public function setIncludeArrival(?bool $includeArrival): self
     {
         $this->includeArrival = $includeArrival;
 

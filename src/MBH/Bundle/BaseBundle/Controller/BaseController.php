@@ -6,9 +6,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Base Controller
@@ -154,6 +156,8 @@ class BaseController extends Controller
         $locale = $request->get('locale');
         if ($locale) {
             $this->setLocale($locale);
+        } else {
+            $this->setLocale($this->getParameter('locale'));
         }
     }
 
@@ -171,4 +175,6 @@ class BaseController extends Controller
     {
         return $this->get('request_stack')->getCurrentRequest();
     }
+
+
 }
