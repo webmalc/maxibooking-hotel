@@ -49,7 +49,6 @@ abstract class AbstractOrderInfo
      */
     abstract public function getCreditCard();
     abstract public function getChannelManagerName() : string;
-    abstract public function getChannelManagerDisplayedName() : string;
     abstract public function isOrderModified() : bool;
     abstract public function isOrderCreated() : bool;
     abstract public function isOrderCancelled() : bool;

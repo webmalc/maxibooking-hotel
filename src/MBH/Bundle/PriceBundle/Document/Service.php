@@ -162,7 +162,6 @@ class Service extends Base
      * @var bool
      * @Gedmo\Versioned
      * @ODM\Boolean()
-     * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     private $includeArrival;
@@ -171,7 +170,6 @@ class Service extends Base
      * @var bool
      * @Gedmo\Versioned
      * @ODM\Boolean()
-     * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
     private $includeDeparture;
@@ -536,9 +534,13 @@ class Service extends Base
      */
     public function isIncludeDeparture()
     {
-        return $this->includeDeparture;
+        if ($this->getCalcType() == 'per_stay') {
+            return $this->includeDeparture;
+        }
+
+        return true;
     }
-    
+
     /**
      * includeArrival set
      *
@@ -559,6 +561,10 @@ class Service extends Base
      */
     public function isIncludeArrival()
     {
-        return $this->includeArrival;
+        if ($this->getCalcType() == 'per_stay') {
+            return $this->includeArrival;
+        }
+
+        return true;
     }
 }

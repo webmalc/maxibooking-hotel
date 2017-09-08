@@ -21,7 +21,7 @@
                 <div id="mbh-results-services-wrapper">
                     <div class="panel panel-primary spacer-top">
                         <div class="panel-heading">
-                            Услуги
+                            {{ 'views.api.get_user_form.services'|trans}}
                         </div>
                         <div class="panel-body">
 
@@ -90,7 +90,7 @@
                         <label for="mbh-user-form-firstName" class="col-sm-2 control-label">{{ 'views.api.getUserForm.name'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
                         <div class="col-sm-10">
                         <input type="text" class="form-control input-sm" id="mbh-user-form-firstName" name="firstName" required value=""
-                                placeholder="Иван">
+                                placeholder="{{ 'views.api.get_user_form.default_name'|trans }}">
                         </div>
                     </div>
 

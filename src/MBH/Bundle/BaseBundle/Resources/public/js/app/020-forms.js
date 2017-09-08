@@ -10,27 +10,27 @@ mbh.datarangepicker = {
             "format": "ll",
             "separator": " - ",
             "daysOfWeek": [
-                "Вс",
-                "Пн",
-                "Вт",
-                "Ср",
-                "Чт",
-                "Пт",
-                "Сб"
+                Translator.trans("online.online-calendar.sun_abbr_min"),
+                Translator.trans("online.online-calendar.mon_abbr_min"),
+                Translator.trans("online.online-calendar.tue_abbr_min"),
+                Translator.trans("online.online-calendar.wed_abbr_min"),
+                Translator.trans("online.online-calendar.thu_abbr_min"),
+                Translator.trans("online.online-calendar.fri_abbr_min"),
+                Translator.trans("online.online-calendar.sat_abbr_min")
             ],
             "monthNames": [
-                "Январь",
-                "Февраль",
-                "Март",
-                "Апрель",
-                "Май",
-                "Июнь",
-                "Июль",
-                "Август",
-                "Сентябрь",
-                "Октябрь",
-                "Ноябрь",
-                "Декабрь"
+                Translator.trans("analytics.months.jan"),
+                Translator.trans("analytics.months.feb"),
+                Translator.trans("analytics.months.mar"),
+                Translator.trans("analytics.months.apr"),
+                Translator.trans("analytics.months.may"),
+                Translator.trans("analytics.months.jun"),
+                Translator.trans("analytics.months.jul"),
+                Translator.trans("analytics.months.aug"),
+                Translator.trans("analytics.months.sep"),
+                Translator.trans("analytics.months.okt"),
+                Translator.trans("analytics.months.nov"),
+                Translator.trans("analytics.months.dec")
             ],
             "firstDay": 1
         }
@@ -111,7 +111,7 @@ $.fn.mbhGuestSelectPlugin = function () {
         $this.select2({
             minimumInputLength: 3,
             allowClear: true,
-            placeholder: 'Выберите гостя',
+            placeholder: Translator.trans("020-forms.select_guest"),
             ajax: {
                 url: Routing.generate('ajax_tourists'),
                 dataType: 'json',
@@ -153,7 +153,7 @@ $.fn.mbhOrganizationSelectPlugin = function () {
         $this.select2({
             minimumInputLength: 3,
             allowClear: true,
-            placeholder: 'Выберите организацию',
+            placeholder: Translator.trans("020-forms.chose_organization"),
             ajax: {
                 url: Routing.generate('organization_json_list'),
                 dataType: 'json',
@@ -169,7 +169,7 @@ $.fn.mbhOrganizationSelectPlugin = function () {
                     var details = data.details;
                     $.each(data.list, function (k, v) {
                         var d = details[v.id];
-                        data.list[k].text = v.text + ' ' + '(ИНН ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
+                        data.list[k].text = v.text + ' ' + '(' + Translator.trans("020-forms.inn") + ' ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
                     });
 
                     return {results: data.list};
@@ -241,7 +241,7 @@ var docReadyForms = function () {
     //select all
     (function () {
         $('select.select-all ').each(function () {
-            var elements = $('<div class="text-right"><small><a href="#" class="select-all-link">выбрать всё</a></small></div>');
+            var elements = $('<div class="text-right"><small><a href="#" class="select-all-link">' + Translator.trans("020-forms.chose_all") + '</a></small></div>');
             var select = $(this);
             $(this)
                 .closest('div.col-sm-6')
@@ -296,8 +296,8 @@ var docReadyForms = function () {
     //BootstrapSwitch configuration
     var bootstrapSwitchConfig = {
         'size': 'small',
-        'onText': 'да',
-        'offText': 'нет',
+        'onText': Translator.trans("020-forms.yes"),
+        'offText': Translator.trans("020-forms.no"),
         'onColor': 'success'
     };
     $('input[type="checkbox"]')
@@ -321,7 +321,7 @@ var docReadyForms = function () {
 
     //Select2 configuration
     $('select:not(.plain-html)').addClass('select2').select2({
-        placeholder: "Сделайте выбор",
+        placeholder: Translator.trans("020-forms.make_choice"),
         allowClear: true,
         width: 'resolve',
         formatSelection: function (item, container) {
@@ -480,7 +480,7 @@ var docReadyForms = function () {
             .select2({
                 minimumInputLength: 3,
                 allowClear: true,
-                placeholder: 'Выберите город',
+                placeholder: Translator.trans("020-forms.select_city"),
                 ajax: {
                     url: Routing.generate('hotel_city'),
                     dataType: 'json',
@@ -520,7 +520,7 @@ var docReadyForms = function () {
             .select2({
                 minimumInputLength: 1,
                 allowClear: true,
-                placeholder: 'Выберите бронь',
+                placeholder: Translator.trans("020-forms.select_package"),
                 ajax: {
                     url: Routing.generate('getPackageJsonSearch'),
                     dataType: 'json',
@@ -824,7 +824,7 @@ var select2TemplateResult = {
         } else if (typeof method === 'object' || !method) {
             return methods.init.apply(this, arguments);
         } else {
-            $.error('Метод с именем ' + method + ' не существует');
+            $.error('Method named "' + method + ' does not exist');
         }
     };
 })(window.jQuery);
@@ -930,6 +930,33 @@ var disableCheckboxListen = function () {
         window.location.href = Routing.generate('change_room_type_enableable_mode', {disableMode: disableMode, route : routeName});
     });
 };
+
+function getExportButtonSettings(entityName, format, filterDataCallback) {
+    var exportUrl = Routing.generate('export_entities', {entityName: entityName, format: format});
+    return {
+        text: '<i class="fa fa-file-excel-o" title="' + format + '" data-toggle="tooltip" data-placement="bottom"></i>',
+        className: 'btn btn-default btn-sm',
+        action: function () {
+        $.ajax({
+            url: exportUrl,
+            type:'GET',
+            success: function (response) {
+                $('<div id="template-document-csv-modal" class="modal"></div>').insertAfter($('.content-wrapper'));
+                var $modal = $('#template-document-csv-modal');
+                $modal.html(response);
+                $modal.find('select').css('width', '100%').select2();
+                $modal.modal('show');
+
+                var $form = $modal.find("form");
+                $form.find('#export-send-button').click(function() {
+                    window.open(exportUrl + '?' + filterDataCallback() + '&' + $form.serialize());
+                    $modal.modal('hide');
+                });
+            }
+        });
+        }
+    }
+}
 
 function onHideCheckboxChange() {
     var $boxHideableCheckbox = $('.box-full-visibility-checkbox, .box-specified-visibility-checkbox');

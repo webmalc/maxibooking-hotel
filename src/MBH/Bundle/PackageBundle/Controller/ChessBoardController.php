@@ -11,7 +11,6 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType;
-use MBH\Bundle\PackageBundle\Form\ChessBoardConciseType;
 use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Services\ChessBoardMessageFormatter;
@@ -79,7 +78,7 @@ class ChessBoardController extends BaseController
      * @Route("/", name="chess_board_home", options={"expose"=true})
      * @Template()
      * @param Request $request
-     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
+     * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @return array
      */
     public function indexAction(Request $request)
@@ -179,7 +178,7 @@ class ChessBoardController extends BaseController
         } catch (\Exception $e) {
             $message = $this->get('translator')->trans($e->getMessage());
             $messageFormatter->addErrorMessage($e->getMessage());
-            $this->logs($message);
+            $this->get('logger')->alert($message);
         }
         $messageFormatter->addSuccessfulMessage('controller.chessboard.package_remove.success');
 
@@ -204,14 +203,14 @@ class ChessBoardController extends BaseController
         $accommodationId = $request->request->get('accommodationId');
         $updatedRoom = $this->dm->find('MBHHotelBundle:Room', $request->request->get('roomId'));
 
-        //Если изменяется размещение, а не добавляется новое
+        //if accommodation changes, but not new one is added
         if ($accommodationId != '') {
             $accommodation = $this->dm->find('MBHPackageBundle:PackageAccommodation', $accommodationId);
-            //Если удаляется размещение
+            //if removed accommodation
             if (!$updatedRoom) {
                 $this->dm->remove($accommodation);
                 $this->dm->flush();
-                $messageFormatter->addSuccessRemoveAccommodationMessage($accommodation);
+                $messageFormatter->addSuccessRemoveAccommodationMessage($accommodation, $package);
             } else {
                 $this->updateAccommodation($package, $accommodation, $updatedRoom, $updatedBeginDate,
                     $updatedEndDate, $messageFormatter);
@@ -248,7 +247,7 @@ class ChessBoardController extends BaseController
         $isBeginDateChanged = $updatedBeginDate->format('d.m.Y') != $accommodation->getBegin()->format('d.m.Y');
         $isEndDateChanged = $updatedEndDate->format('d.m.Y') != $accommodation->getEnd()->format('d.m.Y');
 
-        //Если изменилась дата или конец размещения, но это не первое и не последнее размещение
+        // If the date or end of the placement has changed, but this is not the first or the last placement
         if (($isBeginDateChanged && !$isFirstAccommodation) || ($isEndDateChanged && !$isLastAccommodation)) {
             throw new \Exception($this->get('translator')
                 ->trans('controller.chessboard.accommodation_update.not_first_or_last_accommodation_change'));
@@ -260,9 +259,8 @@ class ChessBoardController extends BaseController
             $isPackageChanged = true;
         }
         if ($isEndDateChanged && $isLastAccommodation
-            //Если дата окончания размещения больше чем дата выезда брони
+            //If the end date of the placement is greater than the date of departure of the reservation
             && (($updatedEndDate->getTimestamp() > $package->getEnd()->getTimestamp())
-                //... или дата выезда брони равна дате окончания размещения, то изменяем дату выезда брони
                 || ($package->getEnd()->getTimestamp() == $accommodation->getEnd()->getTimestamp()))
         ) {
             $package->setEnd(clone $updatedEndDate);
@@ -380,7 +378,8 @@ class ChessBoardController extends BaseController
         $translator = $this->get('translator');
         $helper = $this->container->get('mbh.helper');
 
-        $package = $firstAccommodation->getPackage();
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->getPackageByPackageAccommodationId($firstAccommodation->getId());
         $accommodationEnd = $firstAccommodation->getEnd();
 
         $intermediateDateString = $request->request->get('begin');
@@ -414,7 +413,7 @@ class ChessBoardController extends BaseController
                         $messageFormatter->addErrorMessage($additionResult);
                     }
                 } else {
-                    $messageFormatter->addSuccessRemoveAccommodationMessage($secondAccommodation);
+                    $messageFormatter->addSuccessRemoveAccommodationMessage($secondAccommodation, $package);
                     $this->dm->flush();
                 }
             }
@@ -429,7 +428,7 @@ class ChessBoardController extends BaseController
      * @Method({"GET"})
      * @Route("/packages", name="chessboard_packages", options={"expose"=true})
      * @param Request $request
-     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
+     * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @return JsonResponse
      */
     public function getPackagesData(Request $request)

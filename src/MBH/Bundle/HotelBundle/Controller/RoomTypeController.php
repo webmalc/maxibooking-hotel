@@ -3,10 +3,13 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
 use MBH\Bundle\HotelBundle\Document\TaskSettings;
+use MBH\Bundle\HotelBundle\Form\ImagePriorityType;
+use MBH\Bundle\HotelBundle\Form\OnlineImageFileType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeImageType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeTasksType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeType;
@@ -16,7 +19,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/roomtype")
@@ -120,24 +122,31 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * Delete image
      *
      * @Route("/{id}/image/{imageId}/delete", name="room_type_image_delete")
+     * @ParamConverter("roomType", class="MBHHotelBundle:RoomType",options={"id" = "id"})
+     * @ParamConverter("image", class="MBHBaseBundle:Image",options={"id" = "imageId"})
      * @Method("GET")
      * @Security("is_granted('ROLE_ROOM_TYPE_DELETE')")
+     * @param RoomType $roomType
+     * @param Image $image
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function imageDelete($id, $imageId)
+    public function imageDelete(RoomType $roomType, Image $image)
     {
-        /* @var $entity RoomType */
-        $entity = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$roomType || !$this->container->get('mbh.hotel.selector')->checkPermissions($roomType->getHotel())) {
             throw $this->createNotFoundException();
         }
-        $entity->deleteImageById($imageId);
-        $this->dm->persist($entity);
-        $this->dm->flush();
+        if ($image) {
+            $roomType->removeOnlineImage($image);
+            $imageWasMain = $image->isMain();
+            if($imageWasMain) {
+                $roomType->makeFirstImageAsMain();
+            }
+        }
 
+        $this->dm->flush();
         $this->addFlash('success', 'controller.TaskTypeController.success_delete_photo');
 
-        return $this->redirectToRoute('room_type_image_edit', ['id' => $id, 'imageTab' => 'active']);
+        return $this->redirectToRoute('room_type_image_edit', ['id' => $roomType->getId(), 'imageTab' => 'active']);
     }
 
     /**
@@ -220,7 +229,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      * @Template()
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAutoTasksAction(Request $request, RoomType $roomType)
     {
@@ -272,19 +281,19 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      * @Template("MBHHotelBundle:RoomType:editRoom.html.twig")
      */
-    public function makeMainImageRoomTypeAction(Request $request, RoomType $entity, $imageId)
+    public function makeMainImageRoomTypeAction(RoomType $roomType, $imageId)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($roomType->getHotel())) {
             throw $this->createNotFoundException();
         }
-        /* @var $entity RoomType */
-        $entity->makeMainImageById($imageId);
-        $this->dm->persist($entity);
+        /* @var $roomType RoomType */
+        $roomType->makeMainImageById($imageId);
+        $this->dm->persist($roomType);
         $this->dm->flush();
 
         $this->addFlash('success', 'controller.roomTypeController.success_set_main_photo');
 
-        return $this->redirectToRoute('room_type_image_edit', ['id' => $entity->getId()]);
+        return $this->redirectToRoute('room_type_image_edit', ['id' => $roomType->getId()]);
     }
 
 
@@ -298,33 +307,70 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      * @Template()
      */
-    public function editImagesAction(Request $request, RoomType $entity)
+    public function editImagesAction(Request $request, RoomType $roomType)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($roomType->getHotel())) {
             throw $this->createNotFoundException();
         }
-        $form = $this->createForm(RoomTypeImageType::class);
-        $form->handleRequest($request);
 
-        if ($request->isMethod(Request::METHOD_POST) && $form->isValid()) {
-            $image = new RoomTypeImage();
-            $image->uploadImage($form['imageFile']->getData());
-            $entity->addImage($image);
-            $this->dm->persist($entity);
+        $form = $this->createForm(OnlineImageFileType::class);
+        $form->handleRequest($request);
+        /** @var Image $onlineImage */
+        if ($form->isSubmitted() && $form->isValid()) {
+            $onlineImage = $form->getData();
+            $roomType->addOnlineImage($onlineImage);
+            if ($onlineImage->getIsDefault()) {
+                $roomType->makeMainImage($onlineImage);
+            }
+
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.roomTypeController.success_set_photo');
 
             return $this->redirectToRoute('room_type_image_edit', [
-                'id' => $entity->getId()
+                'id' => $roomType->getId()
             ]);
         }
 
+
+        $images = $roomType->getOnlineImagesByPriority();
+
+        $imagePriorityForm = $this->createForm(ImagePriorityType::class, null, ['action' => '']);
+
         return array(
-            'entity' => $entity,
+            'entity' => $roomType,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity),
-            'images' => $entity->getImages(),
+            'logs' => $this->logs($roomType),
+            'images' => $images,
+            'priorityForm' => $imagePriorityForm->createView()
         );
+    }
+
+    /**
+     * @param Request $request
+     * @param Image $image
+     * @Route("/images/{id}/{imageId}/priority/edit", name="room_type_image_edit_priority", options={"expose" = true })
+     * @ParamConverter("roomType", class="MBHHotelBundle:RoomType",options={"id" = "id"})
+     * @ParamConverter("image", class="MBHBaseBundle:Image",options={"id" = "imageId"})
+     * @Method({"GET","POST"})
+     * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function changeImagePriority(Request $request, RoomType $roomType, Image $image)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($roomType->getHotel())) {
+            throw $this->createNotFoundException();
+        }
+
+        if ($image) {
+            $form = $this->createForm(ImagePriorityType::class, $image);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->dm->flush();
+            }
+        }
+
+        return $this->redirectToRoute('room_type_image_edit', ['id' => $roomType->getId()]);
+
     }
 }

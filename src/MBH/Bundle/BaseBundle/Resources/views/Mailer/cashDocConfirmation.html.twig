@@ -1,0 +1,26 @@
+{% extends 'MBHBaseBundle:Mailer:order.html.twig' %}
+
+{% block text %}
+    {{ parent() }}
+
+    <br>
+    <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #dddddd;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
+        {{ 'mailer.order.payment_info'|trans(transParams) }}
+    </div>
+    <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+        <tbody>
+        <tr>
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">{{ 'mailer.order.total_paid'|trans(transParams) }}:</td>
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
+                {{ order.paid|number_format(2) ~ ' ' ~ currencyText }}
+            </td>
+        </tr>
+        <tr>
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">{{ 'mailer.order.surcharges'|trans(transParams)|raw }}:</td>
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
+                {{ order.debt|number_format(2) ~ ' ' ~ currencyText }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}

@@ -251,16 +251,17 @@ class Helper
     }
 
     /**
-     * Возвращает сумму прописью
+     * Returns the amount in words
      * @author runcore
      * @uses morph(...)
+     * @param $num
+     * @return string
      */
     public function num2str($num)
     {
         $currency = $this->container->get('mbh.currency')->info();
         $nul = 'ноль';
         $translator = $this->container->get('translator');
-        //TODO: Переводы по идее не нужны. Нужно изменять сам сервис.
         $ten = array(
             array(
                 '',
@@ -288,7 +289,7 @@ class Helper
             ),
         );
         $a20 = array(
-            $translator->trans('mbhbasebundle.service.helper.twelve'),
+            $translator->trans('mbhbasebundle.service.helper.ten'),
             $translator->trans('mbhbasebundle.service.helper.eleven'),
             $translator->trans('mbhbasebundle.service.helper.twelve'),
             $translator->trans('mbhbasebundle.service.helper.fourteen'),
@@ -325,13 +326,13 @@ class Helper
             array($currency['text'], $currency['text'], $currency['text'], 0),
             array('тысяча', 'тысячи', 'тысяч', 1),
             array(
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.million'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.millionа'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.millionов'), 0),
+                $translator->trans('mbhbasebundle.service.helper.million'),
+                $translator->trans('mbhbasebundle.service.helper.millionа'),
+                $translator->trans('mbhbasebundle.service.helper.millionov'), 0),
             array(
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.milliard'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.miliarda'),
-                $this->container->get('translator')->trans('mbhbasebundle.service.helper.milliardов'), 0),
+                $translator->trans('mbhbasebundle.service.helper.milliard'),
+                $translator->trans('mbhbasebundle.service.helper.miliarda'),
+                $translator->trans('mbhbasebundle.service.helper.milliardov'), 0),
         );
         //
         list($rub, $kop) = explode('.', sprintf("%015.2f", floatval($num)));

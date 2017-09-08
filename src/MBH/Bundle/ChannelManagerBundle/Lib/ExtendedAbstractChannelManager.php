@@ -2,13 +2,10 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
-use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ChannelManagerBundle\Lib\Response;
 use MBH\Bundle\ChannelManagerBundle\Model\RequestInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Document\Order;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Для реализация данного абстрактного класса, необходимо также реализовать:
@@ -27,10 +24,8 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     protected $requestFormatter;
     /** @var AbstractRequestDataFormatter $requestDataFormatter */
     protected $requestDataFormatter;
-    /** Нужно ли уведомлять сервис о получениии брони? */
-    protected $isNotifyServiceAboutReservation = false;
 
-    abstract protected function getResponseHandler($response, $config = null) : AbstractResponseHandler;
+    abstract protected function getResponseHandler($response, $config = null): AbstractResponseHandler;
 
     /**
      * @param \DateTime $begin
@@ -104,12 +99,10 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $end = $this->getDefaultEnd($begin, $end);
 
         // iterate hotels
-        foreach ($this->getConfig() as $config)
-        {
+        foreach ($this->getConfig() as $config) {
             $serviceTariffs = $this->pullTariffs($config);
             $restrictionsData = $this->requestDataFormatter->formatRestrictionRequestData($begin, $end, $roomType, $serviceTariffs, $config);
             $requestInfoArray = $this->requestFormatter->formatUpdateRestrictionsRequest($restrictionsData);
-
             foreach ($requestInfoArray as $requestInfo) {
                 $sendResult = $this->sendRequestAndGetResponse($requestInfo);
                 $result = $this->checkResponse($sendResult);
@@ -146,8 +139,10 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         foreach ($requestInfoList as $requestInfo) {
             $response = $this->sendRequestAndGetResponse($requestInfo);
             $responseHandler = $this->getResponseHandler($response, $config);
-            $roomTypesData = $responseHandler->getRoomTypesData();
-            $roomTypes += $roomTypesData;
+            if ($responseHandler->isResponseCorrect()) {
+                $roomTypesData = $responseHandler->getRoomTypesData();
+                $roomTypes += $roomTypesData;
+            }
         }
 
         return $roomTypes;
@@ -187,8 +182,13 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         if (!$response) {
             return false;
         }
+        $responseHandler = $this->getResponseHandler($response);
+        $isSuccess = $responseHandler->isResponseCorrect();
+        if (!$isSuccess) {
+            $this->addError($responseHandler->getErrorMessage());
+        }
 
-        return $this->getResponseHandler($response)->isResponseCorrect();
+        return $isSuccess;
     }
 
     /**
@@ -245,14 +245,12 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
 
     public function handlePullOrdersResponse($response, $config, &$result)
     {
-        //TODO: Добвить try catch для Exception и ChannelManagerException
         $responseHandler = $this->getResponseHandler($response, $config);
+        $orderHandler = $this->container->get('mbh.channelmanager.order_handler');
         if (!$this->checkResponse($response)) {
             $this->log($responseHandler->getErrorMessage());
-
             $result = false;
         } else {
-            //TODO: Убрать или нет
             $this->log($response);
             $this->log('Reservations count: ' . $responseHandler->getOrdersCount());
 
@@ -267,7 +265,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
                     [
                         'channelManagerId' => $orderInfo->getChannelManagerOrderId(),
-                        'channelManagerType' => $orderInfo->getChannelManagerDisplayedName()
+                        'channelManagerType' => $orderInfo->getChannelManagerName()
                     ]
                 );
                 if ($orderInfo->isOrderModified()) {
@@ -277,25 +275,25 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 }
                 //new
                 if ($orderInfo->isHandleAsNew($order)) {
-                    $result = $this->createOrder($orderInfo, $order);
-                    $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'new');
+                    $result = $orderHandler->createOrder($orderInfo, $order);
+                    $this->notify($result, $orderInfo->getChannelManagerName(), 'new');
 
                 }
 
                 //edited
                 if ($orderInfo->isHandleAsModified($order)) {
-                    $result = $this->createOrder($orderInfo, $order);
+                    $result = $orderHandler->createOrder($orderInfo, $order);
                     if ($orderInfo->getModifiedDate()) {
                         $order->setChannelManagerEditDateTime($orderInfo->getModifiedDate());
                     }
-                    $this->notify($result, $orderInfo->getChannelManagerDisplayedName(), 'edit');
+                    $this->notify($result, $orderInfo->getChannelManagerName(), 'edit');
                 }
 
                 //delete
                 if ($orderInfo->isHandleAsCancelled($order)) {
                     $this->dm->persist($order);
                     $this->dm->flush();
-                    $this->notify($order, $orderInfo->getChannelManagerDisplayedName(), 'delete');
+                    $this->notify($order, $orderInfo->getChannelManagerName(), 'delete');
                     $this->dm->remove($order);
                     $this->dm->flush();
                     $result = true;
@@ -307,17 +305,9 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                         '#' . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName()
                     );
                 }
-                if ($this->isNotifyServiceAboutReservation) {
-                    $this->notifyServiceAboutReservation($orderInfo, $config);
-                }
+                $this->notifyServiceAboutReservation($orderInfo, $config);
             };
         }
-    }
-
-    public function createOrder(AbstractOrderInfo $orderInfo, Order $order = null) : Order
-    {
-        $this->log('creating order');
-        return $this->container->get('mbh.channel_manager.order_creator')->createOrder($orderInfo, $order);
     }
 
     /**

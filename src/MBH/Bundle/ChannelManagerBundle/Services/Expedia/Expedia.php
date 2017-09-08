@@ -11,7 +11,17 @@ use MBH\Bundle\ChannelManagerBundle\Lib\AbstractResponseHandler;
 class Expedia extends ExtendedAbstractChannelManager
 {
     const CONFIG = 'ExpediaConfig';
-    protected $isNotifyServiceAboutReservation = true;
+    const UNAVAIBLE_PRICES = [
+    ];
+
+    const UNAVAIBLE_RESTRICTIONS = [
+        'minStayArrival' => null,
+        'maxStayArrival' => null,
+        'minBeforeArrival' => null,
+        'maxBeforeArrival' => null,
+        'maxGuest' => null,
+        'minGuest' => null
+    ];
 
     public function __construct(ContainerInterface $container)
     {
@@ -32,15 +42,14 @@ class Expedia extends ExtendedAbstractChannelManager
         return $responseHandler->getErrorMessage();
     }
 
-    protected function getResponseHandler($response, $config = null) : AbstractResponseHandler
+    protected function getResponseHandler($response, $config = null): AbstractResponseHandler
     {
         return $this->container->get('mbh.channelmanager.expedia_response_handler')->setInitData($response, $config);
     }
 
-    public function notifyServiceAboutReservation(AbstractOrderInfo $orderInfo, $config)
+    protected function notifyServiceAboutReservation(AbstractOrderInfo $orderInfo, $config)
     {
         /** @var ExpediaOrderInfo $orderInfo */
-
         $requestData = $this->requestDataFormatter->formatNotifyServiceData($orderInfo, $config);
         $requestInfo = $this->requestFormatter->formatBookingConfirmationRequest($requestData);
 
@@ -48,8 +57,8 @@ class Expedia extends ExtendedAbstractChannelManager
         $responseHandler = $this->getResponseHandler($response);
 
         if (!$responseHandler->isResponseCorrect()) {
-            $this->notifyError($orderInfo->getChannelManagerDisplayedName(),
-                'Ошибка в оповещении сервиса о принятия заказа ' . '#'
+            $this->notifyError($orderInfo->getChannelManagerName(),
+                $this->container->get('translator')->trans('services.expedia.booking_notification.error') . ' #'
                 . $orderInfo->getChannelManagerOrderId() . ' ' . $orderInfo->getPayer()->getName());
         }
     }

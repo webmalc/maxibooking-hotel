@@ -51,7 +51,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="tariffs")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="document.tariff.hotel.hotel_not_chosen")
      * @ODM\Index()
      */
     protected $hotel;
@@ -63,9 +63,9 @@ class Tariff extends Base implements ConditionsInterface
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="document.tariff.full_title.too_short",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="document.tariff.full_title.too_long"
      * )
      * @ODM\Index()
      */
@@ -77,9 +77,9 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="document.tariff.title.too_long",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="document.tariff.title.too_long"
      * )
      * @ODM\Index()
      */
@@ -90,9 +90,9 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое описание",
+     *      minMessage="document.tariff.description.too_short",
      *      max=300,
-     *      maxMessage="Слишком длинное описание"
+     *      maxMessage="document.tariff.description.too_long"
      * )
      * @ODM\Index()
      */

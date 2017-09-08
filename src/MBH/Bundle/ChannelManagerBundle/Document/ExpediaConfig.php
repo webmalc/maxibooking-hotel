@@ -350,5 +350,4 @@ class ExpediaConfig extends Base implements BaseInterface, CurrencyConfigInterfa
 
         return $this;
     }
-
 }

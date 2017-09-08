@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
+use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
@@ -11,8 +11,9 @@ use MBH\Bundle\PackageBundle\Document\PackagePrice;
 class ExpediaPackageInfo extends AbstractPackageInfo
 {
 
-    /** @var ChannelManagerConfigInterface $config */
+    /** @var ExpediaConfig $config */
     private $config;
+
     /**
      * Данные о брони, в виде объекта SimpleXMLElement
      * @var \SimpleXMLElement $orderDataXMLElement
@@ -26,6 +27,10 @@ class ExpediaPackageInfo extends AbstractPackageInfo
     private $prices = [];
     private $isSmoking = false;
     private $channelManagerId;
+    private $isTariffInit = false;
+    private $tariff;
+    private $isRoomTypeInit = false;
+    private $roomType;
 
     /**
      * @param $packageData
@@ -74,49 +79,56 @@ class ExpediaPackageInfo extends AbstractPackageInfo
 
     public function getRoomType() : RoomType
     {
-        $roomTypeId = $this->getPackageCommonData('roomTypeID');
-        if (isset($this->roomTypes[$roomTypeId])) {
-            $roomType = $this->roomTypes[$roomTypeId]['doc'];
-        } else {
-            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
-                [
-                    'hotel.id' => $this->config->getHotelId(),
-                    'isEnabled' => true,
-                    'deletedAt' => null
-                ]
-            );
-            $this->addPackageNote($this->translator->trans('services.expedia.invalid_room_type_id'));
-            $this->isCorrupted = true;
-        }
-        if (!$roomType) {
-            throw new \Exception($this->translator->trans('services.expedia.nor_one_room_type'));
+        if (!$this->isRoomTypeInit) {
+
+            $roomTypeId = $this->getPackageCommonData('roomTypeID');
+            if (isset($this->roomTypes[$roomTypeId])) {
+                $this->roomType = $this->roomTypes[$roomTypeId]['doc'];
+            } else {
+                $this->roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
+                    [
+                        'hotel.id' => $this->config->getHotel()->getId(),
+                        'isEnabled' => true,
+                        'deletedAt' => null
+                    ]
+                );
+                $this->addPackageNote($this->translator->trans('services.expedia.invalid_room_type_id'));
+                $this->isCorrupted = true;
+            }
+            if (!$this->roomType) {
+                throw new \Exception($this->translator->trans('services.expedia.nor_one_room_type'));
+            }
+            $this->isRoomTypeInit = true;
         }
 
-        return $roomType;
+        return $this->roomType;
     }
 
     public function getTariff()
     {
-        $serviceTariffId = $this->getPackageCommonData('ratePlanID');
-        if (isset($this->tariffs[$serviceTariffId])) {
-            $tariff = $this->tariffs[$serviceTariffId]['doc'];
-        } else {
-            $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
-                [
-                    'hotel.id' => $this->config->getHotelId(),
-                    'isEnabled' => true,
-                    'deletedAt' => null
-                ]
-            );
-            $this->addPackageNote($this->translator->trans('services.expedia.invalid_tariff_id'));
-            $this->isCorrupted = true;
+        if (!$this->isTariffInit) {
+            $serviceTariffId = $this->getPackageCommonData('ratePlanID');
+            if (isset($this->tariffs[$serviceTariffId])) {
+                $this->tariff = $this->tariffs[$serviceTariffId]['doc'];
+            } else {
+                $this->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(
+                    [
+                        'hotel.id' => $this->config->getHotel()->getId(),
+                        'isEnabled' => true,
+                        'deletedAt' => null
+                    ]
+                );
+                $this->addPackageNote($this->translator->trans('services.expedia.invalid_tariff_id'));
+                $this->isCorrupted = true;
 
-        }
-        if (!isset($tariff)) {
-            throw new \Exception($this->translator->trans('services.expedia.nor_one_tariff'));
+            }
+            if (!isset($this->tariff)) {
+                throw new \Exception($this->translator->trans('services.expedia.nor_one_tariff'));
+            }
+            $this->isTariffInit = true;
         }
 
-        return $tariff;
+        return $this->tariff;
     }
 
     public function getBeginDate()

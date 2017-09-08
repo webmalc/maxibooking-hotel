@@ -3,12 +3,16 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Traits\CheckIsNotificationTypeExistsTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -36,6 +40,11 @@ class ClientConfig extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    /**
+     * List of notification types allow to client (not stuff)
+     */
+    use AllowNotificationTypesTrait;
 
     /**
      * @var boolean
@@ -117,7 +126,7 @@ class ClientConfig extends Base
     protected $uniteller;
 
     /**
-     * @var Uniteller
+     * @var Rbk
      * @ODM\EmbedOne(targetDocument="Rbk")
      */
     protected $rbk;
@@ -161,7 +170,6 @@ class ClientConfig extends Base
      */
     protected $beginDate;
 
-
     /**
      * @var integer
      * @Gedmo\Versioned
@@ -185,6 +193,82 @@ class ClientConfig extends Base
      * @ODM\Field(type="bool")
      */
     protected $canBookWithoutPayer = true;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $defaultAdultsQuantity = 1;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     */
+    protected $defaultChildrenQuantity = 0;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     */
+    protected $isSendMailAtPaymentConfirmation = false;
+
+    /**
+     * @return bool
+     */
+    public function isSendMailAtPaymentConfirmation(): bool
+    {
+        return $this->isSendMailAtPaymentConfirmation;
+    }
+
+    /**
+     * @param bool $isSendMailAtPaymentConfirmation
+     * @return ClientConfig
+     */
+    public function setIsSendMailAtPaymentConfirmation(bool $isSendMailAtPaymentConfirmation): ClientConfig
+    {
+        $this->isSendMailAtPaymentConfirmation = $isSendMailAtPaymentConfirmation;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultAdultsQuantity(): int
+    {
+        return $this->defaultAdultsQuantity;
+    }
+
+    /**
+     * @param int $defaultAdultsQuantity
+     * @return ClientConfig
+     */
+    public function setDefaultAdultsQuantity(int $defaultAdultsQuantity): ClientConfig
+    {
+        $this->defaultAdultsQuantity = $defaultAdultsQuantity;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultChildrenQuantity(): int
+    {
+        return $this->defaultChildrenQuantity;
+    }
+
+    /**
+     * @param int $defaultChildrenQuantity
+     * @return ClientConfig
+     */
+    public function setDefaultChildrenQuantity(int $defaultChildrenQuantity): ClientConfig
+    {
+        $this->defaultChildrenQuantity = $defaultChildrenQuantity;
+
+        return $this;
+    }
 
     /**
      * @return bool
@@ -387,7 +471,7 @@ class ClientConfig extends Base
     }
 
     /**
-     * @return Uniteller
+     * @return Rbk
      */
     public function getRbk()
     {
@@ -395,7 +479,7 @@ class ClientConfig extends Base
     }
 
     /**
-     * @param Uniteller $rbk
+     * @param Rbk $rbk
      */
     public function setRbk($rbk)
     {
@@ -586,4 +670,5 @@ class ClientConfig extends Base
     {
         $this->beginDate = $beginDate;
     }
+
 }

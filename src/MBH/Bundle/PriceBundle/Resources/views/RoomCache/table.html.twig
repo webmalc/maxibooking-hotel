@@ -24,7 +24,7 @@
 
                 <tr class="mbh-grid-header2 warning">
                     <td colspan="{{ period|length + 1 }}"><strong {% if not roomType.isEnabled %} class="disabled-room-type"{% endif %} >{{ roomType }}</strong>&nbsp;-&nbsp;
-                        <small>{{ tariff is null ? 'Номера в продаже' : 'Квоты по тарифам - ' ~ tariff }}</small>
+                        <small>{{ tariff is null ? 'mbhpricebundle.view.roomcache.layout.nomeravprodazhe'|trans : 'mbhpricebundle.view.roomcache.table.kvotypotarifam'|trans ~ ' - ' ~ tariff }}</small>
                     </td>
                 </tr>
 

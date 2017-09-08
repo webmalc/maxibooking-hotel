@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
+use Doctrine\DBAL\Query\QueryBuilder;
 use MBH\Bundle\BaseBundle\Document\Message;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -33,10 +35,19 @@ class Messenger implements \SplObserver
     public function update(\SplSubject $notifier)
     {
         /** @var NotifierMessage $message */
+        /** @var Notifier $notifier */
         $message = $notifier->getMessage();
 
-        $this->send($message->getText(), $message->getFrom(), $message->getType(), $message->getAutohide(),
-            $message->getEnd(), $message->getCategory(), $message->getHotel());
+        $this->send(
+            $message->getText(),
+            $message->getFrom(),
+            $message->getType(),
+            $message->getAutohide(),
+            $message->getEnd(),
+            $message->getCategory(),
+            $message->getHotel(),
+            $message->getMessageType()
+        );
 
     }
 
@@ -48,11 +59,20 @@ class Messenger implements \SplObserver
      * @param null $end
      * @param null $category
      * @param Hotel|null $hotel
+     * @param string $messageType
      * @return Messenger
      */
-    public function send($text, $from = 'system', $type = 'info', $autohide = false, $end = null, $category = null, Hotel $hotel = null)
-    {
-        return $this->add($text, $from, $type, $autohide, $end, $category, $hotel);
+    public function send(
+        $text,
+        $from = 'system',
+        $type = 'info',
+        $autohide = false,
+        $end = null,
+        $category = null,
+        Hotel $hotel = null,
+        string $messageType
+    ) {
+        return $this->add($text, $from, $type, $autohide, $end, $category, $hotel, $messageType);
     }
 
     /**
@@ -67,11 +87,10 @@ class Messenger implements \SplObserver
 
         foreach ($messages as $message) {
 
-
-            $method = 'get' . ucfirst($message->getCategory()) . 's';
-
-            if (!$message->getCategory() || !$user || !method_exists($user, $method) || $user->$method()) {
-
+            /** @var Message $message */
+            $messageType = $message->getMessageType();
+            /** @var User $user */
+            if ($user->isNotificationTypeExists($messageType)) {
                 if ($message->getHotel() && !$permissions->checkPermissions($message->getHotel())) {
                     continue;
                 }
@@ -81,6 +100,7 @@ class Messenger implements \SplObserver
                 $session->getFlashBag()->add(implode('|', $key), $message->getText());
                 $message->setIsSend(true);
                 $this->dm->persist($message);
+
             }
         }
         $this->dm->flush();
@@ -95,10 +115,19 @@ class Messenger implements \SplObserver
      * @param null $end
      * @param null $category
      * @param Hotel|null $hotel
+     * @param null $messageType
      * @return $this
      */
-    public function add($text, $from = 'system', $type = 'info', $autohide = false, $end = null, $category = null, Hotel $hotel = null)
-    {
+    public function add(
+        $text,
+        $from = 'system',
+        $type = 'info',
+        $autohide = false,
+        $end = null,
+        $category = null,
+        Hotel $hotel = null,
+        $messageType = null
+    ) {
         $message = new Message();
         $message->setFrom($from)
             ->setText($text)
@@ -107,7 +136,7 @@ class Messenger implements \SplObserver
             ->setEnd($end)
             ->setCategory($category)
             ->setHotel($hotel)
-        ;
+            ->setMessageType($messageType);
         $this->dm->persist($message);
         $this->dm->flush();
 
@@ -121,7 +150,7 @@ class Messenger implements \SplObserver
     public function clear($from = null)
     {
         $qb = $this->dm->getRepository('MBHBaseBundle:Message')
-            ->createQueryBuilder('q')
+            ->createQueryBuilder()
             ->field('isSend')->equals(true)
             ->remove();
         if ($from) {

@@ -41,8 +41,7 @@ jQuery(document).ready(function() {
                 return jQuery('#mbh-form-locale').val();
             },
             waiting = function() {
-                var locale = getLocale();
-                var text = !locale || locale == 'ru' ?'Подождите...' : 'Please wait...';
+                var text = '{{ "package.processing"|trans({}, 'front_messages')}}';
                 wrapper.html('<div class="mbh-results-info alert alert-info"><i class="fa fa-spinner fa-spin"></i> ' + text + '</div>');
             },
             getUrlVars = function() {
@@ -65,7 +64,6 @@ jQuery(document).ready(function() {
                 });
             },
             query = getUrlVars();
-        //var errorHtml = '<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>';
         var errorHtml = jQuery('#mbh-date-error').clone().removeClass('hide').attr('id', '');
         if (!query.begin || !query.end) {
             wrapper.html(errorHtml);
@@ -140,7 +138,7 @@ jQuery(document).ready(function() {
                         if (parseInt(per_person.attr('data-change'), 10)) {
                             var touriststHash = touristVal.split('_'),
                                 totalTourists = parseInt(touriststHash[0], 10) + parseInt(touriststHash[1], 10);
-                            var touristsPhrase = (totalTourists === 1) ? ' человека' : ' человек';;
+                            var touristsPhrase = (totalTourists === 1) ? ' человека' : ' человек';
 
                             per_person.html('цена за ' + totalTourists + touristsPhrase);
                         }

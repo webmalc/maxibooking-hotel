@@ -62,6 +62,9 @@ class UserController extends Controller
     {
         $entity = new User();
 
+        $allowNotificationTypes = $this->dm->getRepository('MBHBaseBundle:NotificationType')->getStuffType();
+
+        $entity->setAllowNotificationTypes($allowNotificationTypes->toArray());
         $form = $this->createForm(UserType::class,
             $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles')]
         );
@@ -81,7 +84,7 @@ class UserController extends Controller
      */
     public function createAction(Request $request)
     {
-        $entity = new User(array());
+        $entity = new User();
         $form = $this->createForm(UserType::class,
             $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles')]
         );

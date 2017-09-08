@@ -17,6 +17,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class OrderHandler
 {
     private $dm;
+
+    public function __construct(DocumentManager $dm)
+    {
+        $this->dm = $dm;
+    }
+
     private $search;
     private $translator;
     /** @var  DataCollectingValidator $validator */
@@ -52,7 +58,7 @@ class OrderHandler
             $order->setDeletedAt(null);
         }
 
-        $order->setChannelManagerType($orderInfo->getChannelManagerDisplayedName())
+        $order->setChannelManagerType($orderInfo->getChannelManagerName())
             ->setChannelManagerId($orderInfo->getChannelManagerOrderId())
             ->setMainTourist($orderInfo->getPayer())
             ->setConfirmed(false)
@@ -151,7 +157,7 @@ class OrderHandler
      * @param Order $order
      * @return Package
      */
-    protected function createPackage(AbstractPackageInfo $packageInfo, Order $order): Package
+    protected function createPackage(AbstractPackageInfo $packageInfo, Order $order) : Package
     {
         $package = new Package();
         $package

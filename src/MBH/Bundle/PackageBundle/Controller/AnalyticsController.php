@@ -3,8 +3,10 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\UserBundle\Document\User;
 use Ob\HighchartsBundle\Highcharts\Highchart;
@@ -31,7 +33,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     public function indexAction()
     {
         $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-            ->createQueryBuilder('q')
+            ->createQueryBuilder()
             ->sort('hotel.id', 'asc')
             ->getQuery()
             ->execute()
@@ -76,6 +78,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
         foreach ($this->getPackages() as $package) {
 
+            /** @var PackageService $packageService */
             foreach ($package->getServices() as $packageService) {
                 $id  = $packageService->getService()->getId();
                 $day = $package->getCreatedAt()->format('d.m.Y');
@@ -112,6 +115,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         foreach ($this->getPackages() as $package) {
             $id  = $package->getRoomType()->getId();
 
+            /** @var CashDocument $cashDocument */
             foreach ($package->getOrder()->getCashDocuments() as $cashDocument) {
 
                 if (in_array($cashDocument->getId(), $ids)) {
@@ -569,7 +573,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             return array_reverse($series);
         }
 
-        $series[$i]['name'] = 'Итог';
+        $series[$i]['name'] = $this->get('translator')->trans('controller.analyticsController.series_total_name');
         foreach ($this->getInterval() as $date) {
             $value = 0;
             $dayId = $date->format('d.m.Y');

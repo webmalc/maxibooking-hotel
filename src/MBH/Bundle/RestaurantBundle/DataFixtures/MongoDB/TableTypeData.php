@@ -6,9 +6,13 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\RestaurantBundle\Document\TableType;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class TableTypeData extends AbstractFixture implements OrderedFixtureInterface
+class TableTypeData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function load(ObjectManager $manager)
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
@@ -16,7 +20,8 @@ class TableTypeData extends AbstractFixture implements OrderedFixtureInterface
         if ($hotels) {
             foreach ($hotels as $hotel) {
 
-                foreach ($this->getCategories() as $categoryFullTitle) {
+                foreach ($this->getCategories() as $categoryFullTitleId) {
+                    $categoryFullTitle = $this->container->get('translator')->trans($categoryFullTitleId);
                     if ($manager->getRepository('MBHRestaurantBundle:TableType')->findOneBy(['fullTitle'=>$categoryFullTitle])) {
                         continue;
                     }
@@ -36,7 +41,7 @@ class TableTypeData extends AbstractFixture implements OrderedFixtureInterface
     private function getCategories(): array
     {
         return [
-            'Основной',
+            'fixtures.table_type_data.categories.main',
         ];
     }
 
