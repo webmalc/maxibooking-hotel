@@ -35,7 +35,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      */
     public function indexAction()
     {
-        $entities = $this->dm->getRepository('MBHRestaurantBundle:IngredientCategory')->createQueryBuilder('q')
+        $entities = $this->dm->getRepository('MBHRestaurantBundle:IngredientCategory')->createQueryBuilder()
             ->field('hotel.id')->equals($this->hotel->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()

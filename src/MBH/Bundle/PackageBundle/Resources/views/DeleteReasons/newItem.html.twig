@@ -1,0 +1,12 @@
+{% extends '@MBHPackage/DeleteReasons/layout.html.twig' %}
+
+{% set small_title = 'delete.reasons.item.small_title'|trans ~ " <" ~ entity.name ~ ">" %}
+{% set layout = 'box' %}
+
+{% block content %}
+        {{ form_start(form, {'action': path('package_delete_reasons_item_edit', {id: entry.id}), 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+        {{ form_end(form) }}
+{% endblock %}
+

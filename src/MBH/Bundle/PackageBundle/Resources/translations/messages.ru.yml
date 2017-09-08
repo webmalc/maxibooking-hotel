@@ -437,6 +437,31 @@ windows.search.error: 'Не найдены номера из-за системы
 special.virtualRoom: Виртуальная комната
 special.virtualRoom.help: Выбор виртуальной комнаты
 
-
-
 form.packageMainType.tariff: 'Тариф для пересчета'
+
+delete.reasons.item.small_title: список категорий
+delete.reasons.title: Причины удаления
+Delete.reasons.title: Причины удаления
+delete.reasons.category.action.new: Добавить категорию
+delete.reasons.category.edit: Редактировать
+delete.reasons.common.edit: Редактировать категорию
+delete.reasons.item.helper.new: Добавить причину удаления
+delete.reasons.item.action.new: Добавить причину
+delete.reasons.category.delete: Удалить категорию
+delete.reasons.common.delete: Удалить категорию
+delete.reasons.namelabel: Название
+delete.reasons.common.doing: Действия
+delete.reasons.common.save: Сохранить
+delete.reasons.category.new: Новая категория
+
+package.delete.reason.category.form.fullTitle.label: Название
+package.delete.reason.category.form.fullTitle.placeholder: Отмены
+package.delete.reason.category.form.fullTitle.help: Название категории причины удаления брони(заказа)
+package.delete.reason.category.form.title.label: Внутреннее название
+package.delete.reason.category.form.title.help: Внутреннее название категории (опционально)
+
+form.deleteReasonsType.category: Категория
+form.deleteReasonsType.isActive: Активна
+delete.reasons.category.noitems: В категории нет содержимого
+default.category: По-умолчанию
+delete.reasons.category.action.edit: редактирование категории

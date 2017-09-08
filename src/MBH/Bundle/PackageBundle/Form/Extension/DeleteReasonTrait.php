@@ -2,6 +2,7 @@
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\PackageBundle\Document\DeleteReason;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -18,13 +19,15 @@ trait DeleteReasonTrait
             ])
             ->add('deleteReason', DocumentType::class, [
                 'label' => 'modal.form.delete.reasons.reason',
-                'class' => 'MBH\Bundle\PackageBundle\Document\DeleteReason',
+                'class' => DeleteReason::class,
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->createQueryBuilder()
                         ->field('deletedAt')->exists(false)
+                        ->field('isEnabled')->equals(true)
                         ->sort(['isDefault' => 'desc']);
                 },
-                'required' => true
+                'required' => true,
+                'group_by' => 'category'
             ])
             ->add('order', HiddenType::class, [
                 'mapped' => false

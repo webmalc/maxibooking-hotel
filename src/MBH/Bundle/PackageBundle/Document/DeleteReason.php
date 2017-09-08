@@ -75,6 +75,28 @@ class DeleteReason extends Base
      */
     protected $isDefault = false;
 
+    /**
+     * @Gedmo\Versioned()
+     * @ODM\ReferenceOne(targetDocument="DeleteReasonCategory", inversedBy="deleteReasons")
+     */
+    protected $category;
+
+    /**
+     * @return mixed
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param mixed $category
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+    }
+
     public function __construct()
     {
         $this->setSystem(false);
@@ -88,10 +110,7 @@ class DeleteReason extends Base
         return $this->system;
     }
 
-    /**
-     * @param mixed $system
-     * @return PackageSource
-     */
+
     public function setSystem($system)
     {
         $this->system = $system;
@@ -166,4 +185,6 @@ class DeleteReason extends Base
     {
         return $this->isDefault;
     }
+
+
 }

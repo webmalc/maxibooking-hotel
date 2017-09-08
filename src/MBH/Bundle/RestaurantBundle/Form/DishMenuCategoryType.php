@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zalex
- * Date: 22.06.16
- * Time: 17:04
- */
 
 namespace MBH\Bundle\RestaurantBundle\Form;
 

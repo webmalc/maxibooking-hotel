@@ -1,33 +1,27 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zalex
- * Date: 22.06.16
- * Time: 15:11
- */
-
-namespace MBH\Bundle\RestaurantBundle\Document;
 
 
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
-use Doctrine\Common\Collections\ArrayCollection;
+namespace MBH\Bundle\PackageBundle\Document;
+
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Doctrine\Common\Collections\ArrayCollection;
+use Gedmo\Blameable\Traits\BlameableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
- * @ODM\Document(collection="DishMenuCategory")
+ * @ODM\Document(collection="DeleteReasonCategory", repositoryClass="DeleteReasonCategoryRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"fullTitle","hotel"}, message="validator.document.category.unique")
+ * @MongoDBUnique(fields={"fullTitle"}, message="validator.document.category.unique")
  */
-class DishMenuCategory extends Base
+class DeleteReasonCategory extends Base
 {
     /**
      * Hook timestampable behavior
@@ -73,19 +67,11 @@ class DishMenuCategory extends Base
      * )
      */
     protected $title;
-    
-    /**
-     * @var Hotel
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="dishMenuCategories")
-     * @Assert\NotNull(message="validator.document.dishMenuCategory.hotel")
-     */
-    protected $hotel;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\DishMenuItem", mappedBy="category", cascade={"remove"} )
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\DeleteReason", mappedBy="category", cascade={"remove"} )
      */
-    protected $dishMenuItems;
+    protected $deleteReasons;
 
     /**
      * DishMenuCategory constructor.
@@ -93,7 +79,7 @@ class DishMenuCategory extends Base
      */
     public function __construct()
     {
-        $this->dishMenuItems = new ArrayCollection();
+        $this->deleteReasons = new ArrayCollection();
     }
 
     /**
@@ -129,44 +115,30 @@ class DishMenuCategory extends Base
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
     /**
      * @return mixed
      */
-    public function getHotel()
+    public function getDeleteReasons()
     {
-        return $this->hotel;
+        return $this->deleteReasons;
     }
 
     /**
-     * @param mixed $hotel
+     * @param mixed $deleteReasons
      * @return $this
      */
-
-    public function setHotel(Hotel $hotel)
+    public function setDeleteReasons(ArrayCollection $deleteReasons)
     {
-        $this->hotel = $hotel;
+        foreach ($deleteReasons as $reason) {
+            /** @var DeleteReason $reason */
+            $reason->setCategory($this);
+        }
+        $this->deleteReasons = $deleteReasons;
+
         return $this;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getDishMenuItems()
-    {
-        return $this->dishMenuItems;
-    }
-
-    /**
-     * @param mixed $dishMenuItems
-     * @return $this
-     */
-    public function setDishMenuItems($dishMenuItems)
-    {
-        $this->dishMenuItems = $dishMenuItems;
-        return $this;
-    }
-
 }
