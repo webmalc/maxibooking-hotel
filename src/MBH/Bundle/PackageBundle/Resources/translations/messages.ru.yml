@@ -463,3 +463,5 @@ package.delete.reason.category.form.title.help: Внутреннее назва�
 form.deleteReasonsType.category: Категория
 form.deleteReasonsType.isActive: Активна
 delete.reasons.category.noitems: В категории нет содержимого
+default.category: По-умолчанию
+delete.reasons.category.action.edit: редактирование категории

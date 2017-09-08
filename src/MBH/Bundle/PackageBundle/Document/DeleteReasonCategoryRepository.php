@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class DeleteReasonCategoryRepository extends DocumentRepository
 {
-    const DEFAULT_CATEGORY = "default.category";
+    const DEFAULT_CATEGORY = "По-умолчанию";
 
     public function getEmptyCategory(ArrayCollection $noCategoryDeleteReasons)
     {
