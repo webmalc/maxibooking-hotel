@@ -154,7 +154,7 @@ class DeleteReasonsController extends Controller implements CheckHotelController
 
             $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
 
-            return $this->afterSaveRedirect('package_delete_reasons_item', $item->getId(), ['tab' => $category->getId()]);
+            return $this->afterSaveRedirect('package_delete_reasons_category', $item->getCategory()->getId(), ['tab' => $category->getId()]);
         }
 
         return [

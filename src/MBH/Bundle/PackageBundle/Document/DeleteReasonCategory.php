@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\Document(collection="DeleteReasonCategory", repositoryClass="DeleteReasonCategoryRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"fullTitle","hotel"}, message="validator.document.category.unique")
+ * @MongoDBUnique(fields={"fullTitle"}, message="validator.document.category.unique")
  */
 class DeleteReasonCategory extends Base
 {
