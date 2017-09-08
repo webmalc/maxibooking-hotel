@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ClientConfig extends Base
 {
-    const DEFAULT_BEGIN_DATE_OFFSET = 21;
+    const DEFAULT_BEGIN_DATE_OFFSET = -21;
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
