@@ -127,6 +127,13 @@ class TripAdvisorController extends BaseController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            // Если не заполнены необходимые поля, то тариф не синхронизируется
+            foreach ($config->getTariffs() as $tariff) {
+                /** @var TripAdvisorTariff $tariff */
+                if ($tariff->getIsEnabled() && (empty($tariff->getDeadline()) || empty($tariff->getPolicyInfo()))) {
+                    $tariff->setIsEnabled(false);
+                }
+            }
             $this->dm->flush();
             $this->addFlash('success', 'controller.tripadvisor_controller.settings_saved_success');
         }
