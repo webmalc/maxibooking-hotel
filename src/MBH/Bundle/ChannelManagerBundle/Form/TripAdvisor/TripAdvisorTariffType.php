@@ -37,7 +37,10 @@ class TripAdvisorTariffType extends AbstractType
                 'help' => 'form.trip_advisor_tariff_type.isSynchronized.help',
                 'required' => false,
                 'group' => $tariff->getName(),
-                'disabled' => !empty($options['unfilledFieldErrors'][$builder->getName()])
+                'disabled' => !empty($options['unfilledFieldErrors'][$builder->getName()]),
+                'attr' => [
+                    'class' => 'box-full-visibility-checkbox'
+                ]
             ])
             ->add('refundableType', ChoiceType::class, [
                 'choices' => TripAdvisorTariff::getRefundableTypes(),
