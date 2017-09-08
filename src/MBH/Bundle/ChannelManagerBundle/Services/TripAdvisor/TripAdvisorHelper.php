@@ -206,10 +206,10 @@ class TripAdvisorHelper
         $jsonData = json_encode($configData);
         $client = new Client();
         //TODO: Сменить на URL mbhs
-        $url = 'localhost:8080/app_dev.php/client/tripadvisor/update_config/'
+        $url = 'https://mbhs.maxibooking.ru/client/tripadvisor/update_config/'
             . $config->getHotel()->getId()
             . '/'
-            . $config->getIsEnabled() ? 'true' : 'false';
+            . ($config->getIsEnabled() ? 'true' : 'false');
 
         $result = $client->post($url, [
             'json' => [

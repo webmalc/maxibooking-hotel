@@ -55,7 +55,8 @@ class TripAdvisorTariffType extends AbstractType
                 'attr' => [
                     'class' => 'days-spinner',
                 ],
-                'group' => $tariff->getName()
+                'group' => $tariff->getName(),
+                'required' => false
             ])
             ->add('isPenaltyExists', CheckboxType::class, [
                 'label' => 'form.trip_advisor_tariff_type.is_penalty_exists.label',
