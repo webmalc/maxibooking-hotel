@@ -14,6 +14,10 @@ var cashDocumentConfirmation = function (link) {
                     link.hide();
                     link.closest('tr').removeClass('info');
                 }
+                var $responsible = link.parents('tr').find('.responsible');
+                if($responsible.length && response.responsible) {
+                    $responsible.text(response.responsible);
+                }
             } else {
                 alert('Error: ' + response.message);
             }

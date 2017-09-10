@@ -29,6 +29,7 @@ order.cash.confirm: Подтвердить
 order.cash.pay: Подтвердить
 order.cash.short_pay: оплатить
 order.cash.cash_documents_not_found: Кассовые документы не найдены.
+order.cash.responsible: Ответственный
 order.edit.order_editing: 'редактирование заказа #'
 order.edit.deleted: удален
 order.edit.room: Номер
@@ -493,3 +494,4 @@ dynamic.sales.dates: Даты
 dynamic.sales.show.title: Отображаемые категории
 dynamic.sales.type.room: Тип номера
 dynamic.sales.result: Итого
+
