@@ -130,6 +130,7 @@ $(document).ready(function () {
             {"bSortable": false}, // icon
             null, // prefix
             {"class": "text-center"},
+            null, //packages
             null, // in
             null, // out
             null, //operation
@@ -138,6 +139,7 @@ $(document).ready(function () {
             null, // date
             null, // isPaid
             null, // user
+            null, // responsible
             null, // deletedAt
             {"class": "show-on-print"}, // note
             {"bSortable": false, "class": "table-actions-td"} // actions

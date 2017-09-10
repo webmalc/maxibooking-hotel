@@ -407,10 +407,12 @@ class CashController extends Controller
         $this->dm->persist($entity);
         $this->dm->flush();
 
+        $responsible = $entity->getResponsible() ? $entity->getResponsible()->getName() : null;
+
         return new JsonResponse([
             'error' => false,
             'message' => $this->get('translator')->trans('controller.cashController.payment_confirmed_success'),
-            'responsible' => $entity->getResponsible()->getName()
+            'responsible' => $responsible
         ]);
     }
 
