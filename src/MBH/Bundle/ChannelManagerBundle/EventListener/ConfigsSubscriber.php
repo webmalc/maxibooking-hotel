@@ -9,7 +9,6 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 class ConfigsSubscriber implements EventSubscriber
 {
     /**
@@ -41,7 +40,7 @@ class ConfigsSubscriber implements EventSubscriber
             $this->container->get('mbh.channelmanager')->closeInBackground();
         }
         if ($doc instanceof TripAdvisorConfig) {
-            $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($doc);
+            $this->container->get('mbh.mbhs')->sendUpdateDataToMBHs($doc);
         }
     }
 

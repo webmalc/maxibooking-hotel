@@ -12,15 +12,16 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorHelper;
+use MBH\Bundle\ClientBundle\Service\Mbhs;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
 class HotelSubscriber implements EventSubscriber
 {
-    /** @var  TripAdvisorHelper */
-    private $tripAdvisorHelper;
+    /** @var  Mbhs */
+    private $mbhs;
 
-    public function __construct(TripAdvisorHelper $tripAdvisorHelper) {
-        $this->tripAdvisorHelper = $tripAdvisorHelper;
+    public function __construct(Mbhs $mbhs) {
+        $this->mbhs = $mbhs;
     }
 
     /**
@@ -44,7 +45,7 @@ class HotelSubscriber implements EventSubscriber
                 ->getRepository('MBHChannelManagerBundle:TripAdvisorConfig')
                 ->findOneBy(['hotel' => $document]);
             if (!is_null($config)) {
-                $this->tripAdvisorHelper->sendUpdateDataToMBHs($config);
+                $this->mbhs->sendUpdateDataToMBHs($config);
             }
         }
     }
@@ -58,7 +59,7 @@ class HotelSubscriber implements EventSubscriber
                 ->findOneBy(['hotel' => $document]);
             $config->setIsEnabled(false);
             if (!is_null($config)) {
-                $this->tripAdvisorHelper->sendUpdateDataToMBHs($config);
+                $this->mbhs->sendUpdateDataToMBHs($config);
             }
         }
     }

@@ -18,11 +18,6 @@ class OrderHandler
 {
     private $dm;
 
-    public function __construct(DocumentManager $dm)
-    {
-        $this->dm = $dm;
-    }
-
     private $search;
     private $translator;
     /** @var  DataCollectingValidator $validator */

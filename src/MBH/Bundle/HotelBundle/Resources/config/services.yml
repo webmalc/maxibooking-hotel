@@ -95,3 +95,9 @@ services:
         arguments: ['@translator']
         tags:
             - {name: form.type}
+
+    mbh.hotel_subscriber:
+        class: MBH\Bundle\HotelBundle\EventListener\HotelSubscriber
+        arguments: ['@mbh.mbhs']
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}

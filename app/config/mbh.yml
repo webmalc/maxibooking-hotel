@@ -178,7 +178,7 @@ parameters:
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 
-    #параметры онлайн формы
+    #параметры онлайн формыw
     mbh.online.form:
           messages: true
           payment_types:

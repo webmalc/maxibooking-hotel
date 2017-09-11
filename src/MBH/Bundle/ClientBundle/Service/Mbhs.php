@@ -6,6 +6,7 @@ use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\Response;
 use GuzzleHttp\Client;
 use MBH\Bundle\BaseBundle\Document\Message;
+use MBH\Bundle\ChannelManagerBundle\Document\TripAdvisorConfig;
 use MBH\Bundle\OnlineBundle\Document\Invite;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -308,6 +309,21 @@ class Mbhs
             };
             return null;
         }
+    }
+
+    /**
+     * @param TripAdvisorConfig $config
+     * @return array|null
+     */
+    public function sendUpdateDataToMBHs(TripAdvisorConfig $config)
+    {
+        $configData = $this->container->get('mbh.channel_manager.trip_advisor_response_compiler')->formatHotelInventoryData($config);
+        $url = 'client/tripadvisor/update_config/'
+            . $config->getHotel()->getId()
+            . '/'
+            . ($config->getIsEnabled() ? 'true' : 'false');
+
+        return $this->exchangeJson($configData, $url);
     }
 
     /**
