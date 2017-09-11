@@ -312,21 +312,6 @@ class Mbhs
     }
 
     /**
-     * @param TripAdvisorConfig $config
-     * @return array|null
-     */
-    public function sendUpdateDataToMBHs(TripAdvisorConfig $config)
-    {
-        $configData = $this->container->get('mbh.channel_manager.trip_advisor_response_compiler')->formatHotelInventoryData($config);
-        $url = 'client/tripadvisor/update_config/'
-            . $config->getHotel()->getId()
-            . '/'
-            . ($config->getIsEnabled() ? 'true' : 'false');
-
-        return $this->exchangeJson($configData, $url);
-    }
-
-    /**
      * @return \MBH\Bundle\HotelBundle\Document\Hotel|null
      */
     private function getHotelData()

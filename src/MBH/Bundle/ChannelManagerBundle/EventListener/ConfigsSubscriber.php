@@ -40,7 +40,7 @@ class ConfigsSubscriber implements EventSubscriber
             $this->container->get('mbh.channelmanager')->closeInBackground();
         }
         if ($doc instanceof TripAdvisorConfig) {
-            $this->container->get('mbh.mbhs')->sendUpdateDataToMBHs($doc);
+            $this->container->get('mbh.channel_manager.tripadvisor')->sendUpdateDataToMBHs($doc);
         }
     }
 

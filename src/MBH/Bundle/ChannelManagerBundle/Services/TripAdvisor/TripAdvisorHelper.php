@@ -196,4 +196,24 @@ class TripAdvisorHelper
             'explanation' => $this->translator->trans($descriptionId, [], null, $locale)
         ];
     }
+
+    /**
+     * @param TripAdvisorConfig $config
+     */
+    public function sendUpdateDataToMBHs(TripAdvisorConfig $config)
+    {
+        $configData = $this->responseFormatter->formatHotelInventoryData($config);
+        $client = new Client();
+        $url = 'https://mbhs.maxibooking.ru/client/tripadvisor/update_config/'
+            . $config->getHotel()->getId()
+            . '/'
+            . ($config->getIsEnabled() ? 'true' : 'false');
+
+        $result = $client->post($url, [
+            'json' => [
+                'configData' => $configData,
+                'hotelData' => $config->getHotel()
+            ]
+        ]);
+    }
 }

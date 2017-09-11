@@ -98,6 +98,6 @@ services:
 
     mbh.hotel_subscriber:
         class: MBH\Bundle\HotelBundle\EventListener\HotelSubscriber
-        arguments: ['@mbh.mbhs']
+        arguments: ['@mbh.channel_manager.tripadvisor']
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
