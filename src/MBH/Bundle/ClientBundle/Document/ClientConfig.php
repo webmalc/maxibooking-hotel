@@ -181,6 +181,16 @@ class ClientConfig extends Base
     protected $noticeUnpaid = 0;
 
     /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Field(type="integer")
+     * @Assert\NotNull()
+     * @Assert\Type(type="integer", message="validate.type.integer")
+     * @Assert\Range(min=0, max=2, invalidMessage="")
+     */
+    protected $priceRoundSign = 2;
+
+    /**
      * @var bool
      * @ODM\Field(type="bool")
      * @Assert\NotNull()
@@ -670,5 +680,22 @@ class ClientConfig extends Base
     {
         $this->beginDate = $beginDate;
     }
+
+    /**
+     * @return integer
+     */
+    public function getPriceRoundSign()
+    {
+        return $this->priceRoundSign;
+    }
+
+    /**
+     * @param integer $priceRoundSign
+     */
+    public function setPriceRoundSign($priceRoundSign)
+    {
+        $this->priceRoundSign = $priceRoundSign;
+    }
+
 
 }
