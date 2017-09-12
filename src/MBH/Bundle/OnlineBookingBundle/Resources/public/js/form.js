@@ -261,7 +261,7 @@ $(function () {
                 minDate = moment(defaultMinDate, "DD.MM.YYYY", true),
                 now = moment(),
                 startDate = moment(Math.max(minDate, now)),
-                endDate = startDate.clone().add(1, 'year');
+                endDate = startDate.clone().add(2, 'year');
 
             while ($.inArray(startDate.format("DD.MM.YYYY"), restrictions) != -1) {
                 startDate.add(1, "day");
