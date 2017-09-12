@@ -211,9 +211,9 @@ var docReadyPackages = function () {
     $('.price-spinner').TouchSpin({
         min: 0,
         max: 9999999999999999,
-        step: 0.1,
+        step: 0.01,
         decimals: 2,
-        boostat: 10,
+        boostat: 1,
         maxboostedstep: 20,
         postfix: '<i class="' + mbh.currency.icon + '"></i>'
     });

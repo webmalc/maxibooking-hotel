@@ -4,7 +4,7 @@ var docReadyCash = function () {
     $('#mbh_bundle_cash_cash_document_document_date').add($paidDate).datepicker({
         language: "ru",
         autoclose: true,
-        startView: 2,
+        startView: 0,
         format: 'dd.mm.yyyy'
     });
 
