@@ -5,6 +5,7 @@ namespace MBH\Bundle\ClientBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -66,6 +67,16 @@ class ClientConfigType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'group' => 'form.clientConfigType.main_group',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm begin-datepicker'],
+            ])
+            ->add('priceRoundSign', IntegerType::class, [
+                'required' => false,
+                'label' => 'form.clientConfigType.round.label',
+                'help' => 'form.clientConfigType.round.help',
+                'group' => 'form.clientConfigType.main_group',
+                'attr' => [
+                    'max' => 2,
+                    'min' => 0
+                ]
             ])
         ;
     }

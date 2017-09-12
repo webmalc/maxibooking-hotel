@@ -30,7 +30,7 @@ class ClientConfig extends Base
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -172,6 +172,16 @@ class ClientConfig extends Base
      * @Assert\Range(min=0, max=365)
      */
      protected $noticeUnpaid = 0;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Field(type="integer")
+     * @Assert\NotNull()
+     * @Assert\Type(type="integer", message="validate.type.integer")
+     * @Assert\Range(min=0, max=2, invalidMessage="")
+     */
+    protected $priceRoundSign = 2;
 
     /**
      * @return integer
@@ -532,6 +542,22 @@ class ClientConfig extends Base
     public function setBeginDate(?\DateTime $beginDate = null)
     {
         $this->beginDate = $beginDate;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getPriceRoundSign()
+    {
+        return $this->priceRoundSign;
+    }
+
+    /**
+     * @param integer $priceRoundSign
+     */
+    public function setPriceRoundSign($priceRoundSign)
+    {
+        $this->priceRoundSign = $priceRoundSign;
     }
 
 
