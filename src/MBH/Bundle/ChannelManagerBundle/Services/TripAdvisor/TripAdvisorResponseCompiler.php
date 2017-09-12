@@ -46,14 +46,14 @@ class TripAdvisorResponseCompiler
         'Breakfast' => 19,
         'Lunch' => 21,
         'Dinner' => 22,
-        'Breakfast and Lunch' => 23
+        'Breakfast and Lunch' => 23,
     ];
 
     const RATE_AMENITIES = [
         'bar' => 69,
         'bath' => 85,
         'toilets' => 120,
-        'wifi' => 900128
+        'wifi' => 900128,
     ];
 
     const HOTEL_AMENITIES = [
@@ -66,7 +66,7 @@ class TripAdvisorResponseCompiler
         'parking' => 'PARKING_AVAILABLE',
         'free-wifi' => 'FREE_WIFI',
         'luxury_holidays' => 'LUXURY',
-        'swimming' => 'SWIMMING_POOL'
+        'swimming' => 'SWIMMING_POOL',
     ];
 
     const ROOM_AMENITIES = [
@@ -83,7 +83,7 @@ class TripAdvisorResponseCompiler
         'toilets' => 120,
         'shower' => 142,
         'free-wifi' => 900126,
-        'wifi' => 900128
+        'wifi' => 900128,
     ];
 
     private $confirmationPage;
@@ -114,8 +114,7 @@ class TripAdvisorResponseCompiler
         Currency $currencyHandler,
         $localCurrency,
         OrderHandler $orderHandler
-    )
-    {
+    ) {
         $this->confirmationPage = $confirmationPageUrl;
         $this->domainName = $domainName;
         $this->arrivalTime = $arrivalTime;
@@ -148,7 +147,7 @@ class TripAdvisorResponseCompiler
             'country' => $this->getTranslatableTitle($hotel->getCountry()),
             'amenities' => $this->getAvailableHotelAmenities($hotel->getFacilities()),
             'url' => $config->getHotelUrl(),
-            'room_types' => []
+            'room_types' => [],
         ];
         if ($contactInformation->getPhoneNumber()) {
             $hotelData['phone'] = $contactInformation->getPhoneNumber();
@@ -204,8 +203,7 @@ class TripAdvisorResponseCompiler
         $categories,
         $categoryModifiers,
         $requestedHotelsData
-    )
-    {
+    ) {
         $hotelsAvailabilityData = [];
         foreach ($requestedHotelsData as $hotelId) {
             if (!isset($availabilityData[$hotelId])) {
@@ -225,33 +223,47 @@ class TripAdvisorResponseCompiler
                             $tariff = $searchResult->getTariff();
                             $tripAdvisorTariff = $config->getTATariffByMBHTariffId($tariff->getId());
                             if (!is_null($tripAdvisorTariff) && $tripAdvisorTariff->getIsEnabled()) {
-                                $hotelRoomRate = $this->getHotelRoomRates($searchResult, $adultsChildrenCombinations,
-                                    $currency, $config, $language, $categoryModifiers['partner_booking_data']);
+                                $hotelRoomRate = $this->getHotelRoomRates(
+                                    $searchResult,
+                                    $adultsChildrenCombinations,
+                                    $currency,
+                                    $config,
+                                    $language,
+                                    $categoryModifiers['partner_booking_data']
+                                );
                                 if ($hotelRoomRate !== false) {
-                                    $hotelRoomRates[] = $hotelRoomRate;
+                                    $hotelRoomRates[$tariff->getId()] = $hotelRoomRate;
                                 }
                             }
                         }
                     }
                 }
+
                 if (count($hotelRoomRates) > 0) {
                     $hotelResponseData = [
                         "response_type" => "available",
                         'available' => [
-                            'room_types' => $this->getRoomTypesData($config, $categories['room_type_details'], $language),
+                            'room_types' => $this->getRoomTypesData(
+                                $config,
+                                $categories['room_type_details'],
+                                $language
+                            ),
                             'rate_plans' => $this->getRatePlansData($config, $categories['rate_plan_details']),
                             'room_rates' => $hotelRoomRates,
-                            'partner_booking_details' => $this->getPartnerBookingDetails($config->getHotel())
-                        ]
+                            'partner_booking_details' => $this->getPartnerBookingDetails($config->getHotel()),
+                        ],
                     ];
                     if ($categories['hotel_details']) {
-                        $hotelResponseData['available']['hotel_details'] = $this->getHotelDetails($config->getHotel(), $language);
+                        $hotelResponseData['available']['hotel_details'] = $this->getHotelDetails(
+                            $config->getHotel(),
+                            $language
+                        );
                     }
                 } else {
-                    $hotelResponseData = ["response_type" => "unavailable"];
+                    $hotelResponseData = ["response_type" => "unavailable", 'gde' => 'second'];
                 }
             }
-            $hotelsAvailabilityData[] = $hotelResponseData;
+            $hotelsAvailabilityData[$hotelId] = $hotelResponseData;
         }
 
         return $hotelsAvailabilityData;
@@ -267,7 +279,7 @@ class TripAdvisorResponseCompiler
             'accepted_credit_cards' => $this->getAcceptedCardTypes($hotel),
             'terms_and_conditions' => $hotel->getTripAdvisorConfig()->getTermsAndConditions(),
             'payment_policy' => $hotel->getTripAdvisorConfig()->getPaymentPolicy(),
-            'customer_support' => $this->getCustomerSupportData($hotel->getContactInformation())
+            'customer_support' => $this->getCustomerSupportData($hotel->getContactInformation()),
         ];
     }
 
@@ -287,7 +299,7 @@ class TripAdvisorResponseCompiler
                     $roomTypeData = $this->getRoomTypeData($room->getRoomType(), $language);
                 }
                 $roomTypeData["persistent_room_type_code"] = $room->getRoomType()->getId();
-                $roomTypesData[] = $roomTypeData;
+                $roomTypesData[$room->getRoomType()->getId()] = $roomTypeData;
             }
         }
 
@@ -308,7 +320,7 @@ class TripAdvisorResponseCompiler
                     $tariffData = $this->getTariffData($tariff);
                 }
                 $tariffData['persistent_rate_plan_code'] = $tariff->getTariff()->getId();
-                $tariffsData[] = $tariffData;
+                $tariffsData[$tariff->getTariff()->getId()] = $tariffData;
             }
         }
 
@@ -320,14 +332,13 @@ class TripAdvisorResponseCompiler
         $bookingCreationResult,
         $messages,
         Hotel $hotel
-    )
-    {
+    ) {
         $isSuccessfully = $bookingCreationResult instanceof Order;
 
         $response = [
             'reference_id' => $bookingSession,
             'status' => $isSuccessfully ? 'Success' : 'Failure',
-            'customer_support' => $this->getCustomerSupportData($hotel->getContactInformation())
+            'customer_support' => $this->getCustomerSupportData($hotel->getContactInformation()),
         ];
 
         if ($isSuccessfully) {
@@ -347,7 +358,7 @@ class TripAdvisorResponseCompiler
             'problems' => [],
             'reference_id' => $channelManagerOrderId,
             'status' => $isCreated ? 'Success' : 'Failure',
-            'customer_support' => $this->getCustomerSupportData($hotel->getContactInformation())
+            'customer_support' => $this->getCustomerSupportData($hotel->getContactInformation()),
         ];
 
         if ($isCreated) {
@@ -364,7 +375,7 @@ class TripAdvisorResponseCompiler
             'reservation_id' => $orderId,
             "status" => $removalStatus,
             'cancellation_number' => $orderId,
-            'customer_support' => $this->getCustomerSupportData($hotel->getContactInformation())
+            'customer_support' => $this->getCustomerSupportData($hotel->getContactInformation()),
         ];
     }
 
@@ -389,27 +400,29 @@ class TripAdvisorResponseCompiler
             'roomType' => $roomTypeId,
             'adults' => $adultsCount,
             'children' => $childrenCount,
-            'locale' => $locale
+            'locale' => $locale,
         ];
 
-        return $this->onlineFormUrl . '?' . http_build_query($params);
+        return $this->onlineFormUrl.'?'.http_build_query($params);
     }
 
     private function getCustomerSupportData(ContactInfo $contactInfo)
     {
         return [
             'phone_numbers' => [
-                [
-                    "contact" => $contactInfo->getPhoneNumber(),
-                    "description" => "Support phone line"
-                ]
+                'custom' => [
+                    [
+                        "number" => $contactInfo->getPhoneNumber(),
+                        "description" => "Support phone line",
+                    ],
+                ],
             ],
             'emails' => [
                 [
-                    'contact' => $contactInfo->getEmail(),
-                    'description' => 'Support email'
-                ]
-            ]
+                    'email' => $contactInfo->getEmail(),
+                    'description' => 'Support email',
+                ],
+            ],
         ];
     }
 
@@ -422,28 +435,32 @@ class TripAdvisorResponseCompiler
             'name' => $tariff->getName(),
             'description' => $tariff->getDescription() ? $tariff->getDescription() : $tariff->getName(),
             'rate_amenities' => $this->getRateAmenities($tariff),
-            'refundable' => $tripAdvisorTariff->getRefundableType(),
-            'cancellation_rules' => $this->getCancellationRules($tripAdvisorTariff),
-            'meal_plan' => $this->getRateMealPlanes($tariff)
+            'cancellation_policy' => [
+                'cancellation_summary' => $this->getCancellationSummary($tripAdvisorTariff)
+            ],
+            'meal_plan' => $this->getRateMealPlanes($tariff),
+            'photos' => [],
         ];
 
         return $tariffData;
     }
 
-    private function getCancellationRules(TripAdvisorTariff $tariff)
+    private function getCancellationSummary(TripAdvisorTariff $tariff)
     {
         if ($tariff->getRefundableType() == 'full') {
-            $deadLineDate = (new \DateTime('midnight'))->modify('+ ' . $tariff->getDeadline() . 'days');
-            $result = [
-                'penalty_exists' => $tariff->getIsPenaltyExists(),
-                'policy_info' => $tariff->getPolicyInfo(),
-                'deadline' => $deadLineDate->format('Y-m-d\TH:i:s')
+            $deadLineDate = (new \DateTime('midnight'))->modify('+ '.$tariff->getDeadline().'days');
+            $summary = [
+                'unstructured_cancellation_text' => $tariff->getPolicyInfo(),
+                'cancellation_deadline' => $deadLineDate->format('Y-m-d\TH:i:s'),
             ];
         } else {
-            $result = [];
+            $summary = [];
         }
 
-        return $result;
+        $summary['refundable'] = $tariff->getRefundableType();
+        $summary['cancellation_rules'] = [];
+
+        return $summary;
     }
 
     private function getReservationData(Order $order, Hotel $hotel, TripAdvisorConfig $config)
@@ -470,10 +487,12 @@ class TripAdvisorResponseCompiler
             }
             $cashDocumentsData[] = [
                 'price' => $this->getPriceObject(
-                    $this->currencyHandler->convertFromRub($cashDocument->getTotal(), $currency), $currency),
+                    $this->currencyHandler->convertFromRub($cashDocument->getTotal(), $currency),
+                    $currency
+                ),
                 'type' => $cashDocType,
                 'paid_at_checkout' => $cashDocument->getMethod() == 'cash',
-                'description' => $description
+                'description' => $description,
             ];
         }
 
@@ -482,12 +501,14 @@ class TripAdvisorResponseCompiler
         $reservationData = [
             'reservation_id' => (string)$order->getId(),
             'status' => $this->getOrderStatus($order),
-            'confirmation_url' => $this->confirmationPage . '?'
-                . http_build_query([
-                    'sessionId' => $order->getChannelManagerId(),
-                    'order' => $order->getId(),
-                    'hotelId' => $hotel->getId()
-                ]),
+            'confirmation_url' => $this->confirmationPage.'?'
+                .http_build_query(
+                    [
+                        'sessionId' => $order->getChannelManagerId(),
+                        'order' => $order->getId(),
+                        'hotelId' => $hotel->getId(),
+                    ]
+                ),
             'checkin_date' => $orderFirstPackage->getBegin()->format(self::TRIP_ADVISOR_DATE_FORMAT),
             'checkout_date' => $orderFirstPackage->getEnd()->format(self::TRIP_ADVISOR_DATE_FORMAT),
             'partner_hotel_code' => $orderFirstPackage->getHotel()->getId(),
@@ -497,14 +518,14 @@ class TripAdvisorResponseCompiler
                 'last_name' => $payer->getLastName(),
                 'phone_number' => $payer->getPhone(),
                 'email' => $payer->getEmail(),
-                'country' => $countryCode
+                'country' => $countryCode,
             ],
             'rooms' => $this->getRoomStayData($order->getPackages()->toArray()),
             'receipt' => [
                 'line_items' => $cashDocumentsData,
                 'final_price_at_booking' => $finalPrice['atBooking'],
-                'final_price_at_checkout' => $finalPrice['atCheckOut']
-            ]
+                'final_price_at_checkout' => $finalPrice['atCheckOut'],
+            ],
         ];
 
         return $reservationData;
@@ -529,7 +550,7 @@ class TripAdvisorResponseCompiler
 
         return [
             'atCheckOut' => $this->getPriceObject($finalPriceAtCheckOut, $currency),
-            'atBooking' => $this->getPriceObject($finalPriceAtBooking, $currency)
+            'atBooking' => $this->getPriceObject($finalPriceAtBooking, $currency),
         ];
     }
 
@@ -555,11 +576,14 @@ class TripAdvisorResponseCompiler
     private function getRoomStayData($packages)
     {
         $roomStayData = [];
-        usort($packages, function ($packageOne, $packageTwo) {
-            /** @var Package $packageOne */
-            /** @var Package $packageTwo */
-            return ($packageOne->getId() < $packageTwo->getId()) ? -1 : 1;
-        });
+        usort(
+            $packages,
+            function ($packageOne, $packageTwo) {
+                /** @var Package $packageOne */
+                /** @var Package $packageTwo */
+                return ($packageOne->getId() < $packageTwo->getId()) ? -1 : 1;
+            }
+        );
 
         $groupedPackages = [];
         $currentPackageGroup = [];
@@ -586,8 +610,12 @@ class TripAdvisorResponseCompiler
                 }
             }
             $mainTourist = $mainDataPackage->getTourists()[0];
-            $roomStayData[] = $this->getRoomsData($adultsCount, $mainDataPackage->getChildAges(),
-                $mainTourist->getFirstName(), $mainTourist->getLastName());
+            $roomStayData[] = $this->getRoomsData(
+                $adultsCount,
+                $mainDataPackage->getChildAges(),
+                $mainTourist->getFirstName(),
+                $mainTourist->getLastName()
+            );
         }
 
         return $roomStayData;
@@ -598,19 +626,20 @@ class TripAdvisorResponseCompiler
         return [
             'party' => [
                 'adults' => $adultsCount,
-                'children' => $childrenAges
+                'children' => $childrenAges,
             ],
             'traveler_first_name' => $firstName,
-            'traveler_last_name' => $lastName
+            'traveler_last_name' => $lastName,
         ];
     }
 
     private function getPriceObject($priceValue, $currency)
     {
-        return ['requested_currency_price' => [
-            'amount' => $priceValue,
-            'currency' => $currency
-        ]
+        return [
+            'requested_currency_price' => [
+                'amount' => $priceValue,
+                'currency' => $currency,
+            ],
         ];
     }
 
@@ -630,7 +659,7 @@ class TripAdvisorResponseCompiler
 
         $hotelDetails = [
             'name' => $hotelName,
-            'address1' => $streetName . ', ' . $hotel->getHouse(),
+            'address1' => $streetName.', '.$hotel->getHouse(),
             'city' => $cityName,
             'state' => $regionName,
             'country' => $hotel->getCountry()->getIsoAlpha2(),
@@ -639,8 +668,8 @@ class TripAdvisorResponseCompiler
             'hotel_amenities' => $this->getHotelAmenities($hotel),
             'photos' => $this->getHotelPhotoData($hotel),
             'checkinout_policy' => $hotel->getCheckinoutPolicy(),
-            'checkin_time' => $this->arrivalTime . ':00',
-            'checkout_time' => $this->departureTime . ':00',
+            'checkin_time' => $this->arrivalTime.':00',
+            'checkout_time' => $this->departureTime.':00',
             'hotel_smoking_policy' => ['custom' => [$hotel->getSmokingPolicy()], 'standard' => []],
         ];
         if ($hotel->getTripAdvisorConfig()->getChildPolicy()) {
@@ -666,8 +695,7 @@ class TripAdvisorResponseCompiler
         TripAdvisorConfig $config,
         $requestedLanguage,
         bool $isFull
-    )
-    {
+    ) {
         $priceData = $this->getPriceDataByAdultsChildrenCombinations($adultChildrenCombinations, $result);
         if (!$priceData) {
             return false;
@@ -675,27 +703,36 @@ class TripAdvisorResponseCompiler
         $resultPrice = $this->currencyHandler->convertFromRub($priceData['price'], $currency);
         $finalPriceData = $this->getFinalPriceData($config->getPaymentType(), $resultPrice, $currency);
         $hotelRoomRates = [
-            'persistent_room_rate_code' => $result->getRoomType()->getId() . '_' . $result->getTariff()->getId(),
-            'hotel_room_type_code' => $result->getRoomType()->getId(),
-            'hotel_rate_plan_code' => $result->getTariff()->getId(),
-            'final_price_at_booking' => $finalPriceData['atBooking'],
-            'final_price_at_checkout' => $finalPriceData['atCheckOut'],
+            'persistent_room_rate_code' => $result->getRoomType()->getId().'_'.$result->getTariff()->getId(),
+            'room_type_key' => $result->getRoomType()->getId(),
+            'rate_plan_key' => $result->getTariff()->getId(),
+//            'final_price_at_booking' => $finalPriceData['atBooking'],
+//            'final_price_at_checkout' => $finalPriceData['atCheckOut'],
             'line_items' => $this->getLineItems($resultPrice, $currency, $config->getPaymentType()),
             'payment_policy' => $config->getPaymentPolicy(),
             'rooms_remaining' => $result->getRoomsCount(),
         ];
-        $firstAdultsChildrenCounts = current($this->orderHandler->getAdultsChildrenCountByCombinations(
-            $adultChildrenCombinations[0], $result->getTariff()));
-        $hotelRoomRate['url'] = $this->getSearchUrl($result->getRoomType()->getId(), $result->getBegin(), $result->getEnd(),
-            $firstAdultsChildrenCounts['adultsCount'], $firstAdultsChildrenCounts['childrenCount'],
-            $requestedLanguage);
+        $firstAdultsChildrenCounts = current(
+            $this->orderHandler->getAdultsChildrenCountByCombinations(
+                $adultChildrenCombinations[0],
+                $result->getTariff()
+            )
+        );
+        $hotelRoomRate['url'] = $this->getSearchUrl(
+            $result->getRoomType()->getId(),
+            $result->getBegin(),
+            $result->getEnd(),
+            $firstAdultsChildrenCounts['adultsCount'],
+            $firstAdultsChildrenCounts['childrenCount'],
+            $requestedLanguage
+        );
         if ($isFull) {
             $hotelRoomRates['partner_data'] = [
                 'pricesByDate' => $priceData['pricesByDate'],
                 'roomTypeId' => $result->getRoomType()->getId(),
                 'tariffId' => $result->getTariff()->getId(),
                 'hotelId' => $result->getRoomType()->getHotel()->getId(),
-                'language' => $requestedLanguage
+                'language' => $requestedLanguage,
             ];
         }
 
@@ -706,25 +743,31 @@ class TripAdvisorResponseCompiler
     {
         $roomType = $result->getRoomType();
         $tariff = $result->getTariff();
-        $adultsChildrenCounts = $this->orderHandler->getAdultsChildrenCountByCombinations($adultsChildrenCombinations,
-            $tariff);
+        $adultsChildrenCounts = $this->orderHandler->getAdultsChildrenCountByCombinations(
+            $adultsChildrenCombinations,
+            $tariff
+        );
         //Все ли кобминации количеств детей и взрослых имеют цену?
         $isAllHavenPrice = true;
         $resultPriceData = ['price' => 0, 'roomCount' => 0];
         foreach ($adultsChildrenCounts as $estimatedAdultsChildrenCount) {
             $dividedAdultsChildrenCombinations =
                 $this->orderHandler->getDividedAdultsChildrenCombinations(
-                    $estimatedAdultsChildrenCount['adultsCount'], $estimatedAdultsChildrenCount['childrenCount'],
-                    $roomType->getTotalPlaces());
+                    $estimatedAdultsChildrenCount['adultsCount'],
+                    $estimatedAdultsChildrenCount['childrenCount'],
+                    $roomType->getTotalPlaces()
+                );
             foreach ($dividedAdultsChildrenCombinations as $combination) {
                 $adultsChildrenCounts = $roomType->getAdultsChildrenCombination(
-                    $combination['adults'], isset($combination['children']) ? $combination['children'] : 0);
+                    $combination['adults'],
+                    isset($combination['children']) ? $combination['children'] : 0
+                );
                 $adultsCount = $adultsChildrenCounts['adults'];
                 $childrenCount = $adultsChildrenCounts['children'];
                 $price = $result->getPrice($adultsCount, $childrenCount);
                 if ($price) {
                     $resultPriceData['price'] += $price;
-                    $resultPriceData['pricesByDate'][$adultsCount . '_' . $childrenCount] =
+                    $resultPriceData['pricesByDate'][$adultsCount.'_'.$childrenCount] =
                         $result->getPricesByDate($adultsCount, $childrenCount);
                     $resultPriceData['roomCount']++;
                 } else {
@@ -756,20 +799,37 @@ class TripAdvisorResponseCompiler
             'room_amenities' => $this->getRoomAmenities($roomType),
             'max_occupancy' => [
                 'number_of_adults' => $roomType->getTotalPlaces(),
-                'number_of_children' => $roomType->getTotalPlaces() - 1
+                'number_of_children' => $roomType->getTotalPlaces() - 1,
             ],
-            'bed_configurations' => [$this->getBedConfiguration($roomType)],
-            'extra_bed_configurations' => [$this->getBedConfiguration($roomType)],
+            'bed_configurations' => $this->getBedConfiguration($roomType),
+            'extra_bed_configurations' => $this->getBedConfiguration($roomType),
             'room_smoking_policy' => $roomType->getIsSmoking() ? 'smoking' : 'non_smoking',
-            'room_view_type' => $this->getRoomViewTypes($roomType)
+            'room_view_types' => $this->getRoomViewTypes($roomType),
+            'accessibility_features' => $this->getRoomAccessibilityFeature($roomType),
         ];
 
         if ($roomType->getRoomSpace()) {
-            $roomTypeResponseData['room_size_value'] = (int)$roomType->getRoomSpace();
-            $roomTypeResponseData['room_size_units'] = 'square_meters';
+            $roomTypeResponseData['room_size'] = [
+                'value' => (int)$roomType->getRoomSpace(),
+                'unit' => 'square_meters',
+            ];
         }
 
         return $roomTypeResponseData;
+    }
+
+    private function getRoomAccessibilityFeature(RoomType $roomType)
+    {
+        $features = [];
+        foreach ($roomType->getFacilities() as $facility) {
+            if ($facility == 'disability') {
+                $features['standard'][] = 900504;
+            } elseif ($facility == 'blind') {
+                $features['standard'][] = 900506;
+            }
+        }
+
+        return $features;
     }
 
     private function getRoomTypePhotoData(RoomType $roomType)
@@ -778,7 +838,7 @@ class TripAdvisorResponseCompiler
         foreach ($roomType->getImages() as $image) {
             $roomTypeImageData = [];
             /** @var RoomTypeImage $image */
-            $roomTypeImageData['url'] = 'https://' . $this->domainName . '/' . $image->getPath();
+            $roomTypeImageData['url'] = 'https://'.$this->domainName.'/'.$image->getPath();
             if ($image->getWidth()) {
                 $roomTypeImageData['width'] = (int)$image->getWidth();
             }
@@ -802,8 +862,11 @@ class TripAdvisorResponseCompiler
         foreach ($hotel->getImages() as $image) {
             $roomTypeImageData = [];
             /** @var Image $image */
-            $roomTypeImageData['url'] = 'https://' . $this->domainName . $this->uploaderHelper->asset($image, 'imageFile',
-                    Image::class);
+            $roomTypeImageData['url'] = 'https://'.$this->domainName.$this->uploaderHelper->asset(
+                    $image,
+                    'imageFile',
+                    Image::class
+                );
             if ($image->getWidth()) {
                 $roomTypeImageData['width'] = (int)$image->getWidth();
             }
@@ -833,7 +896,7 @@ class TripAdvisorResponseCompiler
     {
         $amenities = [
             'standard' => [],
-            'custom' => []
+            'custom' => [],
         ];
 
         foreach ($specifiedAmenities as $facility) {
@@ -860,17 +923,15 @@ class TripAdvisorResponseCompiler
     {
         $bedConfiguration = [];
         if (in_array('bed', $roomType->getFacilities())) {
-            $bedConfiguration[] = [
-                'type' => 'standard',
+            $bedConfiguration['standard'][] = [
                 'code' => 9,
-                'count' => 1
+                'count' => 1,
             ];
         }
         if (in_array('double-bed', $roomType->getFacilities())) {
-            $bedConfiguration[] = [
-                'type' => 'standard',
+            $bedConfiguration['standard'][] = [
                 'code' => 1,
-                'count' => 1
+                'count' => 1,
             ];
         }
 
@@ -928,7 +989,7 @@ class TripAdvisorResponseCompiler
                     "price" => $this->getPriceObject($price, $currency),
                     'type' => 'rate',
                     'paid_at_checkout' => true,
-                    'description' => 'Base rate'
+//                    'description' => 'Base rate'
                 ];
                 break;
             case 'online_full':
@@ -936,7 +997,7 @@ class TripAdvisorResponseCompiler
                     "price" => $this->getPriceObject($price, $currency),
                     'type' => 'rate',
                     'paid_at_checkout' => false,
-                    'description' => 'Base rate'
+//                    'description' => 'Base rate'
                 ];
                 break;
             case 'online_half':
@@ -944,13 +1005,13 @@ class TripAdvisorResponseCompiler
                     "price" => $this->getPriceObject($price / 2, $currency),
                     'type' => 'rate',
                     'paid_at_checkout' => true,
-                    'description' => 'Base rate'
+//                    'description' => 'Base rate'
                 ];
                 $lineItems[] = [
                     "price" => $this->getPriceObject($price / 2, $currency),
                     'type' => 'rate',
                     'paid_at_checkout' => false,
-                    'description' => 'Base rate'
+//                    'description' => 'Base rate'
                 ];
                 break;
         }

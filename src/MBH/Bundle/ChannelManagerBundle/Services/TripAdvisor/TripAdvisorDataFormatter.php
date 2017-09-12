@@ -46,8 +46,11 @@ class TripAdvisorDataFormatter
     {
         $tripAdvisorConfigRepository = $this->dm->getRepository('MBHChannelManagerBundle:TripAdvisorConfig');
 
-        $configs = $tripAdvisorConfigRepository->createQueryBuilder()
-            ->field('hotel.id')->in($hotelIds)->getQuery()->execute();
+        $configs = $tripAdvisorConfigRepository
+            ->createQueryBuilder()
+            ->field('hotel.id')->in($hotelIds)
+            ->getQuery()
+            ->execute();
 
         $result = [];
         foreach ($configs as $config) {

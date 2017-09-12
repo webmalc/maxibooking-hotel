@@ -61,12 +61,6 @@ class TripAdvisorTariffType extends AbstractType
                 'group' => $tariff->getName(),
                 'required' => false
             ])
-            ->add('isPenaltyExists', CheckboxType::class, [
-                'label' => 'form.trip_advisor_tariff_type.is_penalty_exists.label',
-                'help' => 'form.trip_advisor_tariff_type.is_penalty_exists.help',
-                'group' => $tariff->getName(),
-                'required' => false
-            ])
             ->add('policyInfo', TextareaType::class, [
                 'label' => 'form.trip_advisor_tariff_type.policy_info.label',
                 'help' => 'form.trip_advisor_tariff_type.policy_info.help',

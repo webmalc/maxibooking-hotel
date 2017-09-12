@@ -123,6 +123,8 @@ services:
               - '@translator'
               - '@validator'
               - '@mbh.channel_manager.trip_advisor_response_compiler'
+              - '%mbhs_key%'
+              - '@doctrine.odm.mongodb.document_manager'
 
     mbh.channel_manager.trip_advisor_response_compiler:
       class: MBH\Bundle\ChannelManagerBundle\Services\TripAdvisor\TripAdvisorResponseCompiler
