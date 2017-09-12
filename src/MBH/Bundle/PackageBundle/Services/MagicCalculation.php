@@ -343,7 +343,7 @@ class MagicCalculation extends Calculation
             $prices[$combination['adults'].'_'.$combination['children']] = [
                 'adults' => $combination['adults'],
                 'children' => $combination['children'],
-                'total' => $total,
+                'total' => $this->getTotalPrice($total),
                 'prices' => $dayPrices,
                 'packagePrices' => $packagePrices,
             ];
@@ -423,6 +423,11 @@ class MagicCalculation extends Calculation
 
         return $table[$adults.'adult'];
 
+    }
+
+    protected function getTotalPrice($total)
+    {
+        return $total;
     }
 
 }

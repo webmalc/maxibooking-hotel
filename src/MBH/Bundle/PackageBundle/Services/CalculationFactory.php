@@ -17,12 +17,17 @@ class CalculationFactory
             ->getRepository('MBHClientBundle:ClientConfig')
             ->fetchConfig();
 
-        $calculation = new CalculationRounded($container);
+        $calculation = self::getService($container);
         if (null !== $clientConfig->getPriceRoundSign()) {
             $calculation->setRoundedSign($clientConfig->getPriceRoundSign());
         }
 
         return $calculation;
+    }
+
+    protected static function getService(ContainerInterface $container)
+    {
+        return new CalculationRounded($container);
     }
 
 }

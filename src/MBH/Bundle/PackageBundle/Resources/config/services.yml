@@ -29,6 +29,7 @@ services:
 
     mbh.magic.calculation:
             class: MBH\Bundle\PackageBundle\Services\MagicCalculation
+            factory: ['MBH\Bundle\PackageBundle\Services\MagicCalculationFactory', createCalculation]
             arguments: ['@service_container']
 
     mbh.order_manager:
