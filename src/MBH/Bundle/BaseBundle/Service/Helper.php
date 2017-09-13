@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
 
@@ -554,5 +555,23 @@ class Helper
         }
 
         return [];
+    }
+
+    public function getTimeZone(?ClientConfig $clientConfig = null)
+    {
+        if (is_null($clientConfig)) {
+            $clientConfig = $this->container
+                ->get('doctrine.odm.mongodb.document_manager')
+                ->getRepository('MBHClientBundle:ClientConfig')
+                ->fetchConfig();
+        }
+
+        if (is_null($clientConfig) || empty($clientConfig->getTimeZone())) {
+            return $this->container->getParameter('locale') === 'ru'
+                ? 'Europe/Moscow'
+                : 'Europe/Paris';
+        }
+
+        return $clientConfig->getTimeZone();
     }
 }

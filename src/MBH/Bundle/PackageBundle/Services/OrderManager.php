@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Lib\Searchable;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -708,7 +709,9 @@ class OrderManager implements Searchable
                 break;
 
             case 'not-paid-time':
-                $notPaidTime = new \DateTime($this->container->getParameter('mbh.package.notpaid.time'));
+                /** @var ClientConfig $clientConfig */
+                $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+                $notPaidTime = new \DateTime('-' . $clientConfig->getNumberOfDaysForPayment().'days');
                 $data['paid'] = 'not_paid';
                 $data['dates'] = 'createdAt';
                 $data['end'] = $notPaidTime->format('d.m.Y');

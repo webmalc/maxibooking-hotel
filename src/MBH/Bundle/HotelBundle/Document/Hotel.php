@@ -34,6 +34,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Hotel extends Base implements \JsonSerializable, AddressInterface
 {
+    const DEFAULT_ARRIVAL_TIME = 12;
+    const DEFAULT_DEPARTURE_TIME = 14;
 
     /**
      * Hook timestampable behavior
@@ -383,6 +385,22 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @ODM\Field(type="string")
      */
     protected $smokingPolicy;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     * @Assert\Range(max="23", min="0")
+     */
+    protected $packageArrivalTime = self::DEFAULT_ARRIVAL_TIME;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     * @Assert\Range(max="23", min="0")
+     */
+    protected $packageDepartureTime = self::DEFAULT_DEPARTURE_TIME;
 
     public function __construct()
     {
@@ -1647,5 +1665,42 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getPackageArrivalTime(): ?int
+    {
+        return $this->packageArrivalTime;
+    }
+
+    /**
+     * @param int $packageArrivalTime
+     * @return Hotel
+     */
+    public function setPackageArrivalTime(int $packageArrivalTime): Hotel
+    {
+        $this->packageArrivalTime = $packageArrivalTime;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPackageDepartureTime(): ?int
+    {
+        return $this->packageDepartureTime;
+    }
+
+    /**
+     * @param int $packageDepartureTime
+     * @return Hotel
+     */
+    public function setPackageDepartureTime(int $packageDepartureTime): Hotel
+    {
+        $this->packageDepartureTime = $packageDepartureTime;
+
+        return $this;
+    }
 
 }
