@@ -510,7 +510,7 @@ var bindSwitchHandlers = function () {
 $(document).ready(function () {
     'use strict';
     docReadyPackages();
-    doFixVirtualRoom();
+    /*doFixVirtualRoom();*/
 
     //package ajax tabs
     (function () {
@@ -536,7 +536,7 @@ $(document).ready(function () {
                 docReadyPackages();
                 docReadyCash();
                 docReadyDocs();
-                doFixVirtualRoom();
+                /*doFixVirtualRoom();*/
             });
         });
     }());
