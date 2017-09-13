@@ -6,7 +6,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Special;
 

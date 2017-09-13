@@ -3,7 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -66,7 +67,10 @@ class SearchFactory implements SearchInterface
      */
     public function search(SearchQuery $query)
     {
-        return $this->search->search($query);
+        $this->persistSearchQuery($query);
+        $search = $this->search->search($query);
+
+        return $search;
     }
 
     /**
@@ -91,5 +95,15 @@ class SearchFactory implements SearchInterface
 
     {
         return $this->search->searchStrictNowSpecials($query);
+    }
+
+    private function persistSearchQuery(SearchQuery $query)
+    {
+        if (!empty($query->tariff) && !$query->tariff instanceof Tariff) {
+            $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                ->fetchById($query->tariff);
+        }
+        $this->dm->persist($query);
+        $this->dm->flush($query);
     }
 }
