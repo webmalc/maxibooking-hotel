@@ -10,7 +10,7 @@ class MagicCalculationFactory extends CalculationFactory
 {
     protected static function getService(ContainerInterface $container)
     {
-        return new MagicCalculation($container);
+        return new MagicCalculationRounded($container);
     }
 
 }

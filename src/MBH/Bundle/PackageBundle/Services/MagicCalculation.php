@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by Zavalyuk Alexandr (Zalex).
- * email: zalex@zalex.com.ua
- * Date: 02.03.17
- * Time: 14:37
- */
 
 namespace MBH\Bundle\PackageBundle\Services;
 

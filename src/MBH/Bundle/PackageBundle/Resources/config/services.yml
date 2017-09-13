@@ -23,12 +23,12 @@ services:
             arguments: ['@service_container']
 
     mbh.calculation:
-            class: MBH\Bundle\PackageBundle\Services\Calculation
+            class: MBH\Bundle\PackageBundle\Services\CalculationFactory
             factory: ['MBH\Bundle\PackageBundle\Services\CalculationFactory', createCalculation]
             arguments: ['@service_container']
 
     mbh.magic.calculation:
-            class: MBH\Bundle\PackageBundle\Services\MagicCalculation
+            class: MBH\Bundle\PackageBundle\Services\MagicCalculationFactory
             factory: ['MBH\Bundle\PackageBundle\Services\MagicCalculationFactory', createCalculation]
             arguments: ['@service_container']
 
