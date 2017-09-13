@@ -114,7 +114,7 @@ ROLE_OKTOGO: Oktogo
 ROLE_HOTELINN: Hotel-inn
 ROLE_MYALLOCATOR: MyAllocator
 ROLE_101HOTELS: '101 Отель'
-ROLE_ONLINE_FORM: 'Онлайн модуль'
+ROLE_ONLINE_FORM: 'Онлайн форма'
 ROLE_ONLINE_FORM_VIEW: 'Просмотр онлайн форм'
 ROLE_ONLINE_FORM_EDIT: 'Редактирование онлайн форм'
 ROLE_ONLINE_FORM_NEW: 'Создание онлайн форм'
