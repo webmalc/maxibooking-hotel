@@ -76,7 +76,7 @@ views.form.index.to_form_place: 'To place form:'
 views.form.index.before_closing_tag: 'Before closing tag'
 views.form.index.search_page_embed_code: 'Page search embed code:'
 views.form.index.to_results_place: 'To place results:'
-views.form.layout.online_form: 'Online form'
+views.form.layout.online_form: 'Online module'
 views.form.period_is_not_filled: 'Period is empty'
 views.api.getPaymentType.reservation_guarantee_half: 'Guaranteed availability, prepayment of 50% total sum before arrival'
 views.api.getResultsTable.facilities: Facilities
