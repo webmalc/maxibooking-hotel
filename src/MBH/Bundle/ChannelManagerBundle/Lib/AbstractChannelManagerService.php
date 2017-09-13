@@ -87,6 +87,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->request = $container->get('request_stack')->getCurrentRequest();
         $this->helper = $container->get('mbh.helper');
         $this->logger = $container->get('mbh.channelmanager.logger');
+        $this->logger::setTimezone(new \DateTimeZone('UTC'));
         $this->currency = $container->get('mbh.currency');
         $this->roomManager = $container->get('mbh.hotel.room_type_manager');
     }
