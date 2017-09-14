@@ -71,7 +71,7 @@ class RoomCache
      * @param \DateTime $begin |null
      * @param \DateTime $end |null
      * @param array $roomTypes array of ids
-     * @return int
+     * @return array
      */
     public function recalculateByPackages(\DateTime $begin = null, \DateTime $end = null, array $roomTypes = [])
     {
@@ -167,7 +167,7 @@ class RoomCache
             $logger->info('OK. Inconsistencies not found');
         }
 
-        return $num;
+        return ['total' => $num, 'numberOfInconsistencies' => $numberOfInconsistencies];
     }
 
 
