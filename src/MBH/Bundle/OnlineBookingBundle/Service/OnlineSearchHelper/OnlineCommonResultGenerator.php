@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
-use MBH\Bundle\PriceBundle\Document\Special;
 
 class OnlineCommonResultGenerator extends AbstractResultGenerator
 {

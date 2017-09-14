@@ -129,6 +129,11 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                     ->setAdditionalDates($query->range)
                     ->setWithTariffs();
                 $specials = $search->searchSpecials($query)->toArray();
+
+                $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+                if ($clientConfig->isQueryStat()) {
+                    $query->setSave(true);
+                }
                 $groupedResult = $search->search($query);
 
             } else {

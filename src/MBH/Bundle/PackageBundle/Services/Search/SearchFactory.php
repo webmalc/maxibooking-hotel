@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -67,8 +68,11 @@ class SearchFactory implements SearchInterface
      */
     public function search(SearchQuery $query)
     {
-        $this->persistSearchQuery($query);
+        $savedQueryId = $query->isSave() ? $this->saveQuery($query): null;
         $search = $this->search->search($query);
+        if (null !== $savedQueryId) {
+            array_walk($search, [$this, 'injectQueryId'], $savedQueryId);
+        }
 
         return $search;
     }
@@ -97,7 +101,7 @@ class SearchFactory implements SearchInterface
         return $this->search->searchStrictNowSpecials($query);
     }
 
-    private function persistSearchQuery(SearchQuery $query)
+    private function saveQuery(SearchQuery $query): string
     {
         if (!empty($query->tariff) && !$query->tariff instanceof Tariff) {
             $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
@@ -105,5 +109,18 @@ class SearchFactory implements SearchInterface
         }
         $this->dm->persist($query);
         $this->dm->flush($query);
+
+        return $query->getId();
+    }
+
+    private function injectQueryId(array &$result, $key, string $queryId)
+    {
+        if (isset ($result['results']) && is_array($result['results'])) {
+            foreach ($result['results'] as $searchResult) {
+                /** @var SearchResult $searchResult */
+                $searchResult->setQueryId($queryId);
+            }
+        }
+
     }
 }

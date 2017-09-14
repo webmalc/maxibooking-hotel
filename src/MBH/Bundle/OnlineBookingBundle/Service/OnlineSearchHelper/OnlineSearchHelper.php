@@ -5,7 +5,6 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
-use MBH\Bundle\PackageBundle\Document\SearchQuery;
 
 class OnlineSearchHelper
 {

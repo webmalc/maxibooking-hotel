@@ -213,6 +213,12 @@ class SearchQuery extends Base
 
     protected $isSpecialStrict = false;
 
+    /** @var bool  */
+    protected $save = false;
+
+    /** @var  string */
+    protected $querySavedId;
+
     /**
      * @return bool
      */
@@ -408,6 +414,44 @@ class SearchQuery extends Base
     public function setIsSpecialStrict(bool $isSpecialStrict)
     {
         $this->isSpecialStrict = $isSpecialStrict;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSave(): bool
+    {
+        return $this->save;
+    }
+
+    /**
+     * @param bool $save
+     * @return SearchQuery
+     */
+    public function setSave(bool $save): SearchQuery
+    {
+        $this->save = $save;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQuerySavedId(): ?string
+    {
+        return $this->querySavedId;
+    }
+
+    /**
+     * @param string $querySavedId
+     * @return SearchQuery
+     */
+    public function setQuerySavedId(string $querySavedId): SearchQuery
+    {
+        $this->querySavedId = $querySavedId;
+
+        return $this;
     }
 
 

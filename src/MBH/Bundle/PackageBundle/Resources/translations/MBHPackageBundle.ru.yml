@@ -30,6 +30,7 @@ order.cash.pay: Подтвердить
 order.cash.short_pay: оплатить
 order.cash.cash_documents_not_found: Кассовые документы не найдены.
 order.cash.responsible: Ответственный
+package.edit.query: Подробности запроса
 order.edit.order_editing: 'редактирование заказа #'
 order.edit.deleted: удален
 order.edit.room: Номер

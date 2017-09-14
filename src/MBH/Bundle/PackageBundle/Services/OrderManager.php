@@ -576,6 +576,13 @@ class OrderManager
 
         }
 
+        //inject SearchQuery
+        if (null !== $data['savedQueryId']) {
+            $searchQuery = $this->dm->find('MBHPackageBundle:SearchQuery', $data['savedQueryId']);
+            $package->setSearchQuery($searchQuery);
+            $this->dm->flush();
+        }
+
         return $package;
     }
 

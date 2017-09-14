@@ -99,6 +99,43 @@
                                 </td>
                             </tr>
                         {% endif %}
+                        {% if package.searchQuery is not empty %}
+                            {% set query = package.searchQuery %}
+                            <tr>
+                                <td class="col-md-3">
+                                    <strong>{{ 'package.edit.query'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                    <p>
+                                        <small><a href="javascript: toggler('main-query')">показать/скрыть</a></small>
+                                    </p>
+                                    <div id="main-query" style="display: none;">
+                                        <small>
+                                            {% if query.adults %}
+                                                <p>
+                                                    Взрослых - <strong>{{ query.adults }} {{ 'adults.full'|transchoice(query.adults) }}</strong>
+                                                </p>
+                                            {% endif %}
+                                            {% if query.children %}
+                                                <p>
+                                                    Детей - <strong>{{ query.children }} {{ 'children.full'|transchoice(query.children) }}</strong>
+                                                </p>
+                                            {% endif %}
+                                            {% if query.childrenAges and query.childrenAges is iterable %}
+                                                <p>
+                                                    Возраста -
+                                                    <strong>
+                                                        {% for age in query.childrenAges %}
+                                                            {{ age }} {{ 'age.full'|transchoice(age) }}
+                                                        {% endfor %}
+                                                    </strong>
+                                                </p>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
 
                         {% if package.pricesByDate is not empty and package.prices is empty %}
                             <tr>

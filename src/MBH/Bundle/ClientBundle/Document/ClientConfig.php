@@ -184,6 +184,15 @@ class ClientConfig extends Base
     protected $priceRoundSign = 2;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $queryStat = true;
+
+    /**
      * @return integer
      */
     public function getNoticeUnpaid(): int
@@ -559,6 +568,26 @@ class ClientConfig extends Base
     {
         $this->priceRoundSign = $priceRoundSign;
     }
+
+    /**
+     * @return bool
+     */
+    public function isQueryStat(): bool
+    {
+        return $this->queryStat;
+    }
+
+    /**
+     * @param bool $queryStat
+     * @return ClientConfig
+     */
+    public function setQueryStat(bool $queryStat): ClientConfig
+    {
+        $this->queryStat = $queryStat;
+
+        return $this;
+    }
+
 
 
 }
