@@ -68,9 +68,13 @@ class SearchFactory implements SearchInterface
      */
     public function search(SearchQuery $query)
     {
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $this->dm->getRepository(ClientConfig::class)->fetchConfig();
+        $query->setSave(($clientConfig->isQueryStat() === true) && $query->isSave());
+
         $savedQueryId = $query->isSave() ? $this->saveQuery($query): null;
         $search = $this->search->search($query);
-        if (null !== $savedQueryId) {
+        if (null !== $savedQueryId ) {
             array_walk($search, [$this, 'injectQueryId'], $savedQueryId);
         }
 
@@ -113,14 +117,16 @@ class SearchFactory implements SearchInterface
         return $query->getId();
     }
 
-    private function injectQueryId(array &$result, $key, string $queryId)
+    private function injectQueryId(&$result, $key, string $queryId)
     {
-        if (isset ($result['results']) && is_array($result['results'])) {
+        if ($result instanceof SearchResult) {
+            $result->setQueryId($queryId);
+        }
+        if (is_array($result) && isset ($result['results']) && is_array($result['results'])) {
             foreach ($result['results'] as $searchResult) {
                 /** @var SearchResult $searchResult */
                 $searchResult->setQueryId($queryId);
             }
         }
-
     }
 }

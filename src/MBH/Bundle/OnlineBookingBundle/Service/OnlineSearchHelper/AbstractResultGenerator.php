@@ -83,6 +83,11 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
             $instance->addResult($searchResult);
         }
         $instance->setQuery($searchQuery);
+        if (isset($results[0]) && $results[0] instanceof SearchResult && $results[0]->getQueryId()) {
+            $searchResult = $results[0];
+            /** @var SearchResult $searchResult */
+            $instance->setQueryId($searchResult->getQueryId());
+        }
 
         return $instance;
     }

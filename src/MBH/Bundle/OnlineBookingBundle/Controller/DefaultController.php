@@ -100,7 +100,6 @@ class DefaultController extends BaseController
         }
         $html = '';
         $requestSearchUrl = $this->onlineOptions['request_search_url'];
-        $response = new Response();
         if ($request->get('getalltariff')) {
             if ($results = $searchResults[0]['results']??null) {
                 $html = $this->renderView(
@@ -129,6 +128,7 @@ class DefaultController extends BaseController
             );
         }
 
+        $response = new Response();
         $response->setContent($html);
         $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
 

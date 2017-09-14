@@ -19,6 +19,9 @@ class OnlineCommonResultGenerator extends AbstractResultGenerator
         }
 
         $searchQuery = $this->initSearchQuery($formData);
+        /** save query in db */
+        $searchQuery->setSave(true);
+
         if ($this->options['add_search_dates'] && $formData->isAddDates()) {
             $range = $this->options['add_search_dates'];
             $searchQuery->range = $range;

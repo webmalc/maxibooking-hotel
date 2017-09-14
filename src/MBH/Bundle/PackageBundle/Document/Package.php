@@ -399,7 +399,7 @@ class Package extends Base implements \JsonSerializable
 
     /**
      * @var SearchQuery
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\SearchQuery")
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\SearchQuery")
      */
     protected $searchQuery;
 
@@ -832,6 +832,7 @@ class Package extends Base implements \JsonSerializable
         $this->restarauntSeat = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tourists = new \Doctrine\Common\Collections\ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->searchQuery = new ArrayCollection();
     }
 
 
@@ -1658,8 +1659,9 @@ class Package extends Base implements \JsonSerializable
         return $this->getHotel()->getOrganization() ?? $this->getHotel();
     }
 
+
     /**
-     * @return SearchQuery
+     * @return ArrayCollection
      */
     public function getSearchQuery()
     {
@@ -1670,9 +1672,9 @@ class Package extends Base implements \JsonSerializable
      * @param SearchQuery $searchQuery
      * @return Package
      */
-    public function setSearchQuery(SearchQuery $searchQuery): Package
+    public function addSearchQuery(SearchQuery $searchQuery): Package
     {
-        $this->searchQuery = $searchQuery;
+        $this->searchQuery->add($searchQuery);
 
         return $this;
     }

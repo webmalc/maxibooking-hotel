@@ -111,5 +111,4 @@ class OnlineSpecialResultGenerator extends AbstractResultGenerator
         return $specials;
     }
 
-
 }
