@@ -75,9 +75,18 @@ class RoomCache
      */
     public function recalculateByPackages(\DateTime $begin = null, \DateTime $end = null, array $roomTypes = [])
     {
+        $logger = $this->container->get('mbh.room_cache.logger');
+        $logDateFormat = 'd.m.Y';
+        $logTimeFormat = 'H:i:s';
 
         $begin = $begin ?: new \DateTime('midnight');
         $end = $end ?: new \DateTime('midnight +365 days');
+
+        $logger->info('Room caches recalculation starts at ' . date($logTimeFormat)
+            . '. Parameters of command: '
+            . ' from ' . $begin->format($logDateFormat)
+            . ' to ' . $end->format($logDateFormat)
+            . ' for room types with ids: [' . implode(', ', $roomTypes) . ']');
 
         /** @var \MBH\Bundle\PriceBundle\Document\RoomCache[] $caches */
         $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
@@ -88,6 +97,7 @@ class RoomCache
         );
 
         $num = 0;
+        $numberOfInconsistencies = 0;
         $batchSize = 3;
 
         foreach ($caches as $cache) {
@@ -106,6 +116,7 @@ class RoomCache
             if ($total != $cache->getPackagesCount()) {
                 $cache->setPackagesCount($total);
             }
+
             if (!count($cache->getPackageInfo()) && $total) {
                 $packages = $qb->getQuery()->execute();
                 foreach ($packages as $package) {
@@ -117,12 +128,44 @@ class RoomCache
             $this->dm->persist($cache);
             $num += 1;
 
+            $oldLeftRoomsValue = $cache->getLeftRooms();
+            $cache->calcLeftRooms();
+
+            $cacheLogMessage = 'Recalculated room cache for hotel "'
+                . $cache->getHotel()->getName() . '" (ID="' . $cache->getHotel()->getId() . '")'
+                . ' room type "' . $cache->getRoomType()->getName() . '(ID="' . $cache->getRoomType()->getId() . '"),'
+                . ' date ' . $cache->getDate()->format($logDateFormat) . ','
+                . ' old value: ' . $oldLeftRoomsValue . ','
+                . ' calculated value: ' . $cache->getLeftRooms();
+
+            if ($oldLeftRoomsValue != $cache->getLeftRooms()) {
+                $logger->error($cacheLogMessage);
+                $numberOfInconsistencies++;
+            } else {
+                $logger->info($cacheLogMessage);
+            }
+
             if (($num % $batchSize) === 0) {
                 $this->dm->flush();
                 $this->dm->clear();
             }
         }
         $this->dm->flush();
+
+        $afterMessage = 'Room caches recalculation ends at ' . date($logTimeFormat)
+            . '. Parameters of command:'
+            . ' from ' . $begin->format($logDateFormat)
+            . ' to ' . $end->format($logDateFormat)
+            . ' for room types with ids: [' . implode(', ', $roomTypes) . ']'
+            . ' ' . $num . ' caches handled';
+
+        if ($numberOfInconsistencies > 0) {
+            $logger->error($afterMessage);
+            $logger->error('Number of inconsistencies:' . $numberOfInconsistencies);
+        } else {
+            $logger->info($afterMessage);
+            $logger->info('OK. Inconsistencies not found');
+        }
 
         return $num;
     }
