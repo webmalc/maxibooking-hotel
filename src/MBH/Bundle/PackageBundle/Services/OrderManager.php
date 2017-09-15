@@ -584,7 +584,7 @@ class OrderManager
         }
 
         //inject SearchQuery
-        if (null !== $data['savedQueryId']) {
+        if (isset($data['savedQueryId']) && (null !== $data['savedQueryId'])) {
             $searchQuery = $this->dm->find('MBHPackageBundle:SearchQuery', $data['savedQueryId']);
             $package->addSearchQuery($searchQuery);
             $this->dm->flush();

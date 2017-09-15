@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-
 /**
  * @Route("/")
  */
@@ -219,6 +218,7 @@ class DefaultController extends BaseController
                     'accommodation' => false,
                     'isOnline' => true,
                     'special' => $formData['special'],
+                    'savedQueryId' => $formData['savedQueryId']
                 ],
             ];
             $tourist = [
