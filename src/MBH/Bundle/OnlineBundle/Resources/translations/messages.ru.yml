@@ -46,6 +46,8 @@ form.inviteType.type.single: 'Однократная (600 руб.)'
 form.inviteType.type.twice: 'Двукратная (900 руб.)'
 online_invite.voting_code: 'Код голосования для вставки на сайт'
 form.formType.css_label: css
+form.formType.is_horizontal.label: 'Горизонтальная?'
+form.formType.is_horizontal.help: 'Поля формы расположены в одну линию?'
 form.formType.css: Оформление
 form.formType.css_help: 'Дополнительные css-стили для онлайн формы'
 form.formType.js_label: javascript
