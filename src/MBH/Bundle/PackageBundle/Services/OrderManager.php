@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Lib\Searchable;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Lib\PackageCreationException;
@@ -736,5 +737,82 @@ class OrderManager implements Searchable
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
         return $packageRepository->fetchQuery($data);
+    }
+
+    /**
+     * @param Builder $qb
+     * @return array
+     */
+    public function calculateSummary(Builder $qb)
+    {
+        $packages = $qb
+            ->hydrate(false)
+            ->select(['order', '_id', 'adults', 'children', 'begin', 'end', 'price', 'totalOverwrite', 'servicesPrice', 'discount', 'isPercentDiscount'])
+            ->getQuery()
+            ->execute()
+            ->toArray()
+        ;
+
+        $orderIds = array_map(function ($package) {
+            return $package['order']['$id'];
+        }, $packages);
+        /** @var OrderRepository $orderRepository */
+        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
+        $orders = $orderRepository
+            ->createQueryBuilder()
+            ->field('id')->in($orderIds)
+            ->hydrate(false)
+            ->select(['id', 'paid', 'price'])
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $numberOfNights = 0;
+        $numberOfGuests = 0;
+        $totalSum = 0;
+        $paidSum = 0;
+        $debt = 0;
+        $oneDay = 24*60*60;
+        foreach ($packages as $rawPackageData) {
+            $numberOfGuests += $rawPackageData['children'] + $rawPackageData['adults'];
+
+            /** @var \MongoDate $mongoBegin */
+            $mongoBegin = $rawPackageData['begin'];
+            /** @var \MongoDate $mongoEnd */
+            $mongoEnd = $rawPackageData['end'];
+            $numberOfNights += round(($mongoEnd->sec - $mongoBegin->sec) / $oneDay);
+
+            if(isset($rawPackageData['totalOverwrite'])) {
+                $price = $rawPackageData['totalOverwrite'];
+            } else {
+                $price = $rawPackageData['price'];
+                if (isset($rawPackageData['servicesPrice'])) {
+                    $price += $rawPackageData['servicesPrice'];
+                }
+                if (isset($rawPackageData['discount'])) {
+                    $discount = isset($rawPackageData['isPercentDiscount']) && $rawPackageData['isPercentDiscount']
+                        ? $rawPackageData['price'] * $rawPackageData['discount']/100
+                        : $rawPackageData['discount'];
+                    $price -= $discount;
+                }
+            }
+            $totalSum += $price;
+
+            $rawOrderData = $orders[$rawPackageData['order']['$id']];
+            if ($rawOrderData['price'] != 0) {
+                $packagePriceToOrderPriceRelation = $price / $rawOrderData['price'];
+                $packagePayment = $rawOrderData['paid'] * $packagePriceToOrderPriceRelation;
+                $paidSum += $packagePayment;
+                $debt += ($price - $packagePayment);
+            }
+        }
+
+        return [
+            'total' => $totalSum,
+            'paid' => $paidSum,
+            'debt' => $debt,
+            'nights' => $numberOfNights,
+            'guests' => $numberOfGuests,
+        ];
     }
 }
