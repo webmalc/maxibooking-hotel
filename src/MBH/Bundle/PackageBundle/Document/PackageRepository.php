@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Service\Cache;
@@ -906,5 +907,18 @@ class PackageRepository extends DocumentRepository
     public function getPackageByPackageAccommodationId(string $packageAccommodationId)
     {
         return $this->findOneBy(['accommodations.id' => $packageAccommodationId]);
+    }
+
+    /**
+     * @param $ordersIds
+     * @return Cursor|Package[]
+     */
+    public function getByOrdersIds($ordersIds)
+    {
+        return $this
+            ->createQueryBuilder()
+            ->field('order.id')->in($ordersIds)
+            ->getQuery()
+            ->execute();
     }
 }

@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Report;
 
-
 abstract class ReportDataHandler
 {
     protected $numberPrecision = 2;

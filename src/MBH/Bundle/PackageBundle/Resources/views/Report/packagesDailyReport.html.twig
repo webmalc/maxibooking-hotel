@@ -1,0 +1,10 @@
+{% extends 'MBHPackageBundle::layout.html.twig' %}
+
+{% set title = 'views.report.packages_daily_report.title'|trans %}
+{% set layout = 'box' %}
+
+{% block content %}
+    <div id="daily-report" class="scrolling">
+        {% include "@MBHBase/Report/report_table.html.twig" with {report: report} %}
+    </div>
+{% endblock %}

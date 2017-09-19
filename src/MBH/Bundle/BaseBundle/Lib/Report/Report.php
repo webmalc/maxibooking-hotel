@@ -6,9 +6,7 @@ use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Отчет состоит из ReportTable. ReportTable состоят из ReportRow. ReportRow состоят из ReportCell.
- * Добавить методы генерирующие ряды по 1 или несколько из ReportColumnDataGenerator-ов. Добавить 2 стандартных data generator-а
- * Class AbstractReport
+ * Class Report
  * @package MBH\Bundle\BaseBundle\Lib\Report
  */
 class Report

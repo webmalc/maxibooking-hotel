@@ -819,4 +819,21 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'operations' => $this->container->getParameter('mbh.cash.operations')
         ]);
     }
+
+    /**
+     * @Route("/packages_daily_report", name="packages_daily_report" )
+     * @Template()
+     * @param Request $request
+     * @return array
+     */
+    public function packagesDailyReportAction(Request $request)
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        $report = $this->get('mbh.packages_daily_report_compiler')
+            ->generate(new \DateTime('midnight'), new \DateTime('+1 month'), $hotels);
+
+        return [
+            'report' => $report
+        ];
+    }
 }

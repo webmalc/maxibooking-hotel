@@ -177,3 +177,10 @@ services:
       arguments: ['@translator', '@doctrine.odm.mongodb.document_manager']
       tags:
           - {name: form.type}
+
+    mbh.packages_daily_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\PackagesDailyReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'

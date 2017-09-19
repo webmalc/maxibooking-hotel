@@ -106,7 +106,7 @@ class ReportTable
             foreach ($columnOptions as $columnOption) {
                 $handlerCriteriaOption = $byColumns ? $columnOption : $rowOption;
                 if (!isset($dataHandlers[$handlerCriteriaOption])) {
-                    throw new \Exception('Not specified column data handler for option "'.$handlerCriteriaOption.'"!');
+                    throw new \Exception('Not specified data handler for option "'.$handlerCriteriaOption.'"!');
                 }
 
                 $valueCriteriaOption = $byColumns ? $rowOption : $columnOption;
