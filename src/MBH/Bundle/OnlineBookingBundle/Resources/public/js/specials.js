@@ -69,7 +69,7 @@ Special.prototype.reNewPrices = function () {
 };
 
 Special.prototype.reNewHref = function () {
-    var page = '/mbresults.php?',
+    var page = '/mbresults/?',
         data = {
             step: 1,
             search_form: {
