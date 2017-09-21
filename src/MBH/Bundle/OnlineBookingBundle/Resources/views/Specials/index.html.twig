@@ -1,6 +1,17 @@
 <script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/specials.js')) }}"></script>
 <script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/jquery.bxslider.min.js')) }}"></script>
 
+{% if multiHotel %}
+    <div class="row text-center">
+    {% for hotel in hotels %}
+        <div class="col-sm-6"><a data-hotelid={{ hotel.id }} title="Спецпредложения {{ hotel.name }}" href="#" class="azvcl hotel-switcher"><img style="height: 80px;" src="http://azovsky.ru/common/logos/{{ hotel.id }}.png" alt=""></a>
+            <p class="text-center"><a data-hotelid="{{ hotel.id }}" title="Спецпредложения {{ hotel.name }}" href="#" class="azvcl hotel-switcher">{{ hotel.name }}</a></p>
+        </div>
+    {% endfor %}
+    </div>
+
+{% endif %}
+
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/spec-slider.css')) }}">
 <div class="spec-wrap">
     <div class="month-spec">
@@ -11,11 +22,7 @@
         </ul>
     </div>
 </div>
-{#{% if multiHotel %}#}
-    {#{% for hotel in hotels %}#}
-        {#<p class="hotel-switcher" data-hotelid="{{ hotel.id }}">{{ hotel.name }}</p>#}
-    {#{% endfor %}#}
-{#{% endif %}#}
+<div id="block_spec_container">
 {% for special in data.specials %}
 <div class="oneblockspec{% for keymonth, month in data.byMonth %}{% if special.special.id in month %} {{ keymonth }} {% endif %}{% endfor %}"
      data-discount="{{ special.discount }}"
@@ -85,4 +92,5 @@
 
 </div>
 {% endfor %}
+</div>
 

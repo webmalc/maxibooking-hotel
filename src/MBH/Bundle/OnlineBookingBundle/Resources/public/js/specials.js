@@ -63,7 +63,6 @@ Special.prototype.recalculatePrice = function () {
 
 Special.prototype.reNewPrices = function () {
     var prices = this.recalculatePrice();
-    console.log(prices.newPrice);
     this.$newPrice.text(this.numberWithCommas(prices.newPrice));
     this.$oldPrice.text(this.numberWithCommas(prices.oldPrice));
 };
@@ -159,7 +158,8 @@ MonthSwitcher.prototype.showClickedSpecials = function () {
         this.specials[special].removeLast();
     }
     //last element
-    this.specials[special].setLast();
+    $("article div#block_spec_container div.oneblockspec:visible:last").addClass('spec-last');
+    // this.specials[special].setLast();
     this.setActive()
 };
 

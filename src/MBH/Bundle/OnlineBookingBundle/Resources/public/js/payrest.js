@@ -10,7 +10,7 @@ $form.on('submit', function (e) {
         data: $(that).serialize()
     })
         .done(function (data) {
-            console.log(data);
+            // console.log(data);
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
             console.log(textStatus);
