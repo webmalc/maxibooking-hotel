@@ -14,11 +14,16 @@ class ReportTable
 
     /**
      * @param null $rowOption
+     * @param bool $isVerticalScrollable
      * @return ReportRow
      */
-    public function addRow($rowOption = null)
+    public function addRow($rowOption = null, $isVerticalScrollable = false)
     {
         $newRow = new ReportRow();
+        if ($isVerticalScrollable) {
+            $newRow->addClass(Report::VERTICAL_SCROLLABLE_CLASS);
+        }
+
         is_null($rowOption) ? $this->reportRows[] = $newRow : $this->reportRows[$rowOption] = $newRow;;
 
         return $newRow;
@@ -53,7 +58,7 @@ class ReportTable
         array $dataHandlers,
         $cellsCallbacks = [],
         $rowsCallbacks = [],
-        $withJsonData = false
+        $withJsonData = true
     ) {
         return $this->generateTable($rowOptions, $columnOptions, $dataHandlers, true, $cellsCallbacks, $rowsCallbacks, $withJsonData);
     }
@@ -73,7 +78,7 @@ class ReportTable
         array $dataHandlers,
         $cellsCallbacks = [],
         $rowsCallbacks = [],
-        $withJsonData = false
+        $withJsonData = true
     ) {
         return $this->generateTable($rowOptions, $columnOptions, $dataHandlers, false, $cellsCallbacks, $rowsCallbacks, $withJsonData);
     }
@@ -93,10 +98,10 @@ class ReportTable
         array $rowOptions,
         array $columnOptions,
         array $dataHandlers,
-        $byColumns = true,
-        $cellsCallbacks = [],
-        $rowsCallbacks = [],
-        $withJsonData = true
+        $byColumns,
+        $cellsCallbacks,
+        $rowsCallbacks,
+        $withJsonData
     ) {
         foreach ($rowOptions as $rowOption) {
             $newRow = $this->fetchRow($rowOption)

@@ -4,7 +4,50 @@
 {% set layout = 'box' %}
 
 {% block content %}
-    <div id="daily-report" class="scrolling">
-        {% include "@MBHBase/Report/report_table.html.twig" with {report: report} %}
-    </div>
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'cash-filter-form-widget'} %}
+        {% block content %}
+            <form class="form-inline search-form filter-form remember" id="daily-report-filter-form" role="form">
+                <div class="input">
+                    <i class="fa fa-calendar" title='{{ 'views.report.packages_daily_report.dates_input.title'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp
+                    <input type="text" id="daily-report-filter-begin"
+                           class="datepicker daily-report-filter begin-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
+                </div>
+                <div class="input hidden">
+                    - &nbsp
+                    <input type="text" id="daily-report-filter-end"
+                           class="datepicker daily-report-filter end-datepicker mbh-daterangepicker  not-set-date form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
+                </div>
+
+                <div class="input">
+                    <i class="fa fa-bed" title='{{ 'views.report.packages_daily_report.hotels.title'|trans }}'
+                       data-toggle='tooltip'></i>&nbsp
+                    <select multiple data-placeholder="{{ 'views.report.packages_daily_report.hotels.placeholder'|trans }}"
+                            id="daily-report-filter-hotels" class="daily-report-filter form-control input-sm">
+                        <option></option>
+                        {% for hotel in hotels %}
+                            <option value="{{ hotel.id }}"
+                                    {% if hotel.id in app.request.get('hotels') and hotels|length != app.request.get('hotels')|length %}selected{% endif %}>{{ hotel.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input">
+                    <button type="button" id="daily-report-update-table-button" class="btn btn-primary">Выбрать</button>
+                </div>
+            </form>
+        {% endblock content %}
+    {% endembed %}
+
+    <div id="daily-report" class="scrolling" style="position:relative;"></div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/report/daily_report.js' %}
+
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
 {% endblock %}

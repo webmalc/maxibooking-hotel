@@ -29,6 +29,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/report")
@@ -833,7 +834,26 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             ->generate(new \DateTime('midnight'), new \DateTime('+1 month'), $hotels);
 
         return [
-            'report' => $report
+            'report' => $report,
+            'hotels' => $hotels,
         ];
+    }
+
+    /**
+     * @Route("/packages_daily_report_table", name="packages_daily_report_table", options={"expose"=true} )
+     * @param Request $request
+     * @return Response
+     */
+    public function packagesDailyReportTableAction(Request $request)
+    {
+        $begin = $this->helper->getDateFromString($request->query->get('begin'));
+        $end = $this->helper->getDateFromString($request->query->get('end'));
+        $hotels = $this->dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')));
+        $report = $this->get('mbh.packages_daily_report_compiler')
+            ->generate($begin, $end,  $hotels->toArray());
+
+        return $report->generateReportTableResponse();
     }
 }

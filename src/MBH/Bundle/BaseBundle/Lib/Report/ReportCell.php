@@ -46,6 +46,14 @@ class ReportCell
     }
 
     /**
+     * @return string
+     */
+    public function getColumnOption()
+    {
+        return $this->columnOption;
+    }
+
+    /**
      * @return int
      */
     public function getRowSpan(): ?int
@@ -120,7 +128,7 @@ class ReportCell
     public function getClasses()
     {
         if (isset($this->callbacks['classes'])) {
-            $this->classes = $this->callbacks['classes']($this);
+            $this->classes = array_merge($this->callbacks['classes']($this), $this->classes);
         }
 
         return $this->classes;

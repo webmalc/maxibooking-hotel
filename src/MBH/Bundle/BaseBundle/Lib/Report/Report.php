@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Report
 {
+    const VERTICAL_SCROLLABLE_CLASS = 'vertical-scrollable';
+    const HORIZONTAL_SCROLLABLE_CLASS = 'horizontal-scrollable';
+
     protected $isSuccess = true;
     protected $errors;
     protected $tables = [];
@@ -50,6 +53,9 @@ class Report
         return $this->twigEngine->render('@MBHBase/Report/report_table.html.twig', ['report' => $this]);
     }
 
+    /**
+     * @return Response
+     */
     public function generateReportTableResponse()
     {
         return (new Response())->setContent($this->generate());

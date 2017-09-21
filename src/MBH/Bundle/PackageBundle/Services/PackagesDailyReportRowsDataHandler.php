@@ -19,6 +19,9 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
     private $hotels;
     /** @var  Package[] */
     private $createdPackages;
+    private $ordersByIds;
+    /** @var  Package[] */
+    private $packagesByOrdersIds;
     private $sumOfCreatedPackagesByHotels = [];
 
     /**
@@ -27,16 +30,19 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
      * @param CashDocument[] $createdCashDocuments
      * @param Package[] $deletedPackages
      * @param Package[] $createdPackages
+     * @param $ordersByIds
      * @return $this
      */
-    public function setInitData(\DateTime $date, $hotels, $createdCashDocuments, $deletedPackages, $createdPackages)
+    public function setInitData(\DateTime $date, $hotels, $createdCashDocuments, $deletedPackages, $createdPackages, $ordersByIds, $packagesByOrdersIds)
     {
         $this->date = $date;
         $this->hotels = $hotels;
         $this->createdCashDocuments = $createdCashDocuments;
         $this->deletedPackages = $deletedPackages;
         $this->createdPackages = $createdPackages;
-        
+        $this->ordersByIds = $ordersByIds;
+        $this->packagesByOrdersIds = $packagesByOrdersIds;
+
         return $this;
     }
 
@@ -72,16 +78,7 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
      */
     private function getSumForCancelledPackagesCashless(Hotel $hotel)
     {
-        $sum = 0;
-        foreach ($this->deletedPackages as $deletedPackage) {
-            foreach ($deletedPackage->getOrder()->getCashDocuments() as $cashDocument) {
-                if ($cashDocument->getOperation() === 'in' && $cashDocument->getMethod() === 'cashless') {
-                    $sum += $cashDocument->getTotal() * $this->getHotelCashDocumentFraction($cashDocument, $hotel, true);
-                }
-            }
-        }
-
-        return $sum;
+        return $this->getSumForCancelledPackages($hotel, 'cashless');
     }
 
     /**
@@ -90,10 +87,19 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
      */
     private function getSumForCancelledPackagesCash(Hotel $hotel)
     {
+        return $this->getSumForCancelledPackages($hotel);
+    }
+
+    private function getSumForCancelledPackages(Hotel $hotel, $method = 'cash')
+    {
         $sum = 0;
         foreach ($this->deletedPackages as $deletedPackage) {
-            foreach ($deletedPackage->getOrder()->getCashDocuments() as $cashDocument) {
-                if ($cashDocument->getOperation() === 'in' && $cashDocument->getMethod() === 'cash') {
+            $order = isset($this->ordersByIds[$deletedPackage->getOrder()->getId()])
+                ? $this->ordersByIds[$deletedPackage->getOrder()->getId()]
+                : $deletedPackage->getOrder();
+
+            foreach ($order->getCashDocuments() as $cashDocument) {
+                if ($cashDocument->getOperation() === 'in' && $cashDocument->getMethod() === $method) {
                     $sum += $cashDocument->getTotal() * $this->getHotelCashDocumentFraction($cashDocument, $hotel, true);
                 }
             }
@@ -124,14 +130,20 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
         return $sum;
     }
 
-
-    public function getSumOfCreatedPackagesByHotel(Hotel $hotel) {
+    /**
+     * @param Hotel $hotel
+     * @return int|float
+     */
+    public function getSumOfCreatedPackagesByHotel(Hotel $hotel)
+    {
         $hotelId = $hotel->getId();
         if (!isset($this->sumOfCreatedPackagesByHotels[$hotelId])) {
 
             $sum = 0;
             foreach ($this->createdPackages as $package) {
-                $sum += $package->getPrice();
+                if ($package->getHotel()->getId() == $hotelId) {
+                    $sum += $package->getPrice();
+                }
             }
 
             $this->sumOfCreatedPackagesByHotels[$hotelId] = $sum;
@@ -140,6 +152,9 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
         return $this->sumOfCreatedPackagesByHotels[$hotelId];
     }
 
+    /**
+     * @return int|float
+     */
     private function getSumOfCreatedPackagesByAllHotels()
     {
         $sum = 0;
@@ -178,6 +193,10 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
                     return $this->getCashlessReceiptsSumOut($hotel);
                 case PackagesDailyReportCompiler::CASH_RECEIPTS_SUM_OUT . $hotel->getId():
                     return $this->getCashReceiptsSumOut($hotel);
+                case PackagesDailyReportCompiler::KREDITORKA_CASH . $hotel->getId():
+                    return 0;
+                case PackagesDailyReportCompiler::KREDITORKA_CASHLESS . $hotel->getId():
+                    return 0;
                 case PackagesDailyReportCompiler::SUM_OF_CREATED_PACKAGES_BY_HOTEL . $hotel->getId():
                     return $this->getSumOfCreatedPackagesByHotel($hotel);
             }
@@ -196,7 +215,11 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
     {
         $hotelPackagesPrice = 0;
         $orderPrice = 0;
-        foreach ($cashDocument->getOrder()->getPackages() as $package) {
+        $cashDocumentOrderPackages = isset($this->packagesByOrdersIds[$cashDocument->getOrder()->getId()])
+            ? $this->packagesByOrdersIds[$cashDocument->getOrder()->getId()]
+            : [];
+        /** @var Package $package */
+        foreach ($cashDocumentOrderPackages as $package) {
             $orderPrice += $package->getPrice();
             if ($package->getHotel()->getId() === $hotel->getId()) {
                 if ($byDeletedPackages && !empty($package->getDeletedAt())) {
@@ -207,6 +230,7 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
             }
         }
 
-        return $hotelPackagesPrice / $orderPrice;
+        return $orderPrice != 0 ? ($hotelPackagesPrice / $orderPrice) : 0;
     }
+
 }
