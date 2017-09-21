@@ -186,7 +186,12 @@ HotelSwitcher.prototype.bindHandlers = function () {
         event.preventDefault();
         event.stopPropagation();
         that.showClickedSpecials();
+        that.setActive(this);
     });
+};
+HotelSwitcher.prototype.setActive = function(link) {
+    $('.hotel-switcher').removeClass('activespc');
+    $(link).closest('.hotel-switcher').addClass('activespc');
 };
 HotelSwitcher.prototype.showClickedSpecials = function () {
     var special;
