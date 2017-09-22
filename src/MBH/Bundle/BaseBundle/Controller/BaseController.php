@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Gedmo\Tool\Wrapper\MongoDocumentWrapper;
+use Doctrine\ODM\MongoDB\Cursor;
 
 /**
  * Base Controller
