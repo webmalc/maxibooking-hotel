@@ -3,9 +3,12 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -143,7 +146,8 @@ class Calculation
         $useCategories = false,
         Special $special = null,
         $useDuration = true
-    ) {
+    )
+    {
         $originTariff = $tariff;
         $prices = [];
         $memcached = $this->container->get('mbh.cache');
@@ -425,5 +429,120 @@ class Calculation
             $packagePrice->setPrice($price)->setSpecial($special);
         }
         return $packagePrice;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param Hotel[] $hotels
+     */
+    public function getDebts(\DateTime $begin, array $hotels = [])
+    {
+        /** @var OrderRepository $orderRepository */
+        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
+        $qb = $orderRepository->createQueryBuilder();
+        $qb
+            ->addOr($qb->expr()
+                ->field('updatedAt')->lt($begin)
+                ->where('function() {
+                return this.price != this.paid;
+            }'))
+            ->addOr($qb->expr()
+                ->field('updatedAt')->gte($begin)
+            );
+
+        /** @var Order[] $orders */
+        $orders = $qb
+            ->getQuery()
+            ->execute()
+            ->toArray();
+        $ordersByIds = [];
+        foreach ($orders as $order) {
+            $ordersByIds[$order->getId()] = $order;
+        }
+
+        $ordersIds = array_keys($ordersByIds);
+
+        /** @var CashDocument[] $cashDocs */
+        $cashDocs = $this->dm
+            ->getRepository('MBHCashBundle:CashDocument')
+            ->createQueryBuilder()
+            ->field('order.id')->in($ordersIds)
+//            ->field('paidDate')->g
+            ->getQuery()
+            ->execute();
+
+        $cashDocsByOrderId = [];
+        foreach ($cashDocs as $cashDoc) {
+            $cashDocsByOrderId[$cashDoc->getOrder()->getId()][] = $cashDoc;
+        }
+
+        /** @var Package[] $packages */
+        $packages = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->createQueryBuilder()
+            ->field('order.id')->in($ordersIds)
+            ->getQuery()
+            ->execute();
+
+        $packagesByOrderIds = [];
+        foreach ($packages as $package) {
+            $packagesByOrderIds[$package->getOrder()->getId()][] = $package;
+        }
+
+        $kreditDebtCash = [];
+        $kreditDebtCashless = [];
+        $debitPartlyPaid = [];
+        $debitNotPaid = [];
+        foreach ($ordersByIds as $orderId => $order) {
+            /** @var CashDocument[] $cashDocuments */
+            $cashDocuments = isset($cashDocsByOrderId[$orderId]) ? $cashDocsByOrderId[$orderId] : [];
+            $packages = isset($packagesByOrderIds[$orderId]) ? $packagesByOrderIds[$orderId] : [];
+
+            $hotelsPriceFractions = [];
+            /** @var Package $package */
+            foreach ($packages as $package) {
+                if (empty($package->getDeletedAt()) || $package->getDeletedAt() > $begin) {
+                    $hotelId = $package->getHotel()->getId();
+                    $fraction = $package->getPrice() / $package->getOrder()->getPrice();
+                    isset($hotelsPriceFractions[$hotelId])
+                        ? $hotelsPriceFractions[$hotelId] += $fraction
+                        : $hotelsPriceFractions[$hotelId] = $fraction;
+                }
+            }
+
+            $cashIncoming = 0;
+            $cashlessIncoming = 0;
+            $refunds = 0;
+            foreach ($cashDocuments as $cashDocument) {
+                if ($cashDocument->getOperation() == 'in' || $cashDocument->getOperation() == 'fee') {
+                    $cashDocument->getMethod() == 'cash'
+                        ? $cashIncoming += $cashDocument->getTotal()
+                        : $cashlessIncoming += $cashDocument->getTotal();
+                } elseif ($cashDocument->getOperation() == 'out') {
+                    $refunds -= $cashDocument->getTotal();
+                }
+            }
+
+            $incomingSum = $cashIncoming + $cashlessIncoming;
+            $cashIncomingFraction = $cashIncoming / $incomingSum;
+
+            if ($incomingSum == 0) {
+                foreach ($hotelsPriceFractions as $hotelId => $priceFraction) {
+                    $packageHotelPrice = $incomingSum * $priceFraction;
+                    isset($debitNotPaid[$hotelId])
+                        ? $debitNotPaid[$hotelId] += $packageHotelPrice
+                        : $debitNotPaid[$hotelId] = $packageHotelPrice;
+                }
+            } elseif ($incomingSum ) {
+
+            }
+        }
+
+        return [
+            $kreditDebtCash,
+            $kreditDebtCashless,
+            $debitNotPaid,
+            $debitPartlyPaid
+        ];
     }
 }

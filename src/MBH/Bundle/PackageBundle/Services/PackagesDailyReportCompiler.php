@@ -23,19 +23,21 @@ class PackagesDailyReportCompiler
     const CASHLESS_RECEIPTS_SUM_OUT = 'cashless-receipts-sum-out';
     const CASH_RECEIPTS_SUM_OUT = 'cash-receipts-sum-out';
     const SUM_OF_CREATED_PACKAGES_BY_HOTEL = 'sum-of-created-packages-by-hotel';
+    const NUMBER_OF_CREATED_PACKAGES_BY_HOTEL = 'number-of-created-packages-by-hotel';
     const SUM_OF_CREATED_PACKAGES = 'sum-of-created-packages';
-    const KREDITORKA_CASH = 'kreditorka-cash';
-    const KREDITORKA_CASHLESS = 'kreditorka-cashles';
+    const ACCOUNTS_PAYABLE_CASH = 'kreditorka-cash';
+    const ACCOUNTS_PAYABLE_CASHLESS = 'kreditorka-cashles';
 
-    const SORTED_COLUMN_OPTIONS = [
+    const SORTED_COLUMN_OPTIONS_BY_HOTELS = [
         self::CASHLESS_RECEIPTS_SUM,
         self::CASHLESS_RECEIPTS_SUM_FOR_CANCELLED,
         self::CASHLESS_RECEIPTS_SUM_OUT,
         self::CASH_RECEIPTS_SUM,
         self::CASH_RECEIPTS_SUM_FOR_CANCELLED,
         self::CASH_RECEIPTS_SUM_OUT,
-        self::KREDITORKA_CASH,
-        self::KREDITORKA_CASHLESS,
+        self::ACCOUNTS_PAYABLE_CASH,
+        self::ACCOUNTS_PAYABLE_CASHLESS,
+        self::NUMBER_OF_CREATED_PACKAGES_BY_HOTEL,
         self::SUM_OF_CREATED_PACKAGES_BY_HOTEL
     ];
 
@@ -166,7 +168,7 @@ class PackagesDailyReportCompiler
     private function getReportColumnsOptions(array $hotels)
     {
         $columnOptions = [self::ROW_TITLE_OPTION];
-        foreach (self::SORTED_COLUMN_OPTIONS as $option) {
+        foreach (self::SORTED_COLUMN_OPTIONS_BY_HOTELS as $option) {
             foreach ($hotels as $hotel) {
                 $columnOptions[] = $option . $hotel->getId();
             }
@@ -206,11 +208,23 @@ class PackagesDailyReportCompiler
             3 * $numberOfHotels
         );
         $titleRow->createAndAddCell(
+            $this->translator->trans('report.packages_daily_report_compiler.cancellation_of_unpaid_packages'),
+            $numberOfHotels
+        );
+        $titleRow->createAndAddCell(
+            $this->translator->trans('report.packages_daily_report_compiler.receivables_partially_paid_vouchers'),
+            $numberOfHotels
+        );
+        $titleRow->createAndAddCell(
             $this->translator->trans('report.packages_daily_report_compiler.cash_debt'),
             $numberOfHotels
         );
         $titleRow->createAndAddCell(
             $this->translator->trans('report.packages_daily_report_compiler.non_cash_debt'),
+            $numberOfHotels
+        );
+        $titleRow->createAndAddCell(
+            $this->translator->trans('report.packages_daily_report_compiler.number_of_packages'),
             $numberOfHotels
         );
         $titleRow->createAndAddCell(
@@ -249,7 +263,8 @@ class PackagesDailyReportCompiler
             $numberOfHotels
         );
 
-        for ($i = 0; $i < 3; $i++) {
+        $numberOfColumnsByHotels = 6;
+        for ($i = 0; $i < $numberOfColumnsByHotels; $i++) {
             foreach ($hotels as $hotel) {
                 $cell = $secondTitleRow->createAndAddCell($hotel->getName(), 1, 2);
                 if ($i == 2) {

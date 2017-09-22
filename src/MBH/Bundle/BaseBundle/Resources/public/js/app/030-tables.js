@@ -148,7 +148,7 @@ function setScrollable() {
         var bothSideScrollable = getScrollableTableTemplate($table);
         var elementComputedStyles = getComputedStyle(element);
         bothSideScrollable.style.width = elementComputedStyles.width;
-        bothSideScrollable.style.height = elementComputedStyles.height;
+        bothSideScrollable.style.height = (parseInt(elementComputedStyles.height, 10) + 1) + 'px';
         var bothSidesScrollableBody = document.createElement('tbody');
         bothSideScrollable.appendChild(bothSidesScrollableBody);
         var bothSidesScrollableLine = document.createElement('tr');

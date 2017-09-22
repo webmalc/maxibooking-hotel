@@ -824,17 +824,13 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/packages_daily_report", name="packages_daily_report" )
      * @Template()
-     * @param Request $request
      * @return array
      */
-    public function packagesDailyReportAction(Request $request)
+    public function packagesDailyReportAction()
     {
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
-        $report = $this->get('mbh.packages_daily_report_compiler')
-            ->generate(new \DateTime('midnight'), new \DateTime('+1 month'), $hotels);
 
         return [
-            'report' => $report,
             'hotels' => $hotels,
         ];
     }
@@ -846,11 +842,16 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function packagesDailyReportTableAction(Request $request)
     {
-        $begin = $this->helper->getDateFromString($request->query->get('begin'));
-        $end = $this->helper->getDateFromString($request->query->get('end'));
+        //TODO: В другом pull request-е есть изменения для дат. Обновить!
+        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
+
+        $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
+        $end = $this->helper->getDateFromString($request->query->get('end'))
+            ?? (clone $defaultBeginDate)->modify('+45 days');
         $hotels = $this->dm
             ->getRepository('MBHHotelBundle:Hotel')
             ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')));
+
         $report = $this->get('mbh.packages_daily_report_compiler')
             ->generate($begin, $end,  $hotels->toArray());
 
