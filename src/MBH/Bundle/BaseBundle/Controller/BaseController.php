@@ -9,6 +9,7 @@ use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Gedmo\Tool\Wrapper\MongoDocumentWrapper;
 
 /**
  * Base Controller
@@ -59,7 +60,7 @@ class BaseController extends Controller
             }
         }
     }
-
+    
     /**
      * Get entity logs
      * @param object $entity
@@ -71,13 +72,26 @@ class BaseController extends Controller
             return null;
         }
 
-        $logs = $this->dm->getRepository('Gedmo\Loggable\Document\LogEntry')->getLogEntries($entity);
+        $repo = $this->dm->getRepository('Gedmo\Loggable\Document\LogEntry');
+
+        $wrapped = new MongoDocumentWrapper($entity, $this->dm);
+        $objectId = $wrapped->getIdentifier();
+        $qb = $repo->createQueryBuilder();
+        $qb->field('objectId')->equals($objectId);
+        $qb->field('objectClass')->equals($wrapped->getMetadata()->name);
+        $qb->limit($this->container->getParameter('mbh.logs.max'));
+        $qb->sort('version', 'DESC');
+        $q = $qb->getQuery();
+        $logs = $q->execute();
+        if ($logs instanceof Cursor) {
+            $logs = $logs->toArray();
+        }
 
         if (empty($logs)) {
             return null;
         }
 
-        return array_slice($logs, 0, $this->container->getParameter('mbh.logs.max'));
+        return $logs;
     }
 
     /**
