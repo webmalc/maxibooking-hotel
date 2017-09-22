@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Gedmo\Tool\Wrapper\MongoDocumentWrapper;
 
 /**
  * Base Controller
@@ -73,13 +74,26 @@ class BaseController extends Controller
             return null;
         }
 
-        $logs = $this->dm->getRepository('Gedmo\Loggable\Document\LogEntry')->getLogEntries($entity);
+        $repo = $this->dm->getRepository('Gedmo\Loggable\Document\LogEntry');
+
+        $wrapped = new MongoDocumentWrapper($entity, $this->dm);
+        $objectId = $wrapped->getIdentifier();
+        $qb = $repo->createQueryBuilder();
+        $qb->field('objectId')->equals($objectId);
+        $qb->field('objectClass')->equals($wrapped->getMetadata()->name);
+        $qb->limit($this->container->getParameter('mbh.logs.max'));
+        $qb->sort('version', 'DESC');
+        $q = $qb->getQuery();
+        $logs = $q->execute();
+        if ($logs instanceof Cursor) {
+            $logs = $logs->toArray();
+        }
 
         if (empty($logs)) {
             return null;
         }
 
-        return array_slice($logs, 0, $this->container->getParameter('mbh.logs.max'));
+        return $logs;
     }
 
     /**
@@ -141,7 +155,6 @@ class BaseController extends Controller
 
             $this->getRequest()->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.baseController.delete_record_success'));
-
         } catch (DeleteException $e) {
             $this->getRequest()->getSession()->getFlashBag()
                 ->set('danger', $this->get('translator')->trans($e->getMessage(), ['%total%' => $e->total]));
@@ -175,6 +188,4 @@ class BaseController extends Controller
     {
         return $this->get('request_stack')->getCurrentRequest();
     }
-
-
 }
