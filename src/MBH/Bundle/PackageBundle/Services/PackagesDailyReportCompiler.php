@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Services;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Report\Report;
 use MBH\Bundle\BaseBundle\Lib\Report\ReportCell;
+use MBH\Bundle\BaseBundle\Lib\Report\ReportRow;
 use MBH\Bundle\BaseBundle\Lib\Report\ReportTable;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
@@ -59,11 +60,12 @@ class PackagesDailyReportCompiler
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param Hotel[] $hotels
+     * @param bool $forEmail
      * @return Report
      */
-    public function generate(\DateTime $begin, \DateTime $end, array $hotels)
+    public function generate(\DateTime $begin, \DateTime $end, array $hotels, $forEmail = false)
     {
-        $table = $this->report->addReportTable();
+        $table = $this->report->addReportTable($forEmail);
         $table->addClass('daily-report-table');
         $this->addTitleRows($table, $hotels, $begin, $end);
 
@@ -129,8 +131,15 @@ class PackagesDailyReportCompiler
                     return [Report::HORIZONTAL_SCROLLABLE_CLASS];
                 }
                 return [];
+            },
+            'styles' => function (ReportCell $cell) {
+                if ($cell->getColumnOption() == PackagesDailyReportCompiler::ROW_TITLE_OPTION && $cell->isForMail()) {
+                    return ['min-width: 50px'];
+                }
+                return [];
             }
         ];
+
         $table->generateByRowHandlers($rowOptions, $this->getReportColumnsOptions($hotels), $dataHandlers, $cellsCallbacks);
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -189,6 +198,7 @@ class PackagesDailyReportCompiler
     {
         $titleRow = $table->addRow(null, true);
         $titleRow->addClass('title-cell');
+        $titleRow->addStyle('background-color: #d2d6de');
 
         $beginYearString = $begin->format('Y');
         $endYearString = $end->format('Y');
@@ -196,7 +206,6 @@ class PackagesDailyReportCompiler
             ? $beginYearString
             : $beginYearString . ' - ' . $endYearString;
         $titleRow->createAndAddCell($yearsString, 1, 3)->addClass(Report::HORIZONTAL_SCROLLABLE_CLASS);
-
 
         $numberOfHotels = count($hotels);
         $titleRow->createAndAddCell(
@@ -238,6 +247,7 @@ class PackagesDailyReportCompiler
         );
 
         $secondTitleRow = $table->addRow(null, true);
+        $secondTitleRow->addStyle('background-color: #d2d6de');
         $secondTitleRow->createAndAddCell(
             $this->translator->trans('report.packages_daily_report_compiler.sum_for_packages'),
             $numberOfHotels
@@ -274,6 +284,7 @@ class PackagesDailyReportCompiler
         }
 
         $thirdTitleRow = $table->addRow(null, true);
+        $thirdTitleRow->addStyle('background-color: #d2d6de');
         for ($i = 0; $i < 6; $i++) {
             foreach ($hotels as $hotel) {
                 $thirdTitleRow->createAndAddCell($hotel->getName());

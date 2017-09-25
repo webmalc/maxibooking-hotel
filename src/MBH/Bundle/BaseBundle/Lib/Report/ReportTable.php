@@ -2,15 +2,31 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Report;
 
-
 class ReportTable
 {
     /** @var  ReportRow[] */
     private $reportRows;
     protected $defaultClasses = ['table', 'table-bordered', 'table-striped', 'table-hover', 'not-auto-datatable'];
     protected $collectedData = [];
+    protected $isForMail = false;
 
     use HasClassesAndAttributesTrait;
+
+    public function setIsForMail($isForMail)
+    {
+        $this->isForMail = $isForMail;
+        $this->addStyle('border-collapse: collapse');
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isForMail()
+    {
+        return $this->isForMail;
+    }
 
     /**
      * @param null $rowOption
@@ -19,7 +35,7 @@ class ReportTable
      */
     public function addRow($rowOption = null, $isVerticalScrollable = false)
     {
-        $newRow = new ReportRow();
+        $newRow = (new ReportRow())->setIsForMail($this->isForMail);
         if ($isVerticalScrollable) {
             $newRow->addClass(Report::VERTICAL_SCROLLABLE_CLASS);
         }

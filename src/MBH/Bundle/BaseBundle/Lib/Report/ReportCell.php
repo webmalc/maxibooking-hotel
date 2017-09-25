@@ -9,9 +9,41 @@ class ReportCell
     private $value;
     private $rowOption;
     private $columnOption;
+    protected $isForMail = false;
 
     use HasClassesAndAttributesTrait;
 
+    /**
+     * @param $isForMail
+     * @return ReportCell
+     */
+    public function setIsForMail($isForMail)
+    {
+        $this->isForMail = $isForMail;
+        if ($isForMail) {
+            $this->addStyle('border: 1px solid black');
+            $this->addStyle('padding: 5px');
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isForMail()
+    {
+        return $this->isForMail;
+    }
+
+    /**
+     * @param $value
+     * @param int $colSpan
+     * @param int $rowSpan
+     * @param array $classes
+     * @param array $attributes
+     * @return ReportCell
+     */
     public function setInitData($value, $colSpan = 1, $rowSpan = 1, $classes = [], $attributes = [])
     {
         $this->value = $value;
@@ -140,7 +172,7 @@ class ReportCell
     public function getAttributes()
     {
         if (isset($this->callbacks['attributes'])) {
-            $this->callbacks['attributes']($this);
+            $this->attributes = array_merge($this->callbacks['attributes']($this), $this->attributes);
         }
 
         return $this->attributes;

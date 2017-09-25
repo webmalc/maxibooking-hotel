@@ -19,17 +19,37 @@ class Report
     protected $tables = [];
     /** @var TwigEngine */
     private $twigEngine;
+    protected $title;
 
     public function __construct(TwigEngine $twigEngine)
     {
         $this->twigEngine = $twigEngine;
     }
 
-    public static function createReportTable()
+    /**
+     * @return string
+     */
+    public function getTitle()
     {
-        return new ReportTable();
+        return $this->title;
     }
 
+    /**
+     * @param string $title
+     * @return Report
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @param $error
+     * @param bool $isReportSuccess
+     * @return Report
+     */
     public function addError($error, $isReportSuccess = false)
     {
         $this->errors[] = $error;
@@ -40,9 +60,13 @@ class Report
         return $this;
     }
 
-    public function addReportTable()
+    /**
+     * @param bool $forMail
+     * @return ReportTable
+     */
+    public function addReportTable($forMail = false)
     {
-        $reportTable = new ReportTable();
+        $reportTable = (new ReportTable())->setIsForMail($forMail);
         $this->tables[] = $reportTable;
 
         return $reportTable;
