@@ -3,6 +3,7 @@
 * add rounded price
 * add mb user to recipients
 * fix config bug in dev mode
+* fix #1020
 
 2.2.2
 ============
