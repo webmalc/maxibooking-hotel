@@ -1,3 +1,9 @@
+2.2.3
+============
+* add rounded price
+* add mb user to recipients
+* fix config bug in dev mode
+
 2.2.2
 ============
 * move channelmanager update in background to RabbitMQ Queue
