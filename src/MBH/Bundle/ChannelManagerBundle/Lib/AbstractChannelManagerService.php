@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Lib;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -16,6 +17,14 @@ use Doctrine\MongoDB\CursorInterface;
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
 {
+
+    const COMMAND_UPDATE = 'update';
+
+    const COMMAND_UPDATE_PRICES = 'updatePrices';
+
+    const COMMAND_UPDATE_ROOMS = 'updateRooms';
+
+    const COMMAND_UPDATE_RESTRICTIONS = 'updateRestrictions';
 
     /**
      * Test mode on/off
@@ -42,7 +51,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     protected $dm;
 
     /**
-     * @var \Symfony\Bundle\TwigBundle\Debug\TimedTwigEngine
+     * @var TwigEngine
      *
      */
     protected $templating;
@@ -260,7 +269,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $result ? $result = $check : $result;
 
         $this->log('ChannelManager update function end.');
-
 
         return $result;
     }
@@ -742,7 +750,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
             return $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
-            return false;
+            $this->logger->addAlert('Error notification Error ChannelManager'.$e->getMessage());
         }
     }
 
@@ -785,12 +793,11 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'))
                 ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
-
             ;
 
             $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
-            return false;
+            $this->logger->addAlert('Notification channelManager ERROR'.$e->getMessage());
         }
     }
 
