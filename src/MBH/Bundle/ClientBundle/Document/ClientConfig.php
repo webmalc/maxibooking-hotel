@@ -3,16 +3,13 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\PersistentCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ClientBundle\Traits\CheckIsNotificationTypeExistsTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -23,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ClientConfig extends Base
 {
+    const DEFAULT_BEGIN_DATE_OFFSET = -21;
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -169,6 +167,13 @@ class ClientConfig extends Base
      * @Assert\Type(type="DateTime")
      */
     protected $beginDate;
+
+    /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     */
+    protected $beginDateOffset;
 
     /**
      * @var integer
@@ -698,4 +703,36 @@ class ClientConfig extends Base
     }
 
 
+    /**
+     * @return int
+     */
+    public function getBeginDateOffset(): ?int
+    {
+        return $this->beginDateOffset;
+    }
+
+    /**
+     * @param int $beginDateOffset
+     * @return ClientConfig
+     */
+    public function setBeginDateOffset(?int $beginDateOffset): ClientConfig
+    {
+        $this->beginDateOffset = $beginDateOffset;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getActualBeginDate()
+    {
+        if (!empty($this->getBeginDate())) {
+            return $this->getBeginDate();
+        }
+
+        $beginDateOffset = !empty($this->getBeginDateOffset()) ? $this->getBeginDateOffset() : self::DEFAULT_BEGIN_DATE_OFFSET;
+
+        return (new \DateTime('midnight'))->modify($beginDateOffset . ' days');
+    }
 }

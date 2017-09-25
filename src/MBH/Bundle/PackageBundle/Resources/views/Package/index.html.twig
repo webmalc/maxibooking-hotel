@@ -10,7 +10,7 @@
                 <i class="fa fa-calendar" title='{{ 'package.index.dates'|trans }}' data-toggle='tooltip'></i>&nbsp <input type="text"
                                                                                               id="package-filter-begin"
                                                                                               class="datepicker package-filter begin-datepicker form-control input-sm"
-                                                                                              data-date-format="dd.mm.yyyy" value="{{ filter_begin_date()|date('d.m.Y') }}">
+                                                                                              data-date-format="dd.mm.yyyy" value="{{ client_config().getActualBeginDate()|date('d.m.Y') }}">
             </div>
             <div class="input">
                 — &nbsp <input type="text" id="package-filter-end"

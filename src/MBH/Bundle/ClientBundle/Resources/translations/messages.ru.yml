@@ -59,6 +59,8 @@ form.clientConfigType.round.help: Порядок дробной части, до
 form.clientConfigType.search_tariffs: 'Количество тарифов'
 form.clientConfigType.search_tariffs_desc: 'Количество тарифов выводимое по умолчанию при подборе'
 form.clientConfigType.add_start_date: 'Начальная дата'
+form.clientConfigType.begin_date_offset.label: 'Смещение начальной даты'
+form.clientConfigType.begin_date_offset.help: 'Смещение начальной даты от текущего числа'
 form.clientConfigType.is_book_without_payer.label: 'Бронировать без плательщика?'
 form.clientConfigType.is_book_without_payer.help: 'Разрешено ли создавать заказы без указания плательщика?'
 form.clientConfigType.default_adults_quantity.label: 'Количество взрослых'
