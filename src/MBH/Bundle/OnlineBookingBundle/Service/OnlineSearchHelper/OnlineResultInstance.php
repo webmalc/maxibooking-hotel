@@ -9,7 +9,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
 use MBH\Bundle\OnlineBookingBundle\Document\LeftRoom;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -43,6 +43,9 @@ class OnlineResultInstance
     protected $type;
     /** @var Special */
     protected $special;
+    /** @var string */
+    protected $queryId;
+
 
     /**
      * OnlineResultInstance constructor.
@@ -338,5 +341,26 @@ class OnlineResultInstance
 
         return $leftRoom->getCount();
     }
+
+    /**
+     * @return string
+     */
+    public function getQueryId(): ?string
+    {
+        return $this->queryId;
+    }
+
+    /**
+     * @param string $queryId
+     * @return OnlineResultInstance
+     */
+    public function setQueryId(string $queryId): OnlineResultInstance
+    {
+        $this->queryId = $queryId;
+
+        return $this;
+    }
+
+
 
 }

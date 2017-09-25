@@ -4,12 +4,13 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -107,6 +108,7 @@ class OrderManager
      * @param Package $old
      * @param Package $new
      * @param Tariff $updateTariff
+     * @param bool $isFixVirtualRoom
      * @return Package|string
      */
     public function updatePackage(Package $old, Package $new, Tariff $updateTariff = null, bool $isFixVirtualRoom = false)
@@ -171,6 +173,8 @@ class OrderManager
         $query->memcached = false;
         $query->setExcludePackage($new);
         $query->isFixVirtualRoom = $isFixVirtualRoom;
+        $query->setSave(true);
+
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -193,7 +197,10 @@ class OrderManager
             if (!$isFixVirtualRoom) {
                 $new->setVirtualRoom($results[0]->getVirtualRoom());
             }
-            ;
+            if ($searchQueryId = $results[0]->getQueryId()) {
+                $searchQuery = $this->dm->find(SearchQuery::class, $searchQueryId);
+                $new->addSearchQuery($searchQuery);
+            }
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
             return $new;
@@ -574,6 +581,13 @@ class OrderManager
                 $this->dm->flush();
             }
 
+        }
+
+        //inject SearchQuery
+        if (isset($data['savedQueryId']) && (null !== $data['savedQueryId'])) {
+            $searchQuery = $this->dm->find('MBHPackageBundle:SearchQuery', $data['savedQueryId']);
+            $package->addSearchQuery($searchQuery);
+            $this->dm->flush();
         }
 
         return $package;

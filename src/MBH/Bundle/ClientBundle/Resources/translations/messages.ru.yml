@@ -51,3 +51,5 @@ form.clientConfigType.search_tariffs_desc: Количество тарифов �
 form.clientConfigType.add_start_date: Начальная дата
 form.clientConfigType.round.label: Округление цены брони
 form.clientConfigType.round.help: Порядок дробной части, до которого будут производится округление. 0 - для отбрасывания дробной части.
+form.clientConfigType.queryStat.label: Статистика запросов
+form.clientConfigType.queryStat.help: Включить/выключить сбор статистики запросов

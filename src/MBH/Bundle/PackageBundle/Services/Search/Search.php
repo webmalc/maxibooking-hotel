@@ -3,13 +3,14 @@
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
@@ -28,7 +29,7 @@ class Search implements SearchInterface
     protected $container;
 
     /**
-     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
+     * @var DocumentManager
      */
     protected $dm;
 
@@ -68,9 +69,10 @@ class Search implements SearchInterface
         $this->memcached = $this->container->get('mbh.cache');
     }
 
+
     /**
-     * @param \MBH\Bundle\PackageBundle\Lib\SearchQuery $query
-     * @return \MBH\Bundle\PackageBundle\Lib\SearchResult[]
+     * @param SearchQuery $query
+     * @return array
      */
     public function search(SearchQuery $query)
     {
@@ -103,7 +105,6 @@ class Search implements SearchInterface
         $today = new \DateTime('midnight');
         $beforeArrival = $today->diff($query->begin)->format('%a');
         $helper = $this->container->get('mbh.helper');
-
 
         //roomTypes
         if (empty($query->roomTypes)) {
@@ -507,6 +508,7 @@ class Search implements SearchInterface
             }
         }
 
+
         return array_values($results);
     }
 
@@ -771,4 +773,5 @@ class Search implements SearchInterface
 
         return $results;
     }
+
 }

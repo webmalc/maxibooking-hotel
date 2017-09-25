@@ -4,9 +4,8 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
-use MBH\Bundle\PriceBundle\Document\Special;
 
 class OnlineCommonResultGenerator extends AbstractResultGenerator
 {
@@ -20,6 +19,9 @@ class OnlineCommonResultGenerator extends AbstractResultGenerator
         }
 
         $searchQuery = $this->initSearchQuery($formData);
+        /** save query in db */
+        $searchQuery->setSave(true);
+
         if ($this->options['add_search_dates'] && $formData->isAddDates()) {
             $range = $this->options['add_search_dates'];
             $searchQuery->range = $range;

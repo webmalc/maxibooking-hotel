@@ -9,7 +9,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\OnlineBookingSearchException;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -83,6 +83,11 @@ abstract class AbstractResultGenerator implements OnlineResultsGeneratorInterfac
             $instance->addResult($searchResult);
         }
         $instance->setQuery($searchQuery);
+        if (isset($results[0]) && $results[0] instanceof SearchResult && $results[0]->getQueryId()) {
+            $searchResult = $results[0];
+            /** @var SearchResult $searchResult */
+            $instance->setQueryId($searchResult->getQueryId());
+        }
 
         return $instance;
     }
