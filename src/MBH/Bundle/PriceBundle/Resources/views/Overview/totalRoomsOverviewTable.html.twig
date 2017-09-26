@@ -5,11 +5,11 @@
 {% set firstRoomTypeData = reportData|first|first %}
 {% set numberOfColumns = firstRoomTypeData['totalRooms']|length + 2 %}
 
-<table id="tariff-data" class="table table-bordered">
+<table id="total-rooms-overview-table" class="table table-bordered" style="width: 300px">
     <tbody>
         <tr>
-            <td class="info">Доступно номеров по тарифу</td>
-            <td>{{ availableNumberOfRooms }}</td>
+            <td class="info">{{ 'total_rooms_overview_table.available_number_of_rooms'|trans}}</td>
+            <td style="padding: 10px;">{{ availableNumberOfRooms }}</td>
         </tr>
     </tbody>
 </table>
@@ -18,12 +18,12 @@
        class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
     <tbody>
     <tr class="mbh-grid-header1 warning">
-        <td colspan="{{ numberOfColumns }}"><strong>По всем отелям</strong></td>
+        <td colspan="{{ numberOfColumns }}"><strong>{{ 'total_rooms_overview_table.by_all_hotels'|trans}}</strong></td>
     </tr>
     <tr class="header">
         <td class="first-th" rowspan="2"></td>
-        <td class="header-td" rowspan="2">Число номеров</td>
-        <td colspan="{{ numberOfColumns - 2 }}" style="text-align: left; position:relative; height: 26px;"><span class="floating-header">Номера в продаже</span></td>
+        <td class="header-td" rowspan="2">{{ 'total_rooms_overview_table.number_of_rooms'|trans}}</td>
+        <td colspan="{{ numberOfColumns - 2 }}" style="text-align: left; position:relative; height: 26px;"><span class="floating-header">{{ 'total_rooms_overview_table.rooms_at_sale'|trans}}</span></td>
     </tr>
     <tr class="header second-row">
         {% for dateString, totalRoomsCount in firstRoomTypeData['totalRooms'] %}
@@ -32,7 +32,7 @@
     </tr>
     <tr>
         <td class="first-td">
-            <strong>Номеров:</strong>
+            <strong>{{ 'total_rooms_overview_table.rooms_count'|trans}}:</strong>
         </td>
         <td class="content">
             {{ report.totalNumberOfRooms }}
@@ -44,7 +44,7 @@
 
     <tr>
         <td class="first-td">
-            <strong>Не использовано номеров</strong>
+            <strong>{{ 'total_rooms_overview_table.number_of_unused_rooms'|trans}}</strong>
         </td>
         {% set resultValue = availableNumberOfRooms - report.totalNumberOfRooms %}
         <td class="content {% if resultValue < 0 %} alert {% endif %}">
@@ -62,8 +62,8 @@
         </tr>
         <tr class="header">
             <td class="first-th" rowspan="2"></td>
-            <td class="header-td" rowspan="2">Число номеров</td>
-            <td colspan="{{ numberOfColumns - 2 }}" style="text-align: left; position:relative; height: 26px;"><span class="floating-header">Номера в продаже</span></td>
+            <td class="header-td" rowspan="2">{{ 'total_rooms_overview_table.number_of_rooms'|trans}}</td>
+            <td colspan="{{ numberOfColumns - 2 }}" style="text-align: left; position:relative; height: 26px;"><span class="floating-header">{{ 'total_rooms_overview_table.rooms_at_sale'|trans}}</span></td>
         </tr>
         <tr class="header second-row">
             {% for dateString, totalRoomsCount in firstRoomTypeData['totalRooms'] %}
@@ -87,7 +87,7 @@
 
         <tr>
             <td class="first-td">
-                <strong>Всего</strong>
+                <strong>{{ 'total_rooms_overview_table.total'|trans}}</strong>
             </td>
             <td class="content">
                 {{ report.getHotelRoomsCount(hotelId) }}

@@ -4,17 +4,24 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Symfony\Component\HttpFoundation\Session\Session;
 
-class ClientLimitsManager
+class ClientManager
 {
+    const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 1;
+    const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_account';
+
     private $dm;
     private $session;
+    private $billingApi;
 
-    public function __construct(DocumentManager $dm, Session $session) {
+    public function __construct(DocumentManager $dm, Session $session, BillingApi $billingApi)
+    {
         $this->dm = $dm;
         $this->session = $session;
+        $this->billingApi = $billingApi;
     }
 
     /**
@@ -61,7 +68,8 @@ class ClientLimitsManager
         \DateTime $end,
         array $rawNewRoomCachesData = [],
         array $rawUpdatedRoomCaches = []
-    ) {
+    )
+    {
         $totalNumbersOfRoomsByDates = [];
         foreach ($rawNewRoomCachesData as $rawRoomCache) {
             /** @var \MongoDate $date */
@@ -78,7 +86,7 @@ class ClientLimitsManager
         foreach ($rawUpdatedRoomCaches as $updatedData) {
             $sortedByIdsUpdatedData[$updatedData['criteria']['_id']->serialize()] = $updatedData['values']['totalRooms'];
         }
-        
+
         $rawExistedRoomCaches = $this->dm
             ->getRepository('MBHPriceBundle:RoomCache')
             ->getRawExistedRoomCaches($begin, $end, ['date', 'totalRooms']);
@@ -98,7 +106,7 @@ class ClientLimitsManager
                 $totalNumbersOfRoomsByDates[$dateString] = $numberOfRooms;
             }
         }
-        
+
         $daysWithExcessNumber = [];
         foreach ($totalNumbersOfRoomsByDates as $dateString => $numberOfRooms) {
             if ($numberOfRooms > $this->getAvailableNumberOfRooms()) {
@@ -114,6 +122,42 @@ class ClientLimitsManager
      */
     public function getAvailableNumberOfRooms()
     {
-        return $this->session->get(Client::AVAILABLE_ROOMS_LIMIT);
+        return $this->getClientData()[Client::AVAILABLE_ROOMS_LIMIT];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isClientActive()
+    {
+        return $this->getClientData()[Client::CLIENT_STATUS] == 'active';
+    }
+
+    /**
+     * @return array
+     */
+    public function getClientData()
+    {
+        $dataReceiptTime = $this->session->get(Client::CLIENT_DATA_RECEIPT_DATETIME);
+        $currentDateTime = new \DateTime();
+
+        if (is_null($dataReceiptTime)
+            || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
+        ) {
+            $clientData = $this->billingApi->getClient();
+            $clientStatus = $clientData[Client::CLIENT_STATUS];
+            $roomsLimit = $clientData[Client::AVAILABLE_ROOMS_LIMIT];
+            $this->session->set(Client::CLIENT_STATUS, $clientData[Client::CLIENT_STATUS]);
+            $this->session->set(Client::CLIENT_DATA_RECEIPT_DATETIME, $currentDateTime);
+            $this->session->set(Client::AVAILABLE_ROOMS_LIMIT, $roomsLimit);
+        } else {
+            $clientStatus = $this->session->get(Client::CLIENT_STATUS);
+            $roomsLimit = $this->session->get(Client::AVAILABLE_ROOMS_LIMIT);
+        }
+
+        return [
+            Client::AVAILABLE_ROOMS_LIMIT => $roomsLimit,
+            Client::CLIENT_STATUS => $clientStatus
+        ];
     }
 }

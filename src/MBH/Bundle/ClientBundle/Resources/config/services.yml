@@ -30,7 +30,7 @@ services:
             - '@validator'
             - '@translator'
             - '@mbh.helper'
-            - '@mbh.client_limits_manager'
+            - '@mbh.client_manager'
             - '@router'
 
     mbh_bundle_client.twig.dashboard_extension:
@@ -39,11 +39,12 @@ services:
         tags:
             - { name: twig.extension }
 
-    mbh.client_limits_manager:
-        class: MBH\Bundle\ClientBundle\Service\ClientLimitsManager
+    mbh.client_manager:
+        class: MBH\Bundle\ClientBundle\Service\ClientManager
         arguments:
             - '@doctrine.odm.mongodb.document_manager'
             - '@session'
+            - '@mbh.billing.api'
     mbh.client_payment_system_type:
         class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
         arguments:

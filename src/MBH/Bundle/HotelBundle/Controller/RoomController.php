@@ -103,7 +103,7 @@ class RoomController extends BaseController
             'hotelId' => $this->hotel->getId()
         ]);
         $form->handleRequest($request);
-        $limitManager = $this->get('mbh.client_limits_manager');
+        $limitManager = $this->get('mbh.client_manager');
         if ($limitManager->isLimitOfRoomsExceeded(1)) {
             $limitErrorMessage = $this->get('translator')
                 ->trans('room_controller.limit_of_rooms_exceeded', [
@@ -182,7 +182,7 @@ class RoomController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $limitManager = $this->get('mbh.client_limits_manager');
+            $limitManager = $this->get('mbh.client_manager');
             if ($entity->getIsEnabled()
                 && !$oldIsEnabledValue
                 && $limitManager->isLimitOfRoomsExceeded(1)) {
@@ -270,7 +270,7 @@ class RoomController extends BaseController
             $data = $form->getData();
             $numberOfCreatedRooms = $data['to'] - $data['from'] + 1;
 
-            $limitManager = $this->get('mbh.client_limits_manager');
+            $limitManager = $this->get('mbh.client_manager');
             if ($limitManager->isLimitOfRoomsExceeded($numberOfCreatedRooms)) {
                 $limitErrorMessage = $this->get('translator')
                     ->trans('room_controller.limit_of_rooms_exceeded', [

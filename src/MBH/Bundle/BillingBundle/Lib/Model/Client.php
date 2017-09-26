@@ -7,7 +7,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Client
 {
     const AVAILABLE_ROOMS_LIMIT = 'rooms_limit';
-    const CLIENT_STATUS_FIELD_NAME = 'status';
+    const CLIENT_STATUS = 'status';
+    const CLIENT_DATA_RECEIPT_DATETIME = 'client-data-receipt-time';
     const DEFAULT_MAXIBOOKING_DOMAIN_NAME = 'maxibooking.ru';
 
     /** @var  string

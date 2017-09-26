@@ -3,6 +3,7 @@
 namespace MBH\Bundle\UserBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\UserBundle\Form\ProfileType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -61,6 +62,21 @@ class ProfileController extends Controller
 
         return [
             'form' => $form->createView(),
+        ];
+    }
+
+    /**
+     * @Template()
+     * @Route("/account", name="user_account")
+     * @Security("is_granted('ROLE_MB_ACCOUNT')")
+     */
+    public function accountAction()
+    {
+        $clientData = $this->get('mbh.client_manager')->getClientData();
+
+        return [
+            'rooms_limit' => $clientData[Client::AVAILABLE_ROOMS_LIMIT],
+            'status' => $clientData[Client::CLIENT_STATUS]
         ];
     }
 }

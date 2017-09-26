@@ -224,7 +224,7 @@ class RoomCache
         if ($rooms == -1) {
             $this->container->get('mbh.mongo')->remove('RoomCache', $remove);
         } else {
-            $limitsManager = $this->container->get('mbh.client_limits_manager');
+            $limitsManager = $this->container->get('mbh.client_manager');
             $outOfLimitRoomsDays = $limitsManager
                 ->getDaysWithExceededLimitNumberOfRoomsInSell($begin, $end, $roomCaches, $updates);
             if (count($outOfLimitRoomsDays) > 0) {

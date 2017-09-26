@@ -3,6 +3,7 @@ namespace MBH\Bundle\UserBundle\Service\ReCaptcha;
 
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\ClientBundle\Service\ClientManager;
 use \ReCaptcha\ReCaptcha;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
@@ -15,19 +16,16 @@ class InteractiveLoginListener
      */
     protected $params;
     protected $session;
-    protected $billing;
 
     /**
      * InteractiveLoginListener constructor.
      * @param array $params
      * @param Session $session
-     * @param BillingApi $billing
      */
-    public function __construct(array $params, Session $session, BillingApi $billing)
+    public function __construct(array $params, Session $session)
     {
         $this->params = $params;
         $this->session = $session;
-        $this->billing = $billing;
     }
 
     /**
@@ -41,15 +39,6 @@ class InteractiveLoginListener
         $reCaptcha = new ReCaptcha($this->params['secret']);
         if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
             throw new BadCredentialsException('Captcha is invalid');
-        }
-
-
-        $clientData = $this->billing->getClient();
-        //TODO: Здесь мы записываем в сессию количество доступных номеров
-        $this->session->set(Client::AVAILABLE_ROOMS_LIMIT, $clientData[Client::AVAILABLE_ROOMS_LIMIT]);
-        $clientStatus = $clientData[Client::CLIENT_STATUS_FIELD_NAME];
-        if ($clientStatus != 'active') {
-            
         }
     }
 

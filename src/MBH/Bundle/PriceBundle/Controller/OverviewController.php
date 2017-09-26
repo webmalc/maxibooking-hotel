@@ -169,7 +169,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         $end = (clone $begin)->add(new \DateInterval('P45D'));
 
         return [
-            'availableNumberOfRooms' => $this->get('mbh.client_limits_manager')->getAvailableNumberOfRooms(),
+            'availableNumberOfRooms' => $this->get('mbh.client_manager')->getAvailableNumberOfRooms(),
             'begin' => $begin,
             'end' => $end,
             'report' => $this->getTotalOverviewReport($begin, $end)
@@ -189,7 +189,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         $end = $reportDates['end'];
 
         return [
-            'availableNumberOfRooms' => $this->get('mbh.client_limits_manager')->getAvailableNumberOfRooms(),
+            'availableNumberOfRooms' => $this->get('mbh.client_manager')->getAvailableNumberOfRooms(),
             'begin' => $begin,
             'end' => $end,
             'report' => $this->getTotalOverviewReport($begin, $end)

@@ -215,7 +215,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         }
 
         $busyDays = [];
-        $limitManager = $this->get('mbh.client_limits_manager');
+        $limitManager = $this->get('mbh.client_manager');
         foreach ($roomCachesByDates as $dateString => $roomCachesByDate) {
             $isExceedLimit = $limitManager->isLimitOfRoomCachesExceeded($roomCachesByDate);
             if ($isExceedLimit) {

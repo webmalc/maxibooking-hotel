@@ -58,6 +58,8 @@ class BillingApi
 
     public function getClient()
     {
-        return $this->sendGet(self::BILLING_HOST.self::CLIENT_REQUEST_URL . '/' . $this->billingLogin );
+        $response = $this->sendGet(self::BILLING_HOST.self::CLIENT_REQUEST_URL . '/' . $this->billingLogin );
+
+        return json_decode($response->getBody(), true);
     }
 }

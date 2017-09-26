@@ -79,3 +79,6 @@ workShift.statuses.closed: Закрыта
 workShift.notification.work_shift_expired: 'Смена идет больше 12 часов. Закройте её'
 form.clientConfigType.notification.staff.label: Список уведомлений для пользователя
 form.clientConfigType.notification.staff.help: Типы каких уведомлений будут доступны пользователю
+
+view.account.small_title: 'Аккаунт'
+view.account.status: 'Статус'
