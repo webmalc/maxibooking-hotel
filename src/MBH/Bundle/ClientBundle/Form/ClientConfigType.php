@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Document\NotificationType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -60,6 +61,16 @@ class ClientConfigType extends AbstractType
                     'required' => false,
                 ]
             )
+            ->add('priceRoundSign', IntegerType::class, [
+                'required' => false,
+                'label' => 'form.clientConfigType.round.label',
+                'help' => 'form.clientConfigType.round.help',
+                'group' => 'form.clientConfigType.main_group',
+                'attr' => [
+                    'max' => 2,
+                    'min' => 0
+                ]
+            ])
             ->add(
                 'isSendMailAtPaymentConfirmation',
                 CheckboxType::class,
@@ -115,6 +126,18 @@ class ClientConfigType extends AbstractType
                     ],
                 ]
             )
+            ->add('queryStat', CheckboxType::class, [
+                'label' => 'form.clientConfigType.queryStat.label',
+                'help' => 'form.clientConfigType.queryStat.help',
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false
+            ])
+            ->add('beginDateOffset', TextType::class, [
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false,
+                'label' => 'form.clientConfigType.begin_date_offset.label',
+                'help' => 'form.clientConfigType.begin_date_offset.help'
+            ])
             ->add(
                 'can_book_without_payer',
                 CheckboxType::class,

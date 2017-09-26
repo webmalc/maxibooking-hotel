@@ -15,7 +15,7 @@ class UserRepository extends DocumentRepository
 {
 
     /**
-     * @param string $notificationType
+     * @param string $notificationTypeName
      * @return mixed
      */
     public function getRecipients(string $notificationTypeName)
@@ -24,8 +24,7 @@ class UserRepository extends DocumentRepository
         $qb = $this->createQueryBuilder();
         $qb
             ->field('enabled')->equals(true)
-            ->field('locked')->equals(false)
-            ->field('username')->notEqual('mb');
+            ->field('locked')->equals(false);
         /** If notificationType is not exists, return all recipients */
         if ($notificationType instanceof NotificationType) {
             $qb->field('allowNotificationTypes')->includesReferenceTo($notificationType);

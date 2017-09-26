@@ -20,9 +20,10 @@ services:
     mbh.tourists.messenger:
             class: MBH\Bundle\PackageBundle\Services\TouristsMessenger
             arguments: ['@service_container']
-        
+
     mbh.calculation:
             class: MBH\Bundle\PackageBundle\Services\Calculation
+            factory: ['MBH\Bundle\PackageBundle\Services\CalculationFactory', createCalculation]
             arguments: ['@service_container']
 
     mbh.order_manager:

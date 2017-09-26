@@ -2,8 +2,9 @@
 
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

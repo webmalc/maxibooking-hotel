@@ -105,6 +105,11 @@ mbhbasebundle.view.mailer.order.sposob: Способ
 mbhbasebundle.view.mailer.order.oplaty: оплаты
 services: услуга|услуги|услуг
 nights: ночь|ночи|ночей
+days: день|дня|дней
+children: реб|реб|дет
+children.full: ребенок|ребенка|детей
+adults.full: взрослый|взрослых|взрослых
+age.full: год|года|лет
 twig.extension.jan: янв
 twig.extension.feb: февр
 twig.extension.march: март

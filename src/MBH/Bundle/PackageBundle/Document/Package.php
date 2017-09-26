@@ -395,6 +395,11 @@ class Package extends Base implements \JsonSerializable
     protected $childAges = [];
 
     /**
+     * @var SearchQuery
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\PackageBundle\Document\SearchQuery")
+     */
+    protected $searchQuery;
+    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
@@ -759,6 +764,7 @@ class Package extends Base implements \JsonSerializable
         $this->tourists = new ArrayCollection();
         $this->accommodations = new ArrayCollection();
         $this->prices = new ArrayCollection();
+        $this->searchQuery = new ArrayCollection();
     }
 
 
@@ -1782,5 +1788,24 @@ class Package extends Base implements \JsonSerializable
         }
 
         return null;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getSearchQuery()
+    {
+        return $this->searchQuery;
+    }
+
+    /**
+     * @param SearchQuery $searchQuery
+     * @return Package
+     */
+    public function addSearchQuery(SearchQuery $searchQuery): Package
+    {
+        $this->searchQuery->add($searchQuery);
+
+        return $this;
     }
 }

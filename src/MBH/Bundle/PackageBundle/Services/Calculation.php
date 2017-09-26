@@ -401,13 +401,23 @@ class Calculation
             $prices[$combination['adults'] . '_' . $combination['children']] = [
                 'adults' => $combination['adults'],
                 'children' => $combination['children'],
-                'total' => $total,
+                'total' => $this->getTotalPrice($total),
                 'prices' => $dayPrices,
                 'packagePrices' => $packagePrices,
             ];
         }
 
         return $prices;
+    }
+
+    /**
+     * Returns raw total price or rounded if method overriden.
+     * @param $total
+     * @return mixed
+     */
+    protected function getTotalPrice($total)
+    {
+        return $total;
     }
 
     /**

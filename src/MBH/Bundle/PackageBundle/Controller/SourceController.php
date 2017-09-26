@@ -6,8 +6,6 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 use MBH\Bundle\PackageBundle\Form\PackageSourceType;
-use MBH\Bundle\PackageBundle\Form\SearchType;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
