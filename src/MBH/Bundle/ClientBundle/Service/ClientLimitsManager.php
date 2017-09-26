@@ -114,6 +114,6 @@ class ClientLimitsManager
      */
     public function getAvailableNumberOfRooms()
     {
-        return $this->session->get(Client::AVAILABLE_NUMBER_OF_ROOMS);
+        return $this->session->get(Client::AVAILABLE_ROOMS_LIMIT);
     }
 }

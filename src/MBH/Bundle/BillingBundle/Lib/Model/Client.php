@@ -1,14 +1,13 @@
 <?php
 
-
 namespace MBH\Bundle\BillingBundle\Lib\Model;
-
 
 use Symfony\Component\Validator\Constraints as Assert;
 
 class Client
 {
-    const AVAILABLE_NUMBER_OF_ROOMS = 'numberOfRooms';
+    const AVAILABLE_ROOMS_LIMIT = 'rooms_limit';
+    const CLIENT_STATUS_FIELD_NAME = 'status';
     const DEFAULT_MAXIBOOKING_DOMAIN_NAME = 'maxibooking.ru';
 
     /** @var  string
@@ -20,7 +19,6 @@ class Client
 
     /** @var  array */
     protected $properties;
-
 
     /** @var  string
      * @Assert\Type(type="string")

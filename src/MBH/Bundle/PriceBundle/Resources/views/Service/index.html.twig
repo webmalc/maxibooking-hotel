@@ -71,12 +71,12 @@
                                     <td class="text-center">
                                         <div class='btn-list'>
                                             {% if is_granted('ROLE_SERVICE_EDIT') %}
-                                                <a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='{{ 'mbhpricebundle.view.service.index.redaktirovaniye.zapisi'|trans }} ' data-toggle='tooltip'>
+                                                <a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='{{ 'mbhpricebundle.view.service.index.redaktirovaniyezapisi'|trans }} ' data-toggle='tooltip'>
                                                     <i class='fa fa-pencil-square-o'></i>
                                                 </a>
                                             {% endif %}
                                             {% if not entry.system and is_granted('ROLE_SERVICE_DELETE') %}
-                                                <a href='{{ path('price_service_category_entry_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'mbhpricebundle.view.service.index.udaleniye.zapisi'|trans }} ' data-toggle='tooltip'>
+                                                <a href='{{ path('price_service_category_entry_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'mbhpricebundle.view.service.index.udaleniyezapisi'|trans }} ' data-toggle='tooltip'>
                                                     <i class='fa fa-trash-o'></i>
                                                 </a>
                                             {% endif %}

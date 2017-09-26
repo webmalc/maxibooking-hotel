@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\EventListener;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 
@@ -27,5 +28,6 @@ class OnRequest
             $this->container->get('twig')->getExtension('core')->setTimezone($tz);
         }
 
+//        return new RedirectResponse('yandex.ru', 301);
     }
 }
