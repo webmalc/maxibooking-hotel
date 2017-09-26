@@ -1,8 +1,357 @@
-package.pdf.hotel_accommodation: Hotel accommodation
+package.pdf.hotel_accommodation: 'Hotel accommodation'
 package.pdf.short_city_extend: city
 package.pdf.short_housing_extend: bldg
-package.pdf.short_apartment_extend: fl
+package.pdf.short_apartment_extend: apt
 package.pdf.short_street_extend: str
 package.pdf.inn: TIN
-package.pdf.notifies_customers: 'informs the Client:'
-package.pdf.with_an_address: with an address at
+package.pdf.notifies_customers: 'notifies the custumer:'
+package.pdf.with_an_address: 'located at:'
+analytics.index.sales_date: 'Date of sale'
+analytics.index.report_type: 'Report type'
+analytics.index.room_type: 'Room type'
+analytics.index.all_rooms: 'All rooms'
+analytics.index.cumulative: Cumulative
+analytics.index.monthly: Monthly
+analytics.layout.analytics: Analytics
+order.cash.order_editing: 'Edit order #'
+order.cash.deleted: Deleted
+order.cash.paid_price: 'Paid / Total:'
+order.cash.paid: paid
+order.cash.not_paid: 'Not paid'
+order.cash.payer: Payer
+order.cash.income: Income
+order.cash.outcome: Expense
+order.cash.is_paid: Paid
+order.cash.payment_way: 'Payment method'
+order.cash.operation_type: 'Operation type'
+order.cash.date: Date
+order.cash.removed: Removed
+order.cash.no: 'no'
+order.cash.edit_record: 'Edit record'
+order.cash.remove_record: 'Delete record'
+order.cash.confirm_payment: 'Payment confirmation'
+order.cash.pay_payment: Payment
+order.cash.are_you_sure_to_confirm_payment: 'Confirm payment of'
+order.cash.are_you_sure_to_pay_payment: 'Confirm payment of'
+order.cash.confirm: Confirm
+order.cash.pay: Confirm
+order.cash.short_pay: Pay
+order.cash.cash_documents_not_found: 'Related documents not found'
+order.edit.order_editing: 'Edit order #'
+order.edit.deleted: deleted
+order.edit.room: Room
+order.edit.card: 'Edit card'
+order.edit.paid_price: 'Paid / Total'
+order.edit.paid: paid
+order.edit.not_paid: 'Not paid'
+order.edit.order_type: 'Order type'
+order.edit.payer: Payer
+order.edit.not_specified: 'not specified'
+order.edit.is_confirmed: Confirmed
+order.edit.is_confirmed_yes: 'yes'
+order.edit.is_confirmed_no: 'no'
+order.layout.reservation: Reservation
+order.navbar.delete_order: 'Delete order'
+order.navbar.lock: Lock
+order.packages.dates: Dates
+order.packages.placement: Accommodation
+order.packages.guests: Guests
+order.packages.price: Price
+order.packages.created: 'Created on'
+order.packages.reservation_type: 'Reservation type'
+order.packages.deleted: deleted
+order.packages.record_edit: 'Edit record'
+order.packages.go_to_placement: 'Continue to accommodation'
+order.packages.edit_reservation: 'Edit reservation'
+order.packages.delete_reservation: 'Delete reservation'
+order.packages.reservations_not_found: 'No reservations found'
+order.tabs.not_confirmed: 'Not confirmed'
+order.tabs.order_info: 'Order information'
+order.tabs.reservations: Reservations
+order.tabs.payer: Payer
+order.tabs.calculations: Calculations
+order.touristEdit.edit_order: 'Edit order'
+order.touristEdit.deleted: deleted
+order.touristEdit.payer_not_specified: 'Payer not specified'
+order.touristEdit.organization_not_specified: 'Organisation not specified'
+order.touristEdit.fio: Name
+order.touristEdit.birth_date: 'Birth date'
+order.touristEdit.gender: Sex
+order.touristEdit.phone: 'Phone number'
+order.touristEdit.email: E-mail
+order.touristEdit.address: Address
+order.touristEdit.document: Document
+order.touristEdit.delete_payer: 'Delete payer'
+order.touristEdit.delete_organization: 'Delete organisation'
+order.package.add: 'Add reservation'
+package.accommodation.edit_reservation: 'Edit reservation'
+package.accommodation.deleted: Deleted
+package.accommodation.placement: 'Accommodation:'
+package.accommodation.guests: Guests
+package.accommodation.stopped: 'Checked in'
+package.accommodation.placement_not_specified: 'Accommodation not specified'
+package.actions: Actions
+package.actions.save_and_close: 'Save and close'
+package.actions.unlock: Unlock
+package.actions.locked: Locked
+package.actions.guests_stopped: 'Guests checked in'
+package.actions.guests_check_out: 'Guests checked out'
+package.actions.accommodation: Accommodation
+package.actions.search: Search
+package.actions.delete: Delete
+package.action.relocation: Relocation
+package.action.action_header: Actions
+package.action.resetTotalOverwrite: 'Remove reservation lock'
+package.action.resetTotalOverwrite.modal_window_text: 'Input data can be rewritten through channel manager'
+package.action.resetTotalOverwrite.modal_window_delete_button_text: 'Remove lock'
+package.actions.docs: Documents
+package.actions.confirmation: Confirmation
+package.actions.confirmation_en: Confirmation
+package.actions.registration_card: 'Регистрационная карта'
+package.actions.fms_form_5: 'Анкета ФМС (Форма 5)'
+package.actions.evidence: 'Свидетельство регистрации'
+package.actions.form_1_g: 'Анкета (Форма 1-Г)'
+package.actions.receipt: Расписка
+package.actions.bill: Счёт
+package.actions.act: Акт
+package.actions.xls_notice: 'Уведомление о прибытии ИГ'
+package.window.not.virtual.room: 'Unaccomodated reservations'
+package.window.not.virtual.room.expand: Expand
+package.window.not.virtual.room.turn: Collapse
+package.actions.find_similar: 'Find similar'
+package.actions.cancel: Cancel
+package.actions.save: Save
+package.cash.edit_reservation: 'Edit reservation'
+package.cash.deleted: Deleted
+package.cash.paid_price: 'Paid / Total:'
+package.cash.paid: Paid
+package.cash.not_paid: 'Not paid'
+package.cash.income: Income
+package.cash.outcome: Expense
+package.cash.payment_way: 'Payment method'
+package.cash.operation_type: 'Operation type'
+package.cash.date: Date
+package.cash.removed: Deleted
+package.cash.edit_record: 'Edit record'
+package.cash.confirm_payment: 'Confirm payment'
+package.cash.are_you_sure_to_confirm_payment: 'Confirm payment of'
+package.cash.confirm: Confirm
+package.cash.delete_record: 'Delete record'
+package.copy.edit_reservation: 'Edit reservation'
+package.copy.deleted: Deleted
+package.edit.edit_reservation: 'Edit reservation'
+package.edit.price: Price
+package.edit.price_by_day: 'Daily price'
+package.edit.dates: Dates
+package.edit.guests: Guests
+package.edit.adults: 'Adults:'
+package.edit.children: 'Children:'
+package.edit.tariff: Rate
+package.edit.room: Room
+package.edit.paid: Paid
+package.edit.not_paid: 'Not paid'
+package.edit.service_price: 'Service price'
+package.edit.order_type: 'Order type'
+package.edit.deleted: Deleted
+package.edit.is_confirmed: 'Confirmed?'
+package.edit.virtual_room: 'Virtual room'
+package.edit.is_confirmed_yes: 'yes'
+package.edit.is_confirmed_no: 'no'
+package.edit.print_act: Print
+package.editTabs.reservation_info: Information
+package.editTabs.guests: Guests
+package.editTabs.services: Services
+package.editTabs.placement: Accommodation
+package.editTabs.documents: Documents
+package.editTabs.data_transfer: 'Data transfer'
+package.editTabs.order: Order
+package.guest.edit_reservation: 'Edit reservation'
+package.guest.deleted: Deleted
+package.guest.guests_not_added: 'Guests not added:'
+package.guest.phone: Phone
+package.guest.email: E-mail
+package.guest.birth_date: 'Birth date'
+package.guest.age: Age
+package.guest.passport: ID
+package.guest.address: Address
+package.guest.main: Main
+package.guest.edit_record: 'Edit record'
+package.guest.write_a_client: 'Send client a message'
+package.guest.delete_record: 'Delete record'
+package.index.reservations_list: 'Reservations list'
+package.index.check_in: 'Check in'
+package.index.check_out: 'Check out'
+package.index.create: Created
+package.index.accommodation: Accommodation
+package.index.deletedAt: Deleted
+package.index.paid: Paid
+package.index.partly_paid: 'Partially paid'
+package.index.not_paid: 'Not paid'
+package.index.is_confirmed: Confirmed
+package.index.is_confirmed_yes: 'Yes'
+package.index.is_confirmed_no: 'No'
+package.index.check_in_today: 'Check in today'
+package.index.check_in_tomorrow: 'Check in tomorrow'
+package.index.checked_in_now: 'Accomodated currently'
+package.index.not_confirmed: 'Not confirmed'
+package.index.without_placement: 'No accommodation'
+package.index.not_paid_in_time: Overdue
+package.index.not_checked_in: 'Not checked in'
+package.index.my_reservations: 'My reservations'
+package.index.order: Order
+package.index.dates: Dates
+package.index.placement: Accommodation
+package.index.guests: Guests
+package.index.price: Price
+package.index.created: Created
+package.index.default: Default
+package.index.isUpdated: Updated
+package.index.selection: Accommodation
+package.index.porter_link: 'Porter report'
+package.index.deleted: 'Deleted?'
+package.json.reservation_type: 'Reservation type'
+package.json.edit_record: 'Edit record'
+package.json.edit_record.order: record
+package.json.deleted: deleted
+package.json.corrupted: error
+package.json.edit_order: 'Edit order'
+package.json.deleted_order: Deleted
+package.json.go_to_placement: 'Proceed to accommodation'
+package.json.not_placed: 'Not accomodated'
+package.json.go_to_payer: 'Proceed to payer'
+package.json.no_payer: 'No payer'
+package.json.go_to_calculations: 'Proceed to calculations'
+package.json.today: Today
+package.jsonButtons.confirm_order: 'Confirm order'
+package.jsonButtons.edit_record: 'Edit record'
+package.jsonButtons.delete_record: 'Delete record'
+package.jsonButtons.view_record: 'View record'
+package.layout.reservation: Reservation
+package.listTabs.list: List
+package.listTabs.chess: Chessboard
+package.listTabs.placement: Accommodation
+package.listTabs.clients: Guests
+package.new.reservation_error: 'Reservation error'
+package.new.reservation_error_try_again: 'An error accured during reservation process. Please try again.'
+package.pdf.executor: 'Executor:'
+package.pdf.address: Address
+package.pdf.short_home_extend: h
+package.pdf.count_paid_total: 'Services total cost:'
+package.pdf.customer: 'Guest:'
+package.pdf.not_specified: 'Not specified'
+package.pdf.services_name: Services
+package.pdf.date: Date
+package.pdf.method: Method
+package.pdf.total: Total
+package.pdf.amount: Amount
+package.pdf.unit: Units
+package.pdf.price: Price
+package.pdf.sum: Sum
+package.pdf.night: night
+package.service.edit_reservation: 'Edit reservation'
+package.service.paid: Paid
+package.service.not_paid: 'Not paid'
+package.service.name: Title
+package.service: Service
+package.service.items: '{% amount %} un.'
+package.service.nights_amount: 'Number of nights'
+package.service.nights: Nights
+package.service.guests_amount: Guests
+package.service.guests: Guests
+package.service.amount: Number
+package.service.short_amount: Num.
+package.service.package: Reservation
+package.service.tourist: Payer
+package.service.title: Title
+package.service.order: Order
+package.service.date: Date
+package.service.price: Price
+package.service.result: Price
+package.service.payment: Payment
+package.service.dept: Debt
+package.service.comment: Comment
+package.service.creation_date: 'Added on'
+package.service.createAt: Cteated
+package.service.delete_record: 'Delete record'
+package.service.add_services: 'Add services?'
+package.service.time: Time
+package.service.edit_record: 'Edit record'
+package.service.index.show_deleted: 'Show deleted'
+package.service.index.filter: Filter
+package.service.index.period: Period
+package.service.index.byDay: 'By days'
+package.service.index.result: Final
+report.accommodation.room_type: 'Room type'
+report.room.dates: Dates
+report.room.room_type: 'Room type'
+report.roomsCells.rooms_amount: 'Rooms total:'
+report.roomsCells.occupied_rooms_amount: 'Rooms reserved'
+report.roomsCells.empty_rooms_amount: 'Rooms available'
+report.roomsCells.select_check_in_date_for_reservation: 'Select check in date'
+report.roomsTable.no_room_types: 'This hotel doen''t have any room types'
+report.roomsTable.room: Room
+report.roomsTable.whole_hotel: 'Whole hotel'
+search.index.search: Search
+search.index.enter_search_data: 'Enter parameters for room selection'
+search.layout.room_search: Accommodation
+search.results.tariff_search: 'Search rates'
+search.results.green: green
+search.results.main_tariffs: '- default rate'
+search.results.blue: blue
+search.results.special_tariffs: '- special rate'
+search.results.check_in: 'Check in'
+search.results.check_out: 'Check out'
+search.results.dates: Dates
+search.results.days_and_nights: Days/nights
+search.results.hotel: Hotel
+search.results.type: Type
+search.results.room: Room
+search.results.tariff: Rate
+search.results.quantity: Number
+search.results.guests: Guests
+search.results.price: Price
+search.results.total_beds: 'Available beds'
+search.results.total_rooms: 'Available rooms'
+search.results.reservate: Reservate
+search.results.accommodation: Accomodate
+search.results.nothing_found_for_your_request: 'Nothing found'
+search.results.enter_search_data: 'Enter parameters for room selection'
+analytics.layout.report: Reports
+report.layout.title: Repots
+package.index.summary.total: Sum
+package.index.summary.paid: Paid
+package.index.summary.debt: Debt
+package.index.summary.nights: Nights
+package.index.summary.guests: Guests
+package.index.name: Name
+package.index.inner_name: 'Internal name'
+package.index.delete_reason: 'Deletion reason'
+package.index.edit_record: 'Edit entry'
+package.index.delete_record: 'Delete record'
+accommodation.alert: 'It''s not recommended to accomodate guests before their arrival to the hotel'
+task.status: Status
+task.priority: Priority
+task.performer: Performer
+task.group: Group
+poll.question.rules: 'Hotel accommodation rules availability'
+poll.question.hotel_location: 'Hotel location and transport availability'
+poll.controller.save_success: 'Thank you! Your rating successfully saved!'
+report.porter.small_title: Portier
+report.porter.error: 'Dates selected incorrectly'
+report.porter.arrivals.empty: 'Reservations not found'
+report.porter.live.empty: 'Reservations not found'
+report.porter.live.debt: Payment
+report.porter.live.departure: 'Check out'
+report.porter.live.arrival: 'Check in'
+report.porter.live.table: Accomodated
+report.porter.lives.table: Accomodated
+report.porter.arrivals.table: 'Checking in'
+report.porter.out.table: 'Check out'
+report.porter.note: Comment
+modal.form.delete.reasons.confirmation: 'Are you sure you want to delete this entry?'
+modal.form.delete.reasons.package: 'reservation deletion reason'
+modal.form.delete.reasons.order: 'Order deletion reason'
+modal.form.delete.reasons.reason_default: 'Not specified'
+modal.form.delete.reasons.close: Cancel
+modal.form.delete.reasons.delete: Delete
+views.list.based_on_technologies_mb: 'Based on MAXIBOOKING LLC technology'

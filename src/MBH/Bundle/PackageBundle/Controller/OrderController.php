@@ -70,7 +70,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
      * @param Package $package
-     * @return Response
+     * @return array|Response
      * @Template()
      * @throws \Exception
      */
@@ -87,7 +87,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
         /** @var CashDocument[] $docs */
         $docs = $cashDocumentRepository
-            ->createQueryBuilder('q')
+            ->createQueryBuilder()
             ->field('order.id')->equals($entity->getId())
             ->sort('createdAt', 'desc')
             ->getQuery()

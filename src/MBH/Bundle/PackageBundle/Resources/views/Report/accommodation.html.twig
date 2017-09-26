@@ -8,7 +8,7 @@
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'accommodation-report-filter-widget'} %}
         <form id="accommodation-report-filter" class="form-inline filter-form remember" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.report.accommodation.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp
+                <i class="fa fa-calendar" title='{{ 'report.accommodation.dates_filter.title'|trans }}' data-toggle='tooltip'></i>&nbsp
                 <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-5 days")|date('d.m.Y') : app.request.get('begin') }}">
             </div>
             <div class="input hidden">
@@ -17,7 +17,7 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-bed"  title='{{ 'mbhpackagebundle.view.report.accommodation.tip.nomera'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select name="roomType" multiple data-placeholder="{{ 'mbhpackagebundle.view.report.accommodation.tip.nomera'|trans }} " id="accommodation-report-filter-roomType" class="accommodation-report-filter form-control input-sm">
+                <i class="fa fa-bed"  title='{{ 'report.accommodation.room_type_filter.title'|trans }}' data-toggle='tooltip'></i>&nbsp  <select name="roomType" multiple data-placeholder="{{ 'report.accommodation.room_type_filter.title'|trans }}" id="accommodation-report-filter-roomType" class="accommodation-report-filter form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
@@ -27,7 +27,7 @@
 
             {% if housings|length %}
                 <div class="input">
-                    <i class="fa fa-home" title='{{ 'mbhpackagebundle.view.report.accommodation.korpus'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select name="housing" multiple data-placeholder="{{ 'mbhpackagebundle.view.report.accommodation.korpus'|trans }} " id="accommodation-report-filter-housing" class="accommodation-report-filter form-control input-sm">
+                    <i class="fa fa-home" title='{{ 'report.accommodation.housing_filter.title'|trans }}' data-toggle='tooltip'></i>&nbsp  <select name="housing" multiple data-placeholder="{{ 'report.accommodation.housing_filter.title'|trans }}" id="accommodation-report-filter-housing" class="accommodation-report-filter form-control input-sm">
                         <option></option>
                         {% for housing in housings %}
                             <option value="{{ housing.id }}" {% if housing in app.request.get('housings') and housings|length != app.request.get('housings')|length %}selected{% endif %}>{{ housing.title }}</option>
@@ -38,7 +38,7 @@
 
             {% if floors|length %}
                 <div class="input">
-                    <i class="fa fa-home" title='{{ 'mbhpackagebundle.view.report.accommodation.etazh'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select name="floor" multiple data-placeholder="{{ 'mbhpackagebundle.view.report.accommodation.etazh'|trans }} " id="accommodation-report-filter-floor" class="accommodation-report-filter form-control input-sm">
+                    <i class="fa fa-home" title='{{ 'report.accommodation.floor_filter.title'|trans }}' data-toggle='tooltip'></i>&nbsp  <select name="floor" multiple data-placeholder="{{ 'report.accommodation.floor_filter.title'|trans }}" id="accommodation-report-filter-floor" class="accommodation-report-filter form-control input-sm">
                         <option></option>
                         {% for floor in floors %}
                             <option value="{{ floor }}" {% if floor in app.request.get('floors') and floors|length != app.request.get('housings')|length %}selected{% endif %}>{{ floor }}</option>
@@ -51,7 +51,7 @@
             {% if not clientConfig or not clientConfig.isInstantSearch %}
                 <div class="input">
                     <button class="btn btn-primary" id="accommodation-report-submit-button">
-                        <i class="fa fa-search"></i> {{ 'mbhpackagebundle.view.report.accommodation.nayti'|trans }} 
+                        <i class="fa fa-search"></i> {{ 'report.accommodation.find_button.title'|trans}}
                     </button>
                 </div>
             {% endif %}

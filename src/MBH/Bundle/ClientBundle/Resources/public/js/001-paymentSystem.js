@@ -15,4 +15,16 @@ $(document).ready(function () {
         showHideFields();
         select.change(showHideFields);
     }());
+
+    var $unitellerFiscalizationFieldsSwitcher = $('#mbh_bundle_clientbundle_client_payment_system_type_isUnitellerWithFiscalization');
+    setUnitellerSpecialFieldsVisibility($unitellerFiscalizationFieldsSwitcher.bootstrapSwitch('state'));
+    $unitellerFiscalizationFieldsSwitcher.on('switchChange.bootstrapSwitch', function (event, state) {
+        setUnitellerSpecialFieldsVisibility(state);
+    });
+
+    function setUnitellerSpecialFieldsVisibility(isVisible) {
+        var $fields = $('#mbh_bundle_clientbundle_client_payment_system_type_taxationRateCode, #mbh_bundle_clientbundle_client_payment_system_type_taxationSystemCode');
+        var $fieldsFormGroups = $fields.closest('.form-group');
+        isVisible ? $fieldsFormGroups.show() : $fieldsFormGroups.hide();
+    }
 });

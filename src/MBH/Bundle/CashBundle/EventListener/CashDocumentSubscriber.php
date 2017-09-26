@@ -5,7 +5,6 @@ namespace MBH\Bundle\CashBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Doctrine\ODM\MongoDB\Event\PreFlushEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\PdfGenerator;
@@ -73,7 +72,7 @@ class CashDocumentSubscriber implements EventSubscriber
     {
         $cashDocument = $args->getDocument();
         if ($cashDocument instanceof CashDocument) {
-            $this->trySendOnPaidNotification($cashDocument);
+            $this->trySendOnConfirmationNotification($cashDocument);
         }
     }
 
@@ -86,8 +85,8 @@ class CashDocumentSubscriber implements EventSubscriber
 
         if ($cashDocument instanceof CashDocument) {
             /** @var CashDocument $cashDocument */
-            if ($args->hasChangedField('isPaid')) {
-                $this->trySendOnPaidNotification($cashDocument);
+            if ($args->hasChangedField('isConfirmed')) {
+                $this->trySendOnConfirmationNotification($cashDocument);
             }
         }
     }
@@ -95,9 +94,9 @@ class CashDocumentSubscriber implements EventSubscriber
     /**
      * @param CashDocument $cashDocument
      */
-    private function trySendOnPaidNotification(CashDocument $cashDocument)
+    private function trySendOnConfirmationNotification(CashDocument $cashDocument)
     {
-        if ($cashDocument->getIsPaid() && $cashDocument->isSendMail()) {
+        if ($cashDocument->getIsConfirmed() && $cashDocument->isSendMail() && $cashDocument->getOperation() == 'in' && $cashDocument->getPayer()) {
             $this->container->get('mbh.cash')->sendMailAtCashDocumentConfirmation($cashDocument);
         }
     }

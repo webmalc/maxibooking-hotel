@@ -6,6 +6,7 @@ namespace MBH\Bundle\BillingBundle\Command;
 
 use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,6 +16,8 @@ class ClientInstallCommand extends ContainerAwareCommand
 {
     /** @var  Logger */
     protected $logger;
+    /** @var  OutputInterface */
+    protected $output;
 
     public function __construct(Logger $logger)
     {
@@ -35,8 +38,11 @@ class ClientInstallCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $start = new \DateTime();
-
+        $this->output = $output;
         $isBilling = $input->getOption('billing');
+        if (null === $input->getOption('clients')) {
+            throw new InvalidArgumentException("You must specify clients option");
+        }
         $clients = explode(',', trim($input->getOption('clients'), ','));
         $clientsForInstall = $this->getContainer()->get('mbh.service.client_list_getter')->getNotInstalledClients(
             $clients
@@ -96,11 +102,12 @@ class ClientInstallCommand extends ContainerAwareCommand
             $maintenanceManager->install($clientName);
             $result = true;
             $message = 'Client '.$clientName.' was installed';
+            $this->addLogMessage($message);
         } catch (\Throwable $e) {
             $maintenanceManager->rollBack($clientName);
             $message = 'Client '.$clientName.'install error.'.$e->getMessage();
+            $this->addLogMessage($message, Logger::CRITICAL);
         }
-        $this->addLogMessage($message);
 
         return $result;
     }
@@ -118,16 +125,21 @@ class ClientInstallCommand extends ContainerAwareCommand
             $process->mustRun();
             $result = true;
             $message = 'Client '.$clientName.' after install success.';
+            $this->addLogMessage($message);
+
         } catch (\Throwable $e) {
             $message = 'Client '.$clientName.'after install error.'.$e->getMessage();
+            $this->addLogMessage($message, Logger::CRITICAL);
         }
-        $this->addLogMessage($message);
 
         return $result;
     }
 
-    private function addLogMessage(string $message)
+    private function addLogMessage(string $message, int $level = Logger::INFO)
     {
-        $this->logger->addInfo($message);
+        if ($this->output && $this->output instanceof OutputInterface) {
+            $this->output->writeln($message);
+        }
+        $this->logger->addRecord($level, $message);
     }
 }

@@ -26,6 +26,7 @@ form.clientPaymentSystemType.payanyway_service: Сервис PAYANYWAY
 form.clientPaymentSystemType.moneymail_service: Сервис MoneyMail
 form.clientPaymentSystemType.moneymail_shop_id: ID магазина (Shop_IDP)
 form.clientPaymentSystemType.moneymail_key: Ключ магазина (Key)
+form.clientPaymentSystemType.uniteller_is_with_fiscalization.label: 'С фискализацией платежа?'
 form.clientPaymentSystemType.uniteller_shop_id: ID магазина (Shop_IDP)
 form.clientPaymentSystemType.uniteller_password: Пароль магазина (Password)
 form.clientPaymentSystemType.uniteller.taxation_rate_code: Код ставки налогооблажения
@@ -44,28 +45,33 @@ form.clientPaymentSystemType.successUrlDesc: URl для перенаправле
 form.clientPaymentSystemType.failUrlDesc: URl для перенаправления пользователя после неуспешной оплаты
 form.clientPaymentSystemType.payment_system_group: Платежная система
 form.clientPaymentSystemType.payment_system_group_links: Ссылки
-mailer.notice.unpaid.packages: Неоплаченные брони
-mailer.notice.unpaid.order.list: Список броней с просроченной оплатой
-mailer.notice.unpaid.package.list: № Заказа
-mailer.notice.unpaid.need.price: Сумма к оплате
+mailer.notice.unpaid.packages: 'Неоплаченные брони'
+mailer.notice.unpaid.order.list: 'Список броней с просроченной оплатой'
+mailer.notice.unpaid.package.list: '№ Заказа'
+mailer.notice.unpaid.need.price: 'Сумма к оплате'
 mailer.notice.unpaid.paid: Оплачено
 mailer.notice.unpaid.phone: Телефон
-mailer.notice.unpaid.mobile.phone: Мобильный телефон
-mailer.notice.unpaid.no.data: Нет данных
+mailer.notice.unpaid.mobile.phone: 'Мобильный телефон'
+mailer.notice.unpaid.no.data: 'Нет данных'
 mailer.notice.unpaid.full_name: ФИО
-form.clientConfigType.search_tariffs: Количество тарифов
-form.clientConfigType.search_tariffs_desc: Количество тарифов выводимое по умолчанию при подборе
-form.clientConfigType.add_start_date: Начальная дата
-form.clientConfigType.is_book_without_payer.label: Бронировать без плательщика?
-form.clientConfigType.is_book_without_payer.help: Разрешено ли создавать заказы без указания плательщика?
-form.clientConfigType.default_adults_quantity.label: Количество взрослых
-form.clientConfigType.default_adults_quantity.help: Количество взрослых в форме поиска по умолчанию
-form.clientConfigType.default_children_quantity.label: Количество детей
-form.clientConfigType.default_children_quantity.help: Количество детей в форме поиска по умолчанию
+form.clientConfigType.round.label: Округление цены брони
+form.clientConfigType.round.help: Порядок дробной части, до которого будут производится округление. 0 - для отбрасывания дробной части.
+form.clientConfigType.search_tariffs: 'Количество тарифов'
+form.clientConfigType.search_tariffs_desc: 'Количество тарифов выводимое по умолчанию при подборе'
+form.clientConfigType.add_start_date: 'Начальная дата'
+form.clientConfigType.begin_date_offset.label: 'Смещение начальной даты'
+form.clientConfigType.begin_date_offset.help: 'Смещение начальной даты от текущего числа'
+form.clientConfigType.is_book_without_payer.label: 'Бронировать без плательщика?'
+form.clientConfigType.is_book_without_payer.help: 'Разрешено ли создавать заказы без указания плательщика?'
+form.clientConfigType.default_adults_quantity.label: 'Количество взрослых'
+form.clientConfigType.default_adults_quantity.help: 'Количество взрослых в форме поиска по умолчанию'
+form.clientConfigType.default_children_quantity.label: 'Количество детей'
+form.clientConfigType.default_children_quantity.help: 'Количество детей в форме поиска по умолчанию'
 form.clientPaymentSystemType.payment_system_paypal_login: Логин
 form.documentTemplateType.hotel: Отель
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
-
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
+form.clientConfigType.queryStat.label: Статистика запросов
+form.clientConfigType.queryStat.help: Включить/выключить сбор статистики запросов
 
 room_controller.limit_of_rooms_exceeded: 'Количество номеров в номерном фонде превышает максимально разрешенное по тарифу. Доступно по тарифу %availableNumberOfRooms%. Подробнее <a target="_blank" href="%overviewUrl%">информация по номерам</a>'

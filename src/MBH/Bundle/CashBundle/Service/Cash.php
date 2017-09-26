@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\CashBundle\Service;
 
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -84,15 +85,23 @@ class Cash
             ->setFrom('system')
             ->setType('info')
             ->setLink('hide')
+            ->setCategory('tourists')
             ->setHotel($order->getFirstHotel())
             ->setOrder($order)
             ->setSubject('mailer.order.subject_text')
+            ->setHeaderText('mailer.order.header_text')
+            ->setTranslateParams([
+                '%hotelName%' => $order->getFirstHotel()->getName(),
+                '%sum%' => $sumString
+            ])
             ->setAdditionalData([
                 'prependText' => $prependText,
                 'currencyText' => $currencyText
             ])
             ->setTemplate('MBHBaseBundle:Mailer:cashDocConfirmation.html.twig')
-            ->setEnd(new \DateTime('+1 minute'));
+            ->setEnd(new \DateTime('+1 minute'))
+            ->setMessageType(NotificationType::CASH_DOC_CONFIRMATION_TYPE)
+        ;
 
         $notifier
             ->setMessage($message)

@@ -7,6 +7,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ClientConfig extends Base
 {
+    const DEFAULT_BEGIN_DATE_OFFSET = -21;
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -36,6 +38,11 @@ class ClientConfig extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    /**
+     * List of notification types allow to client (not stuff)
+     */
+    use AllowNotificationTypesTrait;
 
     /**
      * @var boolean
@@ -162,6 +169,13 @@ class ClientConfig extends Base
     protected $beginDate;
 
     /**
+     * @var int
+     * @ODM\Field(type="int")
+     * @Assert\Type(type="int")
+     */
+    protected $beginDateOffset;
+
+    /**
      * @var integer
      * @Gedmo\Versioned
      * @ODM\Integer()
@@ -170,6 +184,25 @@ class ClientConfig extends Base
      * @Assert\Range(min=0, max=365)
      */
     protected $noticeUnpaid = 0;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Field(type="integer")
+     * @Assert\NotNull()
+     * @Assert\Type(type="integer", message="validate.type.integer")
+     * @Assert\Range(min=0, max=2, invalidMessage="")
+     */
+    protected $priceRoundSign = 2;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $queryStat = true;
 
     /**
      * @var bool
@@ -661,4 +694,75 @@ class ClientConfig extends Base
     {
         $this->beginDate = $beginDate;
     }
+
+    /**
+     * @return integer
+     */
+    public function getPriceRoundSign()
+    {
+        return $this->priceRoundSign;
+    }
+
+    /**
+     * @param integer $priceRoundSign
+     */
+    public function setPriceRoundSign($priceRoundSign)
+    {
+        $this->priceRoundSign = $priceRoundSign;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getBeginDateOffset(): ?int
+    {
+        return $this->beginDateOffset;
+    }
+
+    /**
+     * @param int $beginDateOffset
+     * @return ClientConfig
+     */
+    public function setBeginDateOffset(?int $beginDateOffset): ClientConfig
+    {
+        $this->beginDateOffset = $beginDateOffset;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getActualBeginDate()
+    {
+        if (!empty($this->getBeginDate())) {
+            return $this->getBeginDate();
+        }
+
+        $beginDateOffset = !empty($this->getBeginDateOffset()) ? $this->getBeginDateOffset() : self::DEFAULT_BEGIN_DATE_OFFSET;
+
+        return (new \DateTime('midnight'))->modify($beginDateOffset . ' days');
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isQueryStat(): bool
+    {
+        return $this->queryStat;
+    }
+
+    /**
+     * @param bool $queryStat
+     * @return ClientConfig
+     */
+    public function setQueryStat(bool $queryStat): ClientConfig
+    {
+        $this->queryStat = $queryStat;
+
+        return $this;
+    }
+
 }

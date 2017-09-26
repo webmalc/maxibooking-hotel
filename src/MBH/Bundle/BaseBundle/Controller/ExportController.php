@@ -151,7 +151,8 @@ class ExportController extends BaseController
         } elseif($value instanceof \DateTime) {
             return $value->format('d.m.Y');
         } elseif(is_bool($value)) {
-            return $value ? 'Да' : 'Нет';
+            $unTranslatedValue = $value ? 'controllers.export_controller.yes' : 'controllers.export_controller.no';
+            return $this->get('translator')->trans($unTranslatedValue);
         } elseif(is_object($value)) {
             return $value->__toString();
         } else

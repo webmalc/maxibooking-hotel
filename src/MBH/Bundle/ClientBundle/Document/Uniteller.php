@@ -43,6 +43,31 @@ class Uniteller implements PaymentSystemInterface
     protected $taxationSystemCode;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $isWithFiscalization = true;
+
+    /**
+     * @return bool
+     */
+    public function isWithFiscalization(): bool
+    {
+        return $this->isWithFiscalization;
+    }
+
+    /**
+     * @param bool $isWithFiscalization
+     * @return Uniteller
+     */
+    public function setIsWithFiscalization(bool $isWithFiscalization): Uniteller
+    {
+        $this->isWithFiscalization = $isWithFiscalization;
+
+        return $this;
+    }
+
+    /**
      * @return float
      */
     public function getTaxationRateCode(): ?float
@@ -54,7 +79,7 @@ class Uniteller implements PaymentSystemInterface
      * @param float $taxationRateCode
      * @return Uniteller
      */
-    public function setTaxationRateCode(float $taxationRateCode): Uniteller
+    public function setTaxationRateCode(?float $taxationRateCode): Uniteller
     {
         $this->taxationRateCode = $taxationRateCode;
 
@@ -73,7 +98,7 @@ class Uniteller implements PaymentSystemInterface
      * @param float $taxationSystemCode
      * @return Uniteller
      */
-    public function setTaxationSystemCode(float $taxationSystemCode): Uniteller
+    public function setTaxationSystemCode(?float $taxationSystemCode): Uniteller
     {
         $this->taxationSystemCode = $taxationSystemCode;
 
@@ -221,7 +246,7 @@ class Uniteller implements PaymentSystemInterface
                 'email' => $payer->getEmail(),
                 'id' => $payer->getId()
             ],
-            'lines' => $this->getUnitellerLineItems($order),
+            'lines' => $this->getUnitellerLineItems($order, $cashDocument),
             'total' => $cashDocument->getTotal()
         ]));
     }
@@ -241,37 +266,67 @@ class Uniteller implements PaymentSystemInterface
                 . '&' . hash("sha256", $this->getUnitellerPassword())
             ))
         );
-        //uppercase(
-        // sha256(
-        // sha256(Shop_IDP)
-        // + '&' + sha256(Order_IDP)
-        // + '&' + sha256(Subtotal_P)
-        // + '&' + sha256(Receipt)
-        // + '&' + sha256(password) ) )
     }
 
     /**
      * @param Order $order
+     * @param CashDocument $cashDocument
      * @return array
      */
-    private function getUnitellerLineItems(Order $order)
+    private function getUnitellerLineItems(Order $order, CashDocument $cashDocument)
     {
         $lineItems = [];
 
+        $priceFraction = $cashDocument->getTotal() / $order->getPrice();
+        $beginText = $priceFraction === 1
+            ? 'Услуга '
+            : (round($priceFraction, 2) * 100) . '% от стоимости услуги ';
+
         foreach ($order->getPackages() as $package) {
-            $packageLineName = 'Услуга проживания в номере категории "'
+            $packageLineName = $beginText . 'проживания в номере категории "'
                 . $package->getRoomType()->getName()
                 . ' объекта размещения "' . $package->getHotel()->getName() . '"';
+            $packageLinePrice = ($package->getPackagePrice() * $cashDocument->getTotal()) / $order->getPrice();
+            $this->addLineItem($packageLineName, $packageLinePrice, 1, $lineItems);
 
-            $this->addLineItem($packageLineName, $package->getPackagePrice(true), 1, $lineItems);
             foreach ($package->getServices() as $service) {
-                $this->addLineItem($service->getService()->getName(), $service->getPrice(), $service->getTotalAmount(), $lineItems);
+                $serviceLineName = $beginText . ' "' . $service->getService()->getName() . '"';
+                $serviceLinePrice = ($service->getPrice() * $cashDocument->getTotal()) / $order->getPrice();
+                $this->addLineItem($serviceLineName, $serviceLinePrice, $service->getTotalAmount(), $lineItems);
+            }
+        }
+
+        $lineItems = $this->adjustLastLineItemPrice($lineItems, $cashDocument->getTotal());
+        
+        return $lineItems;
+    }
+
+    /**
+     * Корректирует стоимость последнего итема платежа для схождения с полной стоимостью. Несхождение может произойти в результате округления стоимостей.
+     *
+     * @param $lineItems
+     * @param $totalAmount
+     * @return mixed
+     */
+    private function adjustLastLineItemPrice($lineItems, $totalAmount)
+    {
+        for ($i = (count($lineItems) - 1); $i >= 0; $i--) {
+            $lineItem = $lineItems[$i];
+            if ($lineItem['qty'] == 1 || ($lineItem['qty'] % 2) == 0) {
+                $lineItemPrice = $totalAmount;
+                foreach ($lineItems as $lineItemNumber => $lineItem) {
+                    if ($lineItemNumber != $i) {
+                        $lineItemPrice -= $lineItem['sum'];
+                    }
+                }
+                $lineItem['sum'] = $lineItemPrice;
+                break;
             }
         }
 
         return $lineItems;
     }
-
+    
     /**
      * @param $name
      * @param $price

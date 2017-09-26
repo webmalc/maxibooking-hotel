@@ -19,7 +19,7 @@ abstract class AbstractMaintenance implements MaintenanceInterface
 {
     const MAIN_CONFIG_NAME = '/app/config/parameters.yml';
 
-    const BACKUP_DIR = '/var/www/mbh/backup';
+    const BACKUP_DIR = '/var/www/backup';
 
     /** @var  ContainerInterface */
     protected $container;
@@ -63,6 +63,13 @@ abstract class AbstractMaintenance implements MaintenanceInterface
     }
 
 
+    protected function getClientConfig(string $clientName): array
+    {
+        $fileName = $this->getClientConfigFileName($clientName);
+
+        return $this->yamlParse($fileName);
+    }
+
     protected function dumpFile(string $fileName, string $file)
     {
         try {
@@ -71,23 +78,6 @@ abstract class AbstractMaintenance implements MaintenanceInterface
             throw new ClientMaintenanceException('Error of file dumping.'.$e->getMessage());
         }
 
-    }
-
-    protected function createSymLink(string $source, string $target)
-    {
-        if (!$this->isFileExists($source)) {
-            throw new ClientMaintenanceException('No nginx original file to create Link');
-        }
-        $this->fileSystem->symlink($source, $target);
-    }
-
-    protected function copyFile(string $sourceFile, string $targetFile)
-    {
-        try {
-            $this->fileSystem->copy($sourceFile, $targetFile, true);
-        } catch (IOException $e) {
-            throw new ClientMaintenanceException('Cannot Backup Parameters YML '. $sourceFile.' '.$e->getMessage());
-        }
     }
 
     protected function removeFile(string $fileName)
@@ -101,18 +91,27 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         }
     }
 
+    protected function copyFile(string $sourceFile, string $targetFile)
+    {
+        try {
+            $this->fileSystem->copy($sourceFile, $targetFile, true);
+        } catch (IOException $e) {
+            throw new ClientMaintenanceException('Cannot Backup Parameters YML '. $sourceFile.' '.$e->getMessage());
+        }
+    }
+
+    protected function createSymLink(string $source, string $target)
+    {
+        if (!$this->isFileExists($source)) {
+            throw new ClientMaintenanceException('No nginx original file to create Link');
+        }
+        $this->fileSystem->symlink($source, $target);
+    }
 
     protected function isFileExists(string $fileName)
     {
         return $this->fileSystem->exists($fileName);
     }
-
-    protected function getBackupDir(string $clientName): string
-    {
-        return $this->options['backupDir'].'/'.$clientName;
-    }
-
-
 
     protected function yamlParse(string $fileName): array
     {
@@ -126,6 +125,25 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         }
 
         return $result;
+    }
+
+    protected function getClientConfigFileName(string $clientName): string
+    {
+        $fileName = $this->options['clientConfigDir'].'/'.$this->getConfigName($clientName);
+
+        return $fileName;
+    }
+
+    protected function getConfigName(string $clientName): string
+    {
+        $configName = 'parameters_'.$clientName.'.yml';
+
+        return $configName;
+    }
+
+    protected function getBackupDir(string $clientName): string
+    {
+        return $this->options['backupDir'].'/'.$clientName;
     }
 
     protected function executeConsoleCommand(string $command, string $cwd = null, array $env = null): ?string
@@ -150,27 +168,6 @@ abstract class AbstractMaintenance implements MaintenanceInterface
         }
 
         return $process->getOutput();
-    }
-
-    protected function getClientConfigFileName(string $clientName): string
-    {
-        $fileName = $this->options['clientConfigDir'].'/'.$this->getConfigName($clientName);
-
-        return $fileName;
-    }
-
-    protected function getClientConfig(string $clientName): array
-    {
-        $fileName = $this->getClientConfigFileName($clientName);
-
-        return $this->yamlParse($fileName);
-    }
-
-    protected function getConfigName(string $clientName): string
-    {
-        $configName = 'parameters_'.$clientName.'.yml';
-
-        return $configName;
     }
 
     protected function configureOptions(OptionsResolver $resolver)

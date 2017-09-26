@@ -33,10 +33,10 @@ $(document).ready(function () {
                 //getting date substring
                 if (i>0) {
                     var dateString = table[i][7].text;
-                    var index = dateString.indexOf('до');
+                    var index = dateString.indexOf(Translator.trans("views.task.index.before"));
                     table[i][7].text = dateString.substr(index,100);
                 }
-                //removal "Период" column
+                //removal period column
                 table[i].splice(6, 1);
             }
         },
@@ -145,8 +145,8 @@ $(document).ready(function () {
     changeHousingAndFloor();
     $roomsSelect.parent().append(
         '<div class="btn-group pull-right" style="margin-top: 3px" role="group">' +
-        '<div class="btn btn-xs btn-default clickable" id="select-all-rooms">Выбрать все</div>' +
-        '<div class="btn btn-xs btn-default clickable" id="clear-rooms">Очистить</div>' +
+        '<div class="btn btn-xs btn-default clickable" id="select-all-rooms">'+ Translator.trans("003-task.chose_all") +'</div>' +
+        '<div class="btn btn-xs btn-default clickable" id="clear-rooms">'+ Translator.trans("003-task.clear") +'</div>' +
         '<div>'
     );
     $('#select-all-rooms').on('click', function () {
@@ -177,14 +177,14 @@ $(document).ready(function () {
                 var status,
                     buttonClass,
                     buttonTitle;
-                if (response.status === 'Открыта') {
+                if (response.status === 'open') {
                     status = 'process';
                     buttonClass = 'btn-primary';
-                    buttonTitle = 'Взять в работу';
+                    buttonTitle = Translator.trans("003-task.take_to_work");
                 } else {
                     status = 'closed';
                     buttonClass = 'btn-success';
-                    buttonTitle = 'Завершить';
+                    buttonTitle = Translator.trans("003-task.complete");
                 }
 
                 $button.removeClass('btn-primary btn-success').addClass(buttonClass);

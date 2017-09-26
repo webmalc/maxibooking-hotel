@@ -1,3 +1,51 @@
+2.2.4
+============
+* add query statistic
+
+2.2.3
+============
+* add rounded price
+* add mb user to recipients
+* fix config bug in dev mode
+* fix #1020
+
+2.2.2
+============
+* move channelmanager update in background to RabbitMQ Queue
+
+2.2.1
+============
+* form iframe change size
+
+2.2.0
+============
+* \#968 rebuild message restriction
+* add messagetypes fixtures
+* add messagetypes migrations
+* change some fixtures 
+
+2.1.1
+============
+* \#974 fix generate doc fms
+* split queues 
+* add dedicated consumer cache recalculate 
+
+2.1.0
+============
+* add mail restriction for different mailer types
+* add global swiftmailer log
+
+2.0.0-beta.3
+============
+* merge Xpedia branch
+* merge translation branch
+
+2.0.0-beta.2
+============
+ 
+* add universal cli command [reference](http://redmine.maxi-booking.ru/issues/926#note-3)
+* fix protected upload path in stamp and documents
+
 2.0.0-beta.1
 ============
 * doctrine mongodb vendor update

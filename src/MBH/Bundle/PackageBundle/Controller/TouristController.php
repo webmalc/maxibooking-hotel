@@ -24,6 +24,7 @@ use MBH\Bundle\PackageBundle\Form\TouristType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
 use MBH\Bundle\PackageBundle\Form\UnwelcomeType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
+use MBH\Bundle\VegaBundle\Document\VegaState;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -305,7 +306,8 @@ class TouristController extends Controller
         $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType('vega_russian_passport');
 
         $form = $this->createForm(DocumentRelationType::class, $entity, [
-            'method' => Request::METHOD_POST
+            'method' => Request::METHOD_POST,
+            'isFormInTouristController' => true
         ]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
@@ -331,6 +333,44 @@ class TouristController extends Controller
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
+    }
+
+    /**
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
+     * @Method({"POST"})
+     * @Route("/add_new_country", name="new_vega_state", options={"expose": true})
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addNewCountryAction(Request $request)
+    {
+        $isSuccess = true;
+        $countryName = $request->request->get('countryName');
+        $country = (new VegaState())
+            ->setName($countryName)
+            ->setOriginalName($countryName);
+
+        $errors = $this->get('validator')->validate($country);
+        if (count($errors) > 0) {
+            $isSuccess = false;
+            $errorsList = [];
+            foreach ($errors as $error) {
+                $errorsList[] = $error->getMessage();
+            }
+
+            return new JsonResponse([
+                'success' => $isSuccess,
+                'errors' => $errorsList
+            ]);
+        } else {
+            $this->dm->persist($country);
+            $this->dm->flush();
+        }
+
+        return new JsonResponse([
+            'success' => $isSuccess,
+            'country' => ['id' => $country->getId(), 'name' => $country->getName()]
+        ]);
     }
 
     /**

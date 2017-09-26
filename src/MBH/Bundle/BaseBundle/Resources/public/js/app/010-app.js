@@ -46,14 +46,14 @@ var dangerTr = function() {
 }
 
 mbh.loader = {
-    html: '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>',
+    html: '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>'+ Translator.trans("package.processing") +'...</div>',
     acceptTo: function($container) {
         $container.html(this.html);
     }
 }
 
 mbh.error = {
-    html: '<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Произошла ошибка во время запроса. Попробуйте еще раз.</div>',
+    html: '<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>'+ Translator.trans("010-app.error_occured") +'.</div>',
     acceptTo: function($container) {
         $container.html(this.html);
     }
@@ -122,9 +122,9 @@ mbh.bootstrapSwitchConfig = {
 $('#work-shift-lock').on('click', function(e) {
     e.preventDefault();
     var $this = $(this);
-    var header = 'Блокирование смены';
-    var text = 'Вы уверены, что хотите блокировать текущую смену';
-    var buttonText = 'Блокировать';
+    var header = Translator.trans("010-app.shift_lock");
+    var text = Translator.trans("010-app.sure_block_shift");
+    var buttonText = Translator.trans("010-app.block");
     var buttonIcon = 'danger';
     var buttonClass = 'info';
     mbh.alert.show($this.attr('href'), header, text, buttonText, buttonIcon, buttonClass);
@@ -221,7 +221,12 @@ $(document).ready(function() {
     if (workShiftMenu.length == 1) {
         $('#logout-btn').on('click', function(e) {
             e.preventDefault();
-            mbh.alert.show(this.href, 'Рабочая смена не закрыта', 'Рабочая смена не закрыта', 'Выйти', 'fa-sign-out', 'danger');
+            mbh.alert.show(this.href,
+                Translator.trans("010-app.work_shift_not_closed"),
+                Translator.trans("010-app.work_shift_not_closed"),
+                Translator.trans("010-app.go_out"),
+                'fa-sign-out',
+                'danger');
         })
     }
 

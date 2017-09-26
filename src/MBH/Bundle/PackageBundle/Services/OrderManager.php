@@ -14,10 +14,9 @@ use MBH\Bundle\PackageBundle\Lib\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
@@ -107,6 +106,7 @@ class OrderManager implements Searchable
         $query->setSpecial($new->getSpecial());
         $query->memcached = false;
         $query->setExcludePackage($new);
+        $query->setSave(true);
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -137,6 +137,10 @@ class OrderManager implements Searchable
             ;
 
             $new = $this->recalculateServices($new);
+            if ($searchQueryId = $results[0]->getQueryId()) {
+                $searchQuery = $this->dm->find(SearchQuery::class, $searchQueryId);
+                $new->addSearchQuery($searchQuery);
+            }
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
             return $new;
@@ -477,7 +481,7 @@ class OrderManager implements Searchable
                     $defaultService->isRecalcWithPackage()
                 )
                 ->setPackage($package)
-                ->setNote($this->container->get('translator')->trans('mbhpackagebundle.services.ordermanager.usluga.po.umolchaniyu'));
+                ->setNote($this->container->get('translator')->trans('order_manager.package_service_comment.default_service'));
 
             $package->addService($packageService);
             $this->dm->persist($packageService);
@@ -568,6 +572,14 @@ class OrderManager implements Searchable
                 $this->dm->persist($infantService);
                 $this->dm->flush();
             }
+
+        }
+
+        //inject SearchQuery
+        if (isset($data['savedQueryId']) && (null !== $data['savedQueryId'])) {
+            $searchQuery = $this->dm->find('MBHPackageBundle:SearchQuery', $data['savedQueryId']);
+            $package->addSearchQuery($searchQuery);
+            $this->dm->flush();
         }
 
         return $package;
@@ -624,6 +636,13 @@ class OrderManager implements Searchable
         foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $day) {
             $newPricesByDate[$day->format('d_m_Y')] = $newDailyPrice;
             $packagePrice = $package->getPackagePriceByDate($day);
+            if (is_null($packagePrice)) {
+                $prices =  $package->getPrices()->toArray();
+                $firstPackagePrice = current($prices);
+                $packagePrice = clone $firstPackagePrice;
+                $packagePrice->setDate($day);
+                $package->addPackagePrice($packagePrice);
+            }
             $packagePrice->setPrice($newDailyPrice);
             if (!is_null($tariff)) {
                 $packagePrice->setTariff($tariff);

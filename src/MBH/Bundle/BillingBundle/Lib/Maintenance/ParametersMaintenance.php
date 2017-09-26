@@ -10,6 +10,8 @@ use Symfony\Component\Yaml\Yaml;
 
 final class ParametersMaintenance extends AbstractMaintenance
 {
+    /** @var string */
+    const DB_NAME_PREFIX = 'mbh_';
 
     public function install(string $clientName)
     {
@@ -37,7 +39,7 @@ final class ParametersMaintenance extends AbstractMaintenance
         $this->removeFile($this->getClientConfigFileName($clientName));
     }
 
-    public function update(string $clientName)
+    public function update(string $clientName, string $serverIp = null)
     {
         // TODO: Implement update() method.
     }
@@ -79,7 +81,7 @@ final class ParametersMaintenance extends AbstractMaintenance
     {
         $overrides = $newConfig ?: [
             'parameters' => [
-                'mongodb_database' => $clientName,
+                'mongodb_database' => self::DB_NAME_PREFIX.$clientName,
                 'secret' => $this->getContainer()->get('mbh.helper')->getRandomString(),
                 'router.request_context.host' => $clientName.'.maxibooking.ru',
                 'mbh_cache' => [

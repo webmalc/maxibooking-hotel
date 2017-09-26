@@ -38,6 +38,7 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
         }
         $kernel = $this->getContainer()->get('kernel');
         $producer = $this->getContainer()->get('old_sound_rabbit_mq.task_command_runner_producer');
+
         foreach ($clients as $client) {
             $command = new Command(
                 'mbh:channelmanager:pull',

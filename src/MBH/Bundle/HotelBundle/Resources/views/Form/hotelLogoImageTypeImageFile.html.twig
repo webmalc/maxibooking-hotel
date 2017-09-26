@@ -22,7 +22,7 @@
             {% endif %}
             {% if logo_image_delete_url is defined and logo_image_delete_url is not empty and image_uri %}
                 <p>
-                <a class="text-danger" href="{{ logo_image_delete_url }}"><i class="fa fa-trash-o"></i>{{ 'views.hotel.form.hotelType.delete'|trans }} </a>
+                <a class="text-danger delete-link" data-text="{{ 'views.hotel.form.hotelType.delete_modal_text'|trans }}" href="{{ logo_image_delete_url }}"><i class="fa fa-trash-o"></i>{{ 'views.hotel.form.hotelType.delete'|trans }} </a>
                 </p>
             {% endif %}
 

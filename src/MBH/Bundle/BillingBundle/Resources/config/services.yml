@@ -30,7 +30,7 @@ services:
         parent: mbh.maintenance.abstract
 
     mbh.mongo.maintenance:
-        public: false
+        public: true
         arguments: ["@service_container", {sampleDbName: "%mongodb_database%"}]
 
         class: MBH\Bundle\BillingBundle\Lib\Maintenance\MongoMaintenance
@@ -60,7 +60,15 @@ services:
         arguments: ["@mbh.billing.logger"]
         tags: ['console.command']
 
+    mbh.console.client_db_mover:
+        class: MBH\Bundle\BillingBundle\Command\ClientDBRemoteToLocalCommand
+        arguments: ["@mbh.billing.logger", "@mbh.mongo.maintenance"]
+        tags: ['console.command']
+
     mbh.console.billing_install:
         class: MBH\Bundle\BillingBundle\Command\BillingInstallCommand
         arguments: ["@mbh.billing.api", "@doctrine_mongodb.odm.default_document_manager", "@mbh.billing.logger"]
         tags: ['console.command']
+
+    mbh.service.ssh_commands:
+        class: MBH\Bundle\BillingBundle\Service\SshCommands

@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
@@ -44,6 +43,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     protected $name;
     /**
      * @ODM\Field(type="string")
+     * @Assert\Length(max="50")
      */
     protected $shortName;
     /**
@@ -66,7 +66,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
     /**
      * @ODM\Field(type="string")
      * @Assert\Length(min=9,max=9)
-     * @Assert\Type(type="digit", message="Значение должно быть числом")
+     * @Assert\Type(type="digit", message="document.organiztion.kpp.value_must_by_digit")
      */
     protected $kpp;
 

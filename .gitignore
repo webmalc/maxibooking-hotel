@@ -1,4 +1,6 @@
+index.html
 azovsky_remote/
+develop_folder/
 /web/test
 scripts/deploy_to_test.sh
 /scripts/upload
@@ -41,15 +43,22 @@ nbproject/
 /protectedUpload/1C/*
 /protectedUpload/orderDocuments/*
 /protectedUpload/vegaDocuments/*
+/protectedUpload/clients/*
+!/protectedUpload/clients/.gitkeep
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
 web/online
 app/supervisor
 docker_zalex
-
 web/clients/
+!web/clients/.gitkeep
 backup/
 src/MBH/Bundle/TestBundle/
+docker/php-fpm/keys/*
+!docker/php-fpm/keys/.gitkeep
+docker/nginx/fastcgi_param_client
+
+
 
 
 #Eclipse
@@ -116,3 +125,4 @@ GTAGS
 ctags
 env
 gtags
+

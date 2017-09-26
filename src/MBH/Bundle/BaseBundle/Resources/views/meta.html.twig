@@ -57,11 +57,7 @@
 
         {% block scripts %}
             {#Client config set Date#}
-            {% set dateDatepickers = 'midnight'|date('d.m.Y') %}
-
-            {% if client_config().beginDate is not empty and client_config().beginDate is defined and  date(dateDatepickers) < date(client_config().beginDate)  %}
-                {% set dateDatepickers = client_config().beginDate|date('d.m.Y')  %}
-            {% endif %}
+            {% set datePickerBeginDate = client_config().getActualBeginDate()|date('d.m.Y')  %}
             <script>
                 var mbh = {
                     currency: {
@@ -70,7 +66,7 @@
 
                     },
                     justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }}, 
-                    startDatePick: '{{ dateDatepickers|date('d.m.Y') }}',
+                    startDatePick: '{{ datePickerBeginDate|date('d.m.Y') }}',
                     UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
                     utils: {}
                 }
@@ -114,16 +110,18 @@
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}
 
-            {% if locale == 'en' %}
+            {% if locale starts with 'en' %}
                 {% set bootstrapLocale = 'en-GB' %}
                 {% set select2Locale = 'en' %}
-            {% elseif locale == 'ru' %}
+                {% set frontMessagesLocale = 'en' %}
+            {% elseif locale starts with 'ru' %}
                 {% set bootstrapLocale = 'ru' %}
                 {% set select2Locale = 'ru' %}
+                {% set frontMessagesLocale = 'ru' %}
             {% endif %}
             {% set bootstrapLocaleFile = 'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.' ~ bootstrapLocale ~ '.min.js' %}
             {% set select2LocaleFile = 'assets/vendor/select2/dist/js/i18n/' ~ select2Locale ~ '.js' %}
-            {% set frontMessagesFile = 'js/translations/front_messages/' ~ locale ~ '.js' %}
+            {% set frontMessagesFile = 'js/translations/front_messages/' ~ frontMessagesLocale ~ '.js' %}
 
             <script type="text/javascript" src="{{ asset(bootstrapLocaleFile) }}"></script>
             <script type="text/javascript" src="{{ asset(select2LocaleFile) }}"></script>

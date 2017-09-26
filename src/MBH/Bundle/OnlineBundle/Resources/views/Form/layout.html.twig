@@ -7,22 +7,51 @@
     {{ parent() }}
     <script src="{{ asset('assets/vendor/codemirror/lib/codemirror.js') }}"></script>
     <script src="{{ asset('assets/vendor/codemirror/mode/css/css.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/twig/twig.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/xml/xml.js') }}"></script>
+    <script src="{{ asset('assets/vendor/codemirror/mode/javascript/javascript.js') }}"></script>
     <script src="{{ asset('assets/vendor/codemirror/addon/display/fullscreen.js') }}"></script>
     <script>
-        if (document.getElementById('mbh_bundle_onlinebundle_form_type_css')) {
-            CodeMirror.fromTextArea(document.getElementById('mbh_bundle_onlinebundle_form_type_css'), {
+        var elements = [
+            {
+                elementId: 'mbh_bundle_onlinebundle_form_type_css',
+                type: 'css'
+            },
+            {
+                elementId: 'mbh_bundle_onlinebundle_form_type_js',
+                type: 'javascript'
+            }
+
+        ];
+        if ($("#mbh_bundle_onlinebundle_form_type_formTemplate").length) {
+            elements.push(
+                {
+                    elementId: 'mbh_bundle_onlinebundle_form_type_formTemplate',
+                    type: 'xml'
+                }
+            )
+        }
+
+        var applyCodeMirror = function (element, mode) {
+            CodeMirror.fromTextArea(element, {
                 lineNumbers: true,
-                mode: 'css',
+                mode: mode,
                 extraKeys: {
-                    "F11": function(cm) {
+                    "F11": function (cm) {
                         cm.setOption("fullScreen", !cm.getOption("fullScreen"));
                     },
-                    "Esc": function(cm) {
+                    "Esc": function (cm) {
                         if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
                     }
                 }
             });
+        };
+
+        for (var i in elements) {
+            var element = elements[i];
+            applyCodeMirror(document.getElementById(element.elementId), element.type);
         }
+
     </script>
 {% endblock %}
 

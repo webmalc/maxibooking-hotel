@@ -10,8 +10,8 @@
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {id: 'room-type-table-filter-widget'} %}
         <form id="room-types-table-filter" class="form-inline icon-label-form">
             <div class="form-group">
-                <label><i class="fa fa-bed" title='{{ 'mbhpackagebundle.view.report.roomtypes.tip.nomera'|trans }} ' data-toggle='tooltip'></i></label>
-                <select name="roomType" data-placeholder="{{ 'mbhpackagebundle.view.report.roomtypes.tip.nomera'|trans }} " id="accommodation-report-filter-roomType" class="form-control input-sm">
+                <label><i class="fa fa-bed" title='{{ 'report.room_types.room_type_filter.title'|trans }}' data-toggle='tooltip'></i></label>
+                <select name="roomType" data-placeholder="{{ 'report.room_types.room_type_filter.title'|trans }}" id="accommodation-report-filter-roomType" class="form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
@@ -20,8 +20,8 @@
             </div>
             {% if housings %}
                 <div class="form-group">
-                    <label><i class="fa fa-home" title='{{ 'mbhpackagebundle.view.report.roomtypes.korpus'|trans }} ' data-toggle='tooltip'></i></label>
-                    <select name="housing" data-placeholder="{{ 'mbhpackagebundle.view.report.roomtypes.korpus'|trans }} " id="accommodation-report-filter-housing" class="form-control input-sm">
+                    <label><i class="fa fa-home" title='{{ 'report.room_types.housing_filter.title'|trans }}' data-toggle='tooltip'></i></label>
+                    <select name="housing" data-placeholder="{{ 'report.room_types.housing_filter.title'|trans }}" id="accommodation-report-filter-housing" class="form-control input-sm">
                         <option></option>
                         {% for housing in housings %}
                             <option value="{{ housing.id }}" {% if housing.id in app.request.get('housing') and housing|length != app.request.get('housing')|length %}selected{% endif %}>{{ housing.name }}</option>
@@ -31,8 +31,8 @@
             {% endif %}
             {% if floors %}
                 <div class="form-group">
-                    <label><i class="fa fa-building" title='{{ 'mbhpackagebundle.view.report.roomtypes.etazh'|trans }} ' data-toggle='tooltip'></i></label>
-                    <select name="floor" data-placeholder="{{ 'mbhpackagebundle.view.report.roomtypes.etazh'|trans }} " id="accommodation-report-filter-floor" class="form-control input-sm" style="width: 75px">
+                    <label><i class="fa fa-building" title='{{ 'report.room_types.floor_filter.title'|trans }}' data-toggle='tooltip'></i></label>
+                    <select name="floor" data-placeholder="{{ 'report.room_types.floor_filter.title'|trans }}" id="accommodation-report-filter-floor" class="form-control input-sm" style="width: 75px">
                         <option></option>
                         {% for floor in floors %}
                             <option value="{{ floor }}" {% if floor in app.request.get('floor') and floor|length != app.request.get('floor')|length %}selected{% endif %}>{{ floor }}</option>
@@ -41,8 +41,8 @@
                 </div>
             {% endif %}
             <div class="form-group">
-                <label><i class="{{ currency().icon }}" title='{{ 'mbhpackagebundle.view.report.roomtypes.status.oplaty'|trans }} ' data-toggle='tooltip'></i></label>
-                <select name="status" data-placeholder="{{ 'mbhpackagebundle.view.report.roomtypes.status.oplaty'|trans }} " id="accommodation-report-filter-status" class="form-control input-sm">
+                <label><i class="{{ currency().icon }}" title='{{ 'report.room_types.payment_status_filter.title'|trans }}' data-toggle='tooltip'></i></label>
+                <select name="status" data-placeholder="{{ 'report.room_types.payment_status_filter.title'|trans }}" id="accommodation-report-filter-status" class="form-control input-sm">
                     <option></option>
                     {% for status in statuses %}
                         <option value="{{ status }}" {% if status == app.request.get('status') and floor|length != app.request.get('status')|length %}selected{% endif %}>{{ ('report.roomType.statuses.' ~ status)|trans }}</option>

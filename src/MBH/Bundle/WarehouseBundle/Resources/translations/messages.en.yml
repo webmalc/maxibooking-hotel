@@ -1,0 +1,18 @@
+warehouse.common.subtitle: List
+warehouse.common.savechanges: 'Save changes'
+warehouse.common.info: 'General info'
+warehouse.common.settings: Settings
+warehouse.rec.del: Deletion
+warehouse.record.th.price: Price
+warehouse.cat.new: 'New category'
+warehouse.cat.newSuccess: 'Category successfully added'
+warehouse.items.maxiTitle: 'Title only visible inside MaxiBooknig system'
+warehouse.items.saveSuccess: 'Changes successfully saved'
+warehouse.items.newSuccess: 'Commodity successfully added'
+warehouse.items.delSuccess: 'Commodity successfully deleted'
+warehouse.record.newSuccess: 'Entry successfully added'
+warehouse.record.editSuccess: 'Entry successfully edited.'
+warehouse.record.list: 'List of income and expenditure'
+mbhwarehousebundle.form.recordfiltertype.po: from
+warehouse.controller.invoicecontroller.consignment_saved: 'Document saved'
+warehouse.resources.form.recordfiltertype.with: to

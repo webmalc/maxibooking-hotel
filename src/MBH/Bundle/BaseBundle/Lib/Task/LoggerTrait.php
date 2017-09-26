@@ -48,7 +48,7 @@ trait LoggerTrait
      */
     public function logString(string $output = null):string
     {
-        $log = self::class . ': ' . $output;
+        $log = static::class . ': ' . $output;
         $this->logger->info($log);
 
         return $log;

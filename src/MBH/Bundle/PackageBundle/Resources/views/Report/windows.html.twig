@@ -8,7 +8,7 @@
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'windows-report-filter-widget'} %}
     <form id="windows-report-filter" class="form-inline filter-form remember mbh-start-date" role="form">
         <div class="input">
-            <i class="fa fa-calendar" title='{{ 'mbhpackagebundle.view.report.windows.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp
+            <i class="fa fa-calendar" title='{{ 'report.windows.dates'|trans }}' data-toggle='tooltip'></i>&nbsp
             <input type="text" name="begin" id="windows-report-filter-begin" class="datepicker windows-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy">
         </div>
         <div class="input hidden">
@@ -17,7 +17,7 @@
         </div>
 
         <div class="input">
-            <i class="fa fa-bed"  title='{{ 'mbhpackagebundle.view.report.windows.tip.nomera'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select name="roomType" multiple data-placeholder="{{ 'mbhpackagebundle.view.report.windows.tip.nomera'|trans }} " id="windows-report-filter-roomType" class="windows-report-filter form-control input-sm">
+            <i class="fa fa-bed"  title='{{ 'report.windows.room_type'|trans }}' data-toggle='tooltip'></i>&nbsp  <select name="roomType" multiple data-placeholder="{{ 'report.windows.room_type'|trans }}" id="windows-report-filter-roomType" class="windows-report-filter form-control input-sm">
                 <option></option>
                 {% for roomType in roomTypes %}
                     <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>

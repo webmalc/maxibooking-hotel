@@ -8,8 +8,9 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 /**
- * Данные об интервале в шахматке. Может представлять данные об интервале размещения,
- * ... интервале без размещения частично размещенной брони и неразмещенной брони
+ * .
+ * Data about interval in chessboard. Can display data about interval of accommodation,
+ * ... interval without accommodation partly placed package and unplaced package
  *
  * Class ChessBoardUnit
  * @package MBH\Bundle\PackageBundle\Models\ChessBoard
@@ -72,6 +73,7 @@ class ChessBoardUnit implements \JsonSerializable
             'paidStatus' => $this->package->getPaidStatus(),
             'packageBegin' => $this->package->getBegin()->format('d.m.Y'),
             'packageEnd' => $this->package->getEnd()->format('d.m.Y'),
+            'packageRoomTypeId' => $this->package->getRoomType()->getId(),
             'isCheckIn' => $this->package->getIsCheckIn(),
             'isCheckOut' => $this->package->getIsCheckOut(),
             'isLocked' => $this->package->getIsLocked(),
@@ -80,7 +82,8 @@ class ChessBoardUnit implements \JsonSerializable
             'updatePackage' => $this->hasUpdatePackageRights($this->package),
             'packageId' => $this->getPackageId(),
             'isEarlyCheckIn' => $this->hasEarlyCheckin,
-            'isLateCheckOut' => $this->hasLateCheckout
+            'isLateCheckOut' => $this->hasLateCheckout,
+            'isAccommodationInterval' => !is_null($this->accommodation)
         ];
 
         if ($this->package->getPayer()) {
@@ -137,38 +140,8 @@ class ChessBoardUnit implements \JsonSerializable
     }
 
     /**
-     * @return bool
-     */
-    private function isEarlyCheckIn()
-    {
-        /** @var PackageService $service */
-        foreach ($this->package->getServices() as $service) {
-            if ($service->getService()->getCode() === 'Early check-in') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @return bool
-     */
-    private function isLateCheckOut()
-    {
-        /** @var PackageService $service */
-        foreach ($this->package->getServices() as $service) {
-            if ($service->getService()->getCode() === 'Late check-out') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Получение относительного положения размещения по отношению к остальным размещениям брони
-     * Размещение может занимать полное время брони, быть первым размещением, последним размещением или промежуточным
+     * Obtaining the relative position of places relative to other package locations
+     * Accommodation can take full advantage, being the first placement, last placement or intermediate
      *
      * @param PackageAccommodation $accommodation
      * @param Package $package

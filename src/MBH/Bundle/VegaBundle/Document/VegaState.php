@@ -5,30 +5,36 @@ namespace MBH\Bundle\VegaBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use MBH\Bundle\BaseBundle\Document\Base;
+use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
  * Class VegaFMS
  * @package MBH\Bundle\VegaBundle\Document
  *
+ * @MongoDBUnique(fields="name", message="vega_state.error.unique_name")
  * @ODM\Document(collection="vega_states")
  * @Gedmo\Loggable
-
  */
 class VegaState extends Base
 {
     /**
      * @var string
-     * @ODM\Field(type="string") 
-     * @Gedmo\Versioned
-     */
-    protected $name;
-
-    /**
-     * @var string
-     * @ODM\Field(type="string") 
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     * @Assert\Regex("/[a-zа-я]/i")
      * @Gedmo\Versioned
      */
     protected $originalName;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\Regex("/[a-zа-я]/i")
+     * @Assert\NotNull()
+     * @Gedmo\Versioned
+     */
+    protected $name;
 
     /**
      * @return string
@@ -40,10 +46,13 @@ class VegaState extends Base
 
     /**
      * @param string $name
+     * @return VegaState
      */
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -56,10 +65,13 @@ class VegaState extends Base
 
     /**
      * @param $originalName
+     * @return VegaState
      */
     public function setOriginalName($originalName)
     {
         $this->originalName = $originalName;
+
+        return $this;
     }
 
     /**

@@ -25,7 +25,7 @@ class OnRequest
         //set default timezone
         $tz = $this->container->getParameter('mbh.timezone');
         if (!empty($tz) && $tz != 'default') {
-            $this->container->get('twig')->getExtension('core')->setTimezone($tz);
+            $this->container->get('twig')->getExtension('Twig_Extension_Core')->setTimezone($tz);
         }
 
 //        return new RedirectResponse('yandex.ru', 301);

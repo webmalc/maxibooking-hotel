@@ -109,7 +109,6 @@ class ChessBoardManager {
         };
 
         let $reportFilter = $('#accommodation-report-filter');
-
         $('.daterangepicker-input').daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
             mbh.datarangepicker.on($reportFilter.find('.begin-datepicker.mbh-daterangepicker'), $reportFilter.find('.end-datepicker.mbh-daterangepicker'), picker);
         });
@@ -190,10 +189,11 @@ class ChessBoardManager {
         $slider.slider({tooltip : 'hide', reverseed: true});
         $slider.on('slideStop', () => {
             let sliderValue = $('#ex1').slider('getValue');
-            ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
-            this.currentSizeConfigNumber = sliderValue;
-            window.location.reload();
-            // this.setStyles(sliderValue);
+            if (this.currentSizeConfigNumber !== sliderValue) {
+                ChessBoardManager.setCookie('chessboardSizeNumber', sliderValue);
+                this.currentSizeConfigNumber = sliderValue;
+                window.location.reload();
+            }
         });
     }
 
@@ -374,6 +374,7 @@ class ChessBoardManager {
         let packageDiv = templatePackageElement.cloneNode(true);
         packageDiv.style.width = packageWidth + 'px';
         packageDiv.id = packageItem.id;
+
         let description = document.createElement('div');
         let packageName = (packageItem.payer) ? packageItem.payer : packageItem.number;
         let descriptionText = packageName ? packageName.substr(0, packageCellCount * 5 - 1) : '';
@@ -384,6 +385,31 @@ class ChessBoardManager {
         packageDiv.appendChild(description);
         description.style.width = Math.floor(descriptionText.length * ChessBoardManager.PACKAGE_FONT_SIZE_WIDTH) + 'px';
         packageDiv.classList.add(packageItem.paidStatus);
+        //
+        // description.setAttribute('data-toggle', 'popover');
+        // description.setAttribute('data-html', "true");
+        // description.setAttribute('data-container', "body");
+        // description.setAttribute('title', packageItem.number);
+        // description.setAttribute('data-placement', 'top');
+        // let descriptionPopoverContent = '<b>Номер</b>:' + packageItem.number
+        //     + (packageItem.payer ? '<br><b>Плательщик: </b>' + packageItem.payer : '')
+        //     + '<br><b>Цена: </b>' + packageItem.price
+        //     + '<br><b>Заезд брони: </b>' + packageItem.packageBegin
+        //     + '<br><b>Выезд брони: </b>' + packageItem.packageBegin
+        //     + '<br><b>Заехали: </b>' + (packageItem.isCheckIn ? 'да' : 'нет')
+        //     + '<br><b>Выехали: </b>' + (packageItem.packageBegin ? 'да' : 'нет');
+        // description.setAttribute('data-content', descriptionPopoverContent);
+        // packageDiv.onmousemove = function () {
+        //     let descriptionElement = this.getElementsByClassName('package-description')[0];
+        //     let popoverId = descriptionElement.getAttribute('aria-describedby');
+        //     if (popoverId == null) {
+        //         $(descriptionElement).popover('show');
+        //     }
+        // };
+        // packageDiv.onmouseleave = function () {
+        //     let descriptionElement = this.getElementsByClassName('package-description')[0];
+        //     $(descriptionElement).popover('hide');
+        // };
 
         if (packageItem.position == 'middle' || packageItem.position == 'left') {
             packageDiv.classList.add('with-right-divider');
@@ -767,7 +793,7 @@ class ChessBoardManager {
     }
 
     private getGriddedHeightValue(height) {
-        //1 - бордер
+        //1px - border
         let packageElementHeight = styleConfigs[this.currentSizeConfigNumber].tableCellHeight + 1;
 
         return Math.floor(height / packageElementHeight) * packageElementHeight - 1;
@@ -782,7 +808,7 @@ class ChessBoardManager {
     }
 
     /**
-     * Получение строки, содержащей первые буквы сторон, в которые можно расширять бронь.(e - east, w - west)
+     * Getting the line, containing first letters of sides in which enable widening (e - east, w - west)
      * @param intervalData
      * @returns {string}
      */
@@ -996,6 +1022,7 @@ class ChessBoardManager {
 
         $popoverElements.unbind('shown.bs.popover');
         $popoverElements.on('shown.bs.popover', function () {
+            //remove unplaced package from popover
             let lastPackage = $('.package').last();
             if (lastPackage.attr('unplaced')) {
                 lastPackage.remove();

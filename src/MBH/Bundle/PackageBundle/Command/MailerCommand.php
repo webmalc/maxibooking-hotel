@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Command;
 
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -46,14 +47,18 @@ class MailerCommand extends ContainerAwareCommand
         $repo = $this->dm->getRepository('MBHPackageBundle:Package');
 
         //begin tomorrow report
-        $packages = $repo->createQueryBuilder('p')
+        $packages = $repo->createQueryBuilder()
             ->field('begin')->gte($tomorrow)
             ->field('begin')->lt($dayAfterTomorrow)
             ->getQuery()
             ->execute();
         ;
+
+        $translatedTransferCategory = $this->getContainer()->get('translator')
+            ->trans('price.datafixtures.mongodb.servicedata.transfer');
+
         $transferCategories = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->findBy([
-           '$or' => [['fullTitle' => 'Трансфер'], ['title' => 'Трансфер']],
+           '$or' => [['fullTitle' => $translatedTransferCategory], ['title' => $translatedTransferCategory]],
            'isEnabled' => true
         ]);
         $transferServices = $this->dm->getRepository('MBHPriceBundle:Service')->findBy([
@@ -86,6 +91,7 @@ class MailerCommand extends ContainerAwareCommand
                 ->setTemplate('MBHBaseBundle:Mailer:reportArrival.html.twig')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+1 minute'))
+                ->setMessageType(NotificationType::ARRIVAL_TYPE)
             ;
             $notifier
                 ->setMessage($message)
@@ -122,6 +128,7 @@ class MailerCommand extends ContainerAwareCommand
                     ->addRecipient($payer)
                     ->setLink('hide')
                     ->setSignature('mailer.online.user.signature')
+                    ->setMessageType(NotificationType::ARRIVAL_TYPE)
                 ;
                 $notifier
                     ->setMessage($message)
@@ -180,6 +187,7 @@ class MailerCommand extends ContainerAwareCommand
                     ->setLink($link)
                     ->setLinkText('mailer.online.user.poll.link')
                     ->setSignature('mailer.online.user.signature')
+                    ->setMessageType(NotificationType::FEEDBACK_TYPE)
                 ;
                 $notifier
                     ->setMessage($message)

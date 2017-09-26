@@ -253,7 +253,7 @@ class RoomCache
                 $kernel->isDebug()
             );
 
-            $this->container->get('old_sound_rabbit_mq.task_command_runner_producer')->publish(
+            $this->container->get('old_sound_rabbit_mq.task_cache_recalculate_producer')->publish(
                 serialize(
                     $command
                 )

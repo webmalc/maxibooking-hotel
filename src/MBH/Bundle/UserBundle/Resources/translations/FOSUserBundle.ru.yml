@@ -35,16 +35,16 @@ resetting.reset.submit: 'Изменить пароль'
 resetting.flash.success: 'Пароль успешно сброшен'
 resetting.email.subject: 'Сброс пароля'
 resetting.email.message: "Приветствуем, %username%!\n\nДля сброса пароля, пожалуйста, перейдите по ссылке, нажатием кнопки \"%buttonName%\". \n\nС наилучшими пожеланиями, команда Maxibooking.\n"
-resetting.error.enter_captcha: Необходимо ввести капчу.
-resetting.error.user_not_exists: "Пользователь с именем или почтой \"%username%\" не существует."
+resetting.error.enter_captcha: 'Необходимо ввести капчу.'
+resetting.error.user_not_exists: 'Пользователь с именем или почтой "%username%" не существует.'
 layout.logout: Выйти
 layout.login: Войти
 layout.groups: Группы
-group.name: Название
+group.name: 'Название группы'
 layout.register: Регистрация
 layout.logged_in_as: 'Привет, %username%'
-group.edit: редактирование группы
-group.create: создание группы
+group.edit: 'Редактирование группы'
+group.create: 'Создание группы'
 form.group_name: 'Название группы:'
 form.username: логин
 form.email: email@example.ru
@@ -53,8 +53,8 @@ form.password: 'Пароль:'
 form.password_confirmation: 'Подтвердите пароль:'
 form.new_password: 'Новый пароль:'
 form.new_password_confirmation: 'Подтвердите пароль:'
-edit.small_title: 'редактирование'
-user.index.small_title: 'список'
+edit.small_title: Редактирование
+user.index.small_title: Список
 index.login: Логин
 index.groups: Группы
 index.permissions: Права
@@ -63,9 +63,9 @@ index.status: Статус
 index.disabled: Отключен
 record.index.edit: 'Редактирование записи'
 record.index.remove: 'Удаление записи'
-layout.users: 'Пользователи'
-new.create: 'создание'
-views.profile.layout.user: "Пользователь"
-views.profile.profile.change_password: "cмена пароля"
-views.profile.profile.password_error: Пароль дожен быть не меньше 8 символов и содержать цифру и заглавную букву!
-views.security.login.enter_in: Войти в
+layout.users: Пользователи
+new.create: Создание
+views.profile.layout.user: Пользователь
+views.profile.profile.change_password: 'Смена пароля'
+views.profile.profile.password_error: 'Пароль дожен быть не меньше 8 символов и содержать цифру и заглавную букву!'
+views.security.login.enter_in: 'Войти в'

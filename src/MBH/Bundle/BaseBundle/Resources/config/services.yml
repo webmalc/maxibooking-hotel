@@ -99,13 +99,13 @@ services:
       calls:
         - [attach, ["@mbh.system.messenger"]]
         - [attach, ["@mbh.mailer"]]
-      arguments: ['@service_container']
+      arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.notifier.mailer:
           class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
           calls:
             - [attach, ["@mbh.mailer"]]
-          arguments: ['@service_container']
+          arguments: ['@service_container', "@mbh.mailer.logger"]
 
     mbh.mailer:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Mailer
@@ -244,6 +244,24 @@ services:
         calls:
             - [pushHandler, ['@mbh.mailer.logger_handler']]
 
+    mbh.universal_command.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.mailer.log", 200]
+
+    mbh.universal_command.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: ['app']
+        calls:
+            - [pushHandler, ['@mbh.universal_command.logger_handler']]
+
+    mbh_bundle_base.command.universal_command:
+        class: MBH\Bundle\BaseBundle\Command\UniversalCommand
+        arguments: ["@mbh.universal_command.logger"]
+        calls:
+            - [setContainer, ['@service_container']]
+        tags:
+            - { name: console.command }
+
     mbh.mailer.logger_handler:
         public: false
         class: Monolog\Handler\StreamHandler
@@ -280,7 +298,6 @@ services:
         arguments: [app]
         calls:
             - [pushHandler, ['@mbh.image_migrate.logger_handler']]
-
     mbh.image_migrate.logger_handler:
         public: false
         class:     Monolog\Handler\StreamHandler
@@ -296,3 +313,29 @@ services:
         arguments:
             - '@mbh.raw_mongo_data_handler'
             - '@translator'
+
+    mbh.command.image_migrate:
+        class: MBH\Bundle\BaseBundle\Command\ImageMigrateCommand
+        arguments: ['@mbh.service.ssh_commands', '@mbh.app.root_dir', '@mbh.client.name']
+        tags:
+            - { name: console.command }
+
+    mbh.client.name:
+        class: AppKernel
+        factory: ['@kernel',getClient]
+
+    mbh.app.root_dir:
+        class: AppKernel
+        factory: ['@kernel',getRootDir]
+
+    mbh.swiftmailer.array.logger:
+        public: false
+        class: MBH\Bundle\BaseBundle\Lib\SwiftMailerLogger
+        arguments: ['@mbh.mailer.logger']
+
+    mbh.swiftmailer.logger:
+        class: Swift_Plugins_LoggerPlugin
+        arguments: ["@mbh.swiftmailer.array.logger"]
+        tags:
+            - { name: 'swiftmailer.default.plugin' }
+

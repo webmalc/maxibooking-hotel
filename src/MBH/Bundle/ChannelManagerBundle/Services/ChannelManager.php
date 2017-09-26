@@ -2,9 +2,13 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Lib\Task\Command;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -30,28 +34,31 @@ class ChannelManager
      * @var array
      */
     protected $services = [];
-    
+
     /**
      * @var string
      */
     protected $console;
-    
+
     /**
      * @var string
      */
     protected $env;
 
     protected $client;
+    /** @var  Producer */
+    protected $producer;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->services = $this->getServices();
-        $this->console = $container->get('kernel')->getRootDir() . '/../bin/console ';
+        $this->console = $container->get('kernel')->getRootDir().'/../bin/console ';
         $this->env = $this->container->get('kernel')->getEnvironment();
         $this->logger = $container->get('mbh.channelmanager.logger');
         $this->client = $container->getParameter('client');
+        $this->producer = $this->container->get('old_sound_rabbit_mq.task_command_runner_producer');
     }
 
     /**
@@ -59,7 +66,7 @@ class ChannelManager
      */
     private function checkEnvironment()
     {
-        return ($this->container->getParameter('mbh.environment') != 'prod') ? false : true;
+        return $this->container->getParameter('mbh.environment') === 'prod';
     }
 
     /**
@@ -84,33 +91,52 @@ class ChannelManager
                     }
 
                     $services[] = [
-                    'service' => $service,
-                    'title'   => $info['title'],
-                    'key'     => $key
+                        'service' => $service,
+                        'title' => $info['title'],
+                        'key' => $key,
                     ];
                 }
             } catch (\Exception $e) {
+                $this->logger->addAlert('Error in getServices method of ChannelManager. '.$e->getMessage());
             }
         }
 
         return $services;
     }
 
+    private function addCommandToQueue(
+        string $command,
+        array $params = [],
+        \DateTime $begin = null,
+        \DateTime $end = null
+    ) {
+        $kernel = $this->container->get('kernel');
+        /** @var \AppKernel $kernel */
+        $client = $kernel->getClient();
+        $env = $kernel->getEnvironment();
+        $isDebug = $kernel->isDebug();
+
+        !$begin ?: $params['--begin'] = $begin->format('d.m.Y');
+        !$end ?: $params['--end'] = $end->format('d.m.Y');
+
+        $command = new Command($command, $params, $client, $env, $isDebug);
+        $this->producer->publish(serialize($command));
+
+        $message = sprintf("Add command %s to queue", $command->getCommand());
+        $this->logger->addInfo($message);
+    }
+
     public function clearAllConfigsInBackground()
     {
-        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
-
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:configs ' . $env . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
-        $process->run();
+        $command = 'mbh:channelmanager:configs';
+        $this->addCommandToQueue($command);
     }
 
 
     public function closeInBackground()
     {
-        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
-
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:close ' . $env . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
-        $process->run();
+        $command = 'mbh:channelmanager:close';
+        $this->addCommandToQueue($command);
     }
 
     /**
@@ -119,12 +145,9 @@ class ChannelManager
      */
     public function updateInBackground(\DateTime $begin = null, \DateTime $end = null)
     {
-        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
-        $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
-        $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
+        $command = 'mbh:channelmanager:update';
+        $this->addCommandToQueue($command, [], $begin, $end);
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
-        $process->run();
     }
 
     /**
@@ -133,12 +156,10 @@ class ChannelManager
      */
     public function updateRoomsInBackground(\DateTime $begin = null, \DateTime $end = null)
     {
-        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
-        $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
-        $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
+        $command = 'mbh:channelmanager:update';
+        $params['--type'] = 'rooms';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=rooms ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
-        $process->run();
+        $this->addCommandToQueue($command, $params, $begin, $end);
     }
 
     /**
@@ -147,12 +168,10 @@ class ChannelManager
      */
     public function updatePricesInBackground(\DateTime $begin = null, \DateTime $end = null)
     {
-        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
-        $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
-        $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
+        $command = 'mbh:channelmanager:update';
+        $params['--type'] = 'prices';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=prices ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
-        $process->run();
+        $this->addCommandToQueue($command, $params, $begin, $end);
     }
 
     /**
@@ -161,12 +180,12 @@ class ChannelManager
      */
     public function pullOrdersInBackground($serviceTitle = null, $old = false)
     {
-        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
-        $serviceTitle ? $service = ' --service=' . $serviceTitle : '';
-        $old ? $old = ' --old' : '';
+        $params = [];
+        $command = 'mbh:channelmanager:pull';
+        !$serviceTitle ?: $params['--service'] = $serviceTitle;
+        !$old ?: $params[' --old'] = '';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:pull ' . $env . $service . $old . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
-        $process->run();
+        $this->addCommandToQueue($command, $params);
     }
 
     /**
@@ -175,12 +194,10 @@ class ChannelManager
      */
     public function updateRestrictionsInBackground(\DateTime $begin = null, \DateTime $end = null)
     {
-        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
-        $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
-        $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
+        $command = 'mbh:channelmanager:update';
+        $params['--type'] = 'restrictions';
 
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --type=restrictions ' . $env . $begin . $end . '> /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $this->client]);
-        $process->run();
+        $this->addCommandToQueue($command, $params, $begin, $end);
     }
 
     /**
@@ -201,16 +218,13 @@ class ChannelManager
 
         return $results;
     }
-    
-    /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param RoomType $roomType
-     * @throw \Exception
-     * @return array
-     */
-    public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
-    {
+
+    private function executeServiceCommand(
+        \DateTime $begin = null,
+        \DateTime $end = null,
+        RoomType $roomType = null,
+        $command
+    ) {
         if (!$this->checkEnvironment()) {
             false;
         }
@@ -218,28 +232,44 @@ class ChannelManager
         $result = false;
         foreach ($this->services as $service) {
             try {
-                $noError = false;
-
-                if (empty($roomType) && empty($begin) && empty($end)) {
+                $noError = true;
+                if (empty($roomType) && empty($begin) && empty($end) && $command === AbstractChannelManagerService::COMMAND_UPDATE) {
                     $noError = $service['service']->closeAll();
                 }
 
                 if (!empty($roomType) || $noError) {
-                    $noError = $result[$service['key']]['result'] = $service['service']->update($begin, $end, $roomType);
+                    $noError = $result[$service['key']]['result'] = $service['service']->$command(
+                        $begin,
+                        $end,
+                        $roomType
+                    );
                 }
 
                 if (!$noError) {
+                    $this->logger->error($service['key'].' error when '.$command);
                     $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
                 $this->sendMessage($service, [(string)$e]);
-                $this->logger->error(get_called_class() . ': ' . (string)$e);
+                $this->logger->error(get_called_class().': '.(string)$e);
             }
         }
 
         return $result;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @throw \Exception
+     * @return array|bool
+     */
+    public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
+        return $this->executeServiceCommand($begin, $end, $roomType, AbstractChannelManagerService::COMMAND_UPDATE);
     }
 
     /**
@@ -251,27 +281,7 @@ class ChannelManager
      */
     public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        if (!$this->checkEnvironment()) {
-            false;
-        }
-
-        $result = false;
-        foreach ($this->services as $service) {
-            try {
-                $noError = $result[$service['key']]['result'] = $service['service']->updateRooms($begin, $end, $roomType);
-
-                if (!$noError) {
-                    $this->sendMessage($service, $service['service']->getErrors());
-                }
-            } catch (\Exception $e) {
-                $result[$service['key']]['result'] = false;
-                $result[$service['key']]['error'] = $e;
-                $this->sendMessage($service, [(string)$e]);
-                $this->logger->error(get_called_class() . ': ' . (string)$e);
-            }
-        }
-
-        return $result;
+        return $this->executeServiceCommand($begin, $end, $roomType, AbstractChannelManagerService::COMMAND_UPDATE_ROOMS);
     }
 
     /**
@@ -283,27 +293,7 @@ class ChannelManager
      */
     public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        if (!$this->checkEnvironment()) {
-            false;
-        }
-
-        $result = false;
-        foreach ($this->services as $service) {
-            try {
-                $noError = $result[$service['key']]['result'] = $service['service']->updatePrices($begin, $end, $roomType);
-
-                if (!$noError) {
-                    $this->sendMessage($service, $service['service']->getErrors());
-                }
-            } catch (\Exception $e) {
-                $result[$service['key']]['result'] = false;
-                $result[$service['key']]['error'] = $e;
-                $this->sendMessage($service, [(string)$e]);
-                $this->logger->error(get_called_class() . ': ' . (string)$e);
-            }
-        }
-
-        return $result;
+        return $this->executeServiceCommand($begin, $end, $roomType, AbstractChannelManagerService::COMMAND_UPDATE_PRICES);
     }
 
     /**
@@ -315,28 +305,9 @@ class ChannelManager
      */
     public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        if (!$this->checkEnvironment()) {
-            false;
-        }
-
-        $result = false;
-        foreach ($this->services as $service) {
-            try {
-                $noError = $result[$service['key']]['result'] = $service['service']->updateRestrictions($begin, $end, $roomType);
-
-                if (!$noError) {
-                    $this->sendMessage($service, $service['service']->getErrors());
-                }
-            } catch (\Exception $e) {
-                $result[$service['key']]['result'] = false;
-                $result[$service['key']]['error'] = $e;
-                $this->sendMessage($service, [(string)$e]);
-                $this->logger->error(get_called_class() . ': ' . (string)$e);
-            }
-        }
-
-        return $result;
+        return $this->executeServiceCommand($begin, $end, $roomType, AbstractChannelManagerService::COMMAND_UPDATE_RESTRICTIONS);
     }
+
 
     public function pushResponse($serviceTitle, Request $request)
     {
@@ -349,7 +320,7 @@ class ChannelManager
                 return $service['service']->pushResponse($request);
             } catch (\Exception $e) {
                 $this->sendMessage($service, [(string)$e]);
-                $this->logger->error(get_called_class() . ': ' . (string)$e);
+                $this->logger->error(get_called_class().': '.(string)$e);
             }
         }
 
@@ -365,7 +336,7 @@ class ChannelManager
     public function pullOrders($serviceTitle = null, $old = false)
     {
         if (!$this->checkEnvironment()) {
-            return  false;
+            return false;
         }
         $result = false;
         foreach ($this->services as $service) {
@@ -373,17 +344,20 @@ class ChannelManager
                 continue;
             }
             try {
+                $this->logger->info('Start pullOrders for '.$service['title']);
                 $noError = $result[$service['key']]['result'] = $service['service']->pullOrders($old);
                 if (!$noError) {
+                    $this->logger->error($serviceTitle.' error when pull orders');
                     $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
                 $this->sendMessage($service, [(string)$e]);
-                $this->logger->error(get_called_class() . ': ' . (string)$e);
+                $this->logger->error(get_called_class().': '.(string)$e);
             }
         }
+
         return $result;
     }
 
@@ -395,12 +369,14 @@ class ChannelManager
     {
         $notifier = $this->container->get('mbh.notifier');
         $message = $notifier::createMessage();
-        $text = $service['title'] . $this->container->get('translator')->trans('services.channelManager.sync_error_check_interaction_settings');
+        $text = $service['title'].$this->container->get('translator')->trans(
+                'services.channelManager.sync_error_check_interaction_settings'
+            );
         if (count($errors)) {
-            $text .= '<br><br>' . htmlentities(implode('<br><br>', $errors));
+            $text .= '<br><br>'.htmlentities(implode('<br><br>', $errors));
         }
         foreach ($service['service']->getConfig() as $config) {
-            $text .= '<br>' . $config->getHotel();
+            $text .= '<br>'.$config->getHotel();
         }
         $message
             ->setText($text)
@@ -409,10 +385,9 @@ class ChannelManager
             ->setCategory('error')
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'))
-        ;
+            ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE);
         $notifier
             ->setMessage($message)
-            ->notify()
-        ;
+            ->notify();
     }
 }

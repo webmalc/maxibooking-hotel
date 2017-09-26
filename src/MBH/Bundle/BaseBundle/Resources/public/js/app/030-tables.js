@@ -23,25 +23,25 @@ var docReadyTables = function () {
         "pageLength": 50,
         "stateSave": true,
         "language": {
-            "sProcessing": "Подождите...",
-            "sLengthMenu": "Показать _MENU_ записей",
-            "sZeroRecords": "Записи отсутствуют.",
-            "sInfo": "Записи с _START_ до _END_ из _TOTAL_ записей",
-            "sInfoEmpty": "Записи с 0 до 0 из 0 записей",
-            "sInfoFiltered": "(отфильтровано из _MAX_ записей)",
-            "sEmptyTable": "Ничего не найдено",
+            "sProcessing": Translator.trans("list.sProcessing") + "...",
+            "sLengthMenu": Translator.trans('list.sLengthMenu', {"menu": "_MENU_"}),
+            "sZeroRecords": Translator.trans("list.sZeroRecords"),
+            "sInfo": Translator.trans("list.sInfo", {'start' : '_START_', 'end' : '_END_', 'total' : "_TOTAL_"}),
+            "sInfoEmpty": Translator.trans("list.sInfoEmpty"),
+            "sInfoFiltered": "(" + Translator.trans("list.sInfoFiltered", {"max" : "_MAX_"}) + ")",
+            "sEmptyTable": Translator.trans("list.sEmptyTable"),
             "sInfoPostFix": "",
-            "sSearch": "Поиск ",
+            "sSearch": Translator.trans("list.sSearch") + " ",
             "sUrl": "",
             "oPaginate": {
-                "sFirst": "Первая",
-                "sPrevious": "Назад",
-                "sNext": "Вперед",
-                "sLast": "Последняя"
+                "sFirst": Translator.trans("list.sFirst"),
+                "sPrevious": Translator.trans("list.sPrevious"),
+                "sNext": Translator.trans("list.sNext"),
+                "sLast": Translator.trans("list.sLast")
             },
             "oAria": {
-                "sSortAscending": ": активировать для сортировки столбца по возрастанию",
-                "sSortDescending": ": активировать для сортировки столбцов по убыванию"
+                "sSortAscending": ": " + Translator.trans("list.sSortAscending"),
+                "sSortDescending": ": " + Translator.trans("list.sSortDescending")
             }
         },
         "drawCallback": function () {

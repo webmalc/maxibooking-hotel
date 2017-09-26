@@ -89,7 +89,7 @@
                     {% if clientConfig and clientConfig.useRoomTypeCategory() and row.roomType.category %}
                         {{ row.roomType.category }} -
                     {% endif %}
-                    мест: {{ row.roomType.places }}{% if row.roomType.additionalPlaces > 0 %}(+{{ row.roomType.additionalPlaces }}){% endif %}
+                    {{ 'search.results.number_of_places'|trans}}: {{ row.roomType.places }}{% if row.roomType.additionalPlaces > 0 %}(+{{ row.roomType.additionalPlaces }}){% endif %}
                     - {{ row.roomType.hotel }}
                 </small>
                 <div class="pull-right">
@@ -102,7 +102,7 @@
                 {% endif %}
                 {% if query.limit %}
                     <a data-roomType="{{ clientConfig and clientConfig.useRoomTypeCategory() and row.roomType.category ? row.roomType.category.id : row.roomType.id }}" href="#" class="btn btn-xs btn-default search-all-tariffs-link margin-left-sm">
-                        все тарифы
+                        {{ 'search.results.all_tariffs'|trans}}
                     </a>
                 {% endif %}
                 </div>
@@ -157,7 +157,7 @@
 
                                     {% set arr = priceTourists|split('_') %}
                                     <option value="{{ priceTourists }}">
-                                        {% if arr[0] > 0 %}{{ arr[0] }} вз.{% endif %}{% if arr[0] > 0 and arr[1] > 0 %}+{% endif %}{% if arr[1] > 0 %}{{ arr[1] }} рб.{% endif %}
+                                        {% if arr[0] > 0 %}{{ arr[0] }} {{ 'search.results.number_of_adults'|trans}}{% endif %}{% if arr[0] > 0 and arr[1] > 0 %}+{% endif %}{% if arr[1] > 0 %}{{ arr[1] }} {{ 'search.results.number_of_children'|trans}}{% endif %}
                                     </option>
                                 {% endfor %}
                             </select>
@@ -185,11 +185,13 @@
                                 begin: result.begin|date('d.m.Y'),
                                 end: result.end|date('d.m.Y'),
                                 forceBooking: result.forceBooking,
-                                infants: result.infants
+                                infants: result.infants,
+                                query_id: result.queryId
+
                             })) }}"
                                target="_blank"
                                class="btn btn-success btn-xs package-search-book {{ is_granted('ROLE_PACKAGE_NEW') is empty ? 'hidden' }}"
-                               title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
+                               title="{{ 'search.results.book_button.title'|trans }}: {{ result.roomsCount }}" data-toggle="tooltip">
                                 <span class="package-search-book-reservation-text">{{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}</span>
                                 <span class="package-search-book-accommodation-text"
                                       style="display: none;">{{ "search.results.accommodation"|trans({}, "MBHPackageBundle") }}</span>

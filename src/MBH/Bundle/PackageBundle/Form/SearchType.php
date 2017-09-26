@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -100,7 +101,7 @@ class SearchType extends AbstractType
                 'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
             ))
             ->add('end', DateType::class, array(
-                'label' => 'Отъезд',
+                'label' => 'form.searchType.check_out',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => true,
@@ -160,7 +161,7 @@ class SearchType extends AbstractType
             'orderId' => null,
             'roomManager' => null,
             'startDate' => new \DateTime(),
-            'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery',
+            'data_class' => SearchQuery::class,
             'method' => 'GET',
             'client_config' => null
         ]);

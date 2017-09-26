@@ -10,6 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
@@ -178,7 +179,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "101Hotels","oktogo"},
+     *      choices = {"vashotel", "booking", "myallocator", "ostrovok", "expedia", "hotels", "venere", "101Hotels","oktogo"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      * @ODM\Index()
@@ -792,7 +793,7 @@ class Order extends Base
     }
 
     /**
-     * @return PayerInterface|null
+     * @return RecipientInterface|PayerInterface|null
      */
     public function getPayer()
     {
@@ -994,5 +995,4 @@ class Order extends Base
         $this->onlinePaymentType = $onlinePaymentType;
         return $this;
     }
-
 }

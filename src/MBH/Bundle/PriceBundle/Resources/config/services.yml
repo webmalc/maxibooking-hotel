@@ -76,6 +76,12 @@ services:
       tags:
           - {name: form.type}
 
+  mbh.tariff_inheritance_type:
+      class: MBH\Bundle\PriceBundle\Form\TariffInheritanceType
+      arguments: ['@translator']
+      tags:
+          - {name: form.type}
+
   mbh.service_type:
       class: MBH\Bundle\PriceBundle\Form\ServiceType
       arguments: ['@translator']

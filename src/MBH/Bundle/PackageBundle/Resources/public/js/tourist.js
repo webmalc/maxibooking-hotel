@@ -1,4 +1,4 @@
-/*global window, $, services, document, datepicker, deleteLink, Routing, mbh */
+/*global window, $, services, document, datepicker, deleteLink, Routing, mbh, Translator */
 
 var docReadyTourists = function () {
     'use strict';
@@ -8,7 +8,7 @@ var docReadyTourists = function () {
     var $touristTable = $('#tourist-table');
     var $citizenshipSelect = $touristForm.find('#form_citizenship');
     var touristFilterFormCallback = function () {
-        return $.param({'form' : getTouristFilterFormData($touristForm, $citizenshipSelect)});
+        return $.param({'form': getTouristFilterFormData($touristForm, $citizenshipSelect)});
     };
     $touristTable.dataTable({
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -26,9 +26,9 @@ var docReadyTourists = function () {
                 return requestData;
             }
         },
-        "drawCallback": function( settings ) {
+        "drawCallback": function (settings) {
             var $popover = $touristTable.find('[data-toggle="popover"]');
-            $popover.popover({ html : true });
+            $popover.popover({html: true});
 
             var value = $citizenshipSelect.val();
             if (value == 'native') {
@@ -43,8 +43,8 @@ var docReadyTourists = function () {
             deleteLink();
         },
         "columnDefs": [
-            { className: "hide-on-print", "targets": [ 6, 11 ] },
-            {className: "show-on-print", "targets": [ 3, 4, 5, 9, 10 ] }
+            {className: "hide-on-print", "targets": [6, 11]},
+            {className: "show-on-print", "targets": [3, 4, 5, 9, 10]}
         ]
     });
     $touristTable.dataTable().fnSetFilteringDelay();
@@ -89,7 +89,7 @@ var docReadyTourists = function () {
     }
 
     var details = {};
-        //payer select2
+    //payer select2
     (function () {
         var $organization = $('#organization_organization');
         if ($organization.length !== 1) {
@@ -112,7 +112,7 @@ var docReadyTourists = function () {
                     details = data.details;
                     $.each(data.list, function (k, v) {
                         var d = details[v.id];
-                        data.list[k].text = v.text + ' ' + '(ИНН ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
+                        data.list[k].text = v.text + ' ' + '(' + Translator.trans('tourist.inn') + ' ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
                     });
 
                     return {results: data.list};
@@ -120,7 +120,8 @@ var docReadyTourists = function () {
             },
             dropdownCssClass: "bigdrop"
         });
-        $organization.on('change', function () {
+
+        $('#organization_organization').on('change', function () {
             var value = $(this).val();
             var detail = details[value];
             $.each(detail, function (key, value) {
@@ -135,7 +136,7 @@ var docReadyTourists = function () {
     var $authorityOrganCodeInput = $('#mbh_document_relation_authorityOrganCode');
     select2Text($('#mbh_document_relation_authorityOrgan')).select2({
         minimumInputLength: 3,
-        placeholder: "Сделайте выбор",
+        placeholder: Translator.trans('tourist.make_a_choice'),
         allowClear: true,
         ajax: {
             url: Routing.generate('authority_organ_json_list'),
@@ -196,6 +197,45 @@ var docReadyTourists = function () {
             }
             $authorityOrganCodeInput.attr('disabled', false);
         }
+    });
+
+    var $newCountryModal = $('#new-country-modal');
+    var $documentRelationCountry = $('#mbh_document_relation_country');
+    $('.add-country-button').click(function () {
+        $newCountryModal.modal('show');
+    });
+
+    $('#new-country-create').click(function () {
+        var $errorsBlock = $('#country-name-error');
+        $errorsBlock.html('');
+        var newCountryName = $('#new-country-name').val();
+        var $loader = $('#loader');
+        $loader.html(mbh.loader.html).show();
+        var $modalContent = $('#new-country-content');
+        $modalContent.hide();
+        $.ajax({
+            url: Routing.generate('new_vega_state'),
+            data: {countryName: newCountryName},
+            method: 'POST',
+            success: function (response) {
+                console.log(response);
+                $modalContent.show();
+                $loader.hide();
+                if (response.success) {
+                    $('#new-country-name').val('');
+                    var customCountryOption = document.createElement('option');
+                    customCountryOption.innerHTML = response.country.name;
+                    customCountryOption.value = response.country.id;
+                    $documentRelationCountry.append(customCountryOption);
+                    $documentRelationCountry.val(response.country.id);
+                    $newCountryModal.modal('hide');
+                } else {
+                    response.errors.forEach(function(error) {
+                        $errorsBlock.append(error + '<br>');
+                    });
+                }
+            }
+        });
     });
 
     new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));

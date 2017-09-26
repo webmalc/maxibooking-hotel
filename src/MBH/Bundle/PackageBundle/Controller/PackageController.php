@@ -45,7 +45,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * List entities
      *
-     * @Route("/", name="package")
+     * @Route("/", name="package", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_PACKAGE_VIEW')")
      * @Template()
@@ -63,6 +63,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'count' => true,
             'hotel' => $this->get('mbh.hotel.selector')->getSelected()
         ];
+
         /** @var PackageRepository $repository */
         $repository = $this->dm->getRepository('MBHPackageBundle:Package');
 
@@ -386,7 +387,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             //check by search
             $newTariff = $form->get('tariff')->getData();
             $orderManager = $this->get('mbh.order_manager');
-            if ($package->getPackagePrice() != $oldPackage->getPackagePrice()) {
+            if ($package->getPackagePrice() != $oldPackage->getPackagePrice()
+                && $package->getBegin() == $oldPackage->getBegin()
+                && $package->getEnd() == $oldPackage->getEnd()) {
                 $orderManager->updatePricesByDate($package, $newTariff);
             }
 
@@ -448,7 +451,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'accommodation' => $request->get('accommodation'),
             'forceBooking' => $request->get('forceBooking'),
             'infants' => $request->get('infants'),
-            'childrenAges' => $request->get('children_age')
+            'childrenAges' => $request->get('children_age'),
+            'savedQueryId' => $request->get('query_id')
 
         ];
 
@@ -472,8 +476,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         } catch (PackageCreationException $e) {
             $createdPackageCount = count($e->order->getPackages());
             if ($packages > 1 && $createdPackageCount > 0) {
-                $request->getSession()->getFlashBag()
-                    ->set('danger', 'Создано ' . $createdPackageCount . ' из ' . count($packages) . ' броней');
+                $packageCreationMessage = $this->get('translator')->trans('controller.package_controller.package_creation_flash', [
+                    '%packagesCount%' => $createdPackageCount,
+                    '%requestedPackagesCount%' => $packages
+                ]);
+                $this->addFlash('danger', $packageCreationMessage);
                 $order = $e->order;
             } else {
                 if ($this->container->get('kernel')->getEnvironment() == 'dev') {
@@ -594,7 +601,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $this->dm->persist($package);
         $this->dm->flush();
 
-        $request->getSession()->getFlashBag()->set('success', 'Гость успешно удален.');
+        $this->addFlash('success', 'controller.packageController.guest_removed_successful');
 
         return $this->redirectToRoute('package_guest', ['id' => $package->getId()]);
     }
@@ -988,13 +995,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         });
 
         $this->dm->getFilterCollection()->enable('softdeleteable');
+        $currentDateTime = $this->getParameter('mbh.timezone') !== 'default'
+            ? new \DateTime('now', new \DateTimeZone($this->getParameter('mbh.timezone')))
+            : new \DateTime();
 
         if (!$package->getArrivalTime()) {
-            $package->setArrivalTime(new \DateTime());
+            $package->setArrivalTime($currentDateTime);
         }
 
         if (!$package->getDepartureTime()) {
-            $package->setDepartureTime(new \DateTime());
+            $package->setDepartureTime($currentDateTime);
         }
 
         $hasEarlyCheckIn = false;

@@ -46,7 +46,7 @@ $(document).ready(function () {
             if (wrapper.length === 0) {
                 return false;
             }
-            wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            wrapper.html(mbh.loader.html);
             if (!roomProcessing) {
                 $.ajax({
                     url: Routing.generate(route),
@@ -76,7 +76,7 @@ $(document).ready(function () {
             quotas = $('#mbh_bundle_pricebundle_room_cache_generator_type_quotas'),
             showMessage = function () {
                 rooms.each(function () {
-                    var text = parseInt($(this).val(), 10) === -1 ? 'Дни будет удалены' : '';
+                    var text = parseInt($(this).val(), 10) === -1 ? Translator.trans("004-roomCache.days_will_be_removed") : '';
                     $(this).closest('.col-sm-6').
                         next('.col-sm-4').
                         html('<span class="text-danger text-left input-errors">' + text +  '</span>');

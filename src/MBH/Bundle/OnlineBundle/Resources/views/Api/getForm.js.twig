@@ -30,6 +30,18 @@ jQuery(document).ready(function() {
         }
     };
 
+    var resizeHandler = function () {
+        var formHeight = document.getElementById('mbh-form-wrapper').clientHeight;
+        window.parent.postMessage({
+            type: 'mbh',
+            action: 'formResize',
+            formHeight: formHeight
+        }, '*')
+    };
+    setInterval(function() {
+        resizeHandler();
+    }, 300);
+
     if (window.addEventListener) {
         window.addEventListener("message", processMessage, false);
     } else {
@@ -37,7 +49,7 @@ jQuery(document).ready(function() {
     }
 
     var showCalendar = function() {
-        var el = $(this);
+        var el = jQuery(this);
         last = el;
         window.parent.postMessage({
             type: 'mbh',
@@ -49,15 +61,15 @@ jQuery(document).ready(function() {
     };
 
     var hideCalendar = function(e, exception) {
-        if ((exception && !$(e.target).hasClass(exception)) || !exception) {
+        if ((exception && !jQuery(e.target).hasClass(exception)) || !exception) {
             calendarIframe.css('display', 'none');
         }
     };
 
     begin.on('focus', showCalendar);
     end.on('focus', showCalendar);
-    $('html').click(function(e) {
-        if (!$(e.target).hasClass('mbh-calendar-input')) {
+    jQuery('html').click(function(e) {
+        if (!jQuery(e.target).hasClass('mbh-calendar-input')) {
             window.parent.postMessage({
                 type: 'mbh',
                 action: 'hideCalendar'
@@ -170,7 +182,7 @@ jQuery(document).ready(function() {
 
 function setChildAgeForms(childrenCount) {
     if (isDisplayChildAges) {
-        var $childAgesBlock = $('.children-ages');
+        var $childAgesBlock = jQuery('.children-ages');
         if (childrenCount > 0) {
             $childAgesBlock.show();
         } else if ($childAgesBlock) {
@@ -180,7 +192,7 @@ function setChildAgeForms(childrenCount) {
         var difference = childrenCount - selectFormCount;
         if (difference > 0) {
             for (var i = selectFormCount; i < childrenCount; i++) {
-                var childrenAgeForm = $('#children-age-1').clone();
+                var childrenAgeForm = jQuery('#children-age-1').clone();
                 var selectFormName = 'children-age-' + (i + 1);
                 childrenAgeForm.attr('id', selectFormName);
                 $childAgesBlock.append(childrenAgeForm);
