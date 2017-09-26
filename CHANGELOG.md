@@ -1,3 +1,7 @@
+2.2.4
+============
+* add query statistic
+
 2.2.3
 ============
 * add rounded price
