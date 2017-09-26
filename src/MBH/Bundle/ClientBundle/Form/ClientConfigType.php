@@ -126,6 +126,12 @@ class ClientConfigType extends AbstractType
                     ],
                 ]
             )
+            ->add('queryStat', CheckboxType::class, [
+                'label' => 'form.clientConfigType.queryStat.label',
+                'help' => 'form.clientConfigType.queryStat.help',
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false
+            ])
             ->add('beginDateOffset', TextType::class, [
                 'group' => 'form.clientConfigType.main_group',
                 'required' => false,

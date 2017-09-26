@@ -71,3 +71,5 @@ form.clientPaymentSystemType.payment_system_paypal_login: Логин
 form.documentTemplateType.hotel: Отель
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
+form.clientConfigType.queryStat.label: Статистика запросов
+form.clientConfigType.queryStat.help: Включить/выключить сбор статистики запросов

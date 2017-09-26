@@ -196,6 +196,15 @@ class ClientConfig extends Base
     protected $priceRoundSign = 2;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $queryStat = true;
+
+    /**
      * @var bool
      * @ODM\Field(type="bool")
      * @Assert\NotNull()
@@ -735,4 +744,25 @@ class ClientConfig extends Base
 
         return (new \DateTime('midnight'))->modify($beginDateOffset . ' days');
     }
+
+
+    /**
+     * @return bool
+     */
+    public function isQueryStat(): bool
+    {
+        return $this->queryStat;
+    }
+
+    /**
+     * @param bool $queryStat
+     * @return ClientConfig
+     */
+    public function setQueryStat(bool $queryStat): ClientConfig
+    {
+        $this->queryStat = $queryStat;
+
+        return $this;
+    }
+
 }
