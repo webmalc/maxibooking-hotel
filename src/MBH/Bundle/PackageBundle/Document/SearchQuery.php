@@ -343,6 +343,7 @@ class SearchQuery extends Base
     }
 
     /**
+     * Save SearchQuery in DB
      * @param bool $save
      * @return SearchQuery
      */

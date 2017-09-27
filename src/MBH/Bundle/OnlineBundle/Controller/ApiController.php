@@ -353,6 +353,7 @@ class ApiController extends Controller
         $query->adults = (int)$request->get('adults');
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
+        $query->setSave(true);
         $isViewTariff = false;
 
         $query->setChildrenAges(
