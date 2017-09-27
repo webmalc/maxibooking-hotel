@@ -185,3 +185,10 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
             - '@mbh.report'
             - '@translator'
+
+    mbh.distribution_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\DistributionReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'

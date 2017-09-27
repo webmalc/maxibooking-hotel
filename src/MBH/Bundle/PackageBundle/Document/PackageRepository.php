@@ -413,6 +413,62 @@ class PackageRepository extends DocumentRepository
         return null;
     }
 
+    public function getDistributionByDaysOfWeek(
+        \DateTime $begin,
+        \DateTime $end,
+        array $hotels,
+        $groupType,
+        $type,
+        $creationBegin,
+        $creationEnd
+    ) {
+        $qb = $this
+            ->createQueryBuilder()
+            //TODO: Уточнить
+            ->field('begin')->gte($begin)
+            ->field('end')->lte($end)
+            ;
+
+        return $qb
+            ->map(
+                'function() {
+                    emit(this.begin.getDay(), this)
+                }'
+            )
+            ->reduce(
+                'function(key, values) {
+                    var byRoomTypes = {};
+                    values.forEach(function(elem) {
+                        var packagePrice;
+                        if(elem.totalOverwrite) {
+                            packagePrice = elem.totalOverwrite;
+                        } else {
+                            packagePrice = parseFloat(elem.price, 10);
+        
+                            if (elem.servicesPrice) {
+                                packagePrice += elem.servicesPrice
+                            }
+                            if (elem.discount) {
+                                var discount = elem.isPercentDiscount ? elem.price * elem.discount/100 : elem.discount;
+                                packagePrice -= discount;
+                            }
+                        }
+                        
+                        if (byRoomTypes[elem.roomType.$id]) {
+                            byRoomTypes[elem.roomType.$id]["price"] += packagePrice;
+                            byRoomTypes[elem.roomType.$id]["count"]++;
+                        } else {
+                            byRoomTypes[elem.roomType.$id] = {price: packagePrice, count: 1}
+                        }
+                    });
+                    return byRoomTypes;
+                }'
+            )
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
+
     /**
      * @deprecated todo use queryCriteriaToBuilder
      * @see PackageRepository::queryCriteriaToBuilder

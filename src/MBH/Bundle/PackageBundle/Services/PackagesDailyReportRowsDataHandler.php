@@ -36,6 +36,7 @@ class PackagesDailyReportRowsDataHandler extends ReportDataHandler
      * @param Package[] $deletedPackages
      * @param Package[] $createdPackages
      * @param $ordersByIds
+     * @param $packagesByOrdersIds
      * @return $this
      */
     public function setInitData(\DateTime $date, $hotels, $createdCashDocuments, $deletedPackages, $createdPackages, $ordersByIds, $packagesByOrdersIds)

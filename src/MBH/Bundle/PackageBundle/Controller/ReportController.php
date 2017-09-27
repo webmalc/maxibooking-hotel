@@ -853,7 +853,50 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')));
 
         $report = $this->get('mbh.packages_daily_report_compiler')
-            ->generate($begin, $end,  $hotels->toArray());
+            ->generate($begin, $end, $hotels->toArray());
+
+        return $report->generateReportTableResponse();
+    }
+
+    /**
+     * @Template()
+     * @Route("/distribution_by_days_of_the_week", name="distribution_by_days_of_the_week", options={"expose"=true})
+     */
+    public function packagesByDaysOfWeekAction()
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+
+        return [
+            'hotels' => $hotels,
+        ];
+    }
+
+    /**
+     * @Route("/distribution_report_table", name="distribution_report_table", options={"expose"=true})
+     * @param Request $request
+     * @return Response
+     */
+    public function distributionReportTableAction(Request $request)
+    {
+        //TODO: В другом pull request-е есть изменения для дат. Обновить!
+        $defaultBeginDate = $this->clientConfig->getBeginDate() ?? new \DateTime('midnight');
+
+        $begin = $this->helper->getDateFromString($request->query->get('begin')) ?? $defaultBeginDate;
+        $end = $this->helper->getDateFromString($request->query->get('end'))
+            ?? (clone $defaultBeginDate)->modify('+45 days');
+
+        $creationBegin = $this->helper->getDateFromString($request->query->get('creationBegin'));
+        $creationEnd = $this->helper->getDateFromString($request->query->get('creationEnd'));
+        $hotels = $this->dm
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->getByIds($this->helper->getDataFromMultipleSelectField($request->query->get('hotels')), false)
+            ->toArray();
+
+        $groupType = $request->query->get('group_type');
+        $type = $request->query->get('type');
+
+        $report = $this->get('mbh.distribution_report_compiler')
+            ->generate($begin, $end, $hotels, $groupType, $type, $creationBegin, $creationEnd);
 
         return $report->generateReportTableResponse();
     }
