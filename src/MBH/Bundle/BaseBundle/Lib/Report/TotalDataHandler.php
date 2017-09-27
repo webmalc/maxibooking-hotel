@@ -33,7 +33,11 @@ class TotalDataHandler extends ReportDataHandler
     {
         $sum = 0;
         foreach ($this->dataHandlers as $dataHandler) {
-            $sum += $dataHandler->getValueByOption($rowOption);
+            try {
+                $sum += $dataHandler->getValueByOption($rowOption);
+            } catch (\Throwable $exception) {
+                $val = $dataHandler->getValueByOption($rowOption);
+            }
         }
         
         return $sum;

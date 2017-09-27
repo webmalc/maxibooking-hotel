@@ -26,6 +26,5 @@ class OnRequest
         if (!empty($tz) && $tz != 'default') {
             $this->container->get('twig')->getExtension('Twig_Extension_Core')->setTimezone($tz);
         }
-
     }
 }
