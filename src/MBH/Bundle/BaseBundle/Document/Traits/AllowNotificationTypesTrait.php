@@ -29,7 +29,7 @@ trait AllowNotificationTypesTrait
      * @param array $allowNotificationTypes
      * @return AllowNotificationTypesTrait
      */
-    public function setAllowNotificationTypes(array $allowNotificationTypes = [])
+    public function setAllowNotificationTypes($allowNotificationTypes = [])
     {
         $this->allowNotificationTypes = $allowNotificationTypes;
 
