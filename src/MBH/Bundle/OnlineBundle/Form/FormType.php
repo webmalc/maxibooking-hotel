@@ -155,6 +155,16 @@ class FormType extends AbstractType
                     'attr' => ['rows' => 60]
                 ]
             )
+            ->add(
+                'isHorizontal',
+                CheckboxType::class,
+                [
+                    'group' => 'form.formType.css',
+                    'label' => 'form.formType.is_horizontal.label',
+                    'required' => false,
+                    'help' => 'form.formType.is_horizontal.help',
+                ]
+            )
             ->add('js',
                 TextareaType::class,
                 [

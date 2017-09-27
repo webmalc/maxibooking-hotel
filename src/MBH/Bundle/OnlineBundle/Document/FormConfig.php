@@ -217,6 +217,31 @@ class FormConfig extends Base
     private $cssLibraries;
 
     /**
+     * @var bool
+     * @ODM\Field(type="boolean")
+     */
+    private $isHorizontal = false;
+
+    /**
+     * @return bool
+     */
+    public function isHorizontal(): ?bool
+    {
+        return $this->isHorizontal;
+    }
+
+    /**
+     * @param bool $isHorizontal
+     * @return FormConfig
+     */
+    public function setIsHorizontal(bool $isHorizontal): FormConfig
+    {
+        $this->isHorizontal = $isHorizontal;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getJs(): ?string
