@@ -1,3 +1,10 @@
+2.3.0
+============
+* merged #1053#1051#864#1037#1027#1021#988#837
+* fixes some recently bugs
+* move from parameters.yml to hotel_config
+* and so on, and so on
+
 2.2.4
 ============
 * add query statistic
