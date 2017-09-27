@@ -387,7 +387,7 @@ menu.configs.warehouse: Склад
 menu.communication.label: Взаимодействие
 menu.communication.label.advanced: MyAllocator
 menu.communication.label.your_hotel: ВашОтель
-menu.communication.label.onlineform: 'Онлайн форма'
+menu.communication.label.onlineform: 'Онлайн модуль'
 menu.communication.label.polls: Оценки
 menu.communication.label.invite: 'Визовое приглашение'
 menu.communication.label.hundred_one_hotels: '101 Отель'
@@ -461,7 +461,7 @@ basebundle.menu.warehouse: Склад
 basebundle.menu.interaction: Взаимодействие
 basebundle.menu.additional_channels: 'Дополнительные каналы'
 basebundle.menu.vashotel: ВашОтель
-basebundle.menu.onlineform: 'Онлайн форма'
+basebundle.menu.onlineform: 'Онлайн модуль'
 basebundle.menu.estimates: Оценки
 basebundle.menu.visa_invitation: 'Визовое приглашение'
 basebundle.menu.create_new_hotel: 'Создать новый отель'

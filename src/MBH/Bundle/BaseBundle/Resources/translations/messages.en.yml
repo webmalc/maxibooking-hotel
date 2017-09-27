@@ -184,7 +184,7 @@ menu.configs.tasktype: 'Task types'
 menu.configs.warehouse: Stock
 menu.communication.label: Interactions
 menu.communication.label.advanced: MyAllocator
-menu.communication.label.onlineform: 'Web form'
+menu.communication.label.onlineform: 'Web module'
 menu.communication.label.polls: Ratings
 menu.communication.label.invite: 'Visa invitation'
 menu.communication.label.hundred_one_hotels: '101 Hotel'
@@ -210,7 +210,7 @@ app.resources.twigBundle.translations.error: Error
 basebundle.menu.tasks: Tasks
 basebundle.menu.terms_and_conditions: 'Conditions and limitations'
 basebundle.menu.groups: Groups
-basebundle.menu.onlineform: 'Web form'
+basebundle.menu.onlineform: 'Web module'
 mbhbasebundle.view.pdftemplates.organization.vsego_k_oplate: 'Total payment sum:'
 mbhbasebundle.views.mailer.dla_poluchenia_coda_dostupa_otskaniruite_etc: 'To gain access, please scan this QR code with your cell phone application.'
 mbhbasebundle.views.kass: Cashdesk

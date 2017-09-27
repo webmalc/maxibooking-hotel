@@ -16,7 +16,7 @@ form.formType.hotels_desc: 'Отели используемые в онлайн 
 form.formType.hotels_placeholder: 'Все отели'
 form.formType.parameters: Параметры
 form.formType.use_online_form: 'Использовать ли онлайн форму?'
-form.formType.room_types: 'Типы номеров?'
+form.formType.room_types: 'Show rooms?'
 form.formType.should_we_use_room_type_field_in_online_form: 'Использовать ли поле "Тип номера" в онлайн форме?'
 form.formType.are_there_guests: 'Гости?'
 form.formType.should_we_use_guests_amount_field_in_online_form: 'Использовать ли поле "Количестов гостей" в онлайн форме?'

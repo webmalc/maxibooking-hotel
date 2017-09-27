@@ -48,6 +48,23 @@ class FormType extends AbstractType
                     'help' =>  'form.formType.use_online_form'
                 ]
             )
+            ->add('resultsUrl', TextType::class, [
+                'label' => 'form.formType.resultsUrl_label',
+                'group' => 'form.formType.parameters',
+                'required' => true,
+                'help' => 'form.formType.resultsUrl_help'
+            ])
+            ->add(
+                'nights',
+                CheckboxType::class,
+                [
+                    'label' => 'form.formType.should_we_use_nights_field',
+                    'group' => 'form.formType.parameters',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date'
+                ]
+            )
             ->add(
                 'roomTypes',
                 CheckboxType::class,
@@ -84,17 +101,6 @@ class FormType extends AbstractType
                         'help' => 'form.formType.should_we_use_guests_amount_field_in_online_form'
                     ]
             )
-            ->add(
-                'nights',
-                CheckboxType::class,
-                [
-                    'label' => 'form.formType.should_we_use_nights_field',
-                    'group' => 'form.formType.parameters',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date'
-                ]
-            )
             ->add('isDisplayChildrenAges', CheckboxType::class, [
                 'label' => 'form.formType.used_children_ages.label',
                 'group' => 'form.formType.parameters',
@@ -109,27 +115,21 @@ class FormType extends AbstractType
                 'required' => true,
                 'help' => 'form.formType.max_packages.help'
             ])
-            ->add('resultsUrl', TextType::class, [
-                'label' => 'form.formType.resultsUrl_label',
-                'group' => 'form.formType.parameters',
-                'required' => true,
-                'help' => 'form.formType.resultsUrl_help'
-            ])
             ->add('isFullWidth', CheckboxType::class, [
-                'group' => 'form.formType.parameters',
+                'group' => 'form.formType.css',
                 'label' => 'form.formType.frame_width.is_full_width.label',
                 'required' => false,
                 'help' => 'form.formType.frame_width.is_full_width.help'
             ])
             ->add('frameWidth', IntegerType::class, [
                 'label' => 'form.formType.frame_width.label',
-                'group' => 'form.formType.parameters',
+                'group' => 'form.formType.css',
                 'required' => true,
                 'help' => 'form.formType.frame_width.help'
             ])
             ->add('frameHeight', IntegerType::class, [
                 'label' => 'form.formType.frame_height.label',
-                'group' => 'form.formType.parameters',
+                'group' => 'form.formType.css',
                 'required' => true,
                 'help' => 'form.formType.frame_height.help'
             ])
