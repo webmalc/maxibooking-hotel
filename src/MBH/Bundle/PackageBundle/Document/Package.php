@@ -819,6 +819,14 @@ class Package extends Base implements \JsonSerializable
     {
         return $this->getOrder()->getPaid();
     }
+
+    /**
+     * @return float|int
+     */
+    public function getCalculatedPayment()
+    {
+        return $this->getOrder()->getPrice() == 0 ? 0 : round($this->getPrice() / $this->getOrder()->getPrice() * $this->getPaid(), 2);
+    }
     
     /**
      * @return int
