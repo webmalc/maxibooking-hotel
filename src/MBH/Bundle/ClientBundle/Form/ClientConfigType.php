@@ -5,8 +5,11 @@ namespace MBH\Bundle\ClientBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -18,9 +21,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class ClientConfigType extends AbstractType
 {
+    private $helper;
+
+    public function __construct(Helper $helper)
+    {
+        $this->helper = $helper;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('timeZone', ChoiceType::class, [
+                'choices' => ClientConfig::getTimeZonesList(),
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false,
+                'choice_label' => function ($value) {
+                    return $value;
+                },
+                'label' => 'form.clientConfigType.time_zone.label',
+                'data' => $this->helper->getTimeZone($builder->getData())
+            ])
             ->add(
                 'isSendSms',
                 CheckboxType::class,
@@ -137,6 +157,18 @@ class ClientConfigType extends AbstractType
                 'required' => false,
                 'label' => 'form.clientConfigType.begin_date_offset.label',
                 'help' => 'form.clientConfigType.begin_date_offset.help'
+            ])
+            ->add('numberOfDaysForPayment', TextType::class, [
+                'group' => 'form.clientConfigType.main_group',
+                'label' => 'form.clientConfigType.number_of_days_for_payment.label',
+                'help' => 'form.clientConfigType.number_of_days_for_payment.help',
+                'required' => false
+            ])
+            ->add('currencyRatioFix', TextType::class, [
+                'group' => 'form.clientConfigType.main_group',
+                'required' => false,
+                'label' => 'form.clientConfigType.currency_ratio_fix.label',
+                'help' => 'form.clientConfigType.currency_ratio_fix.help'
             ])
             ->add(
                 'can_book_without_payer',

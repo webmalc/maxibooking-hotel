@@ -84,6 +84,8 @@ form.hotelType.sale_days_amount: 'Количество дней продажи'
 form.hotelType.settings: Настройки
 form.hotelType.how_long_sale_opened_since_today: 'На сколько дней открыта продажа от текущего числа'
 form.hotelType.hostel: 'Хостел?'
+form.hotelType.package_arrival_time.label: Время заезда
+form.hotelType.package_departure_time.label: Время выезда
 form.hotelType.isSmoking.label: 'Разрешено курение?'
 form.hotelType.isSmoking.help: 'Разрешено ли курение в номере?'
 form.hotelType.hostel_hotel_or_not: 'Вы сдаёте койко-места, а не номера?'

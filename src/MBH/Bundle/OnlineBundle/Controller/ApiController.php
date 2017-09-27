@@ -468,13 +468,25 @@ class ApiController extends Controller
         foreach ($requestJson->packages as $data) {
             $hotels[$data->hotel->id] = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneById($data->hotel->id);
         }
+
+        $departureTime = Hotel::DEFAULT_DEPARTURE_TIME;
+        $arrivalTime = Hotel::DEFAULT_ARRIVAL_TIME;
+
+        /** @var Hotel $hotel */
         foreach ($hotels as $hotel) {
+            if (!empty($hotel->getPackageDepartureTime()) && $hotel->getPackageDepartureTime() != Hotel::DEFAULT_DEPARTURE_TIME) {
+                $departureTime = $hotel->getPackageDepartureTime();
+            }
+            if (!empty($hotel->getPackageArrivalTime()) && $hotel->getPackageArrivalTime() != Hotel::DEFAULT_ARRIVAL_TIME) {
+                $departureTime = $hotel->getPackageArrivalTime();
+            }
+
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
         return [
-            'arrival' => $this->container->getParameter('mbh.package.arrival.time'),
-            'departure' => $this->container->getParameter('mbh.package.departure.time'),
+            'arrival' => $arrivalTime,
+            'departure' => $departureTime,
             'request' => $requestJson,
             'services' => $services,
             'hotels' => $hotels,

@@ -37,3 +37,9 @@ services:
             - '%mbh.taxation%'
         tags:
             - { name: form.type }
+
+    mbh.client_config_type:
+        class: MBH\Bundle\ClientBundle\Form\ClientConfigType
+        arguments: ['@mbh.helper']
+        tags:
+            - {name: form.type}

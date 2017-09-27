@@ -1,6 +1,5 @@
 parameters:
     #currencies
-    mbh.currency.ratio.fix: "%currency_ratio_fix%"
     mbh.currency.data:
       rub: {text: 'руб.', small: 'коп.', icon: 'fa fa-ruble'}
       eur: {text: '€', small: '¢', icon: 'fa fa-eur'}
@@ -13,9 +12,6 @@ parameters:
     mbh.recaptcha:
       site: '6Lev6AYUAAAAADL-WFxyHoaaGfya4uFBCUh09FWx'
       secret: '6Lev6AYUAAAAAIk51IMnRdGS4Im_-1h3pk-cM87a'
-
-    #timezone. default - deafult server timezone
-    mbh.timezone: "%mbh_timezone%"
 
     mbh.weekdays: {1: 'Понедельник', 2: 'Вторник', 3: 'Среда', 4: 'Четверг', 5: 'Пятница', 6: 'Суббота', 0: 'Воскресенье'}
 
@@ -277,13 +273,6 @@ parameters:
         residence: Транзит
         humanitarian: Гуманитарная
         other: Другая
-
-    #Время заезда/выезда по умолчанию
-    mbh.package.arrival.time: "%mbh_package_arrival_time%"
-    mbh.package.departure.time: "%mbh_package_departure_time%"
-    
-    #Просроченные брони
-    mbh.package.notpaid.time: '%mbh_package_notpaid_time%'
 
     #Цели приезда
     mbh.package.statuses:

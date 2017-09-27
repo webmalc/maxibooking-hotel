@@ -34,17 +34,9 @@ parameters:
   router.request_context.host: 'example.com'
   router.request_context.scheme: http
   router.request_context.base_url: null
-  mbh_timezone: 'default'
-
-  #Packages
-  mbh_package_arrival_time: 12
-  mbh_package_departure_time: 14
-  mbh_package_notpaid_time: '-5 days'
-  mbh_online_form_max_packages: 5
 
   #Cash
   mbh_payment_systems_change: true
-  currency_ratio_fix: 1.015
 
   #Redis
   mbh_redis: 'redis://mbh-redis' 

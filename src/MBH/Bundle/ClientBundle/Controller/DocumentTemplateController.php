@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ClientBundle\Controller;
 
-
 use Liip\ImagineBundle\Templating\ImagineExtension;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
@@ -21,7 +20,6 @@ use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 
 /**
  * Class DocumentTemplateController
@@ -151,8 +149,8 @@ class DocumentTemplateController extends BaseController
             'payer' => $order->getPayer(),
             'organization' => $organization,
             'user' => $this->getUser(),
-            'arrivalTimeDefault' => $this->getParameter('mbh_package_arrival_time'),
-            'departureTimeDefault' => $this->getParameter('mbh_package_departure_time')
+            'arrivalTimeDefault' => $hotel->getPackageArrivalTime(),
+            'departureTimeDefault' => $hotel->getPackageDepartureTime()
         ];
 
         $params = $this->addCalculatedParams($params, $package);
