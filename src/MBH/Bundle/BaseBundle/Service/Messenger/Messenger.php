@@ -90,7 +90,7 @@ class Messenger implements \SplObserver
             /** @var Message $message */
             $messageType = $message->getMessageType();
             /** @var User $user */
-            if ($user->isNotificationTypeExists($messageType)) {
+            if ($user instanceof User && $user->isNotificationTypeExists($messageType)) {
                 if ($message->getHotel() && !$permissions->checkPermissions($message->getHotel())) {
                     continue;
                 }

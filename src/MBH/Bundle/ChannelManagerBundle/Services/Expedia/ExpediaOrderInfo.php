@@ -16,7 +16,7 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 class ExpediaOrderInfo extends AbstractOrderInfo
 {
     //TODO: Генерировать, наверное нужно
-    const DEFAULT_CONFIRM_NUMBER = '2202199119TZ';
+    const DEFAULT_CONFIRM_NUMBER = '3202199119TZ';
     /** @var ChannelManagerConfigInterface $config */
     private $config;
     /** @var \SimpleXMLElement $orderDataXMLElement */
@@ -35,23 +35,36 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getChannelManagerOrderId(): string
     {
         return (string)$this->getCommonOrderData('id');
     }
 
+    /**
+     * @return int
+     */
     public function getHotelId()
     {
         return (int)$this->getMandatoryDataByXPath($this->orderDataXMLElement->Hotel[0], '@id',
             $this->translator->trans('order_info.expedia.required_hotel_id'));
     }
 
+    /**
+     * @param $param
+     * @return \SimpleXMLElement
+     */
     private function getCommonOrderData($param)
     {
         return $this->getMandatoryDataByXPath($this->orderDataXMLElement, "@$param",
             $this->translator->trans('order_info.expedia.required_order_data', ['%dataAttribute%' => $param]));
     }
 
+    /**
+     * @return Tourist
+     */
     public function getPayer(): Tourist
     {
         /** @var \SimpleXMLElement $primaryGuestDataElement */
@@ -78,7 +91,9 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $payer;
     }
 
-
+    /**
+     * @return array
+     */
     public function getPackagesData(): array
     {
         if (!$this->isPackagesDataInit) {
@@ -95,6 +110,9 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $this->packagesData;
     }
 
+    /**
+     * @return bool
+     */
     public function getIsSmoking(): bool
     {
         $isSmokingElement = $this->orderDataXMLElement->xpath('SpecialRequest[starts-with(@code, "2")]');
@@ -110,6 +128,10 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $isSmoking;
     }
 
+    /**
+     * @param Order $order
+     * @return array
+     */
     public function getCashDocuments(Order $order)
     {
         $cashDocuments = [];
@@ -149,16 +171,25 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $cashDocuments;
     }
 
+    /**
+     * @return bool
+     */
     public function isOrderModified(): bool
     {
         return $this->checkOrderStatusType('Modify');
     }
 
+    /**
+     * @return bool
+     */
     public function isOrderCreated(): bool
     {
         return $this->checkOrderStatusType('Book');
     }
 
+    /**
+     * @return bool
+     */
     public function isOrderCancelled(): bool
     {
         return $this->checkOrderStatusType('Cancel');
@@ -173,16 +204,34 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return (string)$this->getCommonOrderData('type');
     }
 
+    /**
+     * @param $status
+     * @return bool
+     */
     private function checkOrderStatusType($status): bool
     {
         return $this->getOrderStatusType() === $status;
     }
 
+    /**
+     * @return string
+     */
+    private function getOrderStatus()
+    {
+        return (string)$this->getCommonOrderData('status');
+    }
+
+    /**
+     * @return mixed
+     */
     public function getPrice()
     {
         return current($this->getPackagesData())->getPrice();
     }
 
+    /**
+     * @return mixed
+     */
     public function getOriginalPrice()
     {
         return current($this->getPackagesData())->getOriginalPrice();
@@ -193,7 +242,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsNew(?Order $order): bool
+    public function isHandledAsNew(?Order $order): bool
     {
         return $this->checkOrderStatusType('Book') && !$order;
     }
@@ -203,7 +252,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsModified(?Order $order): bool
+    public function isHandledAsModified(?Order $order): bool
     {
         return $this->isOrderModified() && $order;
     }
@@ -213,7 +262,7 @@ class ExpediaOrderInfo extends AbstractOrderInfo
      * @param Order $order
      * @return bool
      */
-    public function isHandleAsCancelled(?Order $order): bool
+    public function isHandledAsCancelled(?Order $order): bool
     {
         return $this->isOrderCancelled() && $order;
     }
@@ -244,6 +293,13 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return $card;
     }
 
+    /**
+     * @param \SimpleXMLElement $element
+     * @param $xpath
+     * @param $exceptionMessage
+     * @return \SimpleXMLElement
+     * @throws ChannelManagerException
+     */
     private function getMandatoryDataByXPath(\SimpleXMLElement $element, $xpath, $exceptionMessage)
     {
         $mandatoryData = $element->xpath($xpath);
@@ -270,6 +326,9 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return self::DEFAULT_CONFIRM_NUMBER;
     }
 
+    /**
+     * @return string
+     */
     public function getNote(): string
     {
         foreach ($this->orderDataXMLElement->SpecialRequest as $specialRequest) {
@@ -314,12 +373,18 @@ class ExpediaOrderInfo extends AbstractOrderInfo
         return [];
     }
 
+    /**
+     * @return PackageSource|null
+     */
     public function getSource(): ?PackageSource
     {
         return $this->dm->getRepository('MBHPackageBundle:PackageSource')
             ->findOneBy(['code' => $this->getChannelManagerName()]);
     }
 
+    /**
+     * @return string
+     */
     public function getChannelManagerName(): string
     {
         $sourceString = (string)$this->getCommonOrderData('source');

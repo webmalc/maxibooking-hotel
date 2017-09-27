@@ -298,7 +298,7 @@ class Builder implements ContainerAwareInterface
         }
 
         //Restaurant links
-        $menu->addChild('restaurant', ['route' => '_welcome', 'label' => 'menu.label.reports'])
+        $menu->addChild('restaurant', ['route' => '_welcome', 'label' => 'menu.label.restaurant'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-cutlery']);
         $menu['restaurant']->addChild('ingredients', ['route'=>'restaurant_ingredient_category', 'label' => 'menu.settings.label.restaurant.ingredients'])
             ->setAttributes(['icon'=> 'fa fa-cutlery']);

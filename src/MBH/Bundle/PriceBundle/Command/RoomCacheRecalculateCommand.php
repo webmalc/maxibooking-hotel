@@ -31,15 +31,19 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
             $roomTypes = explode(',', trim($input->getOption('roomTypes'), ','));
         }
 
-        $num += $this->getContainer()->get('mbh.room.cache')->recalculateByPackages(
+        $recalculationResult = $this->getContainer()->get('mbh.room.cache')->recalculateByPackages(
             $helper->getDateFromString($input->getOption('begin')),
             $helper->getDateFromString($input->getOption('end')),
             isset($roomTypes) ? $roomTypes : []
         );
 
+        $num += $recalculationResult['total'];
+        $numberOfInconsistencies = $recalculationResult['numberOfInconsistencies'];
+
         $time = $start->diff(new \DateTime());
         $output->writeln(
             sprintf('Recalculate complete. Entries: %s. Elapsed time: %s', number_format($num), $time->format('%H:%I:%S'))
         );
+        $output->writeln($numberOfInconsistencies == 0 ? 'Inconsistencies not found' : 'Number of inconsistencies: ' . $numberOfInconsistencies);
     }
 }

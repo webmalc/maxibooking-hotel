@@ -96,8 +96,7 @@ class UserController extends Controller
 
             $this->updateAcl($entity, $form);
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.profileController.record_saved_success'));
+            $this->addFlash('success', 'controller.profileController.record_saved_success');
 
             return $this->afterSaveRedirect('user', $entity->getId());
         }

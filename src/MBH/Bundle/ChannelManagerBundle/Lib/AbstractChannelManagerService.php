@@ -96,6 +96,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->request = $container->get('request_stack')->getCurrentRequest();
         $this->helper = $container->get('mbh.helper');
         $this->logger = $container->get('mbh.channelmanager.logger');
+        $this->logger::setTimezone(new \DateTimeZone('UTC'));
         $this->currency = $container->get('mbh.currency');
         $this->roomManager = $container->get('mbh.hotel.room_type_manager');
     }
@@ -680,9 +681,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
         curl_setopt($ch, CURLOPT_URL, $url);
 
-        if (($method == 'POST' || $method == 'PUT') && !empty($data)) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
         curl_setopt($ch, CURLOPT_VERBOSE, 1);
@@ -722,7 +720,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     /**
      * @param $service
      * @param null $info
-     * @return bool
+     * @return bool|\MBH\Bundle\BaseBundle\Service\Messenger\Notifier
      */
     public function notifyError($service, $info = null)
     {
@@ -837,5 +835,22 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         } catch (Exception $e) {
             return $amount / $config->getCurrencyDefaultRatio();
         }
+    }
+
+    /**
+     * @param Order $order
+     * @param $isModified
+     * @return string
+     */
+    public function getUnexpectedOrderError(Order $order, $isModified)
+    {
+        $errorMessageId = $isModified
+            ? 'services.channel_manager.error.unexpected_modified_order'
+            : 'services.channel_manager.error.unexpected_removed_order';
+
+        return $this->container->get('translator')->trans($errorMessageId, [
+            '%orderId%' => $order->getChannelManagerId(),
+            '%service_name%' => $order->getChannelManagerType()
+        ], 'MBHChannelManagerBundle');
     }
 }
