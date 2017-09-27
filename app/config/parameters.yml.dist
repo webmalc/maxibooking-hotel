@@ -42,14 +42,6 @@ parameters:
   mbh_package_notpaid_time: '-5 days'
   mbh_online_form_max_packages: 5
 
-  #Mailer
-  mailer_user_arrival_links:
-    about: 'http://example.com/'
-    rooms: 'http://example.com/'
-    map: 'http://example.com/'
-    contacts: 'http://example.com/'
-    #poll: 'http://example.com'
-
   #Cash
   mbh_payment_systems_change: true
   currency_ratio_fix: 1.015

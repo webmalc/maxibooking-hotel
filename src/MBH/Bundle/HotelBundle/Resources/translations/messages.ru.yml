@@ -48,6 +48,12 @@ form.hotelExtendedType.check_in_out_policy.label: 'Правила въезда/�
 form.hotelExtendedType.check_in_out_policy.help: 'Правила въезда/выезда, включая предметы необходимые при въезде'
 form.hotelExtendedType.smoking_policy.label: 'Правила курения'
 form.hotelExtendedType.check_in_out_policy.placeholder: 'При въезде необходимо предоставить валидную кредитную или дебетовую карту'
+form.hotelExtendedType.hotel_description_links.group: 'Url-адреса отеля в интернете'
+form.hotelExtendedType.hotel_description_links.about_link.label: 'Об отеле'
+form.hotelExtendedType.hotel_description_links.contacts_link.label: 'Контакты'
+form.hotelExtendedType.hotel_description_links.map_link.label: 'Схема проезда'
+form.hotelExtendedType.hotel_description_links.rooms_link.label: 'Номера и услуги'
+form.hotelExtendedType.hotel_description_links.poll_link.label: 'Опрос'
 form.contact_info_type.available_languages.label: 'Языки общения'
 form.contact_info_type.phone.label: Телефон
 form.contact_info_type.phone.help: 'Номер контактного телефона'
