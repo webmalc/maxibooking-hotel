@@ -132,6 +132,12 @@ var docReadyTourists = function () {
         });
     }());
 
+    var isCustomAuthorityOrgan = function (organValue) {
+        var $selectOption = $('#mbh_document_relation_authorityOrgan').find('option[value="'+ organValue + '"]');
+
+        return $selectOption.html() === organValue;
+    };
+
     var $authorityOrganTextInput = $('#mbh_document_relation_authorityOrganText');
     var $authorityOrganCodeInput = $('#mbh_document_relation_authorityOrganCode');
     select2Text($('#mbh_document_relation_authorityOrgan')).select2({
@@ -159,7 +165,7 @@ var docReadyTourists = function () {
         },
         initSelection: function (element, callback) {
             var id = $(element).val();
-            if (id.length == 24) { //mongoID
+            if (!isCustomAuthorityOrgan(id)) { //mongoID
                 $.ajax(Routing.generate('ajax_authority_organ', {id: id}), {
                     dataType: "json"
                 }).done(function (data) {
@@ -184,7 +190,7 @@ var docReadyTourists = function () {
     }).on('change', function (name, evt) {
         var $this = $(this);
         var value = $this.select2('val');
-        if (value && value.length == 24) { //mongoID
+        if (value && !isCustomAuthorityOrgan(value)) {
             $authorityOrganCodeInput.attr('disabled', true);
             $.ajax(Routing.generate('ajax_authority_organ', {id: value}), {
                 dataType: "json"
