@@ -142,4 +142,19 @@ class OrderRepository extends DocumentRepository
 
     }
 
+    /**
+     * @param Package[] $packages
+     */
+    public function loadRelatedOrders(array $packages)
+    {
+        $orderIds = array_map(function(Package $package) {
+            return $package->getOrder()->getId();
+        }, $packages);
+
+        return $this->createQueryBuilder()
+            ->field('id')->in($orderIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
 }

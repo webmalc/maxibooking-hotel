@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
+use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -56,6 +57,7 @@ class ChannelManager
         $this->console = $container->get('kernel')->getRootDir().'/../bin/console ';
         $this->env = $this->container->get('kernel')->getEnvironment();
         $this->logger = $container->get('mbh.channelmanager.logger');
+        $this->logger::setTimezone(new \DateTimeZone('UTC'));
         $this->client = $container->getParameter('client');
         $this->producer = $this->container->get('old_sound_rabbit_mq.task_command_runner_producer');
     }
@@ -65,7 +67,7 @@ class ChannelManager
      */
     private function checkEnvironment()
     {
-        return ($this->container->getParameter('mbh.environment') != 'prod') ? false : true;
+        return $this->container->getParameter('mbh.environment') === 'prod';
     }
 
     /**
@@ -96,6 +98,7 @@ class ChannelManager
                     ];
                 }
             } catch (\Exception $e) {
+                $this->logger->addAlert('Error in getServices method of ChannelManager. '.$e->getMessage());
             }
         }
 
@@ -217,15 +220,12 @@ class ChannelManager
         return $results;
     }
 
-    /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param RoomType $roomType
-     * @throw \Exception
-     * @return array|bool
-     */
-    public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
-    {
+    private function executeServiceCommand(
+        \DateTime $begin = null,
+        \DateTime $end = null,
+        RoomType $roomType = null,
+        $command
+    ) {
         if (!$this->checkEnvironment()) {
             false;
         }
@@ -233,14 +233,13 @@ class ChannelManager
         $result = false;
         foreach ($this->services as $service) {
             try {
-                $noError = false;
-
-                if (empty($roomType) && empty($begin) && empty($end)) {
+                $noError = true;
+                if (empty($roomType) && empty($begin) && empty($end) && $command === AbstractChannelManagerService::COMMAND_UPDATE) {
                     $noError = $service['service']->closeAll();
                 }
 
                 if (!empty($roomType) || $noError) {
-                    $noError = $result[$service['key']]['result'] = $service['service']->update(
+                    $noError = $result[$service['key']]['result'] = $service['service']->$command(
                         $begin,
                         $end,
                         $roomType
@@ -248,7 +247,7 @@ class ChannelManager
                 }
 
                 if (!$noError) {
-                    $this->logger->error($service['key'].' error when UPDATE');
+                    $this->logger->error($service['key'].' error when '.$command);
                     $this->sendMessage($service, $service['service']->getErrors());
                 }
             } catch (\Exception $e) {
@@ -260,6 +259,18 @@ class ChannelManager
         }
 
         return $result;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @throw \Exception
+     * @return array|bool
+     */
+    public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
+        return $this->executeServiceCommand($begin, $end, $roomType, AbstractChannelManagerService::COMMAND_UPDATE);
     }
 
     /**
@@ -271,33 +282,7 @@ class ChannelManager
      */
     public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        if (!$this->checkEnvironment()) {
-            false;
-        }
-
-        $result = false;
-        foreach ($this->services as $service) {
-            try {
-                $this->logger->info('Start room update for '.$service['title']);
-                $noError = $result[$service['key']]['result'] = $service['service']->updateRooms(
-                    $begin,
-                    $end,
-                    $roomType
-                );
-
-                if (!$noError) {
-                    $this->logger->error($service['key'].' error when updateRooms orders');
-                    $this->sendMessage($service, $service['service']->getErrors());
-                }
-            } catch (\Exception $e) {
-                $result[$service['key']]['result'] = false;
-                $result[$service['key']]['error'] = $e;
-                $this->sendMessage($service, [(string)$e]);
-                $this->logger->error(get_called_class().': '.(string)$e);
-            }
-        }
-
-        return $result;
+        return $this->executeServiceCommand($begin, $end, $roomType, AbstractChannelManagerService::COMMAND_UPDATE_ROOMS);
     }
 
     /**
@@ -309,33 +294,7 @@ class ChannelManager
      */
     public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        if (!$this->checkEnvironment()) {
-            false;
-        }
-
-        $result = false;
-        foreach ($this->services as $service) {
-            try {
-                $this->logger->info('Start price update for '.$service['title']);
-                $noError = $result[$service['key']]['result'] = $service['service']->updatePrices(
-                    $begin,
-                    $end,
-                    $roomType
-                );
-
-                if (!$noError) {
-                    $this->logger->error($service['key'].' error when updatePrices orders');
-                    $this->sendMessage($service, $service['service']->getErrors());
-                }
-            } catch (\Exception $e) {
-                $result[$service['key']]['result'] = false;
-                $result[$service['key']]['error'] = $e;
-                $this->sendMessage($service, [(string)$e]);
-                $this->logger->error(get_called_class().': '.(string)$e);
-            }
-        }
-
-        return $result;
+        return $this->executeServiceCommand($begin, $end, $roomType, AbstractChannelManagerService::COMMAND_UPDATE_PRICES);
     }
 
     /**
@@ -347,35 +306,9 @@ class ChannelManager
      */
     public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        if (!$this->checkEnvironment()) {
-            false;
-        }
-
-        $result = false;
-        foreach ($this->services as $service) {
-            try {
-                $this->logger->info('Start restrictions update for '.$service['title']);
-                $noError = $result[$service['key']]['result'] = $service['service']->updateRestrictions(
-                    $begin,
-                    $end,
-                    $roomType
-                );
-
-                if (!$noError) {
-
-                    $this->logger->error($service['key'].' error when updateRestrictions orders');
-                    $this->sendMessage($service, $service['service']->getErrors());
-                }
-            } catch (\Exception $e) {
-                $result[$service['key']]['result'] = false;
-                $result[$service['key']]['error'] = $e;
-                $this->sendMessage($service, [(string)$e]);
-                $this->logger->error(get_called_class().': '.(string)$e);
-            }
-        }
-
-        return $result;
+        return $this->executeServiceCommand($begin, $end, $roomType, AbstractChannelManagerService::COMMAND_UPDATE_RESTRICTIONS);
     }
+
 
     public function pushResponse($serviceTitle, Request $request)
     {

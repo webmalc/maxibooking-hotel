@@ -35,14 +35,6 @@ parameters:
   router.request_context.scheme: http
   router.request_context.base_url: null
 
-  #Mailer
-  mailer_user_arrival_links:
-    about: 'http://example.com/'
-    rooms: 'http://example.com/'
-    map: 'http://example.com/'
-    contacts: 'http://example.com/'
-    #poll: 'http://example.com'
-
   #Cash
   mbh_payment_systems_change: true
 

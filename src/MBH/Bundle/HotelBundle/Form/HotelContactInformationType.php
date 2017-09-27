@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Form\LanguageType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -70,6 +71,33 @@ class HotelContactInformationType extends AbstractType
                 'required' => false,
             ])
         ;
+
+        $builder
+            ->add('aboutLink', TextType::class, [
+                'group' => 'form.hotelExtendedType.hotel_description_links.group',
+                'label' => 'form.hotelExtendedType.hotel_description_links.about_link.label',
+                'required' => false,
+            ])
+            ->add('contactsLink', TextType::class, [
+                'group' => 'form.hotelExtendedType.hotel_description_links.group',
+                'label' => 'form.hotelExtendedType.hotel_description_links.contacts_link.label',
+                'required' => false,
+            ])
+            ->add('mapLink', TextType::class, [
+                'group' => 'form.hotelExtendedType.hotel_description_links.group',
+                'label' => 'form.hotelExtendedType.hotel_description_links.map_link.label',
+                'required' => false,
+            ])
+            ->add('roomsLink', TextType::class, [
+                'group' => 'form.hotelExtendedType.hotel_description_links.group',
+                'label' => 'form.hotelExtendedType.hotel_description_links.rooms_link.label',
+                'required' => false,
+            ])
+            ->add('pollLink', TextType::class, [
+                'group' => 'form.hotelExtendedType.hotel_description_links.group',
+                'label' => 'form.hotelExtendedType.hotel_description_links.poll_link.label',
+                'required' => false,
+            ]);
 
         $builder
             ->add('latitude', TextType::class, [

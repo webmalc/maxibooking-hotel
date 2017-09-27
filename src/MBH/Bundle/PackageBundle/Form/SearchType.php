@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -160,7 +161,7 @@ class SearchType extends AbstractType
             'orderId' => null,
             'roomManager' => null,
             'startDate' => new \DateTime(),
-            'data_class' => 'MBH\Bundle\PackageBundle\Lib\SearchQuery',
+            'data_class' => SearchQuery::class,
             'method' => 'GET',
             'client_config' => null
         ]);

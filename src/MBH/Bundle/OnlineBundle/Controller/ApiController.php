@@ -8,7 +8,8 @@ use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -662,10 +663,8 @@ class ApiController extends Controller
                     ->setSignature('mailer.online.user.signature')
                     ->setMessageType(NotificationType::ONLINE_ORDER_TYPE);
 
-                $params = $this->container->getParameter('mailer_user_arrival_links');
-
-                if (!empty($params['map'])) {
-                    $message->setLink($params['map'])
+                if (!empty($hotel->getMapLink())) {
+                    $message->setLink($hotel->getMapLink())
                         ->setLinkText($tr->trans('mailer.online.user.map'));
                 }
 

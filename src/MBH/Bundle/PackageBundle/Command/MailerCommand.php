@@ -32,7 +32,6 @@ class MailerCommand extends ContainerAwareCommand
         $helper = $this->getContainer()->get('mbh.helper');
         $notifier = $this->getContainer()->get('mbh.notifier.mailer');
         $router = $this->getContainer()->get('router');
-        $linksParams = $this->getContainer()->getParameter('mailer_user_arrival_links');
 
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -119,7 +118,6 @@ class MailerCommand extends ContainerAwareCommand
                     ->setOrder($package->getOrder())
                     ->setAdditionalData([
                         'package' => $package,
-                        'links' => $this->getContainer()->getParameter('mailer_user_arrival_links'),
                         'fromText' => $package->getRoomType()->getHotel()
                     ])
                     ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
@@ -134,7 +132,6 @@ class MailerCommand extends ContainerAwareCommand
                     ->setMessage($message)
                     ->notify()
                 ;
-
             }
         }
 
@@ -162,8 +159,8 @@ class MailerCommand extends ContainerAwareCommand
                     'payerId' => $order->getPayer()->getId()
                 ], $router::ABSOLUTE_URL);
 
-                if (!empty($linksParams['poll'])) {
-                    $link = $linksParams['poll'] . '?link=' . $link;
+                if (!empty($hotel->getPollLink())) {
+                    $link = $hotel->getPollLink() . '?link=' . $link;
                 }
 
                 $message

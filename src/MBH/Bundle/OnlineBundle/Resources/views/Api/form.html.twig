@@ -1,7 +1,31 @@
 {% spaceless %}
+    {% if formConfig.isHorizontal %}
+        <style>
+            #mbh-form {
+                width: auto;
+            }
+            #mbh-form-submit {
+                width: 95px;
+            }
+            .mbh-form-row {
+                margin-right: 8px;
+                display: inline-block;
+            }
+            #mbh-form-adults-children-wrapper {
+                display: inline-block;
+                margin-left: 5px;
+            }
+            #mbh-form-adults-children-wrapper div.mbh-form-row {
+                float:none;
+            }
+            #mbh-form-wrapper {
+                text-align: center;
+            }
+        </style>
+    {% endif %}
+
 {% if hotels|length %}
 <form id="mbh-form" method="get" class="well" target="_parent" action="{{ formConfig.resultsUrl }}">
-
     {% if hotels|length > 1 %}
     <div class="mbh-form-row form-group">
         <label for="mbh-form-hotel">{{ 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>

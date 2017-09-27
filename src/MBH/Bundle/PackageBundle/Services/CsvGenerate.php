@@ -2,16 +2,8 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Document\PackageRepository;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\DateTime;
-use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 
 class CsvGenerate
 {
@@ -68,6 +60,7 @@ class CsvGenerate
 
         $rows[] = implode(self::DELIMETER, $title);
         $dataCsv = [];
+        /** @var Package $entity */
         foreach ($entities as $entity) {
             foreach (self::DATA as $key => $item) {
 
@@ -82,9 +75,9 @@ class CsvGenerate
                     } elseif ($method == 'getOrder') {
                         $entity->getStatus() == 'channel_manager' ? $dataCsv[] = $translator->trans('manager.channel_manager.' . $entity->getChannelManagerType()) : $dataCsv[] = '';
                     } elseif ($method == 'getPaids') {
-                        $dataCsv[] = $entity->getPaid();
+                        $dataCsv[] = $entity->getCalculatedPayment();
                     } elseif ($method == 'getRest') {
-                        $dataCsv[] = $entity->getPrice() - $entity->getPaid();
+                        $dataCsv[] = round($entity->getPrice() - $entity->getCalculatedPayment(), 2);
                     } else {
 
                         $call = $entity->$method();

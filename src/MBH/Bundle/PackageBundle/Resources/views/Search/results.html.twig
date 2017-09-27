@@ -185,7 +185,9 @@
                                 begin: result.begin|date('d.m.Y'),
                                 end: result.end|date('d.m.Y'),
                                 forceBooking: result.forceBooking,
-                                infants: result.infants
+                                infants: result.infants,
+                                query_id: result.queryId
+
                             })) }}"
                                target="_blank"
                                class="btn btn-success btn-xs package-search-book {{ is_granted('ROLE_PACKAGE_NEW') is empty ? 'hidden' }}"

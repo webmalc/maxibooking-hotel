@@ -276,7 +276,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'paid' => 0,
         ];
 
-        $iteratedOrderIds = [];
         foreach ($packages as $package) {
             /** @var Package $package */
             if (empty($package->getOrder()->getChannelManagerType())
@@ -304,14 +303,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                     $dayTotal[$day] = $default;
                 }
                 $packageOrderId = $package->getOrder()->getId();
-                $add = function ($entry, Package $package) use ($packageOrderId, $iteratedOrderIds) {
+                $add = function ($entry, Package $package) use ($packageOrderId) {
                     $entry['sold']++;
                     $entry['packagePrice'] += $package->getPackagePrice();
                     $entry['price'] += $package->getPrice();
                     $entry['servicesPrice'] += $package->getServicesPrice();
-                    if (!in_array($packageOrderId, $iteratedOrderIds)) {
-                        $entry['paid'] += $package->getPaid();
-                    }
+                    $entry['paid'] += $package->getCalculatedPayment();
                     foreach ($package->getServices() as $packageService) {
                         $entry['services'] += $packageService->getTotalAmount();
                     }
@@ -322,7 +319,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 $data[$user][$day] = $add($data[$user][$day], $package);
                 $total[$user] = $add($total[$user], $package);
                 $dayTotal[$day] = $add($dayTotal[$day], $package);
-                $iteratedOrderIds[] = $packageOrderId;
             }
             $allTotal = $default;
             foreach ($total as $i => $tData) {

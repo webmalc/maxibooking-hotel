@@ -9,16 +9,16 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Lib\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
@@ -108,6 +108,7 @@ class OrderManager implements Searchable
         $query->setSpecial($new->getSpecial());
         $query->memcached = false;
         $query->setExcludePackage($new);
+        $query->setSave(true);
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -138,6 +139,10 @@ class OrderManager implements Searchable
             ;
 
             $new = $this->recalculateServices($new);
+            if ($searchQueryId = $results[0]->getQueryId()) {
+                $searchQuery = $this->dm->find(SearchQuery::class, $searchQueryId);
+                $new->addSearchQuery($searchQuery);
+            }
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
             return $new;
@@ -570,6 +575,14 @@ class OrderManager implements Searchable
                 $this->dm->persist($infantService);
                 $this->dm->flush();
             }
+
+        }
+
+        //inject SearchQuery
+        if (isset($data['savedQueryId']) && (null !== $data['savedQueryId'])) {
+            $searchQuery = $this->dm->find('MBHPackageBundle:SearchQuery', $data['savedQueryId']);
+            $package->addSearchQuery($searchQuery);
+            $this->dm->flush();
         }
 
         return $package;
@@ -739,5 +752,82 @@ class OrderManager implements Searchable
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
         return $packageRepository->fetchQuery($data);
+    }
+
+    /**
+     * @param Builder $qb
+     * @return array
+     */
+    public function calculateSummary(Builder $qb)
+    {
+        $packages = $qb
+            ->hydrate(false)
+            ->select(['order', '_id', 'adults', 'children', 'begin', 'end', 'price', 'totalOverwrite', 'servicesPrice', 'discount', 'isPercentDiscount'])
+            ->getQuery()
+            ->execute()
+            ->toArray()
+        ;
+
+        $orderIds = array_map(function ($package) {
+            return $package['order']['$id'];
+        }, $packages);
+        /** @var OrderRepository $orderRepository */
+        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
+        $orders = $orderRepository
+            ->createQueryBuilder()
+            ->field('id')->in($orderIds)
+            ->hydrate(false)
+            ->select(['id', 'paid', 'price'])
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $numberOfNights = 0;
+        $numberOfGuests = 0;
+        $totalSum = 0;
+        $paidSum = 0;
+        $debt = 0;
+        $oneDay = 24*60*60;
+        foreach ($packages as $rawPackageData) {
+            $numberOfGuests += $rawPackageData['children'] + $rawPackageData['adults'];
+
+            /** @var \MongoDate $mongoBegin */
+            $mongoBegin = $rawPackageData['begin'];
+            /** @var \MongoDate $mongoEnd */
+            $mongoEnd = $rawPackageData['end'];
+            $numberOfNights += round(($mongoEnd->sec - $mongoBegin->sec) / $oneDay);
+
+            if(isset($rawPackageData['totalOverwrite'])) {
+                $price = $rawPackageData['totalOverwrite'];
+            } else {
+                $price = $rawPackageData['price'];
+                if (isset($rawPackageData['servicesPrice'])) {
+                    $price += $rawPackageData['servicesPrice'];
+                }
+                if (isset($rawPackageData['discount'])) {
+                    $discount = isset($rawPackageData['isPercentDiscount']) && $rawPackageData['isPercentDiscount']
+                        ? $rawPackageData['price'] * $rawPackageData['discount']/100
+                        : $rawPackageData['discount'];
+                    $price -= $discount;
+                }
+            }
+            $totalSum += $price;
+
+            $rawOrderData = $orders[$rawPackageData['order']['$id']];
+            if ($rawOrderData['price'] != 0) {
+                $packagePriceToOrderPriceRelation = $price / $rawOrderData['price'];
+                $packagePayment = $rawOrderData['paid'] * $packagePriceToOrderPriceRelation;
+                $paidSum += $packagePayment;
+                $debt += ($price - $packagePayment);
+            }
+        }
+
+        return [
+            'total' => $totalSum,
+            'paid' => $paidSum,
+            'debt' => $debt,
+            'nights' => $numberOfNights,
+            'guests' => $numberOfGuests,
+        ];
     }
 }

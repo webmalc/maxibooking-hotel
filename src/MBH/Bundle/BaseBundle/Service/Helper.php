@@ -574,4 +574,15 @@ class Helper
 
         return $clientConfig->getTimeZone();
     }
+
+    /**
+     * @param $string
+     * @return int
+     */
+    public function getFirstNumberFromString(string $string)
+    {
+        preg_match('/\d+/', $string, $numberMatches);
+
+        return count($numberMatches) > 0 ? $numberMatches[0] : intval($string);
+    }
 }
