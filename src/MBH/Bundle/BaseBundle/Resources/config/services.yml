@@ -202,3 +202,8 @@ services:
     mbh.specials.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.specials.log", 200]
+
+    mbh.report:
+        class: MBH\Bundle\BaseBundle\Lib\Report\Report
+        arguments:
+            - '@templating'
