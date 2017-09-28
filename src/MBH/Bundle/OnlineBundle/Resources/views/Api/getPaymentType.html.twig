@@ -1,6 +1,6 @@
 {% spaceless %}
 <div id="mbh-results-global-wrapper" xmlns="http://www.w3.org/1999/html">
-    {%  if request.packages|length and request.user|length and formConfig is not null %}
+    {%  if request.packages|length and request.user|length and formConfig is not null and (formConfig.personalDataPolicies is empty or request.isConfrmWithPersDataProcessing) %}
 
         <div id="mbh-package-info">
             {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.begin }} - {{ request.end }}.</strong>

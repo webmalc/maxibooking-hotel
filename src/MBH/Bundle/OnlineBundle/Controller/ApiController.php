@@ -485,12 +485,19 @@ class ApiController extends Controller
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
+        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($requestJson->configId);
+
+        if (!$formConfig || !$formConfig->getEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
         return [
             'arrival' => $arrivalTime,
             'departure' => $departureTime,
             'request' => $requestJson,
             'services' => $services,
             'hotels' => $hotels,
+            'config' => $formConfig
         ];
     }
 
@@ -756,6 +763,7 @@ class ApiController extends Controller
 
         return [
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
+            'configId' => $id,
             'urls' => [
                 'table' => $this->generateUrl(
                     'online_form_results_table',

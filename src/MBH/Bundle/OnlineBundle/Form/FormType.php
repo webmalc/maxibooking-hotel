@@ -115,6 +115,12 @@ class FormType extends AbstractType
                 'required' => true,
                 'help' => 'form.formType.max_packages.help'
             ])
+            ->add('personalDataPolicies', TextType::class, [
+                'label' => 'form.formType.pers_data_policies_url.label',
+                'help' => 'form.formType.pers_data_policies_url.help',
+                'required' => false,
+                'group' => 'form.formType.parameters',
+            ])
             ->add('isFullWidth', CheckboxType::class, [
                 'group' => 'form.formType.css',
                 'label' => 'form.formType.frame_width.is_full_width.label',
