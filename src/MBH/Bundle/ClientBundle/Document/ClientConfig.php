@@ -773,7 +773,7 @@ class ClientConfig extends Base
     /**
      * @return bool
      */
-    public function isQueryStat(): bool
+    public function isQueryStat()
     {
         return $this->queryStat;
     }
@@ -782,7 +782,7 @@ class ClientConfig extends Base
      * @param bool $queryStat
      * @return ClientConfig
      */
-    public function setQueryStat(bool $queryStat): ClientConfig
+    public function setQueryStat($queryStat): ClientConfig
     {
         $this->queryStat = $queryStat;
 

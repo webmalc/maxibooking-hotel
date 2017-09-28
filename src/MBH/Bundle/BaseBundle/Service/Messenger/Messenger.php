@@ -100,10 +100,10 @@ class Messenger implements \SplObserver
                 $session->getFlashBag()->add(implode('|', $key), $message->getText());
                 $message->setIsSend(true);
                 $this->dm->persist($message);
-
+                $this->dm->flush($message);
             }
         }
-        $this->dm->flush();
+
         $this->clear();
     }
 
