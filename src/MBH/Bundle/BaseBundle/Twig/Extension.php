@@ -1,6 +1,7 @@
 <?php
 namespace MBH\Bundle\BaseBundle\Twig;
 
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
@@ -120,6 +121,20 @@ class Extension extends \Twig_Extension
         return $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
     }
 
+    public function getFilterBeginDate()
+    {
+        /** @var  ClientConfig $config */
+        $now = new \DateTime("midnight");
+        $config = $this->clientConfig();
+        $beginDate = $config->getBeginDate();
+        if (!$beginDate || $beginDate < $now) {
+            return $now;
+        }
+
+        return $beginDate;
+    }
+
+
     /**
      * @return array
      */
@@ -170,6 +185,7 @@ class Extension extends \Twig_Extension
             'currency' => new \Twig_SimpleFunction('currency', [$this, 'currency'], ['is_safe' => ['html']]),
             'user_cash' => new \Twig_SimpleFunction('user_cash', [$this, 'cashDocuments'], ['is_safe' => ['html']]),
             'client_config' => new \Twig_SimpleFunction('client_config', [$this, 'clientConfig']),
+            'filter_begin_date' => new \Twig_SimpleFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
             'currentWorkShift' => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
             'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
         ];

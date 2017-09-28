@@ -33,4 +33,19 @@ class HotelRepository extends DocumentRepository
             ->execute();
     }
 
+    /**
+     * @param array $hotelsIds
+     * @param bool $isEmptyAsAll
+     * @return Cursor|Hotel[]
+     */
+    public function getByIds(array $hotelsIds, $isEmptyAsAll = true)
+    {
+        $qb = $this->createQueryBuilder();
+        if (!(count($hotelsIds) == 0 && $isEmptyAsAll)) {
+            $qb->field('id')->in($hotelsIds);
+        }
+
+        return $qb->getQuery()->execute();
+    }
+
 }

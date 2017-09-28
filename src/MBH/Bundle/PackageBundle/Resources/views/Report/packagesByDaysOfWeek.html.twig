@@ -76,7 +76,7 @@
 
 {% block scripts %}
     {{ parent() }}
-    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/report/distribution-report.js' %}
+    {% javascripts filter='?uglifyjs2' '@MBHPackageBundle/Resources/public/js/report/distribution-report.js' %}
 
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
