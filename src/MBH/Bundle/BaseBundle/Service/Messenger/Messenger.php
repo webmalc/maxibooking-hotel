@@ -81,9 +81,10 @@ class Messenger implements \SplObserver
                 $session->getFlashBag()->add(implode('|', $key), $message->getText());
                 $message->setIsSend(true);
                 $this->dm->persist($message);
+                $this->dm->flush($message);
             }
         }
-        $this->dm->flush();
+
         $this->clear();
     }
 
@@ -121,7 +122,7 @@ class Messenger implements \SplObserver
     public function clear($from = null)
     {
         $qb = $this->dm->getRepository('MBHBaseBundle:Message')
-            ->createQueryBuilder('q')
+            ->createQueryBuilder()
             ->field('isSend')->equals(true)
             ->remove();
         if ($from) {

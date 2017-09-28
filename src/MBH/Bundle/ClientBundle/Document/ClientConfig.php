@@ -581,7 +581,7 @@ class ClientConfig extends Base
      * @param bool $queryStat
      * @return ClientConfig
      */
-    public function setQueryStat(bool $queryStat): ClientConfig
+    public function setQueryStat($queryStat): ClientConfig
     {
         $this->queryStat = $queryStat;
 
