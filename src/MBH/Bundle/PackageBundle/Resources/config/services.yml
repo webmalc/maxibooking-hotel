@@ -168,3 +168,13 @@ services:
         class: MBH\Bundle\PackageBundle\Lib\DynamicSalesDay
         arguments: ['@doctrine.odm.mongodb.document_manager']
         shared: false
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'
+
+    mbh.distribution_report_compiler:
+        class: MBH\Bundle\PackageBundle\Services\DistributionReportCompiler
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.report'
+            - '@translator'

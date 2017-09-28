@@ -520,6 +520,134 @@ class PackageRepository extends DocumentRepository
     }
 
     /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param string $groupType
+     * @param string $type
+     * @param array $roomTypesIds
+     * @param \DateTime $creationBegin
+     * @param \DateTime $creationEnd
+     * @return array
+     */
+    public function getDistributionByDaysOfWeek(
+        \DateTime $begin,
+        \DateTime $end,
+        string $groupType,
+        string $type,
+        array $roomTypesIds,
+        ?\DateTime $creationBegin,
+        ?\DateTime $creationEnd
+    ) {
+        $filterField = $groupType === 'arrival' ? 'begin' : 'end';
+        $qb = $this
+            ->createQueryBuilder()
+            ->field($filterField)->gte($begin)
+            ->field($filterField)->lte($end);
+
+        if (count($roomTypesIds) > 0) {
+            $qb->field('roomType.id')->in($roomTypesIds);
+        }
+        if ($type === 'actual') {
+            $qb->addOr($qb->expr()->field('deletedAt')->exists(false));
+            $qb->addOr($qb->expr()->field('deletedAt')->equals(null));
+        }
+        if ($type == 'deleted') {
+            $qb->addAnd($qb->expr()->field('deletedAt')->exists(true));
+            $qb->addAnd($qb->expr()->field('deletedAt')->notEqual(null));
+        }
+        if (!is_null($creationBegin)) {
+            $qb->field('createdAt')->gte($creationBegin);
+        }
+        if (!is_null($creationEnd)) {
+            $qb->field('createdAt')->lte($creationEnd);
+        }
+
+        $distributionData = $qb
+            ->map(
+                'function() {
+                    emit(this.' . $filterField . '.getDay(), this)
+                }'
+            )
+            ->reduce(
+                'function(key, values) {
+                    var byRoomTypes = {};
+                    values.forEach(function(elem, index) {
+                        if (elem._id) {
+                            var packagePrice;
+                            if(elem.totalOverwrite) {
+                                packagePrice = elem.totalOverwrite;
+                            } else {
+                                packagePrice = parseFloat(elem.price, 10);
+            
+                                if (elem.servicesPrice) {
+                                    packagePrice += elem.servicesPrice
+                                }
+                                if (elem.discount) {
+                                    var discount = elem.isPercentDiscount ? elem.price * elem.discount/100 : elem.discount;
+                                    packagePrice -= discount;
+                                }
+                            }
+                            if (!elem.roomType) {
+                                throw JSON.stringify(values);
+                            }
+                            
+                            var roomTypeId = elem.roomType.$id.valueOf();
+                            if (byRoomTypes[roomTypeId]) {
+                                byRoomTypes[roomTypeId]["price"] += packagePrice;
+                                byRoomTypes[roomTypeId]["count"]++;
+                            } else {
+                                byRoomTypes[roomTypeId] = {price: packagePrice, count: 1}
+                            } 
+                        } else {
+                            for (var roomTypeId in elem) {
+                                if (byRoomTypes[roomTypeId]) {
+                                    byRoomTypes[roomTypeId]["price"] += elem[roomTypeId]["price"];
+                                    byRoomTypes[roomTypeId]["count"] += elem[roomTypeId]["count"];
+                                } else {
+                                    byRoomTypes[roomTypeId] =
+                                        {price: elem[roomTypeId]["price"], count: elem[roomTypeId]["count"]}; 
+                                }
+                            }
+                        }
+                    });
+                    return byRoomTypes;
+                }'
+            )
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        foreach ($distributionData as $dayOfWeekNumber => $dayOfWeekData) {
+            if (isset($dayOfWeekData['value']['_id'])) {
+                $packageData = $dayOfWeekData['value'];
+                if (isset($packageData['totalOverwrite'])) {
+                    $packagePrice = $packageData['totalOverwrite'];
+                } else {
+                    $packagePrice = floatval($packageData['price']);
+
+                    if (isset($packageData['servicesPrice'])) {
+                        $packagePrice += $packageData['servicesPrice'];
+                    }
+                    if (isset($packageData['discount'])) {
+                        $discount = isset($packageData['isPercentDiscount']) && $packageData['isPercentDiscount'] === true
+                            ? $packageData['price'] * $packageData['discount'] / 100 : $packageData['discount'];
+                        $packagePrice -= $discount;
+                    }
+                }
+
+                /** @var \MongoId $roomTypeMongoId */
+                $roomTypeMongoId = $packageData['roomType']['$id'];
+                $distributionData[$dayOfWeekNumber]['value'] = [$roomTypeMongoId->serialize() => [
+                    'count' => 1,
+                    'price' => $packagePrice
+                ]];
+            }
+        }
+
+        return $distributionData;
+    }
+
+    /**
      * @deprecated todo use queryCriteriaToBuilder
      * @see PackageRepository::queryCriteriaToBuilder
      *
