@@ -512,30 +512,29 @@ class PackageRepository extends DocumentRepository
             ->toArray();
 
         foreach ($distributionData as $dayOfWeekNumber => $dayOfWeekData) {
-            foreach ($dayOfWeekData['value'] as $packageData) {
-                if (count($packageData) > 2) {
-                    if (isset($packageData['totalOverwrite'])) {
-                        $packagePrice = $packageData['totalOverwrite'];
-                    } else {
-                        $packagePrice = floatval($packageData['price']);
+            if (isset($dayOfWeekData['value']['_id'])) {
+                $packageData = $dayOfWeekData['value'];
+                if (isset($packageData['totalOverwrite'])) {
+                    $packagePrice = $packageData['totalOverwrite'];
+                } else {
+                    $packagePrice = floatval($packageData['price']);
 
-                        if (isset($packageData['servicesPrice'])) {
-                            $packagePrice += $packageData['servicesPrice'];
-                        }
-                        if (isset($packageData['discount'])) {
-                            $discount = isset($packageData['isPercentDiscount']) && $packageData['isPercentDiscount'] === true
-                                ? $packageData['price'] * $packageData['discount'] / 100 : $packageData['discount'];
-                            $packagePrice -= $discount;
-                        }
+                    if (isset($packageData['servicesPrice'])) {
+                        $packagePrice += $packageData['servicesPrice'];
                     }
-
-                    /** @var \MongoId $roomTypeMongoId */
-                    $roomTypeMongoId = $packageData['roomType']['$id'];
-                    $distributionData[$dayOfWeekNumber]['value'] = [$roomTypeMongoId->serialize() => [
-                        'count' => 1,
-                        'price' => $packagePrice
-                    ]];
+                    if (isset($packageData['discount'])) {
+                        $discount = isset($packageData['isPercentDiscount']) && $packageData['isPercentDiscount'] === true
+                            ? $packageData['price'] * $packageData['discount'] / 100 : $packageData['discount'];
+                        $packagePrice -= $discount;
+                    }
                 }
+
+                /** @var \MongoId $roomTypeMongoId */
+                $roomTypeMongoId = $packageData['roomType']['$id'];
+                $distributionData[$dayOfWeekNumber]['value'] = [$roomTypeMongoId->serialize() => [
+                    'count' => 1,
+                    'price' => $packagePrice
+                ]];
             }
         }
 
