@@ -6,8 +6,9 @@ $(document).ready(function ($) {
     });
     var $filterBegin = $('#distribution-report-filter-begin');
     if (!$filterBegin.val()) {
-        $filterBegin.val($('#default-begin-date').val());
-        $('#distribution-report-filter-begin').val($('#default-end-date').val());
+        var $rangePickerInput = $('.daterangepicker-input');
+        $rangePickerInput.data('daterangepicker').setStartDate(moment(mbh.startDatePick, "DD.MM.YYYY").toDate());
+        $rangePickerInput.data('daterangepicker').setEndDate(moment(mbh.startDatePick, "DD.MM.YYYY").add(($('form').is('.mbh-start-date-search')) ? 1 : 45, 'days').toDate());
     }
 });
 

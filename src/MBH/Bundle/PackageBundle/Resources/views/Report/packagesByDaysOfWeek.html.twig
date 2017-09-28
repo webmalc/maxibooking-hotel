@@ -8,7 +8,7 @@
     <input id="default-end-date" type="hidden" value="{{ filter_begin_date()|date_modify('+45 days')|date('d.m.Y') }}">
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'cash-filter-form-widget'} %}
         {% block content %}
-            <form class="form-inline filter-form remember " id="distribution-report-filter-form" role="form">
+            <form class="form-inline filter-form remember" id="distribution-report-filter-form" role="form">
                 <div class="input">
                     <select style="width: 180px !important;" id="distribution-report-filter-group-type"
                             class="distribution-report-filter form-control input-sm">
@@ -43,12 +43,12 @@
                     <i class="fa fa-calendar" title='{{ 'views.report.distribution_report.creation_date.title'|trans }}'
                        data-toggle='tooltip'></i>&nbsp
                     <input type="text" id="distribution-report-filter-creation-begin"
-                           class="datepicker begin-datepicker form-control input-sm" data-date-format="dd.mm.yyyy">
+                           class="datepicker form-control input-sm" data-date-format="dd.mm.yyyy">
                 </div>
                 <div class="input">
                     - &nbsp
                     <input type="text" id="distribution-report-filter-creation-end"
-                           class="datepicker end-datepicker form-control input-sm" data-date-format="dd.mm.yyyy">
+                           class="datepicker form-control input-sm" data-date-format="dd.mm.yyyy">
                 </div>
 
                 <div class="input">
